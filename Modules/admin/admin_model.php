@@ -45,9 +45,9 @@ class Admin {
         global $settings, $mysqli;
         $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
-    
+
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-    
+
         $services = array();
         $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
         $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
@@ -57,7 +57,8 @@ class Admin {
         $services['emonPiLCD'] = Admin::getServiceStatus('emonPiLCD.service');
         $services['redis-server'] = Admin::getServiceStatus('redis-server.service');
         $services['mosquitto'] = Admin::getServiceStatus('mosquitto.service');
-    
+        $services['demandshaper'] = Admin::getServiceStatus('demandshaper.service');
+
         //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
@@ -151,15 +152,16 @@ class Admin {
             // (This has the bonus of ignoring the first row which is 7)
             if(count($columns) == 6)
             {
+              $filesystem = $columns[0];
               $partition = $columns[5];
               $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
               $partitions[$partition]['Partition']['text'] = $partition;
-              $partitions[$partition]['FileSystem']['text'] = $columns[0];
+              $partitions[$partition]['FileSystem']['text'] = $filesystem;
               if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
               {
                 $partitions[$partition]['Size']['value'] = $columns[1];
                 $partitions[$partition]['Free']['value'] = $columns[3];
-                $partitions[$partition]['Used']['value'] = $columns[2];
+                $partitions[$partition]['Used']['value'] = $columns[2];                
               }
               else
               {
@@ -168,6 +170,38 @@ class Admin {
                 $partitions[$partition]['Used']['text'] = $columns[2];
                 $partitions[$partition]['Free']['text'] = $columns[3];
               }
+
+              $writeload = 0;
+              $writeloadtime = "";
+              global $redis;
+              if ($redis) {
+                // translate partition mount point to mmcblk0pX based name
+                $partition_name = false;
+                if ($partition=="/boot") $partition_name = "mmcblk0p1";
+                else if ($partition=="/") $partition_name = "mmcblk0p2";
+                else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
+                else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
+                
+                if ($partition_name) {
+                  if ($sectors_written = @exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
+                    $last_sectors_written = 0;
+                    if ($redis->exists("diskstats:$partition_name")) {
+                      $last_sectors_written = $redis->get("diskstats:$partition_name");
+                      $last_time = $redis->get("diskstats:time");
+                      $elapsed = time() - $last_time;
+                      $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                      $writeloadtime = $elapsed;
+                    } else {
+                      $redis->set("diskstats:$partition_name",$sectors_written);
+                      $redis->set("diskstats:time",time());
+                      $writeload = 0;
+                    }
+                    
+                  }
+                }
+              }
+              $partitions[$partition]['WriteLoad']['value'] = $writeload;
+              $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
             }
           }
           return $partitions;
@@ -339,6 +373,8 @@ class Admin {
                     $diskFree = $fs['Free']['value'];
                     $diskTotal = $fs['Size']['value'];
                     $diskUsed = $fs['Used']['value'];
+                    $writeLoad = $fs['WriteLoad']['value'];
+                    $writeLoadTime = $fs['WriteLoadTime']['value'];
                     $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                     $diskPercent = sprintf('%.2f',$diskPercentRaw);
                     $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
@@ -347,10 +383,24 @@ class Admin {
                     } else {
                         $mountpoint = $fs['Partition']['text'];
                     }
+                    
+                    $writeloadstr = "n/a";
+                    if ($writeLoadTime) {
+                        $days = floor($writeLoadTime / 86400);
+                        $hours = floor(($writeLoadTime - ($days*86400))/3600);
+                        $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
+                        
+                        $writeloadstr = Admin::formatSize($writeLoad)."/s (";
+                        if ($days) $writeloadstr .= $days." days ";
+                        if ($hours) $writeloadstr .= $hours." hours "; 
+                        $writeloadstr .= $mins." mins)";
+                    }
+                    
                     $mounts[] = array(
                         'free'=>Admin::formatSize($diskFree),
                         'total'=>Admin::formatSize($diskTotal),
                         'used'=>Admin::formatSize($diskUsed),
+                        'writeload'=>$writeloadstr,
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,

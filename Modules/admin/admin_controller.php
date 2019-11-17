@@ -86,6 +86,15 @@ function admin_controller()
                     }
                     $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
                 }
+                $redis_info = array();
+                if($settings['redis']['enabled']) {
+                    $redis_info = $redis->info();
+                    $redis_info['dbSize'] = $redis->dbSize();
+                    $phpRedisPattern = 'Redis Version =>';
+                    $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
+                    $pipRedisPattern = "Version: ";
+                    $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+                }
 
                 $view_data = array(
                     'system'=>$system,
@@ -100,7 +109,7 @@ function admin_controller()
                     'path'=>$path,
                     'allow_emonpi_admin'=>$settings['interface']['enable_admin_ui'],
                     'emoncms_logfile'=>$emoncms_logfile,
-                    'redis'=>$redis,
+                    'redis_info'=>$redis_info,
                     'feed_settings'=>$settings['feed'],
                     'emoncms_modules'=>$system['emoncms_modules'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),
@@ -222,7 +231,7 @@ function admin_controller()
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
                     $firmware="";
                     if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-                    if (!in_array($firmware,array("emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
                     // Type: all, emoncms, firmware
                     $type="";
                     if (isset($_POST['type'])) $type = $_POST['type'];
@@ -443,6 +452,16 @@ function admin_controller()
                 );
                 
                 return $view_data;
+            }
+            else if ($route->action == 'resetwriteload' && $session['write'])
+            {
+                if ($redis) {
+                    $redis->del("diskstats:mmcblk0p1");
+                    $redis->del("diskstats:mmcblk0p2");
+                    $redis->del("diskstats:mmcblk0p3");
+                    $redis->del("diskstats:time");
+                }
+                return true;
             }
             /*
             else if ($route->action === 'loglevel' && $session['write']) {

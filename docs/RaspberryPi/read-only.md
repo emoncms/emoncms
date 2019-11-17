@@ -1,4 +1,8 @@
-# Enable root filesystem read-only mode
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+## Archived: Enable root filesystem read-only mode
 
 
 ## Setup Data partition

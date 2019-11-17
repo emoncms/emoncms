@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-29 09:34+0200\n"
-"PO-Revision-Date: 2019-06-29 09:35+0200\n"
+"POT-Creation-Date: 2019-10-10 00:16+0200\n"
+"PO-Revision-Date: 2019-10-10 00:16+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,39 +14,44 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/device_view.php:111 ../../../Views/input_view.php:119
+#: ../../../Views/device_view.php:111 ../../../Views/input_view.php:210
 msgid "Input API Help"
 msgstr "Aide de l'API Source"
 
-#: ../../../Views/device_view.php:112 ../../../Views/input_view.php:120
+#: ../../../Views/device_view.php:112 ../../../Views/input_dialog.php:72
+#: ../../../Views/input_dialog.php:103 ../../../Views/input_view.php:209
 #: ../../../input_menu.php:4
 msgid "Inputs"
 msgstr "Sources"
 
-#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.js:300
+#: ../../../Views/input_view.php:36
 msgid "Collapse"
 msgstr "Replier"
 
-#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.js:302
+#: ../../../Views/input_view.php:37
 msgid "Expand"
-msgstr "Déplier"
+msgstr "Étendre"
 
-#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
+#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:39
 msgid "Select all"
 msgstr "Tout sélectionner"
 
-#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
+#: ../../../Views/device_view.php:117
 msgid "Unselect all"
 msgstr "Tout désélectionner"
 
-#: ../../../Views/device_view.php:133 ../../../Views/input_view.php:141
+#: ../../../Views/device_view.php:133 ../../../Views/input_view.php:281
+#: ../../../Views/input_view.php:296
 msgid "No inputs created"
 msgstr "Aucune source de données n'est disponible"
 
-#: ../../../Views/device_view.php:134 ../../../Views/input_view.php:142
+#: ../../../Views/device_view.php:134 ../../../Views/input_view.php:282
+#: ../../../Views/input_view.php:297
 msgid ""
 "Inputs are the main entry point for your monitoring device. Configure your "
 "device to post values here, you may want to follow the <a href=\"api\">Input "
@@ -57,28 +62,33 @@ msgstr ""
 "consulter l'<a href=\"api\">Aide de l'API Source</a> afin de générer votre "
 "requête."
 
-#: ../../../Views/device_view.php:138 ../../../Views/input_view.php:146
+#: ../../../Views/device_view.php:138 ../../../Views/input_view.php:284
+#: ../../../Views/input_view.php:301
 msgid "New device"
 msgstr "Nouvel appareil"
 
-#: ../../../Views/device_view.php:239 ../../../Views/input_view.php:316
+#: ../../../Views/device_view.php:239 ../../../Views/input_view.js:922
+#: ../../../Views/input_view.php:31
 msgid "Configure your device here"
 msgstr "Configurer votre appareil ici"
 
-#: ../../../Views/device_view.php:277 ../../../Views/input_view.php:359
+#: ../../../Views/device_view.php:277 ../../../Views/input_view.php:32
 msgid "Show node key"
 msgstr "Afficher la clé du noeud"
 
-#: ../../../Views/device_view.php:278 ../../../Views/input_view.php:360
+#: ../../../Views/device_view.php:278 ../../../Views/input_view.php:33
+#: ../../../Views/input_view.php:250
 msgid "Configure device using device template"
 msgstr "Configurer l'appareil en utilisant le modèle d'appareil"
 
-#: ../../../Views/device_view.php:300 ../../../Views/input_view.php:402
+#: ../../../Views/device_view.php:300 ../../../Views/input_view.php:34
+#: ../../../Views/input_view.php:273
 msgid "Configure Input processing"
 msgstr "Configurer le traitement de la source"
 
 #: ../../../Views/device_view.php:574 ../../../Views/device_view.php:605
-#: ../../../Views/input_view.php:695 ../../../Views/input_view.php:726
+#: ../../../Views/input_view.js:1184 ../../../Views/input_view.js:1215
+#: ../../../Views/input_view.php:35
 msgid "Saving"
 msgstr "Enregistrement"
 
@@ -242,7 +252,8 @@ msgstr ""
 "et POST (les exemples POST donnés utilisent curl)"
 
 #: ../../../Views/input_api.php:49 ../../../Views/input_api.php:75
-#: ../../../Views/input_api.php:125
+#: ../../../Views/input_api.php:125 ../../../Views/input_dialog.php:113
+#: ../../../Views/input_dialog.php:114
 msgid "Description"
 msgstr "Description"
 
@@ -485,11 +496,11 @@ msgstr "Définir la liste des traitements de sources"
 msgid "Reset input process list"
 msgstr "Réinitialiser la liste des traitements de sources"
 
-#: ../../../Views/input_dialog.php:10
+#: ../../../Views/input_dialog.php:64
 msgid "Delete Input"
 msgstr "Supprimer la source"
 
-#: ../../../Views/input_dialog.php:13
+#: ../../../Views/input_dialog.php:68
 msgid ""
 "Deleting an Input will lose it name and configured Processlist.<br>A new "
 "blank input is automatic created by API data post if it does not already "
@@ -500,65 +511,113 @@ msgstr ""
 "automatiquement lors de la publication de données API si elle n'existe pas "
 "déjà."
 
-#: ../../../Views/input_dialog.php:16
+#: ../../../Views/input_dialog.php:71
 msgid "Are you sure you want to delete?"
 msgstr "Êtes-vous sûr de vouloir supprimer cette source ?"
 
-#: ../../../Views/input_dialog.php:22
+#: ../../../Views/input_dialog.php:87
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/input_dialog.php:23
-msgid "Delete"
-msgstr "Supprimer"
-
-#: ../../../Views/input_dialog.php:31
+#: ../../../Views/input_dialog.php:99
 msgid "Edit Input"
 msgstr "Modifier la source"
 
-#: ../../../Views/input_dialog.php:34
+#: ../../../Views/input_dialog.php:102
 msgid "Edit the input's name and description."
 msgstr "Modifier le nom et la description de la source."
 
-#: ../../../Views/input_dialog.php:41
+#: ../../../Views/input_dialog.php:108 ../../../Views/input_dialog.php:109
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../Views/input_dialog.php:116 ../../../Views/input_dialog.php:147
+msgid "Save"
+msgstr "Enregistrer"
+
+#: ../../../Views/input_dialog.php:133
 msgid "Close"
 msgstr "Fermer"
 
-#: ../../../Views/input_dialog.php:42 ../../../Views/input_dialog.php:52
-msgid "Save"
-msgstr "Enregister"
-
-#: ../../../Views/input_dialog.php:43
+#: ../../../Views/input_dialog.php:134
 msgid "Save All"
 msgstr "Enregistrer tout"
 
-#: ../../../Views/input_dialog.php:50 ../../../Views/input_dialog.php:51
+#: ../../../Views/input_dialog.php:145 ../../../Views/input_dialog.php:146
 msgid "Basic text only. Symbols allowed _-.@"
 msgstr "Texte de base seulement. Symboles autorisés _-.@"
 
-#: ../../../Views/input_dialog.php:50
+#: ../../../Views/input_dialog.php:145
 msgid "name"
 msgstr "nom"
 
-#: ../../../Views/input_dialog.php:51
+#: ../../../Views/input_dialog.php:146
 msgid "description"
 msgstr "description"
 
-#: ../../../Views/input_view.php:196
+#: ../../../Views/input_view.js:178 ../../../Views/input_view.js:182
+msgid "Please install the device module to enable this feature"
+msgstr "Installer SVP le module device pour activer cette fonctionnalité"
+
+#: ../../../Views/input_view.js:185
+msgid "No device key created"
+msgstr "Aucune clé device créée"
+
+#: ../../../Views/input_view.js:373 ../../../Views/input_view.js:486
+#: ../../../Views/input_view.php:216 ../../../Views/input_view.php:220
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../../../Views/input_view.js:400
+msgid "Deleted"
+msgstr "Supprimé"
+
+#: ../../../Views/input_view.js:416
+msgid "Error"
+msgstr "Erreur"
+
+#: ../../../Views/input_view.js:544 ../../../Views/input_view.js:596
+#: ../../../Views/input_view.js:1273
+msgid "Saved"
+msgstr "Enregistré"
+
+#: ../../../Views/input_view.js:688 ../../../Views/input_view.js:692
+#: ../../../Views/input_view.js:696
+msgid "Nothing changed"
+msgstr "Aucune modification"
+
+#: ../../../Views/input_view.php:27
 msgid "ID"
 msgstr "Identifiant"
 
-#: ../../../Views/input_view.php:197
+#: ../../../Views/input_view.php:28
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../Views/input_view.php:198
+#: ../../../Views/input_view.php:29
 msgid "Time"
 msgstr "Temps"
 
-#: ../../../Views/input_view.php:199
+#: ../../../Views/input_view.php:30
 msgid "Updated"
 msgstr "Mise à jour"
+
+#: ../../../Views/input_view.php:38 ../../../Views/input_view.php:234
+#, php-format
+msgid "Select all %s inputs"
+msgstr "Sélectionner l'ensemble des %s sources"
+
+#: ../../../Views/input_view.php:221
+msgid "Edit"
+msgstr "Modifier"
+
+#: ../../../Views/input_view.php:247
+msgid "Show device key"
+msgstr "Afficher la clé de l'appareil"
+
+#: ../../../Views/input_view.php:288
+msgid "Loading"
+msgstr "Chargement"
 
 #: ../../../input_model.php:607
 msgid "Invalid feed"
@@ -577,9 +636,6 @@ msgstr "Erreur lors du paramétrage de la liste des traitements"
 
 #~ msgid "Node"
 #~ msgstr "Nœud"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
 
 #~ msgid "Key"
 #~ msgstr "Clé"

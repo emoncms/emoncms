@@ -1,3 +1,5 @@
+<?php $v=6; ?>
+
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
 <?php } ?>
@@ -7,6 +9,37 @@
 <script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
+<script>
+    var path = "<?php echo $path; ?>";
+    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+
+    var _user = {};
+    _user.lang = "<?php echo $_SESSION['lang']; ?>";
+
+    // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
+    /**
+     * return object of gettext translated strings
+     *
+     * @return object
+     */
+    function getTranslations(){
+        return {
+            'ID': "<?php echo _('ID'); ?>",
+            'Value': "<?php echo _('Value'); ?>",
+            'Time': "<?php echo _('Time'); ?>",
+            'Updated': "<?php echo _('Updated'); ?>",
+            'Configure your device here': "<?php echo _('Configure your device here'); ?>",
+            'Show node key': "<?php echo _('Show node key'); ?>",
+            'Configure device using device template': "<?php echo _('Configure device using device template'); ?>",
+            'Configure Input processing': "<?php echo _('Configure Input processing'); ?>",
+            'Saving': "<?php echo _('Saving'); ?>",
+            'Collapse': "<?php echo _('Collapse'); ?>",
+            'Expand': "<?php echo _('Expand'); ?>",
+            'Select all %s inputs': "<?php echo _('Select all %s inputs'); ?>",
+            'Select all': "<?php echo _('Select all'); ?>"
+        }
+    }
+</script>
 <style>
 
 .container-fluid { padding: 0px 10px 0px 10px; }
@@ -180,12 +213,12 @@ input.checkbox-lg,
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="_('Select all') + ' (' + total_inputs + ')'">
+        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(_('Select all')); ?>' + ' (' + total_inputs + ')'">
             <svg class="icon"><use :xlink:href="checkbox_icon"></use></svg>
             <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="Delete"><i class="icon-trash" ></i></button>
-        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="Edit"><i class="icon-pencil" ></i></button>
+        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="<?php echo _('Delete'); ?>"><i class="icon-trash" ></i></button>
+        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="<?php echo _('Edit'); ?>"><i class="icon-pencil" ></i></button>
     </div>
 
     <div id="noprocesses clearfix"></div>
@@ -198,7 +231,7 @@ input.checkbox-lg,
 
             <div class="select text-center has-indicator" data-col="B">
                 <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
-                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
+                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="'<?php echo addslashes(_("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
             </div>
 
             <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
@@ -211,10 +244,10 @@ input.checkbox-lg,
             <div class="buttons pull-right">
                 <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
                 <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
-                <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="Show device key">
+                <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="<?php echo _('Show device key'); ?>">
                     <i class="icon-lock"></i>
                 </a>
-                <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template') ?>">
+                <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template'); ?>">
                     <i class="icon-cog"></i>
                 </a>
             </div>
@@ -277,37 +310,7 @@ input.checkbox-lg,
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
-<script>
-    var path = "<?php echo $path; ?>";
-    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
 
-    var _user = {};
-    _user.lang = "<?php echo $_SESSION['lang']; ?>";
-
-    // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
-    /**
-     * return object of gettext translated strings
-     *
-     * @return object
-     */
-    function getTranslations(){
-        return {
-            'ID': "<?php echo _('ID'); ?>",
-            'Value': "<?php echo _('Value'); ?>",
-            'Time': "<?php echo _('Time'); ?>",
-            'Updated': "<?php echo _('Updated'); ?>",
-            'Configure your device here': "<?php echo _('Configure your device here'); ?>",
-            'Show node key': "<?php echo _('Show node key'); ?>",
-            'Configure device using device template': "<?php echo _('Configure device using device template'); ?>",
-            'Configure Input processing': "<?php echo _('Configure Input processing') ?>",
-            'Saving': "<?php echo _('Saving') ?>",
-            'Collapse': "<?php echo _('Collapse') ?>",
-            'Expand': "<?php echo _('Expand') ?>",
-            'Select all %s inputs': "<?php echo _('Select all %s inputs') ?>",
-            'Select all': "<?php echo _('Select all') ?>"
-        }
-    }
-</script>
 <script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

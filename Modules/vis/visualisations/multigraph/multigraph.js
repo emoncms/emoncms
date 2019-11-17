@@ -22,13 +22,14 @@ var datatype;
 var graphtype;
 
 function convertToPlotlist(multigraphFeedlist) {
-  if (!multigraphFeedlist[0]) {return false;}
+  if (multigraphFeedlist==undefined) return;
+  if (!multigraphFeedlist[0]) return;
   var plotlist = [];
-  
+
   var showtag = (typeof multigraphFeedlist[0]["showtag"] !== "undefined" ? multigraphFeedlist[0]["showtag"] : true);
   showlegend = (typeof multigraphFeedlist[0]["showlegend"] === "undefined" || multigraphFeedlist[0]["showlegend"]);
   var barwidth = 1;
-  
+
   view.ymin = (typeof multigraphFeedlist[0]["ymin"] !== "undefined" ? multigraphFeedlist[0]["ymin"] : null);
   view.ymax = (typeof multigraphFeedlist[0]["ymax"] !== "undefined" ? multigraphFeedlist[0]["ymax"] : null);
   view.y2min = (typeof multigraphFeedlist[0]["y2min"] !== "undefined" ? multigraphFeedlist[0]["y2min"] : null);
@@ -51,7 +52,7 @@ function convertToPlotlist(multigraphFeedlist) {
     if (currentFeed["datatype"] === "2") {
       datatype=2;
     }
-    
+
     if (graphtype.substring(0, 5) === "lines") {
       plotlist[parseInt(z,10)] = {
         id: currentFeed["id"],
@@ -60,7 +61,7 @@ function convertToPlotlist(multigraphFeedlist) {
           data: null,
           label: tag + currentFeed["name"],
           stack: stacked,
-          points: { 
+          points: {
             show: true,
             radius: 0,
             lineWidth: 1, // in pixels
@@ -158,11 +159,11 @@ function visFeedDataDelayed() {
 
         if (typeof plotdata[parseInt(i,10)] === "undefined") {plotdata[parseInt(i,10)] = [];}
 
-        if (typeof ajaxAsyncXdr[parseInt(i,10)] !== "undefined") { 
+        if (typeof ajaxAsyncXdr[parseInt(i,10)] !== "undefined") {
           ajaxAsyncXdr[parseInt(i,10)].abort(); // Abort pending loads
           ajaxAsyncXdr[parseInt(i,10)]="undefined";
         }
-        var context = {index:i, plotlist:plotlist[parseInt(i,10)]}; 
+        var context = {index:i, plotlist:plotlist[parseInt(i,10)]};
         ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
       }
     }
@@ -195,10 +196,10 @@ function visFeedData() {
             visFeedDataOri();
             clearTimeout(eventRefresh); // Cancel any pending event
             eventRefresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
-        } else {        
+        } else {
             visFeedDataOri();
         }
-    } else {        
+    } else {
         visFeedDataOri();
     }
 }
@@ -316,7 +317,7 @@ function multigraphInit(element) {
     var width = $("#graph_bound").width();
     $("#graph").width(width);
     var height = width * 0.5;
-    
+
     if (embed) {
         $("#graph").height($(window).height());
     } else {
@@ -324,14 +325,14 @@ function multigraphInit(element) {
     }
     plot();
   }
-  
+
   visResize();
 
   $(document).on("window.resized hidden.sidebar.collapse shown.sidebar.collapse",visResize);
 
   // Graph selections
   $("#graph").bind("plotselected", function (event, ranges) {
-     view.start = ranges.xaxis.from; 
+     view.start = ranges.xaxis.from;
      view.end = ranges.xaxis.to;
      visFeedData();
   });
@@ -342,7 +343,7 @@ function multigraphInit(element) {
   $("#right").click(function () {view.panright(); visFeedData();});
   $("#left").click(function () {view.panleft(); visFeedData();});
   $(".graph-time").click(function () {view.timewindow($(this).attr("time")); visFeedData();});
-  
+
   $(".graph-timewindow").click(function () {
      $("#graph-buttons-timemanual").show();
      $("#graph-buttons-normal").hide();
@@ -377,7 +378,7 @@ function multigraphInit(element) {
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
-        out = d;    
+        out = d;
 		$("#datetimepicker1").data("datetimepicker").setDate(out);
     } else {
         out = e.date;
@@ -393,7 +394,7 @@ function multigraphInit(element) {
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
-        out = d;    
+        out = d;
 		$("#datetimepicker2").data("datetimepicker").setDate(out);
     } else {
         out = e.date;
@@ -426,7 +427,7 @@ function multigraphInit(element) {
   $("#graph").bind("touchended", function (event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    view.start = ranges.xaxis.from; 
+    view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     visFeedData();
   });

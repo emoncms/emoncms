@@ -183,7 +183,7 @@
                 $setup = new Setup($mysqli);
                 if ($setup->status()=="unconfigured") {
                     $settings["interface"]["default_controller"] = "setup";
-                    $default_action = "";
+                    $settings["interface"]["default_action"] = "";
                     // Provide special setup access to WIFI module functions
                     $_SESSION['setup_access'] = true;
                 }
