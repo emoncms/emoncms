@@ -1,6 +1,10 @@
-## Install Emoncms on Raspberry Pi (Raspbian Stretch)
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
+---
+
+## Archived: Install Emoncms on Raspberry Pi (Raspbian Stretch)
+
+This guide will install emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
 **Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).**
 

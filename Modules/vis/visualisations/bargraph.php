@@ -270,46 +270,45 @@
             }*/
            
            out = [];
-           var year = new Date (data[0][0]).getFullYear();
-           var month= new Date (data[0][0]).getMonth();
-           var sumtime=0;
-           var sum=0;
-     
-            if (intervalcode=='y'){
-               sumtime= new Date (year,0,1);
-               for (var x=0;x<data.length;x++){
-                  if (new Date (data[x][0]).getFullYear() == year)
-                     sum+=data[x][1];
-                  else {
-                     out.push([sumtime,sum]);
-                     year = new Date (data[x][0]).getFullYear();
-                     sumtime= new Date (year,0,1);
-                     sum=data[x][1];
-                  }
-               }
-               out.push([sumtime,sum]);
-               data=out;
-            }
+           if (data.length) {
+               var year = new Date (data[0][0]).getFullYear();
+               var month= new Date (data[0][0]).getMonth();
+               var sumtime=0;
+               var sum=0;
+         
+                if (intervalcode=='y'){
+                   sumtime= new Date (year,0,1);
+                   for (var x=0;x<data.length;x++){
+                      if (new Date (data[x][0]).getFullYear() == year)
+                         sum+=data[x][1];
+                      else {
+                         out.push([sumtime,sum]);
+                         year = new Date (data[x][0]).getFullYear();
+                         sumtime= new Date (year,0,1);
+                         sum=data[x][1];
+                      }
+                   }
+                   out.push([sumtime,sum]);
+                   data=out;
+                }
 
-            else if (intervalcode=='m'){
-               sumtime= new Date (year,month,1);
-               for (var x=0;x<data.length;x++){
-                  if (new Date (data[x][0]).getMonth() == month)
-                     sum+=data[x][1];
-                  else {
-                     out.push([sumtime,sum]);
-                     month= new Date (data[x][0]).getMonth();
-                     year = new Date (data[x][0]).getFullYear();
-                     sumtime= new Date (year,month,1);
-                     sum=data[x][1];
-                  }
-               }
-               out.push([sumtime,sum]);
-               data=out;
+                else if (intervalcode=='m'){
+                   sumtime= new Date (year,month,1);
+                   for (var x=0;x<data.length;x++){
+                      if (new Date (data[x][0]).getMonth() == month)
+                         sum+=data[x][1];
+                      else {
+                         out.push([sumtime,sum]);
+                         month= new Date (data[x][0]).getMonth();
+                         year = new Date (data[x][0]).getFullYear();
+                         sumtime= new Date (year,month,1);
+                         sum=data[x][1];
+                      }
+                   }
+                   out.push([sumtime,sum]);
+                   data=out;
+                }
             }
-
-            else
-               ;
 
             stats.calc(data);
             plot();

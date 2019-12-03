@@ -1,4 +1,8 @@
-# Installation on Raspian/Debian/Ubuntu (currently unmaintained)
+# Archived: Installation on Raspian/Debian/Ubuntu
+
+**To install emoncms on Debian see new installation script approach: https://github.com/openenergymonitor/EmonScripts**
+
+---
 
 Using the debian package installation approach is currently not recommended. We may move back to using the debian package approach in the future. Please install using the git method in the mean time.
 

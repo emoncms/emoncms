@@ -195,19 +195,19 @@ body{padding:0!important}
         <h3 id="feedEditModalLabel"><?php echo _('Edit feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <p>Feed node:<br>
+        <p><?php echo _('Feed node:'); ?><br>
         <div class="autocomplete">
             <input id="feed-node" type="text" style="margin-bottom:0">
         </div>
         </p>
 
-        <p>Feed name:<br>
+        <p><?php echo _('Feed name:'); ?><br>
         <input id="feed-name" type="text"></p>
 
-        <p>Make feed public: 
+        <p><?php echo _('Make feed public:'); ?>
         <input id="feed-public" type="checkbox"></p>
 
-        <p>Feed Unit</p>
+        <p><?php echo _('Feed Unit'); ?></p>
         <div class="input-prepend">
         <select id="feed_unit_dropdown" style="width:auto">
             <option value=""></option>
@@ -220,7 +220,7 @@ body{padding:0!important}
             }
         }
         ?>
-            <option value="_other">Other</option>
+            <option value="_other"><?php echo _('Other'); ?></option>
         </select>
         <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>
         </div>

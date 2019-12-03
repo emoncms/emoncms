@@ -20,7 +20,10 @@ class Email {
         }
         if ($this->have_swift){
             $this->message = Swift_Message::newInstance();
-            $this->message->setFrom($settings['smtp']['from']);
+            
+            $from = array();
+            $from[$settings['smtp']['from_email']] = $settings['smtp']['from_name'];
+            $this->message->setFrom($from);
         }
     }
 
@@ -64,7 +67,7 @@ class Email {
         if ($this->check()) {
             try {
                 $transport = Swift_SmtpTransport::newInstance($settings['smtp']['host'], $settings['smtp']['port']);
-                if (isset($settings['smtp']['encryption'])) $transport->setEncryption($settings['smtp']['encryption']);
+                if (isset($settings['smtp']['encryption']) && $settings['smtp']['encryption']) $transport->setEncryption($settings['smtp']['encryption']);
                 if (isset($settings['smtp']['username'])) $transport->setUsername($settings['smtp']['username']);
                 if (isset($settings['smtp']['password'])) $transport->setPassword($settings['smtp']['password']);
 
