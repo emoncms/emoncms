@@ -63,8 +63,10 @@ if (is_dir($settings["emoncms_dir"]."/modules")) {
 
 // Set display errors
 if (isset($settings["display_errors"]) && ($settings["display_errors"])) {
-    error_reporting(E_ALL);
+    // @todo: add setting to allow for deprecated warnings
     ini_set('display_errors', 'on');
+    // show all errors except for E_DEPRECATED warnings
+    error_reporting(E_ALL & ~E_DEPRECATED);
 }
 
 // ---------------------------------------------------------------------------------------

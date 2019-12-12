@@ -56,6 +56,12 @@ class VirtualFeed implements engine_methods
         return false; // Not supported by engine
     }
 
+    /**
+     * returns the feed's last value
+     *
+     * @param int $feedid
+     * @return bool|array
+     */
     public function lastvalue($feedid)
     {
         $feedid = intval($feedid);

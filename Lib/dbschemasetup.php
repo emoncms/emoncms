@@ -35,7 +35,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 // the data type, and so not respecifying all of them when specifying
 // the field will result in them being lost.
 //
-function db_schema_diff_datatype($spec, $current)
+function db_schema_diff_datatype($spec, $current, $field)
 {
     $changed = false;
 
@@ -45,6 +45,11 @@ function db_schema_diff_datatype($spec, $current)
     if ($spec['type'] == 'text' && $spec_default !== NULL) {
         $spec_default = "'$spec_default'";
     }
+    // check if field Type changed
+    if($spec['type'] !== $current['Type']) {
+        $changed = true;
+    }
+
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
@@ -172,12 +177,20 @@ function db_schema_add_column($mysqli, $table, $field, $spec, &$operations)
 //
 function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
 {
-    $result = $mysqli->query("DESCRIBE $table `$field`");
+    $result = $mysqli->query("DESCRIBE `$table` `$field`");
     $current = $result->fetch_array();
 
     // Check if we 1. need to change type 2. need to add a primary key
     $diff_datatype = db_schema_diff_datatype($spec, $current, $field);
     $add_key = db_schema_diff_key($spec, $current);
+
+
+    // if($table === 'feeds' && $field === 'id') {
+    //     // var_dump($add_key);
+    //     var_dump($diff_datatype);
+    //     // var_dump(array($table, $field, $spec));
+    //     exit('dave');
+    // }
 
     // If we do, generate a new field spec and update table
     if ($diff_datatype || $add_key) {
