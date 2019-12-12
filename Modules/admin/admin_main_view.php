@@ -71,7 +71,7 @@ listItem;
         </div>
         <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
     </section>
-
+    
     <?php 
     // UPDATES 
     // -------------------

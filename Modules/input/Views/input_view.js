@@ -276,7 +276,7 @@ var app = new Vue({
 
 
 var controls = new Vue({
-    el: '#feedlist-controls',
+    el: '#input-controls',
     data: {
         timeout: null,
         overlayControlsOveride: false

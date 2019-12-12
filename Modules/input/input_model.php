@@ -197,7 +197,7 @@ class Input
             $this->load_to_redis($userid);
             $inputids = $this->redis->sMembers("user:inputs:$userid");
         }
-
+        
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
@@ -207,7 +207,6 @@ class Input
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
             $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
         }
-
         return $dbinputs;
     }
 
