@@ -49,6 +49,7 @@ class Admin {
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
         $services = array();
+        $services['emonmuc'] = Admin::getServiceStatus('emonmuc.service');
         $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
         $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
         $services['emoncms_mqtt'] = Admin::getServiceStatus('emoncms_mqtt.service');

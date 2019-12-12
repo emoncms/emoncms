@@ -35,8 +35,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-    
+    <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
 
@@ -52,34 +51,30 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
         </div>
 
         <?php if (isset($submenu) && ($submenu)) { ?>
-            <div id="submenu">
-                <div class="container">
-                    <?php echo $submenu; ?>
-                </div>
-            </div>
-            <br>
-        <?php } ?>
-        
-        <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
+
+        <div id="submenu">
+            <div class="container">
+                <?php echo $submenu; ?>
             </div>
         </div>
-        
+        <br>
+        <?php } ?>
+
+        <div id="sidebar" class="sidebar d-flex flex-column">
+            <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
+        </div>
+
         <?php
-        $contentContainerClasses[] = 'content-container';
-        
+        $container[] = 'content-container';
         if ($route->controller=="dashboard") { 
-            $contentContainerClasses[] = '';
+            $container[] = '';
         } else { 
-            $contentContainerClasses[] = 'container-fluid';
+            $container[] = 'container-fluid';
         }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+        <main class="<?php echo implode(' ',array_filter(array_unique($container))) ?>">
             <?php echo $content; ?>
         </main>
-        
     </div><!-- eof #wrap -->
-
     <div id="footer">
         <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
@@ -87,28 +82,27 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
 
-<!-- ICONS --------------------------------------------- -->
-<?php
-    // THEME ICONS
-    echo $svg_icons;
-?>
-
-<?php
-    // MODULE ICONS
-    if(!empty($menu['includes']['icons'])) :
-?>
-<svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs>
-        <?php
-        foreach($menu['includes']['icons'] as $icon):
-            echo $icon;
-        endforeach;
-        ?>
-    </defs>
-</svg>
-<?php
-    // end of module icons
-    endif;
-?>
+    <!-- ICONS ------------------------------------------------------------------------------------>
+    <?php
+        // THEME ICONS
+        echo $svg_icons;
+        
+        // MODULE ICONS
+        if(!empty($menu['includes']['icons'])) :
+    ?>
+    <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <defs>
+            <?php
+            if(!empty($menu['includes']['icons'])) {
+                foreach($menu['includes']['icons'] as $icon) {
+                    echo $icon;
+                }
+            }
+            ?>
+    </svg>
+    <?php
+        // end of module icons
+        endif;
+    ?>
 </body>
 </html>

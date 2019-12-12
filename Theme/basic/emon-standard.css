@@ -8,55 +8,27 @@ Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
 */
-html, body {
-    height: 100%;
-}
-
-#wrap {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    /* Negative indent footer by it's height */
-    margin: 0 auto -40px;
-}
 
 .body-login {
     background-color: #ffffff;
 }
 
+.caret,
+.arrow-up,
+.arrow-down {
+    border-top-color: white !important;
+}
+
+.text-larger {
+    font-size: larger
+}
+
+input[type=text][class=variable-name-edit] {
+    margin-bottom:0px;
+}
+
 #login-form input[type="text"], #login-form input[type="password"] {
     width: 94%;
-}
-
-#push, #footer {
-    height: 30px;
-}
-
-#footer {
-    background-color: #f5f5f5;
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-#footer a {
-    color: #77b4d9;
-    text-decoration: none;
-}
-
-#footer span {
-    color: #999;
-}
-
-#submenu {
-    width:100%;
-    background-color:#ddd;
-    height:27px;
-}
-
-#topspacer {
-    padding-top: 40px;
 }
 
 div#account {
@@ -67,8 +39,17 @@ div#account {
     margin-bottom:10px;
 }
 
-input[type=text][class=variable-name-edit] {
-    margin-bottom:0px;
+/* -------------------------------------------------------------------
+   Top nav
+--------------------------------------------------------------------*/
+#submenu {
+    width:100%;
+    background-color:#ddd;
+    height:27px;
+}
+
+#topspacer {
+    padding-top: 40px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
@@ -110,31 +91,9 @@ input[type=text][class=variable-name-edit] {
     overflow-y: auto;
 }
 
-.ajax-loader {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
-}
-
 .navbar-inner {
-    background-color: #44b3e2 !important;
-    background-image: none !important;
     border: none !important;
     padding: 0px !important;
-}
-
-.nav > .active > a {
-    background-color: #209ed3 !important;
-    box-shadow: none !important;
-}
-
-.nav > li > a:hover,
-.nav > .open > a {
-    background-color: #2eaadf !important;
 }
 
 .nav > li > a {
@@ -142,14 +101,82 @@ input[type=text][class=variable-name-edit] {
     text-shadow: none !important;
 }
 
-.caret {
-    border-top-color: #fff !important;
+/* -------------------------------------------------------------------
+   Side nav
+--------------------------------------------------------------------*/
+.sidebar-menu {
+    border-top: 1px solid #444;
+}
+.sidebar-menu li.collapse.in,
+.include-container.collapse.in > li {
+    border-bottom: 1px solid #444;
 }
 
-.text-larger {
-    font-size: larger
+#sidebar {
+    background: #333;
+    color: #aaa;
+}
+#sidebar .nav a {
+    color: #fff;
+}
+#sidebar .nav.sidebar-menu li.active a,
+#sidebar .nav.sidebar-menu li a:focus {
+    background: #212121b3;
+    color: #f1f1f1;
+}
+/* When you mouse over the navigation items, change their color */
+#sidebar .nav.sidebar-menu a:hover {
+    background: #212121;
+}
+#sidebar .nav a:hover,
+.offcanvas a:focus {
+    color: #f1f1f1;
 }
 
+.include-container h4 a {
+    color: #fff;
+}
+
+#sidebar_user_toggle .expanded,
+#sidebar_user_toggle:hover {
+    background: #212121;
+}
+#edit_bookmarks {
+    color: #545454;
+}
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
+	background: #333 !important;
+    color: #fff;
+}
+
+/* -------------------------------------------------------------------
+   Footer
+--------------------------------------------------------------------*/
+#push, #footer {
+    height: 30px;
+}
+
+#footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 12px;
+}
+
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+
+#footer span {
+    color: #999;
+}
+
+/* -------------------------------------------------------------------
+   Nodes
+--------------------------------------------------------------------*/
 .expand-all .icon-resize-small {
     display: none
 }
@@ -267,34 +294,41 @@ input[type=text][class=variable-name-edit] {
     margin-bottom: .5em
 }
 
-.controls {
-    transition: all .2s ease-out
-}
-.controls.affix:before {
-    content: '';
+.controls.affix:before,
+.group-actions.affix:before {
     background: #323232;
-    opacity: 0.85;
-    width: 100%;
-    display: block;
-    position: fixed;
-    z-index: -1;
-    height: 2.5rem;
-    left: 0;
-    margin-top: -.3rem;
 }
-.controls.affix > * {
-    z-index: 2
-}
-.controls.affix {
-    z-index: 2;
-    top: 2.5rem;
-    padding: .3rem 0;
-}
-.controls.affix-top{position:absolute;}
 
-@media only screen and (max-width:979px) {
-    .controls.affix{top:0}
-}
 @media only screen and (min-width:870px) {
     body{font-size:16px}
+}
+
+/* -------------------------------------------------------------------
+   Graph module
+--------------------------------------------------------------------*/
+table#feeds.table thead th {
+    color: #adadad;
+}
+table#feeds.table thead th:hover {
+    color: #f8f9fa;
+}
+table#feeds.table tbody tr > * {
+    border-color: #444;
+}
+
+/* -------------------------------------------------------------------
+   App module
+--------------------------------------------------------------------*/
+.app-header,
+.graph-header {
+    color: #fff;
+    background-color: #333;
+}
+.app-header .action:hover,
+.graph-header .action:hover {
+    background-color: #e3e3e3;
+}
+
+.graph-body {
+    background-color: #f9f9f9;
 }

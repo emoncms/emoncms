@@ -76,8 +76,8 @@ $settings = array(
         'enabled' => isset($feed_settings["redisbuffer"]["enabled"])?$feed_settings["redisbuffer"]["enabled"]:false,
         // Number of seconds to wait before write buffer to disk - user selectable option
         'sleep' => isset($feed_settings["redisbuffer"]["sleep"])?$feed_settings["redisbuffer"]["sleep"]:600
-    ),   
-    
+    ),
+
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
@@ -87,10 +87,10 @@ $settings = array(
     'cassandra'     => array('keyspace' => isset($feed_settings["cassandra"]["keyspace"])?$feed_settings["cassandra"]["keyspace"]:'emoncms'),
     // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     'virtualfeed'   => array('data_sampling' => false),
-    'mysqltimeseries'   => array('data_sampling' => false),
+    'mysqltimeseries' => array('data_sampling' => false),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => isset($max_datapoints)?$max_datapoints:8928,
-    
+    'max_datapoints' => isset($max_datapoints)?$max_datapoints:8928,
+
     // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
     // The thousands separator is not used (specified as "nothing")
     // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
@@ -190,6 +190,17 @@ $settings = array(
     'encryption'=>isset($smtp_email_settings["encryption"])?$smtp_email_settings["encryption"]:"ssl", 
     'username'=>isset($smtp_email_settings["username"])?$smtp_email_settings["username"]:"yourusername@gmail.com",
     'password'=>isset($smtp_email_settings["password"])?$smtp_email_settings["password"]:"yourpassword"
+),
+
+// (OPTIONAL) Multi utility communication module settings
+"muc"=>array(
+    'root_dir' => (isset($muc_settings) && isset($muc_settings["rootdir"]))?$muc_settings["rootdir"]:"/opt/emonmuc/",
+    'lib_dir' => (isset($muc_settings) && isset($muc_settings["libdir"]))?$muc_settings["libdir"]:"/var/opt/emonmuc/"
+),
+
+// (OPTIONAL) App module settings
+"app"=>array(
+    'hidden' => (isset($app_settings) && isset($app_settings["hidden"]))?$app_settings["hidden"]:array()
 ),
 
 // Log file configuration

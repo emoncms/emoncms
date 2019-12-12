@@ -17,8 +17,7 @@ load_language_files("Theme/locale", "theme_messages");
 // if not logged in show login button top right
 $nav_layout = $session['read'] ? 'justify-content-between': 'justify-content-end';
 ?>
-<div class="navbar-inner bg-primary text-dark d-flex flex-nowrap <?php echo $nav_layout ?>">
-
+<div class="navbar-inner d-flex flex-nowrap <?php echo $nav_layout ?>">
 <?php
 if ($session['read']) {
 ?>
@@ -64,7 +63,6 @@ if(!empty($menu['left'])): foreach ($menu['left'] as $item):
 endforeach; endif;
 ?>
 </ul>
-
 <?php } ?>
 
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
@@ -113,7 +111,6 @@ if ($session['read']) {
 }
 ?>
 
-
 <?php
 // top navbar user menu
 $menu_index = 'user';
@@ -145,8 +142,8 @@ if(!empty($grav_user)) {
 
     if(!empty($grav_email)) {
         $item['icon'] = '';
-        $atts['class'] = 'grav img-circle';
-        $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
+        $attrs['class'] = 'grav img-circle';
+        $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $attrs );
     } else {
         $item['li_class'][] = 'no-gravitar';
     }
@@ -175,8 +172,6 @@ if ($session['write']){
 </ul>
 </div>
 
-
-
 <?php
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
@@ -185,18 +180,18 @@ if ($session['write']){
  * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
  * @param string $d Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
  * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
- * @param boole $img True to return a complete IMG tag False for just the URL
- * @param array $atts Optional, additional key/value attributes to include in the IMG tag
+ * @param boolean $img True to return a complete IMG tag False for just the URL
+ * @param array $attrs Optional, additional key/value attributes to include in the IMG tag
  * @return String containing either just a URL or a complete image tag
  * @source https://gravatar.com/site/implement/images/php/
  */
-function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array() ) {
+function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g', $img = false, $attrs = array() ) {
     $url = 'https://www.gravatar.com/avatar/';
     $url .= md5( strtolower( trim( $email ) ) );
     $url .= "?s=$s&d=$d&r=$r";
     if ( $img ) {
         $url = '<img src="' . $url . '"';
-        foreach ( $atts as $key => $val )
+        foreach ( $attrs as $key => $val )
             $url .= ' ' . $key . '="' . $val . '"';
         $url .= ' />';
     }
