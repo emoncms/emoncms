@@ -2,14 +2,11 @@
 
 class MysqlMemory extends MysqlTimeSeries
 {
-    public function create($id, $options)
+    public function create($feedid,$options)
     {
-        $table = $this->get_table(intval($id));
-        $name = $table['name'];
-        $type = $table['type'];
-        
-		$this->log->info("create() Mysql Memory $name");
-        $this->mysqli->query("CREATE TABLE $name (time INT UNSIGNED NOT NULL, data $type, UNIQUE (time)) ENGINE=MEMORY");
+        $feedname = "feed_".trim($feedid)."";
+		$this->log->info("create() Mysql Memory $feedname");
+        $result = $this->mysqli->query("CREATE TABLE $feedname (time INT UNSIGNED NOT NULL, data FLOAT NOT NULL, UNIQUE (time)) ENGINE=MEMORY");
         return true;
     }
 
