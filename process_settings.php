@@ -29,12 +29,11 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
         $settings = array_replace_recursive($_settings,$settings);
     }
 } else if(file_exists(dirname(__FILE__)."/settings.ini")) {
-    $CONFIG_INI = parse_ini_file("default-settings.ini", true, INI_SCANNER_TYPED);
-    $CUSTOM_INI = parse_ini_file("settings.ini", true, INI_SCANNER_TYPED);
-#    $CONFIG_INI = parse_ini_file("default-settings.ini", true);
-#    $CUSTOM_INI = parse_ini_file("settings.ini", true);
-    $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
-    // $settings = ini_check_envvars($settings);
+    $DEFAULT_INI = parse_ini_file("default-settings.ini", true);
+    $SETTINGS_INI = parse_ini_file("settings.ini", true);
+    $SETTINGS_ENV = ini_check_envvars(parse_ini_file("settings.env.ini", true));
+    $settings = array_replace_recursive($DEFAULT_INI, $SETTINGS_INI, $SETTINGS_ENV);
+
 } else {
     $settings_error = true;
     $settings_error_title = "missing settings file";
@@ -86,7 +85,7 @@ function ini_merge($defaults, $overrides) {
     return $defaults;
 };
 
-// This function iterates over all the config file entries, replacing values
+// This function iterates over a single config file entry, replacing values
 // of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
 //
 // This can be useful in containerised setups, or testing environments.
@@ -125,4 +124,58 @@ function resolve_env_vars($value) {
 
     // Set the new value
     return $value;
+}
+
+// This function iterates over all the config file entries, replacing values
+// of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
+//
+// This can be useful in containerised setups, or testing environments.
+// if {{VAR_NAME}} found in .ini file but not an ENV variable it is removed.
+function ini_check_envvars($config) {
+    global $error_out;
+
+    foreach ($config as $section => $options) {
+        if(is_array($options)) {
+            foreach ($options as $key => $value) {
+                // Find {{ }} vars and replace what's within them with the
+                // named environment var
+                if(is_array($value)) {
+                    foreach($value as $subKey => $subValue) {
+                        // loop through INI $value that is an array. currently not supported
+                        //@todo: add array_walk_recursive() style loop but keeping the $section value
+                    }
+                } elseif (strpos($value, '{{') !== false && strpos($value, '}}') !== false) {
+                    preg_match_all( '/{{([^}]*)}}/', $value, $matches);
+                    foreach ($matches[1] as $match) {
+                        if (!isset($_ENV[$match])) {
+                            $error_out .= "<p>Error: environment var '${match}' not defined in config section [${section}], setting '${key}'</p>";
+                            // no match found remove ENV var overide field
+                            if (isset($config[$section][$key])) {
+                                unset($config[$section][$key]);
+                            }
+                        } else {
+                            if (is_bool($_ENV[$match])) {
+                                $_ENV[$match] = $_ENV[$match] ? 'true' : 'false';
+                            }
+                            $newval = str_replace('{{'.$match.'}}', $_ENV[$match], $value);
+                            // Convert booleans from strings
+                            if ($newval === 'true') {
+                                $newval = true;
+                            } else if ($newval === 'false') {
+                                $newval = false;
+
+                                // Convert numbers from strings
+                            } else if (is_numeric($newval)) {
+                                $newval = $newval + 0;
+                            }
+                            
+                            // Set the new value
+                            $config[$section][$key] = $newval;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return array_filter($config);
 }
