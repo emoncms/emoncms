@@ -29,9 +29,12 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
         $settings = array_replace_recursive($_settings,$settings);
     }
 } else if(file_exists(dirname(__FILE__)."/settings.ini")) {
-    $DEFAULT_INI = parse_ini_file("default-settings.ini", true);
-    $SETTINGS_INI = parse_ini_file("settings.ini", true);
-    $SETTINGS_ENV = ini_check_envvars(parse_ini_file("settings.env.ini", true));
+    $DEFAULT_INI = parse_ini_file("default-settings.ini", true, INI_SCANNER_TYPED);
+    $SETTINGS_INI = parse_ini_file("settings.ini", true, INI_SCANNER_TYPED);
+    $SUPPORTED_ENV = parse_ini_file("settings.env.ini", true, INI_SCANNER_TYPED);
+
+    $SETTINGS_ENV = ini_check_envvars($SUPPORTED_ENV);
+    // overwrite order: default-> settings-> env
     $settings = array_replace_recursive($DEFAULT_INI, $SETTINGS_INI, $SETTINGS_ENV);
 
 } else {
