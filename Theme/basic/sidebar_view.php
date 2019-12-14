@@ -7,9 +7,6 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-
-
-
 // logic starts here
 // -------------------------------------------------------
 // creates all second and third level menus with their associated hierarch

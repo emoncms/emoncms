@@ -134,14 +134,14 @@ a.text-muted i[class*="icon-"] {
 #app .accordion {
     margin-bottom: .3rem;
 }
-#feedlist-controls {
+#input-controls {
     top: 3.5rem;
     z-index: 1;
 }
-#feedlist-controls.fixed {
+#input-controls.fixed {
     position: sticky;
 }
-#feedlist-controls:before {
+#input-controls:before {
     background: rgba(0, 0, 0, 0.5);
     content: "";
     position: fixed;
@@ -154,7 +154,7 @@ a.text-muted i[class*="icon-"] {
     transition: .2s height, .16s opacity ease-out;
     opacity: 0;
 }
-#feedlist-controls.fixed:before {
+#input-controls.fixed:before {
     opacity: 1;
     height: 3.15rem;
 }
@@ -175,7 +175,7 @@ input.checkbox-lg,
 [v-cloak] {
   display: none;
 }
-.position-absolute{
+.position-absolute {
     position: absolute;
 }
 
@@ -209,7 +209,7 @@ input.checkbox-lg,
         <h3><?php echo _('Inputs'); ?></h3>
         <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo _('Input API Help'); ?></a></span>
     </div>
-    <div v-cloak id="feedlist-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>

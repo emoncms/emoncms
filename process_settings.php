@@ -75,7 +75,7 @@ if (isset($settings["display_errors"]) && ($settings["display_errors"])) {
 
 // This function takes two arrays of settings and merges them, using
 // the value from $overrides where it differs from the one in $defaults.
-function ini_merge ($defaults, $overrides) {
+function ini_merge($defaults, $overrides) {
     foreach ($overrides as $k => $v) {
         if (is_array($v)) {
             $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
