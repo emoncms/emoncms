@@ -184,14 +184,6 @@ function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
     $diff_datatype = db_schema_diff_datatype($spec, $current, $field);
     $add_key = db_schema_diff_key($spec, $current);
 
-
-    // if($table === 'feeds' && $field === 'id') {
-    //     // var_dump($add_key);
-    //     var_dump($diff_datatype);
-    //     // var_dump(array($table, $field, $spec));
-    //     exit('dave');
-    // }
-
     // If we do, generate a new field spec and update table
     if ($diff_datatype || $add_key) {
         $field_spec = db_schema_make_field($mysqli, $field, $spec, $add_key);
