@@ -70,52 +70,6 @@ endforeach; endif;
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
 
 <?php
-if ($session['userid']== 0){ // User not authenticated
-    $_SESSION['checkUpdate'] = false;
-    $_SESSION['versionListToUpdate']="";
-}
-if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authenticated and no check update
-    if(file_exists('version.txt')){
-       $file1 = fopen('version.txt', 'rb');
-       $actualVersion = fgets($file1);
-       fclose($file1);
-       $lastStableVersion = http_request("GET","https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt",array());   // Get last stable version information
-       if(trim($actualVersion) != trim($lastStableVersion)){
-         $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate']."Emoncms ".trim($lastStableVersion)." | ";
-       }
-    }
-    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
-        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
-              $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-              $jsonAppName = $json->{'name'};
-              $jsonVersion = $json->{'version'};
-              if ($jsonAppName && $jsonVersion!="") {
-                $jsonRemote = json_decode(http_request("GET","https://raw.githubusercontent.com/emoncms/".$jsonAppName."/stable/module.json",array())); // Get JSON last stable version information
-                if($jsonRemote){
-                   $jsonAppNameRemote = $jsonRemote->{'name'};
-                   $jsonVersionRemote = $jsonRemote->{'version'};
-                }
-                if ($jsonVersion && $jsonVersionRemote && $jsonVersion != $jsonVersionRemote){    // Compare actual and last stable versions of the module
-                  $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate'].$jsonAppNameRemote." ".$jsonVersionRemote." | ";
-                }
-              }
-            }
-        }
-    $_SESSION['checkUpdate'] = true;
-}
-$updateNotice = array(
-    'icon'=>'update_available',
-    'href'=>'#',
-    'id'=>'update-available',
-    'title'=>dgettext('theme_messages','New version available:')." ".substr($_SESSION['versionListToUpdate'],0,-2),
-    'class'=>'align-items-center'
-);
-
-if($_SESSION['versionListToUpdate']!="" && $session['read']){
-    echo makeLink($updateNotice);
-}
 $isBookmarked = currentPageIsBookmarked();
 $addBookmark = array(
     'icon'=>'star_border',
