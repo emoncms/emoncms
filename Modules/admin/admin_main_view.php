@@ -1,4 +1,11 @@
 <?php
+global $session; 
+if(!isset($_SESSION['checkUpdate'])){
+$_SESSION['checkUpdate']=false;
+}
+if(!isset($_SESSION['versionListToUpdate'])){
+$_SESSION['versionListToUpdate']="";
+}
     /**
      * View specific functions
      *
@@ -76,11 +83,52 @@ listItem;
     // UPDATES 
     // -------------------
     ?>
+<?php
+if ($session['userid']== 0){ // User not authenticated
+    $_SESSION['checkUpdate'] = false;
+    $_SESSION['versionListToUpdate']="";
+}
+if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authenticated and no check update
+    if(file_exists('version.txt')){
+       $file1 = fopen('version.txt', 'rb');
+       $actualVersion = fgets($file1);
+       fclose($file1);
+       $lastStableVersion = http_request("GET","https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt",array());   // Get last stable version information
+       if(trim($actualVersion) != trim($lastStableVersion)){
+         $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate']."Emoncms ".trim($lastStableVersion)." | ";
+       }
+    }
+    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
+        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
+            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
+              $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
+              $jsonAppName = $json->{'name'};
+              $jsonVersion = $json->{'version'};
+              if ($jsonAppName && $jsonVersion!="") {
+                $jsonRemote = json_decode(http_request("GET","https://raw.githubusercontent.com/emoncms/".$jsonAppName."/stable/module.json",array())); // Get JSON last stable version information
+                if($jsonRemote){
+                   $jsonAppNameRemote = $jsonRemote->{'name'};
+                   $jsonVersionRemote = $jsonRemote->{'version'};
+                }
+                if ($jsonVersion && $jsonVersionRemote && $jsonVersion != $jsonVersionRemote){    // Compare actual and last stable versions of the module
+                  $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate'].$jsonAppNameRemote." ".$jsonVersionRemote." | ";
+                }
+              }
+            }
+        }
+    $_SESSION['checkUpdate'] = true;
+}
+?>
     <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Updates'); ?></h3>
             <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
+            <?php if($_SESSION['versionListToUpdate']!="" && $session['read']){
+                  echo "<p><a href=\"#\" title=\"".dgettext('theme_messages','New version available:')." ".substr($_SESSION['versionListToUpdate'],0,-2)."\"><svg class=\"icon update_available\" style=\"width:25px;height:25px;\"><use xlink:href=\"#icon-update_available\"></use></svg></a></p>";
+                  } 
+             ?>
         </div>
         <div class="btn-group">
         <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
