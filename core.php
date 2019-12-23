@@ -81,7 +81,7 @@ function get($index)
     $val = null;
     if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    // if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
 }
 /** 
@@ -104,7 +104,7 @@ function post($index)
             if(!empty($SANTIZED_POST[$index])) $val = $SANTIZED_POST[$index];
         }
     }
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    // if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
 }
 
