@@ -80,9 +80,7 @@ function get($index)
 {
     $val = null;
     if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
-    
-    // if (get_magic_quotes_gpc()) $val = stripslashes($val);
-    return $val;
+    return stripslashes($val);
 }
 /** 
  * strip slashes from POST values or null if not set
@@ -104,7 +102,8 @@ function post($index)
             if(!empty($SANTIZED_POST[$index])) $val = $SANTIZED_POST[$index];
         }
     }
-    // if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    $val = stripslashes($val);
+    // FILTER_SANITIZE_MAGIC_QUOTES
     return $val;
 }
 
@@ -114,7 +113,7 @@ function prop($index)
     if (isset($_GET[$index])) $val = $_GET[$index];
     if (isset($_POST[$index])) $val = $_POST[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    $val = stripslashes($val);
     return $val;
 }
 
@@ -131,7 +130,7 @@ function delete($index) {
     $val = null;
     if (isset($_DELETE[$index])) $val = $_DELETE[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    $val = stripslashes($val);
     return $val;
 }
 function put($index) {
@@ -139,7 +138,7 @@ function put($index) {
     $val = null;
     if (isset($_PUT[$index])) $val = $_PUT[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    $val = stripslashes($val);
     return $val;
 }
 

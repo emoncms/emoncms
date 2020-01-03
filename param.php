@@ -38,11 +38,11 @@ class Param
         $this->params = array();
         
         foreach ($_GET as $key=>$val) {
-            // if (get_magic_quotes_gpc()) $val = stripslashes($val);
+            $val = stripslashes($val);
             $this->params[$key] = $val;
         }
         foreach ($_POST as $key=>$val) {
-            // if (get_magic_quotes_gpc()) $val = stripslashes($val);
+            $val = stripslashes($val);
             $this->params[$key] = $val;
         }
         
