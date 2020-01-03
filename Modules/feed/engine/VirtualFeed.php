@@ -64,9 +64,12 @@ class VirtualFeed implements engine_methods
      */
     public function lastvalue($feedid)
     {
+        $now = time();
         $feedid = intval($feedid);
         $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
+        if ($processList == '' || $processList == null) { 
+            return array('time'=>(int)$now, 'value'=>null);
+        }
         
         // Check if datatype is daily so that select over range is used rather than skip select approach
         static $feed_datatype_cache = array(); // Array to hold the cache
@@ -78,7 +81,6 @@ class VirtualFeed implements engine_methods
             $datatype = $row['datatype'];
             $feed_datatype_cache[$feedid] = $datatype; // Cache it
         }
-        $now = time();
         
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         global $session,$user;
