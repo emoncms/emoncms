@@ -516,12 +516,7 @@ class Feed
         if ($engine == Engine::VIRTUALFEED) { //if virtual get it now
             $this->log->info("get_timevalue() calling VIRTUAL lastvalue $id");
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
-            if ($lastvirtual) {
-                $timevalue = array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
-            } else {
-                $timevalue = array('time'=>null, 'value'=>null);
-            }
-            return $timevalue;
+            return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
 
         if ($this->redis)
