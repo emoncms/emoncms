@@ -311,19 +311,18 @@ class Admin {
      * @return string
      */
     public static function mqtt_version() {
+        global $log;
         $v = '?';
         if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $v = "n/a";
         } else {
-            try {
-                if (file_exists('/usr/sbin/mosquitto')) {
-                    $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
-                }
-            } catch (Error $e) {
-                global $log;
-                $log->info(_('Issue checking /usr/sbin/mosquitto').' - '.$e->getMessage());
-                $v = "n/a";
+            set_error_handler(function($errno, $errstr, $errfile, $errline) use ($log) { 
+                $log->warn(sprintf("%s:%s - %s", basename($errfile), $errline, $errstr));
+            });
+            if (file_exists('/usr/sbin/mosquitto')) {
+                $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
             }
+            restore_error_handler();
         }
         return $v;
     }
