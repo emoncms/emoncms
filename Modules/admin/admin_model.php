@@ -315,8 +315,13 @@ class Admin {
         if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $v = "n/a";
         } else {
-            if (file_exists('/usr/sbin/mosquitto')) {
-                $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+            try {
+                if (file_exists('/usr/sbin/mosquitto')) {
+                    $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                }
+            } catch (Error $e) {
+                global $log;
+                $log->error(_('Issue checking /usr/sbin/mosquitto').' - '.$e->getMessage());
             }
         }
         return $v;
