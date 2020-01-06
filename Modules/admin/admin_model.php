@@ -321,7 +321,8 @@ class Admin {
                 }
             } catch (Error $e) {
                 global $log;
-                $log->error(_('Issue checking /usr/sbin/mosquitto').' - '.$e->getMessage());
+                $log->info(_('Issue checking /usr/sbin/mosquitto').' - '.$e->getMessage());
+                $v = "n/a";
             }
         }
         return $v;
