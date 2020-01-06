@@ -35,7 +35,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 // the data type, and so not respecifying all of them when specifying
 // the field will result in them being lost.
 //
-function db_schema_diff_datatype($spec, $current, $field)
+function db_schema_diff_datatype($spec, $current)
 {
     $changed = false;
 
