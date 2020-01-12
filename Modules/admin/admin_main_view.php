@@ -95,7 +95,7 @@ if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authen
        fclose($file1);
        $lastStableVersion = http_request("GET","https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt",array());   // Get last stable version information
        if(trim($actualVersion) != trim($lastStableVersion)){
-         $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate']."Emoncms ".trim($lastStableVersion)." | ";
+         $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate']."Emoncms ".trim($lastStableVersion)."<br />";
        }
     }
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
@@ -112,7 +112,7 @@ if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authen
                    $jsonVersionRemote = $jsonRemote->{'version'};
                 }
                 if ($jsonVersion && $jsonVersionRemote && $jsonVersion != $jsonVersionRemote){    // Compare actual and last stable versions of the module
-                  $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate'].$jsonAppNameRemote." ".$jsonVersionRemote." | ";
+                  $_SESSION['versionListToUpdate'] = $_SESSION['versionListToUpdate'].$jsonAppNameRemote." ".$jsonVersionRemote."<br />";
                 }
               }
             }
@@ -126,7 +126,8 @@ if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authen
             <h3 class="mt-1 mb-0"><?php echo _('Updates'); ?></h3>
             <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
             <?php if($_SESSION['versionListToUpdate']!="" && $session['read']){
-                  echo "<p><a href=\"#\" title=\"".dgettext('theme_messages','New version available:')." ".substr($_SESSION['versionListToUpdate'],0,-2)."\"><svg class=\"icon update_available\" style=\"width:25px;height:25px;\"><use xlink:href=\"#icon-update_available\"></use></svg></a></p>";
+                  $update_message = dgettext('theme_messages','New version available:')."<br />".substr($_SESSION['versionListToUpdate'],0,-6);
+                  echo "<p><a href=\"#\" onclick=\"snackbar('".$update_message."');\" title=\"".dgettext('theme_messages','Display new available versions (Emoncms and modules)')."\"><svg class=\"icon update_available\" style=\"width:25px;height:25px;\"><use xlink:href=\"#icon-update_available\"></use></svg></a></p>";
                   } 
              ?>
         </div>
