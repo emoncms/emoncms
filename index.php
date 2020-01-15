@@ -334,37 +334,14 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            
-            // EMONCMS MENU
-            if($session['write']){
-                $menu['tabs'][] = array(
-                    'icon'=>'menu',
-                    'title'=> _("Emoncms"),
-                    'text'=> _("Setup"),
-                    'path' => 'feed/list',
-                    'order' => 0,
-                    'data'=> array(
-                        'sidebar' => '#sidebar_emoncms'
-                    )
-                );
-            }
+            $output['menu'] = $menu;
 
-            include_once ("Lib/misc/nav_functions.php");
-            sortMenu($menu);
             // debugMenu('sidebar');
             $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
-
-            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
-            array(
-                'menu' => $menu,
-                'path' => $path,
-                'session' => $session,
-                'route' => $route
-            ));
+             
             $output['page_classes'][] = 'has-sidebar';
             if (!$session['read']) {
                 $output['page_classes'][] = 'collapsed manual';

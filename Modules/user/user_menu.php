@@ -1,5 +1,6 @@
 <?php
-
+$menu["setup"]["l2"][] = array("name"=>"My Account","href"=>"user/view", "order"=>4, "icon"=>"user");
+/*
 global $session;
 
 $menu['right'][] = array(
@@ -41,4 +42,4 @@ $menu['user'][] = array(
     'path' => '/',
     'public' => true,
     'public_only' => true
-);
+);*/

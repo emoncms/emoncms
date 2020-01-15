@@ -1,8 +1,3 @@
 <?php
 
-    $menu['sidebar']['emoncms'][] = array(
-        'text' => _("Feeds"),
-        'path' => 'feed/view',
-        'icon' => 'format_list_bulleted',
-        'order' => 1
-    );
+$menu["setup"]["l2"][] = array("name"=>"Feeds","href"=>"feed/view", "order"=>2, "icon"=>"format_list_bulleted");

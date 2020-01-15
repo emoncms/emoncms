@@ -1,10 +1,3 @@
 <?php
-    load_language_files("Modules/schedule/locale", "schedule_messages");
-    $menu['sidebar']['emoncms'][] = array(
-        'text' => dgettext("schedule_messages","Schedule"),
-        'path' => 'schedule/view',
-        'icon' => 'schedule',
-        'active' => 'schedule',
-        'order' => 'b3'
-    );
+$menu["setup"]["l2"][] = array("name"=>"Schedule","href"=>"schedule/view", "order"=>3, "icon"=>"schedule");
 

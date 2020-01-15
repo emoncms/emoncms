@@ -182,6 +182,9 @@ function load_language_files($path, $domain='messages'){
 
 function load_menu()
 {
+    $menu = array();
+    $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "l2"=>array());
+    
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
@@ -189,18 +192,9 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                load_language_files("Modules/".$dir[$i]."/locale");
+                // load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
-        }
-    }
-    // add old menu structure if module not updated
-    // @todo: remove this once all users updated (2019-02-15)
-    if(isset($menu_dropdown_config)) {
-        foreach($menu_dropdown_config as $item){
-            if(!empty($item['name'])) $item['text'] = $item['name'];
-            $item['icon'] .= ' icon-white';
-            $menu['sidebar']['setup'][] = $item;
         }
     }
 

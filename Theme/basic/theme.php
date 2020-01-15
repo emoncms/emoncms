@@ -13,6 +13,8 @@ global $settings;
 global $ltime,$path,$emoncms_version,$menu;
 load_language_files("Theme/locale", "theme_messages");
 
+$q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
+
 $v = 10;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
@@ -37,33 +39,17 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <?php echo $mainmenu; ?>
-        </div>
-
-        <?php if (isset($submenu) && ($submenu)) { ?>
-            <div id="submenu">
-                <div class="container">
-                    <?php echo $submenu; ?>
-                </div>
-            </div>
-            <br>
-        <?php } ?>
-        
-        <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
-            </div>
-        </div>
+        <div class="menu-l1"><ul></ul></div>
+        <div class="menu-l2"><ul></ul></div><div class="menu-l3"><ul></ul></div>
         
         <?php
         $contentContainerClasses[] = 'content-container';
@@ -109,3 +95,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 ?>
 </body>
 </html>
+<script>
+var path = "<?php echo $path; ?>";
+var q = "<?php echo $q; ?>"+location.hash;
+menu.init(<?php echo json_encode($menu); ?>);
+</script>
