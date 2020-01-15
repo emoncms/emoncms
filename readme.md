@@ -14,7 +14,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 - Apache (tested with 2.4.25)
 - Redis* (tested with 3.2.6)
 
-_*Redis is recommended to reduce disk writes which prolongs disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
+_*Redis is recommended because it reduces the number of disk writes and therefore prolongs disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
 
 ## Using Emoncms
 
