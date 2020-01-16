@@ -14,7 +14,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 - Apache (tested with 2.4.25)
 - Redis* (tested with 3.2.6)
 
-_*Redis is recommended to reduces disk write load prolonging disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
+_*Redis is recommended because it reduces the number of disk writes and therefore prolongs disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
 
 ## Using Emoncms
 
@@ -22,11 +22,11 @@ _*Redis is recommended to reduces disk write load prolonging disk life (noticabl
 
 There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
 
-The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
+The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots, the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
 
 **1. Screencasts/Videos**
 
-These screencasts where put together to accompany the [emonPi/emonBase setup guide](http://guide.openenergymonitor.org/setup) and do therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of Emoncms including configuring inputs, creating feeds and dashboards.
+These screencasts were put together to accompany the [emonPi/emonBase setup guide](http://guide.openenergymonitor.org/setup) and therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of Emoncms including configuring inputs, creating feeds and dashboards.
 
 - [Screencast: Logging data locally with emoncms on the emonPi/emonBase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
 - [Screencast: Viewing data and creating dashboards on the emonPi/emonBase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
@@ -47,18 +47,18 @@ There are also two screencasts that are specific to optional modules that are in
 
 **3. Emoncms Terminology**
 
-- **Inputs:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
-- **Input: Node:** A grouping identifier for inputs or feeds.
+- **Input:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
+- **Input: Node:** A grouping identifier for an input or feed.
 - **Input: Key:** A sub-identifier for items within each Node.
 - **Input process list (or input processing):** A list of processes* performed sequentially on each input value as it is received on that input.
 - **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed*.
-- **Feeds:** (Feed) A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and where written as part of the emoncms project.
+- **Feed:** A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and were written as part of the emoncms project.
 
 * For a description of what each input process does in emoncms see the helper note within the emoncms input processing configuration interface.
 
 **4. Emoncms.org API Reference**
 
-The following API references apply to emoncms.org they differ slightly to the API available on EmonPI/EmonBase installs, the API refrence for which can be found from the inputs and feed pages when logged in locally.
+The following API references apply to emoncms.org. They differ slightly to the API available on EmonPI/EmonBase installs, the API refrence for which can be found from the inputs and feed pages when logged in locally.
 
 - [Input API reference](https://emoncms.org/site/api#input)
 - [Feed API reference](https://emoncms.org/site/api#feed)
@@ -92,7 +92,7 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 - [App Module](https://github.com/emoncms/app.git) - Application specific dashboards e.g. MyElectric, MySolar
     
-- [Config]( https://github.com/emoncms/config.git) - In-browser emonhub.conf editor and emonhub.log log viewer. git clone
+- [Config]( https://github.com/emoncms/config.git) - In-browser emonhub.conf editor and emonhub.log log viewer. Use `git clone` to install. 
     
 - [Wifi Module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
 
@@ -140,7 +140,7 @@ For developers: The following lists the locations of the files that define emonc
 
 ## Tools
 
-* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backup's and archived data.
+* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backups and archived data.
 
 #### Design
 
