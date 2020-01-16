@@ -45,11 +45,6 @@ function db_schema_diff_datatype($spec, $current)
     if ($spec['type'] == 'text' && $spec_default !== NULL) {
         $spec_default = "'$spec_default'";
     }
-    // check if field Type changed
-    if($spec['type'] !== $current['Type']) {
-        $changed = true;
-    }
-
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
