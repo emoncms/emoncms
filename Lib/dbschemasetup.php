@@ -177,7 +177,7 @@ function db_schema_add_column($mysqli, $table, $field, $spec, &$operations)
 //
 function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
 {
-    $result = $mysqli->query("DESCRIBE `$table` `$field`");
+    $result = $mysqli->query("DESCRIBE $table `$field`");
     $current = $result->fetch_array();
 
     // Check if we 1. need to change type 2. need to add a primary key
