@@ -48,7 +48,10 @@ function db_schema_diff_datatype($spec, $current)
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
-
+    // check if field Type changed
+    if($spec['type'] !== $current['Type']) {
+        $changed = true;
+    }
     // Null handling is a little involved
     if (isset($spec['Null']) && ($spec['Null'] === false || $spec['Null'] === "NO"))
         $spec_null = "NO";
@@ -172,7 +175,7 @@ function db_schema_add_column($mysqli, $table, $field, $spec, &$operations)
 //
 function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
 {
-    $result = $mysqli->query("DESCRIBE $table `$field`");
+    $result = $mysqli->query("DESCRIBE `$table` `$field`");
     $current = $result->fetch_array();
 
     // Check if we 1. need to change type 2. need to add a primary key
