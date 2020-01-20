@@ -154,10 +154,8 @@
     if ($route->controller=="describe") { 
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        if(file_exists('/home/pi/data/emonbase')) {
-            $type = 'emonbase';
-        } elseif(file_exists('/home/pi/data/emonpi')) {
-            $type = 'emonpi';
+        if ($redis && $redis->exists("describe")) {
+            $type = $redis->get("describe");
         } else {
             $type = 'emoncms';
         }
