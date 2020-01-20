@@ -207,11 +207,41 @@ class Rememberme {
     }
 
     // ---------------------------------------------------------------------------------------------------------
+    /**
+     * return ip address of requesting machine
+     * the ip address can be stored in different variables by the system.
+     * which variable name may change dependant on different system setups.
+     * this function *should return an acceptible value in most cases
+     * @todo: more testing on different hardware/opperating systems/proxy servers etc.
+     *
+     * @return string
+     */
+    public function get_client_ip_env() {
+        $ipaddress = '';
+        if (getenv('HTTP_CLIENT_IP'))
+            $ipaddress = getenv('HTTP_CLIENT_IP');
+        else if(getenv('HTTP_X_FORWARDED_FOR'))
+            $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+        else if(getenv('HTTP_X_FORWARDED'))
+            $ipaddress = getenv('HTTP_X_FORWARDED');
+        else if(getenv('HTTP_FORWARDED_FOR'))
+            $ipaddress = getenv('HTTP_FORWARDED_FOR');
+        else if(getenv('HTTP_FORWARDED'))
+            $ipaddress = getenv('HTTP_FORWARDED');
+        else if(getenv('REMOTE_ADDR'))
+            $ipaddress = getenv('REMOTE_ADDR');
+        else
+            $ipaddress = 'UNKNOWN';
+     
+        return $ipaddress;
+    }
+    // ---------------------------------------------------------------------------------------------------------
     private function getCookieValues()
     {
         // Cookie was not sent with incoming request
         if(!isset($_COOKIE[$this->cookieName])) {
-            $this->log->info("getCookieValues: not present");
+            $ip_address = $this->get_client_ip_env();
+            $this->log->info("getCookieValues: not present for: ".$ip_address);
             return false;
         }
         
