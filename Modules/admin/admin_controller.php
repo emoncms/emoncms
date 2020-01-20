@@ -51,7 +51,7 @@ function admin_controller()
         3 =>'ERROR'
     );
 
-    $path_to_config = 'settings.php';
+    // $path_to_config = 'settings.php';
     
     if ($session['admin']) {
         if ($route->format == 'html') {
@@ -119,8 +119,8 @@ function admin_controller()
                     'v' => 3,
                     'log_levels' => $log_levels,
                     'log_level'=>$settings['log']['level'],
-                    'log_level_label' => $log_levels[$settings['log']['level']],
-                    'path_to_config'=> $path_to_config
+                    'log_level_label' => $log_levels[$settings['log']['level']]
+                    // 'path_to_config'=> $path_to_config
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
