@@ -232,6 +232,11 @@ class Feed
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
+        
+        // Clear feed last value (set to zero)
+        if ($this->redis->hExists("feed:$feedid",'value')) {
+            $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+        }
 
         $this->log->info("feed model: clear() feedid=$feedid");
         return $response;
