@@ -231,8 +231,12 @@ function admin_controller()
                     if (isset($_POST['type'])) $type = $_POST['type'];
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
                     
-                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
-                    return "service-runner trigger sent";
+                    if ($redis) {
+                        $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                        return "service-runner trigger sent";
+                    } else {
+                        return "redis not running";
+                    }
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -326,7 +330,7 @@ function admin_controller()
         }
         else if ($route->format == 'json')
         {
-            if ($route->action == 'redisflush' && $session['write'])
+            if ($route->action == 'redisflush' && $session['write'] && $redis)
             {
                 $redis->flushDB();
                 return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
