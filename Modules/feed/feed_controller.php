@@ -218,7 +218,8 @@ function feed_controller()
                     // Update datapoint
                     } else if ($route->action == "update") {
                         if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
-                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'));
+                        $skipbuffer = false; if (isset($_GET['skipbuffer'])) $skipbuffer = true;
+                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'),$skipbuffer);
 
                     // Delete feed
                     } else if ($route->action == "delete") {
@@ -255,11 +256,18 @@ function feed_controller()
                         } else if (isset($_GET['npoints'])) {
                             return $feed->upload_variable_interval($feedid,get("npoints"));
                         }
-                    }
-
-                    if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
-                        if ($route->action == "deletedatapoint") return $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
-                        else if ($route->action == "deletedatarange") return $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
+                    } else if ($route->action == "deletedatapoint") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                            return $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
+                        } else {
+                            return "deletedatapoint only supported by mysqltimeseries engine";
+                        }
+                    } else if ($route->action == "deletedatarange") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                            return $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
+                        } else {
+                            return "deletedatarange only supported by mysqltimeseries engine";
+                        }
                     }
                 }
             }
