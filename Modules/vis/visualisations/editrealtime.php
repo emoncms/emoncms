@@ -138,7 +138,7 @@
     start = Math.floor((start*0.001) / interval) * interval * 1000;
     end = Math.ceil((end*0.001) / interval) * interval * 1000;
     
-    var graph_data = get_feed_data(feedid,start,end,interval,1,1);
+    var graph_data = get_feed_data(feedid,start,end,interval,1,0);
     var stats = power_stats(graph_data);
     //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 
@@ -203,7 +203,9 @@
       data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&value="+multiplyvalue,
       dataType: 'json',
       async: false,
-      success: function() {}
+      success: function(result) {
+          alert(result)
+      }
     });
     vis_feed_data();
   });
