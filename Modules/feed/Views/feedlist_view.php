@@ -1237,10 +1237,12 @@ $("#feedDelete-confirm").click(function(){
                 updateFeedDeleteModalMessage(response);
             }
         }
+        
         setTimeout(function() {
             update();
             updaterStart(update, 5000);
             $('#feedDeleteModal').modal('hide');
+            feed_selection();
         }, 5000);
     }
 });
