@@ -134,14 +134,14 @@ a.text-muted i[class*="icon-"] {
 #app .accordion {
     margin-bottom: .3rem;
 }
-#feedlist-controls {
+#input-controls {
     top: 3.5rem;
     z-index: 1;
 }
-#feedlist-controls.fixed {
+#input-controls.fixed {
     position: sticky;
 }
-#feedlist-controls:before {
+#input-controls:before {
     background: rgba(0, 0, 0, 0.5);
     content: "";
     position: fixed;
@@ -154,7 +154,7 @@ a.text-muted i[class*="icon-"] {
     transition: .2s height, .16s opacity ease-out;
     opacity: 0;
 }
-#feedlist-controls.fixed:before {
+#input-controls.fixed:before {
     opacity: 1;
     height: 3.15rem;
 }
@@ -175,7 +175,7 @@ input.checkbox-lg,
 [v-cloak] {
   display: none;
 }
-.position-absolute{
+.position-absolute {
     position: absolute;
 }
 
@@ -199,6 +199,9 @@ input.checkbox-lg,
 .break-all {
     word-break: break-all;
 }
+.text-nowrap {
+    white-space: nowrap !important;
+}
 [v-cloak] {
     visibility: hidden
 }
@@ -209,7 +212,7 @@ input.checkbox-lg,
         <h3><?php echo _('Inputs'); ?></h3>
         <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo _('Input API Help'); ?></a></span>
     </div>
-    <div v-cloak id="feedlist-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
@@ -257,7 +260,7 @@ input.checkbox-lg,
                 <div class="select text-center" data-col="B">
                     <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
                 </div>
-                <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
+                <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
                 <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
                 <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
                     <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
@@ -313,4 +316,10 @@ input.checkbox-lg,
 
 <script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
+<script>
+    // example values:
+    //  - "vis/auto?feedid="
+    //  - "graph/"
+    _SETTINGS['feedviewpath'] = "<?php if(isset($feedviewpath)) echo $feedviewpath; ?>";
+</script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

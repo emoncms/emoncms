@@ -149,10 +149,14 @@ var app = new Vue({
 
         },
         toggleSelected: function(event, inputid) {
-            if (event.target.tagName !== 'INPUT' && !this.selectMode) {
-                event.stopPropagation();
-                event.preventDefault();
-                return false;
+            if (event.target.tagName === 'A') {
+                // allow links to be clicked
+            } else {
+                if (event.target.tagName !== 'INPUT' && !this.selectMode) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    return false;
+                }
             }
             let index = this.selected.indexOf(inputid);
             if (index === -1) {
@@ -276,7 +280,7 @@ var app = new Vue({
 
 
 var controls = new Vue({
-    el: '#feedlist-controls',
+    el: '#input-controls',
     data: {
         timeout: null,
         overlayControlsOveride: false
@@ -957,8 +961,8 @@ function draw_devices() {
     }
     app.col.A = ((max_name_length * 8) + 30);
     app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
-    app.col.D = ((max_time_length * 8) + 17);
-    app.col.E = ((max_value_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
+    app.col.D = ((max_value_length * 8) + 17);
+    app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
     
     resize_view();

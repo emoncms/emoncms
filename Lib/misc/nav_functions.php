@@ -363,8 +363,15 @@ function sortMenu (&$menus) {
                 }
             }
             // get next sort (max_order) for a menu
-            $next_order = !empty($orders) ? max($orders)+1: 0;
-            
+            try {
+                $sortedOrders = array_values($orders);
+                if(empty($sortedOrders)) $sortedOrders[] = 0;
+                asort($sortedOrders, SORT_NATURAL); // sort like this: 2, 11, a, a1, b
+                preg_match_all('!\d+!', array_slice($sortedOrders, -1)[0], $matches);
+                $next_order = implode(array_column($matches,0));
+            } catch (Exception $e) {
+                $next_order = 0;
+            }   
             // set order field for un-ordered menu items
             foreach($unordered as $index) {
                 // sort by title if available
