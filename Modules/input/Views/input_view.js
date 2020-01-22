@@ -149,7 +149,7 @@ var app = new Vue({
 
         },
         toggleSelected: function(event, inputid) {
-            if (event.currentTarget.tagName === 'A') {
+            if (event.target.tagName === 'A') {
                 // allow links to be clicked
             } else {
                 if (event.target.tagName !== 'INPUT' && !this.selectMode) {

@@ -101,10 +101,10 @@ var processlist_ui =
                 arg.title = _Tr("Feed")+" "+feedid
                 arg.icon = 'icon-list-alt'
                 var feedviewpath = "graph/";
-                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath')) {
+                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
                     var feedviewpath = _SETTINGS.feedviewpath;
                 }
-                arg.href = [path, feedviewpath, feedid].join();
+                arg.href = [path, feedviewpath, feedid].join("");
                 lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
                 arg.text = 'Feedid "+feedid+" does not exists or was deleted'
@@ -250,10 +250,10 @@ var processlist_ui =
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
         var feedviewpath = "graph/";
-        if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath')) {
+        if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
             var feedviewpath = _SETTINGS.feedviewpath;
         }
-        badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join() : false;
+        badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input

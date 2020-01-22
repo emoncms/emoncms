@@ -317,6 +317,6 @@ input.checkbox-lg,
     // example values:
     //  - "vis/auto?feedid="
     //  - "graph/"
-    _SETTINGS['feedviewpath'] = "<?php if(isset($feedview)) echo $feedviewpath; ?>";
+    _SETTINGS['feedviewpath'] = "<?php if(isset($feedviewpath)) echo $feedviewpath; ?>";
 </script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
