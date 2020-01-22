@@ -843,6 +843,8 @@ var processlist_ui =
       }
       $("#process-select").html(out);
       processlist_ui.initprogress();
+      // Automatic call of feed table update
+      if (typeof window.update_feed_list == 'function') update_feed_list();
     }});
 
     // Feeds Select List

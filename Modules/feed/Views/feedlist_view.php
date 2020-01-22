@@ -398,11 +398,11 @@ var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 // auto refresh
-update();
-setInterval(update,5000);
+update_feed_list();
+setInterval(update_feed_list,5000);
 
 var firstLoad = true;
-function update() {
+function update_feed_list() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
         // Show/hide no feeds alert
@@ -540,7 +540,7 @@ function update() {
         autowidth($container) // set each column group to the same width
         } // end of for loop
     }); // end of ajax callback
-}// end of update() function
+}// end of update_feed_list() function
 
 // stop checkbox form opening graph view
 $("#table").on("click",".tbody .select",function(e) {
@@ -713,7 +713,7 @@ $("#feed-edit-save").click(function() {
                     $('#feed-edit-save-message').text(response.message).fadeIn();
                 } else {
                     // ok
-                    update();
+                    update_feed_list();
                     $('#feedEditModal').modal('hide');
                     $('#feed-edit-save-message').text('').hide();
                 }
@@ -1109,8 +1109,8 @@ function enableTrim(start_time){
                         }
                     }
                     $("#feedDelete-loader").stop().fadeOut();
-                    update();
-                    updaterStart(update, 5000);
+                    update_feed_list();
+                    updaterStart(update_feed_list, 5000);
                 }
             }
         });
@@ -1214,8 +1214,8 @@ function enableClear(){
                     }
                 }
                 $("#feedDelete-loader").stop().fadeOut();
-                update();
-                updaterStart(update, 5000);
+                update_feed_list();
+                updaterStart(update_feed_list, 5000);
             }
         });
 }
@@ -1239,8 +1239,8 @@ $("#feedDelete-confirm").click(function(){
         }
         
         setTimeout(function() {
-            update();
-            updaterStart(update, 5000);
+            update_feed_list();
+            updaterStart(update_feed_list, 5000);
             $('#feedDeleteModal').modal('hide');
             feed_selection();
         }, 5000);
@@ -1248,7 +1248,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update_feed_list(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -1307,7 +1307,7 @@ $("#newfeed-save").click(function (){
         alert('ERROR: Feed could not be created. '+result.message);
         return false;
     } else {
-        update(); 
+        update_feed_list(); 
         $('#newFeedNameModal').modal('hide');
     }
 });
