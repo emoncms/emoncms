@@ -4,6 +4,13 @@
     load_language_files("Modules/process/locale", "process_messages");
     
     $v=6;
+    
+    // settings.ini parse_ini_file does not convert [0,6,8,10] into an array
+    // while settings.php engines_hidden will be an array
+    // we convert here the array form to a string which is then passed below
+    // to the process ui javascript side of things which coverts to a js array
+    $engine_hidden = $settings["feed"]['engines_hidden'];
+    if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 ?>
 <style>
   .modal-processlist {
@@ -29,7 +36,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 <script>
-  processlist_ui.engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
+  processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
   <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
 
   $(window).resize(function(){

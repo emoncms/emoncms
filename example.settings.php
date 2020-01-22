@@ -45,7 +45,7 @@ $settings = array(
     // If using emoncms in low-write mode, ensure that PHPFIWA is disabled
     // MYSQL:0, MYSQLMEMORY:8, PHPTIMESERIES:2, PHPFINA:5, PHPFIWA:6, CASSANDRA:10
     // 5:phpfina and 2:phptimeseries are the recommended emoncms feed engines
-    'engines_hidden'=>array(0,6,10),
+    'engines_hidden'=>array(0,6,8,10),
     // Buffer data to be written to
     'redisbuffer'   => array(
         'enabled' => false,
