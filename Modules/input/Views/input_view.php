@@ -297,7 +297,7 @@ input.checkbox-lg,
         <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
-    <div id="input-footer" class="hide">
+    <div id="input-footer" class="xhide">
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
     </div>
     <div id="input-loader" class="ajax-loader"></div>
@@ -313,4 +313,10 @@ input.checkbox-lg,
 
 <script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
+<script>
+    // example values:
+    //  - "vis/auto?feedid="
+    //  - "graph/"
+    _SETTINGS['feedviewpath'] = "<?php if(isset($feedview)) echo $feedviewpath; ?>";
+</script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
