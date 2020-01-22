@@ -297,7 +297,7 @@ input.checkbox-lg,
         <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
-    <div id="input-footer" class="xhide">
+    <div id="input-footer" class="hide">
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
     </div>
     <div id="input-loader" class="ajax-loader"></div>
