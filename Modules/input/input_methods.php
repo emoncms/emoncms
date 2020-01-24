@@ -132,7 +132,7 @@ class InputMethods
                 }
                 $inputs = $jsondata;
             } else {
-                return "Input in not a valid JSON object";
+                return "Input in not a valid JSON object : ".$datain;
             }
         } else {
             $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u','',$datain);
