@@ -37,6 +37,8 @@ function user_controller()
             $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
             $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
             $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
+            $referrer = preg_replace('/[^\p{N}\p{L}_\s\/-]/u','',$referrer);
+            
             // load login template with the above parameters
             $result = view("Modules/user/login_block.php", array(
                 'allowusersregister'=>$allowusersregister,
@@ -53,6 +55,7 @@ function user_controller()
             $next = $path;
             $message = filter_var(urldecode(get('msg')), FILTER_SANITIZE_STRING);
             $referrer = filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL);
+            $referrer = preg_replace('/[^\p{N}\p{L}_\s\/-]/u','',$referrer);
             
             // encode url parameters to pass through to login page
             $msg = urlencode($message);
