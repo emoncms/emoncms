@@ -24,28 +24,17 @@ There are differences between the standard version of emoncms and the version of
 
 The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots, the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
 
-**1. Screencasts/Videos**
+**1. From the Guide**
 
-These screencasts were put together to accompany the [emonPi/emonBase setup guide](http://guide.openenergymonitor.org/setup) and therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of Emoncms including configuring inputs, creating feeds and dashboards.
-
-- [Screencast: Logging data locally with emoncms on the emonPi/emonBase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
-- [Screencast: Viewing data and creating dashboards on the emonPi/emonBase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
-
-There are also two screencasts that are specific to optional modules that are included on the EmonPi/Emonbase standard SD card install but are not part of the standard install if you follow the installation guides below.
-
-- [Screencast: Connecting to WiFi using the emoncms WiFi module on the emonPi/emonBase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
-- [Screencast: Data backup and import using emoncms backup module on the emonPi/emonBase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
-
-**2. From the Guide**
-
-- [Guide: Creating daily kWh graphs](http://guide.openenergymonitor.org/setup/daily-kwh) - How to create daily kWh graphs from cumulative kWh electricity/heat energy feeds.
-- [Guide: Daily Averages](http://guide.openenergymonitor.org/setup/daily-averages) - How to extract daily averages from temperature, humidity & power feeds.
-- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv) - How to use the graph module and feeds interface to export CSV data for use in 3rd party programs such as OpenOffice Calc or Excel.
-- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms) - How to use the histogram tool in the graph module.
+- [Guide: Core Concepts](http://guide.openenergymonitor.org/emoncms/coreconcepts) - Core Emoncms concepts including inputs, input processing and feeds.
+- [Guide: Creating daily kWh graphs](http://guide.openenergymonitor.org/emoncms/daily-kwh) - How to create daily kWh graphs from cumulative kWh electricity/heat energy feeds.
+- [Guide: Daily Averages](http://guide.openenergymonitor.org/emoncms/daily-averages) - How to extract daily averages from temperature, humidity & power feeds.
+- [Guide: Exporting CSV](http://guide.openenergymonitor.org/emoncms/export-csv) - How to use the graph module and feeds interface to export CSV data for use in 3rd party programs such as OpenOffice Calc or Excel.
+- [Guide: Histograms](http://guide.openenergymonitor.org/emoncms/histograms) - How to use the histogram tool in the graph module.
 - [Guide: Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy) - example of configuring the MyElectric dashboard.
 - [Guide: Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/) - example of configuring the MySolar dashboard.
 
-**3. Emoncms Terminology**
+**2. Emoncms Terminology**
 
 - **Input:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
 - **Input: Node:** A grouping identifier for an input or feed.
