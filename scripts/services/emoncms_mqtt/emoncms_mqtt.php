@@ -58,24 +58,29 @@
         die;
     }
     
-    $mysqli = @new mysqli(
-        $settings["sql"]["server"],
-        $settings["sql"]["username"],
-        $settings["sql"]["password"],
-        $settings["sql"]["database"],
-        $settings["sql"]["port"]
-    );
-    
-    if ( $mysqli->connect_error ) {
-        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-        if ( $display_errors ) {
-            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+    $retry = 0;
+    $mysqli_connected = false;
+    while(!$mysqli_connected) {
+        // Try to connect to mysql
+        $mysqli = @new mysqli(
+            $settings["sql"]["server"],
+            $settings["sql"]["username"],
+            $settings["sql"]["password"],
+            $settings["sql"]["database"],
+            $settings["sql"]["port"]
+        );
+        
+        if ($mysqli->connect_error) { 
+            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  
+            $retry ++;
+            if ($retry>3) die;
+            sleep(5.0);
+        } else {
+            $mysqli_connected = true;
+            break;
         }
-        die();
     }
-
-    if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
-
+    
     // Enable for testing
     // $mysqli->query("SET interactive_timeout=60;");
     // $mysqli->query("SET wait_timeout=60;");
