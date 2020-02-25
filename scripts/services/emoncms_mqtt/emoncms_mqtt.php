@@ -233,6 +233,7 @@
             $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
+            
             $time = time();
 
             global $settings, $user, $input, $process, $device, $log, $count;
@@ -302,8 +303,8 @@
             }
 
             if ($st >= 0) {
-                if (isset($route[$st+1]) && isset($route[$st+2]))
-                    $nodeid = $route[$st+1];
+                if (isset($route[$st+1]) && isset($route[$st+2])) {
+                    $userid = $route[$st+1];
                     $nodeid = $route[$st+2];
                     // Filter nodeid, pre input create, to avoid duplicate inputs
                     $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
