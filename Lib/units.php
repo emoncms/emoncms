@@ -6,6 +6,7 @@ namespace emoncms\units;
 
 $config['units'] = array(
     array("short" => "W", "long" => "Watt"),
+    array("short" => "kW", "long" => "Kilowatt"),
     array("short" => "kWh", "long" => "Kilowatt Hour"),
     array("short" => "Wh", "long" => "Watt-Hour"),
     array("short" => "V", "long" => "Volt"),

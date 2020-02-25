@@ -23,7 +23,7 @@ var processlist_ui =
   engines_hidden:[],
   has_redis: 0,
   
-  table: table,
+  table: typeof table !== "undefined" ? table : null,
 
   'draw':function(){
     var i = 0;
@@ -100,7 +100,11 @@ var processlist_ui =
                 arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
                 arg.title = _Tr("Feed")+" "+feedid
                 arg.icon = 'icon-list-alt'
-                arg.href = path+"graph/"+feedid
+                var feedviewpath = "graph/";
+                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+                    var feedviewpath = _SETTINGS.feedviewpath;
+                }
+                arg.href = [path, feedviewpath, feedid].join("");
                 lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
                 arg.text = 'Feedid "+feedid+" does not exists or was deleted'
@@ -245,7 +249,11 @@ var processlist_ui =
         badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
-        badge.href = badge.process.argtype == ProcessArg.FEEDID ? path+"graph/"+badge.value : false;
+        var feedviewpath = "graph/";
+        if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+            var feedviewpath = _SETTINGS.feedviewpath;
+        }
+        badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input
@@ -718,7 +726,9 @@ var processlist_ui =
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
+    if (window.table!=undefined && window.table.draw!=undefined) {
+        table.draw();
+    }
     if (typeof update == 'function') update()
   },
 
@@ -833,6 +843,8 @@ var processlist_ui =
       }
       $("#process-select").html(out);
       processlist_ui.initprogress();
+      // Automatic call of feed table update
+      if (typeof window.update_feed_list == 'function') update_feed_list();
     }});
 
     // Feeds Select List

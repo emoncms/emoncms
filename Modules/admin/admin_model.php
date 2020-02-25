@@ -42,12 +42,12 @@ class Admin {
     
     // Retrieve server information
     public static function system_information() {
-        global $mysqli, $server, $redis_server, $mqtt_server;
+        global $settings, $mysqli;
         $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
-    
+
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-    
+
         $services = array();
         $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
         $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
@@ -57,7 +57,8 @@ class Admin {
         $services['emonPiLCD'] = Admin::getServiceStatus('emonPiLCD.service');
         $services['redis-server'] = Admin::getServiceStatus('redis-server.service');
         $services['mosquitto'] = Admin::getServiceStatus('mosquitto.service');
-    
+        $services['demandshaper'] = Admin::getServiceStatus('demandshaper.service');
+
         //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
@@ -97,20 +98,20 @@ class Admin {
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                     'db_server' => $server,
-                     'db_ip' => gethostbyname($server),
+                     'db_server' => $settings['sql']['server'],
+                     'db_ip' => gethostbyname($settings['sql']['server']),
                      'db_version' => $mysqli->server_info,
                      'db_stat' => $mysqli->stat(),
                      'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
     
-                     'redis_server' => $redis_server['host'].":".$redis_server['port'],
-                     'redis_ip' => gethostbyname($redis_server['host']),
+                     'redis_server' => $settings['redis']['host'].":".$settings['redis']['port'],
+                     'redis_ip' => gethostbyname($settings['redis']['host']),
                      
                      'services' => $services,
                      
-                     'mqtt_server' => $mqtt_server['host'],
-                     'mqtt_ip' => gethostbyname($mqtt_server['host']),
-                     'mqtt_port' => $mqtt_server['port'],
+                     'mqtt_server' => $settings['mqtt']['host'],
+                     'mqtt_ip' => gethostbyname($settings['mqtt']['host']),
+                     'mqtt_port' => $settings['mqtt']['port'],
     
                      'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
                      'http_proto' => $_SERVER['SERVER_PROTOCOL'],
@@ -151,15 +152,16 @@ class Admin {
             // (This has the bonus of ignoring the first row which is 7)
             if(count($columns) == 6)
             {
+              $filesystem = $columns[0];
               $partition = $columns[5];
               $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
               $partitions[$partition]['Partition']['text'] = $partition;
-              $partitions[$partition]['FileSystem']['text'] = $columns[0];
+              $partitions[$partition]['FileSystem']['text'] = $filesystem;
               if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
               {
                 $partitions[$partition]['Size']['value'] = $columns[1];
                 $partitions[$partition]['Free']['value'] = $columns[3];
-                $partitions[$partition]['Used']['value'] = $columns[2];
+                $partitions[$partition]['Used']['value'] = $columns[2];                
               }
               else
               {
@@ -168,6 +170,38 @@ class Admin {
                 $partitions[$partition]['Used']['text'] = $columns[2];
                 $partitions[$partition]['Free']['text'] = $columns[3];
               }
+
+              $writeload = 0;
+              $writeloadtime = "";
+              global $redis;
+              if ($redis) {
+                // translate partition mount point to mmcblk0pX based name
+                $partition_name = false;
+                if ($partition=="/boot") $partition_name = "mmcblk0p1";
+                else if ($partition=="/") $partition_name = "mmcblk0p2";
+                else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
+                else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
+                
+                if ($partition_name) {
+                  if ($sectors_written = @exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
+                    $last_sectors_written = 0;
+                    if ($redis->exists("diskstats:$partition_name")) {
+                      $last_sectors_written = $redis->get("diskstats:$partition_name");
+                      $last_time = $redis->get("diskstats:time");
+                      $elapsed = time() - $last_time;
+                      $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                      $writeloadtime = $elapsed;
+                    } else {
+                      $redis->set("diskstats:$partition_name",$sectors_written);
+                      $redis->set("diskstats:time",time());
+                      $writeload = 0;
+                    }
+                    
+                  }
+                }
+              }
+              $partitions[$partition]['WriteLoad']['value'] = $writeload;
+              $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
             }
           }
           return $partitions;
@@ -201,12 +235,13 @@ class Admin {
 
     /**
      * get an array of raspberry pi properites
-     *
-     * @return array has keys hw,rev,sn,model
+     * 
+     * @see: SoC 'hw' now not required - https://github.com/emoncms/emoncms/issues/1364
+     * @return array has keys [hw,]rev,sn,model     * @return array has keys hw,rev,sn,model
      */
     public static function get_rpi_info() {
         // create empty array with all the required keys
-        $rpi_info = array_map(function($n) {return '';},array_flip(explode(',','hw,rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
+        $rpi_info = array_map(function($n) {return '';},array_flip(explode(',','rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
         // exit with empty array if not a raspberry pi
         if ( !Admin::is_Pi()) return $rpi_info;
         // add the rpi details
@@ -226,7 +261,7 @@ class Admin {
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
             $matches = array_filter($matches);
             if(!empty($matches)) {
-                $rpi_info['hw'] = "Broadcom ".$matches[2][0];
+                // $rpi_info['hw'] = "Broadcom ".$matches[2][0];
                 $rpi_info['rev'] = $matches[2][1];
                 $rpi_info['sn'] = $matches[2][2];
                 $rpi_info['model'] = '';
@@ -276,13 +311,18 @@ class Admin {
      * @return string
      */
     public static function mqtt_version() {
+        global $log;
         $v = '?';
         if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $v = "n/a";
         } else {
+            set_error_handler(function($errno, $errstr, $errfile, $errline) use ($log) { 
+                $log->warn(sprintf("%s:%s - %s", basename($errfile), $errline, $errstr));
+            });
             if (file_exists('/usr/sbin/mosquitto')) {
                 $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
             }
+            restore_error_handler();
         }
         return $v;
     }
@@ -338,6 +378,8 @@ class Admin {
                     $diskFree = $fs['Free']['value'];
                     $diskTotal = $fs['Size']['value'];
                     $diskUsed = $fs['Used']['value'];
+                    $writeLoad = $fs['WriteLoad']['value'];
+                    $writeLoadTime = $fs['WriteLoadTime']['value'];
                     $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                     $diskPercent = sprintf('%.2f',$diskPercentRaw);
                     $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
@@ -346,10 +388,24 @@ class Admin {
                     } else {
                         $mountpoint = $fs['Partition']['text'];
                     }
+                    
+                    $writeloadstr = "n/a";
+                    if ($writeLoadTime) {
+                        $days = floor($writeLoadTime / 86400);
+                        $hours = floor(($writeLoadTime - ($days*86400))/3600);
+                        $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
+                        
+                        $writeloadstr = Admin::formatSize($writeLoad)."/s (";
+                        if ($days) $writeloadstr .= $days." days ";
+                        if ($hours) $writeloadstr .= $hours." hours "; 
+                        $writeloadstr .= $mins." mins)";
+                    }
+                    
                     $mounts[] = array(
                         'free'=>Admin::formatSize($diskFree),
                         'total'=>Admin::formatSize($diskTotal),
                         'used'=>Admin::formatSize($diskUsed),
+                        'writeload'=>$writeloadstr,
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,

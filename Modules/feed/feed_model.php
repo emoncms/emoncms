@@ -232,6 +232,11 @@ class Feed
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
+        
+        // Clear feed last value (set to zero)
+        if ($this->redis->hExists("feed:$feedid",'value')) {
+            $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+        }
 
         $this->log->info("feed model: clear() feedid=$feedid");
         return $response;
@@ -571,7 +576,7 @@ class Feed
         // Call to engine get_data
         $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
 
-        if ($this->settings['redisbuffer']['enabled']) {
+        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
             // Add redisbuffer cache if available
             if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
             
@@ -673,7 +678,7 @@ class Feed
 
         // Download limit
         $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->settings['csvdownloadlimit_mb']*1048576)) {
+        if ($downloadsize>($this->settings['csv_downloadlimit_mb']*1048576)) {
             $this->log->warn("csv_export() CSV download limit exeeded downloadsize=$downloadsize feedid=$feedid");
             return array('success'=>false, 'message'=>"CSV download limit exeeded downloadsize=$downloadsize");
         }
@@ -734,8 +739,6 @@ class Feed
         // Basic name input sanitisation
         $name = preg_replace('/[^\w\s\-]/','',$name);
         
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
-        
         $exportdata = $this->csv_export_multi_prepare($feedids,$start,$end,$outinterval);
         if (isset($exportdata['success']) && !$exportdata['success']) return $exportdata;
 
@@ -779,7 +782,7 @@ class Feed
                 if ($firstline) {
                     $dataline[$feedid] = $data[$feedid];
                 } else if (isset($data[$feedid])) {
-                    $dataline[$feedid] = number_format((float)$data[$feedid],$csv_decimal_places,$csv_decimal_place_separator,'');
+                    $dataline[$feedid] = number_format((float)$data[$feedid],$this->settings['csv_decimal_places'],$this->settings['csv_decimal_place_separator'],'');
                 } else {
                     $dataline[$feedid] = "";
                 }
@@ -787,7 +790,7 @@ class Feed
             if (!$firstline) {
                 $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
             }
-            fputcsv($fh, array($time)+$dataline,$csv_field_separator);
+            fputcsv($fh, array($time)+$dataline,$this->settings['csv_field_separator']);
             $firstline = false;
         }
         fclose($fh);
@@ -904,7 +907,7 @@ class Feed
         return $value;
     }
 
-    public function update_data($feedid,$updatetime,$feedtime,$value)
+    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -915,7 +918,7 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled']) {
+        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
             // Call to buffer update
             $args = array('engine'=>$engine,'updatetime'=>$updatetime);
             $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);

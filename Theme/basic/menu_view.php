@@ -7,11 +7,11 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $menu, $user,$show_menu_titles;
+global $path, $session, $menu, $user, $settings;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
-
+load_language_files("Theme/locale", "theme_messages");
 ?>
 <?php
 // if not logged in show login button top right
@@ -26,18 +26,18 @@ if ($session['read']) {
 <ul id="left-nav" class="nav mr-0 d-flex">
 
 <?php
-// $menu['tabs'][] = array(
-//     'title'=> _("Open/Close Sidebar"),
-//     'id' => 'sidebar-toggle',
-//     'href' => '#',
-//     'icon' => 'icon-menu',
-//     'order' => -1,
-//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
-//     'data'=> array(
-//         'toggle' => 'slide-collapse',
-//         'target' => '#sidebar'
-//     )
-// );
+$menu['tabs'][] = array(
+    'title'=> dgettext('theme_messages','Open/Close Sidebar'),
+    'id' => 'sidebar-toggle',
+    'href' => '#',
+    'icon' => 'icon-menu',
+    'order' => -1,
+    'li_style' => 'width:0; overflow:hidden; visibility:hidden',
+    'data'=> array(
+        'toggle' => 'slide-collapse',
+        'target' => '#sidebar'
+    )
+);
 
 // top level menu icons (MAIN MENU)
 if(!empty($menu['tabs'])) {
@@ -49,7 +49,7 @@ if(!empty($menu['tabs'])) {
         // render menu item
         $item['data']['hide-narrow'] = true;
 
-        if(!$show_menu_titles){
+        if(!$settings['interface']['show_menu_titles']){
             $item['text'] = '';
         }
 
@@ -75,13 +75,13 @@ $addBookmark = array(
     'icon'=>'star_border',
     'href'=>'#',
     'id'=>'set-bookmark',
-    'title'=>_('Add Bookmark')
+    'title'=>dgettext('theme_messages','Add Bookmark')
 );
 $removeBookmark = array(
     'icon'=>'star',
     'href'=>'#',
     'id'=>'remove-bookmark',
-    'title'=>_('Remove Bookmark')
+    'title'=>dgettext('theme_messages','Remove Bookmark')
 );
 if($isBookmarked){
     $addBookmark['li_class'] = 'd-none';
@@ -104,7 +104,7 @@ if ($session['read']) {
         }
         // build dropdown with above items
         echo makeDropdown(array(
-            'title' => _("Setup"),
+            'title' => dgettext('theme_messages','Setup'),
             'href' => '#',
             'icon' => 'cog',
             'sub_items' => $sub_items
@@ -112,7 +112,6 @@ if ($session['read']) {
     }
 }
 ?>
-
 
 <?php
 // top navbar user menu
@@ -135,7 +134,7 @@ if(empty($item['title'])) $item['title'] = $item['text'];
 if ($session['admin'] == 1) {
     settype($item['class'],'array');
     $item['class'][] = 'is_admin';
-    $item['title'] .= sprintf(' (%s)',_('Admin'));
+    $item['title'] .= sprintf(' (%s)',dgettext('theme_messages','Admin'));
 }
 
 // add gravitar
@@ -175,8 +174,6 @@ if ($session['write']){
 </ul>
 </div>
 
-
-
 <?php
 /**
  * Get either a Gravatar URL or complete image tag for a specified email address.
@@ -185,8 +182,8 @@ if ($session['write']){
  * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
  * @param string $d Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
  * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
- * @param boole $img True to return a complete IMG tag False for just the URL
- * @param array $atts Optional, additional key/value attributes to include in the IMG tag
+ * @param boolean $img True to return a complete IMG tag False for just the URL
+ * @param array $attrs Optional, additional key/value attributes to include in the IMG tag
  * @return String containing either just a URL or a complete image tag
  * @source https://gravatar.com/site/implement/images/php/
  */

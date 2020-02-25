@@ -56,11 +56,20 @@ class VirtualFeed implements engine_methods
         return false; // Not supported by engine
     }
 
+    /**
+     * returns the feed's last value
+     *
+     * @param int $feedid
+     * @return bool|array
+     */
     public function lastvalue($feedid)
     {
+        $now = time();
         $feedid = intval($feedid);
         $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
+        if ($processList == '' || $processList == null) { 
+            return array('time'=>(int)$now, 'value'=>null);
+        }
         
         // Check if datatype is daily so that select over range is used rather than skip select approach
         static $feed_datatype_cache = array(); // Array to hold the cache
@@ -72,7 +81,6 @@ class VirtualFeed implements engine_methods
             $datatype = $row['datatype'];
             $feed_datatype_cache[$feedid] = $datatype; // Cache it
         }
-        $now = time();
         
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         global $session,$user;
@@ -185,7 +193,7 @@ class VirtualFeed implements engine_methods
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
         
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -210,8 +218,8 @@ class VirtualFeed implements engine_methods
         for ($i=0; $i<$max; $i++){
             $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
             $value = $data[$i][1];
-            if ($value != null) $value = number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'');
-            fwrite($exportfh, $timenew.$csv_field_separator.$value."\n");
+            if ($value != null) $value = number_format($value,$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'');
+            fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].$value."\n");
         }
         fclose($exportfh);
         exit;

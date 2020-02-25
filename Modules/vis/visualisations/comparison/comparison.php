@@ -91,7 +91,6 @@
     <script type="text/javascript">
         var kwhd = <?php echo $kwhd; ?>;
         var power = <?php echo $power; ?>;
-        var path = "<?php echo $path; ?>";
         var apikey = "<?php echo $apikey; ?>";
         var price = <?php echo $pricekwh ?>;
         var currency = "<?php echo $currency ?>";

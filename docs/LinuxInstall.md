@@ -1,4 +1,8 @@
-# Install Emoncms on Ubuntu / Debian Linux
+**To install emoncms on Debian see new installation script approach: https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+# Archived: Install Emoncms on Ubuntu / Debian Linux
 
 This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see the [RaspberryPi installation guides](RaspberryPi/readme.md).
 
@@ -119,22 +123,23 @@ cd into the emoncms directory where the settings file is located
 
     cd /var/www/html/emoncms/
 
-Make a copy of default.settings.php and call it settings.php
+Make a copy of example.settings.ini and call it settings.ini
 
-    cp default.settings.php settings.php
+    cp example.settings.ini settings.ini
 
-Open settings.php in an editor:
+Open settings.ini in an editor:
 
-    nano settings.php
+    nano settings.ini
 
 Update your database settings to use your new secure password:
 
-    $username = "USERNAME";
-    $password = "YOUR_SECURE_PASSWORD_HERE";
-    $server   = "localhost";
-    $database = "emoncms";
+    [sql]
+    server = "localhost"
+    database = "emoncms"
+    username = "emoncms"
+    password = "my_secure_password"
 
-You will also want to modify SMTP settings and the password reset flag further down in the settings file.
+You may also want to configure other settings, see the default-settings.ini file for a list of all available settings.
 
 Save (Ctrl-X), type Y and exit
 

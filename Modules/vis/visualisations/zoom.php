@@ -60,7 +60,6 @@
 <script id="source" language="javascript" type="text/javascript">
   var kwhd = <?php echo $kwhd; ?>;
   var power = <?php echo $power; ?>;
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var embed = <?php echo $embed; ?>;
   var delta = <?php echo $delta; ?>;
@@ -221,8 +220,7 @@
   $('#left').click(function () {inst_panleft(); vis_feed_data();});
   $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
 
-  $(window).resize(vis_resize);
-  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
   
   function vis_resize() {
     $('#placeholder').width($('#placeholder_bound').width());

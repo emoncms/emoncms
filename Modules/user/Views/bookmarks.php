@@ -15,7 +15,7 @@
                 <button type="submit" data-mode-edit class="btn btn-primary ml-2"><?php echo _("Save") ?></button>
                 <button type="button" data-cancel data-mode-edit class="btn btn-default ml-2"><?php echo _("Cancel") ?></button>
 
-                <a class="span6 mb-0 ml-0" data-title title="<?php echo $path.$b['path'] ?>" href="<?php echo $path.$b['path'] ?>" data-mode-read><?php echo $b['text'] ?></a>
+                <a class="span6 mb-0 ml-0" data-title title="<?php echo $path.$b['path'] ?>" href="<?php echo $path.$b['path'] ?>" data-mode-read data-edit=" [<?php echo _('Edit') ?>]"><?php echo $b['text'] ?></a>
                 <button type="button" data-delete data-mode-read class="btn btn-danger ml-2 pull-right" title="<?php echo _("Delete") ?>"><svg class="icon icon-bin"><use xlink:href="#icon-bin"></use></svg></button>
             </div>
         </form>
@@ -85,9 +85,7 @@
 </style>
 
 <script>
-var path = "<?php echo $path ?>";
 $(function(){
-    var path = "<?php echo $path ?>";
     // SHOW EDIT BOOKMARK FORM
     $(document).on('click', 'form[data-read] [data-title]', function(event) {
         event.preventDefault();

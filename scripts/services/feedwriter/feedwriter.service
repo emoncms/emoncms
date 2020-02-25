@@ -49,10 +49,11 @@ ExecStart=/usr/bin/php /var/www/emoncms/scripts/feedwriter.php
 
 # Setup log folder if it does not exist
 # To be loaded from EnvironmentFile in future
+Environment='USER=pi'
 Environment='LOG_PATH=/var/log/emoncms'
 PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p ${LOG_PATH}
-ExecStartPre=/bin/chown pi ${LOG_PATH}
+ExecStartPre=/bin/chown ${USER} ${LOG_PATH}
 ExecStartPre=/bin/touch ${LOG_PATH}/emoncms.log
 ExecStartPre=/bin/chmod 666 ${LOG_PATH}/emoncms.log
 

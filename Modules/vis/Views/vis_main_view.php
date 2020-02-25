@@ -71,7 +71,6 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <div id="visurl"></div>
 
 <script type="application/javascript">
-  var path = "<?php echo $path; ?>";
   var feedlist = <?php echo json_encode($feedlist); ?>;
   var widgets = <?php echo json_encode($visualisations); ?>;
   var embed = 0;

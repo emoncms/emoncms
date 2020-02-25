@@ -1,4 +1,8 @@
-## Install Emoncms on Raspberry Pi (Raspbian Jessie)
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+## Archived: Install Emoncms on Raspberry Pi (Raspbian Jessie)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.
 
