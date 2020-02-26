@@ -6,7 +6,7 @@ device = "smartplug1272"
 mqtt_user = "user"
 mqtt_passwd = "pass"
 mqtt_host = "host"
-mqtt_port = 1883
+mqtt_port = 8883
 
 basetopic = "user/"+str(userid)
 
@@ -38,12 +38,13 @@ def on_message(client, userdata, msg):
         print basetopic+"/"+device+"/out/state"+" "+value+"\n"
         mqttc.publish(basetopic+"/"+device+"/out/state",value,2)
 
-mqttc = mqtt.Client("smartplug-remote")
+mqttc = mqtt.Client("smartplug")
 mqttc.on_connect = on_connect
 mqttc.on_message = on_message
 
 # Connect
 try:
+    mqttc.tls_set(ca_certs="/usr/share/ca-certificates/mozilla/DST_Root_CA_X3.crt")
     mqttc.username_pw_set(mqtt_user, mqtt_passwd)
     mqttc.connect(mqtt_host, mqtt_port, 60)
     mqttc.loop_start()
