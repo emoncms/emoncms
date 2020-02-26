@@ -263,7 +263,7 @@ class User
         
         // Set MQTT ACL's
         $topic = "user/$userid/#";
-        $stmt = $this->mysqli->prepare("INSERT INTO mqtt_acls (username,topic,rw) VALUES (?,?,2)");
+        $stmt = $this->mysqli->prepare("INSERT INTO mqtt_acls (username,topic,rw) VALUES (?,?,7)"); // See acl rw levels: https://github.com/jpmens/mosquitto-auth-plug/issues/356
         $stmt->bind_param("ss", $username, $topic);
         if (!$stmt->execute()) {
             return array("success"=>false, "Error setting MQTT ACL entry");
