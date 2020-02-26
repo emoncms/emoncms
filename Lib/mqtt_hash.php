@@ -9,7 +9,7 @@ define("TAG", "PBKDF2");
 
 function create_hash($password) {
     
-    $salt = base64_encode(mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
+    $salt = base64_encode(@mcrypt_create_iv(PBKDF2_SALT_BYTE_SIZE, MCRYPT_DEV_URANDOM));
     return TAG . SEPARATOR . PBKDF2_HASH_ALGORITHM . SEPARATOR . PBKDF2_ITERATIONS . SEPARATOR .  $salt . SEPARATOR . 
         base64_encode(pbkdf2(
             PBKDF2_HASH_ALGORITHM,
