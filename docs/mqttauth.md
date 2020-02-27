@@ -16,14 +16,14 @@ Install dependencies (may not be needed?):
 
     sudo apt-get install libc-ares-dev libcurl4-openssl-dev libmysqlclient-dev uuid-dev
     
-Get Mosquitto and build it
+Get Mosquitto and build it.
 
     tar xvzf mosquitto-1.5.tar.gz
     cd mosquitto-1.5
     make mosquitto
     sudo make install
     
-Get mosquitto-auth-plug source and create a suitable configuration file
+Get mosquitto-auth-plug source and create a suitable configuration file (works with mosquitto up to v1.5.9)
 
     git clone https://github.com/jpmens/mosquitto-auth-plug.git
     cd mosquitto-auth-plug
