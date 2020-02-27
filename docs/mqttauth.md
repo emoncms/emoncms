@@ -69,7 +69,10 @@ mosquitto.conf config file:
     
 ### Emoncms setup
 
-1. Change MQTT basetopic
+Install php pecl package mcrypt following guide here: 
+[https://www.techrepublic.com/article/how-to-install-mcrypt-for-php-7-2/](https://www.techrepublic.com/article/how-to-install-mcrypt-for-php-7-2/)
+
+Change MQTT basetopic
 
     nano /var/www/emoncms/settings.ini
     
@@ -80,3 +83,19 @@ The mqtt section should look like this, with your emoncms admin account username
     user = 'admin'
     password = 'adminpassword'
     basetopic = 'user'
+    
+Enable multiuser emoncms:
+
+    [interface]
+    enable_multi_user = true
+    
+### Posting data to emoncms
+
+Restart emoncms_mqtt:
+
+    sudo service emoncms_mqtt restart
+    
+Post data on MQTT topic:
+
+    topic: user/1/devicename/inputname 
+    value: 100
