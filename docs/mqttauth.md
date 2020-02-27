@@ -1,5 +1,9 @@
 # MQTT Auth Setup
 
+This guide assumes that you have installed emoncms using the EmonScripts automated build script:
+
+See: https://github.com/openenergymonitor/EmonScripts
+
 ## Install Mosquitto Auth Plugin
 
 The mosquitto jpmens auth plugin enables authentication and access list control from an external database such as mysql or redis.
