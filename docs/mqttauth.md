@@ -66,3 +66,17 @@ mosquitto.conf config file:
 ### View mosquitto log
 
     tail -f /var/log/mosquitto/mosquitto.log
+    
+### Emoncms setup
+
+1. Change MQTT basetopic
+
+    nano /var/www/emoncms/settings.ini
+    
+The mqtt section should look like this, with your emoncms admin account username and password and changed basetopic:
+    
+    [mqtt]
+    enabled = true
+    user = 'admin'
+    password = 'adminpassword'
+    basetopic = 'user'
