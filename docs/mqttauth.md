@@ -12,7 +12,7 @@ A useful guide on using the plugin: http://my-classes.com/2015/02/05/acl-mosquit
 
 #### Installation
 
-Install dependencies:
+Install dependencies (may not be needed?):
 
     sudo apt-get install libc-ares-dev libcurl4-openssl-dev libmysqlclient-dev uuid-dev
     
@@ -29,21 +29,6 @@ Get mosquitto-auth-plug source and create a suitable configuration file
     cd mosquitto-auth-plug
     cp config.mk.in config.mk
     make
-
-The following steps may no longer be needed?
-    
-Fix for compile error:
-
-- https://github.com/jpmens/mosquitto-auth-plug/issues/183
-
-Recompile both mosquitto and auth plugin with option changed as detailed here:
-
-- [https://github.com/jpmens/mosquitto-auth-plug/issues/33](https://github.com/jpmens/mosquitto-auth-plug/issues/33)
-
-    nano mosquitto-1.4.10/config.mk
-    Set: WITH_SRV:=no
-
-Run: make clean, make, sudo make install in both.
 
 #### Mosquitto configuration
 
