@@ -1,5 +1,9 @@
 # MQTT Auth Setup
 
+This guide assumes that you have installed emoncms using the EmonScripts automated build script:
+
+See: https://github.com/openenergymonitor/EmonScripts
+
 ## Install Mosquitto Auth Plugin
 
 The mosquitto jpmens auth plugin enables authentication and access list control from an external database such as mysql or redis.
@@ -12,38 +16,23 @@ A useful guide on using the plugin: http://my-classes.com/2015/02/05/acl-mosquit
 
 #### Installation
 
-Install dependencies:
+Install dependencies (may not be needed?):
 
     sudo apt-get install libc-ares-dev libcurl4-openssl-dev libmysqlclient-dev uuid-dev
     
-Get Mosquitto and build it
+Get Mosquitto and build it.
 
     tar xvzf mosquitto-1.5.tar.gz
     cd mosquitto-1.5
     make mosquitto
     sudo make install
     
-Get mosquitto-auth-plug source and create a suitable configuration file
+Get mosquitto-auth-plug source and create a suitable configuration file (works with mosquitto up to v1.5.9)
 
     git clone https://github.com/jpmens/mosquitto-auth-plug.git
     cd mosquitto-auth-plug
     cp config.mk.in config.mk
     make
-
-The following steps may no longer be needed?
-    
-Fix for compile error:
-
-- https://github.com/jpmens/mosquitto-auth-plug/issues/183
-
-Recompile both mosquitto and auth plugin with option changed as detailed here:
-
-- [https://github.com/jpmens/mosquitto-auth-plug/issues/33](https://github.com/jpmens/mosquitto-auth-plug/issues/33)
-
-    nano mosquitto-1.4.10/config.mk
-    Set: WITH_SRV:=no
-
-Run: make clean, make, sudo make install in both.
 
 #### Mosquitto configuration
 
@@ -81,3 +70,36 @@ mosquitto.conf config file:
 ### View mosquitto log
 
     tail -f /var/log/mosquitto/mosquitto.log
+    
+### Emoncms setup
+
+Install php pecl package mcrypt following guide here: 
+[https://www.techrepublic.com/article/how-to-install-mcrypt-for-php-7-2/](https://www.techrepublic.com/article/how-to-install-mcrypt-for-php-7-2/)
+
+Change MQTT basetopic
+
+    nano /var/www/emoncms/settings.ini
+    
+The mqtt section should look like this, with your emoncms admin account username and password and changed basetopic:
+    
+    [mqtt]
+    enabled = true
+    user = 'admin'
+    password = 'adminpassword'
+    basetopic = 'user'
+    
+Enable multiuser emoncms:
+
+    [interface]
+    enable_multi_user = true
+    
+### Posting data to emoncms
+
+Restart emoncms_mqtt:
+
+    sudo service emoncms_mqtt restart
+    
+Post data on MQTT topic:
+
+    topic: user/1/devicename/inputname 
+    value: 100
