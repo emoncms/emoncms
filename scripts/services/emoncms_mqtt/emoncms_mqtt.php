@@ -285,46 +285,41 @@
             
             $inputs = array();
             
+            // 1. Filter out basetopic
+            $topic = str_replace($settings['mqtt']['basetopic']."/","",$topic);
+            // 2. Split by /
             $route = explode("/",$topic);
-            $basetopic = explode("/",$settings['mqtt']['basetopic']);
+            $route_len = count($route);
             
-            /*Iterate over base topic to determine correct sub-topic*/
-            $st = -1;
-            foreach ($basetopic as $subtopic) {
-                if(isset($route[$st+1])) {
-                    if($basetopic[$st+1] == $route[$st+1]) {
-                        $st = $st + 1;
-                    } else {
-                        break;
+            if ($route_len>=2) {
+            
+                // Userid is first entry
+                if (is_numeric($route[0])) $userid = (int) $route[0];
+                // Node id is second entry
+                $nodeid = $route[1];
+                // Filter nodeid, pre input create, to avoid duplicate inputs
+                $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+                
+                $dbinputs = $input->get_inputs($userid);
+
+                if ($jsoninput) {
+                    foreach ($jsondata as $key=>$value) {
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                     }
-                } else {
-                    $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+                } else if ($route_len>=3) {
+                    // Input name is all the remaining parts connected together
+                    $input_name_parts = array();
+                    for ($i=2; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
+                    $input_name = implode("_",$input_name_parts);
+                
+                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name, "value"=>$value);
                 }
-            }
-
-            if ($st >= 0) {
-                if (isset($route[$st+1]) && isset($route[$st+2])) {
-                    $userid = $route[$st+1];
-                    $nodeid = $route[$st+2];
-                    // Filter nodeid, pre input create, to avoid duplicate inputs
-                    $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-                    
-                    $dbinputs = $input->get_inputs($userid);
-
-                    if ($jsoninput) {
-                        foreach ($jsondata as $key=>$value) {
-                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
-                        }
-                    } else if (isset($route[$st+3])) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+3], "value"=>$value);
-                    }
-                    else
-                    {
-                        $values = explode(",",$value);
-                        $name = 0;
-                        foreach ($values as $value) {
-                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
-                        }
+                else
+                {
+                    $values = explode(",",$value);
+                    $name = 0;
+                    foreach ($values as $value) {
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
                     }
                 }
             } else {
@@ -376,7 +371,7 @@
             }
             
             foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-            
+
         } catch (Exception $e) {
             $log->error($e);
         }
