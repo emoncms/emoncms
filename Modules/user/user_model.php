@@ -37,6 +37,10 @@ class User
 
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
+
+        $timezone_offset_minutes = 0; // could be added as param to request???
+        $timezone_name = timezone_name_from_abbr("", $timezone_offset_minutes*60, false);
+        $this->default_timezone = !empty($settings["interface"]["default_timezone"])? $settings["interface"]["default_timezone"]: $timezone_name;
     }
 
     //---------------------------------------------------------------------------------------
@@ -650,13 +654,13 @@ class User
     public function get_timezone($userid)
     {
         $userid = (int) $userid;
-        if (!$userid) return false;
+        if (!$userid) return $this->default_timezone;
         if ($result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';")) {
             if ($row = $result->fetch_object()) {
                 return $row->timezone;
             }
         }
-        return false;
+        return $this->default_timezone;
     }
 
     // List supported PHP timezones
