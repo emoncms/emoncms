@@ -38,8 +38,8 @@ class User
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
 
-        $timezone_offset_minutes = 0; // could be added as param to request???
-        $timezone_name = timezone_name_from_abbr("", $timezone_offset_minutes*60, false);
+        $tz_mins_offset = 0; // could be added as param to request???
+        $timezone_name = timezone_name_from_abbr("", $tz_mins_offset*60, false);
         $this->default_timezone = !empty($settings["interface"]["default_timezone"])? $settings["interface"]["default_timezone"]: $timezone_name;
     }
 
