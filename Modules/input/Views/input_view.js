@@ -974,7 +974,7 @@ function draw_devices() {
     app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
     app.col.D = ((max_value_length * 8) + 17);
     app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
-    app.col.H = 200
+    app.col.H = 'calc(100% - ' + (app.col.A + app.col.G + app.col.F + app.col.C + app.col.D + app.col.E) + 'px)';
     
     resize_view();
 

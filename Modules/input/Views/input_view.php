@@ -158,6 +158,10 @@ a.text-muted i[class*="icon-"] {
     opacity: 1;
     height: 3.15rem;
 }
+.node-inputs .pull-right {
+  position: absolute;
+  right: 0;
+}
 .select-mode .node-inputs .node-input {
     cursor: pointer;
 }
@@ -262,7 +266,7 @@ input.checkbox-lg,
                 </div>
                 <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
                 <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-                <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
+                <div class="processlist" data-col="H" :style="{width:col.H}">
                     <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
                 </div>
                 <div class="buttons pull-right">
