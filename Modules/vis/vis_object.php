@@ -97,10 +97,10 @@
         // --------------------------------------------------------------------------------
         // Not currently available on emoncms.org
         // --------------------------------------------------------------------------------     
-        'timestoredaily'=> array('label'=>dgettext('vis_messages','Daily from Multiple (BETA)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1),
-            array('units',dgettext('vis_messages','units'),5,'kWh'))
-        ),
+        //'timestoredaily'=> array('label'=>dgettext('vis_messages','Daily from Multiple (BETA)'), 'options'=>array(
+        //    array('feedid',dgettext('vis_messages','feed'),1),
+        //    array('units',dgettext('vis_messages','units'),5,'kWh'))
+        //),
         
         'smoothie'=> array('label'=>dgettext('vis_messages','Smoothie'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1),
@@ -132,9 +132,9 @@
             array('feedB',dgettext('vis_messages','Feed B'),1)
         )),
         
-        'graph'=> array('label'=>dgettext('vis_messages','Graph (BETA)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1)
-        )),
+        //'graph'=> array('label'=>dgettext('vis_messages','Graph (BETA)'), 'options'=>array(
+        //    array('feedid',dgettext('vis_messages','feed'),1)
+        //)),
         
         'timecompare'=> array('label'=>dgettext('vis_messages','Time Comparison'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1),

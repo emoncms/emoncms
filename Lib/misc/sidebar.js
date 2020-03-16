@@ -128,6 +128,7 @@ $(function(){
             document.body.classList.add('has-animation');
         }, 500);
     }
+
     /** 
      * If menu 3rd level menu shown shrink 2nd level entries
      * 
@@ -171,9 +172,11 @@ $(function(){
             $menu.find('li').not('.active').toggleClass('in');
         }
     }
+
     function getQueryStringValue (key) {  
         return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
     }
+
     // add current page to user's bookmark list
     $('#set-bookmark, #remove-bookmark').click(function(event) {
         event.preventDefault();
@@ -301,17 +304,15 @@ function show_sidebar(options) {
         $(".content-container").css("margin","2.7rem 0 0 15rem");
     }
 }
+
 function hide_sidebar(options) {
     $('#sidebar').trigger('hide.sidebar.collapse');
     $('body').addClass('collapsed').removeClass('expanded');
     $(".content-container").css("margin","2.7rem auto 0 auto");
 }
 
-
 // backward compatible empty function
 if(typeof init_sidebar !== 'function') var init_sidebar = function(){}
-
-
 
 // get/set document cookies
 var docCookies = {

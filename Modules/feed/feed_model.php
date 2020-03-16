@@ -232,6 +232,11 @@ class Feed
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
+        
+        // Clear feed last value (set to zero)
+        if ($this->redis->hExists("feed:$feedid",'value')) {
+            $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+        }
 
         $this->log->info("feed model: clear() feedid=$feedid");
         return $response;
@@ -902,7 +907,7 @@ class Feed
         return $value;
     }
 
-    public function update_data($feedid,$updatetime,$feedtime,$value)
+    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -913,7 +918,7 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled']) {
+        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
             // Call to buffer update
             $args = array('engine'=>$engine,'updatetime'=>$updatetime);
             $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);

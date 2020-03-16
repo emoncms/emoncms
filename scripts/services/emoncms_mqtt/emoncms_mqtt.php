@@ -58,24 +58,29 @@
         die;
     }
     
-    $mysqli = @new mysqli(
-        $settings["sql"]["server"],
-        $settings["sql"]["username"],
-        $settings["sql"]["password"],
-        $settings["sql"]["database"],
-        $settings["sql"]["port"]
-    );
-    
-    if ( $mysqli->connect_error ) {
-        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-        if ( $display_errors ) {
-            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+    $retry = 0;
+    $mysqli_connected = false;
+    while(!$mysqli_connected) {
+        // Try to connect to mysql
+        $mysqli = @new mysqli(
+            $settings["sql"]["server"],
+            $settings["sql"]["username"],
+            $settings["sql"]["password"],
+            $settings["sql"]["database"],
+            $settings["sql"]["port"]
+        );
+        
+        if ($mysqli->connect_error) { 
+            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  
+            $retry ++;
+            if ($retry>3) die;
+            sleep(5.0);
+        } else {
+            $mysqli_connected = true;
+            break;
         }
-        die();
     }
-
-    if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
-
+    
     // Enable for testing
     // $mysqli->query("SET interactive_timeout=60;");
     // $mysqli->query("SET wait_timeout=60;");
@@ -99,10 +104,10 @@
     $user = new User($mysqli,$redis,null);
     
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $settings['feed']);
+    $feed = new Feed($mysqli,$redis,$settings['feed']);
 
     require_once "Modules/input/input_model.php";
-    $input = new Input($mysqli,$redis, $feed);
+    $input = new Input($mysqli,$redis,$feed);
 
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
@@ -132,7 +137,7 @@
     $mqtt_client->onMessage('message');
 
     // Option 1: extend on this:
-     while(true){
+    while(true){
         try {
             $mqtt_client->loop();
         } catch (Exception $e) {
@@ -188,7 +193,6 @@
 
         usleep(10000);
     }
-    
 
     function connect($r, $message) {
         global $log, $connected, $settings, $mqtt_client, $subscribed;
@@ -292,12 +296,12 @@
             
             $route = explode("/",$topic);
             $basetopic = explode("/",$settings['mqtt']['basetopic']);
-
+            
             /*Iterate over base topic to determine correct sub-topic*/
-            $st=-1;
+            $st = -1;
             foreach ($basetopic as $subtopic) {
                 if(isset($route[$st+1])) {
-                    if($basetopic[$st+1]==$route[$st+1]) {
+                    if($basetopic[$st+1] == $route[$st+1]) {
                         $st = $st + 1;
                     } else {
                         break;
@@ -306,11 +310,8 @@
                     $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
                 }
             }
-     
-            if ($st>=0)
-            {
-                if (isset($route[$st+1]))
-                {
+            if ($st >= 0) {
+                if (isset($route[$st+1])) {
                     $nodeid = $route[$st+1];
                     // Filter nodeid, pre input create, to avoid duplicate inputs
                     $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);

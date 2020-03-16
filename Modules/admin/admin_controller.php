@@ -22,7 +22,7 @@ function admin_controller()
     if(!$session['write']) {
         $result = ''; // empty result shows login page (now redirects once logged in)
         $message = _('Admin re-authentication required');
-    }   
+    }
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -51,10 +51,9 @@ function admin_controller()
         3 =>'ERROR'
     );
 
-    $path_to_config = 'settings.php';
+    // $path_to_config = 'settings.php';
     
     if ($session['admin']) {
-        
         if ($route->format == 'html') {
             if ($route->action == 'view') {
                 require "Modules/admin/admin_model.php";
@@ -120,13 +119,12 @@ function admin_controller()
                     'v' => 3,
                     'log_levels' => $log_levels,
                     'log_level'=>$settings['log']['level'],
-                    'log_level_label' => $log_levels[$settings['log']['level']],
-                    'path_to_config'=> $path_to_config
+                    'log_level_label' => $log_levels[$settings['log']['level']]
+                    // 'path_to_config'=> $path_to_config
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
-
             else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
@@ -149,7 +147,6 @@ function admin_controller()
             {
                 return view("Modules/admin/userlist_view.php", array());
             }
-
             else if ($route->action == 'setuser' && $session['write'])
             {
                 $_SESSION['userid'] = intval(get('id'));
@@ -157,7 +154,6 @@ function admin_controller()
                 // stop any other code from running once http header sent
                 exit();
             }
-            
             else if ($route->action == 'downloadlog')
             {
               if ($settings['log']['enabled']) {
@@ -177,7 +173,6 @@ function admin_controller()
                 exit;
               }
             }
-
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";
@@ -223,9 +218,8 @@ function admin_controller()
                 } //End PHP replacement for Tail
                 return trim(ob_get_clean());
             }
-
             else if (($settings['interface']['enable_update_ui'] || $settings['interface']['enable_admin_ui']) && $route->action == 'emonpi') {
-                                
+                
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
@@ -237,8 +231,12 @@ function admin_controller()
                     if (isset($_POST['type'])) $type = $_POST['type'];
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
                     
-                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
-                    return "service-runner trigger sent";
+                    if ($redis) {
+                        $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                        return "service-runner trigger sent";
+                    } else {
+                        return "redis not running";
+                    }
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -332,7 +330,7 @@ function admin_controller()
         }
         else if ($route->format == 'json')
         {
-            if ($route->action == 'redisflush' && $session['write'])
+            if ($route->action == 'redisflush' && $session['write'] && $redis)
             {
                 $redis->flushDB();
                 return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
