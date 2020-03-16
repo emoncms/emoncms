@@ -19,12 +19,12 @@ function directoryLocaleScan($dir) {
         $dlist = Array();
         $dir = realpath($dir);
 
-        $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
+        $dlist = glob( $dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
 
-        foreach($objects as $entry => $object){
-            $entry = str_replace($dir, '', $entry);
-            if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
-        }
+        $dlist = array_map(
+            function($item) { return basename($item); },
+            $dlist
+        ); 
 
         return array_unique($dlist);
     }
