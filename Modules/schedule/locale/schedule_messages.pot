@@ -1,0 +1,261 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Schedule\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-16 01:10+0100\n"
+"PO-Revision-Date: 2020-03-15 23:34+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../Views/schedule_api.php:9
+msgid "Schedule API"
+msgstr ""
+
+#: ../Views/schedule_api.php:10
+msgid "Apikey authentication"
+msgstr ""
+
+#: ../Views/schedule_api.php:11
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
+msgstr ""
+
+#: ../Views/schedule_api.php:12
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr ""
+
+#: ../Views/schedule_api.php:13
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr ""
+
+#: ../Views/schedule_api.php:14
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr ""
+
+#: ../Views/schedule_api.php:15
+msgid "Read only:"
+msgstr ""
+
+#: ../Views/schedule_api.php:18
+msgid "Read & Write:"
+msgstr ""
+
+#: ../Views/schedule_api.php:22
+msgid "Available HTML URLs"
+msgstr ""
+
+#: ../Views/schedule_api.php:24
+msgid "The schedule list view"
+msgstr ""
+
+#: ../Views/schedule_api.php:25
+msgid "This page"
+msgstr ""
+
+#: ../Views/schedule_api.php:28
+msgid "Available JSON commands"
+msgstr ""
+
+#: ../Views/schedule_api.php:29
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr ""
+
+#: ../Views/schedule_api.php:31
+msgid "Schedule process actions"
+msgstr ""
+
+#: ../Views/schedule_api.php:33
+msgid "List schedules"
+msgstr ""
+
+#: ../Views/schedule_api.php:34
+msgid "Get schedule details"
+msgstr ""
+
+#: ../Views/schedule_api.php:35
+msgid "Get only the expression"
+msgstr ""
+
+#: ../Views/schedule_api.php:36
+msgid "Add a schedule"
+msgstr ""
+
+#: ../Views/schedule_api.php:37 ../Views/schedule_view.php:41
+msgid "Delete schedule"
+msgstr ""
+
+#: ../Views/schedule_api.php:38
+msgid "Update schedule"
+msgstr ""
+
+#: ../Views/schedule_api.php:39
+msgid "Test the expression"
+msgstr ""
+
+#: ../Views/schedule_api.php:43
+msgid "Expression documentation"
+msgstr ""
+
+#: ../Views/schedule_api.php:44
+msgid "Expression is used to specify active range."
+msgstr ""
+
+#: ../Views/schedule_api.php:45
+msgid ""
+"Granularity is day light saving time, month, day, week day, hour and minute."
+msgstr ""
+
+#: ../Views/schedule_api.php:46
+msgid ""
+"Expression is built mixing basic blocks with operation characters. An hour "
+"is always required. All other basic blocks are optional and can be mixed on "
+"the same expression to build complex schedule rules. Ranges must be ordered "
+"older-newer. White spaces are ignored and can be ommited."
+msgstr ""
+
+#: ../Views/schedule_api.php:47
+msgid ""
+"Timezone of expression is the same of the user account that created or "
+"edited it. If the expression is public, timezones conversions are automatic "
+"taken in account between owner and user."
+msgstr ""
+
+#: ../Views/schedule_api.php:48
+msgid "Basic blocks:"
+msgstr ""
+
+#: ../Views/schedule_api.php:55
+msgid "Operation characters:"
+msgstr ""
+
+#: ../Views/schedule_api.php:62
+msgid "Expression examples:"
+msgstr ""
+
+#: ../Views/schedule_view.php:18
+msgid "Schedule Help"
+msgstr ""
+
+#: ../Views/schedule_view.php:19 ../Views/schedule_view.php:22
+msgid "Schedules"
+msgstr ""
+
+#: ../Views/schedule_view.php:24
+msgid "No schedules"
+msgstr ""
+
+#: ../Views/schedule_view.php:25
+msgid ""
+"There are no public schedules and you have not created your own yet. Please "
+"add a new schedule.<br><br>For help and examples on how to configure a "
+"schedule, read the <a href=\"api#expression\">Expression documentation</a>."
+msgstr ""
+
+#: ../Views/schedule_view.php:34
+msgid "New schedule"
+msgstr ""
+
+#: ../Views/schedule_view.php:44
+msgid "Deleting a schedule is permanent."
+msgstr ""
+
+#: ../Views/schedule_view.php:46
+msgid ""
+"If you have an Input or Feed Processlist that use this schedule, after "
+"deleting it, review that process list or it will be in error freezing other "
+"process lists."
+msgstr ""
+
+#: ../Views/schedule_view.php:48
+msgid "Are you sure you want to delete?"
+msgstr ""
+
+#: ../Views/schedule_view.php:52
+msgid "Cancel"
+msgstr ""
+
+#: ../Views/schedule_view.php:53
+msgid "Delete permanently"
+msgstr ""
+
+#: ../Views/schedule_view.php:66
+msgid "Name"
+msgstr ""
+
+#: ../Views/schedule_view.php:67
+msgid "Expression"
+msgstr ""
+
+#: ../Views/schedule_view.php:68
+msgid "Public"
+msgstr ""
+
+#: ../schedule_menu.php:4 ../schedule_processlist.php:41
+#: ../schedule_processlist.php:52 ../schedule_processlist.php:63
+#: ../schedule_processlist.php:74
+msgid "Schedule"
+msgstr ""
+
+#: ../schedule_processlist.php:34
+msgid "If !schedule, ZERO"
+msgstr ""
+
+#: ../schedule_processlist.php:42
+msgid ""
+"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value "
+"is ZEROed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+
+#: ../schedule_processlist.php:45
+msgid "If !schedule, NULL"
+msgstr ""
+
+#: ../schedule_processlist.php:53
+msgid ""
+"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value "
+"is NULLed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+
+#: ../schedule_processlist.php:56
+msgid "If schedule, ZERO"
+msgstr ""
+
+#: ../schedule_processlist.php:64
+msgid ""
+"<p>Validates if time is in range of schedule. If in schedule, value is "
+"ZEROed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+
+#: ../schedule_processlist.php:67
+msgid "If schedule, NULL"
+msgstr ""
+
+#: ../schedule_processlist.php:75
+msgid ""
+"<p>Validates if time is in range of schedule. If in schedule, value is "
+"NULLed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
