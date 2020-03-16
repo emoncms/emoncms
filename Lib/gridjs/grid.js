@@ -161,6 +161,7 @@ Vue.component("grid-data", {
         };
     },
     filters: {
+	// eslint-disable-next-line no-use-object-shorthand
         capitalize: function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
