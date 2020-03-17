@@ -5,10 +5,7 @@
    Compatible with SwiftMailer v5.4.8
    Installation:
    
-   cd /opt/emoncms/modules
-   git clone https://github.com/swiftmailer/swiftmailer.git
-   cd swiftmailer
-   git checkout v5.4.8
+   git -C /opt/emoncms/modules clone -b 'v5.4.8' --single-branch https://github.com/swiftmailer/swiftmailer.git
 
    Copy SMTP settings section from default-settings.ini to settings.ini and ammend as necessary
 
