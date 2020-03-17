@@ -1,18 +1,18 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Emoncms 8.4.0 - Feed\n"
-"POT-Creation-Date: 2015-02-04 02:55+0100\n"
-"PO-Revision-Date: 2015-02-04 02:55+0100\n"
-"Last-Translator: \n"
+"Project-Id-Version: Emoncms 10.2.0 - Feed\n"
+"POT-Creation-Date: 2020-03-15 17:53+0100\n"
+"PO-Revision-Date: 2020-03-16 00:31+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
 "Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
 "Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.4\n"
+"X-Generator: Poedit 2.3\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: _\n"
+"X-Poedit-KeywordsList: _;gettext\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/feedapi_view.php:19
@@ -24,141 +24,717 @@ msgid "Apikey authentication"
 msgstr "Apikey autenticazione"
 
 #: ../../../Views/feedapi_view.php:22
+#, fuzzy
 msgid ""
-"If you want to call any of the following action's when your not logged in, "
-"add an apikey to the URL of your request: &apikey=APIKEY."
+"If you want to call any of the following actions when you're not logged in, "
+"you have the option to authenticate with the API key:"
 msgstr ""
+"Se si desidera chiamare una delle seguenti azioni quando non si è connessi, "
+"è possibile eseguire l'autenticazione con la chiave API:"
 
 #: ../../../Views/feedapi_view.php:23
+#, fuzzy
+msgid "Append to your request URL: &apikey=APIKEY"
+msgstr "Aggiungi all'URL della richiesta: &apikey"
+
+#: ../../../Views/feedapi_view.php:24
+#, fuzzy
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Utilizzare il parametro POST: \"apikey\", \"APIkey\""
+
+#: ../../../Views/feedapi_view.php:25
+#, fuzzy
+msgid ""
+"Add the HTTP header: \"Authorization: Bearer APIKEY\" e.g. curl "
+"http://127.0.0.1/emoncms/feed/value.json?id=1 -H \"Authorization: Bearer "
+"APIKEY\""
+msgstr ""
+"Aggiungere l'intestazione HTTP: \"Authorization: Bearer APIKEY\" ad esempio "
+"curl http://127.0.0.1/emoncms/feed/value.json?id=1 -H \"Authorization: "
+"Bearer APIKEY\""
+
+#: ../../../Views/feedapi_view.php:26
 msgid "Read only:"
 msgstr "Sola lettura:"
 
-#: ../../../Views/feedapi_view.php:27
+#: ../../../Views/feedapi_view.php:29
 msgid "Read & Write:"
-msgstr "Lettura & Scrittura"
+msgstr "Lettura & Scrittura:"
 
-#: ../../../Views/feedapi_view.php:31
+#: ../../../Views/feedapi_view.php:33
 msgid "Html"
 msgstr "Html"
 
-#: ../../../Views/feedapi_view.php:32
+#: ../../../Views/feedapi_view.php:34
 msgid "The feed list view"
 msgstr "La lista dei feed"
 
-#: ../../../Views/feedapi_view.php:33
+#: ../../../Views/feedapi_view.php:35
 msgid "This page"
 msgstr "Questa pagina"
 
-#: ../../../Views/feedapi_view.php:35
+#: ../../../Views/feedapi_view.php:37
 msgid "JSON"
 msgstr "JSON"
 
-#: ../../../Views/feedapi_view.php:36
+#: ../../../Views/feedapi_view.php:38
+#, fuzzy
 msgid "To use the json api the request url needs to include .json"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:37
-msgid "returns a list of public feeds made public by the given user."
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:38 ../../../Views/feedapi_view.php:39
-msgid "returns the present value of a given feed"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:40
-msgid "returns feed data"
-msgstr "ritorna i dati del feed"
+msgstr "Per usare l'API json, l'URL della richiesta deve includere .json"
 
 #: ../../../Views/feedapi_view.php:41
-msgid "returns histogram data"
+#, fuzzy
+msgid "Read feed actions"
+msgstr "Leggere le azioni dei feed"
+
+#: ../../../Views/feedapi_view.php:43
+#, fuzzy
+msgid "List feeds for authenticated user"
 msgstr ""
+"Feed di elenco per l'utente autenticatoList feeds for authenticated user"
 
-#: ../../../Views/feedapi_view.php:42
-msgid "returns kwh consumed in a given power band using histogram data type"
+#: ../../../Views/feedapi_view.php:46
+#, fuzzy
+msgid "List public feeds for the given user"
+msgstr "Elencare i feed pubblici per l'utente specificato"
+
+#: ../../../Views/feedapi_view.php:49
+#, fuzzy
+msgid "Get feed field"
+msgstr "Ottenere il campo del feedGet feed field"
+
+#: ../../../Views/feedapi_view.php:52
+#, fuzzy
+msgid "Get all feed fields"
+msgstr "Ottenere tutti i campi del feedGet all feed fields"
+
+#: ../../../Views/feedapi_view.php:55
+#, fuzzy
+msgid "Get feed meta (PHPFina, PHPFiwa)"
+msgstr "Ottenere feed meta (PHPFina, PHPFiwa)"
+
+#: ../../../Views/feedapi_view.php:60
+#, fuzzy
+msgid "Read feed data actions"
+msgstr "Leggere le azioni dei dati dei feed"
+
+#: ../../../Views/feedapi_view.php:62
+#, fuzzy
+msgid "Last updated time and value for feed"
+msgstr "Ora dell'ultimo aggiornamento e valore per il feed"
+
+#: ../../../Views/feedapi_view.php:65
+#, fuzzy
+msgid "Last value of a given feed"
+msgstr "Ultimo valore di un determinato feed"
+
+#: ../../../Views/feedapi_view.php:68
+#, fuzzy
+msgid "Last value for multiple feeds"
+msgstr "Ultimo valore per più feed"
+
+#: ../../../Views/feedapi_view.php:71
+msgid "Returns feed data"
+msgstr "Ritorna i dati del feed"
+
+#: ../../../Views/feedapi_view.php:74
+#, fuzzy
+msgid "Returns histogram data"
+msgstr "Restituisce i dati dell'istogramma"
+
+#: ../../../Views/feedapi_view.php:77
+#, fuzzy
+msgid "Returns kwh consumed in a given power band using histogram data type"
 msgstr ""
+"Restituisce kwh consumato in una determinata banda di alimentazione "
+"utilizzando il tipo di dati dell'istogramma"
 
-#: ../../../Views/feedapi_view.php:44
-msgid "returns id of a feed given by name"
-msgstr "ritorna l'id di un feed cercato per nome"
-
-#: ../../../Views/feedlist_view.php:23
-msgid "Feed API Help"
-msgstr "Aiuto Feed API"
-
-#: ../../../Views/feedlist_view.php:26 ../../../feed_menu.php:7
-msgid "Feeds"
-msgstr "Feeds"
-
-#: ../../../Views/feedlist_view.php:31
-msgid "No feeds created"
+#: ../../../Views/feedapi_view.php:80
+#, fuzzy
+msgid "Export CSV data (timeformat=1: provides date time string format)"
 msgstr ""
+"Esportare i dati CSV (timeformat: 1: fornisce il formato della stringa di "
+"data e ora)"
 
-#: ../../../Views/feedlist_view.php:32
-msgid ""
-"Feeds are where your monitoring data is stored. The recommended route for "
-"creating feeds is to start by creating inputs (see the inputs tab). Once you "
-"have inputs you can either log them straight to feeds or if you want you can "
-"add various levels of input processing to your inputs to create things like "
-"daily average data or to calibrate inputs before storage. You may want to "
-"follow the link as a guide for generating your request."
+#: ../../../Views/feedapi_view.php:86
+#, fuzzy
+msgid "Write feed data actions"
+msgstr "Scrivere le azioni dei dati dei feedWrite feed data actions"
+
+#: ../../../Views/feedapi_view.php:88
+#, fuzzy
+msgid "Insert new data point"
+msgstr "Inserire un nuovo punto dati"
+
+#: ../../../Views/feedapi_view.php:91
+#, fuzzy
+msgid "Update data point"
+msgstr "Aggiornare il punto dati"
+
+#: ../../../Views/feedapi_view.php:94
+#, fuzzy
+msgid "Delete data point"
+msgstr "Eliminare il punto dati"
+
+#: ../../../Views/feedapi_view.php:99
+#, fuzzy
+msgid "Feed setup actions"
+msgstr "Azioni di impostazione dei feed"
+
+#: ../../../Views/feedapi_view.php:101
+msgid "Create new feed"
+msgstr "Crea nuovo feed"
+
+#: ../../../Views/feedapi_view.php:104
+#, fuzzy
+msgid "Delete existent feed"
+msgstr "Eliminare il feed esistente"
+
+#: ../../../Views/feedapi_view.php:107
+#, fuzzy
+msgid "Update feed field"
+msgstr "Aggiorna campo feed"
+
+#: ../../../Views/feedapi_view.php:110
+#, fuzzy
+msgid "Return total engines size"
+msgstr "Restituire le dimensioni totali dei motori"
+
+#: ../../../Views/feedapi_view.php:113
+#, fuzzy
+msgid "Return buffer points pending write"
 msgstr ""
+"Punti del buffer restituito in attesa di scritturaReturn buffer points "
+"pending write"
 
-#: ../../../Views/feedlist_view.php:32
-msgid "Feed API helper"
-msgstr "Feed API helper"
+#: ../../../Views/feedapi_view.php:118
+#, fuzzy
+msgid "Virtual feed process actions"
+msgstr "Azioni del processo di feed virtuale"
 
-#: ../../../Views/feedlist_view.php:42
-msgid "WARNING deleting a feed is permanent"
-msgstr "ATTENZIONE l'eliminazione di un feed è permanente"
+#: ../../../Views/feedapi_view.php:120
+#, fuzzy
+msgid "Get feed process list"
+msgstr "Ottenere l'elenco dei processi dei feedGet feed process list"
 
-#: ../../../Views/feedlist_view.php:45
-msgid "Are you sure you want to delete this feed?"
-msgstr "Sei sicuro di voler eliminare questo feed?"
+#: ../../../Views/feedapi_view.php:121
+#, fuzzy
+msgid "Set feed process list"
+msgstr "Impostare l'elenco dei processi dei feed"
 
-#: ../../../Views/feedlist_view.php:48
-msgid "Cancel"
-msgstr "Annulla"
+#: ../../../Views/feedapi_view.php:122
+#, fuzzy
+msgid "Reset feed process list"
+msgstr "Reimpostare l'elenco dei processi dei feed"
 
-#: ../../../Views/feedlist_view.php:49
-msgid "Delete permanently"
-msgstr "Elimina definitivamente"
-
-#: ../../../Views/feedlist_view.php:113
-msgid "Close"
-msgstr "Chiudi"
-
-#: ../../../Views/feedlist_view.php:127
-msgid "Id"
-msgstr "Id"
-
-#: ../../../Views/feedlist_view.php:128
-msgid "Name"
-msgstr "Nome"
-
-#: ../../../Views/feedlist_view.php:129
+#: ../../../Views/feedlist_view.php:38
 msgid "Tag"
 msgstr "Tag"
 
-#: ../../../Views/feedlist_view.php:130
-msgid "Datatype"
-msgstr "Tipo dato"
+#: ../../../Views/feedlist_view.php:39
+msgid "Feed ID"
+msgstr "Feed ID"
 
-#: ../../../Views/feedlist_view.php:131
-msgid "Engine"
-msgstr "Motore"
+#: ../../../Views/feedlist_view.php:40
+msgid "Feed Interval"
+msgstr "Intervallo feed"
 
-#: ../../../Views/feedlist_view.php:132
-msgid "Public"
-msgstr "Pubblico"
+#: ../../../Views/feedlist_view.php:41
+msgid "Feed Start Time"
+msgstr "Ora di inizio del feed"
 
-#: ../../../Views/feedlist_view.php:133
-msgid "Size"
-msgstr "Dim."
+#: ../../../Views/feedlist_view.php:42
+msgid "Realtime"
+msgstr "Real Time"
 
-#: ../../../Views/feedlist_view.php:135
-msgid "Updated"
-msgstr "Aggiornato"
+#: ../../../Views/feedlist_view.php:43 ../../../Views/feedlist_view.php:278
+msgid "Daily"
+msgstr "Giornaliero"
 
-#: ../../../Views/feedlist_view.php:136
-msgid "Value"
-msgstr "Valore"
+#: ../../../Views/feedlist_view.php:161
+msgid "Feed API Help"
+msgstr "Aiuto Feed API"
+
+#: ../../../Views/feedlist_view.php:162 ../../../feed_menu.php:4
+msgid "Feeds"
+msgstr "Feeds"
+
+#: ../../../Views/feedlist_view.php:166
+msgid "Collapse"
+msgstr "Riduci"
+
+#: ../../../Views/feedlist_view.php:166
+msgid "Expand"
+msgstr "Espandi"
+
+#: ../../../Views/feedlist_view.php:167
+msgid "Select all"
+msgstr "Seleziona tutto"
+
+#: ../../../Views/feedlist_view.php:167
+msgid "Unselect all"
+msgstr "Deseleziona tutto"
+
+#: ../../../Views/feedlist_view.php:168
+msgid "Edit"
+msgstr "Modifica"
+
+#: ../../../Views/feedlist_view.php:169 ../../../Views/feedlist_view.php:349
+msgid "Delete"
+msgstr "Elimina"
+
+#: ../../../Views/feedlist_view.php:170
+msgid "Download"
+msgstr "Download"
+
+#: ../../../Views/feedlist_view.php:171
+msgid "Graph view"
+msgstr "Visualizzazione grafica"
+
+#: ../../../Views/feedlist_view.php:172
+#, fuzzy
+msgid "Process config"
+msgstr "Configurazione del processo"
+
+#: ../../../Views/feedlist_view.php:178
+msgid "No feeds created"
+msgstr "Nessun feed creato"
+
+#: ../../../Views/feedlist_view.php:179
+#, fuzzy
+msgid ""
+"Feeds are where your monitoring data is stored. The route for creating "
+"storage feeds is to start by creating inputs (see the inputs tab). Once you "
+"have inputs you can either log them straight to feeds or if you want you can "
+"add various levels of input processing to your inputs to create things like "
+"daily average data or to calibrate inputs before storage. Alternatively you "
+"can create Virtual feeds, this is a special feed that allows you to do post "
+"processing on existing storage feeds data, the main advantage is that it "
+"will not use additional storage space and you may modify post processing "
+"list that gets applyed on old stored data. You may want the next link as a "
+"guide for generating your request: "
+msgstr ""
+"I feed sono la posizione in cui vengono archiviati i dati di monitoraggio. "
+"Il percorso per la creazione di feed di archiviazione deve iniziare creando "
+"input (vedere la scheda input). Una volta che hai gli ingressi puoi "
+"registrarli direttamente ai feed o se vuoi puoi aggiungere vari livelli di "
+"elaborazione dell'input ai tuoi input per creare cose come i dati medi "
+"giornalieri o per calibrare gli input prima dell'archiviazione. In "
+"alternativa è possibile creare feed virtuali, questo è un feed speciale che "
+"consente di eseguire la post-elaborazione sui dati dei feed di archiviazione "
+"esistenti, il vantaggio principale è che non utilizzerà spazio di "
+"archiviazione aggiuntivo ed è possibile modificare l'elenco di post-"
+"elaborazione che viene applicato sul vecchio dati memorizzati. Potresti "
+"volere il link successivo come guida per generare la tua richiesta:"
+
+#: ../../../Views/feedlist_view.php:179
+msgid "Feed API helper"
+msgstr "Feed API helper"
+
+#: ../../../Views/feedlist_view.php:183
+#, fuzzy
+msgid "Refresh feed size"
+msgstr "Aggiorna dimensioni feed"
+
+#: ../../../Views/feedlist_view.php:184
+msgid "New virtual feed"
+msgstr "Nuovo feed virtuale"
+
+#: ../../../Views/feedlist_view.php:195
+msgid "Edit feed"
+msgstr "Modifica feed"
+
+#: ../../../Views/feedlist_view.php:198
+#, fuzzy
+msgid "Feed node:"
+msgstr "Nodo feed:"
+
+#: ../../../Views/feedlist_view.php:204
+msgid "Feed name:"
+msgstr "Nome feed:"
+
+#: ../../../Views/feedlist_view.php:207
+msgid "Make feed public:"
+msgstr "Rendi pubblico il feed:"
+
+#: ../../../Views/feedlist_view.php:210
+msgid "Feed Unit"
+msgstr "Unità del feed"
+
+#: ../../../Views/feedlist_view.php:223
+msgid "Other"
+msgstr "Altro"
+
+#: ../../../Views/feedlist_view.php:230 ../../../Views/feedlist_view.php:300
+#: ../../../Views/feedlist_view.php:358
+msgid "Close"
+msgstr "Chiudi"
+
+#: ../../../Views/feedlist_view.php:231 ../../../Views/feedlist_view.php:383
+msgid "Save"
+msgstr "Salva"
+
+#: ../../../Views/feedlist_view.php:241
+msgid "CSV export"
+msgstr "Esportazione CSV"
+
+#: ../../../Views/feedlist_view.php:244
+#, fuzzy
+msgid "Select the time range and interval that you wish to export: "
+msgstr ""
+"Selezionare l'intervallo di tempo e l'intervallo di tempo che si desidera "
+"esportare:"
+
+#: ../../../Views/feedlist_view.php:248
+msgid "Start date & time"
+msgstr "Data e ora di inizio"
+
+#: ../../../Views/feedlist_view.php:255
+msgid "End date & time "
+msgstr "Data e ora di fine "
+
+#: ../../../Views/feedlist_view.php:264
+msgid "Interval"
+msgstr "Intervallo"
+
+#: ../../../Views/feedlist_view.php:266
+msgid "Auto"
+msgstr "Automatico"
+
+#: ../../../Views/feedlist_view.php:267
+msgid "5s"
+msgstr "5s"
+
+#: ../../../Views/feedlist_view.php:268
+msgid "10s"
+msgstr "10s"
+
+#: ../../../Views/feedlist_view.php:269
+msgid "30s"
+msgstr "30s"
+
+#: ../../../Views/feedlist_view.php:270
+msgid "1 min"
+msgstr "1 min"
+
+#: ../../../Views/feedlist_view.php:271
+msgid "5 mins"
+msgstr "5 min"
+
+#: ../../../Views/feedlist_view.php:272
+msgid "10 mins"
+msgstr "10 min"
+
+#: ../../../Views/feedlist_view.php:273
+msgid "15 mins"
+msgstr "15 min"
+
+#: ../../../Views/feedlist_view.php:274
+msgid "30 mins"
+msgstr "30 min"
+
+#: ../../../Views/feedlist_view.php:275
+msgid "1 hour"
+msgstr "1 ora"
+
+#: ../../../Views/feedlist_view.php:276
+msgid "6 hour"
+msgstr "6 ore"
+
+#: ../../../Views/feedlist_view.php:277
+msgid "12 hour"
+msgstr "12 ore"
+
+#: ../../../Views/feedlist_view.php:279
+msgid "Weekly"
+msgstr "Settimanale"
+
+#: ../../../Views/feedlist_view.php:280
+msgid "Monthly"
+msgstr "Mensile"
+
+#: ../../../Views/feedlist_view.php:281
+msgid "Annual"
+msgstr "Annuale"
+
+#: ../../../Views/feedlist_view.php:285
+msgid "Date time format"
+msgstr "Formato data e ora"
+
+#: ../../../Views/feedlist_view.php:289
+#, fuzzy
+msgid "Offset secs (for daily)"
+msgstr "Secondi di scostamento (per giorni)"
+
+#: ../../../Views/feedlist_view.php:294
+#, fuzzy
+msgid ""
+"Selecting an interval shorter than the feed interval (or Auto) will use the "
+"feed interval instead. Averages are only returned for feed engines with "
+"built in averaging."
+msgstr ""
+"Se si seleziona un intervallo più breve dell'intervallo di avanzamento (o "
+"Auto), verrà utilizzato l'intervallo di avanzamento. Le medie vengono "
+"restituite solo per i motori di alimentazione con la media incorporata."
+
+#: ../../../Views/feedlist_view.php:295
+#, fuzzy
+msgid ""
+"Date time in excel format is in user timezone. Offset can be set if "
+"exporting in Unix epoch time format."
+msgstr ""
+"La data in formato Excel è nel fuso orario dell'utente. L'offset può essere "
+"impostato se si esporta in formato ora epoca Unix."
+
+#: ../../../Views/feedlist_view.php:299
+msgid "Estimated download size: "
+msgstr "Dimensioni di download stimate: "
+
+#: ../../../Views/feedlist_view.php:301
+msgid "Export"
+msgstr "Esporta"
+
+#: ../../../Views/feedlist_view.php:311
+msgid "Delete feed"
+msgstr "Elimina feed"
+
+#: ../../../Views/feedlist_view.php:312
+#, fuzzy
+msgid "Deleting a feed is permanent."
+msgstr "ATTENZIONE l'eliminazione di un feed è permanente"
+
+#: ../../../Views/feedlist_view.php:319
+msgid "Clear"
+msgstr "Pulisci"
+
+#: ../../../Views/feedlist_view.php:320
+#, fuzzy
+msgid "Empty feed of all data"
+msgstr "Feed vuoto di tutti i dati"
+
+#: ../../../Views/feedlist_view.php:321
+msgid "Clear Data"
+msgstr "Elimina dati"
+
+#: ../../../Views/feedlist_view.php:327
+msgid "Trim"
+msgstr "Ritaglia"
+
+#: ../../../Views/feedlist_view.php:328
+#, fuzzy
+msgid "Empty feed data up to"
+msgstr "Dati del feed vuoti fino a"
+
+#: ../../../Views/feedlist_view.php:336
+#, fuzzy
+msgid "Set to the start date"
+msgstr "Impostare la data di inizio"
+
+#: ../../../Views/feedlist_view.php:336
+msgid "Start"
+msgstr "Inizio"
+
+#: ../../../Views/feedlist_view.php:337
+msgid "One year ago"
+msgstr "Un anno fa"
+
+#: ../../../Views/feedlist_view.php:337
+msgid "- 1 year"
+msgstr "- 1 anno"
+
+#: ../../../Views/feedlist_view.php:338
+msgid "Two years ago"
+msgstr "Due anni fa"
+
+#: ../../../Views/feedlist_view.php:338
+msgid "- 2 year"
+msgstr "- 2 anni"
+
+#: ../../../Views/feedlist_view.php:339
+#, fuzzy
+msgid "Set to the current date/time"
+msgstr "Impostare la data/ora corrente"
+
+#: ../../../Views/feedlist_view.php:339
+msgid "Now"
+msgstr "Ora"
+
+#: ../../../Views/feedlist_view.php:343
+#, fuzzy
+msgid "Trim Data"
+msgstr "Taglia dati"
+
+#: ../../../Views/feedlist_view.php:350
+#, fuzzy
+msgid ""
+"If you have Input Processlist processors that use this feed, after deleting "
+"it, review that process lists or they will be in error, freezing other "
+"Inputs. Also make sure no Dashboards use the deleted feed."
+msgstr ""
+"Se si dispone di processori Input Processlist che utilizzano questo feed, "
+"dopo averlo eliminato, rivedere gli elenchi di processi o saranno in errore, "
+"il congelamento di altri input. Assicurati inoltre che nessun dashboard "
+"utilizzi il feed eliminato."
+
+#: ../../../Views/feedlist_view.php:351
+#, fuzzy
+msgid ""
+"This is a Virtual Feed, after deleting it, make sure no Dashboard continue "
+"to use the deleted feed."
+msgstr ""
+"Si tratta di un feed virtuale, dopo averlo eliminato, assicurarsi che nessun "
+"Dashboard continuare a utilizzare il feed eliminato."
+
+#: ../../../Views/feedlist_view.php:352
+#, fuzzy
+msgid "Delete feed permanently"
+msgstr "Eliminare il feed in modo permanente"
+
+#: ../../../Views/feedlist_view.php:368
+msgid "New Virtual Feed"
+msgstr "Nuovo feed virtuale"
+
+#: ../../../Views/feedlist_view.php:371
+msgid "Feed Name: "
+msgstr "Nome Feed: "
+
+#: ../../../Views/feedlist_view.php:373
+msgid "Feed Tag: "
+msgstr "Feed Tag: "
+
+#: ../../../Views/feedlist_view.php:375
+msgid "Feed DataType: "
+msgstr "Tipo di dati del feed: "
+
+#: ../../../Views/feedlist_view.php:382
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../../../Views/feedlist_view.php:632
+#, fuzzy
+msgid "Unable to rename multiple feeds"
+msgstr "Impossibile rinominare più feed"
+
+#: ../../../Views/feedlist_view.php:848
+#, fuzzy
+msgid "1 Input process associated with this feed"
+msgstr "1 Processo di input associato a questo feed"
+
+#: ../../../Views/feedlist_view.php:852
+#, fuzzy, php-format
+msgid "%s Input processes associated with these feeds"
+msgstr "%s Processi di input associati a questi feed"
+
+#: ../../../Views/feedlist_view.php:853
+#, php-format
+msgid "%s Feeds selected"
+msgstr "%s Feed selezionati"
+
+#: ../../../Views/feedlist_view.php:923
+msgid "Out of range"
+msgstr "Fuori scala"
+
+#: ../../../Views/feedlist_view.php:1096
+#, fuzzy
+msgid ""
+"This is a new feature. Consider backing up your data before you continue. OK "
+"to continue?"
+msgstr ""
+"Questa è una nuova funzionalità. Prendi in considerazione la possibilità di "
+"eseguire il backup dei dati prima di continuare. OK per continuare?"
+
+#: ../../../Views/feedlist_view.php:1125
+#, fuzzy
+msgid "\"Trim\" not available for this storage engine"
+msgstr "\"Trim\" non disponibile per questo motore di archiviazione"
+
+#: ../../../Views/feedlist_view.php:1203
+#, fuzzy
+msgid "Are you sure you want to delete all the feeds data?"
+msgstr "Sei sicuro di voler eliminare tutti i dati dei feed?"
+
+#: ../../../Views/feedlist_view.php:1226
+#, fuzzy
+msgid "\"Clear\" not available for this storage engine"
+msgstr "\"Cancella\" non disponibile per questo motore di archiviazione"
+
+#: ../../../Views/feedlist_view.php:1232
+msgid "Are you sure you want to delete?"
+msgstr "Sei sicuro di volerlo cancellare?"
+
+#: ../../../Views/feedlist_view.php:1236
+msgid "Feeds Deleted"
+msgstr "Feed eliminati"
+
+#: ../../../Views/feedlist_view.php:1251
+#, fuzzy
+msgid "Total size of used space for feeds:"
+msgstr "Dimensione totale dello spazio utilizzato per i feed:"
+
+#: ../../../Views/feedlist_view.php:1404
+#, fuzzy
+msgid "Please enter a valid start date."
+msgstr "Immettere una data di inizio valida."
+
+#: ../../../Views/feedlist_view.php:1405
+#, fuzzy
+msgid "Please enter a valid end date."
+msgstr "Immettere una data di fine valida."
+
+#: ../../../Views/feedlist_view.php:1406
+#, fuzzy
+msgid "Start date must be further back in time than end date."
+msgstr ""
+"La data di inizio deve essere più indietro nel tempo rispetto alla data di "
+"fine."
+
+#: ../../../Views/feedlist_view.php:1407
+#, fuzzy
+msgid "Please select interval to download."
+msgstr "Selezionare l'intervallo per scaricare."
+
+#: ../../../Views/feedlist_view.php:1419
+#, fuzzy
+msgid "Estimated download file size is large."
+msgstr "Le dimensioni stimate del file di download sono grandi."
+
+#: ../../../Views/feedlist_view.php:1419
+#, fuzzy
+msgid "Server could take a long time or abort depending on stored data size."
+msgstr ""
+"Il server potrebbe richiedere molto tempo o interrompersi a seconda delle "
+"dimensioni dei dati archiviati."
+
+#: ../../../Views/feedlist_view.php:1419
+#, fuzzy
+msgid "Limit is"
+msgstr "Limite di caricamento superato"
+
+#: ../../../Views/feedlist_view.php:1419
+#, fuzzy
+msgid "Try exporting anyway?"
+msgstr "Provare a esportare comunque?"
+
+#: ../../../feed_model.php:1072
+#, fuzzy
+msgid "Invalid proccess for Virtual Feed, try another."
+msgstr "Proccess non valido per il feed virtuale, provare un altro."
+
+#: ../../../feed_model.php:1082
+#, fuzzy
+msgid "Invalid feed"
+msgstr "Alimentazione non valida"
+
+#: ../../../feed_model.php:1084
+#, fuzzy
+msgid "Cannot use virtual feed as source"
+msgstr "Impossibile utilizzare il feed virtuale come origine"
+
+#: ../../../feed_model.php:1091
+msgid "Invalid input"
+msgstr "Valore non valido"
+
+#: ../../../feed_model.php:1132
+#, fuzzy
+msgid "Error setting processlist"
+msgstr "Elenco processi per l'impostazione degli errori"

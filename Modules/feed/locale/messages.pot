@@ -1,0 +1,631 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Feed\n"
+"POT-Creation-Date: 2020-03-16 01:09+0100\n"
+"PO-Revision-Date: 2020-03-15 17:55+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../Views/feedapi_view.php:19
+msgid "Feed API"
+msgstr ""
+
+#: ../Views/feedapi_view.php:21
+msgid "Apikey authentication"
+msgstr ""
+
+#: ../Views/feedapi_view.php:22
+msgid ""
+"If you want to call any of the following actions when you're not logged in, "
+"you have the option to authenticate with the API key:"
+msgstr ""
+
+#: ../Views/feedapi_view.php:23
+msgid "Append to your request URL: &apikey=APIKEY"
+msgstr ""
+
+#: ../Views/feedapi_view.php:24
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr ""
+
+#: ../Views/feedapi_view.php:25
+msgid ""
+"Add the HTTP header: \"Authorization: Bearer APIKEY\" e.g. curl "
+"http://127.0.0.1/emoncms/feed/value.json?id=1 -H \"Authorization: Bearer "
+"APIKEY\""
+msgstr ""
+
+#: ../Views/feedapi_view.php:26
+msgid "Read only:"
+msgstr ""
+
+#: ../Views/feedapi_view.php:29
+msgid "Read & Write:"
+msgstr ""
+
+#: ../Views/feedapi_view.php:33
+msgid "Html"
+msgstr ""
+
+#: ../Views/feedapi_view.php:34
+msgid "The feed list view"
+msgstr ""
+
+#: ../Views/feedapi_view.php:35
+msgid "This page"
+msgstr ""
+
+#: ../Views/feedapi_view.php:37
+msgid "JSON"
+msgstr ""
+
+#: ../Views/feedapi_view.php:38
+msgid "To use the json api the request url needs to include .json"
+msgstr ""
+
+#: ../Views/feedapi_view.php:41
+msgid "Read feed actions"
+msgstr ""
+
+#: ../Views/feedapi_view.php:43
+msgid "List feeds for authenticated user"
+msgstr ""
+
+#: ../Views/feedapi_view.php:46
+msgid "List public feeds for the given user"
+msgstr ""
+
+#: ../Views/feedapi_view.php:49
+msgid "Get feed field"
+msgstr ""
+
+#: ../Views/feedapi_view.php:52
+msgid "Get all feed fields"
+msgstr ""
+
+#: ../Views/feedapi_view.php:55
+msgid "Get feed meta (PHPFina, PHPFiwa)"
+msgstr ""
+
+#: ../Views/feedapi_view.php:60
+msgid "Read feed data actions"
+msgstr ""
+
+#: ../Views/feedapi_view.php:62
+msgid "Last updated time and value for feed"
+msgstr ""
+
+#: ../Views/feedapi_view.php:65
+msgid "Last value of a given feed"
+msgstr ""
+
+#: ../Views/feedapi_view.php:68
+msgid "Last value for multiple feeds"
+msgstr ""
+
+#: ../Views/feedapi_view.php:71
+msgid "Returns feed data"
+msgstr ""
+
+#: ../Views/feedapi_view.php:74
+msgid "Returns histogram data"
+msgstr ""
+
+#: ../Views/feedapi_view.php:77
+msgid "Returns kwh consumed in a given power band using histogram data type"
+msgstr ""
+
+#: ../Views/feedapi_view.php:80
+msgid "Export CSV data (timeformat=1: provides date time string format)"
+msgstr ""
+
+#: ../Views/feedapi_view.php:86
+msgid "Write feed data actions"
+msgstr ""
+
+#: ../Views/feedapi_view.php:88
+msgid "Insert new data point"
+msgstr ""
+
+#: ../Views/feedapi_view.php:91
+msgid "Update data point"
+msgstr ""
+
+#: ../Views/feedapi_view.php:94
+msgid "Delete data point"
+msgstr ""
+
+#: ../Views/feedapi_view.php:99
+msgid "Feed setup actions"
+msgstr ""
+
+#: ../Views/feedapi_view.php:101
+msgid "Create new feed"
+msgstr ""
+
+#: ../Views/feedapi_view.php:104
+msgid "Delete existent feed"
+msgstr ""
+
+#: ../Views/feedapi_view.php:107
+msgid "Update feed field"
+msgstr ""
+
+#: ../Views/feedapi_view.php:110
+msgid "Return total engines size"
+msgstr ""
+
+#: ../Views/feedapi_view.php:113
+msgid "Return buffer points pending write"
+msgstr ""
+
+#: ../Views/feedapi_view.php:118
+msgid "Virtual feed process actions"
+msgstr ""
+
+#: ../Views/feedapi_view.php:120
+msgid "Get feed process list"
+msgstr ""
+
+#: ../Views/feedapi_view.php:121
+msgid "Set feed process list"
+msgstr ""
+
+#: ../Views/feedapi_view.php:122
+msgid "Reset feed process list"
+msgstr ""
+
+#: ../Views/feedlist_view.php:38
+msgid "Tag"
+msgstr ""
+
+#: ../Views/feedlist_view.php:39
+msgid "Feed ID"
+msgstr ""
+
+#: ../Views/feedlist_view.php:40
+msgid "Feed Interval"
+msgstr ""
+
+#: ../Views/feedlist_view.php:41
+msgid "Feed Start Time"
+msgstr ""
+
+#: ../Views/feedlist_view.php:42
+msgid "Realtime"
+msgstr ""
+
+#: ../Views/feedlist_view.php:43 ../Views/feedlist_view.php:278
+msgid "Daily"
+msgstr ""
+
+#: ../Views/feedlist_view.php:161
+msgid "Feed API Help"
+msgstr ""
+
+#: ../Views/feedlist_view.php:162 ../feed_menu.php:4
+msgid "Feeds"
+msgstr ""
+
+#: ../Views/feedlist_view.php:166
+msgid "Collapse"
+msgstr ""
+
+#: ../Views/feedlist_view.php:166
+msgid "Expand"
+msgstr ""
+
+#: ../Views/feedlist_view.php:167
+msgid "Select all"
+msgstr ""
+
+#: ../Views/feedlist_view.php:167
+msgid "Unselect all"
+msgstr ""
+
+#: ../Views/feedlist_view.php:168
+msgid "Edit"
+msgstr ""
+
+#: ../Views/feedlist_view.php:169 ../Views/feedlist_view.php:349
+msgid "Delete"
+msgstr ""
+
+#: ../Views/feedlist_view.php:170
+msgid "Download"
+msgstr ""
+
+#: ../Views/feedlist_view.php:171
+msgid "Graph view"
+msgstr ""
+
+#: ../Views/feedlist_view.php:172
+msgid "Process config"
+msgstr ""
+
+#: ../Views/feedlist_view.php:178
+msgid "No feeds created"
+msgstr ""
+
+#: ../Views/feedlist_view.php:179
+msgid ""
+"Feeds are where your monitoring data is stored. The route for creating "
+"storage feeds is to start by creating inputs (see the inputs tab). Once you "
+"have inputs you can either log them straight to feeds or if you want you can "
+"add various levels of input processing to your inputs to create things like "
+"daily average data or to calibrate inputs before storage. Alternatively you "
+"can create Virtual feeds, this is a special feed that allows you to do post "
+"processing on existing storage feeds data, the main advantage is that it "
+"will not use additional storage space and you may modify post processing "
+"list that gets applyed on old stored data. You may want the next link as a "
+"guide for generating your request: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:179
+msgid "Feed API helper"
+msgstr ""
+
+#: ../Views/feedlist_view.php:183
+msgid "Refresh feed size"
+msgstr ""
+
+#: ../Views/feedlist_view.php:184
+msgid "New virtual feed"
+msgstr ""
+
+#: ../Views/feedlist_view.php:195
+msgid "Edit feed"
+msgstr ""
+
+#: ../Views/feedlist_view.php:198
+msgid "Feed node:"
+msgstr ""
+
+#: ../Views/feedlist_view.php:204
+msgid "Feed name:"
+msgstr ""
+
+#: ../Views/feedlist_view.php:207
+msgid "Make feed public:"
+msgstr ""
+
+#: ../Views/feedlist_view.php:210
+msgid "Feed Unit"
+msgstr ""
+
+#: ../Views/feedlist_view.php:223
+msgid "Other"
+msgstr ""
+
+#: ../Views/feedlist_view.php:230 ../Views/feedlist_view.php:300
+#: ../Views/feedlist_view.php:358
+msgid "Close"
+msgstr ""
+
+#: ../Views/feedlist_view.php:231 ../Views/feedlist_view.php:383
+msgid "Save"
+msgstr ""
+
+#: ../Views/feedlist_view.php:241
+msgid "CSV export"
+msgstr ""
+
+#: ../Views/feedlist_view.php:244
+msgid "Select the time range and interval that you wish to export: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:248
+msgid "Start date & time"
+msgstr ""
+
+#: ../Views/feedlist_view.php:255
+msgid "End date & time "
+msgstr ""
+
+#: ../Views/feedlist_view.php:264
+msgid "Interval"
+msgstr ""
+
+#: ../Views/feedlist_view.php:266
+msgid "Auto"
+msgstr ""
+
+#: ../Views/feedlist_view.php:267
+msgid "5s"
+msgstr ""
+
+#: ../Views/feedlist_view.php:268
+msgid "10s"
+msgstr ""
+
+#: ../Views/feedlist_view.php:269
+msgid "30s"
+msgstr ""
+
+#: ../Views/feedlist_view.php:270
+msgid "1 min"
+msgstr ""
+
+#: ../Views/feedlist_view.php:271
+msgid "5 mins"
+msgstr ""
+
+#: ../Views/feedlist_view.php:272
+msgid "10 mins"
+msgstr ""
+
+#: ../Views/feedlist_view.php:273
+msgid "15 mins"
+msgstr ""
+
+#: ../Views/feedlist_view.php:274
+msgid "30 mins"
+msgstr ""
+
+#: ../Views/feedlist_view.php:275
+msgid "1 hour"
+msgstr ""
+
+#: ../Views/feedlist_view.php:276
+msgid "6 hour"
+msgstr ""
+
+#: ../Views/feedlist_view.php:277
+msgid "12 hour"
+msgstr ""
+
+#: ../Views/feedlist_view.php:279
+msgid "Weekly"
+msgstr ""
+
+#: ../Views/feedlist_view.php:280
+msgid "Monthly"
+msgstr ""
+
+#: ../Views/feedlist_view.php:281
+msgid "Annual"
+msgstr ""
+
+#: ../Views/feedlist_view.php:285
+msgid "Date time format"
+msgstr ""
+
+#: ../Views/feedlist_view.php:289
+msgid "Offset secs (for daily)"
+msgstr ""
+
+#: ../Views/feedlist_view.php:294
+msgid ""
+"Selecting an interval shorter than the feed interval (or Auto) will use the "
+"feed interval instead. Averages are only returned for feed engines with "
+"built in averaging."
+msgstr ""
+
+#: ../Views/feedlist_view.php:295
+msgid ""
+"Date time in excel format is in user timezone. Offset can be set if "
+"exporting in Unix epoch time format."
+msgstr ""
+
+#: ../Views/feedlist_view.php:299
+msgid "Estimated download size: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:301
+msgid "Export"
+msgstr ""
+
+#: ../Views/feedlist_view.php:311
+msgid "Delete feed"
+msgstr ""
+
+#: ../Views/feedlist_view.php:312
+msgid "Deleting a feed is permanent."
+msgstr ""
+
+#: ../Views/feedlist_view.php:319
+msgid "Clear"
+msgstr ""
+
+#: ../Views/feedlist_view.php:320
+msgid "Empty feed of all data"
+msgstr ""
+
+#: ../Views/feedlist_view.php:321
+msgid "Clear Data"
+msgstr ""
+
+#: ../Views/feedlist_view.php:327
+msgid "Trim"
+msgstr ""
+
+#: ../Views/feedlist_view.php:328
+msgid "Empty feed data up to"
+msgstr ""
+
+#: ../Views/feedlist_view.php:336
+msgid "Set to the start date"
+msgstr ""
+
+#: ../Views/feedlist_view.php:336
+msgid "Start"
+msgstr ""
+
+#: ../Views/feedlist_view.php:337
+msgid "One year ago"
+msgstr ""
+
+#: ../Views/feedlist_view.php:337
+msgid "- 1 year"
+msgstr ""
+
+#: ../Views/feedlist_view.php:338
+msgid "Two years ago"
+msgstr ""
+
+#: ../Views/feedlist_view.php:338
+msgid "- 2 year"
+msgstr ""
+
+#: ../Views/feedlist_view.php:339
+msgid "Set to the current date/time"
+msgstr ""
+
+#: ../Views/feedlist_view.php:339
+msgid "Now"
+msgstr ""
+
+#: ../Views/feedlist_view.php:343
+msgid "Trim Data"
+msgstr ""
+
+#: ../Views/feedlist_view.php:350
+msgid ""
+"If you have Input Processlist processors that use this feed, after deleting "
+"it, review that process lists or they will be in error, freezing other "
+"Inputs. Also make sure no Dashboards use the deleted feed."
+msgstr ""
+
+#: ../Views/feedlist_view.php:351
+msgid ""
+"This is a Virtual Feed, after deleting it, make sure no Dashboard continue "
+"to use the deleted feed."
+msgstr ""
+
+#: ../Views/feedlist_view.php:352
+msgid "Delete feed permanently"
+msgstr ""
+
+#: ../Views/feedlist_view.php:368
+msgid "New Virtual Feed"
+msgstr ""
+
+#: ../Views/feedlist_view.php:371
+msgid "Feed Name: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:373
+msgid "Feed Tag: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:375
+msgid "Feed DataType: "
+msgstr ""
+
+#: ../Views/feedlist_view.php:382
+msgid "Cancel"
+msgstr ""
+
+#: ../Views/feedlist_view.php:632
+msgid "Unable to rename multiple feeds"
+msgstr ""
+
+#: ../Views/feedlist_view.php:848
+msgid "1 Input process associated with this feed"
+msgstr ""
+
+#: ../Views/feedlist_view.php:852
+#, php-format
+msgid "%s Input processes associated with these feeds"
+msgstr ""
+
+#: ../Views/feedlist_view.php:853
+#, php-format
+msgid "%s Feeds selected"
+msgstr ""
+
+#: ../Views/feedlist_view.php:923
+msgid "Out of range"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1096
+msgid ""
+"This is a new feature. Consider backing up your data before you continue. OK "
+"to continue?"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1125
+msgid "\"Trim\" not available for this storage engine"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1203
+msgid "Are you sure you want to delete all the feeds data?"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1226
+msgid "\"Clear\" not available for this storage engine"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1232
+msgid "Are you sure you want to delete?"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1236
+msgid "Feeds Deleted"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1251
+msgid "Total size of used space for feeds:"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1404
+msgid "Please enter a valid start date."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1405
+msgid "Please enter a valid end date."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1406
+msgid "Start date must be further back in time than end date."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1407
+msgid "Please select interval to download."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1419
+msgid "Estimated download file size is large."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1419
+msgid "Server could take a long time or abort depending on stored data size."
+msgstr ""
+
+#: ../Views/feedlist_view.php:1419
+msgid "Limit is"
+msgstr ""
+
+#: ../Views/feedlist_view.php:1419
+msgid "Try exporting anyway?"
+msgstr ""
+
+#: ../feed_model.php:1072
+msgid "Invalid proccess for Virtual Feed, try another."
+msgstr ""
+
+#: ../feed_model.php:1082
+msgid "Invalid feed"
+msgstr ""
+
+#: ../feed_model.php:1084
+msgid "Cannot use virtual feed as source"
+msgstr ""
+
+#: ../feed_model.php:1091
+msgid "Invalid input"
+msgstr ""
+
+#: ../feed_model.php:1132
+msgid "Error setting processlist"
+msgstr ""
