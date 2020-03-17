@@ -1,6 +1,18 @@
 <?php
 
-/* A simple helper class for email functions */
+/* A simple helper class for email functions
+
+   Compatible with SwiftMailer v5.4.8
+   Installation:
+   
+   cd /opt/emoncms/modules
+   git clone https://github.com/swiftmailer/swiftmailer.git
+   cd swiftmailer
+   git checkout v5.4.8
+
+   Copy SMTP settings section from default-settings.ini to settings.ini and ammend as necessary
+
+*/
 
 class Email {
     private $log;
@@ -8,7 +20,7 @@ class Email {
     private $message;
 
     function __construct(){
-        global $settings;
+        global $settings, $linked_modules_dir;
         $this->log = new EmonLogger(__FILE__);
 
         $this->message = null;
@@ -16,7 +28,7 @@ class Email {
         $this->have_swift = @include_once ("swift_required.php");
         // path from module lib
         if (!$this->have_swift) {
-           $this->have_swift = @include_once ("Lib/swiftmailer/swift_required.php");
+           $this->have_swift = @include_once ("$linked_modules_dir/swiftmailer/lib/swift_required.php");
         }
         if ($this->have_swift){
             $this->message = Swift_Message::newInstance();
