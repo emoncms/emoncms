@@ -12,6 +12,7 @@ import redis
 import subprocess
 import time
 import signal
+import os
 
 def handle_sigterm(sig, frame):
   print("Got Termination signal, exiting")
@@ -21,10 +22,20 @@ def handle_sigterm(sig, frame):
 signal.signal(signal.SIGTERM, handle_sigterm)
 signal.signal(signal.SIGINT, handle_sigterm)
 
+func getEnv(key, fallback string) string {
+    if value, ok := os.LookupEnv(key); ok {
+        return value
+    }
+    return fallback
+}
+
+REDIS_HOST = getEnv('REDIS_HOST','localhost')
+REDIS_PORT = getEnv('REDIS_PORT', 6379)
+
 def connect_redis():
   while True:
     try:
-      server = redis.Redis()
+      server = redis.Redis(host=REDIS_HOST,port=REDIS_PORT)
       if server.ping():
         print("Connected to redis-server")
         sys.stdout.flush()
@@ -49,6 +60,10 @@ while True:
         flag = server.lpop('emoncms:service-runner')
 
       if flag:
+        try:
+          flag = flag.decode('utf-8')
+        except (UnicodeDecodeError, AttributeError):
+          pass
         print("Got flag: %s\n" % flag)
         sys.stdout.flush()
         script, logfile = flag.split('>')
