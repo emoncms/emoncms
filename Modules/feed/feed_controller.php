@@ -51,7 +51,11 @@ function feed_controller()
                 if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
                 else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
             }
-            else if (isset($_GET['userid'])) return $feed->get_user_public_feeds(get('userid'));
+            else if (isset($_GET['userid'])) {
+                return $feed->get_user_public_feeds(get('userid'));
+            } else {
+                return false;
+            }
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds_with_meta($session['userid']);
@@ -92,6 +96,7 @@ function feed_controller()
             // return $_REQUEST;
             $singular = false;
             $feedids = array();
+            $results = array();
             if (isset($_GET['id'])) {
                 $feedids = explode(",", get('id'));
                 $singular = true;

@@ -405,6 +405,11 @@ var firstLoad = true;
 function update_feed_list() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+    
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
