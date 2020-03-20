@@ -110,12 +110,12 @@ class Feed
             $this->log->error("Engine id '".$engine."' is not supported.");
             return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
         }
-
+        
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
-
+        
         // Histogram engine requires MYSQL
-        if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
+        if ($engine != Engine::MYSQL && $datatype == DataType::HISTOGRAM) $engine = Engine::MYSQL;
         
         $options = array();
         if ($engine == Engine::MYSQL || $engine == Engine::MYSQLMEMORY) {
@@ -125,13 +125,9 @@ class Feed
         }
         else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
         else if ($engine == Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
-        $options_out = null;
-        if (count($options) > 0) {
-            $options_out = preg_replace('/[\{\}\"\\\\]/u', '', json_encode($options));
-        }
         
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,options,unit) VALUES (?,?,?,?,?,?,?,?)");
-        $stmt->bind_param("issiiiss",$userid,$tag,$name,$datatype,$public,$engine,$options_out,$unit);
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
