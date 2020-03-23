@@ -87,14 +87,58 @@
   var timeWindow = (3600000*24.0*7);        //Initial time window
   var start = ((new Date()).getTime())-timeWindow;    //Get start time
   var end = (new Date()).getTime();       //Get end time
+  
+  var feed_interval = false;
 
   vis_feed_data();
 
   function vis_feed_data()
   {
+  
+    $.ajax({
+      url: path+'feed/getmeta.json',
+      data: "&apikey="+apikey+"&id="+feedid,
+      dataType: 'json',
+      async: false,
+      success: function(result) {
+          if (result && result.interval!=undefined) {
+              feed_interval = result.interval;
+          }
+      }
+    });
+  
     var npoints = 800;
     interval = Math.round(((end - start)/npoints)/1000);
-    var graph_data = get_feed_data(feedid,start,end,interval,1,1);
+    
+    var outinterval = 5;
+    if (interval>10) outinterval = 10;
+    if (interval>15) outinterval = 15;
+    if (interval>20) outinterval = 20;
+    if (interval>30) outinterval = 30;
+    if (interval>60) outinterval = 60;
+    if (interval>120) outinterval = 120;
+    if (interval>180) outinterval = 180;
+    if (interval>300) outinterval = 300;
+    if (interval>600) outinterval = 600;
+    if (interval>900) outinterval = 900;
+    if (interval>1200) outinterval = 1200;
+    if (interval>1800) outinterval = 1800;
+    if (interval>3600*1) outinterval = 3600*1;
+    if (interval>3600*2) outinterval = 3600*2;
+    if (interval>3600*3) outinterval = 3600*3;
+    if (interval>3600*4) outinterval = 3600*4;
+    if (interval>3600*5) outinterval = 3600*5;
+    if (interval>3600*6) outinterval = 3600*6;
+    if (interval>3600*12) outinterval = 3600*12;
+    if (interval>3600*24) outinterval = 3600*24;
+    
+    interval = outinterval;
+    if (feed_interval && interval<feed_interval) interval = feed_interval;
+
+    start = Math.floor((start*0.001) / interval) * interval * 1000;
+    end = Math.ceil((end*0.001) / interval) * interval * 1000;
+    
+    var graph_data = get_feed_data(feedid,start,end,interval,1,0);
     var stats = power_stats(graph_data);
     //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 
@@ -137,10 +181,12 @@
   $('#okb').click(function () {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
+    
+    console.log(time+" "+newvalue);
 
     $.ajax({
       url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&skipbuffer=1",
       dataType: 'json',
       async: false,
       success: function() {}
@@ -157,7 +203,9 @@
       data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&value="+multiplyvalue,
       dataType: 'json',
       async: false,
-      success: function() {}
+      success: function(result) {
+          alert(result)
+      }
     });
     vis_feed_data();
   });
@@ -173,7 +221,9 @@
       data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end,
       dataType: 'json',
       async: false,
-      success: function() {}
+      success: function(result) {
+          alert(result)
+      }
     });
     vis_feed_data();
     $('#myModal').modal('hide');

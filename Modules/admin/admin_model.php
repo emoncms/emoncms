@@ -231,7 +231,7 @@ class Admin {
      * @return boolean
      */
     public static function is_Pi() {
-        return @exec('ifconfig | grep b8:27:eb:');
+        return !empty(@exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:"'));
     }
 
     /**
@@ -312,13 +312,18 @@ class Admin {
      * @return string
      */
     public static function mqtt_version() {
+        global $log;
         $v = '?';
         if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $v = "n/a";
         } else {
+            set_error_handler(function($errno, $errstr, $errfile, $errline) use ($log) { 
+                $log->warn(sprintf("%s:%s - %s", basename($errfile), $errline, $errstr));
+            });
             if (file_exists('/usr/sbin/mosquitto')) {
                 $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
             }
+            restore_error_handler();
         }
         return $v;
     }

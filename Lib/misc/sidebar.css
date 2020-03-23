@@ -129,7 +129,7 @@ Sidebar sub menus
 
 
 /* -------------------------------------------------------------------
-   Gravatar icon in toolbar
+Gravatar icon in toolbar
 --------------------------------------------------------------------*/
 ul#right-nav li.menu-user{
   padding-right: .125em;
@@ -288,7 +288,12 @@ top navbar override
 }
 #edit_bookmarks {
   padding: .7em !important;
+  color: #545454!important;
   transition: color .3s ease-out;
+}
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
+    color: #FFF!important;
 }
 
 /* sidebar toggle switch */

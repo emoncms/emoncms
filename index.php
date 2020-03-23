@@ -68,7 +68,7 @@
     );
     
     if ( $mysqli->connect_error ) {
-        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+        echo "Can't connect to database, please verify credentials/configuration in settings.ini<br />";
         if ( $settings["display_errors"] ) {
             echo "Error message: <b>" . $mysqli->connect_error . "</b>";
         }
@@ -116,7 +116,7 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
-              $log->error("Invalid API key '" . $apikey. "' | ".$_SERVER["REMOTE_ADDR"]);
+              $log->error("Invalid API key | ".$_SERVER["REMOTE_ADDR"]);
               exit();
         }
     } else if ($devicekey && (@include "Modules/device/device_model.php")) {
@@ -126,7 +126,7 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
               print "Invalid device key";
-              $log->error("Invalid device key '" . $devicekey. "'");
+              $log->error("Invalid device key");
               exit();
         }
     } else {
@@ -154,10 +154,8 @@
     if ($route->controller=="describe") { 
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        if(file_exists('/home/pi/data/emonbase')) {
-            $type = 'emonbase';
-        } elseif(file_exists('/home/pi/data/emonpi')) {
-            $type = 'emonpi';
+        if ($redis && $redis->exists("describe")) {
+            $type = $redis->get("describe");
         } else {
             $type = 'emoncms';
         }

@@ -149,10 +149,14 @@ var app = new Vue({
 
         },
         toggleSelected: function(event, inputid) {
-            if (event.target.tagName !== 'INPUT' && !this.selectMode) {
-                event.stopPropagation();
-                event.preventDefault();
-                return false;
+            if (event.target.tagName === 'A') {
+                // allow links to be clicked
+            } else {
+                if (event.target.tagName !== 'INPUT' && !this.selectMode) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    return false;
+                }
             }
             let index = this.selected.indexOf(inputid);
             if (index === -1) {
@@ -825,6 +829,12 @@ function update(){
     if (DEVICE_MODULE) {
         var def = $.Deferred()
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
+        
+            if (result.message!=undefined && result.message=="Username or password empty") {
+                window.location.href = "/";
+                return false;
+            }
+        
             // Associative array of devices by nodeid
             for (var z in result) {
                 devices[result[z].nodeid] = result[z]
@@ -846,7 +856,12 @@ function update_inputs() {
     var requestTime = (new Date()).getTime();
     return $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
         if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-          
+        
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+        
         // Associative array of inputs by id
         inputs = {};
         for (var z in data) inputs[data[z].id] = data[z];
@@ -957,8 +972,8 @@ function draw_devices() {
     }
     app.col.A = ((max_name_length * 8) + 30);
     app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
-    app.col.D = ((max_time_length * 8) + 17);
-    app.col.E = ((max_value_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
+    app.col.D = ((max_value_length * 8) + 17);
+    app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
     
     resize_view();

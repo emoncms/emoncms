@@ -120,7 +120,8 @@ function input_controller()
             if (file_exists("Modules/device")) $device_module = true;
             return view("Modules/input/Views/input_view.php", array(
                 'path' => $path,
-                'device_module' => $device_module
+                'device_module' => $device_module,
+                'feedviewpath' => $settings['interface']['feedviewpath']
             ));
         }    
         else if ($device && $route->action == 'schedule') {
