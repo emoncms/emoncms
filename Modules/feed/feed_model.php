@@ -844,9 +844,9 @@ class Feed
         }
 
         if (isset($fields->unit)) {
-	    if ($fields->unit !== filter_var($fields->unit, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW)) {
-		    return array('success'=>false, 'message'=>'invalid characters in feed unit');
-	    }
+        if ($fields->unit !== filter_var($fields->unit, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW)) {
+            return array('success'=>false, 'message'=>'invalid characters in feed unit');
+        }
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);

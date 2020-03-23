@@ -8,7 +8,7 @@ class MysqlMemory extends MysqlTimeSeries
         $name = $table['name'];
         $type = $table['type'];
         
-		$this->log->info("create() Mysql Memory $name");
+        $this->log->info("create() Mysql Memory $name");
         $this->mysqli->query("CREATE TABLE $name (time INT UNSIGNED NOT NULL, data $type, UNIQUE (time)) ENGINE=MEMORY");
         return true;
     }
