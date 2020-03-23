@@ -86,8 +86,8 @@ class MysqlTimeSeries implements engine_methods
         if (empty($this->dir) || !is_dir($this->dir) || !is_writable($this->dir)) {
             return true;
         }
-        else if (file_exists($this->dir.$id.".json")) {
-            $result = "Unable to create MySQL already existing meta file '".$this->dir.$id.".json'";
+        else if (file_exists($this->dir.$id.".meta")) {
+            $result = "Unable to create MySQL already existing meta file '".$this->dir.$id.".meta'";
             $this->log->error($result);
             return $result;
         }
@@ -122,8 +122,8 @@ class MysqlTimeSeries implements engine_methods
         if ($result !== true) {
             return $result;
         }
-        if (!file_exists($this->dir.$id.".json")) {
-            $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$id.".json'");
+        if (!file_exists($this->dir.$id.".meta")) {
+            $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$id.".meta'");
             return $result;
         }
         return $meta;
@@ -131,21 +131,32 @@ class MysqlTimeSeries implements engine_methods
 
     private function write_meta($id, $meta)
     {
-        $file = $id . ".json";
+        $file = $id.".meta";
         if (!is_dir($this->dir) || !is_writable($this->dir) ||
             (is_file($this->dir.$file) and !is_writable($this->dir.$file))) {
-            
-            $result = "Unable to write MySQL meta data file: ".$this->dir.$file;
-            $this->log->error($result);
-            return $result;
+                $result = "unable to write meta data file: ".$this->dir.$file;
+                $this->log->error("write_meta() ".$result);
+                return $result;
         }
         
-        $meta_file = file_put_contents($this->dir.$file, json_encode($meta));
-        if (($meta_file === false) || ($meta_file == -1)) {
-            $result = "Unknown error writing MySQL meta data file: ".$this->dir.$file;
-            $this->log->error($result);
+        $meta_file = @fopen($this->dir.$file, 'w');
+        if (!$meta_file) {
+            $error = error_get_last();
+            $result = "could not write meta data file ".$error['message'];
+            $this->log->error("write_meta() ".$result);
             return $result;
         }
+        if (!flock($meta_file, LOCK_EX)) {
+            $result = "meta data file '".$this->dir.$file."' is locked by another process";
+            $this->log->error("write_meta() ".$result);
+            fclose($meta_file);
+            return $result;
+        }
+        foreach ($meta as $key => $value) {
+            if (is_bool($value)) $value = $value ? 'true' : false;
+            fwrite($meta_file, $key.'='.$value.PHP_EOL);
+        }
+        fclose($meta_file);
         return true;
     }
 
@@ -188,19 +199,17 @@ class MysqlTimeSeries implements engine_methods
 
     private function read_meta($id)
     {
-        $file = "$id.json";
+        $file = "$id.meta";
         if (!file_exists($this->dir.$file)) {
-            $error = "MySQL meta file does not exist '".$this->dir.$file."'";
-            $this->log->warn($error);
+            $error = "meta file does not exist '".$this->dir.$file."'";
+            $this->log->warn("read_meta() ".$error);
             throw new Exception($error);
         }
         
-        $meta_file = file_get_contents($this->dir.$file);
-        $meta = json_decode($meta_file);
-        if (json_last_error() != 0) {
-            $error = "Error reading MySQL meta file '".$this->dir.$file."': ".json_last_error_msg();
-            $this->log->warn($error);
-            throw new Exception($error);
+        $meta_file = parse_ini_file($this->dir.$file, false, INI_SCANNER_TYPED);
+        $meta = new stdClass();
+        foreach ($meta_file as $key => $value) {
+            $meta->$key = $value;
         }
         return $meta;
     }
@@ -881,7 +890,7 @@ class MysqlTimeSeries implements engine_methods
      */
     public function delete($id)
     {
-        $meta = $this->dir."$id.json";
+        $meta = $this->dir."$id.meta";
         if (!file_exists($meta)) {
             unlink($meta);
         }
