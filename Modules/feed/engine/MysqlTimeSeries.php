@@ -53,7 +53,7 @@ class MysqlTimeSeries implements engine_methods
         if (isset($settings['prefix'])) {
             $this->prefix = $settings['prefix'];
         }
-        if (isset($settings['generic']) && !$settings['generic']) {
+        if (isset($settings['generic'])) {
             $this->generic = $settings['generic'];
         }
     }
@@ -76,8 +76,6 @@ class MysqlTimeSeries implements engine_methods
         $name = $table['name'];
         $type = $table['type'];
         
-        return "CREATE TABLE $name (time INT UNSIGNED NOT NULL, data $type, UNIQUE (time)) ENGINE=MYISAM";
-        
         $this->mysqli->query("CREATE TABLE $name (time INT UNSIGNED NOT NULL, data $type, UNIQUE (time)) ENGINE=MYISAM");
         return true;
     }
@@ -85,58 +83,64 @@ class MysqlTimeSeries implements engine_methods
     private function create_meta($id, $options)
     {
         // Check to ensure ne existing feed will be overridden
-        if (!empty($this->dir) && is_dir($this->dir) && is_writable($this->dir) && !file_exists($this->dir.$id.".json")) {
-            if ($this->generic) {
-                $name = ($this->prefix ? $this->prefix : "").trim($id);
-                $type = "FLOAT";
-                $empty = false;
+        if (empty($this->dir) || !is_dir($this->dir) || !is_writable($this->dir)) {
+            return true;
+        }
+        else if (file_exists($this->dir.$id.".json")) {
+            $result = "Unable to create MySQL already existing meta file '".$this->dir.$id.".json'";
+            $this->log->error($result);
+            return $result;
+        }
+        if ($this->generic) {
+            $name = ($this->prefix ? $this->prefix : "").trim($id);
+            $type = "FLOAT";
+            $empty = false;
+        }
+        else {
+            $name = "";
+            if ($this->prefix) {
+                $name .= $this->prefix;
+            }
+            if (empty($options["name"])) {
+                $name .= "".trim($id);
             }
             else {
-                $name = "";
-                if ($this->prefix) {
-                    $name .= $this->prefix;
-                }
-                if (empty($options["name"])) {
-                    $name .= "".trim($id);
-                }
-                else {
-                    $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
-                }
-                $type = !empty($options['type']) ? $options['type'] : "FLOAT";
-                $empty = isset($options['empty']) && boolval($options['empty']);
+                $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
             }
-            // Set initial feed meta data
-            $meta = new stdClass();
-            $meta->table_name = $name;
-            $meta->value_type = $type;
-            $meta->value_empty = $empty;
-            $meta->start_time = 0;
-            
-            // Save meta data
-            $result = $this->write_meta($id, $meta);
-            if ($result !== true) {
-                return $result;
-            }
-            if (!file_exists($this->dir.$id.".json")) {
-                $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$id.".json'");
-                return $result;
-            }
+            $type = !empty($options['type']) ? $options['type'] : "FLOAT";
+            $empty = isset($options['empty']) && boolval($options['empty']);
+        }
+        // Set initial feed meta data
+        $meta = new stdClass();
+        $meta->table_name = $name;
+        $meta->value_type = $type;
+        $meta->value_empty = $empty;
+        $meta->start_time = 0;
+        
+        // Save meta data
+        $result = $this->write_meta($id, $meta);
+        if ($result !== true) {
+            return $result;
+        }
+        if (!file_exists($this->dir.$id.".json")) {
+            $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$id.".json'");
+            return $result;
         }
         return $meta;
     }
 
-    private function write_meta($id, $meta_file)
+    private function write_meta($id, $meta)
     {
         $file = $id . ".json";
         if (!is_dir($this->dir) || !is_writable($this->dir) ||
-            is_file($this->dir.$file) and !is_writable($this->dir.$file)) {
+            (is_file($this->dir.$file) and !is_writable($this->dir.$file))) {
             
             $result = "Unable to write MySQL meta data file: ".$this->dir.$file;
             $this->log->error($result);
             return $result;
         }
         
-        $meta_file = file_put_contents($this->dir.$file, json_encode($meta_file));
+        $meta_file = file_put_contents($this->dir.$file, json_encode($meta));
         if (($meta_file === false) || ($meta_file == -1)) {
             $result = "Unknown error writing MySQL meta data file: ".$this->dir.$file;
             $this->log->error($result);
