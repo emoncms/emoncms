@@ -84,42 +84,41 @@ class MysqlTimeSeries implements engine_methods
 
     private function create_meta($id, $options)
     {
-        if ($this->generic) {
-            $name = ($this->prefix ? $this->prefix : "").trim($id);
-            $type = "FLOAT";
-            $empty = false;
-        }
-        else {
-            $name = "";
-            if ($this->prefix) {
-                $name .= $this->prefix;
-            }
-            if (empty($options["name"])) {
-                $name .= "".trim($id);
+        // Check to ensure ne existing feed will be overridden
+        if (!empty($this->dir) && is_dir($this->dir) && is_writable($this->dir) && !file_exists($this->dir.$id.".json")) {
+            if ($this->generic) {
+                $name = ($this->prefix ? $this->prefix : "").trim($id);
+                $type = "FLOAT";
+                $empty = false;
             }
             else {
-                $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
+                $name = "";
+                if ($this->prefix) {
+                    $name .= $this->prefix;
+                }
+                if (empty($options["name"])) {
+                    $name .= "".trim($id);
+                }
+                else {
+                    $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
+                }
+                $type = !empty($options['type']) ? $options['type'] : "FLOAT";
+                $empty = isset($options['empty']) && boolval($options['empty']);
             }
-            $type = !empty($options['type']) ? $options['type'] : "FLOAT";
-            $empty = isset($options['empty']) && boolval($options['empty']);
-        }
-        // Set initial feed meta data
-        $meta = new stdClass();
-        $meta->table_name = $name;
-        $meta->value_type = $type;
-        $meta->value_empty = $empty;
-        $meta->start_time = 0;
-        
-        // Check to ensure ne existing feed will be overridden
-        $file = "$id.meta";
-        if (!empty($this->dir) && is_dir($this->dir) && is_writable($this->dir) && !file_exists($this->dir.$file)) {
+            // Set initial feed meta data
+            $meta = new stdClass();
+            $meta->table_name = $name;
+            $meta->value_type = $type;
+            $meta->value_empty = $empty;
+            $meta->start_time = 0;
+            
             // Save meta data
             $result = $this->write_meta($id, $meta);
             if ($result !== true) {
                 return $result;
             }
-            if (!file_exists($this->dir.$file)) {
-                $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$file."'");
+            if (!file_exists($this->dir.$id.".json")) {
+                $this->log->error("Creating MySQL meta data failed. Unable to find file '".$this->dir.$id.".json'");
                 return $result;
             }
         }
