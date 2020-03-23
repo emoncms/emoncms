@@ -61,7 +61,13 @@ function feed_controller()
             return $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
-            return $feed->get_id($session['userid'],get("name"));
+            if (isset($_GET["tag"]) && isset($_GET["name"])) {
+                return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
+            } else if (isset($_GET["name"])) {
+                return $feed->get_id($session['userid'],get("name"));
+            } else {
+                return false;
+            }
         } elseif ($route->action == "create" && $session['write']) {
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
