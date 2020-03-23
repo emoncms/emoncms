@@ -289,8 +289,7 @@
                 if(isset($route[$st+1])) {
                     if($basetopic[$st+1] == $route[$st+1]) {
                         $st = $st + 1;
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 } else {
@@ -304,16 +303,16 @@
                     $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
                     
                     $dbinputs = $input->get_inputs($userid);
-                    
+
                     if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
-                    }
-                    else if (isset($route[$st+2])) {
+                    } else if (isset($route[$st+2])) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
                     }
-                    else {
+                    else
+                    {
                         $values = explode(",",$value);
                         $name = 0;
                         foreach ($values as $value) {
@@ -321,18 +320,18 @@
                         }
                     }
                 }
+            } else {
+                $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-            else {
-                $log->error("No matching MQTT topics! None or null inputs will be recorded!");
-            }
-            
+
             if (!isset($dbinputs[$nodeid])) {
                 $dbinputs[$nodeid] = array();
-                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
             }
-            
+
             $tmp = array();
-            foreach ($inputs as $i) {
+            foreach ($inputs as $i)
+            {
                 $userid = $i['userid'];
                 $time = $i['time'];
                 $nodeid = $i['nodeid'];
@@ -349,7 +348,8 @@
                         $log->info(json_encode($result));
                     }
                 }
-                else {
+                else 
+                {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         if (!$inputid) {

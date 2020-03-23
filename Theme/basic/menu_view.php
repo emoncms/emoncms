@@ -11,7 +11,7 @@ global $path, $session, $menu, $user, $settings;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
-
+load_language_files("Theme/locale", "theme_messages");
 ?>
 <?php
 // if not logged in show login button top right
@@ -26,7 +26,7 @@ if ($session['read']) {
 
 <?php
 $menu['tabs'][] = array(
-    'title'=> _("Open/Close Sidebar"),
+    'title'=> dgettext('theme_messages','Open/Close Sidebar'),
     'id' => 'sidebar-toggle',
     'href' => '#',
     'icon' => 'icon-menu',
@@ -73,13 +73,13 @@ $addBookmark = array(
     'icon'=>'star_border',
     'href'=>'#',
     'id'=>'set-bookmark',
-    'title'=>_('Add Bookmark')
+    'title'=>dgettext('theme_messages','Add Bookmark')
 );
 $removeBookmark = array(
     'icon'=>'star',
     'href'=>'#',
     'id'=>'remove-bookmark',
-    'title'=>_('Remove Bookmark')
+    'title'=>dgettext('theme_messages','Remove Bookmark')
 );
 if($isBookmarked){
     $addBookmark['li_class'] = 'd-none';
@@ -102,7 +102,7 @@ if ($session['read']) {
         }
         // build dropdown with above items
         echo makeDropdown(array(
-            'title' => _("Setup"),
+            'title' => dgettext('theme_messages','Setup'),
             'href' => '#',
             'icon' => 'cog',
             'sub_items' => $sub_items
@@ -132,7 +132,7 @@ if(empty($item['title'])) $item['title'] = $item['text'];
 if ($session['admin'] == 1) {
     settype($item['class'],'array');
     $item['class'][] = 'is_admin';
-    $item['title'] .= sprintf(' (%s)',_('Admin'));
+    $item['title'] .= sprintf(' (%s)',dgettext('theme_messages','Admin'));
 }
 
 // add gravitar

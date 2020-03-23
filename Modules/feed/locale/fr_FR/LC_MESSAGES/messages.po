@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-28 22:29+0200\n"
-"PO-Revision-Date: 2019-09-28 22:30+0200\n"
+"POT-Creation-Date: 2019-10-22 20:50+0200\n"
+"PO-Revision-Date: 2019-10-22 20:51+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.2.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/feedapi_view.php:19
@@ -309,6 +309,26 @@ msgstr "Nouveau flux virtuel"
 #: ../../../Views/feedlist_view.php:195
 msgid "Edit feed"
 msgstr "Modifier le flux"
+
+#: ../../../Views/feedlist_view.php:198
+msgid "Feed node:"
+msgstr "Nœud de flux : "
+
+#: ../../../Views/feedlist_view.php:204
+msgid "Feed name:"
+msgstr "Nom de flux :"
+
+#: ../../../Views/feedlist_view.php:207
+msgid "Make feed public:"
+msgstr "Rendre ce flux public"
+
+#: ../../../Views/feedlist_view.php:210
+msgid "Feed Unit"
+msgstr "Unité de flux"
+
+#: ../../../Views/feedlist_view.php:223
+msgid "Other"
+msgstr "Autre"
 
 #: ../../../Views/feedlist_view.php:230 ../../../Views/feedlist_view.php:300
 #: ../../../Views/feedlist_view.php:358
@@ -1113,9 +1133,6 @@ msgstr "Erreur définition liste de traitement"
 
 #~ msgid "Make dashboard private"
 #~ msgstr "Rendre ce tableau de bord privé"
-
-#~ msgid "Make dashboard public"
-#~ msgstr "Rendre ce tableau de bord public"
 
 #~ msgid "Draw"
 #~ msgstr "&Eacute;diter"

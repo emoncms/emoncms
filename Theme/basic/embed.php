@@ -18,7 +18,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     $settings["interface"]["themecolor"] = "standard";
 }
 ?>
-
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">

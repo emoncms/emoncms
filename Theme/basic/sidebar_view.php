@@ -8,24 +8,25 @@
 */
 
 // logic starts here
-// ----------------------------------------------------------------------
+// -------------------------------------------------------
 // creates all second and third level menus with their associated hierarch
 // built up from each Module's `*_menu.php` file
 // will mark the active menu and any parent menus
+/* EXAMPLE MARKUP OF A SINGLE MENU ---------
+http://localhost/emoncms/example/1
 
-/*  EXAMPLE MARKUP OF A SINGLE MENU --------------------------------------
-    http://localhost/emoncms/example/1
+<div id="sidebar_apps" class="sidebar-inner active">
+    <h4 class="sidebar-title">Apps</h4>
+    <ul id="menu-apps" class="nav sidebar-menu">
+        <li class="collapse in active"><a class="active" href="http://localhost/emoncms/example/1" title="Example 1">Example 1</a></li>
+        <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
+    </ul>
+</div>
 
-    <div id="sidebar_apps" class="sidebar-inner active">
-        <h4 class="sidebar-title">Apps</h4>
-        <ul id="menu-apps" class="nav sidebar-menu">
-            <li class="collapse in active"><a class="active" href="http://localhost/emoncms/example/1" title="Example 1">Example 1</a></li>
-            <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
-        </ul>
-    </div>
 
-    EXAMPLE END -----------------------------------------------------------
-*/
+
+--------- EXAMPLE END */
+load_language_files("Theme/locale", "theme_messages");
 
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
@@ -133,7 +134,7 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     }
     // activate active menu item or default menu
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
-    $_close = _('Close');
+    $_close = dgettext('theme_messages','Close');
 
 // logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
 // -------------------------------------------------------
@@ -185,7 +186,7 @@ if($session['write']){ ?>
             <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
                 <?php
                     echo makeLink(array(
-                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+                        'text' => dgettext('theme_messages','Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
                         'class'=> array('d-none',!$expanded ? 'collapsed':''),
                         'href' => '#',
                         'id' => 'sidebar_user_toggle',
@@ -196,8 +197,8 @@ if($session['write']){ ?>
                     ));
                 ?>
                     <h4 class="sidebar-title d-flex justify-content-between align-items-center">
-                        <?php echo _("Bookmarks") ?>
-                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+                        <?php echo dgettext('theme_messages','Bookmarks'); ?>
+                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo dgettext('theme_messages','Edit'); ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
                     </h4>
                     <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
                     <?php 
