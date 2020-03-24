@@ -2,9 +2,9 @@
 
 class MysqlMemory extends MysqlTimeSeries
 {
-    public function create($id, $options)
+    public function create($feedid, $options)
     {
-        $table = $this->get_table(intval($id));
+        $table = $this->get_table(intval($feedid));
         $name = $table['name'];
         $type = $table['type'];
         
