@@ -50,8 +50,6 @@ function lang_http_accept()
 
         if (preg_match($pattern, $lang, $splits)) {
             $langs[] = !empty($splits['subtag']) ? $splits["primarytag"] . "_" . $splits['subtag'] : $splits["primarytag"];
-        } else {
-            // No match
         }
     }
     return $langs;
