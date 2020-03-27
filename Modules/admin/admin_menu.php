@@ -3,7 +3,7 @@
 
     $menu['sidebar']['emoncms'][] = array(
         'text' => '',
-        'path' => ' ',
+        'href' => '#', // items with no path or href are not shown,
         'li_class' => 'divider',
         'icon' => '',
         'order' => 'b'
