@@ -497,9 +497,10 @@ class Feed
                 $val = $lastvalue[$field];
             }
             else if ($this->redis) {
+                if (! $this->redis->hExists("feed:$id",$field)) $this->load_feed_to_redis($id);
                 $val = $this->redis->hget("feed:$id",$field);
             } else {
-                $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
+                $result = $this->mysqli->query("SELECT feeds.*, users.timezone FROM feeds INNER JOIN users ON feeds.userid = users.id  WHERE feeds.id = $id");
                 $row = $result->fetch_array();
                 if (isset($row[$field])) $val = $row[$field];
             }
@@ -627,9 +628,8 @@ class Feed
         if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
         
         // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
+        $timezone = $this->get_field($feedid,'timezone');
+
         $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
         return $data;
     }
@@ -644,9 +644,8 @@ class Feed
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
         // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
+        $timezone = $this->get_field($feedid,'timezone');
+
         $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
         return $data;
     }
@@ -671,8 +670,7 @@ class Feed
         if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
 
         // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
+        $timezone = $this->get_field($feedid,'timezone');
         
         return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
@@ -1160,7 +1158,7 @@ class Feed
     /* Redis helpers */
     private function load_to_redis($userid)
     {
-        $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT feeds.*, users.timezone FROM feeds INNER JOIN users ON feeds.userid = users.id WHERE feeds.userid = $userid");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:feeds:$userid", $row->id);
@@ -1174,6 +1172,7 @@ class Feed
             'size'=>$row->size,
             'engine'=>$row->engine,
             'processList'=>$row->processList,
+            'timezone'=>!empty($row->timezone) ? $row->timezone : 'UTC',
             'unit'=> !empty($row->unit) ? $row->unit : ''
             ));
         }
@@ -1181,7 +1180,7 @@ class Feed
 
     private function load_feed_to_redis($id)
     {
-        $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
+        $result = $this->mysqli->query("SELECT feeds.*, users.timezone FROM feeds INNER JOIN users ON feeds.userid = users.id WHERE feeds.id = $id");
         $row = $result->fetch_object();
         if (!$row) {
             $this->log->warn("Feed model: Requested feed does not exist feedid=$id");
@@ -1197,6 +1196,7 @@ class Feed
             'size'=>$row->size,
             'engine'=>$row->engine,
             'processList'=>$row->processList,
+            'timezone'=>!empty($row->timezone) ? $row->timezone : 'UTC',
             'unit'=> !empty($row->unit) ? $row->unit : ''
         ));
         return true;

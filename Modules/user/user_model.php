@@ -743,6 +743,15 @@ class User
         $stmt->bind_param("si", $timezone, $userid);
         $stmt->execute();
         $stmt->close();
+        $this->invalidate_feeds_cache($userid);
+    }
+
+    public function invalidate_feeds_cache($userid)
+    {
+        if (! $this->redis) return;
+        $feeds = $this->redis->smembers("user:feeds:$userid");
+        foreach($feeds as $feedid)
+            $this->redis->del("feed:$feedid");
     }
 
     //---------------------------------------------------------------------------------------
@@ -786,6 +795,7 @@ class User
             return array('success'=>false, 'message'=>_("Error updating user info"));
         }
         $stmt->close();
+        $this->invalidate_feeds_cache($userid);
     }
 
     // Generates a new random read apikey
