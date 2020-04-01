@@ -230,7 +230,7 @@ class Admin {
      * @return boolean
      */
     public static function is_Pi() {
-        return @exec('ifconfig | grep b8:27:eb:');
+        return !empty(@exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:"'));
     }
 
     /**

@@ -51,13 +51,23 @@ function feed_controller()
                 if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
                 else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
             }
-            else if (isset($_GET['userid'])) return $feed->get_user_public_feeds(get('userid'));
+            else if (isset($_GET['userid'])) {
+                return $feed->get_user_public_feeds(get('userid'));
+            } else {
+                return false;
+            }
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
-            return $feed->get_id($session['userid'],get("name"));
+            if (isset($_GET["tag"]) && isset($_GET["name"])) {
+                return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
+            } else if (isset($_GET["name"])) {
+                return $feed->get_id($session['userid'],get("name"));
+            } else {
+                return false;
+            }
         } elseif ($route->action == "create" && $session['write']) {
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
@@ -92,6 +102,7 @@ function feed_controller()
             // return $_REQUEST;
             $singular = false;
             $feedids = array();
+            $results = array();
             if (isset($_GET['id'])) {
                 $feedids = explode(",", get('id'));
                 $singular = true;

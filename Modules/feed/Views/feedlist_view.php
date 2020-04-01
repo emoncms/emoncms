@@ -405,6 +405,11 @@ var firstLoad = true;
 function update_feed_list() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+    
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
@@ -814,7 +819,7 @@ function showSelectedFeeds(feed_inputs) {
     for(s in selected) {
         titles[s] = selected[s].tag+":"+selected[s].name;
         // virtual feed processes
-        if ( selected[s].hasOwnProperty('processList') && selected[s].processList.length > 0 ) {
+        if ( selected[s].hasOwnProperty('processList') && selected[s].processList && selected[s].processList.length > 0 ) {
             linked.push(selected[s]);
             let virtualProcesses = processlist_ui.decode(selected[s].processList);
             for(p in virtualProcesses) {

@@ -268,3 +268,21 @@ function call_hook($function_name, $args){
         }
     }
 }
+
+// ---------------------------------------------------------------------------------------------------------
+/**
+ * return ip address of requesting machine
+ * the ip address can be stored in different variables by the system.
+ * which variable name may change dependant on different system setups.
+ * this function *should return an acceptible value in most cases
+ * @todo: more testing on different hardware/opperating systems/proxy servers etc.
+ *
+ * @return string
+ */
+function get_client_ip_env() {
+    $ipaddress = filter_var(getenv('REMOTE_ADDR'), FILTER_VALIDATE_IP);
+    if(empty($ipaddress)) {
+        $ipaddress = '';
+    }
+    return $ipaddress;
+}

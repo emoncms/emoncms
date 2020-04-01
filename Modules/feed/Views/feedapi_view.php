@@ -40,7 +40,7 @@
 
 <p><b><?php echo _("Read feed actions");?></b></p>
 <table class="table">
-    <tr><td><?php echo _("List feeds for autenticated user"); ?></td><td>
+    <tr><td><?php echo _("List feeds for authenticated user"); ?></td><td>
 		<a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a>
 	</td></tr>
     <tr><td><?php echo _("List public feeds for the given user"); ?></td><td>
