@@ -75,20 +75,24 @@ function view($filepath, array $args = array())
     }
     return $content;
 }
-
+/** 
+ * strip slashes from GET values or null if not set
+ * 
+ * @param string $index name of $_GET item
+ * 
+ **/
 function get($index)
 {
     $val = null;
     if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    $val = stripslashes($val);
     return $val;
 }
 /** 
  * strip slashes from POST values or null if not set
  * 
- * accepts string values in $_POST[index]
- * accepts array with string values only
+ * @param string $index name of $_POST item
  * 
  **/
 function post($index)
@@ -104,17 +108,30 @@ function post($index)
             if(!empty($SANTIZED_POST[$index])) $val = $SANTIZED_POST[$index];
         }
     }
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    if(is_array($val)) {
+        $val = array_map("stripslashes", $val);
+    } else {
+        $val = stripslashes($val);
+    }
     return $val;
 }
-
+/** 
+ * strip slashes from POST or GET values or null if not set
+ * 
+ * @param string $index name of $_POST or $_GET item
+ * 
+ **/
 function prop($index)
 {
     $val = null;
     if (isset($_GET[$index])) $val = $_GET[$index];
     if (isset($_POST[$index])) $val = $_POST[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    if(is_array($val)) {
+        $val = array_map("stripslashes", $val);
+    } else {
+        $val = stripslashes($val);
+    }
     return $val;
 }
 
@@ -131,7 +148,11 @@ function delete($index) {
     $val = null;
     if (isset($_DELETE[$index])) $val = $_DELETE[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    if(is_array($val)) {
+        $val = array_map("stripslashes", $val);
+    } else {
+        $val = stripslashes($val);
+    }
     return $val;
 }
 function put($index) {
@@ -139,7 +160,11 @@ function put($index) {
     $val = null;
     if (isset($_PUT[$index])) $val = $_PUT[$index];
     
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    if(is_array($val)) {
+        $val = array_map("stripslashes", $val);
+    } else {
+        $val = stripslashes($val);
+    };
     return $val;
 }
 
@@ -182,9 +207,7 @@ function load_language_files($path, $domain='messages'){
 
 function load_menu()
 {
-    $menu = array();
-    $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "l2"=>array());
-    
+    global $menu;
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
@@ -197,34 +220,6 @@ function load_menu()
             }
         }
     }
-
-    return $menu;
-}
-
-function load_sidebar()
-{
-    global $route;
-    $sidebar = array(); // Sidebar 1st level nav
-    $sidebar_footer = array(); // Sidebar footer
-    $sidebar_sub = array(); // Sidebar 2nd level nav
-
-    $dir = $route->controller;
-    $path = implode(DIRECTORY_SEPARATOR, array('Modules', $dir, $dir . "_menu.php"));
-    
-    if (is_file($path)) require $path;
-
-    if (!empty($sidebar)) $sidebar['sidebar'] = $sidebar;
-    if (!empty($subnav)) $sidebar['subnav'] = $subnav;
-    if (!empty($sidebar_footer)) $sidebar['footer'] = $sidebar_footer;
-
-    if (!empty($sidebar_includes)) {
-        foreach($sidebar_includes as $file) {
-            if (file_exists($file)) {
-                $sidebar['includes'][] = view($file);
-            }
-        }
-    }
-    return $sidebar;
 }
 
 function http_request($method,$url,$data) {

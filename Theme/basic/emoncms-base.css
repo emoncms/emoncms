@@ -15,10 +15,10 @@ html,body{height: initial!important}
 
 #wrap main.content-container{
   height: 100%;
-  margin-top: 2.7rem;
+  /*margin-top: 2.7rem;
   margin-left: 15rem;
   margin-bottom: 0;
-  margin-right: 0;
+  margin-right: 0;*/
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }

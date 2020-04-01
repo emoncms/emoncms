@@ -68,7 +68,7 @@
     );
     
     if ( $mysqli->connect_error ) {
-        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+        echo "Can't connect to database, please verify credentials/configuration in settings.ini<br />";
         if ( $settings["display_errors"] ) {
             echo "Error message: <b>" . $mysqli->connect_error . "</b>";
         }
@@ -154,10 +154,8 @@
     if ($route->controller=="describe") { 
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        if(file_exists('/home/pi/data/emonbase')) {
-            $type = 'emonbase';
-        } elseif(file_exists('/home/pi/data/emonpi')) {
-            $type = 'emonpi';
+        if ($redis && $redis->exists("describe")) {
+            $type = $redis->get("describe");
         } else {
             $type = 'emoncms';
         }
@@ -333,10 +331,17 @@
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
-            $menu = load_menu();
+            // Menu
+            $menu = array();
+            // Create initial entry for setup menu
+            $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "l2"=>array());
+            if (!$session["write"]) $menu["setup"]["name"] = "Emoncms";
+            
+            // Itterates through installed modules to load module menus
+            load_menu();
+            // Pass menu through to output view - passed on the js based builder
             $output['menu'] = $menu;
-
-            // debugMenu('sidebar');
+            
             $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
             
             // add css class names to <body> tag based on controller's options

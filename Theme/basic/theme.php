@@ -45,12 +45,34 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
+    <?php echo $svg_icons; // THEME ICONS ?>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-        <div class="menu-l1"><ul></ul></div>
+        <div class="menu-top">
+            <div class="menu-l1"><ul></ul></div>
+            <div class="menu-tr"><ul>
+            
+            <!--
+            <li class="dropdown">
+                <div class="dropdown-toggle" data-toggle="dropdown">
+                    <svg class="icon user"><use xlink:href="#icon-user"></use></svg>
+                </div>
+                <ul class="dropdown-menu">
+                    <li><a href="<?php echo $path; ?>user/view">My Account</a></li>
+                    <li><a href="<?php echo $path; ?>user/logout">Logout</a></li>
+                </ul>
+            </li>-->
+            
+            <li class="menu-user d-flex align-items-center no-gravitar dropdown"><a id="user-dropdown" href="#" title="mqtt1 (Admin)" class="grav-container img-circle is_admin dropdown-toggle d-flex flex-nowrap justify-items-between" data-toggle="dropdown"><svg class="icon user"><use xlink:href="#icon-user"></use></svg> </a><ul class="dropdown-menu"><li><a href="http://localhost/emoncms/user/bookmarks" title="Bookmarks" class="d-flex flex-nowrap justify-items-between"><svg class="icon star"><use xlink:href="#icon-star"></use></svg> <span class="ml-1 flex-fill">Bookmarks</span></a></li>
+<li><a href="http://localhost/emoncms/user/view" title="My Account" class="d-flex flex-nowrap justify-items-between"><svg class="icon user"><use xlink:href="#icon-user"></use></svg> <span class="ml-1 flex-fill">My Account</span></a></li>
+<li class="divider"><a href="#"></a></li>
+<li><a id="logout-link" href="http://localhost/emoncms/user/logout" title="Logout" class="d-flex flex-nowrap justify-items-between"><svg class="icon logout"><use xlink:href="#icon-logout"></use></svg> <span class="ml-1 flex-fill">Logout</span></a></li>
+</ul></li>
+            
+            </ul></div>
+        </div>
         <div class="menu-l2"><ul></ul></div><div class="menu-l3"><ul></ul></div>
-        
         <?php
         $contentContainerClasses[] = 'content-container';
         
@@ -60,6 +82,12 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             $contentContainerClasses[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+            <script>
+            // Draw menu just before drawing content but after defining content-container
+            var path = "<?php echo $path; ?>";
+            var q = "<?php echo $q; ?>"+location.hash;
+            menu.init(<?php echo json_encode($menu); ?>);
+            </script>
             <?php echo $content; ?>
         </main>
     </div><!-- eof #wrap -->
@@ -71,10 +99,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
 
 <!-- ICONS --------------------------------------------- -->
-<?php
-    // THEME ICONS
-    echo $svg_icons;
-?>
+
 
 <?php
     // MODULE ICONS
@@ -95,8 +120,4 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 ?>
 </body>
 </html>
-<script>
-var path = "<?php echo $path; ?>";
-var q = "<?php echo $q; ?>"+location.hash;
-menu.init(<?php echo json_encode($menu); ?>);
-</script>
+

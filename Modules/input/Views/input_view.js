@@ -149,10 +149,14 @@ var app = new Vue({
 
         },
         toggleSelected: function(event, inputid) {
-            if (event.target.tagName !== 'INPUT' && !this.selectMode) {
-                event.stopPropagation();
-                event.preventDefault();
-                return false;
+            if (event.target.tagName === 'A') {
+                // allow links to be clicked
+            } else {
+                if (event.target.tagName !== 'INPUT' && !this.selectMode) {
+                    event.stopPropagation();
+                    event.preventDefault();
+                    return false;
+                }
             }
             let index = this.selected.indexOf(inputid);
             if (index === -1) {

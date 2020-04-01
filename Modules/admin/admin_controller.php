@@ -51,7 +51,7 @@ function admin_controller()
         3 =>'ERROR'
     );
 
-    $path_to_config = 'settings.php';
+    // $path_to_config = 'settings.php';
     
     if ($session['admin']) {
         if ($route->format == 'html') {
@@ -119,8 +119,8 @@ function admin_controller()
                     'v' => 3,
                     'log_levels' => $log_levels,
                     'log_level'=>$settings['log']['level'],
-                    'log_level_label' => $log_levels[$settings['log']['level']],
-                    'path_to_config'=> $path_to_config
+                    'log_level_label' => $log_levels[$settings['log']['level']]
+                    // 'path_to_config'=> $path_to_config
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
@@ -231,8 +231,12 @@ function admin_controller()
                     if (isset($_POST['type'])) $type = $_POST['type'];
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
                     
-                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
-                    return "service-runner trigger sent";
+                    if ($redis) {
+                        $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                        return "service-runner trigger sent";
+                    } else {
+                        return "redis not running";
+                    }
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -326,7 +330,7 @@ function admin_controller()
         }
         else if ($route->format == 'json')
         {
-            if ($route->action == 'redisflush' && $session['write'])
+            if ($route->action == 'redisflush' && $session['write'] && $redis)
             {
                 $redis->flushDB();
                 return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());

@@ -199,6 +199,9 @@ input.checkbox-lg,
 .break-all {
     word-break: break-all;
 }
+.text-nowrap {
+    white-space: nowrap !important;
+}
 [v-cloak] {
     visibility: hidden
 }
@@ -257,7 +260,7 @@ input.checkbox-lg,
                 <div class="select text-center" data-col="B">
                     <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
                 </div>
-                <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
+                <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
                 <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
                 <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
                     <div class="label-container line-height-normal" v-html=input.processlistHtml></div>

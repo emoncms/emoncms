@@ -1,25 +1,25 @@
 /* -------------------------------------- */
 
-.menu-l1 {
+.menu-top {
   height:46px;
   width:100%;
   background-color:#44b3e2;
-  z-index:1;
+  z-index:1001;
   position:fixed;
   top:0px;
 }
 
-.menu-l1 ul {
+.menu-top ul {
   list-style:none;
   margin:0px;
   padding:0px;
 }
 
-.menu-l1 li {
+.menu-top li {
   display: inline-block;
 }
 
-.menu-l1 li div {
+.menu-top li div {
   text-decoration: none;
   color: #fff;
 
@@ -28,26 +28,31 @@
   cursor:pointer;
 }
 
-.menu-l1 li div:hover {
+.menu-top li div:hover {
   background-color:#209ed3;
 }
 
-.menu-l1 .active {
+.menu-top .active {
   background-color:#209ed3;
 }
 
+.menu-l1 { float:left; }
 .menu-text-l1 {}
+
+.menu-tr { float:right; }
 
 /* -------------------------------------- */
 
 .menu-l2 {
-  width:50px;
+  width:240px;
   height:100%;
   background-color:#333;
   display:inline-block;
   position:fixed;
   top:0px;
   padding-top:46px;
+  z-index:1000;
+  transition: all 0.3s ease-out;
 }
 
 .menu-l2 ul {
@@ -59,6 +64,7 @@
 .menu-l2 li {
   border-bottom: 1px solid #444;
   height: 50px;
+  overflow:hidden;  
 }
 
 .menu-l2 li div {
@@ -67,6 +73,8 @@
   display: block;
   padding: 17px;
   cursor:pointer;
+  overflow:hidden;
+
 }
 
 .menu-l2 li div:hover {
@@ -78,7 +86,7 @@
 }
 
 .menu-text-l2 {
-  display:none;
+  /*display:none;*/
 }
 
 /* -------------------------------------- */
@@ -87,11 +95,12 @@
   position:fixed;
   top:0px;
   left:50px;
-  width:250px;
+  width:240px;
   height:100%;
   background-color:#222;
-  display:inline-block;
+  display:none;
   padding-top:46px;
+  z-index:1000;
 }
 
 .menu-l3 ul {
@@ -128,3 +137,52 @@ svg.icon {
   fill: #fff;
   vertical-align: -0.15em;
 }
+
+/* -------------------------------------- */
+
+@media (max-width: 1150px) {
+    .menu-l2 {
+        width:50px;
+    }
+}
+
+/* -------------------------------------------------------------------
+Gravatar icon in toolbar
+--------------------------------------------------------------------*/
+ul#right-nav li.menu-user{
+  padding-right: .125em;
+  padding-left: .125em;
+}
+.navbar .nav > li > a.grav-container {
+  padding: .25em;
+  display: block;
+}
+a.grav-container img.grav {
+  max-height: 1.2em;
+}
+a.grav-container img.grav {
+  border: 2px solid #ccc;
+}
+a.grav-container:hover img.grav {
+  border-color: #dedede;
+}
+a.is_admin.grav-container:hover img.grav {
+  border-color: #efefef;
+}
+.no-gravitar a.grav-container {
+  border-radius: 50%;
+  background: #c5c5c5;
+  padding: 0 !important;
+  text-align: center;
+  width: 1.36em;
+  height: 1.36em;
+  line-height: 1.37em;
+  border: 2px solid #ccc;
+  overflow: hidden;
+  margin: 0.2em;
+}
+.no-gravitar a.grav-container .icon.user {
+  font-size: 1.66em;
+  margin: 0 -.1em;
+}
+/* eof gravitar */

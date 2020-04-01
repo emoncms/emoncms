@@ -223,6 +223,7 @@ listItem;
         </div>
     </section>
     
+    <?php /*
     <section>
         <pre id="logreply-bound"><div id="logreply"></div></pre>
         <?php if(is_writable($path_to_config)) { ?>
@@ -245,6 +246,8 @@ listItem;
             </span>
         <?php } ?>
     </section>
+    */ ?>
+    
     <?php } ?>
 
     <?php 
