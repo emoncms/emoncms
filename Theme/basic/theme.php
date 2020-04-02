@@ -10,7 +10,7 @@
   http://openenergymonitor.org
 */
 global $settings;
-global $ltime,$path,$emoncms_version,$menu;
+global $ltime,$path,$emoncms_version,$menu,$session;
 load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
@@ -39,7 +39,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo time(); ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
@@ -53,26 +53,23 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
             
-            <!--
-            <li class="dropdown">
-                <div class="dropdown-toggle" data-toggle="dropdown">
-                    <svg class="icon user"><use xlink:href="#icon-user"></use></svg>
-                </div>
-                <ul class="dropdown-menu">
-                    <li><a href="<?php echo $path; ?>user/view">My Account</a></li>
-                    <li><a href="<?php echo $path; ?>user/logout">Logout</a></li>
+            <?php if ($session["write"]) { ?>
+            <li class="no-gravitar dropdown" style="font-size:1.5rem"><a id="user-dropdown" href="#" title="<?php echo $session["username"]; ?> (Admin)" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown"><svg class="icon user"><use xlink:href="#icon-user"></use></svg></a>
+                
+                <ul class="dropdown-menu pull-right" style="font-size:1rem">
+                    <li><a href="<?php echo $path; ?>user/bookmarks" title="Bookmarks" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-star"></use></svg> Bookmarks</a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="My Account" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> My Account</a></li>
+                    <li class="divider"><a href="#"></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
                 </ul>
-            </li>-->
-            
-            <li class="menu-user d-flex align-items-center no-gravitar dropdown"><a id="user-dropdown" href="#" title="mqtt1 (Admin)" class="grav-container img-circle is_admin dropdown-toggle d-flex flex-nowrap justify-items-between" data-toggle="dropdown"><svg class="icon user"><use xlink:href="#icon-user"></use></svg> </a><ul class="dropdown-menu"><li><a href="http://localhost/emoncms/user/bookmarks" title="Bookmarks" class="d-flex flex-nowrap justify-items-between"><svg class="icon star"><use xlink:href="#icon-star"></use></svg> <span class="ml-1 flex-fill">Bookmarks</span></a></li>
-<li><a href="http://localhost/emoncms/user/view" title="My Account" class="d-flex flex-nowrap justify-items-between"><svg class="icon user"><use xlink:href="#icon-user"></use></svg> <span class="ml-1 flex-fill">My Account</span></a></li>
-<li class="divider"><a href="#"></a></li>
-<li><a id="logout-link" href="http://localhost/emoncms/user/logout" title="Logout" class="d-flex flex-nowrap justify-items-between"><svg class="icon logout"><use xlink:href="#icon-logout"></use></svg> <span class="ml-1 flex-fill">Logout</span></a></li>
-</ul></li>
+            </li>
+
+
+            <?php } ?>
             
             </ul></div>
         </div>
-        <div class="menu-l2"><ul></ul></div><div class="menu-l3"><ul></ul></div>
+        <div class="menu-l2"><ul></ul><div id="menu-l2-controls"><div></div></div></div><div class="menu-l3"><ul></ul></div>
         <?php
         $contentContainerClasses[] = 'content-container';
         
@@ -85,7 +82,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             <script>
             // Draw menu just before drawing content but after defining content-container
             var path = "<?php echo $path; ?>";
-            var q = "<?php echo $q; ?>"+location.hash;
+            var q = "<?php echo $q; ?>"+location.search+location.hash;
             menu.init(<?php echo json_encode($menu); ?>);
             </script>
             <?php echo $content; ?>

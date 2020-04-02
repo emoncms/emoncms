@@ -5,6 +5,6 @@ if ($session["admin"]) {
         'name' => _("Admin"),
         'href' => 'admin/view',
         'icon' => 'tasks',
-        'order' => 5
+        'order' => 13
     );
 }

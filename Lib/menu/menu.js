@@ -1,49 +1,10 @@
 var menu = {
 
-    /*
-    
-    Example menu object
-    - Includes top bar and sidebar menu's in 3 level menu system
-    - Links can be normal or hash locations
-    
-    {
-        "setup": {
-            "name": "Setup",
-            "order": 1,
-            "icon": "menu",
-            "l2": {
-                "feed":{"name":"Feeds","href":"feed/view","order":2,"icon":"format_list_bulleted"},
-                "graph":{"name":"Graph","href":"graph","icon":"show_chart","order":3,"l3":[
-                    {"name":"A","href":"graph/A"},
-                    {"name":"B","href":"graph/B"},
-                    {"name":"C","href":"graph/C"}
-                ]},
-                "input":{"name":"Inputs","href":"input/view","order":1,"icon":"input"}
-            }
-        },
-        "app": {
-            "name": "Apps",
-            "order": 2,
-            "icon": "apps",
-            "l2": {
-                "1":{"name":"App A","href":"app/view#A","icon":"show_chart","order":1},
-                "2":{"name":"App B","href":"app/view#B","icon":"show_chart","order":2},
-                "3":{"name":"App C","href":"app/view#C","icon":"show_chart","order":3}
-            }
-        },
-        "dashboard": {
-            "name": "Dashboard",
-            "order": 3,
-            "icon": "dashboard",
-            "href": "dashboard/view"
-        }
-    }
-    
-    */
-
-    // Holds the menu object
+    // Holds the menu object collated from the _menu.php menu definition files
     obj: {},
 
+    // Menu visibility and states
+    // These do not currently control the state from startup but are set during startup
     l2_visible: false,
     l3_visible: false,
     l2_min: false,
@@ -58,10 +19,16 @@ var menu = {
     
     is_disabled: false,
     
+    // html5 browser storage: checked in init
+    store: false,
+    
     // ------------------------------------------------------------------
     // Init Menu
     // ------------------------------------------------------------------    
     init: function(obj,session) {
+    
+        // html5 browser storage: used to user preferences for menu
+        if (typeof(Storage)!=="undefined") menu.store = true;
     
         var q_parts = q.split("/");
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
@@ -103,6 +70,13 @@ var menu = {
         menu.draw_l1();
         menu.events();
         menu.resize();
+
+        // Initial state of l2 menu
+        if (menu.store && localStorage.menu_l2_min=='true') {
+            $(".menu-l2").css('transition','none');
+            menu.min_l2();
+            $(".menu-l2").css('transition','all 0.3s ease-out');
+        }
     },
 
     // ------------------------------------------------------------------    
@@ -122,8 +96,11 @@ var menu = {
             let active = ""; if (l1==menu.active_l1) active = "active";
             // Prepare icon
             let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+            // Title
+            let title = item['name'];
+            if (item['title']!=undefined) title = item['title'];
             // Menu item
-            out += '<li><div l1='+l1+' class="'+active+'" title='+item['name']+'> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></li>';
+            out += '<li><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></li>';
             // Build level 3 menu (sidebar sub menu) if active
             // if (active && item['sub']!=undefined) active_l2 = l2;
         }
@@ -149,13 +126,21 @@ var menu = {
             let l2 = keys[z];
             let item = menu.obj[menu.active_l1]['l2'][l2];
             
-            // Prepare active status
-            let active = ""; if (q.indexOf(item['href'])===0) { active = "active"; menu.active_l2 = l2 }
-            // Prepare icon
-            let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
-            // Menu item
-            out += '<li><div l2='+l2+' class="'+active+'" title='+item['name']+'> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></li>';
+            if (item['divider']!=undefined && item['divider']) {
+                out += '<li style="height:'+item['divider']+'"></li>';
+            } else {
+                // Prepare active status
+                let active = ""; if (q.indexOf(item['href'])===0) { active = "active"; menu.active_l2 = l2 }
+                // Prepare icon
+                let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+               // Title
+                let title = item['name'];
+                if (item['title']!=undefined) title = item['title'];
+                // Menu item
+                out += '<li><div l2='+l2+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></li>';
+            }
         }
+        
         $(".menu-l2 ul").html(out); 
         
         if (menu.active_l2 && menu.obj[menu.active_l1]['l2'][menu.active_l2]!=undefined && menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']!=undefined) menu.draw_l3();
@@ -214,6 +199,10 @@ var menu = {
         } else {
             $(".content-container").css("margin","46px auto 0 auto");
         }
+        
+        var ctrl = $("#menu-l2-controls").children().first();
+        ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
+        ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
     },
 
     // If we expand l2 we also hide l3
@@ -227,6 +216,10 @@ var menu = {
         var left = 240;
         if (menu.width<1150) left = 50;
         $(".content-container").css("margin","46px 0 0 "+left+"px");
+
+        var ctrl = $("#menu-l2-controls").children().first();
+        ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
+        ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
     },
 
     // If we show l3, l2_min = false moves back to expanded l2
@@ -254,13 +247,29 @@ var menu = {
         menu.height = $(window).height();
         
         if (!menu.is_disabled) {
-            if (menu.width>=576 && menu.width<992) {
+            if (menu.store && localStorage.menu_l2_min=='true') {
                 menu.min_l2();
-            } else if (menu.width<576) {
-                menu.hide_l2();
-                menu.hide_l3();
             } else {
-                menu.exp_l2();
+            
+                if (menu.width>=576 && menu.width<992) {
+                    menu.min_l2();
+                } else if (menu.width<576) {
+                    menu.hide_l2();
+                    menu.hide_l3();
+                    
+                } else {
+                    if (menu.store && localStorage.menu_l2_min=='true') {
+                    
+                    } else {
+                        if (!menu.l3_visible) menu.exp_l2();
+                    }
+                }
+            }
+            
+            if (menu.width<576) {
+                $(".menu-text-l1").hide();
+            } else {
+                $(".menu-text-l1").show();
             }
         }
     },
@@ -283,7 +292,7 @@ var menu = {
             let item = menu.obj[menu.active_l1];
             // Remove active class from all menu items
             $(".menu-l1 li div").removeClass("active");
-            $(menu).addClass("active");
+            $(".menu-l1 li div[l1="+menu.active_l1+"]").addClass("active");
             // If no sub menu then menu item is a direct link
             if (item['l2']==undefined) {
                 window.location = path+item['href']
@@ -304,6 +313,8 @@ var menu = {
                     }
                 }
             }
+            // Store l2 state to localStorage
+            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
         });
 
         $(".menu-l2").on("click","li div",function(event){
@@ -312,7 +323,7 @@ var menu = {
             // Remove active class from all menu items
             $(".menu-l2 li div").removeClass("active");
             // Set active class to current menu
-            $(menu).addClass("active");
+            $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
             if (item['l3']==undefined) {
                 window.location = path+item['href']
@@ -329,7 +340,19 @@ var menu = {
         $(".menu-l2").on("click","li",function(event){
             event.stopPropagation();
         });
-
+        
+        $("#menu-l2-controls").click(function(event){
+            event.stopPropagation();
+            if (menu.l2_visible && menu.l2_min) {
+                menu.exp_l2();
+            } else {
+                menu.min_l2();
+            }
+            // Store l2 state to localStorage
+            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
+        });
+        
+        /*
         $(".menu-l2").click(function(){
             if (menu.l2_min && menu.l3_visible) {
                 menu.hide_l3();
@@ -338,7 +361,9 @@ var menu = {
             } else {
                 menu.min_l2();
             }
-        });
+            // Store l2 state to localStorage
+            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
+        });*/
         
         $(window).resize(function(){
             menu.resize();
