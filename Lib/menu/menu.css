@@ -63,11 +63,17 @@
   display:inline-block;
   position:fixed;
   top:0px;
-  padding-top:46px;
   z-index:1000;
   transition: all 0.3s ease-out;
   overflow-y: auto;
   overflow-x: hidden;
+  scrollbar-width: none; /* can also be: thin */
+  -ms-overflow-style: none;
+}
+
+.menu-l2-inner {
+  padding-top:46px;
+  min-height: calc(100vh - 96px);
 }
 
 .menu-l2 ul {
@@ -78,7 +84,6 @@
 
 .menu-l2 li {
   border-bottom: 1px solid #444;
-  height: 50px;
   overflow:hidden;  
 }
 
@@ -86,7 +91,7 @@
   text-decoration: none;
   color: #fff;
   display: block;
-  padding: 17px;
+  padding: 17px 17px 17px 17px;
   cursor:pointer;
   overflow:hidden;
 
@@ -105,11 +110,6 @@
 }
 
 #menu-l2-controls {
-  position:fixed;
-  bottom:0px;
-}
-
-#menu-l2-controls div {
   text-decoration: none;
   color: #fff;
   display: block;
@@ -127,7 +127,7 @@
   transition: all 0.3s ease-out;
 }
 
-#menu-l2-controls div:hover {
+#menu-l2-controls:hover {
   background-color:#222;
 }
 
@@ -185,6 +185,12 @@ svg.icon {
 @media (max-width: 1150px) {
     .menu-l2 {
         width:50px;
+    }
+}
+
+@media (max-width: 576px) {
+    .menu-l2 li div {
+      padding: 14px 17px 14px 17px;
     }
 }
 

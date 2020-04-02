@@ -69,7 +69,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             
             </ul></div>
         </div>
-        <div class="menu-l2"><ul></ul><div id="menu-l2-controls"><div></div></div></div><div class="menu-l3"><ul></ul></div>
+        <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls"></div></div><div class="menu-l3"><ul></ul></div>
         <?php
         $contentContainerClasses[] = 'content-container';
         

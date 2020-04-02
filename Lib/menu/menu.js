@@ -200,7 +200,7 @@ var menu = {
             $(".content-container").css("margin","46px auto 0 auto");
         }
         
-        var ctrl = $("#menu-l2-controls").children().first();
+        var ctrl = $("#menu-l2-controls");
         ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
         ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
     },
@@ -217,7 +217,7 @@ var menu = {
         if (menu.width<1150) left = 50;
         $(".content-container").css("margin","46px 0 0 "+left+"px");
 
-        var ctrl = $("#menu-l2-controls").children().first();
+        var ctrl = $("#menu-l2-controls");
         ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
         ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
     },
