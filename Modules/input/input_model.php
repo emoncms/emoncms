@@ -519,7 +519,8 @@ class Input
             $processlist_after = implode(",",$pairsout);
 
             if ($processlist_after!=$processlist) {
-                $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                if ($this->redis)
+                    $this->redis->hset("input:$inputid",'processList',$processlist_after);
                 $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
                 $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
             }
