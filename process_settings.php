@@ -46,7 +46,7 @@ if ($settings_error) {
         echo "$settings_error_title\n";
         echo "$settings_error_message\n";
     } else {
-        echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
+        echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial,serif;'>";
         echo "<h3>$settings_error_title</h3>";
         echo "<p>$settings_error_message</p>";
         echo "</div>";
