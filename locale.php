@@ -105,7 +105,7 @@ function set_lang($language)
 function set_lang_by_user($lang)
 {
     $locale = $lang.'.UTF8';
-    define(LC_MESSAGES, $locale);
+    define('LC_MESSAGES', $locale);
     putenv("LC_ALL=$locale");
     setlocale(LC_ALL, $locale);
 }
