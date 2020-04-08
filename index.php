@@ -152,12 +152,17 @@
 
     // Return brief device descriptor for hub detection
     if ($route->controller=="describe") { 
-        header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
         if ($redis && $redis->exists("describe")) {
             $type = $redis->get("describe");
         } else {
             $type = 'emoncms';
+        }
+        if($route->format === 'json') {
+            header('Content-Type: application/json');
+            $type = json_encode($type);
+        } else {
+            header('Content-Type: text/plain');
         }
         echo $type;
         die;
