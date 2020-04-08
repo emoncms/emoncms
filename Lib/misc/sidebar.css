@@ -24,7 +24,7 @@ Side nav
 .sidebar-inner .divider {
 	min-height: 1rem;
 	height: 1rem;
-	background: #212121 !important;
+	background: #333 !important;
 }
 
 .sidebar-inner .divider a {
