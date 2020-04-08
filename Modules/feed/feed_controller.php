@@ -61,7 +61,13 @@ function feed_controller()
             return $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
-            return $feed->get_id($session['userid'],get("name"));
+            if (isset($_GET["tag"]) && isset($_GET["name"])) {
+                return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
+            } else if (isset($_GET["name"])) {
+                return $feed->get_id($session['userid'],get("name"));
+            } else {
+                return false;
+            }
         } elseif ($route->action == "create" && $session['write']) {
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
@@ -121,7 +127,6 @@ function feed_controller()
                                 if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
                                 if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
                                 
-                                
                                 if (isset($_GET['interval'])) {
                                     $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                                 } else if (isset($_GET['mode'])) {
@@ -141,12 +146,15 @@ function feed_controller()
                             }
                         }
                     } else {
-                        $missing = $feedid;
+                        $missing[] = intval($feedid); //add feed id to array of missing ids
                     }
                 }
                 if (!empty($missing)) {
                     // return error if any feed ids not found
-                    return array('success'=>false, 'message'=> count($missing) .' feeds do not exist');
+                    if (count($missing) === 1) // if just one feed not found, return its id
+                        return array('success'=>false, 'message'=> "feed $missing[0] does not exist", 'feeds' => $missing);
+                    else
+                        return array('success'=>false, 'message'=> count($missing) .' feeds do not exist', 'feeds' => $missing);
                 } else {
                     
                     if ($singular && count($results)==1) {

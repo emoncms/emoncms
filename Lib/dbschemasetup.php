@@ -48,7 +48,10 @@ function db_schema_diff_datatype($spec, $current)
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
-
+    // check if field Type changed
+    if($spec['type'] !== $current['Type']) {
+        $changed = true;
+    }
     // Null handling is a little involved
     if (isset($spec['Null']) && ($spec['Null'] === false || $spec['Null'] === "NO"))
         $spec_null = "NO";
@@ -130,6 +133,20 @@ function db_schema_make_index($table, $field) {
 }
 
 //
+// Make a compound key if the schema has more than one key
+//
+function db_schema_make_compound_key($schema)
+{
+    $fields = array();
+    foreach ($schema as $field => $spec) {
+        if (isset($spec['Key']) && $spec['Key']) array_push($fields, "`$field`");
+    }
+    if(count($fields) < 2) return "";
+    $fields = join(",", $fields);
+    return ", PRIMARY KEY ($fields)";
+}
+
+//
 // Create a new table using the given schema
 //
 function db_schema_make_table($mysqli, $table, $schema, &$operations)
@@ -137,15 +154,15 @@ function db_schema_make_table($mysqli, $table, $schema, &$operations)
     // If table doesn't exist, create it from scratch
     $fields = array();
     $indexes = array();
-
+    $pk = db_schema_make_compound_key($schema);
     foreach ($schema as $field => $spec) {
-        $fields[] = db_schema_make_field($mysqli, $field, $spec);
+        $fields[] = db_schema_make_field($mysqli, $field, $spec, $pk === "");
         if (isset($spec['Index'])) {
             $indexes[] = $field;
         }
     }
 
-    $operations[] = "CREATE TABLE `$table` (" .join(', ', $fields). ") ENGINE=MYISAM";
+    $operations[] = "CREATE TABLE `$table` (" .join(', ', $fields). $pk . ") ENGINE=MYISAM";
 
     foreach ($indexes as $field) {
         $operations[] = db_schema_make_index($table, $field);
@@ -172,7 +189,7 @@ function db_schema_add_column($mysqli, $table, $field, $spec, &$operations)
 //
 function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
 {
-    $result = $mysqli->query("DESCRIBE $table `$field`");
+    $result = $mysqli->query("DESCRIBE `$table` `$field`");
     $current = $result->fetch_array();
 
     // Check if we 1. need to change type 2. need to add a primary key

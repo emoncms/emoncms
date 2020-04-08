@@ -994,7 +994,6 @@ class Process_ProcessList
             // kWh calculation
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
             $new_kwh = $last_kwh + $kwh_inc;
-            $this->log->info("power_to_kwh() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_time=$last_time time_now=$time_now");
         } else {
             // in the event that redis is flushed the last time will
             // likely be > 7200s ago and so kwh inc is not calculated
@@ -1040,7 +1039,6 @@ class Process_ProcessList
             # We are working in a new slot (new day) so don't increment it with the data from yesterday
             $new_kwh = $kwh_inc;
         }
-        $this->log->info("power_to_kwhd() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_slot=$last_slot current_slot=$current_slot");
         $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
@@ -1177,9 +1175,6 @@ class Process_ProcessList
     //---------------------------------------------------------------------------------
     public function histogram($feedid, $time_now, $value)
     {
-
-        ///return $value;
-
         $feedname = "feed_" . trim($feedid) . "";
         $new_kwh = 0;
         // Allocate power values into pots of varying sizes
@@ -1376,7 +1371,6 @@ class Process_ProcessList
 
             $padding_mode = "join";
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
-            
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 

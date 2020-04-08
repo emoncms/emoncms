@@ -578,28 +578,36 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
             // Add redisbuffer cache if available
-            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
+            if ($data && $skipmissing) {
+                $bufferstart=end($data)[0];
+            } else {
+                $bufferstart = $start;
+            }
             
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
-                if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
                     $outintervalms = $outinterval * 1000;
 
                     // Convert buffered data to associative array - by timestamp
                     $bufferdata_assoc = array();
                     for ($z=0; $z<count($bufferdata); $z++) {
-                        $time = floor($bufferdata[$z][0]/$outintervalms)*$outintervalms;
+                        $time = floor($bufferdata[$z][0]*0.001/$outinterval)*$outinterval;
                         $bufferdata_assoc[$time] = $bufferdata[$z][1];
                     }
-
+                    
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
                         $time = $data[$z][0];
-                        if (isset($bufferdata_assoc[$time]) && $data[$z][1]==null) $data[$z][1] = $bufferdata_assoc[$time];
+                        if (isset($bufferdata_assoc["".$time*0.001]) && $data[$z][1]==null) {
+                            $data[$z][1] = $bufferdata_assoc["".$time*0.001];
+                        }
                     }
+                    
                 } else {
                     $data = array_merge($data, $bufferdata);
                 }
