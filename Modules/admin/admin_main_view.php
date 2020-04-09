@@ -223,10 +223,9 @@ listItem;
         </div>
     </section>
     
-    <?php /*
     <section>
         <pre id="logreply-bound"><div id="logreply"></div></pre>
-        <?php if(is_writable($path_to_config)) { ?>
+        <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
         <div id="log-level" class="dropup btn-group">
             <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
             <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
@@ -246,7 +245,6 @@ listItem;
             </span>
         <?php } ?>
     </section>
-    */ ?>
     
     <?php } ?>
 
