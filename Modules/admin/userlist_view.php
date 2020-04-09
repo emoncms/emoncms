@@ -46,6 +46,7 @@
 
 <table class="table">
   <tr>
+    <th><?php echo _("Edit"); ?></th>
     <th><?php echo _("Id"); ?></th>
     <th><?php echo _("Username"); ?></th>
     <th><?php echo _("Email"); ?></th>
@@ -143,7 +144,8 @@ function table_draw() {
       } else {
           out += "<tr>";
       }
-      out += "<td><a href='../admin/setuser?id="+users[z].id+"'>"+users[z].id+"</a></td>";
+      out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id="+users[z].id+"'>view</a></td>";
+      out += "<td>"+users[z].id+"</td>";
       out += "<td>"+users[z].username+"</td>";
       out += "<td>"+users[z].email+"</td>";
       out += "<td>"+users[z].feeds+"</td>";
