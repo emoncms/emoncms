@@ -95,7 +95,7 @@ body{padding:0!important}
 #feeds-to-delete { font-style:italic; }
 
 #deleteFeedModalSelectedItems{
-    postion:absolute;
+    position:absolute;
     overflow:hidden;
     text-align:left;
     background: #f5f5f5;
