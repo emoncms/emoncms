@@ -19,9 +19,22 @@ class Param
      * @var bool
      */
     public $sha256base64_response = false;
+
+    /**
+     * @var
+     */
     private $route;
+
+    /**
+     * @var
+     */
     private $user;
+
+    /**
+     * @var array
+     */
     private $params = array();
+
     /**
      * Associative array to make search fast
      * @var array

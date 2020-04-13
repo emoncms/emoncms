@@ -14,7 +14,7 @@
 
 var _SETTINGS = {
     showErrors: true // false to allow errors to be handled by browser developer console
-}
+};
 
 /**
  * POLYFILLS
@@ -42,8 +42,8 @@ if(!document.currentScript) {
  */
 var path = (function() {
     // if [data-path] not in initial <script> tag, this file is in the /Lib directory
-    const filePath = "Lib/emoncms.js"
-    var _path = document.currentScript.dataset.path
+    const filePath = "Lib/emoncms.js";
+    var _path = document.currentScript.dataset.path;
     /**
      * remove the filePath from given url
      * @param {string} src url of current file
@@ -67,11 +67,11 @@ $(function(){
     // trigger jquery "window.resized" custom event after debounce delay
     var resizeTimeout = false;
     window.addEventListener('resize', function(event) {
-        clearTimeout(resizeTimeout)
+        clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(function() {
             $.event.trigger("window.resized");
         }, 200);
-    })
+    });
 });
 
 // Display alert if js error encountered
@@ -96,9 +96,9 @@ window.onerror = function(msg, source, lineno, colno, error) {
                 // if apikey first parameter replace with '?'
                 // if apikey not first parameter replace with ''
                 if(match[2]==="&") {
-                    maskedSource = source.replace(match[0], "")
+                    maskedSource = source.replace(match[0], "");
                 } else {
-                    maskedSource = source.replace(match[0], "?")
+                    maskedSource = source.replace(match[0], "?");
                 }
             }
             var messages = [
@@ -115,5 +115,5 @@ window.onerror = function(msg, source, lineno, colno, error) {
             alert(messages.join("\n"));
         }
         return true; // true == prevents the firing of the default event handler.
-    };
-}
+    }
+};

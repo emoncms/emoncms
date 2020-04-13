@@ -1,13 +1,17 @@
 <?php
-/*
-    All Emoncms code is released under the GNU General Public License v3.
-    See COPYRIGHT.txt and LICENSE.txt.
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project: http://openenergymonitor.org
-*/
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
+
+defined('EMONCMS_EXEC') or die;
 
 global $path, $session, $route, $user;
+
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
@@ -20,10 +24,11 @@ if (!isset($session['profile'])) {
  * @param array $params assoc array: text,path,title,css,id,icon
  * @return string <li><a> link
  */
-function makeListLink($params) {
-    global $route, $session;
+function makeListLink($params)
+{
+    global $session;
     $activeClassName = 'active';
-    
+
     $public = getKeyValue('public', $params);
     $public_only = getKeyValue('public_only', $params);
     $admin_only = getKeyValue('admin_only', $params);
@@ -32,9 +37,9 @@ function makeListLink($params) {
     $is_admin = isset($session['admin']) && $session['admin'];
 
     $li_id = getKeyValue('li_id', $params);
-    $li_class = array_filter( (array) getKeyValue('li_class', $params));
-    $li_style = array_filter( (array) getKeyValue('li_style', $params));
-    $li_attr = array_filter( (array) getKeyValue('li_attr', $params));
+    $li_class = array_filter((array)getKeyValue('li_class', $params));
+    $li_style = array_filter((array)getKeyValue('li_style', $params));
+    $li_attr = array_filter((array)getKeyValue('li_attr', $params));
 
     $id = getKeyValue('id', $params);
     $text = getKeyValue('text', $params);
@@ -43,153 +48,164 @@ function makeListLink($params) {
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
     $order = getKeyValue('order', $params);
-    
-    $active = array_filter( (array) getKeyValue('active', $params));
-    $sub_items = array_filter( (array) getKeyValue('sub_items', $params));
-    $style = array_filter( (array) getKeyValue('style', $params));
-    $class = array_filter( (array) getKeyValue('class', $params));
-    $data = array_filter( (array) getKeyValue('data', $params));
-    $attr = array_filter( (array) getKeyValue('attr', $params));
+
+    $active = array_filter((array)getKeyValue('active', $params));
+    $sub_items = array_filter((array)getKeyValue('sub_items', $params));
+    $style = array_filter((array)getKeyValue('style', $params));
+    $class = array_filter((array)getKeyValue('class', $params));
+    $data = array_filter((array)getKeyValue('data', $params));
+    $attr = array_filter((array)getKeyValue('attr', $params));
     $data['active'] = $active;
-    
-    if(is_current($path) || is_current($active) || is_active($params)){
+
+    if (is_current($path) || is_current($active) || is_active($params)) {
         $li_class[] = $activeClassName;
     }
 
-    if(empty($title)) $title = $text;
+    if (empty($title)) $title = $text;
 
     $link = makeLink(array(
-        'text'=> $text,
-        'title'=> $title,
-        'class'=> $class,
-        'id'=> $id,
-        'icon'=> $icon,
-        'href'=> $href,
-        'path'=> $path,
-        'active'=> $active,
-        'data'=> $data,
-        'style'=> $style,
-        'attr'=> $attr,
-        'order'=>$order
+        'text' => $text,
+        'title' => $title,
+        'class' => $class,
+        'id' => $id,
+        'icon' => $icon,
+        'href' => $href,
+        'path' => $path,
+        'active' => $active,
+        'data' => $data,
+        'style' => $style,
+        'attr' => $attr,
+        'order' => $order
     ));
     $attr = buildAttributes(array_merge($li_attr, array(
         'id' => $li_id,
         'class' => implode(' ', array_unique($li_class)),
         'style' => implode(';', $li_style)
     )));
-    if(!empty($attr)) $attr = ' '.$attr;
+    if (!empty($attr)) $attr = ' ' . $attr;
 
-    if(!empty($sub_items)) {
-        foreach($sub_items as $key=>$item) {
-            if(is_array($item)) {
+    if (!empty($sub_items)) {
+        foreach ($sub_items as $key => $item) {
+            if (is_array($item)) {
                 $sub_items[$key] = makeListLink($item);
             }
         }
-        $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
+        $link .= '<ul class="dropdown-menu">' . implode("\n", $sub_items) . '</ul>';
     }
-    if(($admin_only && $is_admin || !$admin_only) && $logged_in && !$public_only || !$logged_in && $public) {
+    if (($admin_only && $is_admin || !$admin_only) && $logged_in && !$public_only || !$logged_in && $public) {
         return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
     }
 }
+
 /**
  * returns true if current view's url matches passed $path(s)
  *
- * @param mixed $_url single or list of urls to check
- * @return boolean
+ * @param array $_url single or list of urls to check
+ * @return bool
  */
-function is_current($_url = array()) {
+function is_current($_url = array())
+{
     $current_url = getAbsoluteUrl($_SERVER['REQUEST_URI']);
-    foreach((array) $_url as $search) {
+    foreach ((array)$_url as $search) {
         $search_url = getAbsoluteUrl($search);
-        if($search_url === $current_url) {
+        if ($search_url === $current_url) {
             return true;
         }
     }
     return false;
 }
+
 /**
  * returns true if current view's path matches passed $path(s)
  *
- * @param mixed $path - array can be passed to match multiple paths
- * @return boolean
+ * @param $path array can be passed to match multiple paths
+ * @return bool
  */
-function path_is_current($path) {
+function path_is_current($path)
+{
     $current_path = current_route();
-    foreach((array) $path as $search) {
+    foreach ((array)$path as $search) {
         $search_path = parse_url(getAbsoluteUrl($search), PHP_URL_PATH);
-        if ($search_path === $current_path || count(explode('/',$search_path)) > 3 
-            && strpos($current_path, $search_path) === 0)
-        {
+        if ($search_path === $current_path || count(explode('/', $search_path)) > 3
+            && strpos($current_path, $search_path) === 0) {
             return true;
         }
     }
     return false;
 }
+
 /**
  * return the current route path
  *
- * @return string
+ * @return string|string[]
  */
-function current_route() {
+function current_route()
+{
     global $path;
-    if ( (!empty($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') ||
-         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ||
-         (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443') ) {
+    if ((!empty($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') ||
+        (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ||
+        (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443')) {
         $parts['scheme'] = 'https';
     } else {
         $parts['scheme'] = 'http';
     }
-    if(!empty($_SERVER['SERVER_NAME'])) {
+    if (!empty($_SERVER['SERVER_NAME'])) {
         $parts['host'] = $_SERVER['SERVER_NAME'];
     } elseif (!empty($_SERVER['HTTP_HOST'])) {
         $parts['host'] = $_SERVER['HTTP_HOST'];
     }
-    if(!empty($_SERVER['REQUEST_URI'])) {
+    if (!empty($_SERVER['REQUEST_URI'])) {
         $parts['path'] = $_SERVER['REQUEST_URI'];
     }
-    $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') . 
-    ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') . 
-    (isset($parts['host']) ? "{$parts['host']}" : '') . 
-    (isset($parts['port']) ? ":{$parts['port']}" : '') . 
-    (isset($parts['path']) ? "{$parts['path']}" : '') . 
-    (isset($parts['query']) ? "?{$parts['query']}" : '');
+    $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') .
+        ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') .
+        (isset($parts['host']) ? "{$parts['host']}" : '') .
+        (isset($parts['port']) ? ":{$parts['port']}" : '') .
+        (isset($parts['path']) ? "{$parts['path']}" : '') .
+        (isset($parts['query']) ? "?{$parts['query']}" : '');
 
     // return the app's route (not full url)
-    $current_route = str_replace($path,'',$url);
-    return filter_var($current_route, FILTER_VALIDATE_URL) ? $current_route: '';
+    $current_route = str_replace($path, '', $url);
+    return filter_var($current_route, FILTER_VALIDATE_URL) ? $current_route : '';
 }
+
 /**
  * return $array[$key] value if not empty
  * else return empty string
  *
- * @param string $key
- * @param array $array
- * @return mixed
+ * @param $key
+ * @param $array
+ * @return mixed|string
  */
-function getKeyValue($key, $array) {
+function getKeyValue($key, $array)
+{
     return isset($array[$key]) ? $array[$key] : '';
 }
+
 /**
  * return string with new line and multiple tabs
  * eg: tab(3) would return "\n\t\t\t"
  *
- * @param integer $num number of tabs to return
+ * @param $num number of tabs to return
  * @return string
  */
-function tab($num){
+function tab($num)
+{
     $tabspaces = 4;
-    return PHP_EOL.str_pad('',$num*$tabspaces," ");
+    return PHP_EOL . str_pad('', $num * $tabspaces, " ");
 }
+
 /**
  * build <a> link with 'active' class added if is current page
  * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data|public|public_only]
  *
- * @param array $params associative array
- * @return string <a> tag
+ * @param $params array
+ * @return mixed|string <a> tag
  */
-function makeLink($params) {
+function makeLink($params)
+{
     $activeClassName = 'active';
-    
+
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
@@ -198,55 +214,56 @@ function makeLink($params) {
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
     $order = getKeyValue('order', $params);
-    
-    $style = array_filter((array) getKeyValue('style', $params));
-    $class = array_filter((array) getKeyValue('class', $params));
-    $data = array_filter((array) getKeyValue('data', $params));
-    $attr = array_filter((array) getKeyValue('attr', $params));
+
+    $style = array_filter((array)getKeyValue('style', $params));
+    $class = array_filter((array)getKeyValue('class', $params));
+    $data = array_filter((array)getKeyValue('data', $params));
+    $attr = array_filter((array)getKeyValue('attr', $params));
 
     // create url if pre-built url not passed
-    if(empty($href)) $href = getAbsoluteUrl($path);
-    
+    if (empty($href)) $href = getAbsoluteUrl($path);
+
     // append icon to link text
     if (!empty($icon)) {
         $icon = sprintf('<svg class="icon %1$s"><use xlink:href="#icon-%1$s"></use></svg> ', $icon);
-        if(empty($text)){
+        if (empty($text)) {
             $text = sprintf('%s', $icon);
-        }else{
+        } else {
             $text = sprintf('%s<span class="ml-1 flex-fill">%s</span>', $icon, $text);
         }
         $class[] = 'd-flex flex-nowrap justify-items-between';
     }
     // add active class to link if link is to current page
     if (!empty($active)) {
-        if(is_current($active)){
+        if (is_current($active)) {
             $class[] = $activeClassName;
         }
-    } elseif(is_current($path)){
+    } elseif (is_current($path)) {
         $class[] = $activeClassName;
     }
-    
+
     // create the <a> tag attribute list
     $attr = buildAttributes(array_merge($attr, array(
-        'id'=>$id,
-        'href'=>$href,
-        'style'=>implode(';', $style),
-        'title'=>$title,
-        'class'=>implode(' ', $class),
-        'data'=>$data
+        'id' => $id,
+        'href' => $href,
+        'style' => implode(';', $style),
+        'title' => $title,
+        'class' => implode(' ', $class),
+        'data' => $data
     )));
     // exit function if no href value available
-    if(empty($href)) return $text;
+    if (empty($href)) return $text;
 
     // return <a> tag with all the attributes and child elements
     // return sprintf('<a %s>%s %s</a>', $attr, $text, $order);
     return sprintf('<a %s>%s</a>', $attr, $text);
 }
+
 /**
  * return html element attribute string (eg. key1="value1" key2="value2")
  * if value is array multiples are grouped (eg. key="value1 value2")
  * if value is array and key is "data" then array values are prefixed with data-[key]. (eg. data-name="value" data-size="value")
- * 
+ *
  * example of use:
  * ---------------
  * simple pairs: buildAttributes(array('id'=>'menu-item-2'))  ==> 'id="menu-item-2"'
@@ -254,25 +271,26 @@ function makeLink($params) {
  *  ==> 'data-toggle="collapse" data-target="#sidebar"'
  * grouped style: buildAttributes(array('class'=>array('dark','large')))  ==> 'class="dark large"'
  *
- * @param array $attributes
+ * @param $attributes
  * @return string
  */
-function buildAttributes($attributes){
-    return implode(' ', array_filter( array_map(function($key) use ($attributes) {
+function buildAttributes($attributes)
+{
+    return implode(' ', array_filter(array_map(function ($key) use ($attributes) {
         $value = $attributes[$key];
         // print_r($value);
         if (!empty($value)) {
-            if(!is_array($value)) {
+            if (!is_array($value)) {
                 // return simple key=value pair
-                return $key.'="'.$value.'"';
+                return $key . '="' . $value . '"';
             } else {
-                if(isSequential($value)){
+                if (isSequential($value)) {
                     // join multi-value properties
                     // eg css="a b c" etc
                     $list[$key] = implode(' ', array_unique($value));
                 } else {
-                    foreach($value as $key2=>$value2) {
-                        if($key==='data') $key2 = 'data-'.$key2;
+                    foreach ($value as $key2 => $value2) {
+                        if ($key === 'data') $key2 = 'data-' . $key2;
                         // add the data-* attribute 
                         // eg data-'close' data-'open'
                         $list[$key2] = $value2;
@@ -288,26 +306,27 @@ function buildAttributes($attributes){
 /**
  * return full url of given relative path of controller/action
  *
- * @param string $_path eg. feed/list
+ * @param $_passedPath - eg. feed/list
  * @return string eg. http://localhost/emoncms/feed/list
  */
-function getAbsoluteUrl($_passedPath) {
+function getAbsoluteUrl($_passedPath)
+{
     global $path;
-    if(empty($_passedPath)) return '';
+    if (empty($_passedPath)) return '';
 
     // if passed path ($_passedPath) begins with /emoncms remove it
     $_passedPathParts = getPathParts($_passedPath);
     // add to global $path 
     $url = $path . implode('/', $_passedPathParts);
-    
+
     // url query parts
     $query_parts = getQueryParts($_passedPath);
     // return emoncms $path with the relative $_passedPath component;
-    foreach($query_parts as $key=>$value) {
+    foreach ($query_parts as $key => $value) {
         $q[] = sprintf("%s=%s", $key, $value);
     }
     // add query parts of url. eg. ?q=bluetooth+mouse&sort=asc
-    if(!empty($q)) {
+    if (!empty($q)) {
         $query = implode('&', $q);
         $url .= '?' . $query;
     }
@@ -319,39 +338,40 @@ function getAbsoluteUrl($_passedPath) {
  * for development only
  *
  * @param string $key - print sub array if $key supplied
- * @return void - exits php after printing array
  */
-function debugMenu($key = '') {
+function debugMenu($key = '')
+{
     global $menu;
     echo "<pre>";
-    if(!empty($key) && isset($menu[$key]) && $key !== 'includes'){
-        printf("%s:\n-------------\n",strtoupper($key));
+    if (!empty($key) && isset($menu[$key]) && $key !== 'includes') {
+        printf("%s:\n-------------\n", strtoupper($key));
         print_r($menu[$key]);
     } else {
         print_r($menu);
     }
     exit('eof debugMenu()');
 }
+
 /**
- * sort all the menus individually. items without sort are added to bottom a-z
- * calls itself again until $array is a menu item
+ *  sort all the menus individually. items without sort are added to bottom a-z
+ *  calls itself again until $array is a menu item
  *
- * @param array $array
- * @return void
+ * @param $menus
  */
-function sortMenu (&$menus) {
-    foreach($menus as $name=>&$menu) {
+function sortMenu(&$menus)
+{
+    foreach ($menus as $name => &$menu) {
         // includes don't follow same structure
         if ($name === 'includes') return;
-        
+
         // if $menu has numeric keys it has menu items
         // eg $menu[0]
         if (isSequential($menu)) {
             // collect indexes for unordered items
             $orders = array();
             $unordered = array();
-            if(is_array($menu)) {
-                foreach($menu as $key=>&$item) {
+            if (is_array($menu)) {
+                foreach ($menu as $key => &$item) {
                     encodeMenuItemUrl($item);
                     $item['path'] = getAbsoluteUrl($item['path']);
 
@@ -365,28 +385,28 @@ function sortMenu (&$menus) {
             // get next sort (max_order) for a menu
             try {
                 $sortedOrders = array_values($orders);
-                if(empty($sortedOrders)) $sortedOrders[] = 0;
+                if (empty($sortedOrders)) $sortedOrders[] = 0;
                 asort($sortedOrders, SORT_NATURAL); // sort like this: 2, 11, a, a1, b
                 preg_match_all('!\d+!', array_slice($sortedOrders, -1)[0], $matches);
-                $next_order = implode(array_column($matches,0));
+                $next_order = implode(array_column($matches, 0));
             } catch (Exception $e) {
                 $next_order = 0;
-            }   
+            }
             // set order field for un-ordered menu items
-            foreach($unordered as $index) {
+            foreach ($unordered as $index) {
                 // sort by title if available
-                if(isset($menu[$index]['text'])) {
+                if (isset($menu[$index]['text'])) {
                     $menu[$index]['order'] = $menu[$index]['text'];
                 } else {
-                // sort by integer if not title available
+                    // sort by integer if not title available
                     $menu[$index]['order'] = $next_order++;
                 }
             }
             // re-index menu based on 'order' value
-            if(is_array($menu)) usort($menu, 'sortMenuItems');
+            if (is_array($menu)) usort($menu, 'sortMenuItems');
 
-        // if $menu has alpha-numeric keys it is a menu group
-        // eg. $menu['setup']
+            // if $menu has alpha-numeric keys it is a menu group
+            // eg. $menu['setup']
         } else {
             // call sort again for sub-menus
             sortMenu($menu);
@@ -397,50 +417,51 @@ function sortMenu (&$menus) {
 /**
  * url encoding a give menu item's path
  *
- * @param array $item
- * @return void;
+ * @param $item
  */
-function encodeMenuItemUrl(&$item) {
-    if(isset($item['path'])) {
+function encodeMenuItemUrl(&$item)
+{
+    if (isset($item['path'])) {
         $item['path'] = encodePath($item['path']);
     } else {
         $item['path'] = '';
     }
 }
+
 /**
  * return url encoded string
- * 
  * individually encode the parts of given $path string
  *
- * @param string $passed_path relative or absolute url
+ * @param $passed_path - relative or absolute url
  * @return string encoded relative or absolute url
  */
-function encodePath($passed_path) {
+function encodePath($passed_path)
+{
     global $path;
     // split url into parts
     $parts = parse_url($passed_path);
     // encode url path parts
-    if(isset($parts['path'])) {
+    if (isset($parts['path'])) {
         $path_parts = [];
-        foreach(getPathParts($passed_path) as $p) {
+        foreach (getPathParts($passed_path) as $p) {
             $path_parts[] = urlencode($p);
         }
         $parts['path'] = implode('/', $path_parts);
     }
-    
-    if(isset($parts['query'])) {
+
+    if (isset($parts['query'])) {
         $query_parts = getQueryParts($passed_path);
         $query_parts = array_map('urldecode', $query_parts);
         $parts['query'] = http_build_query($query_parts);
     }
 
-    $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') . 
-    ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') . 
-    (isset($parts['host']) ? "{$parts['host']}" : '') . 
-    (isset($parts['port']) ? ":{$parts['port']}" : '') . 
-    (isset($parts['path']) ? "/{$parts['path']}" : '') . 
-    (isset($parts['query']) ? "?{$parts['query']}" : '');
-    
+    $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') .
+        ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') .
+        (isset($parts['host']) ? "{$parts['host']}" : '') .
+        (isset($parts['port']) ? ":{$parts['port']}" : '') .
+        (isset($parts['path']) ? "/{$parts['path']}" : '') .
+        (isset($parts['query']) ? "?{$parts['query']}" : '');
+
     return $url;
 }
 
@@ -448,26 +469,28 @@ function encodePath($passed_path) {
  * return true if all array keys are not a string (aka 'non-associative' array)
  *
  * @param array $array
- * @return boolean
- */ 
-function isSequential($array = array()) {
-    $array = (array) $array;
+ * @return bool
+ */
+function isSequential($array = array())
+{
+    $array = (array)$array;
     $string_keys = array_filter(array_keys($array), 'is_string');
     return count($string_keys) == 0;
 }
 
 /**
  * used as usort() sorting function
- * 
+ *
  * return -1 if $a['order'] is less than $b['order']
  * return 0 if $a['order'] is equal to $b['order']
  * return 1 if $a['order'] is greater than $b['order']
  *
- * @param array $a
- * @param array $b
- * @return int
+ * @param $a
+ * @param $b
+ * @return int|lt
  */
-function sortMenuItems ($a, $b) {
+function sortMenuItems($a, $b)
+{
     $orderby = 'order';
     $ac = getKeyValue($orderby, $a);
     $bc = getKeyValue($orderby, $b);
@@ -477,98 +500,101 @@ function sortMenuItems ($a, $b) {
 /**
  * return true if menu item path is the current page or $passed_path
  *
- * @param array $item - menu item with ['path'] property
- *                      if not array passed attempt to locate the menu item by passed string
- *                      defaults to current route if empty
- * @param string $passed_path - check menu item against this url
- * @return boolean
+ * @param null $item - menu item with ['path'] property if not array passed attempt to locate the menu item by passed string
+ *                     defaults to current route if empty
+ * @param null $passed_path - check menu item against this url
+ * @return bool
  */
-function is_active($item = null, $passed_path = null) {
+function is_active($item = null, $passed_path = null)
+{
     global $route, $path;
     $slash = '/';
-    $base = !empty($passed_path) ? $passed_path: $path;
+    $base = !empty($passed_path) ? $passed_path : $path;
     // if passed item is not an array look it up by path
     if (!is_array($item)) $item = getSidebarItem($item);
     if (!$item) $item = getCurrentMenuItem();
     // remove the full $path from the link's absolute url
     $_path = str_replace($base, '', getKeyValue('path', $item));
     $_active = str_replace($base, '', getKeyValue('active', $item));
-    $q = !empty($route->query) ? "?".$route->query: '';
+    $q = !empty($route->query) ? "?" . $route->query : '';
     // check for different combos of controllers and actions for a match
     if ($_path === implode($slash, array_filter(array($route->controller, $route->action, $route->subaction, $route->subaction2))) ||
-        $_path === implode($slash, array_filter(array($route->controller, $route->action))).$q ||
-        $_active === implode($slash, array_filter(array($route->controller))) ) {
+        $_path === implode($slash, array_filter(array($route->controller, $route->action))) . $q ||
+        $_active === implode($slash, array_filter(array($route->controller)))) {
         return true;
     }
     return false;
 }
+
 /**
  * return true if passed $item has desired properties for bing a menu item
  *
- * @param array $item
- * @return boolean
+ * @param $item
+ * @return bool
  */
-function is_menu_item($item) {
-    if(is_array($item) && (
-        !empty($item['id'])   ||
-        !empty($item['path']) ||
-        !empty($item['href']) ||
-        !empty($item['icon']) ||
-        !empty($item['text']) ||
-        !empty($item['title'])
-    )) {
+function is_menu_item($item)
+{
+    if (is_array($item) && (
+            !empty($item['id']) ||
+            !empty($item['path']) ||
+            !empty($item['href']) ||
+            !empty($item['icon']) ||
+            !empty($item['text']) ||
+            !empty($item['title'])
+        )) {
         return true;
     }
     return false;
 }
+
 /**
  * call the makeListLink() function after modifiying the menu item to act as a dropdown
  *
- * @param array $item - $menu array item
- * @return void
+ * @param $item
+ * @return string
  */
-function makeDropdown($item){
+function makeDropdown($item)
+{
     global $session;
     // add empty text value to avoid title from being used
-    if(empty($item['text'])) $item['text'] = '';
-    
+    if (empty($item['text'])) $item['text'] = '';
+
     // add empty title value to avoid text with icon from being used
-    if(empty($item['title'])) $item['title'] = $item['text'];
-    
+    if (empty($item['title'])) $item['title'] = $item['text'];
+
     // add the dropdown indicator
     // $item['text'] .= ' <b class="caret"></b>';
 
     // add the correct class to the <li>
     $item['li_class'][] = 'dropdown';
-    
-    if(is_current_menu($item['sub_items'])){
+
+    if (is_current_menu($item['sub_items'])) {
         $item['li_class'][] = 'active';
     }
-    
+
     // create variable if empty
-    if(!isset($item['class'])) $item['class'] = '';
-    
+    if (!isset($item['class'])) $item['class'] = '';
+
     // add additional css classes to <li>
     settype($item['class'], 'array');
     $item['class'][] = 'dropdown-toggle';
 
     // add data-* attributes
     $item['data']['toggle'] = 'dropdown';
-    
-    // return <li><a> with sub <ul><li><a>
 
+    // return <li><a> with sub <ul><li><a>
     return makeListLink($item);
 }
 
 /**
  * return a clickable link that opens / closes sidebar
  *
- * @param [type] $item
- * @return void
+ * @param $item
  */
-function sidebarCollapseBtn($item) {
+function sidebarCollapseBtn($item)
+{
     global $sidebar_collapsed;
-    if(!empty($sidebar_collapsed) && $sidebar_collapsed){
+    if (!empty($sidebar_collapsed) && $sidebar_collapsed) {
         $item['class'][] = 'collapsed';
     }
     $item['data']['toggle'] = 'slide-collapse';
@@ -576,49 +602,55 @@ function sidebarCollapseBtn($item) {
     $item['href'] = '#';
     echo makeLink($item);
 }
+
 /**
  * return array that holds the current pages's menu item
  *
- * @return void
+ * @return array
  */
-function getCurrentMenuItem(){
+function getCurrentMenuItem()
+{
     global $menu;
-    if(!empty(getCurrentMenuItemIndex())) {
-        list($group,$_menu,$index) = getCurrentMenuItemIndex()[0];
-        return !empty($menu[$group][$_menu][$index]) ? $menu[$group][$_menu][$index]: array();
+    if (!empty(getCurrentMenuItemIndex())) {
+        list($group, $_menu, $index) = getCurrentMenuItemIndex()[0];
+        return !empty($menu[$group][$_menu][$index]) ? $menu[$group][$_menu][$index] : array();
     }
     return array();
 }
+
 /**
  * return menu that contains the current menu item
  * returns empty array if not found
- * returns first occurance of path only
+ * returns first occurrence of path only
  *
- * @return void
+ * @return array
  */
-function getCurrentMenu() {
+function getCurrentMenu()
+{
     global $menu;
     $index = getCurrentMenuItemIndex();
-    if(!empty($index)) {
-        list($group,$_menu,$index) = $index[0];
+    if (!empty($index)) {
+        list($group, $_menu, $index) = $index[0];
         return $menu[$group][$_menu];
     } else {
         return array();
     }
 }
+
 /**
  * return an array of indexes that identify the current page's menu item
  *
- * @return void
+ * @return array
  */
-function getCurrentMenuItemIndex(){
+function getCurrentMenuItemIndex()
+{
     global $menu;
     $keys = array();
-    foreach($menu as $key=>$item){
-        foreach($item as $key2=>$item2){
-            foreach($item2 as $key3=>$item3){
-                $path = getKeyValue('path',$item3);
-                if(is_current($path)){
+    foreach ($menu as $key => $item) {
+        foreach ($item as $key2 => $item2) {
+            foreach ($item2 as $key3 => $item3) {
+                $path = getKeyValue('path', $item3);
+                if (is_current($path)) {
                     $keys[] = array($key, $key2, $key3);
                 }
             }
@@ -628,14 +660,14 @@ function getCurrentMenuItemIndex(){
 }
 
 /**
- * return an array of indexes
- * where the matching "path" is found the menu
+ * return an array of indexes where the matching "path" is found the menu
  *
  * @param string $path
  * @param string $group index for menu group - all groups checked if empty
  * @return array
  */
-function getRouteMenuItemIndex($path='', $group='') {
+function getRouteMenuItemIndex($path = '', $group = '')
+{
     global $menu;
     echo "getindex: $path,$group\n";
     if (empty($path)) $_path = current_route();
@@ -644,15 +676,15 @@ function getRouteMenuItemIndex($path='', $group='') {
     $search = getAbsoluteUrl($path);
     $results = array();
 
-    foreach ($_menu as $key=>$item){
-        foreach ($item as $key2=>$item2) {
+    foreach ($_menu as $key => $item) {
+        foreach ($item as $key2 => $item2) {
             if (is_menu_item($item2)) {
-                if($search == getAbsoluteUrl(getKeyValue('path',$item2))){
+                if ($search == getAbsoluteUrl(getKeyValue('path', $item2))) {
                     $results[] = array($key, $key2, null);
                 }
             } else {
-                foreach($item2 as $key3=>$item3){
-                    if($search == getKeyValue('path',$item3)){
+                foreach ($item2 as $key3 => $item3) {
+                    if ($search == getKeyValue('path', $item3)) {
                         $results[] = array($key, $key2, $key3);
                     }
                 }
@@ -666,31 +698,33 @@ function getRouteMenuItemIndex($path='', $group='') {
  * return a menu item matching a given path
  * @note: was using getRouteMenuItemIndex() to return the menu items. now uses searchArray()
  *
- * @param string $path
- * @return array
+ * @param $path
+ * @return array|mixed
  */
-function getSidebarItem($path) {
+function getSidebarItem($path)
+{
     global $menu;
     $results = array();
-    foreach($menu['sidebar'] as $name=>$sidebar) {
+    foreach ($menu['sidebar'] as $name => $sidebar) {
         foreach (searchArray($sidebar, 'path', getAbsoluteUrl($path)) as $result) {
             $results[] = $result;
         }
     }
     $results = array_values(array_filter($results));
-    if(count($results)==1) $results = $results[0];
+    if (count($results) == 1) $results = $results[0];
     return $results;
 }
 
 /**
  * return array of matching elements based on key an value
  *
- * @param array $array
- * @param string $key
- * @param mixed $value
+ * @param $array
+ * @param $key
+ * @param $value
  * @return array
  */
-function searchArray($array, $key, $value) {
+function searchArray($array, $key, $value)
+{
     $results = array();
     if (is_array($array)) {
         // if match found add to results
@@ -704,64 +738,73 @@ function searchArray($array, $key, $value) {
     }
     return $results;
 }
+
 /**
  * return true if current page requires a sidebar
+ * @return bool
+ * @todo POSSIBLY unused
  *
- * @return void
  */
-function currentPageRequiresSidebar(){
+function currentPageRequiresSidebar()
+{
     $currentMenuItem = getCurrentMenuItem();
-    $currentPath = getKeyValue('path',$currentMenuItem);
+    $currentPath = getKeyValue('path', $currentMenuItem);
     return pathRequiresSidebar($currentPath);
 }
+
 /**
  * return true if passed path requires a sidebar
  *
- * @param string $path
- * @return void
+ * @param $path
+ * @return bool
  */
-function pathRequiresSidebar($path){
+function pathRequiresSidebar($path)
+{
     global $route, $menu;
     $counter = 0;
-    foreach($menu['setup'] as $item):
-        if(is_current($item)){
+    foreach ($menu['setup'] as $item):
+        if (is_current($item)) {
             $counter++;
         }
     endforeach;
-    if(!empty($menu[$route->controller])): foreach($menu[$route->controller] as $item):
-        if(is_current($item)){
+    if (!empty($menu[$route->controller])): foreach ($menu[$route->controller] as $item):
+        if (is_current($item)) {
             $counter++;
         }
     endforeach; endif;
-    if(!empty($menu['includes'][$route->controller])): foreach($menu['includes'][$route->controller] as $item):
+    if (!empty($menu['includes'][$route->controller])): foreach ($menu['includes'][$route->controller] as $item):
         $counter++;
     endforeach; endif;
     return $counter > 0;
 }
+
 /**
  * return array of url path split by forward slash (/)
  * empty elements removed from array
  *
- * @param string $url if empty current route used
+ * @param string $passed_path if empty current route used
  * @return array eg. ['input','view']
  */
-function getPathParts($passed_path='') {
+function getPathParts($passed_path = '')
+{
     global $path;
-    if(empty($passed_path)) $passed_path = current_route();
-    $passed_path = str_replace($path,'',$passed_path);
+    if (empty($passed_path)) $passed_path = current_route();
+    $passed_path = str_replace($path, '', $passed_path);
     $_path = parse_url($passed_path, PHP_URL_PATH);
     // separate the path by a forward slash
     $_pathParts = explode('/', $_path);
     return array_values(array_filter($_pathParts));
 }
+
 /**
  * return the first part of the route path (controller name)
  * eg: if $path is input/view function will return "input"
  *
  * @param string $path
- * @return string
+ * @return mixed
  */
-function getPathController($path='') {
+function getPathController($path = '')
+{
     $parts = getPathParts($path);
     return array_shift($parts); // return the first item
 }
@@ -770,51 +813,54 @@ function getPathController($path='') {
  * return array of url query parameters in given url
  * empty elements removed from array
  *
- * @param string $url
+ * @param $path
  * @return array
  */
-function getQueryParts($path) {
+function getQueryParts($path)
+{
     $query = parse_url($path, PHP_URL_QUERY);
     $query_items = array();
-    foreach(explode('&', $query) as $item) {
-        if (strpos($item,'=') > -1) {
+    foreach (explode('&', $query) as $item) {
+        if (strpos($item, '=') > -1) {
             list($key, $value) = explode('=', $item);
             $query_items[$key] = $value;
         }
     }
     // remove empty url parameters
-    return array_filter($query_items, function($var){
+    return array_filter($query_items, function ($var) {
         return $var !== '';
     });
 }
 
 /**
  * return true if current route is in given list of menu items
- * 
- * @param array $menu
+ *
+ * @param array $_menu
  * @return bool
  */
-function is_current_menu($_menu = array()) {
-    foreach($_menu as $k=>$item){
+function is_current_menu($_menu = array())
+{
+    foreach ($_menu as $k => $item) {
         $_path = getKeyValue('path', $item);
         $_active = getKeyValue('active', $item);
-        if(is_current($_path) || is_current($_active)|| is_active($item)) return true;
+        if (is_current($_path) || is_current($_active) || is_active($item)) return true;
     }
     return false;
 }
 
 /**
  * return true if current route is in given list of menus
- * 
+ *
  * matches on path only eg. /feed/list
  * ignores url query eg. ?sort=asc
  *
- * @param array $menu
+ * @param $group
  * @return bool
  */
-function is_current_group($group) {
-    if(empty($group)) return false;
-    foreach($group as $menu) {
+function is_current_group($group)
+{
+    if (empty($group)) return false;
+    foreach ($group as $menu) {
         if (is_current_menu($menu)) return true;
     }
     return false;
@@ -823,30 +869,33 @@ function is_current_group($group) {
 /**
  * return true if passed menu item has children/siblings that are currently being viewed
  *
- * @param array $item
- * @return boolean
+ * @param string $item
+ * @return bool
  */
-function hasActiveChildren($item = '') {
-    if(empty($item)) {
+function hasActiveChildren($item = '')
+{
+    if (empty($item)) {
         $item = getCurrentMenuItem();
     }
     $children = getChildMenuItems($item);
     // echo "\n-emrys--".count($children);
-    foreach($children as $child) {
+    foreach ($children as $child) {
         $path = getKeyValue('path', $child);
-        if(is_current($path) || is_active($path)){
+        if (is_current($path) || is_active($path)) {
             return true;
         }
     }
     return false;
 }
+
 /**
  * return true if current route points to active menu item within sub-menu
  *
- * @param mixed $input string or array of menu items
+ * @param $input string or array of menu items
  * @return bool
  */
-function thirdLevelActive($input) {
+function thirdLevelActive($input)
+{
     // function accepts multiple inputs types. ensure they are all the same
     $items = array(); // list to store all the inputs;
 
@@ -858,7 +907,7 @@ function thirdLevelActive($input) {
         $items[] = $input;
     }
 
-    foreach($items as $item){
+    foreach ($items as $item) {
         if (is_menu_item($item)) {
             return true;
             // if menu item has no children, 3rd level hidden
@@ -879,17 +928,19 @@ function thirdLevelActive($input) {
     }
     return false;
 }
+
 /**
  * return true if passed item's path is in a 3rd level menu
  *
- * @param [type] $item
- * @return boolean
+ * @param $item
+ * @return bool
  */
-function is_third_level($item) {
+function is_third_level($item)
+{
     global $menu;
-    list($group,$m,$k) = getCurrentMenuItemIndex()[0];
+    list($group, $m, $k) = getCurrentMenuItemIndex()[0];
     $path = getAbsoluteUrl(current_route());
-    
+
     /* example structure in menu files of 3rd level menu
     --------------------------------------------------------
     $menu['sidebar']['includes']['setup']['sync'][] = array(
@@ -897,16 +948,16 @@ function is_third_level($item) {
         'path' => 'sync/view/inputs'
     );
     */
-    if(!empty($_menu = $menu[$group]['includes'])) {
-        if(is_array($_menu)) {
-            foreach($_menu as $_name=>$items) {
-                if(is_array($items)) {
-                    foreach($items as $k=>$sub_items) {
-                        if(is_array($sub_items)) {
-                            foreach($sub_items as $third_level) {
+    if (!empty($_menu = $menu[$group]['includes'])) {
+        if (is_array($_menu)) {
+            foreach ($_menu as $_name => $items) {
+                if (is_array($items)) {
+                    foreach ($items as $k => $sub_items) {
+                        if (is_array($sub_items)) {
+                            foreach ($sub_items as $third_level) {
                                 $_path = getKeyValue('path', $third_level);
                                 $_url = getAbsoluteUrl($_path);
-                                if($_url==$path) {
+                                if ($_url == $path) {
                                     // passed menu item matches 3rd level menu item
                                     return true;
                                 }
@@ -925,21 +976,22 @@ function is_third_level($item) {
 /**
  * if a menu item has a [data][sidebar] property, return matching sidebar menu
  *
- * @param array $parent parent menu item
+ * @param $parent parent menu item
  * @return array
  */
-function getChildMenuItems($parent) {
+function getChildMenuItems($parent)
+{
     global $menu;
     $children = array();
-    if(!empty($parent['data']['sidebar'])) {
+    if (!empty($parent['data']['sidebar'])) {
         $child_selector = $parent['data']['sidebar'];
-        $menu_key = str_replace('#sidebar_','',$child_selector);
-        
-        foreach($menu['sidebar'] as $menu_key2 => $sub_menu) {
-            if(!empty($menu['sidebar']['includes'][$menu_key2][$menu_key])){
+        $menu_key = str_replace('#sidebar_', '', $child_selector);
+
+        foreach ($menu['sidebar'] as $menu_key2 => $sub_menu) {
+            if (!empty($menu['sidebar']['includes'][$menu_key2][$menu_key])) {
                 $children[] = $menu['sidebar']['includes'][$menu_key2][$menu_key];
             }
-            foreach($sub_menu as $item) {
+            foreach ($sub_menu as $item) {
                 if ($menu_key == $menu_key2) {
                     $children[] = $item;
                 }
@@ -952,18 +1004,19 @@ function getChildMenuItems($parent) {
 /**
  * return true if current route is bookmarked by user
  *
- * @return void
+ * @return bool
  */
-function currentPageIsBookmarked(){
+function currentPageIsBookmarked()
+{
     // @todo: change this to retreive current bookmarks when user logs in
     global $mysqli, $user, $session, $route;
 
     $current_path = current_route();
-    if(!empty($route->query)) $current_path.='?'.$route->query;
+    if (!empty($route->query)) $current_path .= '?' . $route->query;
 
-    if($bookmarks = $user->getUserBookmarks($session['userid'])) {
-        foreach($bookmarks as $b) {
-            if (!empty($b['path']) && $b['path']===$current_path){
+    if ($bookmarks = $user->getUserBookmarks($session['userid'])) {
+        foreach ($bookmarks as $b) {
+            if (!empty($b['path']) && $b['path'] === $current_path) {
                 return true;
             }
         }
@@ -972,9 +1025,9 @@ function currentPageIsBookmarked(){
     if (file_exists("Modules/dashboard/dashboard_model.php")) {
         require_once "Modules/dashboard/dashboard_model.php";
 
-        if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
-            foreach($dashboard_bookmarks as $b) {
-                if (!empty($b['path']) && $b['path']===$current_path){
+        if ($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
+            foreach ($dashboard_bookmarks as $b) {
+                if (!empty($b['path']) && $b['path'] === $current_path) {
                     return true;
                 }
             }
@@ -983,42 +1036,46 @@ function currentPageIsBookmarked(){
     return false;
 }
 
-
-function getUserBookmarkedDashboards($userid){
+/**
+ * @param $userid
+ * @return array
+ */
+function getUserBookmarkedDashboards($userid)
+{
     // @todo: should this be in user model or dashboard model??
     global $mysqli, $user;
     $bookmarks = array();
     require_once "Modules/dashboard/dashboard_model.php";
     $dashboard = new Dashboard($mysqli);
     $default_dashboard = array();
-    foreach($dashboard->get_list($userid,false,false) as $item){
-        if($item['main']===true){
+    foreach ($dashboard->get_list($userid, false, false) as $item) {
+        if ($item['main'] === true) {
             $default_dash = $item;
         }
-        if($item['published']===true){
+        if ($item['published'] === true) {
             $fav_dash[] = $item;
         }
     }
-    $orderbase = 1  ;
+    $orderbase = 1;
 
     // ADD DEFAULT DASHBOARD
     if (!empty($default_dash)) {
         $bookmarks[] = array(
             'text' => _('Main Dashboard'),
-            'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
+            'title' => sprintf('%s - %s', $default_dash['name'], $default_dash['description']),
             'icon' => 'star',
-            'order'=> $orderbase,
-            'path' => 'dashboard/view?id='.$default_dash['id']
+            'order' => $orderbase,
+            'path' => 'dashboard/view?id=' . $default_dash['id']
         );
     }
     // ADD BOOKMARKED DASHBOARDS
     if (!empty($fav_dash)) {
-        foreach($fav_dash as $fav) {
+        foreach ($fav_dash as $fav) {
             $bookmarks[] = array(
                 'text' => $fav['name'],
-                'path' => 'dashboard/view?id='.$fav['id'],
-                'order'=> $orderbase++,
-                'title'=> $fav['description']
+                'path' => 'dashboard/view?id=' . $fav['id'],
+                'order' => $orderbase++,
+                'title' => $fav['description']
             );
         }
     }

@@ -7,7 +7,7 @@
   "config": {
     "optimize-autoloader": true,
     "platform": {
-      "php": "5.3.10"
+      "php": "5.5"
     },
     "vendor-dir": "libraries/vendor"
   },
@@ -23,7 +23,7 @@
     ]
   },
   "require": {
-    "php": ">=5.3.10",
+    "php": ">=5.5",
     "ext-redis": "*",
     "ext-mysqli": "*",
     "ext-gettext": "*",
