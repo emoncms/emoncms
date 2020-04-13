@@ -1,4 +1,14 @@
 <?php
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
+
+defined('EMONCMS_EXEC') or die;
 
 class TemplateEngine implements engine_methods
 {
@@ -6,10 +16,9 @@ class TemplateEngine implements engine_methods
     private $writebuffer = array();
 
     /**
-     * Constructor.
-     *
-     * @api
-    */
+     * TemplateEngine constructor.
+     * @param $options
+     */
     public function __construct($options)
     {
         $this->log = new EmonLogger(__FILE__);
@@ -22,7 +31,8 @@ class TemplateEngine implements engine_methods
      *
      * @param integer $feedid The id of the feed to be created
      * @param array $options for the engine
-    */
+     * @return bool
+     */
     public function create($feedid,$options)
     {
         $this->log->info("create() dummy feed feedid=$feedid");
@@ -43,7 +53,8 @@ class TemplateEngine implements engine_methods
      * Gets engine metadata
      *
      * @param integer $feedid The id of the feed to be created
-    */
+     * @return stdClass
+     */
     public function get_meta($feedid)
     {
         $meta = new stdClass();
@@ -59,7 +70,8 @@ class TemplateEngine implements engine_methods
      * Returns engine occupied size in bytes
      *
      * @param integer $feedid The id of the feed to be created
-    */
+     * @return int
+     */
     public function get_feed_size($feedid)
     {
         return 0;
@@ -94,7 +106,8 @@ class TemplateEngine implements engine_methods
      * Get array with last time and value from a feed
      *
      * @param integer $feedid The id of the feed
-    */
+     * @return array
+     */
     public function lastvalue($feedid)
     {
         return array('time'=>time(), 'value'=>0);
@@ -104,8 +117,14 @@ class TemplateEngine implements engine_methods
      * Return the data for the given timerange - cf shared_helper.php
      *
      * please note that unix timestamps should be expressed in ms cause coming from the js
-     * 
-    */
+     * @param $feedid
+     * @param $start
+     * @param $end
+     * @param $interval
+     * @param $skipmissing
+     * @param $limitinterval
+     * @return array
+     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $data = array();
@@ -118,11 +137,23 @@ class TemplateEngine implements engine_methods
         return $data;
     }
 
+    /**
+     * @param $feedid
+     * @param $start
+     */
     public function export($feedid,$start)
     {
 
     }
 
+    /**
+     * @param int $feedid
+     * @param int $start
+     * @param int $end
+     * @param int $outinterval
+     * @param string $usertimezone
+     * @return mixed|void
+     */
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
 
@@ -133,14 +164,23 @@ class TemplateEngine implements engine_methods
 
 // #### \/ Below are buffer write methods
 
-    // Insert data in post write buffer, parameters like post()
+    /**
+     * Insert data in post write buffer, parameters like post()
+     *
+     * @param $feedid
+     * @param $time
+     * @param $value
+     * @param null $arg
+     */
     public function post_bulk_prepare($feedid,$time,$value,$arg=null)
     {
         $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
     }
 
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
+    /**
+     * Saves post buffer to engine in bulk
+     * Writing data in larger blocks saves reduces disk write load
+     */
     public function post_bulk_save()
     {
         foreach ($this->writebuffer as $feedid=>$data) {
@@ -154,4 +194,19 @@ class TemplateEngine implements engine_methods
 
 // #### \/ Bellow are engine private methods    
 
+    /**
+     * @inheritDoc
+     */
+    public function clear($feedid)
+    {
+        // TODO: Implement clear() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function trim($feedid, $start_time)
+    {
+        // TODO: Implement trim() method.
+    }
 }

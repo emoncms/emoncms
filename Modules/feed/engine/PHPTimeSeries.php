@@ -1,4 +1,17 @@
 <?php
+/**
+ * @package EmonCMS.Feeds
+ * Emoncms - open source energy visualisation
+ * Internal engine for low-write functionality
+ * Maintains a buffer in redis with latest feed data
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
+
+defined('EMONCMS_EXEC') or die;
+
 // engine_methods interface in shared_helper.php
 include_once dirname(__FILE__) . '/shared_helper.php';
 
@@ -6,95 +19,95 @@ class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     private $log;
-    
     private $writebuffer = array();
 
     /**
-     * Constructor.
-     *
-     * @api
-    */
+     * PHPTimeSeries constructor.
+     * @param $settings
+     */
     public function __construct($settings)
     {
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
         $this->log = new EmonLogger(__FILE__);
     }
 
-// #### \/ Below are required methods
     /**
      * Create feed
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param int $feedid The id of the feed to be created
      * @param array $options for the engine
-    */
-    public function create($feedid,$options)
+     * @return bool|string
+     */
+    public function create($feedid, $options)
     {
-        $fh = @fopen($this->dir."feed_$feedid.MYD", 'a');
+        $fh = @fopen($this->dir . "feed_$feedid.MYD", 'a');
         if (!$fh) {
             $error = error_get_last();
-            $msg = "could not write data file ".$error['message'];
-            $this->log->error("create() ".$msg);
+            $msg = "could not write data file " . $error['message'];
+            $this->log->error("create() " . $msg);
             return $msg;
         }
 
         if (!flock($fh, LOCK_EX)) {
-            $msg = "data file '".$this->dir."feed_$feedid.MYD"."' is locked by another process";
-            $this->log->error("create() ".$msg);
+            $msg = "data file '" . $this->dir . "feed_$feedid.MYD" . "' is locked by another process";
+            $this->log->error("create() " . $msg);
             fclose($fh);
             return $msg;
         }
 
         fclose($fh);
-        if (file_exists($this->dir."feed_$feedid.MYD")) return true;
+        if (file_exists($this->dir . "feed_$feedid.MYD")) return true;
         return false;
     }
 
     /**
      * Delete feed
      *
-     * @param integer $feedid The id of the feed to be created
-    */
+     * @param int $feedid The id of the feed to be created
+     */
     public function delete($feedid)
     {
-        unlink($this->dir."feed_$feedid.MYD");
+        unlink($this->dir . "feed_$feedid.MYD");
     }
 
     /**
      * Gets engine metadata
      *
-     * @param integer $feedid The id of the feed to be created
-    */
+     * @param int $feedid The id of the feed to be created
+     * @return stdClass
+     */
     public function get_meta($feedid)
     {
-    
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $npoints = floor(filesize($this->dir."feed_$feedid.MYD") / 9.0);
-        
+
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'rb');
+        $npoints = floor(filesize($this->dir . "feed_$feedid.MYD") / 9.0);
+
         $start_time = 0;
         if ($npoints) {
-            $array = unpack("x/Itime/fvalue",fread($fh,9));
+            $array = unpack("x/Itime/fvalue", fread($fh, 9));
             $start_time = $array["time"];
         }
         fclose($fh);
-    
+
         $meta = new stdClass();
         $meta->id = $feedid;
         $meta->start_time = $start_time;
         // $meta->nlayers = 1;
         $meta->npoints = $npoints;
         $meta->interval = 1;
-        
+
         return $meta;
     }
 
     /**
      * Returns engine occupied size in bytes
      *
-     * @param integer $feedid The id of the feed to be created
-    */
+     * @param int $feedid The id of the feed to be created
+     * @return false|int
+     */
     public function get_feed_size($feedid)
     {
-        return filesize($this->dir."feed_$feedid.MYD");
+        return filesize($this->dir . "feed_$feedid.MYD");
     }
 
     // POST OR UPDATE
@@ -103,155 +116,186 @@ class PHPTimeSeries implements engine_methods
     // - append if file is empty
     // - append if datapoint is in the future
     // - update if datapoint is older than last datapoint value
-    /**
-     * Adds a data point to the feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-     * @param array $arg optional padding mode argument
-    */
-    public function post($feedid,$time,$value,$arg=null)
-    {
-        $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
-
-        $feedid = (int) $feedid;
-        $time = (int) $time;
-        $value = (float) $value;
-                
-        clearstatcache($this->dir."feed_$feedid.MYD");
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-        $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
-        if ($csize!=$filesize) {
-            $this->log->warn("post() filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
-            
-            // extend file by required number of bytes
-            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'wb')) return false;
-            fseek($fh,$csize);
-            fwrite($fh, pack("CIf",249,$time,$value));
-            fclose($fh);
-            return $value;
-        }
-        
-        // If there is data then read last value
-        if ($filesize>=9) {
-        
-            // pen the data file to read and write
-            $fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'c+');
-            if (!$fh) {
-                $this->log->warn("post() could not open data file feedid=$feedid");
-                return false;
-            }
-            
-            // Read last value
-            fseek($fh,$filesize-9);
-            $d = fread($fh,9);
-            if (strlen($d)!=9) {
-                fclose($fh);
-                return false;
-            }
-            $array = unpack("x/Itime/fvalue",$d);
-
-            // Check if new datapoint is in the future
-            if ($time>$array['time']) {
-                // if yes: APPEND
-                fwrite($fh, pack("CIf",249,$time,$value));
-            } else {
-                // if no: UPDATE
-                // search for existing datapoint at time
-                $pos = $this->binarysearch_exact($fh,$time,$filesize);
-                if ($pos!=-1) {
-                    // update existing datapoint
-                    fseek($fh,$pos);
-                    fwrite($fh, pack("CIf",249,$time,$value));
-                }
-            }
-            fclose($fh);
-        }
-        else
-        {
-            // If theres no data in the file then we just append a first datapoint
-            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
-            fwrite($fh, pack("CIf",249,$time,$value));
-            fclose($fh);
-        }
-        
-        return $value;
-    }
 
     /**
      * Updates a data point in the feed
      *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
+     * @param int $feedid The id of the feed to add to
+     * @param int $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-    */
-    public function update($feedid,$time,$value)
+     * @return bool|float
+     */
+    public function update($feedid, $time, $value)
     {
-      return $this->post($feedid,$time,$value);
+        return $this->post($feedid, $time, $value);
     }
 
     /**
-     * Get array with last time and value from a feed
+     * Adds a data point to the feed
      *
-     * @param integer $feedid The id of the feed
-    */
-    public function lastvalue($feedid)
+     * @param int $feedid The id of the feed to add to
+     * @param int $time The unix timestamp of the data point, in seconds
+     * @param float $value The value of the data point
+     * @param null $arg optional padding mode argument
+     * @return bool|float
+     */
+    public function post($feedid, $time, $value, $arg = null)
     {
+        $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
+
         $feedid = (int)$feedid;
-        $this->log->info("lastvalue() $feedid");
-        
-        if (!file_exists($this->dir."feed_$feedid.MYD"))  return false;
-        
-        $array = false;
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-        if ($filesize>=9)
-        {
-            fseek($fh,$filesize-9);
-            $array = unpack("x/Itime/fvalue",fread($fh,9));
+        $time = (int)$time;
+        $value = (float)$value;
+
+        clearstatcache($this->dir . "feed_$feedid.MYD");
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
+        $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) * 9.0;
+        if ($csize != $filesize) {
+            $this->log->warn("post() filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
+
+            // extend file by required number of bytes
+            if (!$fh = $this->fopendata($this->dir . "feed_$feedid.MYD", 'wb')) return false;
+            fseek($fh, $csize);
+            fwrite($fh, pack("CIf", 249, $time, $value));
+            fclose($fh);
+            return $value;
         }
-        fclose($fh);
-        return $array;
+
+        // If there is data then read last value
+        if ($filesize >= 9) {
+
+            // pen the data file to read and write
+            $fh = $this->fopendata($this->dir . "feed_$feedid.MYD", 'c+');
+            if (!$fh) {
+                $this->log->warn("post() could not open data file feedid=$feedid");
+                return false;
+            }
+
+            // Read last value
+            fseek($fh, $filesize - 9);
+            $d = fread($fh, 9);
+            if (strlen($d) != 9) {
+                fclose($fh);
+                return false;
+            }
+            $array = unpack("x/Itime/fvalue", $d);
+
+            // Check if new datapoint is in the future
+            if ($time > $array['time']) {
+                // if yes: APPEND
+                fwrite($fh, pack("CIf", 249, $time, $value));
+            } else {
+                // if no: UPDATE
+                // search for existing datapoint at time
+                $pos = $this->binarysearch_exact($fh, $time, $filesize);
+                if ($pos != -1) {
+                    // update existing datapoint
+                    fseek($fh, $pos);
+                    fwrite($fh, pack("CIf", 249, $time, $value));
+                }
+            }
+            fclose($fh);
+        } else {
+            // If theres no data in the file then we just append a first datapoint
+            if (!$fh = $this->fopendata($this->dir . "feed_$feedid.MYD", 'a')) return false;
+            fwrite($fh, pack("CIf", 249, $time, $value));
+            fclose($fh);
+        }
+
+        return $value;
     }
-    
+
+    /**
+     * @param $filename
+     * @param $mode
+     * @return bool|false|resource
+     */
+    private function fopendata($filename, $mode)
+    {
+        $fh = @fopen($filename, $mode);
+
+        if (!$fh) {
+            $this->log->warn("PHPTimeSeries:fopendata could not open $filename");
+            return false;
+        }
+
+        if (!flock($fh, LOCK_EX)) {
+            $this->log->warn("PHPTimeSeries:fopendata $filename locked by another process");
+            fclose($fh);
+            return false;
+        }
+
+        return $fh;
+    }
+
+    /**
+     * @param $fh
+     * @param $time
+     * @param $filesize
+     * @return float|int
+     */
+    private function binarysearch_exact($fh, $time, $filesize)
+    {
+        if ($filesize == 0) return -1;
+        $start = 0;
+        $end = $filesize - 9;
+        for ($i = 0; $i < 30; $i++) {
+            $mid = $start + round(($end - $start) / 18) * 9;
+            fseek($fh, $mid);
+            $d = fread($fh, 9);
+            $array = unpack("x/Itime/fvalue", $d);
+            if ($time == $array['time']) return $mid;
+            if (($end - $start) == 9) return -1;
+            if ($time > $array['time']) $start = $mid; else $end = $mid;
+        }
+        return -1;
+    }
+
     /**
      * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $limitinterval When set to 1 , return the calculated timestamp if difference between calculated and hardcoded timestamps (based on metadata) is less than $interval - When set to 0, return the harcoded timestamp
-    */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+     * @param int $feedid
+     * @param int $start
+     * @param int $end
+     * @param int $interval
+     * @param int $skipmissing
+     * @param int $limitinterval When set to 1 , return the calculated timestamp if difference between calculated
+     *                          and hardcoded timestamps (based on metadata) is less than $interval
+     *                          When set to 0, return the harcoded timestamp
+     * @return array
+     */
+    public function get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval)
     {
         global $settings;
 
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        $interval= (int) $interval;
+        $start = intval($start / 1000);
+        $end = intval($end / 1000);
+        $interval = (int)$interval;
 
         // Minimum interval
-        if ($interval<1) $interval = 1;
+        if ($interval < 1) $interval = 1;
         // End must be larger than start
-        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
+        if ($end <= $start) return array("success" => false, "message" => "request end time before start time");
         // Maximum request size
-        $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $settings['feed']['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (" . $settings['feed']['max_datapoints'] . "), increase request interval or time range, requested datapoints = $req_dp");
-        
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
+        $req_dp = round(($end - $start) / $interval);
+        if ($req_dp > $settings['feed']['max_datapoints']) return array("success" => false, "message" => "request datapoint limit reached (" . $settings['feed']['max_datapoints'] . "), increase request interval or time range, requested datapoints = $req_dp");
 
-        if ($filesize==0) return array();
-        
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
+
+        if ($filesize == 0) return array();
+
         $data = array();
-        $time = 0; $i = 0;
+        $time = 0;
+        $i = 0;
         $atime = 0;
 
-        while ($time<=$end)
-        {
+        while ($time <= $end) {
             $time = $start + ($interval * $i);
-            $pos = $this->binarysearch($fh,$time,$filesize);
-            fseek($fh,$pos);
-            $d = fread($fh,9);
-            $array = @unpack("x/Itime/fvalue",$d);
+            $pos = $this->binarysearch($fh, $time, $filesize);
+            fseek($fh, $pos);
+            $d = fread($fh, 9);
+            $array = @unpack("x/Itime/fvalue", $d);
             $dptime = $array['time'];
 
             $value = null;
@@ -259,20 +303,19 @@ class PHPTimeSeries implements engine_methods
             $lasttime = $atime;
             $atime = $time;
 
-            if ($limitinterval)
-            {
-                $diff = abs($dptime-$time);
-                if ($diff<$interval) {
+            if ($limitinterval) {
+                $diff = abs($dptime - $time);
+                if ($diff < $interval) {
                     $value = $array['value'];
-                } 
+                }
             } else {
                 $value = $array['value'];
                 $atime = $array['time'];
             }
-            if ($value !== null) $value = (float) $value ;
+            if ($value !== null) $value = (float)$value;
 
-            if ($atime!=$lasttime) {
-                if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);
+            if ($atime != $lasttime) {
+                if ($value !== null || $skipmissing === 0) $data[] = array($atime * 1000, $value);
             }
 
             $i++;
@@ -280,61 +323,123 @@ class PHPTimeSeries implements engine_methods
 
         return $data;
     }
-    
-    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+
+    /**
+     * @param $fh
+     * @param $time
+     * @param $filesize
+     * @return float|int
+     */
+    private function binarysearch($fh, $time, $filesize)
     {
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        
+        // Binary search works by finding the file midpoint and then asking if
+        // the datapoint we want is in the first half or the second half
+        // it then finds the mid point of the half it was in and asks which half
+        // of this new range its in, until it narrows down on the value.
+        // This approach usuall finds the datapoint you want in around 20
+        // itterations compared to the brute force method which may need to
+        // go through the whole file that may be millions of lines to find a
+        // datapoint.
+        $start = 0;
+        $end = $filesize - 9;
+
+        // 30 here is our max number of itterations
+        // the position should usually be found within
+        // 20 itterations.
+        for ($i = 0; $i < 30; $i++) {
+            // Get the value in the middle of our range
+            $mid = $start + round(($end - $start) / 18) * 9;
+            fseek($fh, $mid);
+            $d = fread($fh, 9);
+            $array = @unpack("x/Itime/fvalue", $d);
+
+            // echo "S:$start E:$end M:$mid $time ".$array['time']." ".($time-$array['time'])."\n";
+
+            // If it is the value we want then exit
+            if ($time == $array['time']) return $mid;
+
+            // If the query range is as small as it can be 1 datapoint wide: exit
+            if (($end - $start) == 9) return ($mid - 9);
+
+            // If the time of the last middle of the range is
+            // more than our query time then next itteration is lower half
+            // less than our query time then nest ittereation is higher half
+            if ($time > $array['time']) $start = $mid; else $end = $mid;
+        }
+    }
+
+    /**
+     * @param $id
+     * @param $start
+     * @param $end
+     * @param $mode
+     * @param $timezone
+     * @return array
+     * @throws Exception
+     */
+    public function get_data_DMY($id, $start, $end, $mode, $timezone)
+    {
+        $start = intval($start / 1000);
+        $end = intval($end / 1000);
+
         $data = array();
-        
+
         $date = new DateTime();
-        if ($timezone===0) $timezone = "UTC";
+        if ($timezone === 0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
-        
+
         $date->modify("midnight");
-        $increment="+1 day";
-        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
-        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
-        
-        $fh = fopen($this->dir."feed_$id.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$id.MYD");
+        $increment = "+1 day";
+        if ($mode == "weekly") {
+            $date->modify("this monday");
+            $increment = "+1 week";
+        }
+        if ($mode == "monthly") {
+            $date->modify("first day of this month");
+            $increment = "+1 month";
+        }
+
+        $fh = fopen($this->dir . "feed_$id.MYD", 'rb');
+        $filesize = filesize($this->dir . "feed_$id.MYD");
 
         $n = 0;
-        $array = array("time"=>0, "value"=>0);
-        while($n<10000) // max iterations
+        $array = array("time" => 0, "value" => 0);
+        while ($n < 10000) // max iterations
         {
             $time = $date->getTimestamp();
-            if ($time>$end) break;
-            
-            $pos = $this->binarysearch($fh,$time,$filesize);
-            fseek($fh,$pos);
-            $d = fread($fh,9);
-            
+            if ($time > $end) break;
+
+            $pos = $this->binarysearch($fh, $time, $filesize);
+            fseek($fh, $pos);
+            $d = fread($fh, 9);
+
             $lastarray = $array;
-            $array = unpack("x/Itime/fvalue",$d);
-            
-            if ($array['time']!=$lastarray['time']) {
-                if ($array['time']>=$start && $array['time']<$end) {
-                    $data[] = array($array['time']*1000,$array['value']);
+            $array = unpack("x/Itime/fvalue", $d);
+
+            if ($array['time'] != $lastarray['time']) {
+                if ($array['time'] >= $start && $array['time'] < $end) {
+                    $data[] = array($array['time'] * 1000, $array['value']);
                 }
             }
             $date->modify($increment);
-            
+
             $n++;
         }
-        
+
         fclose($fh);
-        
+
         return $data;
     }
 
-
-    public function export($feedid,$start)
+    /**
+     * @param $feedid
+     * @param $start
+     */
+    public function export($feedid, $start)
     {
-        $feedid = (int) $feedid;
-        $start = (int) $start;
+        $feedid = (int)$feedid;
+        $start = (int)$start;
 
         $feedname = "feed_$feedid.MYD";
 
@@ -350,9 +455,9 @@ class PHPTimeSeries implements engine_methods
         header("Pragma: no-cache");
 
         // Write to output stream
-        $fh = @fopen( 'php://output', 'w' );
+        $fh = @fopen('php://output', 'w');
 
-        $primaryfeedname = $this->dir.$feedname;
+        $primaryfeedname = $this->dir . $feedname;
         $primary = fopen($primaryfeedname, 'rb');
         $primarysize = filesize($primaryfeedname);
 
@@ -360,108 +465,116 @@ class PHPTimeSeries implements engine_methods
 
         $localsize = $start;
         $localsize = intval($localsize / 9) * 9;
-        if ($localsize<0) $localsize = 0;
+        if ($localsize < 0) $localsize = 0;
 
-        fseek($primary,$localsize);
+        fseek($primary, $localsize);
         $left_to_read = $primarysize - $localsize;
-        if ($left_to_read>0){
-            do
-            {
-                if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+        if ($left_to_read > 0) {
+            do {
+                if ($left_to_read > 8192) $readsize = 8192; else $readsize = $left_to_read;
                 $left_to_read -= $readsize;
 
-                $data = fread($primary,$readsize);
-                fwrite($fh,$data);
-            }
-            while ($left_to_read>0);
+                $data = fread($primary, $readsize);
+                fwrite($fh, $data);
+            } while ($left_to_read > 0);
         }
         fclose($primary);
         fclose($fh);
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    /**
+     * @param int $feedid
+     * @param int $start
+     * @param int $end
+     * @param int $outinterval
+     * @param string $usertimezone
+     * @return bool|mixed
+     */
+    public function csv_export($feedid, $start, $end, $outinterval, $usertimezone)
     {
         global $settings;
 
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
 
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;
-        $outinterval = (int) $outinterval;
-        
-        if ($outinterval<1) $outinterval = 1;
+        $feedid = (int)$feedid;
+        $start = (int)$start;
+        $end = (int)$end;
+        $outinterval = (int)$outinterval;
+
+        if ($outinterval < 1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);
         $end = $start + ($dp * $outinterval);
-        if ($dp<1) return false;
+        if ($dp < 1) return false;
 
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
 
         $interval = ($end - $start) / $dp;
 
         // Ensure that interval request is less than 1
         // adjust number of datapoints to request if $interval = 1;
-        if ($interval<1) {
+        if ($interval < 1) {
             $interval = 1;
             $dp = ($end - $start) / $interval;
         }
 
         $time = 0;
-        
+
         // There is no need for the browser to cache the output
         header("Cache-Control: no-cache, no-store, must-revalidate");
 
         // Tell the browser to handle output as a csv file to be downloaded
         header('Content-Description: File Transfer');
         header("Content-type: application/octet-stream");
-        $filename = $feedid.".csv";
+        $filename = $feedid . ".csv";
         header("Content-Disposition: attachment; filename={$filename}");
 
         header("Expires: 0");
         header("Pragma: no-cache");
 
         // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
+        $exportfh = @fopen('php://output', 'w');
 
-        for ($i=0; $i<$dp; $i++)
-        {
-            $pos = $this->binarysearch($fh,$start+($i*$interval),$filesize);
+        for ($i = 0; $i < $dp; $i++) {
+            $pos = $this->binarysearch($fh, $start + ($i * $interval), $filesize);
 
-            fseek($fh,$pos);
+            fseek($fh, $pos);
 
             // Read the datapoint at this position
-            $d = fread($fh,9);
+            $d = fread($fh, 9);
 
             // Itime = unsigned integer (I) assign to 'time'
             // fvalue = float (f) assign to 'value'
-            $array = unpack("x/Itime/fvalue",$d);
+            $array = unpack("x/Itime/fvalue", $d);
 
             $last_time = $time;
             $time = $array['time'];
-            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
+            $timenew = $helperclass->getTimeZoneFormated($time, $usertimezone);
             // $last_time = 0 only occur in the first run
-            if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].number_format($array['value'],$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'')."\n");
+            if (($time != $last_time && $time > $last_time) || $last_time == 0) {
+                fwrite($exportfh, $timenew . $settings['feed']['csv_field_separator'] . number_format($array['value'], $settings['feed']['csv_decimal_places'], $settings['feed']['csv_decimal_place_separator'], '') . "\n");
             }
         }
         fclose($exportfh);
         exit;
     }
 
-// #### /\ Above are required methods
-
-
-// #### \/ Below are buffer write methods
-
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($feedid,$timestamp,$value,$arg=null)
+    /**
+     * Insert data in post write buffer, parameters like post()
+     *
+     * @param $feedid
+     * @param $timestamp
+     * @param $value
+     * @param null $arg
+     * @return float
+     */
+    public function post_bulk_prepare($feedid, $timestamp, $value, $arg = null)
     {
-        $feedid = (int) $feedid;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
+        $feedid = (int)$feedid;
+        $timestamp = (int)$timestamp;
+        $value = (float)$value;
 
         $filename = "feed_$feedid.MYD";
         $npoints = $this->get_npoints($feedid);
@@ -471,160 +584,119 @@ class PHPTimeSeries implements engine_methods
         }
 
         // If there is data then read last value
-        if ($npoints>=1) {
+        if ($npoints >= 1) {
             static $lastvalue_static_cache = array(); // Array to hold the cache
             if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
                 $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid);
-            }           
-            if ($timestamp<=$lastvalue_static_cache[$feedid]['time']) {
+            }
+            if ($timestamp <= $lastvalue_static_cache[$feedid]['time']) {
                 // if data is in past, its not supported, could call update here to fix on file before continuing
                 // but really this should not happen for past data has process_feed_buffer uses update for that.
-                $this->log->warn("post_bulk_prepare() data in past, nothing saved.  feedid=$feedid timestamp=$timestamp last=".$lastvalue_static_cache[$feedid]['time']." value=$value");
+                $this->log->warn("post_bulk_prepare() data in past, nothing saved.  feedid=$feedid timestamp=$timestamp last=" . $lastvalue_static_cache[$feedid]['time'] . " value=$value");
                 return $value;
             }
         }
 
-        $this->writebuffer[$feedid] .= pack("CIf",249,$timestamp,$value);
-        $lastvalue_static_cache[$feedid] = array('time'=>$timestamp,'value'=>$value); // Set static cache last value
+        $this->writebuffer[$feedid] .= pack("CIf", 249, $timestamp, $value);
+        $lastvalue_static_cache[$feedid] = array('time' => $timestamp, 'value' => $value); // Set static cache last value
         return $value;
     }
 
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
+    /**
+     * @param $feedid
+     * @return false|float
+     */
+    private function get_npoints($feedid)
+    {
+        $bytesize = 0;
+        $filename = "feed_$feedid.MYD";
+
+        if (file_exists($this->dir . $filename)) {
+            clearstatcache($this->dir . $filename);
+            $bytesize += filesize($this->dir . $filename);
+        }
+
+        if (isset($this->writebuffer[$feedid]))
+            $bytesize += strlen($this->writebuffer[$feedid]);
+        return floor($bytesize / 9.0);
+    }
+
+    /**
+     * Get array with last time and value from a feed
+     *
+     * @param $feedid The id of the feed
+     * @return array|bool|false
+     */
+    public function lastvalue($feedid)
+    {
+        $feedid = (int)$feedid;
+        $this->log->info("lastvalue() $feedid");
+
+        if (!file_exists($this->dir . "feed_$feedid.MYD")) return false;
+
+        $array = false;
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
+        if ($filesize >= 9) {
+            fseek($fh, $filesize - 9);
+            $array = unpack("x/Itime/fvalue", fread($fh, 9));
+        }
+        fclose($fh);
+        return $array;
+    }
+
+    /**
+     * Saves post buffer to engine in bulk
+     * Writing data in larger blocks saves reduces disk write load
+     *
+     * @return int
+     */
     public function post_bulk_save()
     {
         $byteswritten = 0;
-        foreach ($this->writebuffer as $feedid=>$data)
-        {
-            $filename = $this->dir."feed_$feedid.MYD";
+        foreach ($this->writebuffer as $feedid => $data) {
+            $filename = $this->dir . "feed_$feedid.MYD";
             // Auto-correction if something happens to the datafile, it gets partitally written to
             // this will correct the file size to always be an integer number of 4 bytes.
             clearstatcache($filename);
-            if (@filesize($filename)%9 != 0) {
-                $npoints = floor(filesize($filename)/9.0);
-                $fh = fopen($filename,"c");
-                fseek($fh,$npoints*9.0);
-                fwrite($fh,$data);
+            if (@filesize($filename) % 9 != 0) {
+                $npoints = floor(filesize($filename) / 9.0);
+                $fh = fopen($filename, "c");
+                fseek($fh, $npoints * 9.0);
+                fwrite($fh, $data);
                 fclose($fh);
                 print "PHPTIMESERIES: FIXED DATAFILE WITH INCORRECT LENGHT\n";
                 $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                fwrite($fh,$data);
+            } else {
+                $fh = fopen($filename, "ab");
+                fwrite($fh, $data);
                 fclose($fh);
             }
-            
+
             $byteswritten += strlen($data);
         }
         $this->writebuffer = array(); // Clear writebuffer
 
         return $byteswritten;
     }
-    
-    
-// #### \/ Below engine public specific methods
 
-
-// #### \/ Bellow are engine private methods    
-
-    private function get_npoints($feedid)
+    /**
+     * @param int $feedid
+     * @param int $start_time
+     * @return array
+     */
+    public function trim($feedid, $start_time)
     {
-        $bytesize = 0;
-        $filename = "feed_$feedid.MYD";
-
-        if (file_exists($this->dir.$filename)) {
-            clearstatcache($this->dir.$filename);
-            $bytesize += filesize($this->dir.$filename);
-        }
-            
-        if (isset($this->writebuffer[$feedid]))
-            $bytesize += strlen($this->writebuffer[$feedid]);
-        return floor($bytesize / 9.0);
-    } 
-
-
-    private function fopendata($filename,$mode)
-    {
-        $fh = @fopen($filename,$mode);
-
-        if (!$fh) {
-            $this->log->warn("PHPTimeSeries:fopendata could not open $filename");
-            return false;
-        }
-        
-        if (!flock($fh, LOCK_EX)) {
-            $this->log->warn("PHPTimeSeries:fopendata $filename locked by another process");
-            fclose($fh);
-            return false;
-        }
-        
-        return $fh;
+        return array('success' => false, 'message' => '"Trim" not available for this storage engine');
     }
 
-
-
-    private function binarysearch($fh,$time,$filesize)
+    /**
+     * @param int $feedid
+     * @return array
+     */
+    public function clear($feedid)
     {
-        // Binary search works by finding the file midpoint and then asking if
-        // the datapoint we want is in the first half or the second half
-        // it then finds the mid point of the half it was in and asks which half
-        // of this new range its in, until it narrows down on the value.
-        // This approach usuall finds the datapoint you want in around 20
-        // itterations compared to the brute force method which may need to
-        // go through the whole file that may be millions of lines to find a
-        // datapoint.
-        $start = 0; $end = $filesize-9;
-
-        // 30 here is our max number of itterations
-        // the position should usually be found within
-        // 20 itterations.
-        for ($i=0; $i<30; $i++)
-        {
-            // Get the value in the middle of our range
-            $mid = $start + round(($end-$start)/18)*9;
-            fseek($fh,$mid);
-            $d = fread($fh,9);
-            $array = @unpack("x/Itime/fvalue",$d);
-
-            // echo "S:$start E:$end M:$mid $time ".$array['time']." ".($time-$array['time'])."\n";
-
-            // If it is the value we want then exit
-            if ($time==$array['time']) return $mid;
-
-            // If the query range is as small as it can be 1 datapoint wide: exit
-            if (($end-$start)==9) return ($mid-9);
-
-            // If the time of the last middle of the range is
-            // more than our query time then next itteration is lower half
-            // less than our query time then nest ittereation is higher half
-            if ($time>$array['time']) $start = $mid; else $end = $mid;
-        }
-    }
-
-    private function binarysearch_exact($fh,$time,$filesize)
-    {
-        if ($filesize==0) return -1;
-        $start = 0; $end = $filesize-9;
-        for ($i=0; $i<30; $i++)
-        {
-            $mid = $start + round(($end-$start)/18)*9;
-            fseek($fh,$mid);
-            $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
-            if ($time==$array['time']) return $mid;
-            if (($end-$start)==9) return -1;
-            if ($time>$array['time']) $start = $mid; else $end = $mid;
-        }
-        return -1;
-    }
-
-    public function trim($feedid,$start_time){
-        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
-    }
-    public function clear($feedid){
-        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+        return array('success' => false, 'message' => '"Clear" not available for this storage engine');
     }
 
 }
