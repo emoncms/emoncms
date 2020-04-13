@@ -1,19 +1,22 @@
 <?php
-/*
-  All Emoncms code is released under the GNU Affero General Public License.
-  See COPYRIGHT.txt and LICENSE.txt.
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
 
-  ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
-*/
+defined('EMONCMS_EXEC') or die;
 
-// no direct access
-defined('EMONCMS_EXEC') or die('Restricted access');
-
-// Return all locale directory from all modules.
-// If one module has a language it will be detected
+/**
+ * Return all locale directory from all modules.
+ * If one module has a language it will be detected
+ *
+ * @param $dir
+ * @return array
+ */
 function directoryLocaleScan($dir) {
     if (isset($dir) && is_readable($dir)) {
         $dlist = Array();
@@ -30,12 +33,17 @@ function directoryLocaleScan($dir) {
     }
 }
 
+/**
+ * @return array
+ */
 function get_available_languages()
 {
    return directoryLocaleScan(dirname(__FILE__));
 }
 
-
+/**
+ * @return array
+ */
 function lang_http_accept()
 {
     $langs = array();
@@ -102,6 +110,9 @@ function set_lang($language)
     set_lang_by_user($lang);
 }
 
+/**
+ * @param $lang
+ */
 function set_lang_by_user($lang)
 {
     $locale = $lang.'.UTF8';
@@ -110,6 +121,9 @@ function set_lang_by_user($lang)
     setlocale(LC_ALL, $locale);
 }
 
+/**
+ * @param $lang
+ */
 function set_emoncms_lang($lang)
 {
     // If no language defined use the browser language
@@ -121,4 +135,3 @@ function set_emoncms_lang($lang)
     }
     global $session;
 }
-

@@ -1,20 +1,18 @@
 <?php
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
 
-/*
+defined('EMONCMS_EXEC') or die;
 
-    All Emoncms code is released under the GNU Affero General Public License.
-    See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-*/
-
-// no direct access
-defined('EMONCMS_EXEC') or die('Restricted access');
-
+/**
+ * @return string
+ */
 function get_application_path()
 {
     // Default to http protocol
@@ -37,6 +35,11 @@ function get_application_path()
     return $path;
 }
 
+/**
+ * @param $mysqli
+ * @param $database
+ * @return bool
+ */
 function db_check($mysqli,$database)
 {
     $result = $mysqli->query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
@@ -44,6 +47,10 @@ function db_check($mysqli,$database)
     if ($row['0']>0) return true; else return false;
 }
 
+/**
+ * @param $controller_name
+ * @return array
+ */
 function controller($controller_name)
 {
     $output = array('content'=>EMPTY_ROUTE);
@@ -64,6 +71,11 @@ function controller($controller_name)
     return $output;
 }
 
+/**
+ * @param $filepath
+ * @param array $args
+ * @return false|string
+ */
 function view($filepath, array $args = array())
 {
     $content = '';
@@ -75,12 +87,12 @@ function view($filepath, array $args = array())
     }
     return $content;
 }
-/** 
+
+/**
  * strip slashes from GET values or null if not set
- * 
- * @param string $index name of $_GET item
- * 
- **/
+ * @param $index name of $_GET item
+ * @return string|null
+ */
 function get($index)
 {
     $val = null;
@@ -89,12 +101,12 @@ function get($index)
     $val = stripslashes($val);
     return $val;
 }
-/** 
+
+/**
  * strip slashes from POST values or null if not set
- * 
- * @param string $index name of $_POST item
- * 
- **/
+ * @param $index name of $_POST item
+ * @return array|string|null
+ */
 function post($index)
 {
     $val = null;
@@ -115,12 +127,12 @@ function post($index)
     }
     return $val;
 }
-/** 
+
+/**
  * strip slashes from POST or GET values or null if not set
- * 
- * @param string $index name of $_POST or $_GET item
- * 
- **/
+ * @param $index name of $_POST or $_GET item
+ * @return array|mixed|string|null
+ */
 function prop($index)
 {
     $val = null;
@@ -135,7 +147,10 @@ function prop($index)
     return $val;
 }
 
-
+/**
+ * @param $index
+ * @return mixed|null
+ */
 function server($index)
 {
     $val = null;
@@ -143,6 +158,10 @@ function server($index)
     return $val;
 }
 
+/**
+ * @param $index
+ * @return array|mixed|string|null
+ */
 function delete($index) {
     parse_str(file_get_contents("php://input"),$_DELETE);//create array with posted (DELETE) method) values
     $val = null;
@@ -155,6 +174,11 @@ function delete($index) {
     }
     return $val;
 }
+
+/**
+ * @param $index
+ * @return array|mixed|string|null
+ */
 function put($index) {
     parse_str(file_get_contents("php://input"),$_PUT);//create array with posted (PUT method) values
     $val = null;
@@ -168,13 +192,18 @@ function put($index) {
     return $val;
 }
 
+/**
+ * @return mixed
+ */
 function version(){
     $version_file = file_get_contents('./version.txt');
     $version = filter_var($version_file, FILTER_SANITIZE_STRING);
     return $version;
 }
 
-
+/**
+ * @return array
+ */
 function load_db_schema()
 {
     $schema = array();
@@ -191,12 +220,11 @@ function load_db_schema()
     }
     return $schema;
 }
+
 /**
  * binds the gettext translations to the correct file and domain/type
- *
- * @param string $path path to the directory containing the .mo files for each language
- * @param [string] $domain
- * @return void
+ * @param $path path to the directory containing the .mo files for each language
+ * @param string $domain
  */
 function load_language_files($path, $domain='messages'){
     // Load language files for module    
@@ -205,6 +233,9 @@ function load_language_files($path, $domain='messages'){
     textdomain($domain);
 }
 
+/**
+ * @return mixed
+ */
 function load_menu()
 {
     $dir = scandir("Modules");
@@ -219,8 +250,11 @@ function load_menu()
             }
         }
     }
-    // add old menu structure if module not updated
-    // @todo: remove this once all users updated (2019-02-15)
+
+    /**
+     * add old menu structure if module not updated
+     * @todo: remove this once all users updated (2019-02-15)
+     */
     if(isset($menu_dropdown_config)) {
         foreach($menu_dropdown_config as $item){
             if(!empty($item['name'])) $item['text'] = $item['name'];
@@ -232,6 +266,9 @@ function load_menu()
     return $menu;
 }
 
+/**
+ * @return array
+ */
 function load_sidebar()
 {
     global $route;
@@ -258,6 +295,12 @@ function load_sidebar()
     return $sidebar;
 }
 
+/**
+ * @param $method
+ * @param $url
+ * @param $data
+ * @return bool|string
+ */
 function http_request($method,$url,$data) {
 
     $options = array();
@@ -282,10 +325,19 @@ function http_request($method,$url,$data) {
     return $resp;
 }
 
+/**
+ * @param $message
+ * @return array
+ */
 function emoncms_error($message) {
     return array("success"=>false, "message"=>$message);
 }
 
+/**
+ * @param $function_name
+ * @param $args
+ * @return mixed
+ */
 function call_hook($function_name, $args){
     // @todo: make args parameter optional
     $dir = scandir("Modules");
@@ -305,15 +357,13 @@ function call_hook($function_name, $args){
     }
 }
 
-// ---------------------------------------------------------------------------------------------------------
 /**
- * return ip address of requesting machine
- * the ip address can be stored in different variables by the system.
+ * return ip address of requesting machine the ip address can be stored in different variables by the system.
  * which variable name may change dependant on different system setups.
  * this function *should return an acceptible value in most cases
- * @todo: more testing on different hardware/opperating systems/proxy servers etc.
  *
- * @return string
+ * @todo: more testing on different hardware/opperating systems/proxy servers etc.
+ * @return mixed|string
  */
 function get_client_ip_env() {
     $ipaddress = filter_var(getenv('REMOTE_ADDR'), FILTER_VALIDATE_IP);

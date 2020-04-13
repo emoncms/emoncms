@@ -1,23 +1,23 @@
 <?php
-/*
-    All Emoncms code is released under the GNU Affero General Public License.
-    See COPYRIGHT.txt and LICENSE.txt.
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
 
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-*/
-
-// no direct access
-defined('EMONCMS_EXEC') or die('Restricted access');
+defined('EMONCMS_EXEC') or die;
 
 require_once('Lib/enum.php');
 
-// Load settings.php
 $settings_error = false;
 
-if(file_exists(dirname(__FILE__)."/settings.php")) {
+/**
+ * Load settings.php
+ */
+if (file_exists(dirname(__FILE__) . "/settings.php")) {
     require_once('default-settings.php');
     require_once('settings.php');
     if (!isset($settings)) {
@@ -26,9 +26,9 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
         //$settings_error_title = "settings.php file error";    
         //$settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
     } else {
-        $settings = array_replace_recursive($_settings,$settings);
+        $settings = array_replace_recursive($_settings, $settings);
     }
-} else if(file_exists(dirname(__FILE__)."/settings.ini")) {
+} else if (file_exists(dirname(__FILE__) . "/settings.ini")) {
     $CONFIG_INI = parse_ini_file("default-settings.ini", true, INI_SCANNER_TYPED);
     $CUSTOM_INI = parse_ini_file("settings.ini", true, INI_SCANNER_TYPED);
 #    $CONFIG_INI = parse_ini_file("default-settings.ini", true);
@@ -55,48 +55,59 @@ if ($settings_error) {
 }
 
 // ---------------------------------------------------------------------------------------
-if (is_dir($settings["emoncms_dir"]."/modules")) {
-    $linked_modules_dir = $settings["emoncms_dir"]."/modules";
+if (is_dir($settings["emoncms_dir"] . "/modules")) {
+    $linked_modules_dir = $settings["emoncms_dir"] . "/modules";
 } else {
     $linked_modules_dir = $settings["emoncms_dir"];
 }
 
-// Set display errors
+/**
+ * Set display errors
+ */
 if (isset($settings["display_errors"]) && ($settings["display_errors"])) {
     error_reporting(E_ALL);
     ini_set('display_errors', 'on');
 }
 
-// ---------------------------------------------------------------------------------------
-// FUNCTIONS
-// ---------------------------------------------------------------------------------------
-
-// This function takes two arrays of settings and merges them, using
-// the value from $overrides where it differs from the one in $defaults.
-function ini_merge($defaults, $overrides) {
+/**
+ * This function takes two arrays of settings and merges them, using
+ * the value from $overrides where it differs from the one in $defaults.
+ * @param $defaults
+ * @param $overrides
+ * @return mixed
+ */
+function ini_merge($defaults, $overrides)
+{
     foreach ($overrides as $k => $v) {
         if (is_array($v)) {
             $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
         } else {
-            $defaults[$k] = resolve_env_vars($v,$defaults[$k]);
+            $defaults[$k] = resolve_env_vars($v, $defaults[$k]);
 #            $defaults[$k] = $v;
         }
     }
 
     return $defaults;
-};
+}
 
-// This function iterates over all the config file entries, replacing values
-// of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
-//
-// This can be useful in containerised setups, or testing environments.
+/**
+ * This function iterates over all the config file entries, replacing values of the format {{VAR_NAME}} with the
+ * environment variable 'VAR_NAME'.
+ * This can be useful in containerised setups, or testing environments.
+ *
+ * @param $value
+ * @return bool|int|string|string[]
+ */
+function resolve_env_vars($value)
+{
 
-function resolve_env_vars($value) {
-    // To do any processing we need a string, and at least one pair of {{ }}
-    // Otherwise just return what we got.
+    /**
+     * To do any processing we need a string, and at least one pair of {{ }}
+     * Otherwise just return what we got.
+     */
     if (!is_string($value) ||
-            strpos($value, '{{') === false ||
-            strpos($value, '}}') === false) {
+        strpos($value, '{{') === false ||
+        strpos($value, '}}') === false) {
         return $value;
     }
 
@@ -109,20 +120,26 @@ function resolve_env_vars($value) {
             return $value;
         }
 
-        $value = str_replace('{{'.$env_name.'}}', $env_value, $value);
+        $value = str_replace('{{' . $env_name . '}}', $env_value, $value);
     }
 
-    // Convert booleans from strings
+    /**
+     * Convert booleans from strings
+     */
     if (strcasecmp($value, "true") == 0) {
         $value = true;
     } else if (strcasecmp($value, 'false') == 0) {
         $value = false;
 
-    // Convert numbers from strings
+        /**
+         * Convert numbers from strings
+         */
     } else if (is_numeric($value)) {
         $value = $value + 0;
     }
 
-    // Set the new value
+    /**
+     * Set the new value
+     */
     return $value;
 }

@@ -1,4 +1,4 @@
-﻿/* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
+/* Copyright (C) 1999 Masanao Izumo <iz@onicos.co.jp>
 * Version: 1.0
 * LastModified: Dec 25 1999
 * This library is free.  You can redistribute it and/or modify it.

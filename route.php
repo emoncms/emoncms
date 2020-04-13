@@ -1,20 +1,18 @@
 <?php
+/**
+ * @package EmonCMS.Site
+ * Emoncms - open source energy visualisation
+ *
+ * @copyright OpenEnergyMonitor project; See COPYRIGHT.txt
+ * @license GNU Affero General Public License; see LICENSE.txt
+ * @link http://openenergymonitor.org
+ */
 
-/*
+defined('EMONCMS_EXEC') or die;
 
-    All Emoncms code is released under the GNU Affero General Public License.
-    See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-*/
-
-// no direct access
-defined('EMONCMS_EXEC') or die('Restricted access');
-
+/**
+ * Class Route
+ */
 class Route
 {
     /**
@@ -41,7 +39,7 @@ class Route
      * @var string
      */
     public $query = '';
-    
+
     /**
      * @var string
      */
@@ -70,7 +68,7 @@ class Route
     }
 
     /**
-     * @param  string $q
+     * @param string $q
      * @param string $documentRoot
      * @param string $requestMethod
      */
@@ -129,15 +127,15 @@ class Route
             $this->subaction2 = $args[3];
         }
         $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        
+
         // allow for method to be added as post variable
-        if(post('_method')=='DELETE') {
+        if (post('_method') == 'DELETE') {
             $this->method = 'DELETE';
-        } elseif(post('_method')=='PUT') {
+        } elseif (post('_method') == 'PUT') {
             $this->method = 'PUT';
-        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        } elseif (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
-        } elseif($requestMethod === 'OPTIONS') {
+        } elseif ($requestMethod === 'OPTIONS') {
             // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Headers: Authorization');
