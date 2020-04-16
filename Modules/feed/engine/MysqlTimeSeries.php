@@ -898,24 +898,29 @@ class MysqlTimeSeries implements engine_methods
         $this->mysqli->query("DROP TABLE $table");
     }
 
-    // Bellow are engine private methods
-
-    private function get_data_type($feedid)
+    public function get_table_name($feedid)
     {
-        if ($this->redis) {
-            return $this->redis->hget("feed:$feedid", "datatype");
+        $feedid = intval($feedid);
+        $name = "";
+        if ($this->prefix) {
+            $name .= $this->prefix;
         }
-        global $mysqli;
-        $result = $mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-        $row = $result->fetch_array();
-        return $row["datatype"];
+        if ($this->generic) {
+            $name .= "".trim($feedid);
+        }
+        else {
+            $name .= $this->get_table($feedid, "name");
+        }
+        return $name;
     }
+
+    // Bellow are engine private methods
 
     private function get_table($feedid, $field=null)
     {
         if ($this->generic) {
             $table = array(
-                "name" => ($this->prefix ? $this->prefix : "").trim($feedid),
+                "name" => $this->get_table_name($feedid),
                 "type" => "FLOAT NOT NULL"
             );
         }
@@ -949,20 +954,15 @@ class MysqlTimeSeries implements engine_methods
         return $table;
     }
 
-    protected function get_table_name($feedid)
+    private function get_data_type($feedid)
     {
-        $feedid = intval($feedid);
-        $name = "";
-        if ($this->prefix) {
-            $name .= $this->prefix;
+        if ($this->redis) {
+            return $this->redis->hget("feed:$feedid", "datatype");
         }
-        if ($this->generic) {
-            $name .= "".trim($feedid);
-        }
-        else {
-            $name .= $this->get_table($feedid, "name");
-        }
-        return $name;
+        global $mysqli;
+        $result = $mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
+        $row = $result->fetch_array();
+        return $row["datatype"];
     }
 
     // Search time in buffer if found update its value and return true 
