@@ -6,15 +6,15 @@ $device = $_GET['node'];
 ?>
 
 <style>
-
 .box {
     padding:20px;
     background-color:#f6f6f6;
     border: 1px solid #ddd;
-}
+    }
 
-.saved { color:#888 };
-
+.saved {
+    color:#888;
+    }
 </style>
 
 <div style="height:20px"></div>
