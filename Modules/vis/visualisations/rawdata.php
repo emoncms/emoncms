@@ -14,6 +14,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
@@ -70,7 +71,7 @@ var backgroundColour = urlParams.colourbg;
 if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
 $("body").css("background-color","#"+backgroundColour);
 document.body.style.setProperty("--bg-vis-graph-color", "#"+backgroundColour);
-  
+
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;
@@ -121,14 +122,14 @@ $(function() {
         $("#info").show();
     }
     draw();
-    
+
     $("#zoomout").click(function () {view.zoomout(); draw();});
     $("#zoomin").click(function () {view.zoomin(); draw();});
     $('#right').click(function () {view.panright(); draw();});
     $('#left').click(function () {view.panleft(); draw();});
     $("#graph-fullscreen").click(function () {view.fullscreen();});
     $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
-    
+
     placeholder.bind("plotselected", function (event, ranges)
     {
         view.start = ranges.xaxis.from;
@@ -162,20 +163,20 @@ $(function() {
     });
 
     function draw()
-    {   
+    {
         view.calc_interval(2400);
         data = feed.getdata(feedid,view.start,view.end,view.interval,average,delta,skipmissing,1);
-        
+
         var out = [];
-        
+
         if (scale!=1) {
             for (var z=0; z<data.length; z++) {
                 var val = data[z][1] * scale;
                 out.push([data[z][0],val]);
             }
             data = out;
-        } 
-       
+        }
+
         var s = stats(data);
         $("#stats-mean").html(s.mean.toFixed(dp)+units);
         $("#stats-min").html(s.minval.toFixed(dp)+units);
@@ -184,7 +185,7 @@ $(function() {
         $("#stats-npoints").html(data.length);
         plot();
     }
-    
+
     function plot()
     {
         var options = {
@@ -200,7 +201,7 @@ $(function() {
         $.plot(placeholder, [{data:data,color: plotColour}], options);
     }
 
-    
+
     // Graph buttons and navigation efects for mouse and touch
     $("#graph").mouseenter(function(){
         $("#graph-navbar").show();
@@ -217,18 +218,18 @@ $(function() {
         $("#graph-buttons").stop().fadeOut();
         $("#stats").stop().fadeOut();
     });
-    
+
     $("#graph").bind("touchended", function (event, ranges)
     {
         $("#graph-buttons").stop().fadeIn();
         $("#stats").stop().fadeIn();
-        view.start = ranges.xaxis.from; 
+        view.start = ranges.xaxis.from;
         view.end = ranges.xaxis.to;
         draw();
     });
 
     $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-    
+
     function vis_resize() {
         var width = placeholder_bound.width();
         var height = width * 0.5;
@@ -240,6 +241,6 @@ $(function() {
         if (embed) placeholder.height($(window).height()-top_offset);
         plot();
     }
-    
+
 });
 </script>

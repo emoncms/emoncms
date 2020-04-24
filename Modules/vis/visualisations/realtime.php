@@ -12,9 +12,10 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
-    
+
 <?php if (!$embed) { ?>
 <h2><?php echo _("Realtime data:"); ?> <?php echo $feedidname; ?></h2>
 <?php } ?>
@@ -109,7 +110,7 @@ function getdp() {
                 if (data[data.length - 1][0] != result.time * 1000) {
                     data.push([result.time * 1000, parseFloat(result.value)]);
                 }
-                
+
                 if (data[1] && data[1][0] < (start)) data.splice(0, 1);
                 data.sort();
             }

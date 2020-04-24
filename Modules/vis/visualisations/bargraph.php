@@ -11,11 +11,12 @@
 
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed, $vis_version;
-    
+
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
@@ -143,14 +144,14 @@ $(function() {
 
     if (embed==false) $("#vis-title").html("<br><h2><?php echo _("Bar graph:") ?> "+feedname+"<h2>");
     draw();
-    
+
     $("#zoomout").click(function () {view.zoomout(); draw();});
     $("#zoomin").click(function () {view.zoomin(); draw();});
     $('#right').click(function () {view.panright(); draw();});
     $('#left').click(function () {view.panleft(); draw();});
-    
+
     $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
-    
+
     $('.graph-interval').click(function () {
         intervalcode=$(this).attr("interval");
 
@@ -169,13 +170,13 @@ $(function() {
         } else {
            timeWindow = 3600000*24*31;
         }
-        
+
         view.start = +new Date - timeWindow;
         view.end = +new Date;
 
         draw();
     });
-    
+
     placeholder.bind("plotselected", function (event, ranges)
     {
         view.start = ranges.xaxis.from;
@@ -207,9 +208,9 @@ $(function() {
             intervalcode='d';
              var ndaysofthemonth= 31;
              var monthid=new Date(item.datapoint[0]).getMonth();
-            if (monthid==1) 
+            if (monthid==1)
                 ndaysofthemonth=28;
-            if (monthid==3 || monthid==5 || monthid==8 || monthid==10) 
+            if (monthid==3 || monthid==5 || monthid==8 || monthid==10)
                 ndaysofthemonth=30;
             timeWindow = 3600000*24*(1+ndaysofthemonth);
             view.start = item.datapoint[0]-3600000*24/2;
@@ -227,13 +228,13 @@ $(function() {
     }
 
    });
-    
+
     placeholder.bind("plothover", function (event, pos, item)
     {
         if (item) {
             if (previousPoint != item.datapoint){
                 previousPoint = item.datapoint;
-                
+
                 var datestr;
                 if (intervalcode=='y')
                     datestr = new Date(item.datapoint[0]).format("yyyy");
@@ -260,41 +261,41 @@ $(function() {
         var d = new Date()
         var n = d.getTimezoneOffset();
         var offset = n / -60;
-    
+
         var datastart = Math.floor(view.start / intervalms) * intervalms;
         var dataend = Math.ceil(view.end / intervalms) * intervalms;
         datastart -= offset * 3600000;
         dataend -= offset * 3600000;
-        
+
         if (interval==86400) {
             data = feed.getdata(feedid,datastart,dataend,"daily",average,delta,0,0,false);
         } else {
             data = feed.getdata(feedid,datastart,dataend,interval,average,delta,0,0,false);
         }
-        
+
         var out = [];
-        
+
         if (scale!=1) {
             for (var z=0; z<data.length; z++) {
                 var val = data[z][1] * scale;
                 out.push([data[z][0],val]);
             }
             data = out;
-        } 
-       
+        }
+
         /* to align the day bar and the day text (not needed if if the ajax request is fixed)
         for (var x=0;x<data.length;x++){
            offset= new Date (data[x][0]).getTimezoneOffset();
            data[x][0]=Math.floor(data[x][0] / intervalms) * intervalms + offset*60000;
         }*/
-       
+
        out = [];
        if (data.length) {
            var year = new Date (data[0][0]).getFullYear();
            var month= new Date (data[0][0]).getMonth();
            var sumtime=0;
            var sum=0;
-     
+
             if (intervalcode=='y'){
                sumtime= new Date (year,0,1);
                for (var x=0;x<data.length;x++){
@@ -330,7 +331,7 @@ $(function() {
         }
         plot();
     }
-    
+
     function plot()
     {
 
@@ -372,7 +373,7 @@ $(function() {
         $("#graph-buttons").stop().fadeOut();
         $("#stats").stop().fadeOut();
     });
-    
+
     placeholder.bind("touchended", function (event, ranges)
     {
         $("#graph-buttons").stop().fadeIn();
@@ -381,9 +382,9 @@ $(function() {
         view.end = ranges.xaxis.to;
         draw();
     });
-    
+
     $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-    
+
     function vis_resize() {
         var width = placeholder_bound.width();
         var height = placeholder_bound.width();

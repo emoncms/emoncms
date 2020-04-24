@@ -11,6 +11,7 @@ global $path, $embed, $vis_version;
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
@@ -50,7 +51,7 @@ feed.apikey = apikey;
 
 var timeWindow = (3600000*24.0*365*5); //Initial time window
 var start = +new Date - timeWindow;    //Get start time
-var end = +new Date; 
+var end = +new Date;
 
 var d = new Date()
 var n = d.getTimezoneOffset();

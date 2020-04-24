@@ -12,6 +12,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js?v=3"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
@@ -25,25 +26,25 @@
     <div style="position:absolute; top:10px; left:0px; width:100%;">
         &nbsp;&nbsp;<span id="out2">Loading...</span><span id="out"></span>
     </div>
-    
+
     <div id="placeholder" style="top: 30px; left:0px;"></div>
-    
+
     <div style="position:relative; width:100%; bottom:-30px;">&nbsp;&nbsp;&nbsp;&nbsp;
         <small id="axislabely"></small><br>&nbsp;&nbsp;<span id="bot_out"></span>
     </div>
-    
+
     <div id="graph-buttons" style="position:absolute; top:45px; right:32px; opacity:0.5; display: none;">
         <div class='btn-group' id="graph-return">
             <button class='btn graph-return' id="return">Back</button>
         </div>
-        
+
         <div class='btn-group'>
             <button class='btn graph-time' time='1'>D</button>
             <button class='btn graph-time' time='7'>W</button>
             <button class='btn graph-time' time='30'>M</button>
             <button class='btn graph-time' time='365'>Y</button>
         </div>
-        
+
         <div class='btn-group' id='graph-navbar' style='display: none;'>
             <button class='btn graph-nav' id='zoomin'>+</button>
             <button class='btn graph-nav' id='zoomout'>-</button>
@@ -107,7 +108,7 @@ function vis_feed_kwh_data_callback(data) {
     kwh_data = data;
     var total = 0, ndays=0;
     for (var z in kwh_data) {
-        total += kwh_data[z][1]; 
+        total += kwh_data[z][1];
         ndays++;
     }
 

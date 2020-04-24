@@ -13,6 +13,7 @@ global $path, $embed, $vis_version;
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 
@@ -72,7 +73,7 @@ view.start = +new Date - timeWindow;
 view.end = +new Date;
 view.limit_x = false;
 
-var kwhd_start = view.start; 
+var kwhd_start = view.start;
 var kwhd_end = view.end;
 var panning = false;
 
@@ -122,7 +123,7 @@ function vis_feed_data() {
                 skipmissing = 1
             }
             feedlist[i].plot.data = feed.getdata(feedlist[i].id,datastart,dataend,interval,0,feedlist[i].delta,skipmissing,0);
-        
+
             if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
         }
     }
@@ -130,8 +131,8 @@ function vis_feed_data() {
     if (feedlist[0].selected) {
         var st = stats(feedlist[0].plot.data);
         $("#stats").html("Average: "+st['mean'].toFixed(0)+"W | "+st['kwh'].toFixed(2)+" kWh");
-    } else { 
-        $("#stats").html(""); 
+    } else {
+        $("#stats").html("");
     }
 
     plot();
@@ -158,7 +159,7 @@ $("#graph").bind("plothover", function (event, pos, item) {
 
 // Graph zooming
 $("#graph").bind("plotselected", function (event, ranges) {
-    view.start = ranges.xaxis.from; 
+    view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
     panning = true; setTimeout(function() {panning = false; }, 100);
@@ -167,9 +168,9 @@ $("#graph").bind("plotselected", function (event, ranges) {
 // Graph click
 $("#graph").bind("plotclick", function (event, pos, item) {
     if (item!=null && feedlist[0].selected == 0 && !panning) {
-        kwhd_start = view.start; 
+        kwhd_start = view.start;
         kwhd_end = view.end;
-        view.start = item.datapoint[0]; 
+        view.start = item.datapoint[0];
         view.end = item.datapoint[0] + (3600000*24.0);
         feedlist[0].selected = 1;
         feedlist[1].selected = 0;
@@ -188,7 +189,7 @@ $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_f
 
 $('#mode').click(function () {
     if ($(this).html() == "kwhd") {
-        view.start = kwhd_start; 
+        view.start = kwhd_start;
         view.end = kwhd_end;
         feedlist[0].selected = 0;
         feedlist[1].selected = 1;
@@ -220,11 +221,11 @@ $("#graph").bind("touchstarted", function (event, pos) {
 $("#graph").bind("touchended", function (event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    view.start = ranges.xaxis.from; 
+    view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
     panning = true; setTimeout(function() {panning = false; }, 100);
 });
-  
+
 </script>
 
