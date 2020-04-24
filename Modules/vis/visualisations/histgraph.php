@@ -28,6 +28,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
@@ -65,7 +66,7 @@
     if (feedid == 0) plotGraph();
 
     $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-    
+
     function vis_resize() {
       $('#graph').width($('#graph_bound').width());
       if (embed) $('#graph').height($(window).height());

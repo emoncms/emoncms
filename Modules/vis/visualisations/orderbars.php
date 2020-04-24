@@ -11,7 +11,8 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
- 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
+
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
@@ -35,10 +36,10 @@
   var feedname = "<?php echo $feedidname; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var delta = <?php echo $delta; ?>;
-  
+
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
-  var end = +new Date; 
+  var end = +new Date;
 
   var d = new Date()
   var n = d.getTimezoneOffset();
@@ -47,12 +48,12 @@
   end = Math.floor(end / 86400000) * 86400000;
   start -= offset * 3600000;
   end -= offset * 3600000;
-  
+
   var graph_data = [];
   vis_feed_data();
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
@@ -63,7 +64,7 @@
   function vis_feed_data()
   {
     graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
-    
+
     if (window.delta==1) {
         var tmp = [];
         for (var n=1; n<graph_data.length; n++) {

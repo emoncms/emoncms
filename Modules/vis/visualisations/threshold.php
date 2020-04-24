@@ -11,6 +11,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
@@ -54,7 +55,7 @@
   var thresholdB = <?php echo $thresholdB; ?>;
 
   var apikey = "<?php echo $apikey; ?>";
-  
+
   var initzoom = urlParams.initzoom;
   if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '7'; // Initial zoom default to 7 days (1 week)
 
@@ -69,7 +70,7 @@
   vis_feed_data();
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
@@ -117,7 +118,7 @@
   $('#right').click(function () {inst_panright(); vis_feed_data();});
   $('#left').click(function () {inst_panleft(); vis_feed_data();});
   $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
-  
+
   // Graph buttons and navigation efects for mouse and touch
   $("#graph").mouseenter(function(){
     $("#graph-navbar").show();
@@ -134,7 +135,7 @@
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
   });
-  
+
   $("#graph").bind("touchended", function (event, ranges)
   {
     $("#graph-buttons").stop().fadeIn();

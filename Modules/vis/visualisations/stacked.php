@@ -11,6 +11,7 @@
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
@@ -30,7 +31,7 @@
   var kwhdA = <?php echo $bottom; ?>;
   var kwhdB = <?php echo $top; ?>;
   var delta = <?php echo $delta; ?>;
-  
+
   var colourb = urlParams.colourb;
   if (colourb==undefined || colourb=='') colourb = "0096ff";
   var colourt = urlParams.colourt;
@@ -49,8 +50,8 @@
 
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
-  var end = +new Date; 
-  
+  var end = +new Date;
+
   var d = new Date()
   var n = d.getTimezoneOffset();
   var offset = n / -60;
@@ -58,7 +59,7 @@
   end = Math.floor(end / 86400000) * 86400000;
   start -= offset * 3600000;
   end -= offset * 3600000;
-  
+
   var dataA = get_feed_data_DMY(kwhdA,start,end,"daily");
   var dataB = get_feed_data_DMY(kwhdB,start,end,"daily");
 
@@ -68,7 +69,7 @@
       if (dataA[n][1]!=null) { start_index = n; break; }
       if (dataB[n][1]!=null) { start_index = n; break; }
   }
-  
+
   if (delta==1) {
       var tmpA = [];
       var tmpB = [];
@@ -97,7 +98,7 @@
   monthsB = get_months(dataB);
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());

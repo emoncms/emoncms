@@ -19,6 +19,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -39,7 +40,7 @@
     var fill = "<?php echo $fill; ?>";
     var depth = "<?php echo $depth; ?>";
     var npoints = "<?php echo $npoints; ?>";
-    
+
     var initzoom = urlParams.initzoom;
     if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '168'; // Initial zoom 7*24=168 hours  (1 week)
 

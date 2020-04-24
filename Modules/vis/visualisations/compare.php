@@ -14,6 +14,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
@@ -101,11 +102,11 @@
   var line_data = [];
 
   var lineAmin,lineBmin,lineAmax,lineBmax;
-  
+
   vis_feed_data();
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     //if (embed) $('#graph').height($(window).height());
@@ -179,22 +180,22 @@
       }
     }
 
-    lineAmin = feedAB.reduce(function(min, obj) { 
-            return obj[0] < min ? obj[0] : min; 
+    lineAmin = feedAB.reduce(function(min, obj) {
+            return obj[0] < min ? obj[0] : min;
           }, Infinity);
-    
-    lineBmin = feedAB.reduce(function(min, obj) { 
-            return obj[1] < min ? obj[1] : min; 
+
+    lineBmin = feedAB.reduce(function(min, obj) {
+            return obj[1] < min ? obj[1] : min;
           }, Infinity);
-          
-    lineAmax = feedAB.reduce(function(max, obj) { 
-            return obj[0] > max ? obj[0] : max; 
+
+    lineAmax = feedAB.reduce(function(max, obj) {
+            return obj[0] > max ? obj[0] : max;
           }, -Infinity);
-    
-    lineBmax = feedAB.reduce(function(max, obj) { 
-            return obj[1] > max ? obj[1] : max; 
+
+    lineBmax = feedAB.reduce(function(max, obj) {
+            return obj[1] > max ? obj[1] : max;
           }, -Infinity);
-    
+
     plot();
   }
 
@@ -223,7 +224,7 @@
     if (lineAoffset == 0) lineAoffset = lineAmin/10;
     lineBoffset=(lineBmax-lineBmin)/10;
     if (lineBoffset == 0) lineBoffset = lineBmin/10;
-    
+
     var plot = $.plot($("#line"), [
       {color:2,data: feedAB, points: { show: true }},
       {color: "#000",data: line_data,lines: { show: true, fill: false }}],{
@@ -259,7 +260,7 @@
     calibration = 1.0 * $("#calibration").val();
     vis_feed_data();
   });
-  
+
   // Graph buttons and navigation efects for mouse and touch
   $("#graph").mouseenter(function(){
     $("#graph-navbar").show();
@@ -276,12 +277,12 @@
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
   });
-  
+
   $("#graph").bind("touchended", function (event, ranges)
   {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    start = ranges.xaxis.from; 
+    start = ranges.xaxis.from;
     end = ranges.xaxis.to;
     vis_feed_data();
   });
