@@ -312,7 +312,7 @@ class User
         $emailer->body("<p>To complete ".$this->appname." registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
         $result = $emailer->send();
         if (!$result['success']) {
-            $this->log->error("Email send returned error. emailto=" + $email . " message='" . $result['message'] . "'");
+            $this->log->error("Email send returned error. emailto=" . $email . " message='" . $result['message'] . "'");
         } else {
             $this->log->info("Email sent to $email");
         }
