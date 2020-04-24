@@ -17,7 +17,7 @@ class Admin {
      * get running status of service
      *
      * @param string $name
-     * @return mixed true == running | false == stopped | null == not installed
+     * @return bool|null true == running | false == stopped | null == not installed
      */
     public static function getServiceStatus($name) {
         @exec('systemctl show '.$name.' | grep State', $exec);
@@ -35,12 +35,16 @@ class Admin {
                 'SubState' => $status["SubState"]
             );
         } else {
-        $return = null;
+            $return = null;
         }
         return $return;
     }
 
-    // Retrieve server information
+    /**
+     * Retrieve server information
+     *
+     * @return array
+     */
     public static function system_information() {
         global $settings, $mysqli;
         $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
@@ -126,6 +130,7 @@ class Admin {
                      'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                      );
       }
+
       /**
        * return array of mounted partitions
        *
@@ -207,12 +212,11 @@ class Admin {
           return $partitions;
       }
 
-
     /**
      * return an array of all installed php modules
      *
      * @param [type] $_modules
-     * @return void
+     * @return array
      */
     public static function php_modules($_modules) {
         natcasesort($_modules);// sort case insensitive
@@ -227,7 +231,7 @@ class Admin {
     /**
      * return true if php is running on raspberry pi
      *
-     * @return boolean
+     * @return bool
      */
     public static function is_Pi() {
         return !empty(@exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:"'));
@@ -327,6 +331,10 @@ class Admin {
         return $v;
     }
 
+    /**
+     * @param array $mem_info
+     * @return array
+     */
     public static function get_ram($mem_info){
         // Ram information
         $sysRam = array_map(function($n) {return '';},array_flip(explode(',','used,raw,percent,table,swap')));
@@ -366,7 +374,7 @@ class Admin {
      * return array of disk mounts with properties separated from original strings
      *
      * @param array $partitions
-     * @return void
+     * @return array
      */
     public static function get_mountpoints($partitions) {
         // Filesystem Information
@@ -421,7 +429,7 @@ class Admin {
     /**
      * return read only state of the file system
      *
-     * @return void
+     * @return string
      */
     public static function get_fs_state(){
         $currentfs = "<b>read-only</b>";
