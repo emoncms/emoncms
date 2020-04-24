@@ -39,7 +39,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.5.0.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
