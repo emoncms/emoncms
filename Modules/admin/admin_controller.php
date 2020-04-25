@@ -315,16 +315,15 @@ function admin_controller()
 
                 if ($route->subaction == 'fs' && $session['admin'])
                 {
-                  if (isset($_POST['argument'])) {
-                    $argument = $_POST['argument'];
+                    if (isset($_POST['argument'])) {
+                        $argument = $_POST['argument'];
                     }
-                  if ($argument == 'ro'){
-                    passthru('rpi-ro');
-
-                  }
-                  if ($argument == 'rw'){
-                    passthru('rpi-rw');
-                  }
+                    if ($argument == 'ro'){
+                        passthru('rpi-ro');
+                    }
+                    if ($argument == 'rw'){
+                        passthru('rpi-rw');
+                    }
                 }
             }
         }
