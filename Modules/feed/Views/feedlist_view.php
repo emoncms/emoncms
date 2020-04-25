@@ -615,8 +615,6 @@ function nodeIntervalClass (feeds) {
     if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
     if (nodeMissed > 8) result.push('status-danger');
     return result.join(' ');
-
-    return result;
 }
 
 
