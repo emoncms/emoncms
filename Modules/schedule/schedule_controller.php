@@ -41,7 +41,7 @@ function schedule_controller()
                 // if public
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $scheduleget['userid']==$session['userid']) {
                     if ($route->action == "delete") $result = $schedule->delete($scheduleid );
-                    if ($route->action == 'set') $result = $schedule->set_fields($scheduleid ,get('fields'));
+                    if ($route->action == 'set') $result = $schedule->set_fields($scheduleid,get('fields'));
                 }
             }
             else

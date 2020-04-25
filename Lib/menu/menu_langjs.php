@@ -11,3 +11,4 @@ function _Tr_Menu(key)
     return LANG_JS_MENU[key] || key;
 }
 </script>
+
