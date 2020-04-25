@@ -319,11 +319,11 @@ function admin_controller()
                     $argument = $_POST['argument'];
                     }
                   if ($argument == 'ro'){
-                    return passthru('rpi-ro');
+                    passthru('rpi-ro');
 
                   }
                   if ($argument == 'rw'){
-                    return passthru('rpi-rw');
+                    passthru('rpi-rw');
                   }
                 }
             }
