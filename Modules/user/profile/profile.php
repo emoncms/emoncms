@@ -21,24 +21,25 @@ $languages = get_available_languages();
 $languages_name = languagecode_to_name($languages);
 //languages order by language name
 $languages_new = array();
-foreach ($languages_name as $key=>$lang){
+foreach ($languages_name as $key => $lang) {
     $languages_new[$key]=$languages[$key];
 }
 $languages= array_values($languages_new);
 $languages_name= array_values($languages_name);
 
 
-function languagecode_to_name($langs) {
+function languagecode_to_name($langs)
+{
     static $lang_names = null;
     if ($lang_names === null) {
         $json_data = file_get_contents(__DIR__.'/language_country.json');
         $lang_names = json_decode($json_data, true);
     }
-    foreach ($langs as $key=>$val){
-      $lang[$key]=$lang_names[$val];
+    foreach ($langs as $key => $val) {
+        $lang[$key]=$lang_names[$val];
     }
-   asort($lang);
-   return $lang;
+    asort($lang);
+    return $lang;
 }
 
 ?>
@@ -114,7 +115,7 @@ function languagecode_to_name($langs) {
           </div>
         </div>
         
-	    <br>
+        <br>
         <div class="account-item">
             <button class="btn btn-danger" id="deleteall"><?php echo _('Delete my account'); ?></button>
         </div>
@@ -133,10 +134,10 @@ function languagecode_to_name($langs) {
               <td style="padding-left:20px">
                 <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
                 <br/>
-	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
-	            </td>
-	          </tr>
-	        </table>
+                  <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
+                </td>
+              </tr>
+            </table>
         </div>
     </div>
     <div class="span8">
@@ -150,13 +151,13 @@ function languagecode_to_name($langs) {
         <div id="preferences-section" class="well hidden">
             <h4><?php echo _('Beta Features'); ?>:
                 <small class="text-info" id="preferences-errors"
-                  data-saved-text="<?php echo _('Saved'); ?>" 
-                  data-error-text="<?php echo _('Error'); ?>" 
+                  data-saved-text="<?php echo _('Saved'); ?>"
+                  data-error-text="<?php echo _('Error'); ?>"
                   data-loading-text="<?php echo _('Saving...'); ?>"
                 ></small>
             </h4>
             <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
-            
+
                 <!-- start preference section  -->
                 <div class="control-group">
                     <label class="control-label"><?php echo _('Device Module Beta'); ?></label>

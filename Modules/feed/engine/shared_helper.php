@@ -14,7 +14,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class SharedHelper
 {
-    public function getTimeZoneFormated($time_in,$timezone) {
+    public function getTimeZoneFormated($time_in, $timezone)
+    {
         if ($timezone) {
             $time = DateTime::createFromFormat("U", (int)$time_in);
             $time->setTimezone(new DateTimeZone($timezone));
@@ -26,11 +27,12 @@ class SharedHelper
 }
 /**
  * Required methods for each engine (Template/Interface for what methods are required)
- * 
- * custom engine methods can be added by extending a new interface with this one. 
+ *
+ * custom engine methods can be added by extending a new interface with this one.
  * use the newly extended interface to implement the custom engine class
  */
-interface engine_methods{
+interface engine_methods
+{
     
     /**
      * Create feed
@@ -38,7 +40,7 @@ interface engine_methods{
      * @param integer $feedid The id of the feed to be created
      * @param array $options for the engine
     */
-    public function create($feedid,$options);
+    public function create($feedid, $options);
     
     /**
      * Delete feed
@@ -69,7 +71,7 @@ interface engine_methods{
      * @param float $value The value of the data point
      * @param array $arg optional padding mode argument
     */
-    public function post($feedid,$feedtime,$value,$arg);
+    public function post($feedid, $feedtime, $value, $arg);
     
     /**
      * Updates a data point in the feed
@@ -78,7 +80,7 @@ interface engine_methods{
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function update($feedid,$feedtime,$value);
+    public function update($feedid, $feedtime, $value);
     
     /**
      * Return the data for the given timerange
@@ -90,7 +92,7 @@ interface engine_methods{
      * @param integer $skipmissing Skip null values from returned data (used by some engines)
      * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
     */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval);
+    public function get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
     
     /**
      * return data in csv format
@@ -98,8 +100,8 @@ interface engine_methods{
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $outinterval The number of seconds for each data point to return 
-     * @param mixed One of the supported timezone names or an offset value (+0200). 
+     * @param integer $outinterval The number of seconds for each data point to return
+     * @param mixed One of the supported timezone names or an offset value (+0200).
      * @return void
      */
 
@@ -112,12 +114,12 @@ interface engine_methods{
      * @see http://php.net/manual/en/timezones.php
      * @return void
      */
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone);    
+    public function csv_export($feedid, $start, $end, $outinterval, $usertimezone);
     
     /**
      * delete all past data for a feed. keeping all the feed settings the same
-     * 
-     * a new feed starttime of "[CURRENT_TIMESTAMP]" is created 
+     *
+     * a new feed starttime of "[CURRENT_TIMESTAMP]" is created
      *
      * @param integer $feedid The id of the feed to fetch from
      * @return array associative array with success and message
@@ -126,13 +128,13 @@ interface engine_methods{
     
     /**
      * delete past data for a feed up to a point.
-     * 
-     * a new feed starttime of "$start_time" is created 
+     *
+     * a new feed starttime of "$start_time" is created
      *
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start_time The unix timestamp in ms of the start of the data range
      * @return array associative array with success and message
-     * 
+     *
      */
     public function trim($feedid, $start_time);
 }

@@ -77,7 +77,7 @@ $_settings = array(
         'enabled' => false,
         // Number of seconds to wait before write buffer to disk - user selectable option
         'sleep' => 60
-    ),   
+    ),
     
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
@@ -182,12 +182,12 @@ $_settings = array(
     
     'host'=>"",
     // 25, 465, 587
-    'port'=>"",  
+    'port'=>"",
     'from_email' => '',
     'from_name' => '',
     // comment lines below that dont apply
     // ssl, tls
-    'encryption'=>"", 
+    'encryption'=>"",
     'username'=>"",
     'password'=>""
 ),

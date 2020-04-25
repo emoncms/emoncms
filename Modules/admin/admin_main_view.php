@@ -7,15 +7,17 @@
     /**
      * Shutdown button
      */
-    function ShutdownBtn(){
-        return '<button id="haltPi" class="btn btn-danger btn-small">'._('Shutdown').'</button>';
-    }
+function ShutdownBtn()
+{
+    return '<button id="haltPi" class="btn btn-danger btn-small">'._('Shutdown').'</button>';
+}
     /**
      * Reboot button
      */
-    function RebootBtn(){
-        return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'._('Reboot').'</button>';
-    }
+function RebootBtn()
+{
+    return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'._('Reboot').'</button>';
+}
 
     /**
      * output a progress bar with the labels and summery below
@@ -25,21 +27,22 @@
      * @param array $summary key/value pairs to show below the progress bar
      * @return string
      */
-    function bar($width,$label,$summary) {
-        $pattern = <<<eot
+function bar($width, $label, $summary)
+{
+    $pattern = <<<eot
         <h5 class="m-0">%s</h5>
         <div class="progress progress-info mb-0">
             <div class="bar" style="width: %s%%"></div>
         </div>
 eot;
-        $markup = sprintf($pattern, $label, $width);
-        $markup .= '<dl class="inline">';
-        foreach($summary as $key=>$value) {
-            $markup .= "<dt class=\"pl-0\">$key</dt><dd>$value</dd>";
-        }
-        $markup .= '</dl>';
-        return $markup;
+    $markup = sprintf($pattern, $label, $width);
+    $markup .= '<dl class="inline">';
+    foreach ($summary as $key => $value) {
+        $markup .= "<dt class=\"pl-0\">$key</dt><dd>$value</dd>";
     }
+    $markup .= '</dl>';
+    return $markup;
+}
     /**
      * return html for single admin page title/value row
      * @param string $title shown as the row title
@@ -47,12 +50,13 @@ eot;
      * @param string $title_css list of css classes to add to the title container
      * @param string $value_css list of css classes to add to the value container
      */
-    function row($title, $value, $title_css = '', $value_css='') {
-        return <<<listItem
+function row($title, $value, $title_css = '', $value_css = '')
+{
+    return <<<listItem
         <dt class="col-sm-2 col-4 text-truncate {$title_css}">{$title}</dt>
         <dd class="col-sm-10 col-8 border-box px-1 {$value_css}">{$value}</dd>
 listItem;
-    }
+}
 ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
@@ -60,8 +64,8 @@ listItem;
 <h2><?php echo _('Administration'); ?></h2>
 
 <div class="admin-container">
-    <?php 
-    // USERS 
+    <?php
+    // USERS
     // -------------------
     ?>
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 text-right pb-2 px-1">
@@ -72,8 +76,8 @@ listItem;
         <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
     </section>
     
-    <?php 
-    // UPDATES 
+    <?php
+    // UPDATES
     // -------------------
     ?>
     <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
@@ -103,10 +107,10 @@ listItem;
         </div>
     </section>
     
-    <?php 
+        <?php
     // EMONCMS UPDATE
     // -------------------
-    ?>
+        ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Emoncms Only'); ?></h4>
@@ -116,10 +120,10 @@ listItem;
         <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
     </aside>
 
-    <?php 
+        <?php
     // EMONHUB UPDATE
     // -------------------
-    ?>
+        ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update EmonHub Only'); ?></h4>
@@ -128,10 +132,10 @@ listItem;
         <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
     </aside>
 
-    <?php 
+        <?php
     // EMONPI UPDATE
     // -------------------
-    ?>
+        ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Firmware Only'); ?></h4>
@@ -150,10 +154,10 @@ listItem;
         </div>
     </aside>
 
-    <?php 
+        <?php
     // DATABASE UPDATE
     // -------------------
-    ?>
+        ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left span6 ml-0">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Database Only'); ?></h4>
@@ -174,7 +178,7 @@ listItem;
             <h3 class="mt-1 mb-0"><?php echo _('Update Log'); ?></h3>
             <p><?php
             // if(is_readable($update_log_filename)) {
-                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'), $update_log_filename);
+                echo sprintf("%s <code>%s</code>", _('View last entries on the logfile:'), $update_log_filename);
             // } else {
                 //echo '<div class="alert alert-warn">';
                 //echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
@@ -204,8 +208,8 @@ listItem;
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Emoncms Log'); ?></h3>
             <p><?php
-            if(is_writable($emoncms_logfile)) {
-                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$emoncms_logfile);
+            if (is_writable($emoncms_logfile)) {
+                echo sprintf("%s <code>%s</code>", _('View last entries on the logfile:'), $emoncms_logfile);
             } else {
                 echo '<div class="alert alert-warn">';
                 echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
@@ -213,7 +217,7 @@ listItem;
             } ?></p>
         </div>
         <div>
-            <?php if(is_writable($emoncms_logfile)) { ?>
+            <?php if (is_writable($emoncms_logfile)) { ?>
                 <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>
@@ -225,14 +229,14 @@ listItem;
     
     <section>
         <pre id="logreply-bound"><div id="logreply"></div></pre>
-        <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
+        <?php if (isset($path_to_config) && is_writable($path_to_config)) { ?>
         <div id="log-level" class="dropup btn-group">
             <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
             <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
             <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
-                <?php foreach ($log_levels as $key=>$value) {
+                <?php foreach ($log_levels as $key => $value) {
                     $active = $key === $log_level ? ' active':'';
                     printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
                 }?>
@@ -248,7 +252,7 @@ listItem;
     
     <?php } ?>
 
-    <?php 
+    <?php
     // SERVER INFO
     // -------------------
     ?>
@@ -266,27 +270,27 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
         <dl class="row">
             <?php
-            foreach ($services as $key=>$value):
+            foreach ($services as $key => $value) :
                 echo row(
                     sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
                     sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
                 );
             endforeach;
-        ?>
+            ?>
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'),$emoncms_version); ?>
+            <?php echo row(_('Version'), $emoncms_version); ?>
             <?php echo row(_('Modules'), $emoncms_modules); ?>
             <?php
             $git_parts = array(
-                row(_('URL'), $system['git_URL'],'','overflow-hidden'),
+                row(_('URL'), $system['git_URL'], '', 'overflow-hidden'),
                 row(_('Branch'), $system['git_branch']),
                 row(_('Describe'), $system['git_describe'])
             );
-            $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
-        ?>
+            $git_details = sprintf('<dl class="row">%s</dl>', implode('', $git_parts));
+            ?>
             <?php echo row(_('Git'), $git_details); ?>
         </dl>
 
@@ -300,7 +304,7 @@ listItem;
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
         <dl class="row">
-            <?php 
+            <?php
             echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), array(
                 'Total'=>$ram_info['total'],
                 'Used'=>$ram_info['used'],
@@ -325,9 +329,10 @@ listItem;
         <br>
         
         <dl class="row">
-            <?php 
-            foreach($disk_info as $mount_info) {
-                echo row($mount_info['mountpoint'], 
+            <?php
+            foreach ($disk_info as $mount_info) {
+                echo row(
+                    $mount_info['mountpoint'],
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
@@ -358,19 +363,19 @@ listItem;
         <dl class="row">
             <?php
             $redis_version_lines[] = row(_('Redis Server'), $redis_info['redis_version']);
-            if(!empty($redis_info['pipRedis'])) {
+            if (!empty($redis_info['pipRedis'])) {
                 $redis_version_lines[] = row(_('Python Redis'), $redis_info['pipRedis']);
             }
-            if(!empty($redis_info['phpRedis'])) {
+            if (!empty($redis_info['phpRedis'])) {
                 $redis_version_lines[] = row(_('PHP Redis'), $redis_info['phpRedis']);
             }
-            echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
+            echo row(_('Version'), sprintf('<dl class="row">%s</dl>', implode('', $redis_version_lines))); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
-            <?php 
-            $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
-            $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
-            $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
-            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
+            <?php
+            $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>', _('Flush'));
+            $redis_keys = sprintf('%s keys', $redis_info['dbSize']);
+            $redis_size = sprintf('(%s)', $redis_info['used_memory_human']);
+            echo row(sprintf('<span class="align-self-center">%s</span>', _('Size')), sprintf('<span id="redisused">%s %s</span>%s', $redis_keys, $redis_size, $redis_flush_btn), 'd-flex', 'd-flex align-items-center justify-content-between');
             ?>
             <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
             
@@ -388,13 +393,13 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
         <dl class="row">
         <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
-        <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
+        <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'], "", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
         </dl>
 
-        <?php if (!empty(implode('',$rpi_info))) : ?>
+        <?php if (!empty(implode('', $rpi_info))) : ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
         <dl class="row">
-            <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
+            <?php echo row(sprintf('<span class="align-self-center">%s</span>', _('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>', 'd-flex', 'd-flex align-items-center justify-content-between') ?>
             <!-- <?php echo row(_('SoC'), $rpi_info['hw']) ?> -->
             <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
             <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>

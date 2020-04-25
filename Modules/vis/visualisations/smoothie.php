@@ -17,7 +17,9 @@
 <?php } ?>
 
 <canvas id="mycanvas" style="width: 100%; height: 100%;"></canvas>
-<?php if (!$embed) { ?> </div> <?php } ?>
+<?php if (!$embed) {
+    ?> </div> <?php
+} ?>
 
 <script id="source" language="javascript" type="text/javascript">
   var feedid = <?php echo $feedid; ?>;

@@ -18,8 +18,7 @@ function time_controller()
 
     $result = false;
 
-    if ($route->action == 'local' && $session['read'])
-    {
+    if ($route->action == 'local' && $session['read']) {
         $userid = (int) $session['userid'];
         $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
@@ -33,8 +32,7 @@ function time_controller()
         }
     }
 
-    if ($route->action == 'server')
-    {
+    if ($route->action == 'server') {
         $result = 't'.date('H,i,s');
     }
 

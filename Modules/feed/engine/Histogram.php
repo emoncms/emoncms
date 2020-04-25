@@ -25,20 +25,20 @@ class Histogram implements engine_methods
      *
      * @param integer $feedid The feedid of the histogram table to be created
     */
-    public function create($feedid,$options)
+    public function create($feedid, $options)
     {
         $feedname = "feed_".$feedid;
         $result = $this->mysqli->query(
-        "CREATE TABLE $feedname (
+            "CREATE TABLE $feedname (
         time INT UNSIGNED, data float, data2 float,
-        INDEX ( `time` )) ENGINE=MYISAM");
+        INDEX ( `time` )) ENGINE=MYISAM"
+        );
 
         return true;
     }
 
     public function get_meta($feedid)
     {
-
     }
 
 // #### /\ Above are required methods
@@ -55,23 +55,25 @@ class Histogram implements engine_methods
      *
      * @return array of power vs kwh
     */
-    public function get_power_vs_kwh($feedid,$start,$end)
+    public function get_power_vs_kwh($feedid, $start, $end)
     {
         $feedid = intval($feedid);
         $start = intval($start);
         $end = intval($end);
 
-        if ($end == 0) $end = time()*1000;
+        if ($end == 0) {
+            $end = time()*1000;
+        }
         $feedname = "feed_".trim($feedid)."";
-        $start = $start/1000; $end = $end/1000;
+        $start = $start/1000;
+        $end = $end/1000;
         $data = array();
 
         // Histogram has an extra dimension so a sum and group by needs to be used.
         $result = $this->mysqli->query("select data2, sum(data) as kWh from $feedname WHERE time>='$start' AND time<'$end' group by data2 order by data2 Asc");
 
         $data = array();                                    // create an array for them
-        while($row = $result->fetch_array())                // for all the new lines
-        {
+        while ($row = $result->fetch_array()) {                // for all the new lines
             $dataValue = $row['kWh'];                       // get the datavalue
             $data2 = $row['data2'];                         // and the instant watts
             $data[] = array($data2 , $dataValue);           // add time and data to the array
@@ -98,7 +100,9 @@ class Histogram implements engine_methods
         $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
 
         $data = array();
-        while($row = $result->fetch_array()) $data[] = array($row['time']* 1000 , $row['kWh']);
+        while ($row = $result->fetch_array()) {
+            $data[] = array($row['time']* 1000 , $row['kWh']);
+        }
 
         return $data;
     }
@@ -120,15 +124,13 @@ class Histogram implements engine_methods
 
         $data = array();
 
-        for ($i=0; $i<count($points)-1; $i++)
-        {
+        for ($i=0; $i<count($points)-1; $i++) {
             $min = intval($points[$i]);
             $max = intval($points[$i+1]);
 
             $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
 
-            while($row = $result->fetch_array())
-            {
+            while ($row = $result->fetch_array()) {
                 if (!isset($data[$row['time']])) {
                     $data[$row['time']] = array(0,0,0,0,0);
                     $data[$row['time']][0] = (int)$row['time'];
@@ -137,36 +139,44 @@ class Histogram implements engine_methods
             }
         }
         $out = array();
-        foreach ($data as $item) $out[] = $item;
+        foreach ($data as $item) {
+            $out[] = $item;
+        }
 
         return $out;
     }
 
     
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid, $start, $end, $outinterval, $usertimezone)
     {
-    
     }
-    public function trim($feedid,$start_time){
+    public function trim($feedid, $start_time)
+    {
         return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
     }
-    public function clear($feedid){
+    public function clear($feedid)
+    {
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 
-    public function delete($feedid){
+    public function delete($feedid)
+    {
         return array('success'=>false,'message'=>'"Delete" not available for this storage engine');
     }
-    public function post($feedid,$time,$value,$arg=null){
+    public function post($feedid, $time, $value, $arg = null)
+    {
         return array('success'=>false,'message'=>'"Post" not available for this storage engine');
     }
-    public function get_feed_size($feedid){
+    public function get_feed_size($feedid)
+    {
         return array('success'=>false,'message'=>'"Get_Feed_Size" not available for this storage engine');
     }
-    public function update($feedid,$time,$value){
+    public function update($feedid, $time, $value)
+    {
         return array('success'=>false,'message'=>'"Update" not available for this storage engine');
     }
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval){
+    public function get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval)
+    {
         return array('success'=>false,'message'=>'"Get_Data" not available for this storage engine');
     }
 }

@@ -10,7 +10,9 @@
     */
 
     global $path, $embed;
-    if (!isset($feedidname)) $feedidname = "";
+if (!isset($feedidname)) {
+    $feedidname = "";
+}
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->

@@ -19,11 +19,19 @@
 
 <?php
     global $path, $embed;
-    if (!$feedid) $feedid = 0;
-    if (!$barwidth) $barwidth = 50;
+if (!$feedid) {
+    $feedid = 0;
+}
+if (!$barwidth) {
+    $barwidth = 50;
+}
 
-    if (!$start) $start = 0;
-    if (!$end) $end = 0;
+if (!$start) {
+    $start = 0;
+}
+if (!$end) {
+    $end = 0;
+}
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->

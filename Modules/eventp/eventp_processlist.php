@@ -26,7 +26,8 @@ class Eventp_ProcessList
 
     // / Below are functions of this module processlist, same name must exist on process_list()
     
-    public function process_list() {
+    public function process_list()
+    {
 
         textdomain("eventp_messages");
           
@@ -95,34 +96,37 @@ class Eventp_ProcessList
               "nochange"=>true,
               "description"=>_("<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.</p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.</p>")
            )
-        ); 
+        );
         return $list;
     }
     
-    public function sendEmail($emailbody, $time, $value, $options) {
+    public function sendEmail($emailbody, $time, $value, $options)
+    {
         global $user, $session, $settings;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
-        if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
+        if (!empty($this->parentProcessModel->timezone)) {
+            $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
+        }
         $timeformated = $timeformated->format("Y-m-d H:i:s");
 
         $tag = array("{id}","{type}","{time}","{value}");
         $replace = array($options['sourceid'],$options['sourcetype'],$timeformated, $value);
         $emailbody = str_replace($tag, $replace, $emailbody);
 
-        if ($options['sourcetype'] == "INPUT"){
+        if ($options['sourcetype'] == "INPUT") {
             $inputdetails = $this->parentProcessModel->input->get_details($options['sourceid']);
             $tag = array("{key}","{name}","{node}");
             $replace = array($inputdetails['name'], $inputdetails['description'], $inputdetails['nodeid']);
             $emailbody = str_replace($tag, $replace, $emailbody);
-        } else if ($options['sourcetype'] == "VIRTUALFEED") {
+        } elseif ($options['sourcetype'] == "VIRTUALFEED") {
             // Not suported for VIRTUAL FEEDS
         }
 
         //need to get an email address from the config file or the form ?
         $emailto = $settings['smtp']['default_emailto'];
 
-        if (!empty($emailto)) { 
+        if (!empty($emailto)) {
             require_once "Lib/email.php";
             $email = new Email();
             //$email->from(from);
@@ -180,10 +184,11 @@ class Eventp_ProcessList
             $redispath = "process:ifRateGtEqualSkip:".$options['sourcetype'].":".$options['sourceid']."_".$this->parentProcessModel->proc_goto;
             //$this->log->info("ifRateGtEqualSkip() time=$time value=$value redispath=$redispath");
             if ($redis->exists($redispath)) {
-                $lastvalue = $redis->hmget($redispath,array('time','value'));
+                $lastvalue = $redis->hmget($redispath, array('time','value'));
                 $change = abs($value - $lastvalue['value']);
-                if ($change >= $arg)
+                if ($change >= $arg) {
                     $this->parentProcessModel->proc_skip_next = true;
+                }
             }
             $redis->hMset($redispath, array('time' => $time, 'value' => $value));
         }
@@ -197,14 +202,14 @@ class Eventp_ProcessList
             $redispath = "process:ifRateLtSkip:".$options['sourcetype'].":".$options['sourceid']."_".$this->parentProcessModel->proc_goto;
             //$this->log->info("ifRateLtSkip() time=$time value=$value redispath=$redispath");
             if ($redis->exists($redispath)) {
-                $lastvalue = $redis->hmget($redispath,array('time','value'));
+                $lastvalue = $redis->hmget($redispath, array('time','value'));
                 $change = abs(floatval($value) - floatval($lastvalue['value']));
-                if ($change < $arg)
+                if ($change < $arg) {
                     $this->parentProcessModel->proc_skip_next = true;
+                }
             }
             $redis->hMset($redispath, array('time' => $time, 'value' => $value));
         }
         return $value;
     }
-
 }

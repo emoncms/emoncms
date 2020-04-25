@@ -3,11 +3,13 @@
     <?php echo _("You can bookmark any page you're on by clicking the star icon (top right)") ?>
 </p>
 
-<section id="bookmarks-container" <?php if (empty($bookmarks)) echo ' class="d-none"' ?>>
+<section id="bookmarks-container" <?php if (empty($bookmarks)) {
+    echo ' class="d-none"';
+                                  } ?>>
     <h4><?php echo _('Rename or remove your bookmarks') ?></h4>
     <ul id="bookmarks" class="list-group" style="display: inline-block">
     <?php if (!empty($bookmarks)) : ?>
-    <?php foreach($bookmarks as $b): ?>
+        <?php foreach ($bookmarks as $b) : ?>
         <li class="list-group-item bookmark">
         <form class="form-inline mb-0" data-read>
             <div class="controls controls-row d-flex align-items-center">
@@ -20,7 +22,7 @@
             </div>
         </form>
         </li>
-    <?php endforeach; ?>
+        <?php endforeach; ?>
     <?php endif; ?>
     </ul>
 </section>

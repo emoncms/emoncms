@@ -32,9 +32,9 @@ td:nth-of-type(2) { width:4%;}
     <li><?php echo _('<b>encryption</b> - An encrypted version of both of the above.'); ?></li>
 </ul>
 
-<p><?php echo _("If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. This was emonCMS' original input method. The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS server as that method provides an option to efficiently upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
+<p><?php echo _("If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. This was emonCMS' original input method. The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS server as that method provides an option to efficiently upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. "); ?></p>
 
-<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the EmonCMS apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
+<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the EmonCMS apikey is used as the pre-shared key for encrypting the data with AES-128-CBC."); ?></p>
 
 <h4><?php echo _('input/post'); ?></h4>
 
@@ -106,7 +106,7 @@ td:nth-of-type(2) { width:4%;}
 
 <h4><?php echo _('Encryption'); ?></h4>
 
-<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/master/docs/input_encrypted.md">PHP Example source code.</a></p>
+<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC."); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/master/docs/input_encrypted.md">PHP Example source code.</a></p>
 
 <p>
 1. Start with a request string conforming with the API options above e.g: node=emontx&data={power1:100,power2:200,power3:300}<br>

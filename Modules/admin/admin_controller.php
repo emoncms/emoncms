@@ -19,7 +19,7 @@ function admin_controller()
     $result = EMPTY_ROUTE;// display missing route message by default
     $message = _('406: Route not found');
     
-    if(!$session['write']) {
+    if (!$session['write']) {
         $result = ''; // empty result shows login page (now redirects once logged in)
         $message = _('Admin re-authentication required');
     }
@@ -63,11 +63,17 @@ function admin_controller()
                 if (isset($_POST['shutdownPi'])) {
                     $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
                 }
-                if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
+                if (isset($shutdownPi)) {
+                    if ($shutdownPi == 'reboot') {
+                        shell_exec('sudo shutdown -r now 2>&1');
+                    } elseif ($shutdownPi == 'halt') {
+                        shell_exec('sudo shutdown -h now 2>&1');
+                    }
+                }
                 // create array of installed services
                 $services = array();
                 $system = Admin::system_information();
-                foreach($system['services'] as $key=>$value) {
+                foreach ($system['services'] as $key => $value) {
                     if (!is_null($system['services'][$key])) {
                         $services[$key] = array(
                             'state' => ucfirst($value['ActiveState']),
@@ -78,7 +84,7 @@ function admin_controller()
                     }
                 }
                 // add custom messages for feedwriter service
-                if(isset($services['feedwriter'])) {
+                if (isset($services['feedwriter'])) {
                     $message = '<font color="red">Service is not running</font>';
                     if ($services['feedwriter']['running']) {
                         $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
@@ -86,7 +92,7 @@ function admin_controller()
                     $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
                 }
                 $redis_info = array();
-                if($settings['redis']['enabled']) {
+                if ($settings['redis']['enabled']) {
                     $redis_info = $redis->info();
                     $redis_info['dbSize'] = $redis->dbSize();
                     $phpRedisPattern = 'Redis Version =>';
@@ -124,12 +130,13 @@ function admin_controller()
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
-            }
-            else if ($route->action == 'db')
-            {
+            } elseif ($route->action == 'db') {
                 $applychanges = get('apply');
-                if (!$applychanges) $applychanges = false;
-                else $applychanges = true;
+                if (!$applychanges) {
+                    $applychanges = false;
+                } else {
+                    $applychanges = true;
+                }
 
                 require_once "Lib/dbschemasetup.php";
 
@@ -137,51 +144,44 @@ function admin_controller()
                 $updates[] = array(
                     'title'=>"Database schema",
                     'description'=>"",
-                    'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+                    'operations'=>db_schema_setup($mysqli, load_db_schema(), $applychanges)
                 );
                 $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
                 return view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
-            }
-
-            else if ($route->action == 'users' && $session['write'])
-            {
+            } elseif ($route->action == 'users' && $session['write']) {
                 return view("Modules/admin/userlist_view.php", array());
-            }
-            else if ($route->action == 'setuser' && $session['write'])
-            {
+            } elseif ($route->action == 'setuser' && $session['write']) {
                 $_SESSION['userid'] = intval(get('id'));
                 header("Location: ../user/view");
                 // stop any other code from running once http header sent
                 exit();
-            }
-            else if ($route->action == 'downloadlog')
-            {
-              if ($settings['log']['enabled']) {
-                header("Content-Type: application/octet-stream");
-                header("Content-Transfer-Encoding: Binary");
-                header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
-                header("Pragma: no-cache");
-                header("Expires: 0");
-                flush();
-                if (file_exists($emoncms_logfile)) {
-                  readfile($emoncms_logfile);
+            } elseif ($route->action == 'downloadlog') {
+                if ($settings['log']['enabled']) {
+                    header("Content-Type: application/octet-stream");
+                    header("Content-Transfer-Encoding: Binary");
+                    header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
+                    header("Pragma: no-cache");
+                    header("Expires: 0");
+                    flush();
+                    if (file_exists($emoncms_logfile)) {
+                        readfile($emoncms_logfile);
+                    } else {
+                        echo($emoncms_logfile . " does not exist!");
+                    }
+                    exit;
                 }
-                else
-                {
-                  echo($emoncms_logfile . " does not exist!");
-                }
-                exit;
-              }
-            }
-            else if ($route->action == 'getlog')
-            {
+            } elseif ($route->action == 'getlog') {
                 $route->format = "text";
-                if (!$settings['log']['enabled']) return "Log is disabled";
-                if (!file_exists($emoncms_logfile)) return "$emoncms_logfile does not exist";
+                if (!$settings['log']['enabled']) {
+                    return "Log is disabled";
+                }
+                if (!file_exists($emoncms_logfile)) {
+                    return "$emoncms_logfile does not exist";
+                }
                 
                 ob_start();
                 // PHP replacement for tail starts here
-                function read_file($file, $lines) 
+                function read_file($file, $lines)
                 {
                     //global $fsize;
                     $handle = fopen($file, "r");
@@ -196,7 +196,9 @@ function admin_controller()
                                 $beginning = true;
                                 break;
                             }
-                            if(!empty($handle)) $t = fgetc($handle);
+                            if (!empty($handle)) {
+                                $t = fgetc($handle);
+                            }
                             $pos --;
                         }
                         $linecounter --;
@@ -204,35 +206,43 @@ function admin_controller()
                              rewind($handle);
                         }
                         $text[$lines-$linecounter-1] = fgets($handle);
-                        if ($beginning) break;
+                        if ($beginning) {
+                            break;
+                        }
                     }
-                    fclose ($handle);
+                    fclose($handle);
                     return array_reverse($text);
                 }
 
-                $fsize = round(filesize($emoncms_logfile)/1024/1024,2);
+                $fsize = round(filesize($emoncms_logfile)/1024/1024, 2);
                 $lines = read_file($emoncms_logfile, 25);
                 
                 foreach ($lines as $line) {
-                  echo $line;
+                    echo $line;
                 } //End PHP replacement for Tail
                 return trim(ob_get_clean());
-            }
-            else if (($settings['interface']['enable_update_ui'] || $settings['interface']['enable_admin_ui']) && $route->action == 'emonpi') {
-                
+            } elseif (($settings['interface']['enable_update_ui'] || $settings['interface']['enable_admin_ui']) && $route->action == 'emonpi') {
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
                     $firmware="";
-                    if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    if (isset($_POST['firmware'])) {
+                        $firmware = $_POST['firmware'];
+                    }
+                    if (!in_array($firmware, array("none","emonpi","rfm69pi","rfm12pi","custom"))) {
+                        return "Invalid firmware type";
+                    }
                     // Type: all, emoncms, firmware
                     $type="";
-                    if (isset($_POST['type'])) $type = $_POST['type'];
-                    if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
+                    if (isset($_POST['type'])) {
+                        $type = $_POST['type'];
+                    }
+                    if (!in_array($type, array("all","emoncms","firmware","emonhub"))) {
+                        return "Invalid update type";
+                    }
                     
                     if ($redis) {
-                        $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                        $redis->rpush("service-runner", "$update_script $type $firmware>$update_logfile");
                         return "service-runner trigger sent";
                     } else {
                         return "redis not running";
@@ -241,29 +251,27 @@ function admin_controller()
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
                     $route->format = "text";
-                    if (!file_exists($update_logfile)) return "$update_logfile does not exist";
+                    if (!file_exists($update_logfile)) {
+                        return "$update_logfile does not exist";
+                    }
                     ob_start();
                     passthru("cat " . $update_logfile);
                     return trim(ob_get_clean());
                 }
                 
-                if ($route->subaction == 'downloadupdatelog' && $session['admin'])
-                {
+                if ($route->subaction == 'downloadupdatelog' && $session['admin']) {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary");
                     header("Content-disposition: attachment; filename=\"" . basename($update_logfile) . "\"");
                     header("Pragma: no-cache");
                     header("Expires: 0");
                     flush();
-                    if (file_exists($update_logfile))
-                    {
-                      ob_start();
-                      readfile($update_logfile);
-                      echo(trim(ob_get_clean()));
-                    }
-                    else
-                    {
-                      echo($update_logfile . " does not exist!");
+                    if (file_exists($update_logfile)) {
+                        ob_start();
+                        readfile($update_logfile);
+                        echo(trim(ob_get_clean()));
+                    } else {
+                        echo($update_logfile . " does not exist!");
                     }
                     exit;
                 }
@@ -271,9 +279,12 @@ function admin_controller()
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     
-                    $fh = @fopen($backup_flag,"w");
-                    if (!$fh) return "ERROR: Can't write the flag $backup_flag.";
-                    else $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
+                    $fh = @fopen($backup_flag, "w");
+                    if (!$fh) {
+                        return "ERROR: Can't write the flag $backup_flag.";
+                    } else {
+                        $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
+                    }
                     @fclose($fh);
                 }
                 
@@ -284,8 +295,7 @@ function admin_controller()
                     return trim(ob_get_clean());
                 }
                 
-                if ($route->subaction == 'downloadbackuplog' && $session['admin'])
-                {
+                if ($route->subaction == 'downloadbackuplog' && $session['admin']) {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary");
                     header("Content-disposition: attachment; filename=\"" . basename($backup_logfile) . "\"");
@@ -293,13 +303,11 @@ function admin_controller()
                     header("Expires: 0");
                     flush();
                     if (file_exists($backup_logfile)) {
-                      ob_start();
-                      readfile($backup_logfile);
-                      echo(trim(ob_get_clean()));
-                    }
-                    else
-                    {
-                      echo($backup_logfile . " does not exist!");
+                        ob_start();
+                        readfile($backup_logfile);
+                        echo(trim(ob_get_clean()));
+                    } else {
+                        echo($backup_logfile . " does not exist!");
                     }
                     exit;
                 }
@@ -313,39 +321,28 @@ function admin_controller()
                     exit;
                 }
 
-                if ($route->subaction == 'fs' && $session['admin'])
-                {
+                if ($route->subaction == 'fs' && $session['admin']) {
                     if (isset($_POST['argument'])) {
                         $argument = $_POST['argument'];
                     }
-                    if ($argument == 'ro'){
+                    if ($argument == 'ro') {
                         passthru('rpi-ro');
                     }
-                    if ($argument == 'rw'){
+                    if ($argument == 'rw') {
                         passthru('rpi-rw');
                     }
                 }
             }
-        }
-        else if ($route->format == 'json')
-        {
-            if ($route->action == 'redisflush' && $session['write'] && $redis)
-            {
+        } elseif ($route->format == 'json') {
+            if ($route->action == 'redisflush' && $session['write'] && $redis) {
                 $redis->flushDB();
                 return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
-            }
-            
-            else if ($route->action == 'numberofusers')
-            {
+            } elseif ($route->action == 'numberofusers') {
                 $route->format = "text";
                 $result = $mysqli->query("SELECT COUNT(*) FROM users");
                 $row = $result->fetch_array();
                 return (int) $row[0];
-            }
-
-            else if ($route->action == 'userlist')
-            {
-
+            } elseif ($route->action == 'userlist') {
                 $limit = "";
                 if (isset($_GET['page']) && isset($_GET['perpage'])) {
                     $page = (int) $_GET['page'];
@@ -356,27 +353,41 @@ function admin_controller()
                 
                 $orderby = "id";
                 if (isset($_GET['orderby'])) {
-                    if ($_GET['orderby']=="id") $orderby = "id";
-                    if ($_GET['orderby']=="username") $orderby = "username";
-                    if ($_GET['orderby']=="email") $orderby = "email";
-                    if ($_GET['orderby']=="email_verified") $orderby = "email_verified";
+                    if ($_GET['orderby']=="id") {
+                        $orderby = "id";
+                    }
+                    if ($_GET['orderby']=="username") {
+                        $orderby = "username";
+                    }
+                    if ($_GET['orderby']=="email") {
+                        $orderby = "email";
+                    }
+                    if ($_GET['orderby']=="email_verified") {
+                        $orderby = "email_verified";
+                    }
                 }
                 
                 $order = "DESC";
                 if (isset($_GET['order'])) {
-                    if ($_GET['order']=="decending") $order = "DESC";
-                    if ($_GET['order']=="ascending") $order = "ASC";
+                    if ($_GET['order']=="decending") {
+                        $order = "DESC";
+                    }
+                    if ($_GET['order']=="ascending") {
+                        $order = "ASC";
+                    }
                 }
                 
                 $search = false;
                 $searchstr = "";
                 if (isset($_GET['search'])) {
                     $search = $_GET['search'];
-                    $search_out = preg_replace('/[^\p{N}\p{L}_\s\-@.]/u','',$search);
-                    if ($search_out!=$search || $search=="") { 
-                        $search = false; 
+                    $search_out = preg_replace('/[^\p{N}\p{L}_\s\-@.]/u', '', $search);
+                    if ($search_out!=$search || $search=="") {
+                        $search = false;
                     }
-                    if ($search!==false) $searchstr = "WHERE username LIKE '%$search%' OR email LIKE '%$search%'";
+                    if ($search!==false) {
+                        $searchstr = "WHERE username LIKE '%$search%' OR email LIKE '%$search%'";
+                    }
                 }
             
                 $data = array();
@@ -387,29 +398,23 @@ function admin_controller()
                     $userid = (int) $row->id;
                     $result1 = $mysqli->query("SELECT * FROM feeds WHERE `userid`='$userid'");
                     $row->feeds = $result1->num_rows;
-                    
                 }
                 return $data;
-            }
-            
-            else if ($route->action == 'setuserfeed' && $session['write'])
-            {
+            } elseif ($route->action == 'setuserfeed' && $session['write']) {
                 $feedid = (int) get("id");
                 $result = $mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
                 $row = $result->fetch_object();
                 $userid = $row->userid;
                 $_SESSION['userid'] = $userid;
                 header("Location: ../user/view");
-            }
-            else if ($route->action == 'system' && $session['write'])
-            {
+            } elseif ($route->action == 'system' && $session['write']) {
                 require "Modules/admin/admin_model.php";
                 global $path, $emoncms_version, $shutdownPi;
 
                 // create array of installed services
                 $services = array();
                 $system = Admin::system_information();
-                foreach($system['services'] as $key=>$value) {
+                foreach ($system['services'] as $key => $value) {
                     if (!is_null($system['services'][$key])) {
                         $services[$key] = array(
                             'state' => ucfirst($value['ActiveState']),
@@ -420,7 +425,7 @@ function admin_controller()
                     }
                 }
                 // add custom messages for feedwriter service
-                if(isset($services['feedwriter'])) {
+                if (isset($services['feedwriter'])) {
                     $message = 'Service is not running';
                     if ($services['feedwriter']['running']) {
                         $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
@@ -449,9 +454,7 @@ function admin_controller()
                 );
                 
                 return $view_data;
-            }
-            else if ($route->action == 'resetwriteload' && $session['write'])
-            {
+            } elseif ($route->action == 'resetwriteload' && $session['write']) {
                 if ($redis) {
                     $redis->del("diskstats:mmcblk0p1");
                     $redis->del("diskstats:mmcblk0p2");
@@ -514,30 +517,31 @@ function admin_controller()
 
         if ($settings['updatelogin']===true) {
             $route->format = 'html';
-            if ($route->action == 'db')
-            {
+            if ($route->action == 'db') {
                 $applychanges = false;
-                if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
+                if (isset($_GET['apply']) && $_GET['apply']==true) {
+                    $applychanges = true;
+                }
 
                 require_once "Lib/dbschemasetup.php";
                 $updates = array(array(
                     'title'=>"Database schema", 'description'=>"",
-                    'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+                    'operations'=>db_schema_setup($mysqli, load_db_schema(), $applychanges)
                 ));
 
                 return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
             }
         } else {
             // user not admin level display login
-            $log->error(sprintf('%s|%s',_('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
+            $log->error(sprintf('%s|%s', _('Not Admin'), implode('/', array_filter(array($route->controller,$route->action,$route->subaction)))));
             $message = urlencode(_('Admin Authentication Required'));
             
-            $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+            $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL)));
             return sprintf(
-                '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>', 
+                '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>',
                 _('Admin Authentication Required'),
                 _('Session timed out or user not Admin'),
-                sprintf("%suser/logout?msg=%s&ref=%s",$path, $message, $referrer),
+                sprintf("%suser/logout?msg=%s&ref=%s", $path, $message, $referrer),
                 _('Re-authenticate to see this page')
             );
         }

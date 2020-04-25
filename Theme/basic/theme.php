@@ -44,7 +44,9 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
 </head>
-<body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
+<body class="fullwidth <?php if (isset($page_classes)) {
+    echo implode(' ', $page_classes);
+                       } ?>">
     <div id="wrap">
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <?php echo $mainmenu; ?>
@@ -61,24 +63,26 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
         
         <div id="sidebar" class="bg-dark text-light">
             <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
+                <?php if (isset($sidebar) && !empty($sidebar)) {
+                    echo $sidebar;
+                } ?>
             </div>
         </div>
         
         <?php
         $contentContainerClasses[] = 'content-container';
         
-        if ($route->controller=="dashboard") { 
+        if ($route->controller=="dashboard") {
             $contentContainerClasses[] = '';
-        } else { 
+        } else {
             $contentContainerClasses[] = 'container-fluid';
         }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+        <main class="<?php echo implode(' ', array_filter(array_unique($contentContainerClasses))) ?>">
             <?php echo $content; ?>
         </main>
     </div><!-- eof #wrap -->
     <div id="footer">
-        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <?php echo dgettext('theme_messages', 'Powered by'); ?>&nbsp;<a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
@@ -92,20 +96,20 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 
 <?php
     // MODULE ICONS
-    if(!empty($menu['includes']['icons'])) :
-?>
+if (!empty($menu['includes']['icons'])) :
+    ?>
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
-        <?php
-        foreach($menu['includes']['icons'] as $icon):
-            echo $icon;
-        endforeach;
-        ?>
+    <?php
+    foreach ($menu['includes']['icons'] as $icon) :
+        echo $icon;
+    endforeach;
+    ?>
     </defs>
 </svg>
-<?php
+    <?php
     // end of module icons
-    endif;
+endif;
 ?>
 </body>
 </html>

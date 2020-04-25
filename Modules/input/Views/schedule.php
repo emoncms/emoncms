@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 global $path;
 $device = $_GET['node'];

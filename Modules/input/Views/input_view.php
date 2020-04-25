@@ -11,7 +11,11 @@
 
 <script>
     var path = "<?php echo $path; ?>";
-    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+    const DEVICE_MODULE = <?php if ($device_module) {
+        echo 'true';
+                          } else {
+                              echo 'false';
+                          } ?>;
 
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
@@ -306,7 +310,9 @@ input.checkbox-lg,
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
-<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
+<?php if ($device_module) {
+    require "Modules/device/Views/device_dialog.php";
+} ?>
 <?php // delete and edit modals
     require "Modules/input/Views/input_dialog.php";
 ?>
@@ -320,6 +326,8 @@ input.checkbox-lg,
     // example values:
     //  - "vis/auto?feedid="
     //  - "graph/"
-    _SETTINGS['feedviewpath'] = "<?php if(isset($feedviewpath)) echo $feedviewpath; ?>";
+    _SETTINGS['feedviewpath'] = "<?php if (isset($feedviewpath)) {
+        echo $feedviewpath;
+                                 } ?>";
 </script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

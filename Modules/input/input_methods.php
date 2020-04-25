@@ -18,7 +18,7 @@ class InputMethods
     private $feed;
     private $redis;
 
-    public function __construct($mysqli,$redis,$user,$input,$feed,$process,$device)
+    public function __construct($mysqli, $redis, $user, $input, $feed, $process, $device)
     {
         $this->mysqli = $mysqli;
         $this->redis = $redis;
@@ -37,7 +37,7 @@ class InputMethods
     // input/post.json?node=10&csv=100,200,300
     // ------------------------------------------------------------------------------------
     public function post($userid)
-    {   
+    {
         // Nodeid
         global $route,$param,$log;
         
@@ -46,11 +46,13 @@ class InputMethods
         
         if ($route->subaction) {
             $nodeid = $route->subaction;
-        } else if ($param->exists('node')) {
+        } elseif ($param->exists('node')) {
             $nodeid = $param->val('node');
         }
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-        if ($nodeid=="") $nodeid = 0;
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u', '', $nodeid);
+        if ($nodeid=="") {
+            $nodeid = 0;
+        }
         
         // Time
         //if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
@@ -58,10 +60,10 @@ class InputMethods
             $inputtime = $param->val('time');
 
             // validate time
-            if (is_numeric($inputtime)){
+            if (is_numeric($inputtime)) {
                 $log->info("Valid time in seconds used ".$inputtime);
                 $time = (int) $inputtime;
-            } elseif (is_string($inputtime)){
+            } elseif (is_string($inputtime)) {
                 if (($timestamp = strtotime($inputtime)) === false) {
                     //If time string is not valid, use system time.
                     $log->warn("Time string not valid ".$inputtime);
@@ -85,16 +87,23 @@ class InputMethods
          * from JSON.  The previous 'json' type is retained for
          * backwards compatibility, since some strings would be parsed
          * differently in the two cases. */
-        if ($param->exists('json')) $datain = $param->val('json');
-        else if ($param->exists('fulljson')) $datain = $param->val('fulljson');
-        else if ($param->exists('csv')) $datain = $param->val('csv');
-        else if ($param->exists('data')) $datain = $param->val('data');
+        if ($param->exists('json')) {
+            $datain = $param->val('json');
+        } elseif ($param->exists('fulljson')) {
+            $datain = $param->val('fulljson');
+        } elseif ($param->exists('csv')) {
+            $datain = $param->val('csv');
+        } elseif ($param->exists('data')) {
+            $datain = $param->val('data');
+        }
 
-        if ($datain=="") return "Request contains no data via csv, json or data tag";
+        if ($datain=="") {
+            return "Request contains no data via csv, json or data tag";
+        }
         
         if ($param->exists('fulljson')) {
             $jsondata = null;
-            $jsondata = json_decode($datain,true,2);
+            $jsondata = json_decode($datain, true, 2);
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
                 // JSON is valid - is it an array
                 //$jsoninput = true;
@@ -106,14 +115,14 @@ class InputMethods
                 // Time set as a parameter takes precedence.
                 if ($param->exists('time')) {
                     $log->info("Time from parameter used");
-                } elseif (array_key_exists('time',$jsondataLC)){
+                } elseif (array_key_exists('time', $jsondataLC)) {
                     $inputtime = $jsondataLC['time'];
 
                     // validate time
-                    if (is_numeric($inputtime)){
+                    if (is_numeric($inputtime)) {
                         $log->info("Valid time in seconds used ".$inputtime);
                         $time = (int) $inputtime;
-                    } elseif (is_string($inputtime)){
+                    } elseif (is_string($inputtime)) {
                         if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
                             $log->warn("Time string not valid ".$inputtime);
@@ -135,29 +144,36 @@ class InputMethods
                 return "Input in not a valid JSON object";
             }
         } else {
-            $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u','',$datain);
+            $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u', '', $datain);
             $datapairs = explode(',', $json);
             
             $inputs = array();
             $csvi = 0;
-            for ($i=0; $i<count($datapairs); $i++)
-            {
+            for ($i=0; $i<count($datapairs); $i++) {
                 $keyvalue = explode(':', $datapairs[$i]);
 
                 if (isset($keyvalue[1])) {
-                    if ($keyvalue[0]=='') return "Format error, json key missing or invalid character";
-                    if (!is_numeric($keyvalue[1]) && $keyvalue[1]!='null') return "Format error, json value is not numeric";
+                    if ($keyvalue[0]=='') {
+                        return "Format error, json key missing or invalid character";
+                    }
+                    if (!is_numeric($keyvalue[1]) && $keyvalue[1]!='null') {
+                        return "Format error, json value is not numeric";
+                    }
                     $inputs[$keyvalue[0]] = (float) $keyvalue[1];
                 } else {
-                    if (!is_numeric($keyvalue[0]) && $keyvalue[0]!='null') return "Format error: csv value is not numeric";
+                    if (!is_numeric($keyvalue[0]) && $keyvalue[0]!='null') {
+                        return "Format error: csv value is not numeric";
+                    }
                     $inputs[$csvi+1] = (float) $keyvalue[0];
                     $csvi ++;
                 }
             }
         }
 
-        $result = $this->process_node($userid,$time,$nodeid,$inputs);
-        if ($result!==true) return $result;
+        $result = $this->process_node($userid, $time, $nodeid, $inputs);
+        if ($result!==true) {
+            return $result;
+        }
         
         return "ok";
     }
@@ -210,9 +226,13 @@ class InputMethods
 
         $len = count($data);
         
-        if ($len==0) return "Format error, json string supplied is not valid";
+        if ($len==0) {
+            return "Format error, json string supplied is not valid";
+        }
         
-        if (!isset($data[$len-1][0])) return "Format error, last item in bulk data does not contain any data";
+        if (!isset($data[$len-1][0])) {
+            return "Format error, last item in bulk data does not contain any data";
+        }
 
         // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
         if ($param->exists('sentat')) {
@@ -231,41 +251,40 @@ class InputMethods
             $time_ref = time() - (int) $data[$len-1][0];
         }
         
-        foreach ($data as $item)
-        {
-            if (count($item)>2)
-            {
+        foreach ($data as $item) {
+            if (count($item)>2) {
                 // check for correct time format
                 $itemtime = (int) $item[0];
 
                 $time = $time_ref + (int) $itemtime;
                 if (!is_object($item[1])) {
-                    $nodeid = $item[1]; 
+                    $nodeid = $item[1];
                 } else {
                     return "Format error, node must not be an object";
                 }
-                if ($nodeid=="") $nodeid = 0;
+                if ($nodeid=="") {
+                    $nodeid = 0;
+                }
 
                 $inputs = array();
                 $name = 1;
-                for ($i=2; $i<count($item); $i++)
-                {
-                    if (is_object($item[$i]))
-                    {
+                for ($i=2; $i<count($item); $i++) {
+                    if (is_object($item[$i])) {
                         $value = (float) current($item[$i]);
                         $inputs[key($item[$i])] = $value;
                         continue;
                     }
-                    if (strlen($item[$i]))
-                    {
+                    if (strlen($item[$i])) {
                         $value = (float) $item[$i];
                         $inputs[$name] = $value;
                     }
                     $name ++;
                 }
 
-                $result = $this->process_node($userid,$time,$nodeid,$inputs);
-                if ($result!==true) return $result;
+                $result = $this->process_node($userid, $time, $nodeid, $inputs);
+                if ($result!==true) {
+                    return $result;
+                }
             }
         }
         
@@ -276,48 +295,54 @@ class InputMethods
     // Register and process the inputs for the node given
     // This function is used by all input methods
     // ------------------------------------------------------------------------------------
-    public function process_node($userid,$time,$nodeid,$inputs)
+    public function process_node($userid, $time, $nodeid, $inputs)
     {
         $dbinputs = $this->input->get_inputs($userid);
         
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u', '', $nodeid);
         
         $validate_access = $this->input->validate_access($dbinputs, $nodeid);
-        if (!$validate_access['success']) return "Error: ".$validate_access['message'];
+        if (!$validate_access['success']) {
+            return "Error: ".$validate_access['message'];
+        }
         
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
-            if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
+            if ($this->device) {
+                $this->device->create($userid, $nodeid, null, null, null);
+            }
         }
         
         $tmp = array();
-        foreach ($inputs as $name => $value)
-        {
-            $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
+        foreach ($inputs as $name => $value) {
+            $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u', '', $name);
             
-            if (!isset($dbinputs[$nodeid][$name]))
-            {
+            if (!isset($dbinputs[$nodeid][$name])) {
                 $inputid = $this->input->create_input($userid, $nodeid, $name);
                 $dbinputs[$nodeid][$name] = true;
                 $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
-                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-            }
-            else
-            {
-                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'], $time, $value);
+            } else {
+                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'], $time, $value);
                 
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array(
+                if ($dbinputs[$nodeid][$name]['processList']) {
+                    $tmp[] = array(
                     'value'=>$value,
                     'processList'=>$dbinputs[$nodeid][$name]['processList'],
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
                     'sourceid'=>$dbinputs[$nodeid][$name]['id'])
-                );
+                    );
+                }
 
-                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
+                if (isset($_GET['mqttpub'])) {
+                    $this->process->publish_to_mqtt("emon/$nodeid/$name", $time, $value);
+                }
             }
         }
 
-        foreach ($tmp as $i) $this->process->input($time,$i['value'],$i['processList'],$i['opt']);
+        foreach ($tmp as $i) {
+            $this->process->input($time, $i['value'], $i['processList'], $i['opt']);
+        }
         
         return true;
     }
@@ -325,19 +350,21 @@ class InputMethods
     // ------------------------------------------------------------------------------------
     // Fall back for older PHP versions
     // ------------------------------------------------------------------------------------
-    private function hex2bin($hexstr) 
-    { 
-        $n = strlen($hexstr); 
-        $sbin="";   
-        $i=0; 
-        while($i<$n) 
-        {       
-            $a =substr($hexstr,$i,2);           
-            $c = pack("H*",$a); 
-            if ($i==0){$sbin=$c;} 
-            else {$sbin.=$c;} 
-            $i+=2; 
-        } 
-        return $sbin; 
+    private function hex2bin($hexstr)
+    {
+        $n = strlen($hexstr);
+        $sbin="";
+        $i=0;
+        while ($i<$n) {
+            $a =substr($hexstr, $i, 2);
+            $c = pack("H*", $a);
+            if ($i==0) {
+                $sbin=$c;
+            } else {
+                $sbin.=$c;
+            }
+            $i+=2;
+        }
+        return $sbin;
     }
 }

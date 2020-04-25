@@ -25,21 +25,21 @@ function _Tr(key)
 ?>
 //START
 // process_ui.js
-LANG_JS["Changed, press to save"] = '<?php echo addslashes(dgettext('process_messages','Changed, press to save')); ?>';
-LANG_JS["Click here for additional information about this process."] = '<?php echo addslashes(dgettext('process_messages','Click here for additional information about this process.')); ?>';
-LANG_JS["Delete"] = '<?php echo addslashes(dgettext('process_messages','Delete')); ?>';
-LANG_JS["Does NOT modify value passed onto next process step."] = '<?php echo addslashes(dgettext('process_messages','Does NOT modify value passed onto next process step.')); ?>';
-LANG_JS["Edit"] = '<?php echo addslashes(dgettext('process_messages','Edit')); ?>';
-LANG_JS["Feed"] = '<?php echo addslashes(dgettext('process_messages','Feed')); ?>';
-LANG_JS["feed last value:"] = '<?php echo addslashes(dgettext('process_messages','feed last value:')); ?>';
-LANG_JS["Input"] = '<?php echo addslashes(dgettext('process_messages','Input')); ?>';
-LANG_JS["input last value:"] = '<?php echo addslashes(dgettext('process_messages','input last value:')); ?>';
-LANG_JS["Modified value passed onto next process step."] = '<?php echo addslashes(dgettext('process_messages','Modified value passed onto next process step.')); ?>';
-LANG_JS["Move down"] = '<?php echo addslashes(dgettext('process_messages','Move down')); ?>';
-LANG_JS["Move up"] = '<?php echo addslashes(dgettext('process_messages','Move up')); ?>';
-LANG_JS["Not modified"] = '<?php echo addslashes(dgettext('process_messages','Not modified')); ?>';
-LANG_JS["Requires REDIS."] = '<?php echo addslashes(dgettext('process_messages','Requires REDIS.')); ?>';
-LANG_JS["Saved"] = '<?php echo addslashes(dgettext('process_messages','Saved')); ?>';
-LANG_JS["Text"] = '<?php echo addslashes(dgettext('process_messages','Text')); ?>';
-LANG_JS["Value"] = '<?php echo addslashes(dgettext('process_messages','Value')); ?>';
+LANG_JS["Changed, press to save"] = '<?php echo addslashes(dgettext('process_messages', 'Changed, press to save')); ?>';
+LANG_JS["Click here for additional information about this process."] = '<?php echo addslashes(dgettext('process_messages', 'Click here for additional information about this process.')); ?>';
+LANG_JS["Delete"] = '<?php echo addslashes(dgettext('process_messages', 'Delete')); ?>';
+LANG_JS["Does NOT modify value passed onto next process step."] = '<?php echo addslashes(dgettext('process_messages', 'Does NOT modify value passed onto next process step.')); ?>';
+LANG_JS["Edit"] = '<?php echo addslashes(dgettext('process_messages', 'Edit')); ?>';
+LANG_JS["Feed"] = '<?php echo addslashes(dgettext('process_messages', 'Feed')); ?>';
+LANG_JS["feed last value:"] = '<?php echo addslashes(dgettext('process_messages', 'feed last value:')); ?>';
+LANG_JS["Input"] = '<?php echo addslashes(dgettext('process_messages', 'Input')); ?>';
+LANG_JS["input last value:"] = '<?php echo addslashes(dgettext('process_messages', 'input last value:')); ?>';
+LANG_JS["Modified value passed onto next process step."] = '<?php echo addslashes(dgettext('process_messages', 'Modified value passed onto next process step.')); ?>';
+LANG_JS["Move down"] = '<?php echo addslashes(dgettext('process_messages', 'Move down')); ?>';
+LANG_JS["Move up"] = '<?php echo addslashes(dgettext('process_messages', 'Move up')); ?>';
+LANG_JS["Not modified"] = '<?php echo addslashes(dgettext('process_messages', 'Not modified')); ?>';
+LANG_JS["Requires REDIS."] = '<?php echo addslashes(dgettext('process_messages', 'Requires REDIS.')); ?>';
+LANG_JS["Saved"] = '<?php echo addslashes(dgettext('process_messages', 'Saved')); ?>';
+LANG_JS["Text"] = '<?php echo addslashes(dgettext('process_messages', 'Text')); ?>';
+LANG_JS["Value"] = '<?php echo addslashes(dgettext('process_messages', 'Value')); ?>';
 //END 

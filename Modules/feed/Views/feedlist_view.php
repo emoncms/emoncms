@@ -215,8 +215,8 @@ body{padding:0!important}
         // add available units from units.php
         include('Lib/units.php');
         if (defined('UNITS')) {
-            foreach(UNITS as $unit){
-                printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
+            foreach (UNITS as $unit) {
+                printf('<option value="%s">%s (%1$s)</option>', $unit['short'], $unit['long']);
             }
         }
         ?>

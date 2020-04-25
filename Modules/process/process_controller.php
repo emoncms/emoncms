@@ -17,27 +17,29 @@ function process_controller()
     global $mysqli, $redis, $user, $session, $route, $settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
-    if (!$session['write']) return array('content'=>false);
+    if (!$session['write']) {
+        return array('content'=>false);
+    }
 
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $settings["feed"]);
+    $feed = new Feed($mysqli, $redis, $settings["feed"]);
 
-    require_once "Modules/input/input_model.php"; 
-    $input = new Input($mysqli,$redis, $feed);
+    require_once "Modules/input/input_model.php";
+    $input = new Input($mysqli, $redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+    $process = new Process($mysqli, $input, $feed, $user->get_timezone($session['userid']));
     
-    if ($route->format == 'html')
-    {
-        if ($route->action == 'api') $result = view("Modules/process/Views/process_api.php", array());
-    }
-
-    else if ($route->format == 'json')
-    {
-        if ($route->action == "list") $result = $process->get_process_list();
+    if ($route->format == 'html') {
+        if ($route->action == 'api') {
+            $result = view("Modules/process/Views/process_api.php", array());
+        }
+    } elseif ($route->format == 'json') {
+        if ($route->action == "list") {
+            $result = $process->get_process_list();
+        }
     }
 
     return array('content'=>$result);

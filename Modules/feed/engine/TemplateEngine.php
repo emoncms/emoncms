@@ -23,10 +23,10 @@ class TemplateEngine implements engine_methods
      * @param integer $feedid The id of the feed to be created
      * @param array $options for the engine
     */
-    public function create($feedid,$options)
+    public function create($feedid, $options)
     {
         $this->log->info("create() dummy feed feedid=$feedid");
-        return true; // if successful 
+        return true; // if successful
     }
 
     /**
@@ -36,7 +36,6 @@ class TemplateEngine implements engine_methods
     */
     public function delete($feedid)
     {
-
     }
 
     /**
@@ -73,9 +72,8 @@ class TemplateEngine implements engine_methods
      * @param float $value The value of the data point
      * @param array $arg optional padding mode argument
     */
-    public function post($feedid,$time,$value,$arg=null)
+    public function post($feedid, $time, $value, $arg = null)
     {
-
     }
 
     /**
@@ -85,23 +83,21 @@ class TemplateEngine implements engine_methods
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function update($feedid,$time,$value)
+    public function update($feedid, $time, $value)
     {
-    
     }
 
     /**
      * scale a portion of a feed
-     * added by Alexandre CUER - january 2019 
+     * added by Alexandre CUER - january 2019
      *
      * @param integer $feedid The id of the feed
      * @param integer $start unix time stamp in ms of the start of the data range
      * @param integer $end unix time stamp in ms of the end of the data rage
-     * @param float $scale : numeric value for the scaling 
+     * @param float $scale : numeric value for the scaling
     */
-    public function scalerange($id,$start,$end,$scale)
+    public function scalerange($id, $start, $end, $scale)
     {
-    
     }
 
     /**
@@ -118,38 +114,34 @@ class TemplateEngine implements engine_methods
      * Return the data for the given timerange - cf shared_helper.php
      *
      * please note that unix timestamps should be expressed in ms cause coming from the js
-     * 
+     *
     */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval)
     {
         $data = array();
 
         // example of datapoint format
         $time = time() * 1000; // time in milliseconds
-        $value = 123.4; 
+        $value = 123.4;
         $data[] = array($time,$value);
 
         return $data;
     }
 
-    public function get_data_DMY($id,$start,$end,$mode,$timezone)
+    public function get_data_DMY($id, $start, $end, $mode, $timezone)
     {
-    
     }
     
-    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
+    public function get_data_DMY_time_of_day($id, $start, $end, $mode, $timezone, $split)
     {
-    
     }
 
-    public function export($feedid,$start)
+    public function export($feedid, $start)
     {
-
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid, $start, $end, $outinterval, $usertimezone)
     {
-
     }
 
 // #### /\ Above are required methods
@@ -158,7 +150,7 @@ class TemplateEngine implements engine_methods
 // #### \/ Below are buffer write methods
 
     // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
+    public function post_bulk_prepare($feedid, $time, $value, $arg = null)
     {
         $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
     }
@@ -167,29 +159,25 @@ class TemplateEngine implements engine_methods
     // Writing data in larger blocks saves reduces disk write load
     public function post_bulk_save()
     {
-        foreach ($this->writebuffer as $feedid=>$data) {
+        foreach ($this->writebuffer as $feedid => $data) {
         // $this->someSaveMechanism->array($data[$p][0],$data[$p][1]);
         }
     }
 
-    public function get_average($id,$start,$end,$interval)
+    public function get_average($id, $start, $end, $interval)
     {
-    
     }
     
-    public function get_average_DMY($id,$start,$end,$mode,$timezone)
+    public function get_average_DMY($id, $start, $end, $mode, $timezone)
     {
-    
     }
     
-    public function upload_fixed_interval($id,$start,$interval,$npoints)
+    public function upload_fixed_interval($id, $start, $interval, $npoints)
     {
-    
     }
     
-    public function upload_variable_interval($feedid,$npoints)
+    public function upload_variable_interval($feedid, $npoints)
     {
-    
     }
     
     /**
@@ -200,7 +188,6 @@ class TemplateEngine implements engine_methods
      */
     public function clear($feedid)
     {
-    
     }
     
     /**
@@ -210,13 +197,11 @@ class TemplateEngine implements engine_methods
      * @param integer $start_time new timestamp to start the feed data from
      * @return boolean
      */
-    public function trim($feedid,$start_time) 
+    public function trim($feedid, $start_time)
     {
-    
     }
 // #### \/ Below engine public specific methods
 
 
-// #### \/ Bellow are engine private methods    
-
+// #### \/ Bellow are engine private methods
 }

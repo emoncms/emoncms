@@ -16,7 +16,9 @@ class PHPFiwa implements engine_methods
     */
     public function __construct($settings)
     {
-        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        if (isset($settings['datadir'])) {
+            $this->dir = $settings['datadir'];
+        }
         $this->log = new EmonLogger(__FILE__);
     }
 
@@ -25,21 +27,22 @@ class PHPFiwa implements engine_methods
      *
      * @param integer $feedid The id of the feed to be created
     */
-    public function create($id,$options)
+    public function create($id, $options)
     {
         $interval = (int) $options['interval'];
-        if ($interval<5) $interval = 5;
+        if ($interval<5) {
+            $interval = 5;
+        }
 
         // Check to ensure we dont overwrite an existing feed
-        if (!$meta = $this->get_meta($id))
-        {
+        if (!$meta = $this->get_meta($id)) {
             $this->log->info("PHPFIWA:create creating feed id=$id");
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->id = $id;
             $meta->start_time = 0;
             
-            // Limitation's on feed interval's so that the next layer can always be produced from an 
+            // Limitation's on feed interval's so that the next layer can always be produced from an
             // integer number of datapoints from the layer below
             
             // layer intervals are also designed for most useful data export, minute, hourly, daily mean
@@ -71,10 +74,12 @@ class PHPFiwa implements engine_methods
             }
             
             // If interval is outside of the allowed layer intervals
-            if ($meta->nlayers==0) return false;
+            if ($meta->nlayers==0) {
+                return false;
+            }
 
             // Save meta data
-            $this->create_meta($id,$meta);
+            $this->create_meta($id, $meta);
             
             $fh = fopen($this->dir.$meta->id."_0.dat", 'c+');
             fclose($fh);
@@ -87,7 +92,9 @@ class PHPFiwa implements engine_methods
         }
 
         $feedname = "$id.meta";
-        if (file_exists($this->dir.$feedname)) return true;
+        if (file_exists($this->dir.$feedname)) {
+            return true;
+        }
         return false;
     }
 
@@ -99,8 +106,8 @@ class PHPFiwa implements engine_methods
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function post($id,$timestamp,$value,$arg=null)
-    {   
+    public function post($id, $timestamp, $value, $arg = null)
+    {
         $this->log->info("PHPFiwa:post id=$id timestamp=$timestamp value=$value");
 
         $id = (int) $id;
@@ -130,7 +137,7 @@ class PHPFiwa implements engine_methods
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints[0] == 0 && $meta->start_time==0) {
             $meta->start_time = $timestamp;
-            $this->create_meta($id,$meta);
+            $this->create_meta($id, $meta);
         }
 
         if ($timestamp < $meta->start_time) {
@@ -148,10 +155,10 @@ class PHPFiwa implements engine_methods
              return false; // updating of datapoints to be made available via update function
         }
         
-        $result = $this->update_layer($meta,$layer,$point,$timestamp,$value);
+        $result = $this->update_layer($meta, $layer, $point, $timestamp, $value);
     }
     
-    private function update_layer($meta,$layer,$point,$timestamp,$value)
+    private function update_layer($meta, $layer, $point, $timestamp, $value)
     {
         $fh = fopen($this->dir.$meta->id."_$layer.dat", 'c+');
         if (!$fh) {
@@ -170,8 +177,7 @@ class PHPFiwa implements engine_methods
         $padding = ($point - $last_point)-1;
         
         if ($padding>0) {
-            if ($this->write_padding($fh,$meta->npoints[$layer],$padding)===false)
-            {
+            if ($this->write_padding($fh, $meta->npoints[$layer], $padding)===false) {
                 // Npadding returned false = max block size was exeeded
                 $this->log->warn("PHPFiwa:update_layer padding max block size exeeded $padding id=".$meta->id);
                 return false;
@@ -179,20 +185,22 @@ class PHPFiwa implements engine_methods
         }
         
         // 2) Write new datapoint
-        fseek($fh,4*$point);
-        if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
+        fseek($fh, 4*$point);
+        if (!is_nan($value)) {
+            fwrite($fh, pack("f", $value));
+        } else {
+            fwrite($fh, pack("f", NAN));
+        }
         
-        if ($point >= $meta->npoints[$layer])
-        {
-          $meta->npoints[$layer] = $point + 1;
+        if ($point >= $meta->npoints[$layer]) {
+            $meta->npoints[$layer] = $point + 1;
         }
         // fclose($fh);
         
         // 3) Averaging
         $layer ++;
 
-        if ($layer<$meta->nlayers)
-        {        
+        if ($layer<$meta->nlayers) {
             $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
             $timestamp_avl = floor($timestamp / $meta->interval[$layer]) * $meta->interval[$layer];
             $point_avl = ($timestamp_avl-$start_time_avl) / $meta->interval[$layer];
@@ -200,13 +208,15 @@ class PHPFiwa implements engine_methods
            
             $first_point = $point - $point_in_avl;
             
-            if ($first_point<0) $first_point = 0;
+            if ($first_point<0) {
+                $first_point = 0;
+            }
             
             // Read in points
             fseek($fh, 4*$first_point);
             $d = fread($fh, 4 * ($point_in_avl+1));
             $count = strlen($d)/4;
-            $d = unpack("f*",$d);
+            $d = unpack("f*", $d);
             fclose($fh);
         
             // Calculate average of points
@@ -216,7 +226,9 @@ class PHPFiwa implements engine_methods
             $i=0;
             while ($count--) {
                 $i++;
-                if (is_nan($d[$i])) continue;   // Skip unknown values
+                if (is_nan($d[$i])) {
+                    continue;   // Skip unknown values
+                }
                 $sum += $d[$i];                 // Summing
                 $sum_count ++;
             }
@@ -227,7 +239,7 @@ class PHPFiwa implements engine_methods
                 $average = NAN;
             }
             
-            $meta = $this->update_layer($meta,$layer,$point_avl,$timestamp_avl,$average);  
+            $meta = $this->update_layer($meta, $layer, $point_avl, $timestamp_avl, $average);
         }
         
         return $meta;
@@ -240,9 +252,8 @@ class PHPFiwa implements engine_methods
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function update($feedid,$time,$value)
+    public function update($feedid, $time, $value)
     {
-    
     }
 
     /**
@@ -254,7 +265,7 @@ class PHPFiwa implements engine_methods
      * @param integer $dp The number of data points to return (used by some engines)
     */
     //CHAVEIRO: this method is deprecated
-    public function get_data_basic($feedid,$start,$end,$dp)
+    public function get_data_basic($feedid, $start, $end, $dp)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
@@ -264,19 +275,29 @@ class PHPFiwa implements engine_methods
         $layer = 0;
 
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($feedid)) {
+            return false;
+        }
 
         // The number of datapoints in the query range:
         $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
         
         // Cant return more datapoints than exists in bottom layer
-        if ($dp>$dp_in_range) $dp = $dp_in_range;
+        if ($dp>$dp_in_range) {
+            $dp = $dp_in_range;
+        }
         
         // Find out the closest layer to the range we have selected
         $dpratio = $dp_in_range / $dp;
-        if ($dpratio > ($meta->interval[1] / $meta->interval[0])) $layer = 1;   
-        if ($dpratio > ($meta->interval[2] / $meta->interval[0])) $layer = 2;
-        if ($dpratio > ($meta->interval[3] / $meta->interval[0])) $layer = 3;
+        if ($dpratio > ($meta->interval[1] / $meta->interval[0])) {
+            $layer = 1;
+        }
+        if ($dpratio > ($meta->interval[2] / $meta->interval[0])) {
+            $layer = 2;
+        }
+        if ($dpratio > ($meta->interval[3] / $meta->interval[0])) {
+            $layer = 3;
+        }
         
         $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
                 
@@ -286,38 +307,44 @@ class PHPFiwa implements engine_methods
         // i.e if we want 1000 datapoints out of 100,000 then we need to get one
         // datapoints every 100 datapoints.
         $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
+        if ($skipsize<1) {
+            $skipsize = 1;
+        }
 
         // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
+        if ($start>$meta->start_time) {
             $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
         } else {
             $startpos = 0;
         }
 
         $data = array();
-        $time = 0; $i = 0;
+        $time = 0;
+        $i = 0;
 
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
         $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
-        while($time<=$end)
-        {
+        while ($time<=$end) {
             // $position steps forward by skipsize every loop
             $pos = ($startpos + ($i * $skipsize));
 
             // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints[$layer]-1) break;
+            if ($pos > $meta->npoints[$layer]-1) {
+                break;
+            }
 
             // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
+            fseek($fh, $pos*4);
+            $val = unpack("f", fread($fh, 4));
 
             // calculate the datapoint time
             $time = $start_time_avl + $pos * $meta->interval[$layer];
 
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+            if (!is_nan($val[1])) {
+                $data[] = array($time*1000,$val[1]);
+            }
 
             $i++;
         }
@@ -330,35 +357,49 @@ class PHPFiwa implements engine_methods
      * @param integer $limitinterval not implemented
      *
      */
-    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
+    public function get_data($feedid, $start, $end, $outinterval, $skipmissing, $limitinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
         $outinterval = (int) $outinterval;
-        if ($outinterval<1) $outinterval = 1;
+        if ($outinterval<1) {
+            $outinterval = 1;
+        }
         
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($feedid)) {
+            return false;
+        }
 
         // 1) Find nearest layer with interval less than request interval
         $layer = 0;
-        if ($meta->nlayers>1 && $outinterval >= $meta->interval[1]) $layer = 1;
-        if ($meta->nlayers>2 && $outinterval >= $meta->interval[2]) $layer = 2;
-        if ($meta->nlayers>3 && $outinterval >= $meta->interval[3]) $layer = 3;
+        if ($meta->nlayers>1 && $outinterval >= $meta->interval[1]) {
+            $layer = 1;
+        }
+        if ($meta->nlayers>2 && $outinterval >= $meta->interval[2]) {
+            $layer = 2;
+        }
+        if ($meta->nlayers>3 && $outinterval >= $meta->interval[3]) {
+            $layer = 3;
+        }
         
         // 2) Calculate the portion of the data file that we need to load:
         $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
         $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
         $endpos = ceil(($end - $start_time_avl) / $meta->interval[$layer]);
-        if ($startpos<0) $startpos = 0;
-        if ($endpos<$startpos) $endpos = $startpos;
+        if ($startpos<0) {
+            $startpos = 0;
+        }
+        if ($endpos<$startpos) {
+            $endpos = $startpos;
+        }
         $dp_in_range = $endpos - $startpos;
         
         // 3) Load data values available in time range
         if ($dp_in_range) {
             $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
-            fseek($fh,$startpos*4);
-            $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
+            fseek($fh, $startpos*4);
+            $layer_values = unpack("f*", fread($fh, 4 * $dp_in_range));
             fclose($fh);
             $dploaded = count($layer_values);
         }
@@ -367,8 +408,7 @@ class PHPFiwa implements engine_methods
 
         $i=0;
         $time0 = 0;
-        while($time0<=$end)
-        {
+        while ($time0<=$end) {
             $time0 = $start + ($outinterval * $i);
             $time1 = $start + ($outinterval * ($i+1));
             $pos0 = round(($time0 - $start_time_avl) / $meta->interval[$layer]);
@@ -376,13 +416,12 @@ class PHPFiwa implements engine_methods
             
             $value = null;
             
-            if ($pos0>=0)
-            {
+            if ($pos0>=0) {
                 $p = $pos0 - $startpos;
                 $point_sum = 0;
                 $points_in_sum = 0;
                 
-                while($p<$pos1-$startpos) {
+                while ($p<$pos1-$startpos) {
                     if (isset($layer_values[$p+1]) && !is_nan($layer_values[$p+1])) {
                         $point_sum += $layer_values[$p+1];
                         $points_in_sum++;
@@ -394,7 +433,7 @@ class PHPFiwa implements engine_methods
                     $value = $point_sum / $points_in_sum;
                     if ($value !== null) {
                          $value = (float)$value;
-                    } 
+                    }
                 }
             }
             
@@ -418,31 +457,30 @@ class PHPFiwa implements engine_methods
         $id = (int) $id;
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
-        if ($meta->npoints[0]>0)
-        {
+        if (!$meta = $this->get_meta($id)) {
+            return false;
+        }
+        if ($meta->npoints[0]>0) {
             $fh = fopen($this->dir.$meta->id."_0.dat", 'rb');
             $size = $meta->npoints[0]*4;
-            fseek($fh,$size-4);
-            $d = fread($fh,4);
+            fseek($fh, $size-4);
+            $d = fread($fh, 4);
             fclose($fh);
 
-	    $value = null;
-            $val = unpack("f",$d);
+            $value = null;
+            $val = unpack("f", $d);
             $time = $meta->start_time + $meta->interval[0] * $meta->npoints[0];
 
             if (!is_nan($val[1])) {
                 $value = (float) $val[1];
-            } 
+            }
             return array('time'=>(int)$time, 'value'=>$value);
-        }
-        else
-        {
+        } else {
             return array('time'=>(int)0, 'value'=>(float)0);
         }
     }
     
-    public function export($id,$start,$layer)
+    public function export($id, $start, $layer)
     {
         $id = (int) $id;
         $start = (int) $start;
@@ -468,30 +506,36 @@ class PHPFiwa implements engine_methods
         header("Pragma: no-cache");
 
         // Write to output stream
-        $fh = @fopen( 'php://output', 'w' );
+        $fh = @fopen('php://output', 'w');
         
         $primary = fopen($this->dir.$feedname, 'rb');
         $primarysize = filesize($this->dir.$feedname);
         
         $localsize = $start;
         $localsize = intval($localsize / 4) * 4;
-        if ($localsize<0) $localsize = 0;
+        if ($localsize<0) {
+            $localsize = 0;
+        }
 
         // Get the first point which will be updated rather than appended
-        if ($localsize>=4) $localsize = $localsize - 4;
+        if ($localsize>=4) {
+            $localsize = $localsize - 4;
+        }
         
-        fseek($primary,$localsize);
+        fseek($primary, $localsize);
         $left_to_read = $primarysize - $localsize;
-        if ($left_to_read>0){
-            do
-            {
-                if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+        if ($left_to_read>0) {
+            do {
+                if ($left_to_read>8192) {
+                    $readsize = 8192;
+                } else {
+                    $readsize = $left_to_read;
+                }
                 $left_to_read -= $readsize;
 
-                $data = fread($primary,$readsize);
-                fwrite($fh,$data);
-            }
-            while ($left_to_read>0);
+                $data = fread($primary, $readsize);
+                fwrite($fh, $data);
+            } while ($left_to_read>0);
         }
         fclose($primary);
         fclose($fh);
@@ -500,17 +544,20 @@ class PHPFiwa implements engine_methods
     
     public function delete($id)
     {
-        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta = $this->get_meta($id)) {
+            return false;
+        }
         unlink($this->dir.$meta->id.".meta");
-        for ($i=0; $i<$meta->nlayers; $i++)
-        {
-          unlink($this->dir.$meta->id."_$i.dat");
+        for ($i=0; $i<$meta->nlayers; $i++) {
+            unlink($this->dir.$meta->id."_$i.dat");
         }
     }
     
     public function get_feed_size($id)
     {
-        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta = $this->get_meta($id)) {
+            return false;
+        }
         
         $size = 0;
         $size += filesize($this->dir.$meta->id.".meta");
@@ -538,11 +585,11 @@ class PHPFiwa implements engine_methods
         
         $metafile = fopen($this->dir.$feedname, 'rb');
 
-        $tmp = unpack("I",fread($metafile,4));
-        $tmp = unpack("I",fread($metafile,4)); 
+        $tmp = unpack("I", fread($metafile, 4));
+        $tmp = unpack("I", fread($metafile, 4));
         $meta->start_time = $tmp[1];
         
-        $tmp = unpack("I",fread($metafile,4)); 
+        $tmp = unpack("I", fread($metafile, 4));
         $meta->nlayers = $tmp[1];
         
         if ($meta->nlayers<1 || $meta->nlayers>4) {
@@ -551,26 +598,23 @@ class PHPFiwa implements engine_methods
         }
         
         $meta->npoints = array();
-        for ($i=0; $i<$meta->nlayers; $i++)
-        {
-          $tmp = unpack("I",fread($metafile,4)); 
-          $meta->npoints[$i] = $tmp[1];
+        for ($i=0; $i<$meta->nlayers; $i++) {
+            $tmp = unpack("I", fread($metafile, 4));
+            $meta->npoints[$i] = $tmp[1];
         }
         
         $meta->interval = array();
-        for ($i=0; $i<$meta->nlayers; $i++)
-        {
-          $tmp = unpack("I",fread($metafile,4)); 
-          $meta->interval[$i] = $tmp[1];
+        for ($i=0; $i<$meta->nlayers; $i++) {
+            $tmp = unpack("I", fread($metafile, 4));
+            $meta->interval[$i] = $tmp[1];
         }
         
         fclose($metafile);
    
         $meta->npoints = array();
-        for ($i=0; $i<$meta->nlayers; $i++)
-        {
-          clearstatcache($this->dir.$meta->id."_$i.dat");
-          $meta->npoints[$i] = floor(filesize($this->dir.$meta->id."_$i.dat") / 4.0);
+        for ($i=0; $i<$meta->nlayers; $i++) {
+            clearstatcache($this->dir.$meta->id."_$i.dat");
+            $meta->npoints[$i] = floor(filesize($this->dir.$meta->id."_$i.dat") / 4.0);
         }
         
         
@@ -585,7 +629,7 @@ class PHPFiwa implements engine_methods
         return $meta;
     }
 
-    public function create_meta($id,$meta)
+    public function create_meta($id, $meta)
     {
         $id = (int) $id;
         $feedname = "$id.meta";
@@ -603,16 +647,20 @@ class PHPFiwa implements engine_methods
             return false;
         }
         
-        fwrite($metafile,pack("I",$meta->id));
-        fwrite($metafile,pack("I",$meta->start_time)); 
-        fwrite($metafile,pack("I",$meta->nlayers));
-        foreach ($meta->npoints as $n) fwrite($metafile,pack("I",0));       // Legacy
-        foreach ($meta->interval as $d) fwrite($metafile,pack("I",$d));
+        fwrite($metafile, pack("I", $meta->id));
+        fwrite($metafile, pack("I", $meta->start_time));
+        fwrite($metafile, pack("I", $meta->nlayers));
+        foreach ($meta->npoints as $n) {
+            fwrite($metafile, pack("I", 0));       // Legacy
+        }
+        foreach ($meta->interval as $d) {
+            fwrite($metafile, pack("I", $d));
+        }
         
         fclose($metafile);
     }
     
-    private function write_padding($fh,$npoints,$npadding)
+    private function write_padding($fh, $npoints, $npadding)
     {
         $tsdb_max_padding_block = 1024 * 1024;
         
@@ -625,29 +673,30 @@ class PHPFiwa implements engine_methods
         $pointsperblock = $tsdb_max_padding_block / 4; // 262144
 
         // If needed is less than max set to padding needed:
-        if ($npadding < $pointsperblock) $pointsperblock = $npadding;
+        if ($npadding < $pointsperblock) {
+            $pointsperblock = $npadding;
+        }
 
         // Fill padding buffer
         $buf = '';
         for ($n = 0; $n < $pointsperblock; $n++) {
-            $buf .= pack("f",NAN);
+            $buf .= pack("f", NAN);
         }
 
-        fseek($fh,4*$npoints);
+        fseek($fh, 4*$npoints);
 
         do {
-            if ($npadding < $pointsperblock) 
-            { 
+            if ($npadding < $pointsperblock) {
                 $pointsperblock = $npadding;
-                $buf = ''; 
+                $buf = '';
                 for ($n = 0; $n < $pointsperblock; $n++) {
-                    $buf .= pack("f",NAN);
+                    $buf .= pack("f", NAN);
                 }
             }
             
             fwrite($fh, $buf);
             $npadding -= $pointsperblock;
-        } while ($npadding); 
+        } while ($npadding);
     }
     
     public function recompile($meta)
@@ -664,13 +713,16 @@ class PHPFiwa implements engine_methods
         
         $fh = fopen($this->dir.$meta->id."_$layer.dat", 'c+');
         $fh1 = fopen($this->dir.$meta->id."_1.dat", 'c+');
-        $fh2 = fopen($this->dir.$meta->id."_2.dat", 'c+');    
+        $fh2 = fopen($this->dir.$meta->id."_2.dat", 'c+');
         $fh3 = fopen($this->dir.$meta->id."_3.dat", 'c+');
                   
         $pos = 0;
-        $sum1 = 0; $n1=0;
-        $sum2 = 0; $n2=0; 
-        $sum3 = 0; $n3=0; 
+        $sum1 = 0;
+        $n1=0;
+        $sum2 = 0;
+        $n2=0;
+        $sum3 = 0;
+        $n3=0;
                        
         $timestamp = $meta->start_time;
         $interval0 = $meta->interval[0];
@@ -697,68 +749,71 @@ class PHPFiwa implements engine_methods
         //print $offset;
         $mtime = microtime(true);
         
-        while($d = fread($fh,3600))
-        {
-        
+        while ($d = fread($fh, 3600)) {
             $count = strlen($d)/4;
-            $d = unpack("f*",$d);
+            $d = unpack("f*", $d);
             
             $buf1 = '';
             $buf2 = '';
             $buf3 = '';
             
-            for ($i=1; $i<$count+1; $i++)
-            {
-              if (($pos + $offset1) % $ratio1 == 0)
-              {
-                if ($n1) {
-                    $buf1 .= pack("f",$sum1/$n1);
-                } else {
-                    $buf1 .= pack("f",NAN);
+            for ($i=1; $i<$count+1; $i++) {
+                if (($pos + $offset1) % $ratio1 == 0) {
+                    if ($n1) {
+                        $buf1 .= pack("f", $sum1/$n1);
+                    } else {
+                        $buf1 .= pack("f", NAN);
+                    }
+                    $npoints1++;
+                    $sum1 = 0;
+                    $n1=0;
                 }
-                $npoints1++;
-                $sum1 = 0; $n1=0;
-                
-              }
               
-              if (($pos + $offset2) % $ratio2 == 0)
-              {
-                if ($n2) {
-                    $buf2 .= pack("f",$sum2/$n2);
-                } else {
-                    $buf2 .= pack("f",NAN);
+                if (($pos + $offset2) % $ratio2 == 0) {
+                    if ($n2) {
+                        $buf2 .= pack("f", $sum2/$n2);
+                    } else {
+                        $buf2 .= pack("f", NAN);
+                    }
+                    $npoints2++;
+                    $sum2 = 0;
+                    $n2=0;
                 }
-                $npoints2++;
-                $sum2 = 0; $n2=0;
-              }
               
-              if (($pos + $offset3) % $ratio3 == 0)
-              {
-                if ($n3) {
-                    $buf3 .= pack("f",$sum3/$n3);
-                } else {
-                    $buf3 .= pack("f",NAN);
+                if (($pos + $offset3) % $ratio3 == 0) {
+                    if ($n3) {
+                        $buf3 .= pack("f", $sum3/$n3);
+                    } else {
+                        $buf3 .= pack("f", NAN);
+                    }
+                    $npoints3++;
+                    $sum3 = 0;
+                    $n3=0;
                 }
-                $npoints3++;
-                $sum3 = 0; $n3=0;
-              }
               
-              $val = $d[$i];
-              if (!is_nan($val)) { 
-                $sum1 += $val; $n1++;
-                $sum2 += $val; $n2++;
-                $sum3 += $val; $n3++;
-              }
+                $val = $d[$i];
+                if (!is_nan($val)) {
+                    $sum1 += $val;
+                    $n1++;
+                    $sum2 += $val;
+                    $n2++;
+                    $sum3 += $val;
+                    $n3++;
+                }
 
-              $pos++;
-              $timestamp += $interval0;
-              
+                $pos++;
+                $timestamp += $interval0;
             }
             
-            if ($buf1!='') fwrite($fh1,$buf1);
-            if ($buf2!='') fwrite($fh2,$buf2);
-            if ($buf3!='') fwrite($fh3,$buf3);
-            
+            if ($buf1!='') {
+                fwrite($fh1, $buf1);
+            }
+            if ($buf2!='') {
+                fwrite($fh2, $buf2);
+            }
+            if ($buf3!='') {
+                fwrite($fh3, $buf3);
+            }
         }
         
         fclose($fh);
@@ -771,7 +826,7 @@ class PHPFiwa implements engine_methods
         return $meta;
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid, $start, $end, $outinterval, $usertimezone)
     {
         global $settings;
         require_once "Modules/feed/engine/shared_helper.php";
@@ -785,26 +840,38 @@ class PHPFiwa implements engine_methods
         $layer = 0;
 
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($feedid)) {
+            return false;
+        }
 
-        if ($outinterval<$meta->interval[0]) $outinterval = $meta->interval[0];
+        if ($outinterval<$meta->interval[0]) {
+            $outinterval = $meta->interval[0];
+        }
         $dp = floor(($end - $start) / $outinterval);
-        if ($dp<1) return false;
+        if ($dp<1) {
+            return false;
+        }
         
         $end = $start + ($dp * $outinterval);
         
         $dpratio = $outinterval / $meta->interval[0];
         
         if ($meta->nlayers>1) {
-          if ($dpratio >= ($meta->interval[1] / $meta->interval[0])) $layer = 1;
-        }   
+            if ($dpratio >= ($meta->interval[1] / $meta->interval[0])) {
+                $layer = 1;
+            }
+        }
         
         if ($meta->nlayers>2) {
-          if ($dpratio >= ($meta->interval[2] / $meta->interval[0])) $layer = 2;
+            if ($dpratio >= ($meta->interval[2] / $meta->interval[0])) {
+                $layer = 2;
+            }
         }
         
         if ($meta->nlayers>3) {
-          if ($dpratio >= ($meta->interval[3] / $meta->interval[0])) $layer = 3;
+            if ($dpratio >= ($meta->interval[3] / $meta->interval[0])) {
+                $layer = 3;
+            }
         }
         
         $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
@@ -815,10 +882,12 @@ class PHPFiwa implements engine_methods
         // i.e if we want 1000 datapoints out of 100,000 then we need to get one
         // datapoints every 100 datapoints.
         $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
+        if ($skipsize<1) {
+            $skipsize = 1;
+        }
 
         // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
+        if ($start>$meta->start_time) {
             $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
         } else {
             $startpos = 0;
@@ -837,7 +906,7 @@ class PHPFiwa implements engine_methods
         header("Pragma: no-cache");
 
         // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
+        $exportfh = @fopen('php://output', 'w');
 
         $data = array();
         $i = 0;
@@ -846,15 +915,14 @@ class PHPFiwa implements engine_methods
         // datapoint that is beyond the end of our query range
         $mstart = microtime(true);
         $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
-        fseek($fh,$startpos*4);
-        $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
+        fseek($fh, $startpos*4);
+        $layer_values = unpack("f*", fread($fh, 4 * $dp_in_range));
         fclose($fh);
 
         $count = count($layer_values)-1;
         
         $naverage = $skipsize;
-        for ($i=1; $i<$count-$naverage; $i+=$naverage)
-        {
+        for ($i=1; $i<$count-$naverage; $i+=$naverage) {
             // Calculate the average value of each block
             $point_sum = 0;
             $points_in_sum = 0;
@@ -872,18 +940,20 @@ class PHPFiwa implements engine_methods
                 $time = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
                 $average = $point_sum / $points_in_sum;
                 //$data[] = array($time*1000,$average);
-                $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($average,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
+                $timenew = $helperclass->getTimeZoneFormated($time, $usertimezone);
+                fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($average, $settings["feed"]["csv_decimal_places"], $settings["feed"]["csv_decimal_place_separator"], '')."\n");
             }
         }
         
         fclose($exportfh);
         exit;
     }
-    public function trim($feedid,$start_time){
+    public function trim($feedid, $start_time)
+    {
         return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
     }
-    public function clear($feedid){
+    public function clear($feedid)
+    {
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 }

@@ -23,10 +23,10 @@ $mqtt = new Mosquitto\Client('Emoncms input publish example');
 $qos = 2;
 $topic = 'emoncms';
 // callback functions
-$mqtt->onConnect(function() use ($mqtt, $qos, $topic) {
+$mqtt->onConnect(function () use ($mqtt, $qos, $topic) {
     // on connect publish messages
     // publish (topic, payload, QoS)
-    $mqtt->publish("emoncms/input/5","100,200,300", $qos);
+    $mqtt->publish("emoncms/input/5", "100,200,300", $qos);
     $mqtt->publish("emoncms/input/10/power", 350.3, $qos);
     $mqtt->publish("emoncms/input/house/power", 2500, $qos);
     $mqtt->publish("emoncms/input/house/temperature", 18.2, $qos);
@@ -37,17 +37,20 @@ $mqtt->onConnect(function() use ($mqtt, $qos, $topic) {
         'csv'=>array(200,300,400)
     );
     // publish message with json payload
-    $mqtt->publish("emoncms/input",json_encode($m), $qos);
-    
+    $mqtt->publish("emoncms/input", json_encode($m), $qos);
 });
-$mqtt->onPublish(function($message_id){
+$mqtt->onPublish(function ($message_id) {
     printf("published %s\n", $message_id);
     
     global $mqtt;
-    if ($message_id==5) $mqtt->disconnect();
+    if ($message_id==5) {
+        $mqtt->disconnect();
+    }
 });
-$mqtt->onDisconnect( function() { echo "Disconnected cleanly\n"; });
+$mqtt->onDisconnect(function () {
+    echo "Disconnected cleanly\n";
+});
 
-$mqtt->setCredentials($mqtt_server['user'],$mqtt_server['password']);
+$mqtt->setCredentials($mqtt_server['user'], $mqtt_server['password']);
 $mqtt->connect($mqtt_server['host'], $mqtt_server['port'], 5);
 $mqtt->loopForever();

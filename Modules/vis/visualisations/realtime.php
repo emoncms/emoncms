@@ -7,7 +7,7 @@
    Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
     global $path, $embed;
- ?>
+?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>

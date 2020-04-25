@@ -25,7 +25,8 @@ class Schedule_ProcessList
         $this->schedule = new Schedule($parent->mysqli, $parent->timezone);
     }
 
-    public function process_list() {
+    public function process_list()
+    {
         
         textdomain("schedule_messages");
         
@@ -79,19 +80,23 @@ class Schedule_ProcessList
     }
     // / Below are functions of this module processlist, same name must exist on process_list()
     
-    public function if_not_schedule_zero($scheduleid, $time, $value) {
+    public function if_not_schedule_zero($scheduleid, $time, $value)
+    {
         $result = $this->schedule->match($scheduleid, $time);
         return ($result ? $value : 0);
     }
-    public function if_not_schedule_null($scheduleid, $time, $value) {
+    public function if_not_schedule_null($scheduleid, $time, $value)
+    {
         $result = $this->schedule->match($scheduleid, $time);
         return ($result ? $value : null);
     }
-    public function if_schedule_zero($scheduleid, $time, $value) {
+    public function if_schedule_zero($scheduleid, $time, $value)
+    {
         $result = $this->schedule->match($scheduleid, $time);
         return ($result ? 0 : $value);
     }
-    public function if_schedule_null($scheduleid, $time, $value) {
+    public function if_schedule_null($scheduleid, $time, $value)
+    {
         $result = $this->schedule->match($scheduleid, $time);
         return ($result ? null : $value);
     }

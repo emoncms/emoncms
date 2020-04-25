@@ -1,6 +1,7 @@
 <?php
 
-class Rememberme {
+class Rememberme
+{
 
     private $mysqli;
     private $log;
@@ -45,11 +46,11 @@ class Rememberme {
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    public function setCookie($content,$expire) 
+    public function setCookie($content, $expire)
     {
         $this->log->info("setCookie: $content $expire");
         
-        setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
+        setcookie($this->cookieName, $content, $expire, $this->path, $this->domain, $this->secure, $this->httpOnly);
         
         // Double check cookie saved correctly
         if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!=$content) {
@@ -64,7 +65,8 @@ class Rememberme {
     // Check Credentials from cookie
     // @return bool|string False if login was not successful, credential string if it was successful
     // ---------------------------------------------------------------------------------------------------------
-    public function login() {
+    public function login()
+    {
         $this->log->info("login");
         if (!$cookieValues = $this->getCookieValues()) {
             // If the cookie is invalid
@@ -73,7 +75,7 @@ class Rememberme {
             // Only clear the cookie if there is content in it
             if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!="") {
                 // Set cookie blank and force to expire
-                $this->setCookie("",time()-$this->expireTime);
+                $this->setCookie("", time()-$this->expireTime);
                 unset($_COOKIE[$this->cookieName]);
             }
             
@@ -82,7 +84,7 @@ class Rememberme {
         }
 
         $loginResult = false;
-        switch($this->findTriplet($cookieValues)) {
+        switch ($this->findTriplet($cookieValues)) {
             case self::TRIPLET_FOUND:
                 // remove old triplet before creating new one, otherwise since the salt is defaulted to "" it would create
                 // a new triplet with the same persistentToken in DB which will cause the next findTriplet to fail (finding the incorrect one) and remove the cookie again.
@@ -92,8 +94,7 @@ class Rememberme {
                 $cookieValues->token = $this->createToken();
                 $expire = time() + $this->expireTime;
                 if ($this->storeTriplet($cookieValues, $expire)) {
-                
-                    if (!$this->setCookie(implode("|",array($cookieValues->userid,$cookieValues->token,$cookieValues->persistentToken)),$expire)) {
+                    if (!$this->setCookie(implode("|", array($cookieValues->userid,$cookieValues->token,$cookieValues->persistentToken)), $expire)) {
                         // this should never happen
                         $this->log->warn("login, errors setting cookie");
                     }
@@ -103,9 +104,9 @@ class Rememberme {
                 }
                 break;
             case self::TRIPLET_INVALID:
-                $this->setCookie("",time()-$this->expireTime);
+                $this->setCookie("", time()-$this->expireTime);
                 $this->lastLoginTokenWasInvalid = true;
-                if($this->cleanStoredTokensOnInvalidResult) {
+                if ($this->cleanStoredTokensOnInvalidResult) {
                     $this->cleanAllTriplets($cookieValues->userid);
                 }
                 break;
@@ -113,7 +114,7 @@ class Rememberme {
                 // Only clear the cookie if there is content in it
                 if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!="") {
                     // Set cookie blank and force to expire
-                    $this->setCookie("",time()-$this->expireTime);
+                    $this->setCookie("", time()-$this->expireTime);
                     unset($_COOKIE[$this->cookieName]);
                 }
                 break;
@@ -122,17 +123,22 @@ class Rememberme {
     }
 
     // ---------------------------------------------------------------------------------------------------------
-    public function cookieIsValid($userid) {
+    public function cookieIsValid($userid)
+    {
         $this->log->info("cookieIsValid");
         $userid = (int) $userid;
         
         // Fetch cookie values, if result false cookie is not valid
-        if (!$cookieValues = $this->getCookieValues()) return false;
+        if (!$cookieValues = $this->getCookieValues()) {
+            return false;
+        }
         
         // If we have a valid cookie, check for database match
         $state = $this->findTriplet($cookieValues);
         
-        if ($state === self::TRIPLET_FOUND) return true;
+        if ($state === self::TRIPLET_FOUND) {
+            return true;
+        }
         return false;
     }
 
@@ -157,7 +163,7 @@ class Rememberme {
             return false;
         }
         
-        if (!$this->setCookie(implode("|",array($cookieValues->userid,$cookieValues->token,$cookieValues->persistentToken)),$expire)) {
+        if (!$this->setCookie(implode("|", array($cookieValues->userid,$cookieValues->token,$cookieValues->persistentToken)), $expire)) {
             // Failure to set cookie, will result in message to user defined in user_model
             return false;
         }
@@ -170,7 +176,8 @@ class Rememberme {
     // called from user_model
     // result is currently unused
     // ---------------------------------------------------------------------------------------------------------
-    public function clearCookie() {
+    public function clearCookie()
+    {
         $this->log->info("clearCookie");
         
         // fetch and validate cookie
@@ -179,37 +186,44 @@ class Rememberme {
         // Only clear the cookie if there is content in it
         if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!="") {
             // Set cookie blank and force to expire
-            $this->setCookie("",time()-$this->expireTime);
+            $this->setCookie("", time()-$this->expireTime);
             unset($_COOKIE[$this->cookieName]);
         }
         
         // If original cookie was invalid exit
-        if (!$cookieValues) return false;
+        if (!$cookieValues) {
+            return false;
+        }
         
         $this->log->info("clearCookie call to cleanTriplet");
-        if (!$this->cleanTriplet($cookieValues)) return false;
+        if (!$this->cleanTriplet($cookieValues)) {
+            return false;
+        }
         return true;
     }
 
-    public function getCookieName() {
+    public function getCookieName()
+    {
         return $this->cookieName;
     }
 
-    public function loginTokenWasInvalid() {
+    public function loginTokenWasInvalid()
+    {
         return $this->lastLoginTokenWasInvalid;
     }
 
     // ---------------------------------------------------------------------------------------------------------
     // Create a pseudo-random token.
     // ---------------------------------------------------------------------------------------------------------
-    private function createToken() {
+    private function createToken()
+    {
             return md5(uniqid(mt_rand(), true));
     }
     // ---------------------------------------------------------------------------------------------------------
     private function getCookieValues()
     {
         // Cookie was not sent with incoming request
-        if(!isset($_COOKIE[$this->cookieName])) {
+        if (!isset($_COOKIE[$this->cookieName])) {
             $ip_address = get_client_ip_env();
             $this->log->info("getCookieValues: not present for: ".$ip_address);
             return false;
@@ -223,7 +237,7 @@ class Rememberme {
         
         $cookieValueArray = explode("|", $_COOKIE[$this->cookieName], 3);
 
-        if(count($cookieValueArray) != 3) {
+        if (count($cookieValueArray) != 3) {
             $this->log->warn("getCookieValues: cookie must contain 3 parts: ".count($cookieValueArray));
             return false;
         }
@@ -235,11 +249,11 @@ class Rememberme {
             $this->log->warn("getCookieValues: userid is not an integer");
             return false;
         }
-        if (preg_replace('/[^\w\s]/','',$cookieValueArray[1])!=$cookieValueArray[1]) {
+        if (preg_replace('/[^\w\s]/', '', $cookieValueArray[1])!=$cookieValueArray[1]) {
             $this->log->warn("getCookieValues: token is not alphanumeric");
             return false;
         }
-        if (preg_replace('/[^\w\s]/','',$cookieValueArray[2])!=$cookieValueArray[2]) {
+        if (preg_replace('/[^\w\s]/', '', $cookieValueArray[2])!=$cookieValueArray[2]) {
             $this->log->warn("getCookieValues: token is not alphanumeric");
             return false;
         }
@@ -254,7 +268,8 @@ class Rememberme {
     }
  
     // ---------------------------------------------------------------------------------------------------------
-    private function findTriplet($cookieValues) {
+    private function findTriplet($cookieValues)
+    {
         //$this->log->info("findTriplet");
         
         if (!$stmt = $stmt = $this->mysqli->prepare("SELECT token FROM rememberme WHERE userid=? AND persistentToken=? LIMIT 1")) {
@@ -263,7 +278,7 @@ class Rememberme {
         }
         
         $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $stmt->bind_param("is", $cookieValues->userid, $sha1_persistentToken);
         if (!$stmt->execute()) {
             $this->log->warn("findTriplet sql fail");
         }
@@ -277,7 +292,7 @@ class Rememberme {
             return self::TRIPLET_FOUND;
             
         // false will occur when there are no entries
-        } else if ($sha1_token==false) {
+        } elseif ($sha1_token==false) {
             $this->log->info("findTriplet TRIPLET_NOT_FOUND");
             return self::TRIPLET_NOT_FOUND;
         
@@ -292,7 +307,7 @@ class Rememberme {
     // $cookieValues has been validated
     // called from login and createCookie
     // ---------------------------------------------------------------------------------------------------------
-    private function storeTriplet($cookieValues, $expire=0)
+    private function storeTriplet($cookieValues, $expire = 0)
     {
         $date = date("Y-m-d H:i:s", $expire);
                
@@ -304,7 +319,7 @@ class Rememberme {
         $sha1_token = sha1($cookieValues->token);
         $sha1_persistentToken = sha1($cookieValues->persistentToken);
         
-        $stmt->bind_param("isss",$cookieValues->userid,$sha1_token,$sha1_persistentToken,$date);
+        $stmt->bind_param("isss", $cookieValues->userid, $sha1_token, $sha1_persistentToken, $date);
         if ($stmt->execute()) {
             return true;
         } else {
@@ -327,7 +342,7 @@ class Rememberme {
         }
         
         $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $stmt->bind_param("is", $cookieValues->userid, $sha1_persistentToken);
         if ($stmt->execute()) {
             $this->log->info("cleanTriplet success");
             $this->cleanExpiredTriplets($cookieValues->userid);
@@ -348,7 +363,7 @@ class Rememberme {
         $this->log->info("cleanAllTriplets");
         
         $stmt = $this->mysqli->prepare("DELETE FROM rememberme WHERE userid=?");
-        $stmt->bind_param("i",$userid);
+        $stmt->bind_param("i", $userid);
         
         if ($stmt->execute()) {
             return true;
@@ -366,28 +381,31 @@ class Rememberme {
         $date = date("Y-m-d H:i:s", time());
         
         $stmt = $this->mysqli->prepare("SELECT expire FROM rememberme WHERE userid=?");
-        $stmt->bind_param("i",$userid);
+        $stmt->bind_param("i", $userid);
         $stmt->execute();
         $stmt->bind_result($expire);
         
         $expire_list = array();
-        while ($stmt->fetch()) $expire_list[] = $expire;
+        while ($stmt->fetch()) {
+            $expire_list[] = $expire;
+        }
         $stmt->close();
         
         $overdue_count = 0;
-        foreach ($expire_list as $expire)
-        {
+        foreach ($expire_list as $expire) {
             $seconds_overdue = time() - strtotime($expire);
             if ($seconds_overdue>0) {
                 $overdue_count++;
                 $stmt = $this->mysqli->prepare("DELETE FROM rememberme WHERE userid=? AND expire=?");
-                $stmt->bind_param("is",$userid,$expire);
+                $stmt->bind_param("is", $userid, $expire);
                 if (!$stmt->execute()) {
                     $this->log->warn("could not delete expired triplet $userid $expire");
                 }
                 $stmt->close();
             }
         }
-        if ($overdue_count>0) $this->log->info("Deleted $overdue_count expired");
+        if ($overdue_count>0) {
+            $this->log->info("Deleted $overdue_count expired");
+        }
     }
 }

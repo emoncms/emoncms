@@ -19,32 +19,40 @@ function input_controller()
     global $mysqli, $redis, $user, $session, $route, $settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
-    if (!$session['write']) return array('content'=>false);
+    if (!$session['write']) {
+        return array('content'=>false);
+    }
 
     global $feed;
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $settings["feed"]);
+    $feed = new Feed($mysqli, $redis, $settings["feed"]);
 
     require_once "Modules/input/input_model.php";
-    $input = new Input($mysqli,$redis, $feed);
+    $input = new Input($mysqli, $redis, $feed);
 
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli, $input, $feed, $user->get_timezone($session['userid']));
 
 
 
-    if ($route->format == 'html')
-    {
-        if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
-        if ($route->action == 'node') $result =  view("Modules/input/Views/input_node.php", array());
-        if ($route->action == 'process') $result = view("Modules/input/Views/process_list.php",array('inputid'=> intval(get('inputid'))));
-        if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
+    if ($route->format == 'html') {
+        if ($route->action == 'api') {
+            $result = view("Modules/input/Views/input_api.php", array());
+        }
+        if ($route->action == 'node') {
+            $result =  view("Modules/input/Views/input_node.php", array());
+        }
+        if ($route->action == 'process') {
+            $result = view("Modules/input/Views/process_list.php", array('inputid'=> intval(get('inputid'))));
+        }
+        if ($route->action == 'view') {
+            $result =  view("Modules/input/Views/input_view.php", array());
+        }
     }
 
-    if ($route->format == 'json')
-    {
+    if ($route->format == 'json') {
         /*
 
         input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
@@ -79,32 +87,27 @@ function input_controller()
         https://github.com/emoncms/emoncms/pull/118
         */
 
-        if ($route->action == 'bulk')
-        {
+        if ($route->action == 'bulk') {
             $valid = true;
 
-            if (!isset($_GET['data']) && isset($_POST['data']))
-            {
+            if (!isset($_GET['data']) && isset($_POST['data'])) {
                 $data = json_decode(post('data'));
-            }
-            else
-            {
+            } else {
                 $data = json_decode(get('data'));
             }
 
             $userid = $session['userid'];
 
-            $dropped = 0; $droppednegative = 0;
+            $dropped = 0;
+            $droppednegative = 0;
 
             $len = count($data);
-            if ($len>0)
-            {
-                if (isset($data[$len-1][0]))
-                {
+            if ($len>0) {
+                if (isset($data[$len-1][0])) {
                     // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
                     if (isset($_GET['sentat'])) {
                         $time_ref = time() - (int) $_GET['sentat'];
-                    }  elseif (isset($_POST['sentat'])) {
+                    } elseif (isset($_POST['sentat'])) {
                         $time_ref = time() - (int) $_POST['sentat'];
                     }
                     // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
@@ -124,10 +127,8 @@ function input_controller()
                         $time_ref = time() - (int) $data[$len-1][0];
                     }
 
-                    foreach ($data as $item)
-                    {
-                        if (count($item)>2)
-                        {
+                    foreach ($data as $item) {
+                        if (count($item)>2) {
                             // check for correct time format
                             $itemtime = (int) $item[0];
 
@@ -136,8 +137,7 @@ function input_controller()
 
                             $inputs = array();
                             $name = 1;
-                            for ($i=2; $i<count($item); $i++)
-                            {
+                            for ($i=2; $i<count($item); $i++) {
                                 $value = (float) $item[$i];
                                 $inputs[$name] = $value;
                                 $name ++;
@@ -156,25 +156,35 @@ function input_controller()
                                 $lasttime = $redis->get("limiter:$userid:$nodeid");
                             }
 
-                            if (($time-$lasttime)>=1)
-                            {
-                                $redis->set("limiter:$userid:$nodeid",$time);
+                            if (($time-$lasttime)>=1) {
+                                $redis->set("limiter:$userid:$nodeid", $time);
                                 $str = json_encode($array);
 
                                 if ($redis->llen('buffer')<10000) {
-                                    $redis->rpush('buffer',$str);
+                                    $redis->rpush('buffer', $str);
                                 } else {
                                     $valid = false;
                                     $error = "Too many connections, input queue is full";
                                 }
                             } else {
-                                if (($time-$lasttime)<0) $droppednegative ++;
+                                if (($time-$lasttime)<0) {
+                                    $droppednegative ++;
+                                }
                                 $dropped ++;
                             }
-                        } else { $valid = false; $error = "Format error, bulk item needs at least 3 values"; }
+                        } else {
+                            $valid = false;
+                            $error = "Format error, bulk item needs at least 3 values";
+                        }
                     }
-                } else { $valid = false; $error = "Format error, last item in bulk data does not contain any data"; }
-            } else { $valid = false; $error = "Format error, json string supplied is not valid"; }
+                } else {
+                    $valid = false;
+                    $error = "Format error, last item in bulk data does not contain any data";
+                }
+            } else {
+                $valid = false;
+                $error = "Format error, json string supplied is not valid";
+            }
 
             if ($dropped) {
                 $valid = false;
@@ -193,41 +203,63 @@ function input_controller()
         // input/post.json?node=10&json={power1:100,power2:200,power3:300}
         // input/post.json?node=10&csv=100,200,300
 
-        if ($route->action == 'post')
-        {
-            $valid = true; $error = "";
+        if ($route->action == 'post') {
+            $valid = true;
+            $error = "";
 
             $nodeid = get('node');
-            if ($nodeid && !is_numeric($nodeid)) { $valid = false; $error = "Nodeid must be an integer, nodeid given was not numeric"; }
+            if ($nodeid && !is_numeric($nodeid)) {
+                $valid = false;
+                $error = "Nodeid must be an integer, nodeid given was not numeric";
+            }
             $nodeid = (int) $nodeid;
 
-            if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+            if (isset($_GET['time'])) {
+                $time = (int) $_GET['time'];
+            } else {
+                $time = time();
+            }
 
             $data = array();
 
             $datain = false;
             // code below processes input regardless of json or csv type
-            if (isset($_GET['json'])) $datain = get('json');
-            if (isset($_GET['csv'])) $datain = get('csv');
-            if (isset($_GET['data'])) $datain = get('data');
-            if (isset($_POST['data'])) $datain = post('data');
+            if (isset($_GET['json'])) {
+                $datain = get('json');
+            }
+            if (isset($_GET['csv'])) {
+                $datain = get('csv');
+            }
+            if (isset($_GET['data'])) {
+                $datain = get('data');
+            }
+            if (isset($_POST['data'])) {
+                $datain = post('data');
+            }
 
-            if ($datain!="")
-            {
-                $json = preg_replace('/[^\p{L}_\p{N}\s\-.:,]/u','',$datain);
+            if ($datain!="") {
+                $json = preg_replace('/[^\p{L}_\p{N}\s\-.:,]/u', '', $datain);
                 $datapairs = explode(',', $json);
 
                 $csvi = 0;
-                for ($i=0; $i<count($datapairs); $i++)
-                {
+                for ($i=0; $i<count($datapairs); $i++) {
                     $keyvalue = explode(':', $datapairs[$i]);
 
                     if (isset($keyvalue[1])) {
-                        if ($keyvalue[0]=='') {$valid = false; $error = "Format error, json key missing or invalid character"; }
-                        if (!is_numeric($keyvalue[1])) {$valid = false; $error = "Format error, json value is not numeric"; }
+                        if ($keyvalue[0]=='') {
+                            $valid = false;
+                            $error = "Format error, json key missing or invalid character";
+                        }
+                        if (!is_numeric($keyvalue[1])) {
+                            $valid = false;
+                            $error = "Format error, json value is not numeric";
+                        }
                         $data[$keyvalue[0]] = (float) $keyvalue[1];
                     } else {
-                        if (!is_numeric($keyvalue[0])) {$valid = false; $error = "Format error: csv value is not numeric"; }
+                        if (!is_numeric($keyvalue[0])) {
+                            $valid = false;
+                            $error = "Format error: csv value is not numeric";
+                        }
                         $data[$csvi+1] = (float) $keyvalue[0];
                         $csvi ++;
                     }
@@ -243,41 +275,65 @@ function input_controller()
                 if (count($data)>0 && $valid) {
                     $str = json_encode($packet);
                     if ($redis->llen('buffer')<10000) {
-                        $redis->rpush('buffer',$str);
+                        $redis->rpush('buffer', $str);
                     } else {
-                        $valid = false; $error = "Too many connections, input queue is full";
+                        $valid = false;
+                        $error = "Too many connections, input queue is full";
                     }
                 }
-            }
-            else
-            {
+            } else {
                 $valid = false;
                 $error = "Request contains no data via csv, json or data tag";
             }
 
-            if ($valid) $result = 'ok';
-            else $result = "Error: $error\n";
+            if ($valid) {
+                $result = 'ok';
+            } else {
+                $result = "Error: $error\n";
+            }
         }
 
-        if ($route->action == "clean") $result = $input->clean($session['userid']);
-        if ($route->action == "list") $result = $input->getlist($session['userid']);
-        if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-        if ($route->action == "getallprocesses") $result = $process->get_process_list();
+        if ($route->action == "clean") {
+            $result = $input->clean($session['userid']);
+        }
+        if ($route->action == "list") {
+            $result = $input->getlist($session['userid']);
+        }
+        if ($route->action == "getinputs") {
+            $result = $input->get_inputs($session['userid']);
+        }
+        if ($route->action == "getallprocesses") {
+            $result = $process->get_process_list();
+        }
 
-        if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
-        {
-            if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
+        if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'], get("inputid"))) {
+            if ($route->action == "delete") {
+                $result = $input->delete($session['userid'], get("inputid"));
+            }
 
-            if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
+            if ($route->action == 'set') {
+                $result = $input->set_fields(get('inputid'), get('fields'));
+            }
 
-            if ($route->action == "process")
-            {
-                if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), post('processlist'));
-                if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'),get('engine'));
-                if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
-                if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
-                if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
-                if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
+            if ($route->action == "process") {
+                if ($route->subaction == "set") {
+                    $result = $input->set_processlist(get('inputid'), post('processlist'));
+                }
+                if ($route->subaction == "add") {
+                    $result = $input->add_process($process, $session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'), get('engine'));
+                }
+                if ($route->subaction == "list") {
+                    $result = $input->get_processlist(get("inputid"));
+                }
+                if ($route->subaction == "delete") {
+                    $result = $input->delete_process(get("inputid"), get('processid'));
+                }
+                if ($route->subaction == "move") {
+                    $result = $input->move_process(get("inputid"), get('processid'), get('moveby'));
+                }
+                if ($route->subaction == "reset") {
+                    $result = $input->reset_process(get("inputid"));
+                }
             }
         }
     }

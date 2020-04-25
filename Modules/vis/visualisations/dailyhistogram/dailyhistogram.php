@@ -15,15 +15,19 @@
 
   $power = (int) get('power');
   $kwhd = (int) get('kwhd');
-  if (isset($_GET['whw'])) {$whw = (int) $_GET['whw'];} else {$whw = 0;}	// Histogram feed
+  if (isset($_GET['whw'])) {
+      $whw = (int) $_GET['whw'];
+  } else {
+      $whw = 0;
+  }    // Histogram feed
 
   $currency = get('currency')?get('currency'):'&pound;';
-  $currency = preg_replace('/[^\w\s&;]/','',$currency);
+  $currency = preg_replace('/[^\w\s&;]/', '', $currency);
     
   $pricekwh = get('pricekwh')?get('pricekwh'):0.14;
   $pricekwh = (float) $pricekwh;
   
-  ?>
+    ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>

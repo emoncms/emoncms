@@ -17,7 +17,7 @@
     $kwhd = (int) get('kwhd');
     
     $currency = get('currency')?get('currency'):'&euro;';
-    $currency = preg_replace('/[^\w\s&;]/','',$currency);
+    $currency = preg_replace('/[^\w\s&;]/', '', $currency);
     
     $pricekwh = get('pricekwh')?get('pricekwh'):0.12;
     $pricekwh = (float) $pricekwh;
