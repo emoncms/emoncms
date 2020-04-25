@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<ruleset name="Emoncms">
+	<rule ref="Generic">
+		<exclude name="Generic.Arrays.ArrayIndent.KeyIncorrect"/>
+		<exclude name="Generic.Arrays.DisallowLongArraySyntax.Found"/>
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found"/>
+		<exclude name="Generic.Files.InlineHTML.Found"/>
+		<exclude name="Generic.Files.LineLength.MaxExceeded"/>
+		<exclude name="Generic.Files.LineLength.TooLong"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment.IncorrectWarning"/>
+		<exclude name="Generic.Formatting.MultipleStatementAlignment.NotSameWarning"/>
+		<exclude name="Generic.Functions.FunctionCallArgumentSpacing.NoSpaceAfterComma"/>
+		<exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.BraceOnNewLine"/>
+		<exclude name="Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps"/>
+		<exclude name="Generic.PHP.CharacterBeforePHPOpeningTag.Found"/>
+		<exclude name="Generic.PHP.ClosingPHPTag.NotFound"/>
+		<exclude name="Generic.PHP.RequireStrictTypes.MissingDeclaration"/>
+		<exclude name="Generic.WhiteSpace.DisallowSpaceIndent.SpacesUsed"/>
+		<exclude name="Generic.WhiteSpace.DisallowTabIndent.TabsUsed"/>
+		<exclude name="Generic.WhiteSpace.LanguageConstructSpacing.IncorrectSingle"/>
+		<exclude name="Generic.WhiteSpace.ScopeIndent.Incorrect"/>
+		<exclude name="Generic.WhiteSpace.ScopeIndent.IncorrectExact"/>
+		<exclude name="Generic.Formatting.NoSpaceAfterCast.SpaceFound"/>
+		<exclude name="Generic.Arrays.ArrayIndent.CloseBraceNotNewLine"/>
+		<exclude name="Generic.Arrays.ArrayIndent.CloseBraceIncorrect"/>
+		<exclude name="Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps"/>
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.FoundInWhileCondition"/>"/>
+		<exclude name="Generic.Formatting.SpaceAfterNot.Incorrect"/>
+		<exclude name="Generic.CodeAnalysis.AssignmentInCondition.Found"/>
+		<exclude name="Generic.Functions.OpeningFunctionBraceBsdAllman.BraceOnSameLine"/>
+		<exclude name="Generic.CodeAnalysis.ForLoopWithTestFunctionCall.NotAllowed"/>
+		<exclude name="Generic.PHP.NoSilencedErrors.Discouraged"/>
+		<exclude name="Generic.PHP.SAPIUsage.FunctionFound"/>
+		<exclude name="Generic.Files.LowercasedFilename.NotFound"/>
+		<exclude name="Generic.Commenting.Todo.TaskFound"/>
+		<exclude name="Generic.Commenting.DocComment.ShortNotCapital"/>
+		<exclude name="Generic.Files.OneClassPerFile.MultipleFound"/>
+		<exclude name="Generic.Metrics.CyclomaticComplexity.MaxExceeded"/>
+		<exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.SpaceBeforeBrace"/>
+		<exclude name="Generic.ControlStructures.InlineControlStructure.NotAllowed"/>
+	</rule>
+	<file>.</file>
+	<arg name="extensions" value="php"/>
+	<arg name="encoding" value="UTF-8"/>
+</ruleset>
