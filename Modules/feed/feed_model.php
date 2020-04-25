@@ -702,7 +702,7 @@ class Feed
     }
 
     // Prepare export multi data
-    private function csv_export_multi_prepare($feedids,$start,$end,$outinterval)
+    public function csv_export_multi_prepare($feedids,$start,$end,$outinterval)
     {
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         $exportdata = array();
