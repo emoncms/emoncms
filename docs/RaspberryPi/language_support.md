@@ -2,8 +2,7 @@
 
 ### 1) Check installed languages
 
-You will need to have ssh access to be able to check the languages installed, if you don't know how to do this then have
-a look at ssh.md. 
+You will need to have ssh access to be able to check the languages installed. 
 
 From the cmd line enter the following:
 
