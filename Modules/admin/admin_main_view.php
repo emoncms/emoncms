@@ -397,7 +397,8 @@ listItem;
             <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
             <!-- <?php echo row(_('SoC'), $rpi_info['hw']) ?> -->
             <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
-            <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
+            <?php echo row(_('CPU Temperature'), $rpi_info['cputemp']) ?>
+            <?php echo row(_('GPU Temperature'), $rpi_info['gputemp']) ?>
             <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
             <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
         </dl>
