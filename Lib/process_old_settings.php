@@ -76,7 +76,7 @@ $settings = array(
         'enabled' => isset($feed_settings["redisbuffer"]["enabled"])?$feed_settings["redisbuffer"]["enabled"]:false,
         // Number of seconds to wait before write buffer to disk - user selectable option
         'sleep' => isset($feed_settings["redisbuffer"]["sleep"])?$feed_settings["redisbuffer"]["sleep"]:600
-    ),   
+    ),
     
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
@@ -181,13 +181,13 @@ $settings = array(
     
     'host'=>isset($smtp_email_settings["host"])?$smtp_email_settings["host"]:"smtp.gmail.com",
     // 25, 465, 587
-    'port'=>isset($smtp_email_settings["port"])?$smtp_email_settings["port"]:"465",  
+    'port'=>isset($smtp_email_settings["port"])?$smtp_email_settings["port"]:"465",
     'from_email' =>isset($smtp_email_settings["from_email"])?$smtp_email_settings["from_email"]:'noreply@emoncms.org',
     'from_name' =>isset($smtp_email_settings["from_name"])?$smtp_email_settings["from_name"]:'EmonCMS',
 
     // comment lines below that dont apply
     // ssl, tls
-    'encryption'=>isset($smtp_email_settings["encryption"])?$smtp_email_settings["encryption"]:"ssl", 
+    'encryption'=>isset($smtp_email_settings["encryption"])?$smtp_email_settings["encryption"]:"ssl",
     'username'=>isset($smtp_email_settings["username"])?$smtp_email_settings["username"]:"yourusername@gmail.com",
     'password'=>isset($smtp_email_settings["password"])?$smtp_email_settings["password"]:"yourpassword"
 ),
