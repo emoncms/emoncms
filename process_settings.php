@@ -17,27 +17,21 @@ require_once('Lib/enum.php');
 // Load settings.php
 $settings_error = false;
 
-if(file_exists(dirname(__FILE__)."/settings.php")) {
+if (file_exists(dirname(__FILE__)."/settings.ini")) {
+    $CONFIG_INI = parse_ini_file("default-settings.ini", true, INI_SCANNER_TYPED);
+    $CUSTOM_INI = parse_ini_file("settings.ini", true, INI_SCANNER_TYPED);
+    $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
+} elseif (file_exists(dirname(__FILE__)."/settings.php")) {
     require_once('default-settings.php');
     require_once('settings.php');
     if (!isset($settings)) {
         require_once('Lib/process_old_settings.php');
-        //$settings_error = true;
-        //$settings_error_title = "settings.php file error";    
-        //$settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
     } else {
         $settings = array_replace_recursive($_settings,$settings);
     }
-} else if(file_exists(dirname(__FILE__)."/settings.ini")) {
-    $CONFIG_INI = parse_ini_file("default-settings.ini", true, INI_SCANNER_TYPED);
-    $CUSTOM_INI = parse_ini_file("settings.ini", true, INI_SCANNER_TYPED);
-#    $CONFIG_INI = parse_ini_file("default-settings.ini", true);
-#    $CUSTOM_INI = parse_ini_file("settings.ini", true);
-    $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
-    // $settings = ini_check_envvars($settings);
 } else {
     $settings_error = true;
-    $settings_error_title = "missing settings file";
+    $settings_error_title = "settings.ini file missing";
     $settings_error_message = "Create a settings.ini file from a example.settings.ini template";
 }
 
