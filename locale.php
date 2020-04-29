@@ -14,17 +14,20 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 // Return all locale directory from all modules.
 // If one module has a language it will be detected
-function directoryLocaleScan($dir) {
+function directoryLocaleScan($dir)
+{
     if (isset($dir) && is_readable($dir)) {
-        $dlist = Array();
+        $dlist = array();
         $dir = realpath($dir);
 
-        $dlist = glob( $dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
+        $dlist = glob($dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
 
         $dlist = array_map(
-            function($item) { return basename($item); },
+            function ($item) {
+                return basename($item);
+            },
             $dlist
-        ); 
+        );
 
         return array_unique($dlist);
     }
@@ -32,7 +35,7 @@ function directoryLocaleScan($dir) {
 
 function get_available_languages()
 {
-   return directoryLocaleScan(dirname(__FILE__));
+    return directoryLocaleScan(dirname(__FILE__));
 }
 
 
@@ -40,8 +43,7 @@ function lang_http_accept()
 {
     $langs = array();
 
-    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang)
-    {
+    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
@@ -80,7 +82,7 @@ function set_lang($language)
  * ORDER OF PREFERENCE WITH LANGUAGE SELECTION
  * -------------------------------------------
  * 1. non logged in users use the browser's language
- * 2. logged in users use their saved language preference 
+ * 2. logged in users use their saved language preference
  * 3. logged in users without language saved uses `$default_language` from settings.php
  * 4. else fallback is set to 'en_GB'
 */
@@ -88,8 +90,8 @@ function set_lang($language)
     $lang = $fallback_language; // if not found use fallback
 
     // loop through all given $language values
-    // if given language is a key or value in the above list use it 
-    foreach($language as $lang_code) {
+    // if given language is a key or value in the above list use it
+    foreach ($language as $lang_code) {
         $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
         if (isset($supported_languages[$lang_code])) { // key check
             $lang = $supported_languages[$lang_code];
@@ -121,4 +123,3 @@ function set_emoncms_lang($lang)
     }
     global $session;
 }
-
