@@ -14,12 +14,13 @@
             "parallel-lint . --exclude vendor"
         ]
     },
-    "license": "AGPL-3.0-or-later"
+    "license": "AGPL-3.0-or-later",
     "require": {
-    "ext-mysqli": "*",
-    "ext-gettext": "*",
-    "ext-json": "*",
-    "ext-curl": "*",
-    "ext-openssl": "*",
-    "ext-ctype": "*"
+        "ext-mysqli": "*",
+        "ext-gettext": "*",
+        "ext-json": "*",
+        "ext-curl": "*",
+        "ext-openssl": "*",
+        "ext-ctype": "*"
+    }
 }
