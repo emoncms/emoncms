@@ -424,12 +424,12 @@ class Admin {
      * @return void
      */
     public static function get_fs_state(){
-        $currentfs = "<b>read-only</b>";
+        $currentfs = "read-only";
         exec('mount', $resexec);
         $matches = null;
         preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
         if (!empty($matches)) {
-            $currentfs = "<b>read-write</b>";
+            $currentfs = "read-write";
         }
         if (!Admin::is_Pi()) $currentfs = '?';
         return $currentfs;
