@@ -14,11 +14,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class SharedHelper
 {
-    public function getTimeZoneFormated($time_in,$timezone) {
-        if ($timezone) {
+    public function getTimeZoneFormated($time_in,$timezone,$timeformat) {
+        if ($timeformat=="excel") {
             $time = DateTime::createFromFormat("U", (int)$time_in);
             $time->setTimezone(new DateTimeZone($timezone));
             return $time->format("d/m/Y H:i:s");
+        } else if ($timeformat=="iso8601") {
+            $time = DateTime::createFromFormat("U", (int)$time_in);
+            $time->setTimezone(new DateTimeZone($timezone));
+            return $time->format("c");
         } else {
             return $time_in;
         }
@@ -112,7 +116,7 @@ interface engine_methods{
      * @see http://php.net/manual/en/timezones.php
      * @return void
      */
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone);    
+    public function csv_export($feedid,$start,$end,$interval,$timezone,$timeformat);    
     
     /**
      * delete all past data for a feed. keeping all the feed settings the same

@@ -283,9 +283,11 @@ body{padding:0!important}
             </td>
             <td>
                 <p><b><?php echo _('Date time format');?></b></p>
-                <div class="checkbox">
-                  <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
-                </div>
+                <select id="export-timeformat">
+                    <option value="unix">Unix timestamp</option>
+                    <option value="excel">Excel (d/m/Y H:i:s), Timezone set in user account</option>
+                    <option value="iso8601">ISO 8601 (e.g: 2020-01-01T10:00:00+01:00)</option>
+                </select>
             </td>
         </tr>
         </table>
@@ -1392,7 +1394,7 @@ $("#export").click(function()
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
-    var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
+    var export_timeformat = $("#export-timeformat").val();
 
     if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
     if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }

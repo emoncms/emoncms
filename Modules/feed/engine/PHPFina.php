@@ -634,7 +634,7 @@ class PHPFina implements engine_methods
 
     }
 
-    public function csv_export($feedid,$start,$end,$interval,$timezone)
+    public function csv_export($feedid,$start,$end,$interval,$timezone,$timeformat)
     {
         global $settings;
 
@@ -695,7 +695,7 @@ class PHPFina implements engine_methods
                 $val = unpack("f",fread($fh,4));
                 if (is_nan($val[1])) $val = null;
                 
-                $timenew = $helperclass->getTimeZoneFormated($time,$timezone);
+                $timenew = $helperclass->getTimeZoneFormated($time,$timezone,$timeformat);
                 fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($val[1],$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
             }
             

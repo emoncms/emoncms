@@ -380,7 +380,7 @@ class PHPTimeSeries implements engine_methods
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone,$timeformat)
     {
         global $settings;
 
