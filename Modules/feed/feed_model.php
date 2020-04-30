@@ -677,28 +677,15 @@ class Feed
         return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
+    public function csv_export($feedid,$start,$end,$interval,$format)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
-
-        // Download limit
-        $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->settings['csv_downloadlimit_mb']*1048576)) {
-            $this->log->warn("csv_export() CSV download limit exeeded downloadsize=$downloadsize feedid=$feedid");
-            return array('success'=>false, 'message'=>"CSV download limit exeeded downloadsize=$downloadsize");
-        }
-
-        if ($datetimeformat == 1) {
-            global $user,$session;
-            $usertimezone = $user->get_timezone($session['userid']);
-        } else {
-            $usertimezone = false;
-        }
+        $timezone = $this->get_timezone($feedid);
         // Call to engine csv_export method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval,$usertimezone);
+        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$interval,$timezone,$format);
     }
 
     // Prepare export multi data
@@ -1230,6 +1217,18 @@ class Feed
             $timezone = "UTC";
         }
         return $timezone;
+    }
+    
+    public function get_timezone($feedid) 
+    {   
+        if ($this->redis) {
+            $userid = $this->redis->hget("feed:$feedid",'userid');
+        } else {
+            $result = $this->mysqli->query("SELECT userid FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_object();
+            $userid = $row->userid;
+        }
+        return $this->get_user_timezone($userid);
     }
     
     // ------------------------------------------

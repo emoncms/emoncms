@@ -275,10 +275,10 @@ body{padding:0!important}
                     <option value=3600><?php echo _('1 hour');?></option>
                     <option value=21600><?php echo _('6 hour');?></option>
                     <option value=43200><?php echo _('12 hour');?></option>
-                    <option value=86400><?php echo _('Daily');?></option>
-                    <option value=604800><?php echo _('Weekly');?></option>
-                    <option value=2678400><?php echo _('Monthly');?></option>
-                    <option value=31536000><?php echo _('Annual');?></option>
+                    <option value=d><?php echo _('Daily');?></option>
+                    <option value=w><?php echo _('Weekly');?></option>
+                    <option value=m><?php echo _('Monthly');?></option>
+                    <option value=y><?php echo _('Annual');?></option>
                 </select>
             </td>
             <td>
@@ -286,13 +286,12 @@ body{padding:0!important}
                 <div class="checkbox">
                   <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
                 </div>
-                <label><?php echo _('Offset secs (for daily)');?>&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled></label>
             </td>
         </tr>
         </table>
             <div class="alert alert-info">
                 <p><?php echo _('Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.');?></p>
-                <p><?php echo _('Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.');?></p>
+                <p><?php echo _('Date time in excel format is in user timezone');?></p>
             </div>
     </div>
     <div class="modal-footer">
@@ -1345,12 +1344,6 @@ $(".feed-download").click(function(){
 
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
-
-    if ($("#export-timezone-offset").val()=="") {   
-        var timezoneoffset = user.timezoneoffset();
-        if (timezoneoffset==null) timezoneoffset = 0;
-        $("#export-timezone-offset").val(parseInt(timezoneoffset));
-    }
     
     $('#feedExportModal').modal('show');
 });
@@ -1382,7 +1375,6 @@ $('#datetimepicker2').on("changeDate", function (e) {
 });
 
 $('#export-interval, #export-timeformat').on('change', function(e) {
-    $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
@@ -1400,9 +1392,7 @@ $("#export").click(function()
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
-    var export_timezone_offset = parseInt($("#export-timezone-offset").val());
     var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
-    if (export_timeformat) { export_timezone_offset = 0; }
 
     if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
     if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
@@ -1413,9 +1403,9 @@ $("#export").click(function()
     var downloadsize = calculate_download_size(ids.length);
     
     if (ids.length>1) {
-        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+export_start+"&end="+export_end+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
     } else {
-        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+export_start+"&end="+export_end+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
     }
 
     if (downloadsize>(downloadlimit*1048576)) {
