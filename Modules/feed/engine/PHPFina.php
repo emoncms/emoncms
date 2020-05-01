@@ -648,9 +648,9 @@ class PHPFina implements engine_methods
     public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat)
     {
         global $settings;
-
         require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
+        $helperclass = new SharedHelper($settings['feed']);
+        $helperclass->set_time_format($timezone,$timeformat);
 
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -668,29 +668,19 @@ class PHPFina implements engine_methods
             $date->setTimezone(new DateTimeZone($timezone));
             $date->setTimestamp($start);
             $date->modify("midnight");
+            if ($interval=="w") $date->modify("this monday");
+            if ($interval=="m") $date->modify("first day of this month");
             $time = $date->getTimestamp();
             
         } else {
             // align to fixed interval
             $interval = (int) $interval;
-            if ($interval<$meta->interval) $interval = $meta->interval;
-            $interval = round($interval/$meta->interval)*$meta->interval;
-            $time = floor($start/$interval)*$interval;
+            if ($interval<$meta->interval) $interval = $meta->interval;     // limit interval by feed interval
+            $interval = round($interval/$meta->interval)*$meta->interval;   // round interval to be integer multiple of feed interval
+            $time = floor($start/$interval)*$interval;                      // round time by interval
         }
         
-        // ----------------------------------------------------------------
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        $filename = $feedid.".txt";
-        header("Content-Disposition: attachment; filename={$filename}");
-        header("Expires: 0");
-        header("Pragma: no-cache");
-        // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
-        // ----------------------------------------------------------------
+        $helperclass->csv_header($feedid);
                
         $fh = fopen($this->dir.$feedid.".dat", 'rb');
         
@@ -749,13 +739,11 @@ class PHPFina implements engine_methods
                 if (is_nan($value)) $value = null;
             }
             
-            $timenew = $helperclass->getTimeZoneFormated($div_start,$timezone,$timeformat);
-            fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($value,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
+            $helperclass->csv_write($div_start,$value);
             
             $time = $div_end;
         }
-        
-        fclose($exportfh);
+        $helperclass->csv_close();
         exit;
     }
 
