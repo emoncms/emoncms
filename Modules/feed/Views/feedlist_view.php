@@ -280,6 +280,8 @@ body{padding:0!important}
                     <option value=m><?php echo _('Monthly');?></option>
                     <option value=y><?php echo _('Annual');?></option>
                 </select>
+                
+                <p class="hide"><input id="export-average" type="checkbox" style="margin-top:-4px"> Return Averages</p>
             </td>
             <td>
                 <p><b><?php echo _('Date time format');?></b></p>
@@ -1341,7 +1343,16 @@ $("#save-processlist").click(function (){
 $(".feed-download").click(function(){
     var ids = [];
     for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+        if (selected_feeds[feedid]==true) {
+            ids.push(parseInt(feedid));
+        }
+    }
+    
+    // Enable averaging checkbox for single feed selection & phpfina
+    if (ids.length==1 && feeds[ids[0]].engine==5) {
+        $("#export-average").parent().show();
+    } else {
+        $("#export-average").parent().hide();
     }
 
     $("#export").attr('feedcount',ids.length);
@@ -1407,7 +1418,15 @@ $("#export").click(function()
     if (ids.length>1) {
         url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+export_start+"&end="+export_end+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
     } else {
-        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+export_start+"&end="+export_end+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+    
+        var average_str = "";
+        if (feeds[ids[0]].engine==5) {
+            var enable_average = $("#export-average")[0].checked*1;
+            average_str = "&average="+enable_average;
+        }
+    
+        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+export_start+"&end="+export_end+"&interval="+export_interval+average_str+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+        console.log(url);
     }
 
     if (downloadsize>(downloadlimit*1048576)) {

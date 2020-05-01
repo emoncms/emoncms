@@ -677,16 +677,19 @@ class Feed
         return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
-    public function csv_export($feedid,$start,$end,$interval,$timeformat)
+    public function csv_export($feedid,$start,$end,$interval,$average,$timeformat)
     {
         $feedid = (int) $feedid;
+        $average = (int) $average;
+        
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         if (!in_array($timeformat,array("unix","excel","iso8601"))) return array('success'=>false, 'message'=>'Invalid time format');
+
         $engine = $this->get_engine($feedid);
         $timezone = $this->get_timezone($feedid);
         // Call to engine csv_export method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$interval,$timezone,$timeformat);
+        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat);
     }
 
     // Prepare export multi data

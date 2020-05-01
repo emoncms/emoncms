@@ -634,7 +634,18 @@ class PHPFina implements engine_methods
 
     }
 
-    public function csv_export($feedid,$start,$end,$interval,$timezone,$timeformat)
+    /**
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
+     * @see http://php.net/manual/en/timezones.php
+     * @return void
+     */
+    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat)
     {
         global $settings;
 
@@ -644,8 +655,6 @@ class PHPFina implements engine_methods
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
-        
-        $average = true;
 
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($feedid)) return false;
@@ -718,7 +727,7 @@ class PHPFina implements engine_methods
                 $sum = 0;
                 $n = 0;
                 $val = 0;
-                while($time<$div_end) {
+                while($time<$div_end && $time<$end) {
                     $tmp = unpack("f",fread($fh,4));
                     // option 1
                     // if (!is_nan($tmp[1])) $val = 1*$tmp[1];
@@ -741,7 +750,7 @@ class PHPFina implements engine_methods
             }
             
             $timenew = $helperclass->getTimeZoneFormated($div_start,$timezone,$timeformat);
-            fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($value,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')." ".$n."\n");
+            fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($value,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
             
             $time = $div_end;
         }

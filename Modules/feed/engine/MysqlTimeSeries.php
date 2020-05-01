@@ -599,7 +599,7 @@ class MysqlTimeSeries implements engine_methods
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone,$timeformat)
+    public function csv_export($feedid,$start,$end,$outinterval,$average,$usertimezone,$timeformat)
     {
         global $settings;
 

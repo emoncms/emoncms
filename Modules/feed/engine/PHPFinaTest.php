@@ -23,6 +23,7 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
         $this->start = strtotime("-1 week"); // 2 week interval ( 20160 minutes / 336 hours)
         $this->end = strtotime("+1 week");
         $this->interval = 1500; // 25 mins between points
+        $this->average = 0;
         $this->outinterval = 1500; //?? not sure if this is good
         $this->usertimezone = 'Europe/London';
         $this->baseUrl = 'http://localhost/emoncms';
@@ -73,7 +74,8 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
             'id'=>$this->feedid,
             'start'=>$this->start,
             'end'=>$this->end,
-            'interva'=>$this->outinterval,
+            'interval'=>$this->outinterval,
+            'average'=>$this->average,
             'timeformat'=>$this->usertimezone
         );
         $urlToControllerThatGeneratesCsvDownload.=('?'.http_build_query($params));

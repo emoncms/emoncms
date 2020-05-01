@@ -771,7 +771,7 @@ class PHPFiwa implements engine_methods
         return $meta;
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid,$start,$end,$outinterval,$average,$usertimezone,$timeformat)
     {
         global $settings;
         require_once "Modules/feed/engine/shared_helper.php";

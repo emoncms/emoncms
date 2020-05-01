@@ -209,8 +209,8 @@ class CassandraEngine implements engine_methods
         $this->log->info("export($feedid,$start)");
         // TODO implement
     }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    
+    public function csv_export($feedid,$start,$end,$outinterval,$average,$usertimezone,$timeformat)
     {
     		$feedid = (int) $feedid;
     		$start = (int) $start;

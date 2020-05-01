@@ -191,7 +191,7 @@ function feed_controller()
                     else if ($route->action == 'histogram') return $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') return $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
                     else if ($route->action == 'kwhatpowers') return $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
-                    else if ($route->action == "csvexport") return $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
+                    else if ($route->action == "csvexport") return $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('average'),get('timeformat'));
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
                         elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));

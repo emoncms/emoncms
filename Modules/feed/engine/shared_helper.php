@@ -111,12 +111,14 @@ interface engine_methods{
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $outinterval output data point interval
-     * @param string $usertimezone a name for a php timezone eg. "Europe/London"
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
      * @see http://php.net/manual/en/timezones.php
      * @return void
      */
-    public function csv_export($feedid,$start,$end,$interval,$timezone,$timeformat);    
+    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat);    
     
     /**
      * delete all past data for a feed. keeping all the feed settings the same

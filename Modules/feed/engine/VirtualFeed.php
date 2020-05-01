@@ -183,7 +183,7 @@ class VirtualFeed implements engine_methods
         return false; // TBD
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
+    public function csv_export($feedid,$start,$end,$outinterval,$average,$usertimezone,$timeformat)
     {
         global $settings;
         
