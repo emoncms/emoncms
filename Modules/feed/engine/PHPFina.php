@@ -683,6 +683,11 @@ class PHPFina implements engine_methods
         $helperclass->csv_header($feedid);
                
         $fh = fopen($this->dir.$feedid.".dat", 'rb');
+        
+        // turn off averaging if export interval is the same as the feed interval
+        if ($interval==$meta->interval) $average = false;
+        // seek only one for full resolution export
+        $first_seek = false;
                 
         while($time<=$end)
         {   
@@ -706,33 +711,49 @@ class PHPFina implements engine_methods
             }
             
             // seek to starting position
-            $pos = floor(($time-$meta->start_time) / $meta->interval);
-            fseek($fh,$pos*4);
-            
+            $pos_start = floor(($div_start-$meta->start_time) / $meta->interval);
+
             $value = null;
             
             if ($average) {
                 // Calculate average in period
                 $sum = 0;
                 $n = 0;
-                $val = 0;
-                while($time<$div_end) {
-                    if ($time>=$meta->start_time && $time<$meta->end_time) {
-                        $tmp = unpack("f",fread($fh,4));
-                        if (!is_nan($tmp[1])) {
-                            $val = 1*$tmp[1];
-                            $sum += $val;
+                
+                // calculate end position
+                $pos_end = floor(($div_end-$meta->start_time) / $meta->interval);
+                
+                // limit start and end by available data
+                // results in dp_to_read being 0 outside of range
+                if ($pos_start<0) $pos_start = 0;
+                if ($pos_end<0) $pos_end = 0;
+                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;                
+                if ($pos_end>$meta->npoints) $pos_end = $meta->npoints;
+                $dp_to_read = $pos_end-$pos_start;
+                
+                if ($dp_to_read) {
+                    fseek($fh,$pos_start*4);
+                    // read division in one block, much faster!
+                    $s = fread($fh,4*$dp_to_read);
+                    $tmp = unpack("f*",$s);
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                        if (!is_nan($tmp[$x+1])) {
+                            $sum += $tmp[$x+1];
                             $n++;
                         }
                     }
-                    $time += $meta->interval;
                 }
                 if ($n>0) $value = 1.0*$sum/$n;
+                
             } else {
                 if ($time>=$meta->start_time && $time<$meta->end_time) {
                     // Output value at start at div start
-                    $val = unpack("f",fread($fh,4));
-                    $value = $val[1];
+                    if (!$first_seek) {
+                        $first_seek = true;
+                        fseek($fh,$pos_start*4);
+                    }
+                    $tmp = unpack("f",fread($fh,4));
+                    $value = $tmp[1];
                     if (is_nan($value)) $value = null;
                 }
             }
