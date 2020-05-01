@@ -11,6 +11,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
@@ -57,7 +58,7 @@
   var power = "<?php echo $power; ?>";
   var kwhd = "<?php echo $kwhd; ?>";
   var delta = "<?php echo $delta; ?>";
-  
+
   var timeWindow = (3600000*24.0*30);         //Initial time window
   var start = ((new Date()).getTime())-timeWindow;    //Get start time
   var end = (new Date()).getTime();       //Get end time
@@ -74,7 +75,7 @@
   feedlist[1] = {id: kwhd, mode:"daily", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
@@ -101,15 +102,15 @@
     for(var i in feedlist) {
       if (timeWindowChanged) feedlist[i].plot.data = null;
       if (feedlist[i].selected) {
-        
+
         if (!feedlist[i].plot.data) {
           //feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
-          
+
           if (feedlist[i].interval!=undefined && feedlist[i].interval>0)
           {
             interval = feedlist[i].interval;
             intervalms = interval * 1000;
-            
+
             var d = new Date()
             var n = d.getTimezoneOffset();
             var offset = n / -60;
@@ -128,7 +129,7 @@
           } else {
               feedlist[i].plot.data = get_feed_data_DMY(feedlist[i].id,datastart,dataend,feedlist[i].mode);
           }
-          
+
           if (feedlist[i].delta==1 && i==1) {
               var tmp = [];
               for (var n=1; n<feedlist[i].plot.data.length; n++) {
@@ -138,7 +139,7 @@
               feedlist[i].plot.data = tmp;
           }
         }
-        
+
         if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
       }
     }
@@ -234,7 +235,7 @@
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
   });
-  
+
   $("#graph").bind("touchended", function (event, ranges)
   {
     $("#graph-buttons").stop().fadeIn();
@@ -243,6 +244,6 @@
     timeWindowChanged = 1; vis_feed_data();
     panning = true; setTimeout(function() {panning = false; }, 100);
   });
-  
+
 </script>
 

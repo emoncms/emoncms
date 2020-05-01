@@ -17,6 +17,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/graph.js"></script>
 
@@ -42,7 +43,7 @@
 <div id="info" style="padding:20px;background-color:rgb(245,245,245); font-style:italic; display:none">
 
     <p><b><?php echo dgettext('vis_messages','Stats'); ?></b></p>
-    
+
     <table class="table">
         <tr><th></th><th><?php echo dgettext('vis_messages','Mean'); ?></th><th><?php echo dgettext('vis_messages','Min'); ?></th><th><?php echo dgettext('vis_messages','Max'); ?></th><th><?php echo dgettext('vis_messages','Diff'); ?></th><th><?php echo dgettext('vis_messages','Std Dev'); ?></th><th><?php echo dgettext('vis_messages','npoints'); ?></th></tr>
         <tr>
@@ -55,7 +56,7 @@
             <td id="stats-npoints"></td>
         </tr>
     </table>
-    
+
     <p><b><?php echo dgettext('vis_messages','Advanced'); ?></b></p>
     <div><?php echo dgettext('vis_messages','Apply smoothing (number of points):'); ?>
       <select id="smoothing" style="width:50px">
@@ -70,7 +71,7 @@
     <br>
 
     <p><b><?php echo dgettext('vis_messages','API Request'); ?></b></p>
-    
+
     <div class="input-prepend input-append">
         <span class="add-on" style="width:75px"><?php echo dgettext('vis_messages','Start'); ?></span>
         <input id="request-start" type="text" style="width:80px" />
@@ -83,15 +84,15 @@
 
         <span class="add-on"><?php echo dgettext('vis_messages','Skip missing'); ?> <input id="request-skipmissing" type="checkbox" /></span>
         <span class="add-on"><?php echo dgettext('vis_messages','Limit interval'); ?> <input id="request-limitinterval" type="checkbox" /></span>
-    
+
         <button id="resend" class="btn"><?php echo dgettext('vis_messages','Resend'); ?></button>
     </div>
-    
+
     <div>GET <a id="request-url"></a></div>
     <br>
-    
+
     <button class="btn" id="showcsv" ><?php echo dgettext('vis_messages','Show CSV Output'); ?></button>
-    
+
     <textarea id="csv" style="width:95%; height:500px; display:none; margin-top:10px"></textarea>
 
 </div>

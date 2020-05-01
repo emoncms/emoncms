@@ -11,6 +11,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
@@ -28,25 +29,25 @@
     <div style="position:absolute; top:10px; left:0px; width:100%;">
         &nbsp;&nbsp;<span id="out2">Loading...</span><span id="out"></span>
     </div>
-    
+
     <div id="placeholder" style="top: 30px; left:0px;"></div>
-    
+
     <div style="position:relative; width:100%; bottom:-30px;">&nbsp;&nbsp;&nbsp;&nbsp;
         <small id="axislabely"></small><br>&nbsp;&nbsp;<span id="bot_out"></span>
     </div>
-    
+
     <div id="graph-buttons" style="position:absolute; top:45px; right:32px; opacity:0.5; display: none;">
         <div class='btn-group' id="graph-return">
             <button class='btn graph-return' id="return">Back</button>
         </div>
-        
+
         <div class='btn-group'>
             <button class='btn graph-time' time='1'>D</button>
             <button class='btn graph-time' time='7'>W</button>
             <button class='btn graph-time' time='30'>M</button>
             <button class='btn graph-time' time='365'>Y</button>
         </div>
-        
+
         <div class='btn-group' id='graph-navbar' style='display: none;'>
             <button class='btn graph-nav' id='zoomin'>+</button>
             <button class='btn graph-nav' id='zoomout'>-</button>
@@ -63,15 +64,15 @@
   var apikey = "<?php echo $apikey; ?>";
   var embed = <?php echo $embed; ?>;
   var delta = <?php echo $delta; ?>;
-  
+
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
-  var end = +new Date; 
+  var end = +new Date;
 
   $('#placeholder').width($('#placeholder_bound').width());
   $('#placeholder').height($('#placeholder_bound').height()-80);
   if (embed) $('#placeholder').height($(window).height()-80);
-  
+
   var event_vis_feed_data;
   var ajaxAsyncXdr;
 
@@ -80,7 +81,7 @@
   var months = [];
   var years = [];
   var power_data = [];
-  
+
   var view = 0;
 
   // Global instantaneous graph variables
@@ -100,10 +101,10 @@
   start -= offset * 3600000;
   end -= offset * 3600000;
   get_feed_data_DMY_async(vis_feed_kwh_data_callback,null,kwhd,start,end,"daily"); // get 5 years of daily kw_data
-  
+
   //load feed kwh_data
   function vis_feed_kwh_data_callback(context,data){
-  
+
     if (window.delta==1) {
         var tmp = [];
         for (var n=1; n<data.length; n++) {
@@ -111,7 +112,7 @@
         }
         data = tmp;
     }
-  
+
     kwh_data = data;
     var total = 0, ndays=0;
     for (z in kwh_data) {
@@ -148,16 +149,16 @@
     $("#out").html("");
     $("#bot_out").html("Loading...");
   }
-  
+
   function vis_feed_data_delayed(){
     var interval = Math.round(((end - start)*0.001) / 800);
-    if (typeof ajaxAsyncXdr !== 'undefined') { 
+    if (typeof ajaxAsyncXdr !== 'undefined') {
       ajaxAsyncXdr.abort(); // abort pending requests
       ajaxAsyncXdr=undefined;
     }
     ajaxAsyncXdr=get_feed_data_async(vis_feed_data_callback,null,feedid,start,end,interval,1,1);
   }
-  
+
   //load feed data
   function vis_feed_data_callback(context,data){
     power_data=data;
@@ -221,7 +222,7 @@
   $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+
   function vis_resize() {
     $('#placeholder').width($('#placeholder_bound').width());
     $('#placeholder').height($('#placeholder_bound').height()-80);
@@ -231,7 +232,7 @@
     if (view==2) set_daily_view();
     if (view==3) vis_feed_data();
   }
-  
+
   // Graph buttons and navigation efects for mouse and touch
   $("#placeholder").mouseenter(function(){
     if (view==3) {
@@ -253,7 +254,7 @@
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
     if (view==3) {
-      start = ranges.xaxis.from; 
+      start = ranges.xaxis.from;
       end = ranges.xaxis.to;
       vis_feed_data();
     }

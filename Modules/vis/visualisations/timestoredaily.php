@@ -14,6 +14,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
@@ -142,7 +143,7 @@ $(function() {
 
         plot();
     }
-    
+
     function plot()
     {
         var plot = $.plot(placeholder, [plotdata], {
@@ -155,7 +156,7 @@ $(function() {
             touch: { pan: "x", scale: "x" }
         });
     }
-    
+
     // Graph buttons and navigation efects for mouse and touch
     placeholder.mouseenter(function(){
         $("#graph-navbar").show();
@@ -172,7 +173,7 @@ $(function() {
         $("#graph-buttons").stop().fadeOut();
         $("#stats").stop().fadeOut();
     });
-    
+
 
     placeholder.bind("touchended", function (event, ranges)
     {
@@ -182,9 +183,9 @@ $(function() {
         view.end = ranges.xaxis.to;
         draw();
     });
-        
+
     $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-    
+
     function vis_resize() {
         placeholder.width(placeholder_bound.width());
         if (embed) placeholder.height($(window).height()-top_offset);

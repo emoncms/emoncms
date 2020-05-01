@@ -13,6 +13,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
@@ -87,14 +88,14 @@
   var timeWindow = (3600000*24.0*7);        //Initial time window
   var start = ((new Date()).getTime())-timeWindow;    //Get start time
   var end = (new Date()).getTime();       //Get end time
-  
+
   var feed_interval = false;
 
   vis_feed_data();
 
   function vis_feed_data()
   {
-  
+
     $.ajax({
       url: path+'feed/getmeta.json',
       data: "&apikey="+apikey+"&id="+feedid,
@@ -106,10 +107,10 @@
           }
       }
     });
-  
+
     var npoints = 800;
     interval = Math.round(((end - start)/npoints)/1000);
-    
+
     var outinterval = 5;
     if (interval>10) outinterval = 10;
     if (interval>15) outinterval = 15;
@@ -131,13 +132,13 @@
     if (interval>3600*6) outinterval = 3600*6;
     if (interval>3600*12) outinterval = 3600*12;
     if (interval>3600*24) outinterval = 3600*24;
-    
+
     interval = outinterval;
     if (feed_interval && interval<feed_interval) interval = feed_interval;
 
     start = Math.floor((start*0.001) / interval) * interval * 1000;
     end = Math.ceil((end*0.001) / interval) * interval * 1000;
-    
+
     var graph_data = get_feed_data(feedid,start,end,interval,1,0);
     var stats = power_stats(graph_data);
     //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
@@ -181,7 +182,7 @@
   $('#okb').click(function () {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
-    
+
     console.log(time+" "+newvalue);
 
     $.ajax({
@@ -228,7 +229,7 @@
     vis_feed_data();
     $('#myModal').modal('hide');
   });
-  
+
 
   // Graph buttons and navigation efects for mouse and touch
   $("#graph").mouseenter(function(){
@@ -246,7 +247,7 @@
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
   });
-  
+
   $("#graph").bind("touchended", function (event, ranges)
   {
     $("#graph-buttons").stop().fadeIn();
@@ -254,5 +255,5 @@
     start = ranges.xaxis.from; end = ranges.xaxis.to;
     vis_feed_data();
   });
-  
+
 </script>

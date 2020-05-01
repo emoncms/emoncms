@@ -11,10 +11,11 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
-    
+
     <?php if (!$embed) { ?>
     <h2><?php echo _("Realtime data:"); ?> <?php echo $feedidname; ?></h2>
     <?php } ?>
@@ -32,7 +33,7 @@
 
     <script id="source" language="javascript" type="text/javascript">
     var feedid = <?php echo $feedid; ?>;                //Fetch table name
-    var apikey = "<?php echo $apikey; ?>";  
+    var apikey = "<?php echo $apikey; ?>";
     var embed = <?php echo $embed; ?>;
     var is_kw = <?php echo $kw === 1 ? 'true': 'false'; ?>;
     var data = [];
@@ -64,10 +65,10 @@
     timerget = setInterval(getdp,7500);
     gpu_fast();
     //setInterval(fast,150);
-    
+
     // GPU friendly fast update loop
-    function gpu_fast() { 
-      setTimeout( 
+    function gpu_fast() {
+      setTimeout(
        function() {
           window.requestAnimationFrame(gpu_fast);
           fast();
@@ -83,7 +84,7 @@
     }
 
     $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-    
+
     function vis_resize() {
       graph.width(graph_bound.width());
       if (embed) graph.height($(window).height());
@@ -91,11 +92,11 @@
     }
 
     function getdp(){
-      $.ajax({ url: 
-        path+"feed/timevalue.json", 
-        data: "id="+feedid, 
-        dataType: 'json', 
-        async: true, 
+      $.ajax({ url:
+        path+"feed/timevalue.json",
+        data: "id="+feedid,
+        dataType: 'json',
+        async: true,
         success: function(result) {
           if (data.length==0 || data[data.length-1][0]!=result.time*1000) {
             data.push([result.time*1000,parseFloat(result.value)]);
@@ -126,15 +127,15 @@
     }
 
     // Operate buttons
-    $('.viewWindow').click(function () { 
-      timeWindow = (1000 * $(this).attr("time") ); 
+    $('.viewWindow').click(function () {
+      timeWindow = (1000 * $(this).attr("time") );
       start = end-timeWindow;            //Get start time
 
       var rate = 0;
       if (timeWindow > 300*1000){ // > 5m
-        rate = timeWindow/120; 
+        rate = timeWindow/120;
         fast_update_fps = 10;
-      } else { 
+      } else {
         rate = timeWindow/60;
         fast_update_fps = 20;
       }
