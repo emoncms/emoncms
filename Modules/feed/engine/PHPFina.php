@@ -519,7 +519,7 @@ class PHPFina implements engine_methods
 
         $data = array();
 
-	/* Open file */
+    /* Open file */
         $fh = fopen($this->dir.$id.".dat", 'rb');
 
         $date = new DateTime();
@@ -1168,11 +1168,13 @@ class PHPFina implements engine_methods
                     
                     $val = NAN;
                     for ($x=0; $x<$dp_to_read; $x++) {
-                      if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
-                      if (!is_nan($val)) {
-                        $sum += $val;
-                        $n++;
-                      }
+                        if (!is_nan($tmp[$x+1])) {
+                            $val = 1*$tmp[$x+1];
+                            if (!is_nan($val)) {
+                                $sum += $val;
+                                $n++;
+                            }
+                        }
                     }
                     
                     $average = null;
