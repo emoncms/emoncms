@@ -644,16 +644,18 @@ class PHPFina implements engine_methods
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
+        
+        $average = true;
 
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($feedid)) return false;
         $meta->npoints = $this->get_npoints($feedid);
+        $meta->end_time = $meta->start_time + ($meta->npoints*$meta->interval);
         
         // only allow interval codes or numeric
         if (in_array($interval,array("d","m","w","y"))) {
             // align to day, month, year
             $date = new DateTime();
-            if ($timezone===0) $timezone = "UTC";
             $date->setTimezone(new DateTimeZone($timezone));
             $date->setTimestamp($start);
             $date->modify("midnight");
@@ -673,49 +675,77 @@ class PHPFina implements engine_methods
         // Tell the browser to handle output as a csv file to be downloaded
         header('Content-Description: File Transfer');
         header("Content-type: application/octet-stream");
-        $filename = $feedid.".csv";
+        $filename = $feedid.".txt";
         header("Content-Disposition: attachment; filename={$filename}");
         header("Expires: 0");
         header("Pragma: no-cache");
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
         // ----------------------------------------------------------------
-                
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
+               
         $fh = fopen($this->dir.$feedid.".dat", 'rb');
-        while($time<=$end)
-        {
-            $pos = floor(($time-$meta->start_time) / $meta->interval);
-            if ($pos >= $meta->npoints) break;
-            
-            if ($pos>=0) {
-                // read from the file
-                fseek($fh,$pos*4);
-                $val = unpack("f",fread($fh,4));
-                if (is_nan($val[1])) $val = null;
+        
+        if ($time<$meta->start_time) $time = $meta->start_time;
+        if ($end>$meta->end_time) $end = $meta->end_time;
                 
-                $timenew = $helperclass->getTimeZoneFormated($time,$timezone,$timeformat);
-                fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($val[1],$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
-            }
+        while($time<=$end)
+        {   
+            $div_start = $time;
             
             // Advance position
             if ($interval=="d") {
                 $date->modify("+1 day");
-                $time = $date->getTimestamp();
+                $div_end = $date->getTimestamp();
             } else if ($interval=="w") {
                 $date->modify("+1 week");
-                $time = $date->getTimestamp();
+                $div_end = $date->getTimestamp();
             } else if ($interval=="m") {
                 $date->modify("+1 month");
-                $time = $date->getTimestamp();
+                $div_end = $date->getTimestamp();
             } else if ($interval=="y") {
                 $date->modify("+1 year");
-                $time = $date->getTimestamp();
+                $div_end = $date->getTimestamp();
             } else {
-                $time += $interval;
+                $div_end = $time + $interval;
             }
+            
+            // seek to starting position
+            $pos = floor(($time-$meta->start_time) / $meta->interval);
+            fseek($fh,$pos*4);
+        
+            if ($average) {
+                // Calculate average in period
+                $sum = 0;
+                $n = 0;
+                $val = 0;
+                while($time<$div_end) {
+                    $tmp = unpack("f",fread($fh,4));
+                    // option 1
+                    // if (!is_nan($tmp[1])) $val = 1*$tmp[1];
+                    // $sum += $val;
+                    // $n++;
+                    // option 2
+                    if (!is_nan($tmp[1])) {
+                        $val = 1*$tmp[1];
+                        $sum += $val;
+                        $n++;
+                    }
+                    $time += $meta->interval;
+                }
+                $value = 1.0*$sum/$n;
+            } else {
+                // Output value at start at div start
+                $val = unpack("f",fread($fh,4));
+                $value = $val[1];
+                if (is_nan($value)) $value = null;
+            }
+            
+            $timenew = $helperclass->getTimeZoneFormated($div_start,$timezone,$timeformat);
+            fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($value,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')." ".$n."\n");
+            
+            $time = $div_end;
         }
+        
         fclose($exportfh);
         exit;
     }
