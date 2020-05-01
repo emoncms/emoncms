@@ -683,9 +683,6 @@ class PHPFina implements engine_methods
         $helperclass->csv_header($feedid);
                
         $fh = fopen($this->dir.$feedid.".dat", 'rb');
-        
-        if ($time<$meta->start_time) $time = $meta->start_time;
-        if ($end>$meta->end_time) $end = $meta->end_time;
                 
         while($time<=$end)
         {   
@@ -711,32 +708,33 @@ class PHPFina implements engine_methods
             // seek to starting position
             $pos = floor(($time-$meta->start_time) / $meta->interval);
             fseek($fh,$pos*4);
-        
+            
+            $value = null;
+            
             if ($average) {
                 // Calculate average in period
                 $sum = 0;
                 $n = 0;
                 $val = 0;
-                while($time<$div_end && $time<$end) {
-                    $tmp = unpack("f",fread($fh,4));
-                    // option 1
-                    // if (!is_nan($tmp[1])) $val = 1*$tmp[1];
-                    // $sum += $val;
-                    // $n++;
-                    // option 2
-                    if (!is_nan($tmp[1])) {
-                        $val = 1*$tmp[1];
-                        $sum += $val;
-                        $n++;
+                while($time<$div_end) {
+                    if ($time>=$meta->start_time && $time<$meta->end_time) {
+                        $tmp = unpack("f",fread($fh,4));
+                        if (!is_nan($tmp[1])) {
+                            $val = 1*$tmp[1];
+                            $sum += $val;
+                            $n++;
+                        }
                     }
                     $time += $meta->interval;
                 }
-                $value = 1.0*$sum/$n;
+                if ($n>0) $value = 1.0*$sum/$n;
             } else {
-                // Output value at start at div start
-                $val = unpack("f",fread($fh,4));
-                $value = $val[1];
-                if (is_nan($value)) $value = null;
+                if ($time>=$meta->start_time && $time<$meta->end_time) {
+                    // Output value at start at div start
+                    $val = unpack("f",fread($fh,4));
+                    $value = $val[1];
+                    if (is_nan($value)) $value = null;
+                }
             }
             
             $helperclass->csv_write($div_start,$value);

@@ -69,8 +69,13 @@ class SharedHelper
     }
     
     public function csv_write($time,$value) {
-        $timenew = $this->format_time($time);
-        fwrite($this->export_fh,$timenew.$this->csv_field_separator.number_format($value,$this->csv_dp,$this->csv_dp_separator,'')."\n");
+        $time = $this->format_time($time);
+        if ($value!=null) {
+            $value = number_format($value,$this->csv_dp,$this->csv_dp_separator,'');
+        } else {
+            $value = 'null';
+        }
+        fwrite($this->export_fh,$time.$this->csv_field_separator.$value."\n");
     }
     
     public function csv_close() {
