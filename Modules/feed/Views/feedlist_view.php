@@ -275,10 +275,10 @@ body{padding:0!important}
                     <option value=3600><?php echo _('1 hour');?></option>
                     <option value=21600><?php echo _('6 hour');?></option>
                     <option value=43200><?php echo _('12 hour');?></option>
-                    <option value=d><?php echo _('Daily');?></option>
-                    <option value=w><?php echo _('Weekly');?></option>
-                    <option value=m><?php echo _('Monthly');?></option>
-                    <option value=y><?php echo _('Annual');?></option>
+                    <option value=daily><?php echo _('Daily');?></option>
+                    <option value=weekly><?php echo _('Weekly');?></option>
+                    <option value=monthly><?php echo _('Monthly');?></option>
+                    <option value=annual><?php echo _('Annual');?></option>
                 </select>
                 
                 <p class="hide"><input id="export-average" type="checkbox" style="margin-top:-4px"> Return Averages</p>

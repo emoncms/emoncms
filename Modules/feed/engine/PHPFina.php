@@ -378,131 +378,207 @@ class PHPFina implements engine_methods
     }
 
     /**
-     * Return the data for the given timerange - cf shared_helper.php
-     *
-    */
-    public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
+     * @param integer $csv pipe output as csv
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
+     */
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        global $settings;
-        
-        $skipmissing = (int) $skipmissing;
-        $limitinterval = (int) $limitinterval;
+        // todo: consider supporting a variety of time formats here
         $start = intval($start/1000);
         $end = intval($end/1000);
-        $interval= (int) $interval;
+        
+        global $settings;
+        if ($timezone===0) $timezone = "UTC";
+        
+        if ($csv) {
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+        }
 
-        // Minimum interval
-        if ($interval<1) $interval = 1;
-        // End must be larger than start
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
+        
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
-        // Maximum request size
-        $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $settings["feed"]["max_datapoints"]) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $settings["feed"]["max_datapoints"] . "), increase request interval or time range, requested datapoints = $req_dp");
-        
+
+        // Load feed meta data
         // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
-        $meta->npoints = $this->get_npoints($name);
+        // todo: combine npoints and end_time into get_meta
+        if (!$meta = $this->get_meta($feedid)) return false;
+        $meta->npoints = $this->get_npoints($feedid);
+        $meta->end_time = $meta->start_time + ($meta->npoints*$meta->interval);
         
-        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval;
-
-        $this->log->info("get_data() feed=$name st=$start end=$end int=$interval sk=$skipmissing lm=$limitinterval pts=$meta->npoints st=$meta->start_time");
-
-        $data = array();
-        $time = 0; $i = 0;
-        $numdp = 0;
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$name.".dat", 'rb');
+        $fullres = false;
+        
+        // The first section here deals with the timezone aligned interval codes
+        // the start time is modified to align to the nearest day, week, month or year
+        // later the while loop is advanced by the value in the $modify string
+        // all using php DateTime aligned to user/feed timezone
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            $fixed_interval = false;
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($start);
+            $date->modify("midnight");
+            $modify = "+1 day";
+            if ($interval=="weekly") {
+                $date->modify("this monday");
+                $modify = "+1 week";
+            } else if ($interval=="monthly") {
+                $date->modify("first day of this month");
+                $modify = "+1 month";
+            } else if ($interval=="annual") {
+                $date->modify("first day of this year");
+                $modify = "+1 year";
+            }
+            $time = $date->getTimestamp();
+        } else {
+            // If interval codes are not specified then we advanced by a fixed numeric interval 
+            $fixed_interval = true;
+            $interval = (int) $interval;
+            if ($interval<1) $interval = 1;
+            if ($limitinterval) {
+                if ($interval<$meta->interval) $interval = $meta->interval;       // limit interval by feed interval
+                $interval = round($interval/$meta->interval)*$meta->interval;     // round interval to be integer multiple of feed interval
+            }
+            $time = $start;
+            
+            // turn off averaging if export interval is the same as the feed interval
+            if ($interval==$meta->interval) {
+                $average = false;
+                $fullres = true;
+            }
+            if ($interval<$meta->interval) {
+                $average = false;
+            }
+        }
+        
+        if ($csv) {
+            $helperclass->csv_header($feedid);
+        } else {
+            $data = array();
+        }
+               
+        $fh = fopen($this->dir.$feedid.".dat", 'rb');
+        
+ 
+        // seek only once for full resolution export
+        $first_seek = false;
+                
         while($time<=$end)
-        {
-            $time = $start + ($interval * $i);
-            $pos = round(($time - $meta->start_time) / $meta->interval);
+        {   
+            $div_start = $time;
+            
+            // Advance position
+            if ($fixed_interval) {
+                $div_end = $time + $interval;
+            } else {
+                $date->modify($modify);
+                $div_end = $date->getTimestamp();
+            }
+            
+            // seek to starting position
+            $pos_start = floor(($div_start-$meta->start_time) / $meta->interval);
+
             $value = null;
-
-            if ($pos>=0 && $pos < $meta->npoints)
-            {
-                // read from the file
-                fseek($fh,$pos*4);
-                $val = unpack("f",fread($fh,4));
-
-                // add to the data array if its not a nan value
-                if (!is_nan($val[1])) {
-                    $value = (float) $val[1];
-                } else {
-                    $value = null;
+            
+            if ($average) {
+                // Calculate average in period
+                $sum = 0;
+                $n = 0;
+                
+                // calculate end position
+                $pos_end = floor(($div_end-$meta->start_time) / $meta->interval);
+                
+                // limit start and end by available data
+                // results in dp_to_read being 0 outside of range
+                if ($pos_start<0) $pos_start = 0;
+                if ($pos_end<0) $pos_end = 0;
+                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;                
+                if ($pos_end>$meta->npoints) $pos_end = $meta->npoints;
+                $dp_to_read = $pos_end-$pos_start;
+                
+                if ($dp_to_read) {
+                    fseek($fh,$pos_start*4);
+                    // read division in one block, much faster!
+                    $s = fread($fh,4*$dp_to_read);
+                    $tmp = unpack("f*",$s);
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                        if (!is_nan($tmp[$x+1])) {
+                            $sum += $tmp[$x+1];
+                            $n++;
+                        }
+                    }
                 }
-                //$this->log->info("get_data() ". ($pos*4) ." time=$time value=$value"); 
+                if ($n>0) $value = 1.0*$sum/$n;
+                
+            } else {
+                if ($time>=$meta->start_time && $time<$meta->end_time) {
+                    // Output value at start at div start
+                    if (!$first_seek || !$fullres) {
+                        $first_seek = true;
+                        fseek($fh,$pos_start*4);
+                    }
+                    $tmp = unpack("f",fread($fh,4));
+                    $value = $tmp[1];
+                    if (is_nan($value)) $value = null;
+                }
             }
             
             if ($value!==null || $skipmissing===0) {
-                // see https://openenergymonitor.org/emon/node/11260
-                $data[] = array($time*1000,$value);
-            }
-
-            $i++;
-        }
-        return $data;
-    }
-    
-    public function get_data_DMY($id,$start,$end,$mode,$timezone)
-    {
-        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
-
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-               
-        // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
-        $meta->npoints = $this->get_npoints($id);
-        
-        $data = array();
-        
-        $fh = fopen($this->dir.$id.".dat", 'rb');
-        
-        $date = new DateTime();
-        if ($timezone===0) $timezone = "UTC";
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setTimestamp($start);
-        $date->modify("midnight");
-        $increment="+1 day";
-        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
-        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
-        
-        $n = 0;
-        while($n<10000) // max iterations
-        {
-            $time = $date->getTimestamp();
-            if ($time>$end) break;
-            
-            $pos = round(($time - $meta->start_time) / $meta->interval);
-            $value = null;
-            
-            if ($pos>=0 && $pos < $meta->npoints)
-            {
-                // read from the file
-                fseek($fh,$pos*4);
-                $val = unpack("f",fread($fh,4));
-                
-                // add to the data array if its not a nan value
-                if (!is_nan($val[1])) {
-                    $value = $val[1];
+                if ($csv) { 
+                    $helperclass->csv_write($div_start,$value);
                 } else {
-                    $value = null;
+                    $data[] = array($div_start*1000,$value);
                 }
             }
-            if ($time>=$start) {
-                $data[] = array($time*1000,$value);
-            }
-
-            $date->modify($increment);
-            $n++;
+            
+            $time = $div_end;
         }
         
-        fclose($fh);
-        
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
     
+    // The following were all previously implemented seperatly
+    // and are now replaced by the combined implementation above 
+    // to ensure consistent results and avoid code duplication
+    // mapping of original function calls are left in here for
+    // compatibility with rest of emoncms application
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
+    }
+    public function get_data_DMY($feedid,$start,$end,$interval,$timezone) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,0,$timezone);
+    }
+    public function get_average($feedid,$start,$end,$interval) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,1);
+    }
+    public function get_average_DMY($feedid,$start,$end,$interval,$timezone) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
+    }
+    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
+        $this->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,true);
+    }
+    
+    // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
@@ -518,18 +594,24 @@ class PHPFina implements engine_methods
         $meta->npoints = $this->get_npoints($id);
 
         $data = array();
-
-    /* Open file */
+        
         $fh = fopen($this->dir.$id.".dat", 'rb');
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
-        $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
 
+        $date->modify("midnight");
+        $modify = "+1 day";
+        if ($mode=="weekly") {
+            $date->modify("this monday");
+            $modify = "+1 week";
+        } else if ($mode=="monthly") {
+            $date->modify("first day of this month");
+            $modify = "+1 month";
+        }
+        
         $n = 0;
         while($n<10000) // max iterations allows for approx 7 months with 1 day granularity
         {
@@ -567,9 +649,7 @@ class PHPFina implements engine_methods
             if ($time>=$start && $time<$end) {
                 $data[] = array($time*1000,$split_values);
             }
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
+            $date->modify($modify);
             $n++;
         }
         fclose($fh);
@@ -632,138 +712,6 @@ class PHPFina implements engine_methods
         fclose($fh);
         exit;
 
-    }
-
-    /**
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval output data point interval
-     * @param integer $average enabled/disable averaging
-     * @param string $timezone a name for a php timezone eg. "Europe/London"
-     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
-     * @see http://php.net/manual/en/timezones.php
-     * @return void
-     */
-    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat)
-    {
-        global $settings;
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper($settings['feed']);
-        $helperclass->set_time_format($timezone,$timeformat);
-
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;
-
-        // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($feedid)) return false;
-        $meta->npoints = $this->get_npoints($feedid);
-        $meta->end_time = $meta->start_time + ($meta->npoints*$meta->interval);
-        
-        // only allow interval codes or numeric
-        if (in_array($interval,array("d","m","w","y"))) {
-            // align to day, month, year
-            $date = new DateTime();
-            $date->setTimezone(new DateTimeZone($timezone));
-            $date->setTimestamp($start);
-            $date->modify("midnight");
-            if ($interval=="w") $date->modify("this monday");
-            if ($interval=="m") $date->modify("first day of this month");
-            $time = $date->getTimestamp();
-            
-        } else {
-            // align to fixed interval
-            $interval = (int) $interval;
-            if ($interval<$meta->interval) $interval = $meta->interval;     // limit interval by feed interval
-            $interval = round($interval/$meta->interval)*$meta->interval;   // round interval to be integer multiple of feed interval
-            $time = floor($start/$interval)*$interval;                      // round time by interval
-        }
-        
-        $helperclass->csv_header($feedid);
-               
-        $fh = fopen($this->dir.$feedid.".dat", 'rb');
-        
-        // turn off averaging if export interval is the same as the feed interval
-        if ($interval==$meta->interval) $average = false;
-        // seek only one for full resolution export
-        $first_seek = false;
-                
-        while($time<=$end)
-        {   
-            $div_start = $time;
-            
-            // Advance position
-            if ($interval=="d") {
-                $date->modify("+1 day");
-                $div_end = $date->getTimestamp();
-            } else if ($interval=="w") {
-                $date->modify("+1 week");
-                $div_end = $date->getTimestamp();
-            } else if ($interval=="m") {
-                $date->modify("+1 month");
-                $div_end = $date->getTimestamp();
-            } else if ($interval=="y") {
-                $date->modify("+1 year");
-                $div_end = $date->getTimestamp();
-            } else {
-                $div_end = $time + $interval;
-            }
-            
-            // seek to starting position
-            $pos_start = floor(($div_start-$meta->start_time) / $meta->interval);
-
-            $value = null;
-            
-            if ($average) {
-                // Calculate average in period
-                $sum = 0;
-                $n = 0;
-                
-                // calculate end position
-                $pos_end = floor(($div_end-$meta->start_time) / $meta->interval);
-                
-                // limit start and end by available data
-                // results in dp_to_read being 0 outside of range
-                if ($pos_start<0) $pos_start = 0;
-                if ($pos_end<0) $pos_end = 0;
-                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;                
-                if ($pos_end>$meta->npoints) $pos_end = $meta->npoints;
-                $dp_to_read = $pos_end-$pos_start;
-                
-                if ($dp_to_read) {
-                    fseek($fh,$pos_start*4);
-                    // read division in one block, much faster!
-                    $s = fread($fh,4*$dp_to_read);
-                    $tmp = unpack("f*",$s);
-                    for ($x=0; $x<$dp_to_read; $x++) {
-                        if (!is_nan($tmp[$x+1])) {
-                            $sum += $tmp[$x+1];
-                            $n++;
-                        }
-                    }
-                }
-                if ($n>0) $value = 1.0*$sum/$n;
-                
-            } else {
-                if ($time>=$meta->start_time && $time<$meta->end_time) {
-                    // Output value at start at div start
-                    if (!$first_seek) {
-                        $first_seek = true;
-                        fseek($fh,$pos_start*4);
-                    }
-                    $tmp = unpack("f",fread($fh,4));
-                    $value = $tmp[1];
-                    if (is_nan($value)) $value = null;
-                }
-            }
-            
-            $helperclass->csv_write($div_start,$value);
-            
-            $time = $div_end;
-        }
-        $helperclass->csv_close();
-        exit;
     }
 
 // #### /\ Above are required methods
@@ -959,372 +907,6 @@ class PHPFina implements engine_methods
             $bytesize += strlen($this->writebuffer[$feedid]);
             
         return floor($bytesize / 4.0);
-    }   
-
-    // -----------------------------------------------------------------------------------
-    // Post processed average layer
-    // -----------------------------------------------------------------------------------
-    
-    /*
-    
-    Averaging (mean)
-    
-    The standard data request method returns the value of the data point at the specified timestamp
-    this works well for most data requests and is the required method for extracting accumulating kWh data
-    
-    However its useful for many applicaitons to be able to extract the average value for a given period
-    An example would be requesting hourly temperature over number of days and wanting to see the average temperature for each hour
-    rather than the temperature at the start of each hour.
-    
-    Emoncms initially did this with a dedicated feed engine called PHPFiwa the implementation of that engine calculated the average
-    values on the fly as the data came in which is not a particularly write efficient method as each average layer is opened for every
-    update and only one 4 byte float is appended.
-    
-    A better approach is to post process the average layers when the data request is made and to cache the calculated averages at this
-    point. This significantly reduces the write load and converts the averaged layers into a recompilable cached property rather than
-    and integral part of the core engine.
-    
-    */
-        
-    public function get_average($id,$start,$end,$interval)
-    {
-        global $settings;
-
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        $interval= (int) $interval;
-        
-        // Minimum interval
-        if ($interval<1) $interval = 1;
-        // Maximum request size
-        $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $settings["feed"]["max_datapoints"]) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $settings["feed"]["max_datapoints"] . "), increase request interval or time range, requested datapoints = $req_dp");
-        
-        $layer_interval = 0;
-        //if ($interval>=600) $layer_interval = 600;
-        //if ($interval>=3600) $layer_interval = 3600;
-        
-        // Only return an average if the $interval is more than a layer interval
-        // and check that the interval is an integer number of layer intervals
-        if ($layer_interval>0 && $interval%$layer_interval==0) {
-            //if (!$this->calculate_average($id,$layer_interval)) {
-                // return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
-            //    return array('success'=>false);
-            //}
-        }
-        
-        $dir = $this->dir;
-        //if ($layer_interval>0) $dir = $dir."averages/$layer_interval/";
-        
-        $meta = new stdClass();
-        $metafile = fopen($dir.$id.".meta", 'rb');
-        fseek($metafile,8);
-        $tmp = unpack("I",fread($metafile,4));
-        $meta->interval = $tmp[1];
-        $tmp = unpack("I",fread($metafile,4));
-        $meta->start_time = $tmp[1];
-        fclose($metafile);
-        $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
-        
-        //if ((($end-$start) / $meta->interval)>69120) {
-        //    return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
-        //}
-        
-        if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
-        
-        $dp_to_read = $interval / $meta->interval;
-        
-        $data = array();
-        $time = 0; $i = 0;
-        $numdp = 0;
-        
-        $total_read_count = 0;
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $fh = fopen($dir.$id.".dat", 'rb');
-        while($time<=$end)
-        {
-            $time = $start + ($interval * $i);
-            $pos = round(($time - $meta->start_time) / $meta->interval);
-            $average = null;
-
-            if ($pos>=0 && $pos < $meta->npoints)
-            {
-                // read from the file
-                fseek($fh,$pos*4);
-                $s = fread($fh,4*$dp_to_read);
-                
-                $len = strlen($s);
-                $total_read_count += $len / 4.0;
-                
-                if ($len!=4*$dp_to_read) break;
-                
-                $tmp = unpack("f*",$s);
-                $sum = 0.0; $n = 0;
-                
-                /*
-                for ($x=0; $x<$dp_to_read; $x++) {
-                  if (!is_nan($tmp[$x+1])) {
-                      $sum += 1.0*$tmp[$x+1];
-                      $n++;
-                  }
-                }*/
-                
-                $val = NAN;
-                for ($x=0; $x<$dp_to_read; $x++) {
-                  if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
-                  if (!is_nan($val)) {
-                    $sum += $val;
-                    $n++;
-                  }
-                }
-                
-                $average = null;
-                if ($n>0) $average = $sum / $n;
-            }
-            
-            if ($time>=$start) {
-                $data[] = array($time*1000,$average);
-            }
-
-            $i++;
-        }
-        
-        return $data;        
-    }
-    
-    public function get_average_DMY($id,$start,$end,$mode,$timezone)
-    {
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        
-        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
-        
-        if ($mode=="daily") $interval = 86400;
-        if ($mode=="weekly") $interval = 86400*7;
-        if ($mode=="monthly") $interval = 86400*30;
-        
-        $layer_interval = 0;
-        //if ($interval>=600) $layer_interval = 600;
-        //if ($interval>=3600) $layer_interval = 3600;
-        
-        // Only return an average if the $interval is more than a layer interval
-        // and check that the interval is an integer number of layer intervals
-        if ($layer_interval>0 && $interval%$layer_interval==0) {
-            //if (!$this->calculate_average($id,$layer_interval)) {
-                // return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
-            //    return array('success'=>false);
-            //}
-        }
-        
-        $dir = $this->dir;
-        //if ($layer_interval>0) $dir = $dir."averages/$layer_interval/";
-        
-        $meta = new stdClass();
-        $metafile = fopen($dir.$id.".meta", 'rb');
-        fseek($metafile,8);
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->interval = $tmp[1];
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->start_time = $tmp[1];
-        fclose($metafile);
-        $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
-        
-        //if ((($end-$start) / $meta->interval)>69120) {
-        //    return array('success'=>false, 'message'=>"Range to long");
-        //}
-        
-        if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
-        
-        $dp_to_read = $interval / $meta->interval;
-        
-        $data = array();
-        $time = 0; $i = 0;
-        $numdp = 0;
-        $total_read_count = 0;
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        
-        $fh = fopen($dir.$id.".dat", 'rb');
-        
-        $date = new DateTime();
-        if ($timezone===0) $timezone = "UTC";
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setTimestamp($start);
-        $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
-        
-        $itterations = 0;
-        while(true) // max itterations
-        {
-            $time = $date->getTimestamp();
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
-            $nexttime = $date->getTimestamp();
-            
-            if ($time>$end) break;
-            
-            $pos = round(($time - $meta->start_time) / $meta->interval);
-            $nextpos = round(($nexttime - $meta->start_time) / $meta->interval);
-            $dp_to_read = $nextpos - $pos;
-            if ($dp_to_read==0) return false;
-            
-            $average = null;
-            
-            if ($pos>=0 && $pos < $meta->npoints)
-            {
-                // read from the file
-                fseek($fh,$pos*4);
-                $s = fread($fh,4*$dp_to_read);
-
-                $len = strlen($s);
-                $total_read_count += $len / 4.0;
-                
-                if ($len==4*$dp_to_read) {
-
-                    $tmp = unpack("f*",$s);
-                    $sum = 0; $n = 0;
-                    
-                    $val = NAN;
-                    for ($x=0; $x<$dp_to_read; $x++) {
-                        if (!is_nan($tmp[$x+1])) {
-                            $val = 1*$tmp[$x+1];
-                            if (!is_nan($val)) {
-                                $sum += $val;
-                                $n++;
-                            }
-                        }
-                    }
-                    
-                    $average = null;
-                    if ($n>0) $average = $sum / $n;
-                }
-            }
-            
-            if ($time>=$start) {
-                $data[] = array($time*1000,$average);
-            }
-            
-            $itterations++;
-        }
-        
-        fclose($fh);
-
-        
-        return $data;
-    }
-
-
-    private function calculate_average($id,$layer_interval)
-    {
-        $idir = $this->dir;
-        $odir = $this->dir."averages/$layer_interval/";
-        
-        // Open PHPFina meta file, get start time and interval
-        $base_meta = $this->get_meta($id);
-        
-        // clearstatcache($idir.$id.".dat");
-        $base_meta->npoints = floor(filesize($idir.$id.".dat") / 4.0);
-        
-        // Calculate start time of average layer
-        $start_time = ceil($base_meta->start_time / $layer_interval) * $layer_interval;
-
-        // Check if the average layer already exists
-        // if it does load its meta file and check that the base layer calculated start_time matches
-        $layer_npoints = 0;
-
-        if (file_exists($odir.$id.".meta")) {
-            $layer_meta = new stdClass();
-            $metafile = fopen($odir.$id.".meta", 'rb');
-            fseek($metafile,8);
-            $tmp = unpack("I",fread($metafile,4));
-            $layer_meta->interval = $tmp[1];
-            $tmp = unpack("I",fread($metafile,4));
-            $layer_meta->start_time = $tmp[1];
-            fclose($metafile);
-            
-            if ($layer_meta->start_time != $start_time) {
-                echo "ERROR: average layer start time does not match base layer\n";
-                return false;
-            }
-            
-            if ($layer_meta->interval != $layer_interval) {
-                echo "ERROR: average layer interval does not match base layer\n";
-                return false;
-            }
-            
-            if (file_exists($odir.$id.".dat")) {
-                // clearstatcache($odir.$id.".dat");
-                $layer_npoints = floor(filesize($odir.$id.".dat") / 4.0);
-            }
-        } else {
-            $layer_meta = clone $base_meta;
-            $layer_meta->start_time = $start_time;
-            $layer_meta->interval = $layer_interval;
-            
-            $metafile = fopen($odir.$id.".meta", 'wb');
-            fwrite($metafile,pack("I",0));
-            fwrite($metafile,pack("I",0));
-            fwrite($metafile,pack("I",$layer_meta->interval));
-            fwrite($metafile,pack("I",$layer_meta->start_time));
-            fclose($metafile);
-        }
-
-        if (!$if = @fopen($idir.$id.".dat", 'rb')) {
-            echo "ERROR: could not open $idir $id.dat\n";
-            return false;
-        }
-
-        if (!$of = @fopen($odir.$id.".dat", 'c+')) {
-            echo "ERROR: could not open $odir $id.dat\n";
-            return false;
-        }
-
-        $dp_to_read = $layer_meta->interval / $base_meta->interval;
-
-        $start_time = $layer_meta->start_time + ($layer_npoints*$layer_meta->interval);
-        $base_start_pos = ($start_time - $base_meta->start_time) / $base_meta->interval;
-        
-        // If amount to process is more than 1 week of 10 second data or 86400*7 / 10 = 60480 datapoints.
-        // return false as this will take too long in a http request and needs to be processed in the background.
-        
-        $npoints_to_process = $base_meta->npoints - $base_start_pos;
-        if ($npoints_to_process>60480) {
-            echo "ERROR: amount to process is too much $npoints_to_process \n";
-            return false;
-        }
-        
-        fseek($if,$base_start_pos*4);
-        fseek($of,$layer_npoints*4);
-
-        $buffer = "";
-
-        while (true)
-        {
-            $s = fread($if,4*$dp_to_read);
-            if (strlen($s)!=4*$dp_to_read) break;
-            
-            $tmp = unpack("f*",$s);
-            $sum = 0; $n = 0;
-            for ($i=0; $i<$dp_to_read; $i++) {
-              if (!is_nan($tmp[$i+1])) {
-                  $sum += 1*$tmp[$i+1];
-                  $n++;
-              }
-            }
-            $average = NAN;
-            if ($n>0) $average = $sum / $n;
-            $buffer .= pack("f",$average);
-        }
-        
-        // Final stage write buffer and close files
-        fwrite($of,$buffer);
-        fclose($of);
-        fclose($if);
-        
-        return true;
     }
     
     public function upload_fixed_interval($id,$start,$interval,$npoints)
