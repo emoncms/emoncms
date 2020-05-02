@@ -242,12 +242,11 @@ class PHPTimeSeries implements engine_methods
         if ($filesize==0) return array();
         
         $data = array();
-        $time = 0; $i = 0;
+        $time = $start;
         $atime = 0;
 
         while ($time<=$end)
         {
-            $time = $start + ($interval * $i);
             $pos = $this->binarysearch($fh,$time,$filesize);
             fseek($fh,$pos);
             $d = fread($fh,9);
@@ -275,7 +274,7 @@ class PHPTimeSeries implements engine_methods
                 if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);
             }
 
-            $i++;
+            $time += $interval;
         }
 
         return $data;

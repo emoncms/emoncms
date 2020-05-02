@@ -392,6 +392,10 @@ class PHPFina implements engine_methods
      */
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
+        $feedid = (int) $feedid;
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
+        
         // todo: consider supporting a variety of time formats here
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -405,12 +409,6 @@ class PHPFina implements engine_methods
             $helperclass->set_time_format($timezone,$timeformat);
         }
 
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;
-        $skipmissing = (int) $skipmissing;
-        $limitinterval = (int) $limitinterval;
-        
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
 
         // Load feed meta data
@@ -473,11 +471,10 @@ class PHPFina implements engine_methods
         }
                
         $fh = fopen($this->dir.$feedid.".dat", 'rb');
-        
  
         // seek only once for full resolution export
         $first_seek = false;
-                
+             
         while($time<=$end)
         {   
             $div_start = $time;
