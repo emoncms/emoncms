@@ -247,7 +247,7 @@ class PHPTimeSeries implements engine_methods
 
         while ($time<=$end)
         {
-            $pos = $this->binarysearch($fh,$time,$filesize);
+            $pos = $this->binarysearch($fh,$time,0,$filesize-9);
             fseek($fh,$pos);
             $d = fread($fh,9);
             $array = @unpack("x/Itime/fvalue",$d);
@@ -280,55 +280,175 @@ class PHPTimeSeries implements engine_methods
         return $data;
     }
     
-    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    /**
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
+     * @param integer $csv pipe output as csv
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
+     */
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
+        $feedid = (int) $feedid;
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
         $start = intval($start/1000);
         $end = intval($end/1000);
         
-        $data = array();
-        
-        $date = new DateTime();
+        global $settings;
         if ($timezone===0) $timezone = "UTC";
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setTimestamp($start);
         
-        $date->modify("midnight");
-        $increment="+1 day";
-        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
-        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
-        
-        $fh = fopen($this->dir."feed_$id.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$id.MYD");
+        if ($csv) {
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+        }
 
-        $n = 0;
-        $array = array("time"=>0, "value"=>0);
-        while($n<10000) // max iterations
-        {
-            $time = $date->getTimestamp();
-            if ($time>$end) break;
-            
-            $pos = $this->binarysearch($fh,$time,$filesize);
-            fseek($fh,$pos);
-            $d = fread($fh,9);
-            
-            $lastarray = $array;
-            $array = unpack("x/Itime/fvalue",$d);
-            
-            if ($array['time']!=$lastarray['time']) {
-                if ($array['time']>=$start && $array['time']<$end) {
-                    $data[] = array($array['time']*1000,$array['value']);
-                }
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+        
+        // The first section here deals with the timezone aligned interval codes
+        // the start time is modified to align to the nearest day, week, month or year
+        // later the while loop is advanced by the value in the $modify string
+        // all using php DateTime aligned to user/feed timezone
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            $fixed_interval = false;
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($start);
+            $date->modify("midnight");
+            $modify = "+1 day";
+            $interval_check = 3600*24;
+            if ($interval=="weekly") {
+                $date->modify("this monday");
+                $modify = "+1 week";
+                $interval_check = 3600*24*7;
+            } else if ($interval=="monthly") {
+                $date->modify("first day of this month");
+                $modify = "+1 month";
+                $interval_check = 3600*24*30;
+            } else if ($interval=="annual") {
+                $date->modify("first day of this year");
+                $modify = "+1 year";
+                $interval_check = 3600*24*365;
             }
-            $date->modify($increment);
-            
-            $n++;
+            $time = $date->getTimestamp();
+        } else {
+            // If interval codes are not specified then we advanced by a fixed numeric interval 
+            $fixed_interval = true;
+            $interval = (int) $interval;
+            if ($interval<1) $interval = 1;
+            $time = $start;
         }
         
-        fclose($fh);
+        if ($csv) {
+            $helperclass->csv_header($feedid);
+        } else {
+            $data = array();
+        }
+               
+        $filesize = filesize($this->dir."feed_$feedid.MYD");
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        // Get starting position
+        $pos_start = $this->binarysearch($fh,$time,0,$filesize-9);
+ 
+        // seek only once for full resolution export
+        $first_seek = false;
+             
+        while($time<=$end)
+        {   
+            $div_start = $time;
+            
+            // Advance position
+            if ($fixed_interval) {
+                $div_end = $time + $interval;
+            } else {
+                $date->modify($modify);
+                $div_end = $date->getTimestamp();
+            }
+            
+            // find end position (which is also the next start position)
+            // pos_end - pos_start = number of datapoints to average
+            $pos_end = $this->binarysearch($fh,$div_end,0,$filesize-9);
+            $bytes_to_read = ($pos_end-$pos_start);
+            
+            $value = null;
+            
+            if ($average && $bytes_to_read>9) {
+                // Calculate average in period
+                $sum = 0;
+                $n = 0;
+                $dp_to_read = $bytes_to_read / 9;
+                
+                if ($bytes_to_read) {
+                    fseek($fh,$pos_start);
+                    // read division in one block, much faster!
+                    $s = fread($fh,$bytes_to_read);
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                        $tmp = unpack("f",substr($s,($x*9)+5,4));
+                        if (!is_nan($tmp[1])) {
+                            $sum += $tmp[1];
+                            $n++;
+                        }
+                    }
+                }
+                if ($n>0) $value = 1.0*$sum/$n;
+                
+            } else {
+                fseek($fh,$pos_start);
+                $dp = unpack("x/Itime/fvalue",fread($fh,9));
+                if (abs($dp['time']-$div_start)<$interval_check) {
+                    $value = $dp['value'];
+                }
+                if (is_nan($value)) $value = null;
+            }
+            
+            if ($value!==null || $skipmissing===0) {
+                if ($csv) { 
+                    $helperclass->csv_write($div_start,$value);
+                } else {
+                    $data[] = array($div_start*1000,$value);
+                }
+            }
+            
+            $time = $div_end;
+            $pos_start = $pos_end;
+        }
         
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
-
+    
+    // The following were all previously implemented seperatly
+    // and are now replaced by the combined implementation above 
+    // to ensure consistent results and avoid code duplication
+    // mapping of original function calls are left in here for
+    // compatibility with rest of emoncms application
+    public function get_data_v2($feedid,$start,$end,$interval,$skipmissing,$limitinterval) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
+    }
+    public function get_data_DMY($feedid,$start,$end,$interval,$timezone) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,0,$timezone);
+    }
+    public function get_average($feedid,$start,$end,$interval) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,1);
+    }
+    public function get_average_DMY($feedid,$start,$end,$interval,$timezone) {
+        return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
+    }
+    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
+        $this->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,true);
+    }
 
     public function export($feedid,$start)
     {
@@ -376,77 +496,6 @@ class PHPTimeSeries implements engine_methods
         }
         fclose($primary);
         fclose($fh);
-        exit;
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$average,$usertimezone,$timeformat)
-    {
-        global $settings;
-
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;
-        $outinterval = (int) $outinterval;
-        
-        if ($outinterval<1) $outinterval = 1;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        if ($dp<1) return false;
-
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-
-        $interval = ($end - $start) / $dp;
-
-        // Ensure that interval request is less than 1
-        // adjust number of datapoints to request if $interval = 1;
-        if ($interval<1) {
-            $interval = 1;
-            $dp = ($end - $start) / $interval;
-        }
-
-        $time = 0;
-        
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        $filename = $feedid.".csv";
-        header("Content-Disposition: attachment; filename={$filename}");
-
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
-
-        for ($i=0; $i<$dp; $i++)
-        {
-            $pos = $this->binarysearch($fh,$start+($i*$interval),$filesize);
-
-            fseek($fh,$pos);
-
-            // Read the datapoint at this position
-            $d = fread($fh,9);
-
-            // Itime = unsigned integer (I) assign to 'time'
-            // fvalue = float (f) assign to 'value'
-            $array = unpack("x/Itime/fvalue",$d);
-
-            $last_time = $time;
-            $time = $array['time'];
-            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-            // $last_time = 0 only occur in the first run
-            if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].number_format($array['value'],$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'')."\n");
-            }
-        }
-        fclose($exportfh);
         exit;
     }
 
@@ -564,7 +613,7 @@ class PHPTimeSeries implements engine_methods
 
 
 
-    private function binarysearch($fh,$time,$filesize)
+    private function binarysearch($fh,$time,$start,$end)
     {
         // Binary search works by finding the file midpoint and then asking if
         // the datapoint we want is in the first half or the second half
@@ -574,7 +623,6 @@ class PHPTimeSeries implements engine_methods
         // itterations compared to the brute force method which may need to
         // go through the whole file that may be millions of lines to find a
         // datapoint.
-        $start = 0; $end = $filesize-9;
 
         // 30 here is our max number of itterations
         // the position should usually be found within

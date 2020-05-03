@@ -567,11 +567,13 @@ class Feed
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        // Maximum request size
+        $period = ($end-$start)*0.001;
+        $req_dp = round($period / $outinterval);
+        if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
+
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');        
         $engine = $this->get_engine($feedid);
-        if ($engine == Engine::VIRTUALFEED) {
-            $this->log->info("get_data() $feedid,$start,$end,$outinterval,$skipmissing,$limitinterval");
-        }
 
         // Call to engine get_data
         $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
@@ -626,10 +628,7 @@ class Feed
         
         if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
         
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
+        $timezone = $this->get_timezone($feedid);
         $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
         return $data;
     }
@@ -643,10 +642,7 @@ class Feed
         
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
+        $timezone = $this->get_timezone($feedid);    
         $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
         return $data;
     }
@@ -657,7 +653,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         
         $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
+        if ($engine!=Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
         return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
     }
@@ -668,12 +664,9 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         
         $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
+        if ($engine!=Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
+        $timezone = $this->get_timezone($feedid);
         return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
