@@ -450,6 +450,11 @@ function admin_controller()
                 
                 return $view_data;
             }
+            else if ($route->action == 'componentlist' && $session['write'])
+            {
+                require "Modules/admin/admin_model.php";
+                return Admin::component_list();
+            }
             else if ($route->action == 'resetwriteload' && $session['write'])
             {
                 if ($redis) {

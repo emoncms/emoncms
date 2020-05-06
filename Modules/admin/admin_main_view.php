@@ -276,19 +276,27 @@ listItem;
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
-        <dl class="row">
-            <?php echo row(_('Version'),$emoncms_version); ?>
-            <?php echo row(_('Modules'), $emoncms_modules); ?>
-            <?php
-            $git_parts = array(
-                row(_('URL'), $system['git_URL'],'','overflow-hidden'),
-                row(_('Branch'), $system['git_branch']),
-                row(_('Describe'), $system['git_describe'])
-            );
-            $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
-        ?>
-            <?php echo row(_('Git'), $git_details); ?>
-        </dl>
+        
+        <table class="table" >
+        <tr>
+            <th>Name</th>
+            <th>Version</th>
+            <th>Git Describe</th>
+            <th>Git URL</th>
+            <th>Git Branch</th>
+            <th></th>
+        </tr>
+        <?php foreach ($emoncms_modules as $module) { ?>
+        <tr>
+            <td><?php echo ucfirst($module["name"]); ?></td>
+            <td><?php echo "v".$module["version"]; ?></td>
+            <td><?php echo $module["describe"]; ?></td>
+            <td><a href="<?php echo $module["url"]; ?>"><?php echo $module["url"]; ?></a></td>
+            <td><?php echo $module["branch"]; ?></td>
+            <td></td>
+        </tr>
+        <?php } ?>
+        </table>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
         <dl class="row">
