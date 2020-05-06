@@ -835,6 +835,19 @@ class Process_ProcessList
               "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
+              "name"=>_("Power to kWh Half-hour"),
+              "short"=>"kwh_hh",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"power_to_kwh_hh",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"kWh",
+              "group"=>_("Power & Energy"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "nochange"=>true,
+              "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used each half hour (kWh HH)</p>")
            )
         );
         return $list;
@@ -1041,6 +1054,48 @@ class Process_ProcessList
         }
         $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
+        return $value;
+    }
+
+    // Converts a power feed into kWh per half hour
+    public function power_to_kwh_hh($feedid, $time_now, $value)
+    {
+        $interval = 1800;
+        $new_kwh = 0;
+        // Get last value
+        $last = $this->feed->get_timevalue($feedid);
+
+        if (!isset($last['value'])) $last['value'] = 0;
+        if (!isset($last['time'])) $last['time'] = $time_now;
+        $last_kwh = $last['value']*1;
+        $last_time = $last['time']*1;
+        
+        // Work out half hourly lot that we are in
+        $current_slot = floor($time_now/$interval) * $interval;
+        $last_slot = floor($last_time/$interval) * $interval;
+
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
+            // kWh calculation
+            $kwh_inc = ($time_elapsed * $value) / 3600000.0;
+        } else {
+            // in the event that redis is flushed the last time will
+            // likely be > 7200s ago and so kwh inc is not calculated
+            // rather than enter 0 we dont increase it
+            $kwh_inc = 0;
+        }
+
+        if ($last_slot == $current_slot) {
+            $new_kwh = $last_kwh + $kwh_inc;
+        } else {
+            // We are working in a new slot
+            $new_kwh = $kwh_inc;
+            // This is a new half hour, so record the last half hour to the feed
+            $this->feed->insert_data($feedid, $last_slot, $last_slot, $last_kwh);
+        }
+        // Update the feeds timevalue on every update in redis
+        $this->feed->set_timevalue($feedid, $new_kwh, $time_now);
+            
         return $value;
     }
 
