@@ -190,7 +190,7 @@ class User
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
                             $_SESSION['write'] = 1;
-                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['admin'] = $userData->admin;
                             $_SESSION['lang'] = $userData->language;
                             $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
