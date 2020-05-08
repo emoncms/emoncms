@@ -124,6 +124,7 @@ function admin_controller()
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
+                //return view("Modules/admin/view.php", array("view_data"=>$view_data));
             }
             else if ($route->action == 'db')
             {

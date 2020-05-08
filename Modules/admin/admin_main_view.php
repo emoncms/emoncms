@@ -277,6 +277,23 @@ listItem;
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
         
+        <dl class="row">
+            <dd class="col-2 inline"><b>Name</b></dd>
+            <dd class="col-1 inline"><b>Version</b></dd>
+            <dd class="col-2 inline"><b>Git Describe</b></dd>
+            <dd class="col-4 inline"><b>Git URL</b></dd>
+            <dd class="col-3 inline"><b>Git Branch</b></dd>
+
+            <?php foreach ($emoncms_modules as $module) { ?>
+            <dd class="col-2 inline"><?php echo ucfirst($module["name"]); ?></dd>
+            <dd class="col-1 inline"><?php echo "v".$module["version"]; ?></dd>
+            <dd class="col-2 inline"><?php echo $module["describe"]; ?></dd>
+            <dd class="col-4 inline"><a href="<?php echo $module["url"]; ?>"><?php echo $module["url"]; ?></a></dd>
+            <dd class="col-3 inline text-truncate"><?php echo $module["branch"]; ?></dd>
+            <?php } ?>
+        </dl>
+
+        <?php /*
         <table class="table" >
         <tr>
             <th>Name</th>
@@ -297,7 +314,7 @@ listItem;
         </tr>
         <?php } ?>
         </table>
-
+        */?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
         <dl class="row">
             <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>

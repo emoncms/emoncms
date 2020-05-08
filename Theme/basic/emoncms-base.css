@@ -319,6 +319,11 @@ ul.nav > li > [disabled] {
     width: 100%;
     margin: 0;
 }
+.col-1 {
+    -ms-flex: 0 0 8.333333333%;
+    flex: 0 0 8.333333333%;
+    max-width: 8.333333333%;
+}
 .col-2 {
     -ms-flex: 0 0 16.666667%;
     flex: 0 0 16.666667%;
