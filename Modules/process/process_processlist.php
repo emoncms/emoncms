@@ -835,6 +835,28 @@ class Process_ProcessList
               "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
+              "name"=>_("max by input"),
+              "short"=>"max_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"max_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by input"),
+              "short"=>"min_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"min_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
            )
         );
         return $list;
@@ -970,6 +992,20 @@ class Process_ProcessList
     public function subtract_input($id, $time, $value)
     {
         return $value - $this->input->get_last_value($id);
+    }
+    
+    public function max_input($id, $time, $value)
+    {
+        $max_limit = $this->input->get_last_value($id);
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_input($id, $time, $value)
+    {
+        $min_limit = $this->input->get_last_value($id);
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
     }
 
     //---------------------------------------------------------------------------------------
