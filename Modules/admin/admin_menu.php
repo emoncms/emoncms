@@ -2,9 +2,9 @@
     defined('EMONCMS_EXEC') or die('Restricted access');
 
     $menu['sidebar']['emoncms'][] = array(
-        'text' => _("Setup"),
-        'path' => null,
-        'li_class' => 'sidebar-subtitle',
+        'text' => '',
+        'href' => '#', // items with no path or href are not shown,
+        'li_class' => 'divider',
         'icon' => '',
         'order' => 'b'
     );

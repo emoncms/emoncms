@@ -61,8 +61,6 @@ div#account {
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
     #submenu, #footer {
-        margin-left: -20px;
-        margin-right: -20px;
         padding-left: 20px;
         padding-right: 20px;
     }
@@ -119,11 +117,15 @@ div#account {
    Side nav
 --------------------------------------------------------------------*/
 .sidebar-menu {
-    border-top: 1px solid #f0f0f0;
+    border-top: 1px solid #ebebeb;
 }
 .sidebar-menu li.collapse.in,
 .include-container.collapse.in > li {
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #ebebeb;
+}
+
+.sidebar-inner .divider {
+	background: #e3e3e3;
 }
 
 #sidebar {

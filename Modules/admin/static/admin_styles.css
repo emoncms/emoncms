@@ -181,3 +181,42 @@ pre.small [data-dismiss="log"]{
         display:none!important;
     }
 }
+
+ul#php-modules {
+    list-style-type: none;
+    margin: 0;
+    columns: 4;
+    -webkit-columns: 4;
+    -moz-columns: 4;
+}
+ul#php-modules li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 800px) {
+    ul#php-modules {
+        columns: 3;
+        -webkit-columns: 3;
+        -moz-columns: 3;
+    }
+}
+
+@media (max-width: 575px) {
+    ul#php-modules {
+        columns: 2;
+        -webkit-columns: 2;
+        -moz-columns: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    ul#php-modules {
+        columns: 1;
+        -webkit-columns: 1;
+        -moz-columns: 1;
+    }
+}
+
+

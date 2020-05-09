@@ -205,13 +205,13 @@ class Rememberme {
     private function createToken() {
             return md5(uniqid(mt_rand(), true));
     }
-
     // ---------------------------------------------------------------------------------------------------------
     private function getCookieValues()
     {
         // Cookie was not sent with incoming request
         if(!isset($_COOKIE[$this->cookieName])) {
-            $this->log->info("getCookieValues: not present");
+            $ip_address = get_client_ip_env();
+            $this->log->info("getCookieValues: not present for: ".$ip_address);
             return false;
         }
         

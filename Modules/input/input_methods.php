@@ -132,6 +132,7 @@ class InputMethods
                 }
                 $inputs = $jsondata;
             } else {
+                $log->error("Invalid JSON: $datain");
                 return "Input in not a valid JSON object";
             }
         } else {
