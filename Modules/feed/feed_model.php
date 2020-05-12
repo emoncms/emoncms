@@ -48,7 +48,7 @@ class Feed
             switch ($e) {
                 case (string)Engine::MYSQL :
                     require "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
-                    $engines[$e] = new MysqlTimeSeries($this->mysqli);
+                    $engines[$e] = new MysqlTimeSeries($this->mysqli,$this->redis,$this->settings['mysqltimeseries']);
                     break;
                 case (string)Engine::VIRTUALFEED :
                     require "Modules/feed/engine/VirtualFeed.php";      // Takes care of Virtual Feeds
@@ -105,27 +105,34 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
-    
-        if (!ENGINE::is_valid($engine)) {
+        
+        if (!Engine::is_valid($engine)) {
             $this->log->error("Engine id '".$engine."' is not supported.");
             return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
         }
-
+        
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
-
+        
         // Histogram engine requires MYSQL
-        if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
-
+        if ($engine != Engine::MYSQL && $datatype == DataType::HISTOGRAM) $engine = Engine::MYSQL;
+        
+        $options = array();
+        if ($engine == Engine::MYSQL || $engine == Engine::MYSQLMEMORY) {
+            if (!empty($options_in->name)) $options['name'] = $options_in->name;
+            if (!empty($options_in->type)) $options['type'] = $options_in->type;
+            if (isset($options_in->empty)) $options['empty'] = $options_in->empty;
+        }
+        else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
+        else if ($engine == Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
+        
         $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
         $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
         $feedid = $this->mysqli->insert_id;
-        
-        if ($feedid>0)
-        {
+        if ($feedid > 0) {
             // Add the feed to redis
             if ($this->redis) {
                 $this->redis->sAdd("user:feeds:$userid", $feedid);
@@ -141,11 +148,7 @@ class Feed
                     'unit'=>$unit
                 ));
             }
-
-            $options = array();
-            if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
-            if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
-
+            
             $engineresult = false;
             if ($datatype==DataType::HISTOGRAM) {
                 $engineresult = $this->EngineClass("histogram")->create($feedid,$options);
@@ -833,9 +836,9 @@ class Feed
         }
 
         if (isset($fields->unit)) {
-	    if ($fields->unit !== filter_var($fields->unit, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW)) {
-		    return array('success'=>false, 'message'=>'invalid characters in feed unit');
-	    }
+        if ($fields->unit !== filter_var($fields->unit, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW)) {
+            return array('success'=>false, 'message'=>'invalid characters in feed unit');
+        }
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);
