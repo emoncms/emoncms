@@ -345,6 +345,7 @@ class PHPTimeSeries implements engine_methods
             $interval = (int) $interval;
             if ($interval<1) $interval = 1;
             $time = $start;
+            $interval_check = $interval;
         }
         
         if ($csv) {
@@ -390,10 +391,14 @@ class PHPTimeSeries implements engine_methods
                     fseek($fh,$pos_start);
                     // read division in one block, much faster!
                     $s = fread($fh,$bytes_to_read);
+                    $s2 = "";
                     for ($x=0; $x<$dp_to_read; $x++) {
-                        $tmp = unpack("f",substr($s,($x*9)+5,4));
-                        if (!is_nan($tmp[1])) {
-                            $sum += $tmp[1];
+                        $s2 .= substr($s,($x*9)+5,4);
+                    }
+                    $tmp = unpack("f*",$s2);
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                        if (!is_nan($tmp[$x+1])) {
+                            $sum += $tmp[$x+1];
                             $n++;
                         }
                     }
