@@ -1199,7 +1199,7 @@ class Process_ProcessList
         }
         $redis->hMset("process:ratechange:$feedid", array('time' => $time, 'value' => $value));
 
-        // return $ratechange;
+        return $ratechange;
     }
 
     public function save_to_input($inputid, $time, $value)
