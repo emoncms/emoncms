@@ -857,6 +857,28 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("max by feed"),
+              "short"=>"max_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"max_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by feed"),
+              "short"=>"min_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"min_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
            )
         );
         return $list;
@@ -1004,6 +1026,22 @@ class Process_ProcessList
     public function min_input($id, $time, $value)
     {
         $min_limit = $this->input->get_last_value($id);
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
+    
+    public function max_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $max_limit = $timevalue['value']*1;
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $min_limit = $timevalue['value']*1;
         if ($value<$min_limit) $value = $min_limit;
         return $value;
     }
