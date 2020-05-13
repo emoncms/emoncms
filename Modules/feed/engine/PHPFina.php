@@ -419,6 +419,7 @@ class PHPFina implements engine_methods
         $meta->end_time = $meta->start_time + ($meta->npoints*$meta->interval);
         
         $fullres = false;
+        if ($interval=="original") $interval = $meta->interval;
         
         // The first section here deals with the timezone aligned interval codes
         // the start time is modified to align to the nearest day, week, month or year
@@ -572,7 +573,7 @@ class PHPFina implements engine_methods
         return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
     }
     public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
-        $this->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,true);
+        $this->get_data_combined($feedid,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
     
     // Splits daily, weekly, monthly output into time of use segments defined by $split

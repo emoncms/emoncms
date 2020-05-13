@@ -263,7 +263,7 @@ body{padding:0!important}
             <td>
                 <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
-                    <option value=1><?php echo _('Auto');?></option>
+                    <option value=original><?php echo _('Original feed interval');?></option>
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
                     <option value=30><?php echo _('30s');?></option>
@@ -293,10 +293,6 @@ body{padding:0!important}
             </td>
         </tr>
         </table>
-            <div class="alert alert-info">
-                <p><?php echo _('Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.');?></p>
-                <p><?php echo _('Date time in excel format is in user timezone');?></p>
-            </div>
     </div>
     <div class="modal-footer">
         <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span>MB</div>
@@ -1341,6 +1337,9 @@ $("#save-processlist").click(function (){
 // Export feature
 // ---------------------------------------------------------------------------------------------
 $(".feed-download").click(function(){
+    $("#export-average").parent().hide();
+    $("#export-average").data("enabled",0);
+    
     var ids = [];
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) {
@@ -1348,11 +1347,14 @@ $(".feed-download").click(function(){
         }
     }
     
-    // Enable averaging checkbox for single feed selection & phpfina
-    if (ids.length==1 && feeds[ids[0]].engine==5) {
-        $("#export-average").parent().show();
-    } else {
-        $("#export-average").parent().hide();
+    var selected_interval = $('#export-interval').val();
+    // Enable averaging checkbox for single feed selection, phpfina & phptimeseries
+    var engine = feeds[ids[0]].engine;
+    if (ids.length==1 && (engine==2 || engine==5)) {
+        $("#export-average").data("enabled",1);
+        if (selected_interval!="original") {
+            $("#export-average").parent().show();
+        }
     }
 
     $("#export").attr('feedcount',ids.length);
@@ -1385,6 +1387,16 @@ $('#datetimepicker1').on("changeDate", function (e) {
 
 $('#datetimepicker2').on("changeDate", function (e) {
     $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
+});
+
+$('#export-interval').on('change', function(e) {
+    if ($("#export-average").data("enabled")) {
+        if ($(this).val()=="original") {
+            $("#export-average").parent().hide();
+        } else {
+            $("#export-average").parent().show();
+        }
+    }
 });
 
 $('#export-interval, #export-timeformat').on('change', function(e) {

@@ -339,6 +339,8 @@ class PHPTimeSeries implements engine_methods
                 $interval_check = 3600*24*365;
             }
             $time = $date->getTimestamp();
+        } elseif ($interval=="original") {
+            $time = $start;
         } else {
             // If interval codes are not specified then we advanced by a fixed numeric interval 
             $fixed_interval = true;
@@ -355,75 +357,90 @@ class PHPTimeSeries implements engine_methods
         }
                
         $filesize = filesize($this->dir."feed_$feedid.MYD");
+        $npoints = floor($filesize / 9);
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         // Get starting position
         $pos_start = $this->binarysearch($fh,$time,0,$filesize-9);
- 
-        // seek only once for full resolution export
-        $first_seek = false;
-             
-        while($time<=$end)
-        {   
-            $div_start = $time;
-            
-            // Advance position
-            if ($fixed_interval) {
-                $div_end = $time + $interval;
-            } else {
-                $date->modify($modify);
-                $div_end = $date->getTimestamp();
-            }
-            
-            // find end position (which is also the next start position)
-            // pos_end - pos_start = number of datapoints to average
-            $pos_end = $this->binarysearch($fh,$div_end,0,$filesize-9);
-            $bytes_to_read = ($pos_end-$pos_start);
-            
-            $value = null;
-            
-            if ($average && $bytes_to_read>9) {
-                // Calculate average in period
-                $sum = 0;
-                $n = 0;
-                $dp_to_read = $bytes_to_read / 9;
+        
+        if ($interval!="original") {
+            while($time<=$end)
+            {   
+                $div_start = $time;
                 
-                if ($bytes_to_read) {
-                    fseek($fh,$pos_start);
-                    // read division in one block, much faster!
-                    $s = fread($fh,$bytes_to_read);
-                    $s2 = "";
-                    for ($x=0; $x<$dp_to_read; $x++) {
-                        $s2 .= substr($s,($x*9)+5,4);
-                    }
-                    $tmp = unpack("f*",$s2);
-                    for ($x=0; $x<$dp_to_read; $x++) {
-                        if (!is_nan($tmp[$x+1])) {
-                            $sum += $tmp[$x+1];
-                            $n++;
+                // Advance position
+                if ($fixed_interval) {
+                    $div_end = $time + $interval;
+                } else {
+                    $date->modify($modify);
+                    $div_end = $date->getTimestamp();
+                }
+                
+                // find end position (which is also the next start position)
+                // pos_end - pos_start = number of datapoints to average
+                $pos_end = $this->binarysearch($fh,$div_end,0,$filesize-9);
+                $bytes_to_read = ($pos_end-$pos_start);
+                
+                $value = null;
+                
+                if ($average && $bytes_to_read>9) {
+                    // Calculate average in period
+                    $sum = 0;
+                    $n = 0;
+                    $dp_to_read = $bytes_to_read / 9;
+                    
+                    if ($bytes_to_read) {
+                        fseek($fh,$pos_start);
+                        // read division in one block, much faster!
+                        $s = fread($fh,$bytes_to_read);
+                        $s2 = "";
+                        for ($x=0; $x<$dp_to_read; $x++) {
+                            $s2 .= substr($s,($x*9)+5,4);
+                        }
+                        $tmp = unpack("f*",$s2);
+                        for ($x=0; $x<$dp_to_read; $x++) {
+                            if (!is_nan($tmp[$x+1])) {
+                                $sum += $tmp[$x+1];
+                                $n++;
+                            }
                         }
                     }
-                }
-                if ($n>0) $value = 1.0*$sum/$n;
-                
-            } else {
-                fseek($fh,$pos_start);
-                $dp = unpack("x/Itime/fvalue",fread($fh,9));
-                if (abs($dp['time']-$div_start)<$interval_check) {
-                    $value = $dp['value'];
-                }
-                if (is_nan($value)) $value = null;
-            }
-            
-            if ($value!==null || $skipmissing===0) {
-                if ($csv) { 
-                    $helperclass->csv_write($div_start,$value);
+                    if ($n>0) $value = 1.0*$sum/$n;
+                    
                 } else {
-                    $data[] = array($div_start*1000,$value);
+                    fseek($fh,$pos_start);
+                    $dp = unpack("x/Itime/fvalue",fread($fh,9));
+                    if (abs($dp['time']-$div_start)<$interval_check) {
+                        $value = $dp['value'];
+                    }
+                    if (is_nan($value)) $value = null;
                 }
+                
+                if ($value!==null || $skipmissing===0) {
+                    if ($csv) { 
+                        $helperclass->csv_write($div_start,$value);
+                    } else {
+                        $data[] = array($div_start*1000,$value);
+                    }
+                }
+                
+                $time = $div_end;
+                $pos_start = $pos_end;
             }
-            
-            $time = $div_end;
-            $pos_start = $pos_end;
+        } else {
+            // Export original data
+            $n = 0;
+            fseek($fh,0);
+            while($time<=$end && $n<$npoints) {
+                $dp = unpack("x/Itime/fvalue",fread($fh,9));
+                $time = $dp['time']; $value = $dp['value'];
+                
+                if ($csv) { 
+                    $helperclass->csv_write($time,$value);
+                } else {
+                    $data[] = array($time*1000,$value);
+                }
+                $n++;
+            }
         }
         
         if ($csv) {
@@ -452,7 +469,7 @@ class PHPTimeSeries implements engine_methods
         return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
     }
     public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
-        $this->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,true);
+        $this->get_data_combined($feedid,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
 
     public function export($feedid,$start)
