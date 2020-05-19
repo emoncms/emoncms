@@ -288,7 +288,7 @@ class InputMethods
         
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
-            if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
+            if ($this->device) $this->device->create($userid,$nodeid);
         }
         
         $tmp = array();
