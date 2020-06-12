@@ -263,6 +263,7 @@
                     if (is_numeric($inputtime)){
                         $log->info("Valid time in seconds used ".$inputtime);
                         $time = (int) $inputtime;
+                        unset($jsondata["time"]);
                     } elseif (is_string($inputtime)){
                         if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
@@ -312,8 +313,16 @@
                 $dbinputs = $input->get_inputs($userid);
 
                 if ($jsoninput) {
+                    $input_name = "";
+                    if ($route_len>=2) {
+                    // Input name is all the remaining parts connected together with _ and
+                    // added to front of input name.
+                        $input_name_parts = array();
+                        for ($i=1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
+                        $input_name = implode("_",$input_name_parts)."_";
+                    }
                     foreach ($jsondata as $key=>$value) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
                     }
                 } else if ($route_len>=2) {
                     // Input name is all the remaining parts connected together
