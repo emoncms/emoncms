@@ -263,6 +263,7 @@
                     if (is_numeric($inputtime)){
                         $log->info("Valid time in seconds used ".$inputtime);
                         $time = (int) $inputtime;
+                        unset($jsondata["time"]);
                     } elseif (is_string($inputtime)){
                         if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
