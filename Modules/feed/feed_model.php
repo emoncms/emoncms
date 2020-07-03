@@ -73,7 +73,7 @@ class Feed
                 case (string)Engine::MYSQLMEMORY : 
                     require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
-                    $engines[$e] = new MysqlMemory($this->mysqli);
+                    $engines[$e] = new MysqlMemory($this->mysqli,$this->settings['mysqltimeseries']);
                     break;
                 case "histogram" :
                     require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
