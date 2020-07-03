@@ -53,6 +53,20 @@ eot;
         <dd class="col-sm-10 col-8 border-box px-1 {$value_css}">{$value}</dd>
 listItem;
     }
+    
+    function list_serial_ports() {
+        $ports = array();
+        for ($i=0; $i<5; $i++) {
+            if (file_exists("/dev/ttyAMA$i")) {
+                $ports[] = "ttyAMA$i";
+            }  
+            if (file_exists("/dev/ttyUSB$i")) {
+                $ports[] = "ttyUSB$i";
+            }
+        }
+        return $ports;
+    }
+    
 ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
@@ -153,11 +167,17 @@ listItem;
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
         </div>
         <div class="input-append">
+            <select id="select_serial_port">
+                <?php foreach (list_serial_ports() as $port) { ?>
+                <option><?php echo $port; ?></option>
+                <?php } ?>
+            </select>
             <select id="selected_firmware">
                 <option value="none">none</option>
                 <option value="emonpi">EmonPi</option>
                 <option value="rfm69pi">RFM69Pi</option>
                 <option value="rfm12pi">RFM12Pi</option>
+                <option value="emontxv3cm">EmonTxV3CM</option>
                 <option value="custom">Custom</option>
             </select>
             <button class="update btn btn-info" type="firmware"><?php echo _('Update Firmware'); ?></button>
@@ -788,8 +808,9 @@ $(".update-collapse").click(function() {
 // update all button clicked
 $(".update").click(function() {
   var type = $(this).attr("type");
+  var serial_port = $("#select_serial_port").val();
   var firmware = $("#selected_firmware").val();
-  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware, async: true, success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
     {
       // update with latest value
       refresh_updateLog(result);

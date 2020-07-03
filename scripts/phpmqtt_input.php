@@ -228,49 +228,58 @@
         $log->info("Disconnected cleanly");
     }
 
-    function message($message) {
-        global $settings, $user, $input, $process, $device, $log, $count;
+    function message($message)
+    {
         try {
+            $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
             $time = time();
-            
+
+            global $settings, $user, $input, $process, $device, $log, $count;
+
             //remove characters that emoncms topics cannot handle
             $topic = str_replace(":","",$topic);
-            
+
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
-            $jsoninput = false;
             $jsondata = json_decode($value,true,2);
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
                 // JSON is valid - is it an array
                 $jsoninput = true;
                 $log->info("MQTT Valid JSON found ");
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
 
                 // If JSON, check to see if there is a time value else set to time now.
-                foreach ($jsondata as $key=>$value) {
-                    if (strtolower($key) == 'time') {
-                        // validate time
-                        if (is_numeric($value)) {
-                            $log->info("Found valid time in seconds: ".$value);
-                            $time = intval($value);
+                if (array_key_exists('time',$jsondataLC)){
+                    $inputtime = $jsondataLC['time'];
+
+                    // validate time
+                    if (is_numeric($inputtime)){
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
+                    } elseif (is_string($inputtime)){
+                        if (($timestamp = strtotime($inputtime)) === false) {
+                            //If time string is not valid, use system time.
+                            $log->warn("Time string not valid ".$inputtime);
+                            $time = time();
+                        } else {
+                            $log->info("Valid time string used ".$inputtime);
+                            $time = $timestamp;
                         }
-                        elseif (is_string($value)) {
-                            if (($timestamp = strtotime($value)) === false) {
-                                //If time string is not valid, use system time.
-                                $log->warn("Time string not valid: ".$value);
-                            } else {
-                                $log->info("Found valid time string: ".$value);
-                                $time = $timestamp;
-                            }
-                        }
-                        else {
-                            $log->warn("Time value not valid: ".$value);
-                        }
-                        unset($jsondata[$key]);
-                        break;
+                    } else {
+                        $log->warn("Time value not valid ".$inputtime);
+                        $time = time();
                     }
+                } else {
+                    $log->info("No time element found in JSON - System time used");
+                    $time = time();
                 }
+            } else {
+                $jsoninput = false;
+                $time = time();
             }
+
             $log->info($topic." ".$value);
             $count ++;
             
