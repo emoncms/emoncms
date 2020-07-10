@@ -130,6 +130,10 @@ body{padding:0!important}
     right: 0;
 }
 
+.node-feeds .node-feed.status-none:after,
+.node.status-none .accordion-toggle:after {
+    background: #D6D6D6;
+}
 .node-feeds .node-feed.status-warning:after,
 .node.status-warning .accordion-toggle:after {
     background: #FFC107;
@@ -143,16 +147,20 @@ body{padding:0!important}
     background: #DC3545;
 }
 
+.node.status-none .accordion-toggle .last-update,
+.node-feeds .node-feed.status-none .last-update {
+    color: #999!important;
+}
 .node.status-warning .accordion-toggle .last-update,
-.node-feeds .node-feed.status-warning .last-update{
+.node-feeds .node-feed.status-warning .last-update {
     color: #C70!important;
 }
 .node.status-success .accordion-toggle .last-update,
-.node-feeds .node-feed.status-success .last-update{
+.node-feeds .node-feed.status-success .last-update {
     color: #28A745!important; 
 }
 .node.status-danger .accordion-toggle .last-update,
-.node-feeds .node-feed.status-danger .last-update{
+.node-feeds .node-feed.status-danger .last-update {
     color: #DC3545!important;
 }
 
@@ -466,7 +474,7 @@ function update_feed_list() {
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
+            out += '<div class="node accordion ' + nodeUpdateStatus(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
@@ -509,7 +517,7 @@ function update_feed_list() {
 
                 row_title = title_lines.join("\n");
 
-                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                out += "<div class='" + feedUpdateStatus(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                 out += "<div class='name' data-col='A'>"+feed.name+"</div>";
@@ -584,39 +592,106 @@ function buildFeedNodeList() {
     autocomplete(document.getElementById("feed-node"), node_names);
 }
 
-
-function missedIntervals(feed) {
-    if (!feed) return void 0;
-    var lastUpdated = new Date(feed.time * 1000);
+/**
+ * Get the CSS class name for a set of node feeds. Returnes the class based on 
+ * the highest number of missed intervals, if an interval is configured.
+ * Otherwise based on the furthest elapsed time since the last update.
+ * 
+ * @param {array} - array of feeds
+ * @return {string} 
+ */
+function nodeUpdateStatus(feeds) {
+    var status = 'status-none';
+    var elapsed = 2592000; // Use 30 days in the past as error threshold
+    var missed = 0;
     var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / feed.interval);
-    return missedIntervals;
-}
-function feedListItemIntervalClass (feed) {
-    if (!feed) return void 0;
-    let missed = missedIntervals(feed);
-    let result = [];
-    if (missed < 3) result.push('status-success');
-    if (missed > 2 && missed < 9) result.push('status-warning');
-    if (missed > 8) result.push('status-danger');
-    return result.join(' ');
-}
-function nodeIntervalClass (feeds) {
-    let nodeMissed = 0;
-    for (f in feeds) {
-        let missed = missedIntervals(feeds[f]);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
+    for (i in feeds) {
+        var feed = feeds[i];
+        if (!feed.time) {
+            continue;
+        }
+        
+        let e = (now - new Date(feed.time*1000).getTime())/1000;
+        if (e > 0 && typeof feed.interval !== 'undefined' && feed.interval > 1) {
+            missed = Math.max(missed, parseInt(e/feed.interval));
+        }
+        if (e < 2592000) {
+            elapsed = Math.min(elapsed, e);
         }
     }
-    let result = [];
-    if (nodeMissed < 3) result.push('status-success');
-    if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
-    if (nodeMissed > 8) result.push('status-danger');
-    return result.join(' ');
+    if (missed > 0) {
+        status = feedMissedStatus(missed);
+    }
+    else if (elapsed < 2592000) {
+        status = feedElapsedStatus(elapsed);
+    }
+    return status;
 }
 
+/**
+ * Get the CSS class name based on the number of missed intervals, if an interval
+ * is configured. Otherwise based on the elapsed time since the last update.
+ * 
+ * @param {object} feed
+ * @return string
+ */
+function feedUpdateStatus(feed) {
+    var status = 'status-none';
+    if (!feed || !feed.time) {
+        return status;
+    }
+    
+    var elapsed = feedElapsedTime(feed.time);
+    if (elapsed > 0 && typeof feed.interval !== 'undefined' && feed.interval > 1) {
+        status = feedMissedStatus(parseInt(elapsed/feed.interval));
+    }
+    else {
+        status = feedElapsedStatus(elapsed);
+    }
+    return status;
+}
+
+/**
+ * Returns the CSS class name based on the number of missed intervals.
+ * 
+ * @param integer missed: number of missed intervals since last update
+ * @return string
+ */
+function feedMissedStatus(missed) {
+    if (missed < 5) {
+        return 'status-success'; 
+    }
+    else if (missed < 12) {
+        return 'status-warning';
+    }
+    return 'status-danger';
+}
+
+/**
+ * Returns the css class name based on the elapsed time since the last update.
+ * 
+ * @param integer elapsed: elapsed time since last update in seconds
+ * @return string
+ */
+function feedElapsedStatus(elapsed) {
+    if (elapsed < 60) {
+        return 'status-success'; 
+    }
+    else if (elapsed < 7200) {
+        return 'status-warning';
+    }
+    return 'status-danger';
+}
+
+/**
+ * Returns the elapsed time in seconds since the feed was updated.
+ * 
+ * @param integer time: unix timestamp of the feed in seconds
+ * @return integer
+ */
+function feedElapsedTime(time) {
+    return (new Date().getTime() - new Date(time*1000).getTime())/1000;
+}
 
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
