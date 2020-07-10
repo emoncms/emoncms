@@ -77,9 +77,12 @@ function ini_merge($defaults, $overrides)
 {
     foreach ($overrides as $k => $v) {
         if (is_array($v)) {
+            if (!isset($defaults[$k])) {
+                $defaults[$k] = array();
+            }
             $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
         } else {
-            $defaults[$k] = resolve_env_vars($v, $defaults[$k]);
+            $defaults[$k] = resolve_env_vars($v);
 #            $defaults[$k] = $v;
         }
     }
