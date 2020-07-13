@@ -208,7 +208,7 @@ $settings = array(
 
 // (OPTIONAL) App module settings
 "app"=>array(
-    'hidden' => (isset($app_settings) && isset($app_settings["hidden"]))?$app_settings["hidden"]:array()
+    'hidden' => (isset($app_settings) && isset($app_settings["hidden"]))?implode(',',$app_settings["hidden"]):''
 ),
 
 // Log file configuration
