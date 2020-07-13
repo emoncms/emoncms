@@ -93,29 +93,38 @@ input[type="checkbox"] { margin:0px; }
 .buttons{
     padding-right: .4em;
 }
+
+.status-none.node-info::after,
+.status-none.node-input::after {
+    background: #D6D6D6;
+}
 .status-success.node-info::after,
-.status-success.node-input::after{
+.status-success.node-input::after {
     background: #28A745!important;
 }
 .status-danger.node-info::after,
-.status-danger.node-input::after{
+.status-danger.node-input::after {
     background: #DC3545!important;
 }
 .status-warning.node-info::after,
-.status-warning.node-input::after{
+.status-warning.node-input::after {
     background: #FFC107!important;
 }
 
+.status-none.node-info .last-update,
+.status-none.node-input .last-update {
+    color: #999!important;
+}
 .status-success.node-info .last-update,
-.status-success.node-input .last-update{
+.status-success.node-input .last-update {
     color: #28A745!important;
 }
 .status-danger.node-info .last-update,
-.status-danger.node-input .last-update{
+.status-danger.node-input .last-update {
     color: #DC3545!important;
 }
 .status-warning.node-info .last-update,
-.status-warning.node-input .last-update{
+.status-warning.node-input .last-update {
     color: #C70!important;
 }
 

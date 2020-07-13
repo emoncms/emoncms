@@ -196,11 +196,11 @@ var app = new Vue({
             }
         },
         inputStatus: function(input) {
-            return missedIntervalClassName(missedIntervals(input));
+            return inputUpdateStatus(input);
         },
         deviceStatus: function(device) {
             var input = this.oldestDeviceInput(device);
-            return missedIntervalClassName(missedIntervals(input));
+            return inputUpdateStatus(input);
         },
         oldestDeviceInput: function(device) {
             var oldest = false;
@@ -1309,69 +1309,49 @@ $(window).on("resize",function() {
     resize_timeout = setTimeout(resize_view,40);
 });
 
-
-
 /**
- * find out how many intervals an feed/input has missed
+ * Get the CSS class name based on the elapsed time since the last update.
  * 
- * @param {Object} nodeItem
- * @return mixed
- */
-function missedIntervals(nodeItem) {
-    // @todo: interval currently fixed to 5s
-    var interval = 5;
-    if (!nodeItem || !nodeItem.time) return null;
-    var lastUpdated = new Date(nodeItem.time * 1000);
-    var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / interval);
-    return missedIntervals;
-}
-/**
- * get css class name based on number of missed intervals
- * 
- * @param {*} missed - number of missed intervals, false if error
+ * @param {object} input
  * @return string
  */
-function missedIntervalClassName (missed) {
-    let result = 'status-success';
-    if (missed > 4) result = 'status-warning'; 
-    if (missed > 11) result = 'status-danger';
-    if (missed === null) result = 'status-danger';
-    return result;
-}
-/**
- * get css class name for node item status
- * 
- * first gets number of missed intervals since last update
- * @param {object} nodeItem
- * @return {string} 
- */
-function nodeItemIntervalClass (nodeItem) {
-    let missed = missedIntervals(nodeItem);
-    return missedIntervalClassName(missed);
-}
-/**
- * get css class name for latest node status
- * 
- * only returns the status for the most recent update
- * @param {array} - array of nodeItems
- * @return {string} 
- */
-function nodeIntervalClass (node) {
-    let nodeMissed = 0;
-    let missed = null;
-    // find most recent interval status
-    for (f in node.inputs) {
-        let nodeItem = node.inputs[f];
-        missed = missedIntervals(nodeItem);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
-        }
+function inputUpdateStatus(input) {
+    var status = 'status-none';
+    if (!input || !input.time) {
+        return status;
     }
-    return missedIntervalClassName(missed);
+    return inputElapsedStatus(inputElapsedTime(input.time));
 }
 
+/**
+ * Returns the css class name based on the elapsed time since the last update.
+ * 
+ * @param integer elapsed: elapsed time since last update in seconds
+ * @return string
+ */
+function inputElapsedStatus(elapsed) {
+    var status = 'status-none';
+    if (elapsed < 60) {
+        status = 'status-success'; 
+    }
+    else if (elapsed < 900) {
+        status = 'status-warning';
+    }
+    else if (elapsed < 2592000) {
+        status = 'status-danger';
+    }
+    return status;
+}
+
+/**
+ * Returns the elapsed time in seconds since the input was updated.
+ * 
+ * @param integer time: unix timestamp of the input in seconds
+ * @return integer
+ */
+function inputElapsedTime(time) {
+    return (new Date().getTime() - new Date(time*1000).getTime())/1000;
+}
 
 /**
  * get new array created from values in both arrays

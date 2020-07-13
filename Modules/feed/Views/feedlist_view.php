@@ -677,7 +677,7 @@ function feedElapsedStatus(elapsed) {
     if (elapsed < 60) {
         return 'status-success'; 
     }
-    else if (elapsed < 7200) {
+    else if (elapsed < 900) {
         return 'status-warning';
     }
     return 'status-danger';
