@@ -1334,7 +1334,7 @@ function inputElapsedStatus(elapsed) {
     if (elapsed < 60) {
         status = 'status-success'; 
     }
-    else if (elapsed < 900) {
+    else if (elapsed < 7200) {
         status = 'status-warning';
     }
     else if (elapsed < 2592000) {

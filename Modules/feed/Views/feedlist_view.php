@@ -677,10 +677,13 @@ function feedElapsedStatus(elapsed) {
     if (elapsed < 60) {
         return 'status-success'; 
     }
-    else if (elapsed < 900) {
+    else if (elapsed < 7200) {
         return 'status-warning';
     }
-    return 'status-danger';
+    else if (elapsed < 2592000) {
+        return 'status-danger';
+    }
+    return 'status-none';
 }
 
 /**
