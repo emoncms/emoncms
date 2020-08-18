@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 ## Used to run arbitrary commands from the EmonCMS web interface
 # EmonCMS submits commands to redis where this service picks them up
