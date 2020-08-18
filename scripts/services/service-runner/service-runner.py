@@ -46,7 +46,7 @@ def main():
         script, logfile = flag.split(">")
         print("STARTING:", script, '&>', logfile, flush=True)
         # Got a cmdline, now run it.
-        with open(logfile, "a") as f:
+        with open(logfile, "w") as f:
             try:
                 subprocess.call(shlex.split(script), stdout=f, stderr=f)
             except Exception as exc:
