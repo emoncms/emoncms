@@ -200,6 +200,15 @@ $settings = array(
     'password'=>isset($smtp_email_settings["password"])?$smtp_email_settings["password"]:"yourpassword"
 ),
 
+// (OPTIONAL) Solar module settings
+"solar"=>array(
+    'root_dir' => (isset($solar_settings) && isset($solar_settings["rootdir"]))?$solar_settings["rootdir"]:"/opt/emonpv/",
+    'libs_dir' => (isset($solar_settings) && isset($solar_settings["libsdir"]))?$solar_settings["libsdir"]:"/opt/emonpv/libs/",
+    'data_dir' => (isset($solar_settings) && isset($solar_settings["datadir"]))?$solar_settings["datadir"]:"/var/opt/emonpv/data/",
+    'script' => (isset($solar_settings) && isset($solar_settings["script"]))?$solar_settings["script"]:"/var/opt/emonpv/",
+    'python' => (isset($solar_settings) && isset($solar_settings["python"]))?$solar_settings["python"]:"/var/opt/emonpv/"
+),
+
 // (OPTIONAL) Multi utility communication module settings
 "muc"=>array(
     'root_dir' => (isset($muc_settings) && isset($muc_settings["rootdir"]))?$muc_settings["rootdir"]:"/opt/emonmuc/",
