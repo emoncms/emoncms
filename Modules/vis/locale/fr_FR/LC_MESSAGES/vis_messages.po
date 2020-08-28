@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 14:23+0200\n"
-"PO-Revision-Date: 2018-08-06 14:24+0200\n"
+"POT-Creation-Date: 2020-08-28 11:21+0200\n"
+"PO-Revision-Date: 2020-08-28 11:29+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,26 +14,26 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/vis_main_view.php:40
+#: ../../../Views/vis_main_view.php:38
 msgid "Visualisations"
 msgstr "Visualisations"
 
-#: ../../../Views/vis_main_view.php:45
+#: ../../../Views/vis_main_view.php:43
 msgid "Select visualisation:"
 msgstr "Type de visualisation :"
 
-#: ../../../Views/vis_main_view.php:50
+#: ../../../Views/vis_main_view.php:48
 msgid "Set options:"
 msgstr "Options :"
 
-#: ../../../Views/vis_main_view.php:52
+#: ../../../Views/vis_main_view.php:50
 msgid "Note:"
 msgstr "Remarque :"
 
-#: ../../../Views/vis_main_view.php:52
+#: ../../../Views/vis_main_view.php:50
 msgid ""
 "If a feed does not appear in the selection box, check that the type has been "
 "set on the feeds page."
@@ -41,19 +41,19 @@ msgstr ""
 "Si un flux n'apparait pas dans la liste, vérifiez que vous avez défini son "
 "type dans la page \"Flux\"."
 
-#: ../../../Views/vis_main_view.php:57
+#: ../../../Views/vis_main_view.php:55
 msgid "View"
 msgstr "Afficher"
 
-#: ../../../Views/vis_main_view.php:58
+#: ../../../Views/vis_main_view.php:56
 msgid "Full screen"
 msgstr "Plein écran"
 
-#: ../../../Views/vis_main_view.php:63
+#: ../../../Views/vis_main_view.php:61
 msgid "Embed in your website:"
 msgstr "Intégration dans votre site Web :"
 
-#: ../../../Views/vis_main_view.php:142 ../../../vis_langjs.php:64
+#: ../../../Views/vis_main_view.php:139 ../../../vis_langjs.php:64
 msgid ""
 "Some of the feeds selected are not public, to embed a visualisation publicly "
 "first make the feeds that you want to use public."
@@ -62,15 +62,15 @@ msgstr ""
 "visualisation publique, rendez d'abord publics les flux que vous voulez "
 "utiliser."
 
-#: ../../../Views/vis_main_view.php:142 ../../../vis_langjs.php:66
+#: ../../../Views/vis_main_view.php:139 ../../../vis_langjs.php:66
 msgid "To embed privately:"
 msgstr "Pour une intégration privée :"
 
-#: ../../../Views/vis_main_view.php:189
+#: ../../../Views/vis_main_view.php:186
 msgid "Off"
 msgstr "Off"
 
-#: ../../../Views/vis_main_view.php:189
+#: ../../../Views/vis_main_view.php:186
 msgid "On"
 msgstr "On"
 
@@ -94,11 +94,11 @@ msgstr "Authentification non valide"
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../../../vis_langjs.php:29
+#: ../../../vis_langjs.php:29 ../../../visualisations/graph.php:59
 msgid "Advanced"
 msgstr "Avancé"
 
-#: ../../../vis_langjs.php:30 ../../../visualisations/editrealtime.php:68
+#: ../../../vis_langjs.php:30 ../../../visualisations/editrealtime.php:69
 msgid "Are you sure you want to delete?"
 msgstr "Êtes-vous sûr de vouloir supprimer?"
 
@@ -122,7 +122,7 @@ msgstr "Largeur de la barre (%)"
 msgid "Basic"
 msgstr "Basique"
 
-#: ../../../vis_langjs.php:36 ../../../visualisations/editrealtime.php:72
+#: ../../../vis_langjs.php:36 ../../../visualisations/editrealtime.php:73
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -142,7 +142,7 @@ msgstr "Supprimer"
 msgid "Delete Multigraph"
 msgstr "Supprimer Multigraph"
 
-#: ../../../vis_langjs.php:41 ../../../visualisations/editrealtime.php:73
+#: ../../../vis_langjs.php:41 ../../../visualisations/editrealtime.php:74
 msgid "Delete permanently"
 msgstr "Supprimer de manière permanente"
 
@@ -300,10 +300,10 @@ msgstr "Défaut : 800"
 msgid "Default visible window interval"
 msgstr "Intervalle de fenêtre visible par défaut"
 
-#: ../../../vis_langjs.php:85 ../../../vis_object.php:43
-#: ../../../vis_object.php:72 ../../../vis_object.php:81
-#: ../../../vis_object.php:87 ../../../vis_object.php:99
-#: ../../../vis_object.php:104
+#: ../../../vis_langjs.php:85 ../../../vis_object.php:44
+#: ../../../vis_object.php:56 ../../../vis_object.php:65
+#: ../../../vis_object.php:71 ../../../vis_object.php:77
+#: ../../../vis_object.php:82
 msgid "delta"
 msgstr "delta"
 
@@ -311,8 +311,8 @@ msgstr "delta"
 msgid "Depth"
 msgstr "Profondeur"
 
-#: ../../../vis_langjs.php:87 ../../../vis_object.php:32
-#: ../../../vis_object.php:41
+#: ../../../vis_langjs.php:87 ../../../vis_object.php:33
+#: ../../../vis_object.php:42
 msgid "dp"
 msgstr "dp"
 
@@ -340,7 +340,7 @@ msgstr "heure"
 msgid "Hours"
 msgstr "Heures"
 
-#: ../../../vis_langjs.php:95
+#: ../../../vis_langjs.php:95 ../../../visualisations/graph.php:81
 msgid "Interval"
 msgstr "Intervalle"
 
@@ -352,7 +352,7 @@ msgstr ""
 "Intervalle (secondes) - vous pouvez définir \"d\" pour jour, \"m\" pour "
 "mois, ou \"y\" pour année"
 
-#: ../../../vis_langjs.php:97 ../../../vis_object.php:68
+#: ../../../vis_langjs.php:97 ../../../vis_object.php:52
 msgid "kwhd"
 msgstr "kwhd"
 
@@ -380,7 +380,7 @@ msgstr "minute"
 msgid "minutes"
 msgstr "minutes"
 
-#: ../../../vis_langjs.php:104 ../../../vis_object.php:44
+#: ../../../vis_langjs.php:104 ../../../vis_object.php:45
 msgid "mode"
 msgstr "mode"
 
@@ -412,8 +412,8 @@ msgstr "Puissance"
 msgid "Power to show"
 msgstr "Puissance à afficher"
 
-#: ../../../vis_langjs.php:111 ../../../vis_object.php:33
-#: ../../../vis_object.php:42
+#: ../../../vis_langjs.php:111 ../../../vis_object.php:34
+#: ../../../vis_object.php:43
 msgid "scale"
 msgstr "échelle"
 
@@ -473,8 +473,8 @@ msgstr "Ufac"
 msgid "Ufac value"
 msgstr "Valeur ufac"
 
-#: ../../../vis_langjs.php:126 ../../../vis_object.php:31
-#: ../../../vis_object.php:40 ../../../vis_object.php:50
+#: ../../../vis_langjs.php:126 ../../../vis_object.php:32
+#: ../../../vis_object.php:41 ../../../vis_object.php:119
 msgid "units"
 msgstr "unités"
 
@@ -494,11 +494,15 @@ msgstr "Semaine"
 msgid "Year"
 msgstr "Année"
 
-#: ../../../vis_langjs.php:131 ../../../vis_object.php:66
+#: ../../../vis_langjs.php:131 ../../../vis_object.php:50
 msgid "Zoom"
 msgstr "Zoom"
 
-#: ../../../vis_menu.php:7
+#: ../../../vis_langjs.php:132
+msgid "Display power as kW"
+msgstr "Afficher la puissance en kW"
+
+#: ../../../vis_menu.php:4
 msgid "Visualization"
 msgstr "Visualisation"
 
@@ -506,186 +510,191 @@ msgstr "Visualisation"
 msgid "RealTime"
 msgstr "RealTime"
 
-#: ../../../vis_object.php:21 ../../../vis_object.php:28
-#: ../../../vis_object.php:37 ../../../vis_object.php:49
-#: ../../../vis_object.php:54 ../../../vis_object.php:59
-#: ../../../vis_object.php:91 ../../../vis_object.php:103
-#: ../../../vis_object.php:108 ../../../vis_object.php:115
-#: ../../../vis_object.php:119 ../../../vis_object.php:132
-#: ../../../vis_object.php:136
+#: ../../../vis_object.php:21 ../../../vis_object.php:29
+#: ../../../vis_object.php:38 ../../../vis_object.php:81
+#: ../../../vis_object.php:90 ../../../vis_object.php:94
+#: ../../../vis_object.php:101 ../../../vis_object.php:111
+#: ../../../vis_object.php:118 ../../../vis_object.php:123
+#: ../../../vis_object.php:130 ../../../vis_object.php:136
+#: ../../../vis_object.php:143
 msgid "feed"
 msgstr "flux"
 
-#: ../../../vis_object.php:22 ../../../vis_object.php:30
-#: ../../../vis_object.php:38
+#: ../../../vis_object.php:22 ../../../vis_object.php:31
+#: ../../../vis_object.php:39
 msgid "colour"
 msgstr "couleur"
 
-#: ../../../vis_object.php:27
+#: ../../../vis_object.php:23
+msgid "kW"
+msgstr "kW"
+
+#: ../../../vis_object.php:28
 msgid "RawData"
 msgstr "RawData"
 
-#: ../../../vis_object.php:29 ../../../vis_object.php:137
+#: ../../../vis_object.php:30 ../../../vis_object.php:112
 msgid "fill"
 msgstr "remplissage"
 
-#: ../../../vis_object.php:36
+#: ../../../vis_object.php:37
 msgid "BarGraph"
 msgstr "BarGraph"
 
-#: ../../../vis_object.php:39
+#: ../../../vis_object.php:40
 msgid "interval"
 msgstr "intervalle"
 
-#: ../../../vis_object.php:48
-msgid "Daily from Multiple (BETA)"
-msgstr "Daily from Multiple (BETA)"
-
-#: ../../../vis_object.php:53 ../../../visualisations/smoothie.php:15
-msgid "Smoothie"
-msgstr "Smoothie"
-
-#: ../../../vis_object.php:55
-msgid "ufac"
-msgstr "ufac"
-
-#: ../../../vis_object.php:58
-msgid "Histgraph"
-msgstr "Histgraph"
-
-#: ../../../vis_object.php:60
-msgid "barwidth"
-msgstr "largeur barre"
-
-#: ../../../vis_object.php:61
-msgid "start"
-msgstr "début"
-
-#: ../../../vis_object.php:62
-msgid "end"
-msgstr "fin"
-
-#: ../../../vis_object.php:67 ../../../vis_object.php:97
-#: ../../../vis_object.php:109
+#: ../../../vis_object.php:51 ../../../vis_object.php:75
+#: ../../../vis_object.php:137
 msgid "power"
 msgstr "puissance"
 
-#: ../../../vis_object.php:69
+#: ../../../vis_object.php:53
 msgid "currency"
 msgstr "devise"
 
-#: ../../../vis_object.php:70
+#: ../../../vis_object.php:54
 msgid "currency_after_val"
 msgstr "devise_après_val"
 
-#: ../../../vis_object.php:71
+#: ../../../vis_object.php:55
 msgid "pricekwh"
 msgstr "prixkwh"
 
-#: ../../../vis_object.php:76 ../../../visualisations/stacked.php:20
+#: ../../../vis_object.php:60 ../../../visualisations/stacked.php:20
 #: ../../../visualisations/stackedsolar.php:19
 msgid "Stacked"
 msgstr "Stacked"
 
-#: ../../../vis_object.php:77
+#: ../../../vis_object.php:61
 msgid "bottom"
 msgstr "bas"
 
-#: ../../../vis_object.php:78
+#: ../../../vis_object.php:62
 msgid "top"
 msgstr "haut"
 
-#: ../../../vis_object.php:79
+#: ../../../vis_object.php:63
 msgid "colourt"
 msgstr "couleur h"
 
-#: ../../../vis_object.php:80
+#: ../../../vis_object.php:64
 msgid "colourb"
 msgstr "couleur b"
 
-#: ../../../vis_object.php:84
+#: ../../../vis_object.php:68
 msgid "StackedSolar"
 msgstr "StackedSolar"
 
-#: ../../../vis_object.php:85
+#: ../../../vis_object.php:69
 msgid "solar"
 msgstr "solaire"
 
-#: ../../../vis_object.php:86
+#: ../../../vis_object.php:70
 msgid "consumption"
 msgstr "consommation"
 
-#: ../../../vis_object.php:90 ../../../visualisations/threshold.php:21
-msgid "Threshold"
-msgstr "Seuil"
-
-#: ../../../vis_object.php:92 ../../../vis_object.php:110
-msgid "thresholdA"
-msgstr "seuil A"
-
-#: ../../../vis_object.php:93 ../../../vis_object.php:111
-msgid "thresholdB"
-msgstr "seuil B"
-
-#: ../../../vis_object.php:96
+#: ../../../vis_object.php:74
 msgid "SimpleZoom"
 msgstr "SimpleZoom"
 
-#: ../../../vis_object.php:98
+#: ../../../vis_object.php:76
 msgid "kwh"
 msgstr "kwh"
 
-#: ../../../vis_object.php:102
+#: ../../../vis_object.php:80
 msgid "OrderBars"
 msgstr "OrderBars"
 
-#: ../../../vis_object.php:107
-msgid "OrderThreshold"
-msgstr "OrderThreshold"
-
-#: ../../../vis_object.php:114
-msgid "EditRealtime"
-msgstr "EditRealtime"
-
-#: ../../../vis_object.php:118
-msgid "EditDaily"
-msgstr "EditDaily"
-
-#: ../../../vis_object.php:122
+#: ../../../vis_object.php:85
 msgid "MultiGraph"
 msgstr "MultiGraph"
 
-#: ../../../vis_object.php:123
+#: ../../../vis_object.php:86
 msgid "mid"
-msgstr ""
+msgstr "mid"
 
-#: ../../../vis_object.php:126
+#: ../../../vis_object.php:89
+msgid "EditRealtime"
+msgstr "EditRealtime"
+
+#: ../../../vis_object.php:93
+msgid "EditDaily"
+msgstr "EditDaily"
+
+#: ../../../vis_object.php:100 ../../../visualisations/smoothie.php:15
+msgid "Smoothie"
+msgstr "Smoothie"
+
+#: ../../../vis_object.php:102
+msgid "ufac"
+msgstr "ufac"
+
+#: ../../../vis_object.php:105
 msgid "Compare"
 msgstr "Compare"
 
-#: ../../../vis_object.php:127
+#: ../../../vis_object.php:106
 msgid "Feed A"
 msgstr "Flux A"
 
-#: ../../../vis_object.php:128
+#: ../../../vis_object.php:107
 msgid "Feed B"
 msgstr "Flux B"
 
-#: ../../../vis_object.php:131
-msgid "Graph (BETA)"
-msgstr "Graph (BETA)"
-
-#: ../../../vis_object.php:135
+#: ../../../vis_object.php:110
 msgid "Time Comparison"
 msgstr "Time Comparison"
 
-#: ../../../vis_object.php:138
+#: ../../../vis_object.php:113
 msgid "depth"
 msgstr "profondeur"
 
-#: ../../../vis_object.php:139
+#: ../../../vis_object.php:114
 msgid "data points"
 msgstr "points de données"
+
+#: ../../../vis_object.php:117
+msgid "Timestore Daily (Deprecated)"
+msgstr "Timestore Daily (Obsolète)"
+
+#: ../../../vis_object.php:122
+msgid "Histgraph (Deprecated)"
+msgstr "Histgraph (Obsolète)"
+
+#: ../../../vis_object.php:124
+msgid "barwidth"
+msgstr "largeur barre"
+
+#: ../../../vis_object.php:125
+msgid "start"
+msgstr "début"
+
+#: ../../../vis_object.php:126
+msgid "end"
+msgstr "fin"
+
+#: ../../../vis_object.php:129
+#| msgid "Threshold Order"
+msgid "Threshold (Deprecated)"
+msgstr "Threshold (Obsolète)"
+
+#: ../../../vis_object.php:131 ../../../vis_object.php:138
+msgid "thresholdA"
+msgstr "seuil A"
+
+#: ../../../vis_object.php:132 ../../../vis_object.php:139
+msgid "thresholdB"
+msgstr "seuil B"
+
+#: ../../../vis_object.php:135
+msgid "OrderThreshold (Deprecated)"
+msgstr "OrderThreshold (obsolète)"
+
+#: ../../../vis_object.php:142
+msgid "Graph (Deprecated)"
+msgstr "Graph (Obsolète)"
 
 #: ../../../visualisations/bargraph.php:128
 msgid "Bar graph:"
@@ -781,25 +790,113 @@ msgid "Delete data in window"
 msgstr "Supprimer les données dans la fenêtre"
 
 #: ../../../visualisations/editrealtime.php:56
-msgid "Multiply data in window by:"
-msgstr "Multiplier les données dans la fenêtre par :"
+msgid "Multiply data in the window by a float or a fraction"
+msgstr "Multiplier les données dans la fenêtre par un flottant ou une fraction"
 
-#: ../../../visualisations/editrealtime.php:63
+#: ../../../visualisations/editrealtime.php:58
+msgid ""
+"<br>To erase all the window with NAN > type NAN - To convert all the window "
+"to absolute values > type abs(x)"
+msgstr ""
+"<br>Pour tout effacer dans la fenêtre avec NAN > saissez NAN - Pour "
+"convertir toute la fenêtre en valeurs absolues > saisissez abs(x)"
+
+#: ../../../visualisations/editrealtime.php:64
 msgid "Delete feed data"
 msgstr "Supprimer les données du flux"
 
-#: ../../../visualisations/editrealtime.php:66
+#: ../../../visualisations/editrealtime.php:67
 msgid "Deleting feed data in this window is permanent."
 msgstr ""
 "ATTENTION ! La suppression des données du flux dans cette fenêtre est "
 "permanente ."
 
-#: ../../../visualisations/histgraph.php:35
-msgid "Histogram:"
+#: ../../../visualisations/graph.php:23
+msgid "Data viewer"
+msgstr "Visualiseur de données"
+
+#: ../../../visualisations/graph.php:28
+msgid "D"
 msgstr ""
 
-#: ../../../visualisations/multigraph.php:52
-msgid "Multigraph:"
+#: ../../../visualisations/graph.php:29
+msgid "W"
+msgstr ""
+
+#: ../../../visualisations/graph.php:30
+msgid "M"
+msgstr ""
+
+#: ../../../visualisations/graph.php:31
+msgid "Y"
+msgstr ""
+
+#: ../../../visualisations/graph.php:44
+msgid "Stats"
+msgstr "Statistiques"
+
+#: ../../../visualisations/graph.php:47
+msgid "Mean"
+msgstr "Médiane"
+
+#: ../../../visualisations/graph.php:47
+msgid "Min"
+msgstr "Min"
+
+#: ../../../visualisations/graph.php:47
+msgid "Max"
+msgstr "Max"
+
+#: ../../../visualisations/graph.php:47
+msgid "Diff"
+msgstr "Différence"
+
+#: ../../../visualisations/graph.php:47
+msgid "Std Dev"
+msgstr "Ecart-type"
+
+#: ../../../visualisations/graph.php:47
+msgid "npoints"
+msgstr "npoints"
+
+#: ../../../visualisations/graph.php:60
+msgid "Apply smoothing (number of points):"
+msgstr "Appliquer lissage (nb de points) :"
+
+#: ../../../visualisations/graph.php:72
+msgid "API Request"
+msgstr "Requête API"
+
+#: ../../../visualisations/graph.php:75
+msgid "Start"
+msgstr "Début"
+
+#: ../../../visualisations/graph.php:78
+msgid "End"
+msgstr "Fin"
+
+#: ../../../visualisations/graph.php:84
+msgid "Skip missing"
+msgstr "Ignorer données manquantes"
+
+#: ../../../visualisations/graph.php:85
+msgid "Limit interval"
+msgstr "Limiter intervalle"
+
+#: ../../../visualisations/graph.php:87
+msgid "Resend"
+msgstr "Renvoyer"
+
+#: ../../../visualisations/graph.php:93 ../../../visualisations/graph.php:103
+msgid "Show CSV Output"
+msgstr "Afficher sortie CSV"
+
+#: ../../../visualisations/graph.php:104
+msgid "Hide CSV Output"
+msgstr "Masquer sortie CSV"
+
+#: ../../../visualisations/histgraph.php:35
+msgid "Histogram:"
 msgstr ""
 
 #: ../../../visualisations/orderbars.php:20
@@ -834,7 +931,7 @@ msgstr "Écart-type : "
 msgid "Datapoints in view:"
 msgstr "Points de données dans la vue :"
 
-#: ../../../visualisations/rawdata.php:109
+#: ../../../visualisations/rawdata.php:107
 msgid "Raw:"
 msgstr ""
 
@@ -853,11 +950,15 @@ msgstr "min"
 msgid "Simpler kWh/d zoomer"
 msgstr ""
 
-#: ../../../visualisations/timecompare.php:47
+#: ../../../visualisations/threshold.php:21
+msgid "Threshold"
+msgstr "Seuil"
+
+#: ../../../visualisations/timecompare.php:46
 msgid "Time Compare: "
 msgstr "Comparaison de temps :"
 
-#: ../../../visualisations/timestoredaily.php:86
+#: ../../../visualisations/timestoredaily.php:85
 msgid "Timestore Daily:"
 msgstr ""
 
@@ -865,29 +966,38 @@ msgstr ""
 msgid "kWh/d Zoomer"
 msgstr ""
 
-#: ../../../visualisations/zoom.php:122
+#: ../../../visualisations/zoom.php:121
 msgid "Total:"
 msgstr "Total:"
 
-#: ../../../visualisations/zoom.php:122 ../../../visualisations/zoom.php:170
+#: ../../../visualisations/zoom.php:121 ../../../visualisations/zoom.php:169
 msgid "kWh"
 msgstr "kWh"
 
-#: ../../../visualisations/zoom.php:122 ../../../visualisations/zoom.php:170
+#: ../../../visualisations/zoom.php:121 ../../../visualisations/zoom.php:169
 msgid "Average:"
 msgstr "Moyenne :"
 
-#: ../../../visualisations/zoom.php:122
+#: ../../../visualisations/zoom.php:121
 msgid "a week"
 msgstr "une semaine"
 
-#: ../../../visualisations/zoom.php:122
+#: ../../../visualisations/zoom.php:121
 msgid "a year"
 msgstr "une année"
 
-#: ../../../visualisations/zoom.php:122
+#: ../../../visualisations/zoom.php:121
 msgid "Unit price:"
 msgstr "Prix unitaire :"
+
+#~ msgid "Daily from Multiple (BETA)"
+#~ msgstr "Daily from Multiple (BETA)"
+
+#~ msgid "Histgraph"
+#~ msgstr "Histgraph"
+
+#~ msgid "Graph (BETA)"
+#~ msgstr "Graph (BETA)"
 
 #~ msgid "Vis"
 #~ msgstr "Visualisation"
@@ -1402,14 +1512,8 @@ msgstr "Prix unitaire :"
 #~ msgid "Preview"
 #~ msgstr "Vista previa"
 
-#~ msgid "Reset"
-#~ msgstr "Resetear"
-
 #~ msgid "Language"
 #~ msgstr "Lenguaje"
-
-#~ msgid "API keys"
-#~ msgstr "Claves API"
 
 #~ msgid "converted feed: "
 #~ msgstr "fuente convertida:"
