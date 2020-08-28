@@ -251,6 +251,7 @@ function feed_controller()
                                 $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
                             }
                         }
+                        return array('success'=>true);
 
                     // Update datapoint
                     } else if ($route->action == "update") {
