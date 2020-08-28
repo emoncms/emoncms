@@ -225,8 +225,32 @@ function feed_controller()
                         }
 
                     // Insert datapoint
-                    } else if ($route->action == "insert") { 
-                        return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                    } else if ($route->action == "insert") {
+                        
+                        // Single data point
+                        if (isset($_GET['time']) || isset($_GET['value'])) {
+                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                        }
+
+                        // Single or multiple datapoints via json format
+                        // Format: [[UNIXTIME,VALUE],[UNIXTIME,VALUE],[UNIXTIME,VALUE]]
+                        $data = false;
+                        if (isset($_GET['data'])) {
+                            $data = json_decode($_GET['data']);
+                        } else if (isset($_POST['data'])) {
+                            $data = json_decode($_POST['data']);
+                        } else {
+                            return array('success'=>false, 'message'=>'missing data parameter');
+                        }
+                        if ($data==null) return array('success'=>false, 'message'=>'error decoding json');
+                        
+                        if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
+                        
+                        foreach ($data as $dp) {
+                            if (count($dp)==2) {
+                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
+                            }
+                        }
 
                     // Update datapoint
                     } else if ($route->action == "update") {
