@@ -50,7 +50,7 @@ td:nth-of-type(2) { width:4%;}
     
     <tr><td><?php echo _('JSON format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300}</a></td></tr>
 
-    <tr><td><?php echo _('JSON format - with time (as a string in this example)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%22<?php echo date(DATE_ATOM);?>%22}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300,"time":"<?php echo date(DATE_ATOM);?>"}</a></td></tr>
+    <tr><td><?php echo _('JSON format - with time (as a string in this example)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%22<?php echo urlencode(date(DATE_ATOM));?>%22}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300,"time":"<?php echo urlencode(date(DATE_ATOM));?>"}</a></td></tr>
     
     <tr><td><?php echo _('JSON like format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
     
