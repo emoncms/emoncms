@@ -25,7 +25,7 @@ function feed_controller()
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
-    
+
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
@@ -59,7 +59,7 @@ function feed_controller()
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds_with_meta($session['userid']);
-        } elseif ($route->action == "getid" && $session['read']) { 
+        } elseif ($route->action == "getid" && $session['read']) {
             $route->format = "text";
             if (isset($_GET["tag"]) && isset($_GET["name"])) {
                 return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
@@ -92,7 +92,7 @@ function feed_controller()
             // Export multiple feeds on the same csv
             // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
             return $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
-        
+
         // ----------------------------------------------------------------------------
         // Multi feed actions
         // ----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ function feed_controller()
                 $singular = true;
             }
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
-            
+
             if (!empty($feedids)) {
                 $missing = array();
                 foreach($feedids as $key => $feedid) {
@@ -117,17 +117,18 @@ function feed_controller()
                         // if public or belongs to user
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
-                        
+
                             $results[$key] = array('feedid'=>$feedid);
-                            
+
                             // feed/data ----------------------------------------------
                             if ($route->action=="data") {
                                 $skipmissing = 1;
                                 $limitinterval = 1;
                                 if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
                                 if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
-                                
-                                if (isset($_GET['interval'])) {
+                                if ($feed->get($feedid)["engine"]==9){
+                                    $results[$key]['data'] = $feed->get_batch($feedid);
+                                } else if (isset($_GET['interval'])) {
                                     $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                                 } else if (isset($_GET['mode'])) {
                                     if (isset($_GET['split'])) {
@@ -136,13 +137,13 @@ function feed_controller()
                                         $results[$key]['data'] = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
                                     }
                                 }
-                            // feed/average --------------------------------------------   
+                            // feed/average --------------------------------------------
                             } else if ($route->action == 'average') {
                                 if (isset($_GET['mode'])) {
                                     $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
                                 } else if (isset($_GET['interval'])) {
                                     $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
-                                } 
+                                }
                             }
                         }
                     } else {
@@ -156,13 +157,13 @@ function feed_controller()
                     else
                         return array('success'=>false, 'message'=> count($missing) .' feeds do not exist', 'feeds' => $missing);
                 } else {
-                    
+
                     if ($singular && count($results)==1) {
                         return $results[0]['data'];
                     } else {
                         return $results;
-                    } 
-                    // @todo: return array for each feed's data 
+                    }
+                    // @todo: return array for each feed's data
                     // and a single array for each interval timestamp
                 }
             } else {
@@ -226,7 +227,7 @@ function feed_controller()
 
                     // Insert datapoint
                     } else if ($route->action == "insert") {
-                        
+
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
                              return $feed->insert_data($feedid,time(),get("time"),get("value"));
@@ -243,9 +244,9 @@ function feed_controller()
                             return array('success'=>false, 'message'=>'missing data parameter');
                         }
                         if ($data==null) return array('success'=>false, 'message'=>'error decoding json');
-                        
+
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
-                        
+
                         foreach ($data as $dp) {
                             if (count($dp)==2) {
                                 $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
@@ -262,26 +263,26 @@ function feed_controller()
                     // Delete feed
                     } else if ($route->action == "delete") {
                         return $feed->delete($feedid);
-                        
+
                     // scale range for PHPFINA
-                    // added by Alexandre CUER - january 2019 
+                    // added by Alexandre CUER - january 2019
                     } else if ($route->action == "scalerange") {
                         if ($f['engine'] == Engine::PHPFINA) {
                             $result = $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
                         } else {
                             return "scalerange only supported by phpfina engine";
                         }
-                        
+
                     // Clear feed
                     } else if ($route->action == "clear") {
                         return $feed->clear($feedid);
-                    
+
                     // Trim feed
                     } else if ($route->action == "trim") {
                         if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
                         $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
                         return $feed->trim($feedid, $start_time);
-                        
+
                     // Process
                     } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { return array('success'=>false, 'message'=>'Feed is not Virtual'); }
