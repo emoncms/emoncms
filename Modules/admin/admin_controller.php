@@ -232,7 +232,10 @@ function admin_controller()
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
                     // Serial port
                     $serial_port="ttyAMA0";
-                    if (isset($_POST['serial_port'])) {
+                    if ($_POST['serial_port'] == "null") {
+                        $serial_port = "";
+                    }
+                    else if (isset($_POST['serial_port'])) {
                         $serial_port = $_POST['serial_port'];
                         if (!in_array($serial_port,array("ttyAMA0","ttyUSB0","ttyUSB1","ttyUSB2"))) return "Invalid serial port type";  
                     }
