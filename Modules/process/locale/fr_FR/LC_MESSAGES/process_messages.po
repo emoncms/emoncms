@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-29 14:18+0200\n"
-"PO-Revision-Date: 2019-06-29 14:20+0200\n"
+"POT-Creation-Date: 2020-08-28 10:59+0200\n"
+"PO-Revision-Date: 2020-08-28 11:18+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.3\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/process_api.php:5
@@ -79,11 +79,11 @@ msgstr "Actions de traitement"
 msgid "List all supported process"
 msgstr "Lister tous les traitements supportés"
 
-#: ../../../Views/process_ui.php:41
+#: ../../../Views/process_ui.php:50
 msgid "process list setup"
 msgstr "paramétrage liste des traitements"
 
-#: ../../../Views/process_ui.php:44
+#: ../../../Views/process_ui.php:53
 msgid ""
 "Processes are executed sequentially with the result value being passed down "
 "for further processing to the next processor on this processing list."
@@ -92,136 +92,158 @@ msgstr ""
 "transmise pour traitement ultérieur au processus suivant sur cette liste de "
 "traitement."
 
-#: ../../../Views/process_ui.php:46
+#: ../../../Views/process_ui.php:55
 msgid "You have no processes defined"
 msgstr "Vous n'avez aucun traitement défini"
 
-#: ../../../Views/process_ui.php:51
+#: ../../../Views/process_ui.php:60
 msgid "Order"
 msgstr "Ordre"
 
-#: ../../../Views/process_ui.php:52
+#: ../../../Views/process_ui.php:61
 msgid "Process"
 msgstr "Traitement"
 
-#: ../../../Views/process_ui.php:54
+#: ../../../Views/process_ui.php:63
 msgid "Arg"
 msgstr "Argument"
 
-#: ../../../Views/process_ui.php:55
+#: ../../../Views/process_ui.php:64
 msgid "Latest"
 msgstr "Dernière valeur"
 
-#: ../../../Views/process_ui.php:56
+#: ../../../Views/process_ui.php:65
 msgid "Actions"
 msgstr "Actions"
 
-#: ../../../Views/process_ui.php:63
+#: ../../../Views/process_ui.php:72
 msgid "Add process"
 msgstr "Ajouter un traitement"
 
-#: ../../../Views/process_ui.php:68
+#: ../../../Views/process_ui.php:77
 msgid "Edit process"
 msgstr "Modifier un traitement"
 
-#: ../../../Views/process_ui.php:76 ../../../process_langjs.php:44
+#: ../../../Views/process_ui.php:85 ../../../process_langjs.php:44
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../Views/process_ui.php:77
+#: ../../../Views/process_ui.php:86
 msgid "Type value..."
 msgstr "Saisir valeur..."
 
-#: ../../../Views/process_ui.php:83 ../../../process_langjs.php:43
+#: ../../../Views/process_ui.php:92 ../../../process_langjs.php:43
 msgid "Text"
 msgstr "Texte"
 
-#: ../../../Views/process_ui.php:84
+#: ../../../Views/process_ui.php:93
 msgid "Type text..."
 msgstr "Saisir texte..."
 
-#: ../../../Views/process_ui.php:90 ../../../process_langjs.php:35
+#: ../../../Views/process_ui.php:99 ../../../process_langjs.php:35
 #: ../../../process_processlist.php:145 ../../../process_processlist.php:157
 #: ../../../process_processlist.php:198 ../../../process_processlist.php:212
 #: ../../../process_processlist.php:224 ../../../process_processlist.php:354
+#: ../../../process_processlist.php:847 ../../../process_processlist.php:858
 msgid "Input"
 msgstr "Source"
 
-#: ../../../Views/process_ui.php:99
+#: ../../../Views/process_ui.php:108
 msgid "Schedule"
 msgstr "Planification"
 
-#: ../../../Views/process_ui.php:108
+#: ../../../Views/process_ui.php:117
 msgid "Data"
 msgstr "Données"
 
-#: ../../../Views/process_ui.php:120 ../../../process_langjs.php:33
+#: ../../../Views/process_ui.php:129 ../../../process_langjs.php:33
 #: ../../../process_processlist.php:445 ../../../process_processlist.php:457
 #: ../../../process_processlist.php:469 ../../../process_processlist.php:481
+#: ../../../process_processlist.php:869 ../../../process_processlist.php:880
 msgid "Feed"
 msgstr "Flux"
 
-#: ../../../Views/process_ui.php:125
-msgid "Type feed tag..."
-msgstr "Saisir étiquette du flux..."
+#: ../../../Views/process_ui.php:133
+msgid ""
+"Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - "
+"_ : and spaces"
+msgstr ""
+"Veuillez saisir une étiquette de flux composée de lettres alphabétiques, A-Z "
+"a-z 0-9 - _ : et espaces"
 
-#: ../../../Views/process_ui.php:125
+#: ../../../Views/process_ui.php:133
 msgid "Tag"
 msgstr "Étiquette"
 
-#: ../../../Views/process_ui.php:128
-msgid "Type feed name..."
-msgstr "Saisir nom du flux..."
+#: ../../../Views/process_ui.php:135
+msgid ""
+"Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - "
+"_ : and spaces"
+msgstr ""
+"Veuillez saisir un nom de flux composé de lettres alphabétiques, A-Z a-z 0-9 "
+"- _ : et espaces"
 
-#: ../../../Views/process_ui.php:128
+#: ../../../Views/process_ui.php:135
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../Views/process_ui.php:133
+#: ../../../Views/process_ui.php:140
 msgid "Engine"
 msgstr "Moteur"
 
-#: ../../../Views/process_ui.php:146
+#: ../../../Views/process_ui.php:152
 msgid "Select interval"
 msgstr "Sélectionner intervalle"
-
-#: ../../../Views/process_ui.php:147 ../../../Views/process_ui.php:148
-#: ../../../Views/process_ui.php:149 ../../../Views/process_ui.php:150
-#: ../../../Views/process_ui.php:151 ../../../Views/process_ui.php:152
-msgid "s"
-msgstr "s"
 
 #: ../../../Views/process_ui.php:153 ../../../Views/process_ui.php:154
 #: ../../../Views/process_ui.php:155 ../../../Views/process_ui.php:156
 #: ../../../Views/process_ui.php:157 ../../../Views/process_ui.php:158
+msgid "s"
+msgstr "s"
+
+#: ../../../Views/process_ui.php:159 ../../../Views/process_ui.php:160
+#: ../../../Views/process_ui.php:161 ../../../Views/process_ui.php:162
+#: ../../../Views/process_ui.php:163 ../../../Views/process_ui.php:164
 msgid "m"
 msgstr "m"
 
-#: ../../../Views/process_ui.php:159
+#: ../../../Views/process_ui.php:165
 msgid "h"
 msgstr "h"
 
-#: ../../../Views/process_ui.php:160
+#: ../../../Views/process_ui.php:166
 msgid "d"
 msgstr "j"
 
-#: ../../../Views/process_ui.php:167
+#: ../../../Views/process_ui.php:169
+msgid ""
+"Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 "
+"and _ characters"
+msgstr ""
+"Veuillez saisir un nom de table composé de lettres alphabétiques, A-Z a-z "
+"0-9 - _ : et espaces"
+
+#: ../../../Views/process_ui.php:169
+msgid "Table"
+msgstr "Table"
+
+#: ../../../Views/process_ui.php:176
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../../../Views/process_ui.php:172 ../../../process_langjs.php:32
+#: ../../../Views/process_ui.php:181 ../../../process_langjs.php:32
 msgid "Edit"
 msgstr "Modifier"
 
-#: ../../../Views/process_ui.php:175
+#: ../../../Views/process_ui.php:184
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/process_ui.php:186
+#: ../../../Views/process_ui.php:195
 msgid "Close"
 msgstr "Fermer"
 
-#: ../../../Views/process_ui.php:187 ../../../process_langjs.php:40
+#: ../../../Views/process_ui.php:196 ../../../process_langjs.php:40
 msgid "Not modified"
 msgstr "Non modifié"
 
@@ -275,7 +297,8 @@ msgid "Log to feed"
 msgstr "Log to feed"
 
 #: ../../../process_processlist.php:79 ../../../process_processlist.php:117
-#: ../../../process_processlist.php:505
+#: ../../../process_processlist.php:505 ../../../process_processlist.php:821
+#: ../../../process_processlist.php:834
 msgid "Main"
 msgstr "Principal"
 
@@ -296,7 +319,7 @@ msgstr ""
 "temporelles qui peut ensuite être utilisé pour explorer des données "
 "historiques. Ceci est recommandé pour l'enregistrement des données de "
 "puissance, de température, d'humidité, de tension et de courant.</"
-"p><p><b>Feed engine:</b><ul><li><b >PHPFina</b> est le moteur de flux "
+"p><p><b>Feed engine :</b><ul><li><b >PHPFina</b> est le moteur de flux "
 "recommandé, c'est un moteur de base de temps à intervalle de temps fixe.</"
 "li><li><b>PHPTimeseries</b> est pour les données affichées à un intervalle "
 "non régulier, comme lors d'un changement d'état.</li></ul></p><p><b>Feed "
@@ -348,17 +371,16 @@ msgid ""
 "<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh "
 "feed.<br><br><b>Visualisation tip:</b> Feeds created with this input "
 "processor can be used to generate daily kWh data using the BarGraph "
-"visualisation with the delta property set to 1.<br>See forum thread here for "
-"an example <a href=\"https://openenergymonitor.org/emon/"
-"node/12308\">Creating kWh per day bar graphs from Accumulating kWh </a></p>"
+"visualisation with the delta property set to 1. See <a href='https://guide."
+"openenergymonitor.org/setup/daily-kwh/' target='_blank' "
+"rel='noopener'>Guide: Daily kWh</a><br><br>"
 msgstr ""
 "<p><b>Power to kWh:</b> Convertit une valeur de puissance en Watts en flux "
 "kWh cumulatif.<br><br><b>Astuce de visualisation :</b> Les flux créés avec "
 "ce traitement d'entrée peuvent être utilisés pour générer des données kWh "
 "quotidiennes à l'aide de la visualisation BarGraph avec la propriété delta "
-"définie sur 1.<br>Voir le fil du forum ici pour un exemple <a href=\"https://"
-"openenergymonitor.org/emon/node/12308\">Creating kWh per day bar graphs from "
-"Accumulating kWh </a></p>"
+"définie sur 1.<br>Voir <a href='https://guide.openenergymonitor.org/setup/"
+"daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a></p>"
 
 #: ../../../process_processlist.php:124
 msgid "Power to kWh/d"
@@ -710,10 +732,9 @@ msgid ""
 "the processor, assuming these are error's, the max power threshold is set to "
 "25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input "
 "processor can be used to generate daily kWh data using the BarGraph "
-"visualisation with the delta property set to 1 and scale set to 0.001."
-"<br>See forum thread here for an example <a href=\"https://openenergymonitor."
-"org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh "
-"</a></p>"
+"visualisation with the delta property set to 1 and scale set to 0.001. See: "
+"<a href='https://guide.openenergymonitor.org/setup/daily-kwh/' "
+"target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>"
 msgstr ""
 "<b>Wh Accumulator:</b>Utilisé avec emontx, emonth ou emonpi pulsecount ou "
 "emontx exécutant le micrologiciel <i> emonTxV3_4_continuous_kwhtotals </ i> "
@@ -725,9 +746,9 @@ msgstr ""
 "sur 25 kW.<br><br><b>Astuce de visualistion :</b>Les flux créés avec ce "
 "traitement d'entrée peuvent être utilisés pour générer des données kWh "
 "quotidiennes à l'aide de la visualisation BarGraph avec la propriété delta "
-"définie sur 1 et l'échelle définie sur 0,001.<br> Voir le fil du forum pour "
-"un exemple <a href=\"https://openenergymonitor.org/emon/node/12308\" "
-"Creating kWh per day bar graphs from Accumulating kWh </a></p>"
+"définie sur 1 et l'échelle définie sur 0,001.<br> Voir <a href='https://"
+"guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' "
+"rel='noopener'>Guide: Daily kWh</a></p>"
 
 #: ../../../process_processlist.php:512
 msgid "Publish to MQTT"
@@ -1043,6 +1064,101 @@ msgstr ""
 "<p>Décale la valeur absolue d'une valeur donnée. Cela peut être utile pour "
 "calibrer une variable particulière sur le web plutôt que par reprogrammation "
 "matérielle.</p>"
+
+#: ../../../process_processlist.php:814
+#| msgid "Wh Accumulator"
+msgid "kWh Accumulator"
+msgstr "kWh Accumulator"
+
+#: ../../../process_processlist.php:824
+msgid ""
+"<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh "
+"input, it also filter's out spikes in energy use that are larger than a max "
+"power threshold set in the processor, assuming these are error's, the max "
+"power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds "
+"created with this input processor can be used to generate daily kWh data "
+"using the BarGraph visualisation with the delta property set to 1 and scale "
+"set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-"
+"kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>"
+msgstr ""
+"<b>Wh Accumulator:</b>Ce processeur supprime les réinitialisations d'une "
+"entrée de kWh cumulée, il filtre également les pics de consommation "
+"d'énergie qui sont plus grands qu'un seuil de puissance maximale défini dans "
+"le processeur, en supposant qu'il s'agisse d'erreurs, le seuil de puissance "
+"maximale est défini sur 25 kW.<br><br><b>Astuce de visualisation :</b>Les "
+"flux créés avec ce traitement d'entrée peuvent être utilisés pour générer "
+"des données kWh quotidiennes à l'aide de la visualisation BarGraph avec la "
+"propriété delta définie sur 1 et l'échelle définie sur 0,001.<br> Voir  <a "
+"href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' "
+"rel='noopener'>Guide: Daily kWh</a></p>"
+
+#: ../../../process_processlist.php:827
+#| msgid "Log to feed"
+msgid "Log to feed (Join)"
+msgstr "Log to feed (Join)"
+
+#: ../../../process_processlist.php:837
+msgid ""
+"<p><b>Log to feed (Join):</b> In addition to the standard log to feed "
+"process, this process links missing data points with a straight line between "
+"the newest value and the previous value. It is designed for use with total "
+"cumulative kWh meter reading inputs, producing a feed that can be used with "
+"the delta property when creating bar graphs. See: <a href='https://guide."
+"openenergymonitor.org/setup/daily-kwh/' target='_blank' "
+"rel='noopener'>Guide: Daily kWh</a><br><br>"
+msgstr ""
+"<p><b>Log to feed (Join):</b> En plus du processus strandard log to feed, ce "
+"processus relie les points de données manquants avec une ligne droite entre "
+"la valeur la plus récente et la valeur précédente.Il est conçu pour être "
+"utilisé avec des entrées de lecture de compteur de kWh cumulées totales, "
+"produisant un flux qui peut être utilisé avec la propriété delta lors de la "
+"création de graphiques à barres. Voir <a href='https://guide."
+"openenergymonitor.org/setup/daily-kwh/' target='_blank' "
+"rel='noopener'>Guide: Daily kWh</a><br><br>"
+
+#: ../../../process_processlist.php:840
+#| msgid "x input"
+msgid "max by input"
+msgstr "max by input"
+
+#: ../../../process_processlist.php:848 ../../../process_processlist.php:859
+msgid ""
+"<p>Limits the current value by the last value from an input as selected from "
+"the input list. The result is passed back for further processing by the next "
+"processor in the processing list.</p>"
+msgstr ""
+"<p>Divise la valeur actuelle à la dernière valeur de l'autre entrée "
+"sélectionnée dans la liste d'entrée. Le résultat est renvoyé pour traitement "
+"ultérieur par le traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:851
+#| msgid "x input"
+msgid "min by input"
+msgstr "min by input"
+
+#: ../../../process_processlist.php:862
+msgid "max by feed"
+msgstr "max by feed"
+
+#: ../../../process_processlist.php:870 ../../../process_processlist.php:881
+msgid ""
+"<p>Limits the current value by the last value from an feed as selected from "
+"the feed list. The result is passed back for further processing by the next "
+"processor in the processing list.</p>"
+msgstr ""
+"<p>Divise la valeur actuelle à la dernière valeur de l'autre entrée "
+"sélectionnée dans la liste d'entrée. Le résultat est renvoyé pour traitement "
+"ultérieur par le traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:873
+msgid "min by feed"
+msgstr "min by feed"
+
+#~ msgid "Type feed tag..."
+#~ msgstr "Saisir étiquette du flux..."
+
+#~ msgid "Type feed name..."
+#~ msgstr "Saisir nom du flux..."
 
 #~ msgid "1/ source feed"
 #~ msgstr "1/ source feed"
