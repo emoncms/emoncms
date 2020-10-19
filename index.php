@@ -237,7 +237,36 @@ if ($route->controller == 'input' && $route->action == 'bulk') {
 }
 
 // 6) Load the main page controller
-$output = controller($route->controller);
+try {
+    $output = controller($route->controller);
+    
+} catch(Exception $e) {
+    // Alter the http header code
+    header($_SERVER["SERVER_PROTOCOL"]." 500 Internal Server Error");
+    
+    $title = _('500 Internal Server Error');
+    $message = sprintf('%s: %s', get_class($e), $e->getMessage());
+    
+    // return the formatted string
+    if ($route->format === 'html') {
+        $content = sprintf('<h2>%s</h2><p class="lead">%s.</p>', $title, $message);
+        if ($session['admin']) {
+            $content .= sprintf("<p>%s</p>", 
+                    str_replace("\n", "<br>",
+                    str_replace(" ", "&nbsp", 
+                            $e->getTraceAsString())));
+        }
+        $output['content'] = $content;
+    }
+    else {
+        $output['content'] = array(
+                'success' => false, 
+                'message' => $message, 
+                'trace' => $e->getTrace());
+    }
+    $log->warn(sprintf('%s|%s', $title, $message));
+}
+
 // If no controller of this name - then try username
 // need to actually test if there isnt a controller rather than if no content
 // is returned from the controller.
