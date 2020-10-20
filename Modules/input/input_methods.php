@@ -56,6 +56,8 @@ class InputMethods
         //if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
         if ($param->exists('time')) {
             $inputtime = $param->val('time');
+            // Remove from array so no used as an input
+            unset($jsondataLC['time']);
 
             // validate time
             if (is_numeric($inputtime)){
