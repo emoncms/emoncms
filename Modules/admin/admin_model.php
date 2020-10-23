@@ -32,7 +32,8 @@ class Admin {
         } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
             return array(
                 'ActiveState' => $status["ActiveState"],
-                'SubState' => $status["SubState"]
+                'SubState' => $status["SubState"],
+                'UnitFileState' => $status["UnitFileState"]
             );
         } else {
             $return = null;
