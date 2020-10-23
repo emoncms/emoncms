@@ -368,7 +368,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MySQL'); ?></h4>
         <dl class="row">
             <?php echo row(_('Version'), $system['db_version']); ?>
-            <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
+            <?php echo row(_('Host'), $system['db_server'] . ' (' . $system['db_ip'] . ')'); ?>
             <?php echo row(_('Date'), $system['db_date']); ?>
             <?php echo row(_('Stats'), $system['db_stat']); ?>
         </dl>
