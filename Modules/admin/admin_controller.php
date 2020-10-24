@@ -78,14 +78,14 @@ function admin_controller()
                         );
                     	
                     	// Set 'cssClass' based on service's configuration and current status
-                        if ($value['SubState']==='running') {                // Check if service is running
-                            $services[$key]['cssClass'] = 'success';
-                        } elseif ($value['UnitFileState']==='disabled') {    // If service isn't running, check if its disabled
-                            $services[$key]['cssClass'] = 'disabled';
-                            $services[$key]['text'] = 'Disabled';
-                        } else {                                             // Service is not running and not disabled, so is in a failed state
-                            $services[$key]['cssClass'] = 'danger';
-                        }
+                    	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+                    		$services[$key]['cssClass'] = 'masked';
+                    		$services[$key]['text'] = 'Masked';
+                    	} elseif ($value['SubState']==='running') {    // If not masked, check if file is running
+                    		$services[$key]['cssClass'] = 'success';
+                    	} else {                                       // Assume service is in danger
+                    		$services[$key]['cssClass'] = 'danger';
+                    	}
                     }
                 }
                 // add custom messages for feedwriter service

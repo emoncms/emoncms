@@ -29,11 +29,15 @@ class Admin {
         }
         if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
             $return = null;
-        } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
+        } else if (
+        		isset($status["ActiveState"]) &&
+        		isset($status["SubState"]) &&
+        		isset($status["LoadState"])
+        		) {
             return array(
                 'ActiveState' => $status["ActiveState"],
                 'SubState' => $status["SubState"],
-                'UnitFileState' => $status["UnitFileState"]
+                'LoadState' => $status["LoadState"]
             );
         } else {
             $return = null;

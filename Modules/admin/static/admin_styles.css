@@ -34,7 +34,7 @@ table tr td.subinfo { border-color:transparent;}
 .badge-danger{
     background-color: #DC3545;
 }
-.badge-disabled{
+.badge-masked{
     background-color: #808080;
 }
 section {
