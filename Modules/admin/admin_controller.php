@@ -68,19 +68,22 @@ function admin_controller()
                 $services = array();
                 $system = Admin::system_information();
                 foreach($system['services'] as $key=>$value) {
-                    if (!is_null($system['services'][$key])) {
-                        $services[$key] = array(
+                    if (!is_null($system['services'][$key])) {    // If the service was found on this system
+                        
+                        // Populate service status fields
+                    	$services[$key] = array(
                             'state' => ucfirst($value['ActiveState']),
                             'text' => ucfirst($value['SubState']),
-                            //'cssClass' => $value['SubState']==='running' ? 'success': 'danger',
                             'running' => $value['SubState']==='running'
                         );
-                        if ($value['SubState']==='running') {                // Check if file is running
+                    	
+                    	// Set 'cssClass' based on service's configuration and current status
+                        if ($value['SubState']==='running') {                // Check if service is running
                             $services[$key]['cssClass'] = 'success';
-                        } elseif ($value['UnitFileState']==='disabled') {    // Check if service is disabled
+                        } elseif ($value['UnitFileState']==='disabled') {    // If service isn't running, check if its disabled
                             $services[$key]['cssClass'] = 'disabled';
                             $services[$key]['text'] = 'Disabled';
-                        } else {                                             // Assume service is in danger
+                        } else {                                             // Service is not running and not disabled, so is in a failed state
                             $services[$key]['cssClass'] = 'danger';
                         }
                     }
