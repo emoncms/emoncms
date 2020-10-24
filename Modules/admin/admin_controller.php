@@ -81,7 +81,7 @@ function admin_controller()
                     	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
                     		$services[$key]['cssClass'] = 'masked';
                     		$services[$key]['text'] = 'Masked';
-                    	} elseif ($value['SubState']==='running') {    // If not masked, check if file is running
+                    	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
                     		$services[$key]['cssClass'] = 'success';
                     	} else {                                       // Assume service is in danger
                     		$services[$key]['cssClass'] = 'danger';
