@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import time
 from datetime import datetime
 
 import numpy as np
@@ -30,11 +29,11 @@ def getOWMHourly(url):
     celà donne donc 48 valeurs
     """
     with closing(urlopen(url)) as prev:
-        all = json.loads(prev.read())
-        nb = len(all["hourly"])
+        res = json.loads(prev.read())
+        nb = len(res["hourly"])
         data=np.zeros((nb,4))
         i=0
-        for r in all["hourly"]:
+        for r in res["hourly"]:
             data[i,0]=r["dt"]
             data[i,1]=r["clouds"]
             data[i,2]=r["temp"]
@@ -51,11 +50,11 @@ def getOWMDaily(url):
     """
 
     with closing(urlopen(url)) as prev:
-        all = json.loads(prev.read())
-        nb = len(all["daily"])
+        res = json.loads(prev.read())
+        nb = len(res["daily"])
         data=np.zeros((nb*4,4))
         i=0
-        for r in all["daily"]:
+        for r in res["daily"]:
             data[i,0]=r["dt"]-6*3600
             data[i,1]=r["clouds"]
             data[i,2]=r["temp"]["morn"]
