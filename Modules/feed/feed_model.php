@@ -654,7 +654,7 @@ class Feed
         return $data;
     }
     
-    public function get_average($feedid,$start,$end,$outinterval)
+    public function get_average($feedid,$start,$end,$outinterval,$coverage)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -662,10 +662,10 @@ class Feed
         $engine = $this->get_engine($feedid);
         if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
-        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
+        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval,$coverage);
     }
     
-    public function get_average_DMY($feedid,$start,$end,$mode)
+    public function get_average_DMY($feedid,$start,$end,$mode,$coverage)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -677,7 +677,7 @@ class Feed
         $userid = $this->get_field($feedid,"userid");
         $timezone = $this->get_user_timezone($userid);
         
-        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
+        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone,$coverage);
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)

@@ -941,7 +941,7 @@ class PHPFina implements engine_methods
     
     */
         
-    public function get_average($id,$start,$end,$interval)
+    public function get_average($id,$start,$end,$interval,$coverage)
     {
         global $settings;
 
@@ -1048,7 +1048,7 @@ class PHPFina implements engine_methods
         return $data;        
     }
     
-    public function get_average_DMY($id,$start,$end,$mode,$timezone)
+    public function get_average_DMY($id,$start,$end,$mode,$timezone,$coverage)
     {
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -1124,6 +1124,7 @@ class PHPFina implements engine_methods
             $pos = round(($time - $meta->start_time) / $meta->interval);
             $nextpos = round(($nexttime - $meta->start_time) / $meta->interval);
             $dp_to_read = $nextpos - $pos;
+            $coverage_count = 0;
             if ($dp_to_read==0) return false;
             
             $average = null;
@@ -1144,8 +1145,9 @@ class PHPFina implements engine_methods
                     
                     $val = NAN;
                     for ($x=0; $x<$dp_to_read; $x++) {
-                      if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
-                      if (!is_nan($val)) {
+                      if (!is_nan($tmp[$x+1])) {
+                        $val = 1*$tmp[$x+1];
+                      // if (!is_nan($val)) {
                         $sum += $val;
                         $n++;
                       }
@@ -1153,11 +1155,17 @@ class PHPFina implements engine_methods
                     
                     $average = null;
                     if ($n>0) $average = $sum / $n;
+                    
+                    $coverage_count = $n;
                 }
             }
             
             if ($time>=$start) {
-                $data[] = array($time*1000,$average);
+                if ($coverage) {
+                    $data[] = array($time*1000,$average,1*number_format(100*$coverage_count/$dp_to_read,1));
+                } else {
+                    $data[] = array($time*1000,$average);
+                }
             }
             
             $itterations++;

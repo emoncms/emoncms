@@ -139,9 +139,9 @@ function feed_controller()
                             // feed/average --------------------------------------------   
                             } else if ($route->action == 'average') {
                                 if (isset($_GET['mode'])) {
-                                    $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
+                                    $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'),get('coverage'));
                                 } else if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                                    $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'),get('coverage'));
                                 } 
                             }
                         }
