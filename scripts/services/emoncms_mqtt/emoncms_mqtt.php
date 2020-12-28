@@ -121,7 +121,7 @@
         new Mosquitto\Client($id,$cleanSession)
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
-    */ 
+    */
     $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
     
     $connected = false;
@@ -151,6 +151,13 @@
                 // SUBSCRIBE
                 $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
+                if($settings['mqtt']['capath'] !== null) {
+                    $log->warn("mqtt: using ssl");
+                    $mqtt_client->setTlsCertificates($settings['mqtt']['capath'],
+                                                     $settings['mqtt']['certpath'],
+                                                     $settings['mqtt']['keypath'],
+                                                     $settings['mqtt']['keypw']);
+                }
                 $mqtt_client->connect($settings['mqtt']['host'], $settings['mqtt']['port'], 5);
                 // moved subscribe to onConnect callback
 

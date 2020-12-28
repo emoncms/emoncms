@@ -146,6 +146,12 @@
                 // SUBSCRIBE
                 $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
+                if(array_key_exists('capath', $settings['mqtt'])) {
+                    $mqtt_client->setTlsCertificates($settings['mqtt']['capath'],
+                                                     $settings['mqtt']['certpath'],
+                                                     $settings['mqtt']['keypath'],
+                                                     $settings['mqtt']['keypw']);
+                }
                 $mqtt_client->connect($settings['mqtt']['host'], $settings['mqtt']['port'], 5);
                 // moved subscribe to onConnect callback
 
