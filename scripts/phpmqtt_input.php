@@ -146,7 +146,8 @@
                 // SUBSCRIBE
                 $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
-                if(array_key_exists('capath', $settings['mqtt'])) {
+                if(isset($settings['mqtt']['capath']) && $settings['mqtt']['capath'] !== null) {
+                    $log->warn("mqtt: using ssl");
                     $mqtt_client->setTlsCertificates($settings['mqtt']['capath'],
                                                      $settings['mqtt']['certpath'],
                                                      $settings['mqtt']['keypath'],
