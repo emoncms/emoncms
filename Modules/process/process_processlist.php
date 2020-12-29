@@ -879,6 +879,18 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "id_num"=>60,
+              "name"=>_("scale input"),
+              "short"=>"s inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"scale_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Scales the current value by ten to the power of the other input.</p>")
            )
         );
         return $list;
@@ -975,6 +987,15 @@ class Process_ProcessList
     public function times_input($id, $time, $value)
     {
         return $value * $this->input->get_last_value($id);
+    }
+
+    //---------------------------------------------------------------------------------------
+    // Scales current value using another input.  Current value is multiplied by 10^input
+    //---------------------------------------------------------------------------------------
+    public function scale_input($id, $time, $value)
+    {
+        $input_value = $this->input->get_last_value($id);
+        return $value * pow(10, $input_value);
     }
 
     public function divide_input($id, $time, $value)
