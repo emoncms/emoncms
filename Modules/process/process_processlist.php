@@ -993,18 +993,16 @@ class Process_ProcessList
         return abs($value);
     }
 
-    public function value_and_scale($arg, $time, $value) {
+    public function value_and_scale($arg, $time, $value) 
+    {
         $scale = $value & 0xFFFF; // Right 16 bits are the scale
-        $val = $value >> 16; // Left 16 bits are the value
-
         if($scale >= 0x8000) { // Decode twos complement if negative
           $scale = -(($scale ^ 0xFFFF)+1);		
         }
         
         $val = $value >> 16; // Left 16 vits are the value
-        
-        $result = $val * pow(10, $scale);        
 
+        // Apply scale factor to the value
         return $val * pow(10, $scale);
     }
 
