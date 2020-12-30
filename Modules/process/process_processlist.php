@@ -891,7 +891,19 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Scales the current value by ten to the power of the other input.</p>")
-           )
+           ),
+           array(
+            "id_num"=>61,
+            "name"=>_("value and scale"),
+            "short"=>"v+s",
+            "argtype"=>ProcessArg::NONE,
+            "function"=>"value_and_scale",
+            "datafields"=>0,
+            "datatype"=>DataType::UNDEFINED,
+            "unit"=>"",
+            "group"=>_("Calibration"),
+            "description"=>_("<p>Unpack combined value and scale factor, applying the scale factor.</p>")
+         ),
         );
         return $list;
     }
@@ -979,6 +991,21 @@ class Process_ProcessList
     public function abs_value($arg, $time, $value)
     {
         return abs($value);
+    }
+
+    public function value_and_scale($arg, $time, $value) {
+        $scale = $value & 0xFFFF; // Right 16 bits are the scale
+        $val = $value >> 16; // Left 16 bits are the value
+
+        if($scale >= 0x8000) { // Decode twos complement if negative
+          $scale = -(($scale ^ 0xFFFF)+1);		
+        }
+        
+        $val = $value >> 16; // Left 16 vits are the value
+        
+        $result = $val * pow(10, $scale);        
+
+        return $val * pow(10, $scale);
     }
 
     //---------------------------------------------------------------------------------------
