@@ -266,8 +266,9 @@ function feed_controller()
                     // scale range for PHPFINA
                     // added by Alexandre CUER - january 2019 
                     } else if ($route->action == "scalerange") {
+
                         if ($f['engine'] == Engine::PHPFINA) {
-                            $result = $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
+                            return $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
                         } else {
                             return "scalerange only supported by phpfina engine";
                         }
