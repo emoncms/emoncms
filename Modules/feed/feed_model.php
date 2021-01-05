@@ -544,8 +544,11 @@ class Feed
                 // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
-                $lastvalue = $this->EngineClass($engine)->lastvalue($id);
-                $this->redis->hMset("feed:$id", array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
+                if ($lastvalue = $this->EngineClass($engine)->lastvalue($id)) {
+                    $this->redis->hMset("feed:$id", array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
+                } else {
+                    $lastvalue = array('time'=>0,'value'=>0);
+                }
             }
         }
         else
