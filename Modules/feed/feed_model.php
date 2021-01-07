@@ -563,10 +563,21 @@ class Feed
         return $lastvalue;
     }
 
-    public function get_value($id)
+    public function get_value($feedid,$time=false)
     {
-        $lastvalue = $this->get_timevalue($id);
-        return $lastvalue['value'];
+        $feedid = (int) $feedid;
+        
+        if (!$time) {
+            $lastvalue = $this->get_timevalue($feedid);
+            return $lastvalue['value'];
+        } else {
+            if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+            
+            $engine = $this->get_engine($feedid);
+            if ($engine!=Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) return array('success'=>false, 'message'=>"This request is only supported by PHPFina");
+            
+            return $this->EngineClass($engine)->get_value($feedid,$time);
+        }
     }
 
     public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
