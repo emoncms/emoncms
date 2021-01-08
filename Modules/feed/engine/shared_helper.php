@@ -86,7 +86,7 @@ interface engine_methods{
      * @param integer $feedid The id of the feed
      * @param integer $time in seconds
     */
-    public function get_value($feedid,$time);
+    // public function get_value($feedid,$time);
     
     /**
      * Return the data for the given timerange
