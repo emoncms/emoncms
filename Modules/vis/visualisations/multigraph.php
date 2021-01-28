@@ -10,6 +10,8 @@
     //global $path;
     //$embed = (int)(get("embed"));
     //$mid = intval(get("mid"));
+    global $settings;
+    $themeFile = "Theme/" . $settings["interface"]["theme"] . "/" . "emon-" . $settings["interface"]["themecolor"] . ".css";
 ?>
 <script>
 //still needed ?
@@ -32,6 +34,7 @@ srcScripts.forEach(function(srcScript){
 
 //srcLinks includes all the needed css
 var srcLinks = [];
+srcLinks.push(path+"<?php echo $themeFile; ?>");
 srcLinks.push(path+"Lib/bootstrap/css/bootstrap.min.css");
 srcLinks.push(path+"Lib/bootstrap/css/bootstrap-responsive.min.css");
 srcLinks.push(path+"Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css");
