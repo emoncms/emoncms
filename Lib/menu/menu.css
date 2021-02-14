@@ -187,17 +187,6 @@ height:46px;
 
 .menu-text-l3 {}
 
-
-svg.icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: #fff;
-  fill: #fff;
-  vertical-align: -0.15em;
-}
-
 /* -------------------------------------- */
 
 @media (max-width: 1150px) {
@@ -247,6 +236,11 @@ a.is_admin.grav-container:hover img.grav {
   overflow: hidden;
   margin: 0.2em;
 }
+
+.no-gravitar a.grav-container:hover {
+  background: none;
+}
+
 .no-gravitar a.grav-container .icon.user {
   font-size: 1.66em;
   margin: 0 -.1em;

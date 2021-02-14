@@ -28,6 +28,16 @@ body.collapsed #wrap main.content-container{
   margin-right: auto;
 } 
 
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+
 /*-------------------------------------*/
 /* utilities */
 /*-------------------------------------*/

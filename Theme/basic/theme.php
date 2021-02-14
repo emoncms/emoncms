@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 10;
+$v = 13;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
@@ -54,10 +54,9 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             <div class="menu-tr"><ul>
             
             <?php if ($session["write"]) { ?>
-            <li class="no-gravitar dropdown" style="font-size:1.5rem"><a id="user-dropdown" href="#" title="<?php echo $session["username"]; ?> (Admin)" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown"><svg class="icon user"><use xlink:href="#icon-user"></use></svg></a>
+            <li class="no-gravitar dropdown" style="font-size:1.5rem"><a id="user-dropdown" href="#" title="<?php echo $session["username"]; ?> (Admin)" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown"><svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg></a>
                 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
-                    <li><a href="<?php echo $path; ?>user/bookmarks" title="Bookmarks" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-star"></use></svg> Bookmarks</a></li>
                     <li><a href="<?php echo $path; ?>user/view" title="My Account" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> My Account</a></li>
                     <li class="divider"><a href="#"></a></li>
                     <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
