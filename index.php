@@ -369,8 +369,9 @@ if ($route->format == 'json') {
         } else {
             if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
         }
+        print view($themeDir . "theme.php", $output);
     }
-    print view($themeDir . "theme.php", $output);
+
 } elseif ($route->format == 'text') {
     header('Content-Type: text/plain');
     print $output['content'];
