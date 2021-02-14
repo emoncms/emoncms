@@ -10,7 +10,7 @@ if ($session["write"]) {
     );
     
     $menu["setup"]["l2"]['divider'] = array(
-        "divider"=>"30px",
+        "divider"=>"15px",
         "href"=>'',
         "order"=>4
     );

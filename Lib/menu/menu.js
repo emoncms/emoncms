@@ -129,8 +129,9 @@ var menu = {
         });
 
         // Build level 2 menu (sidebar)
-        // var out = '<h3 class="l2-title mx-3" style="color:#aaa">'+menu.obj[menu.active_l1]['name']+'</h3>';
-        var out = "";
+        var menu_title_l2 = menu.obj[menu.active_l1]['name'];
+        if (menu_title_l2=="Setup") menu_title_l2 = "Emoncms";
+        var out = '<h4 class="menu-title-l2"><span>'+menu_title_l2+'</span></h4>';
         for (var z in keys) {
             let l2 = keys[z];
             let item = menu.obj[menu.active_l1]['l2'][l2];
@@ -199,7 +200,7 @@ var menu = {
         $(".menu-l2").css("width","50px");
         $(".menu-l3").hide();
         $(".menu-text-l2").hide();
-        $(".l2-title").hide();
+        $(".menu-title-l2 span").hide();
         
         var window_width = $(window).width();
         var max_width = $(".content-container").css("max-width").replace("px","");
@@ -217,7 +218,7 @@ var menu = {
 
     // If we expand l2 we also hide l3
     exp_l2: function () {
-        if (menu.l2_min) setTimeout(function(){ $(".menu-text-l2").show(); $(".l2-title").show(); },200);
+        if (menu.l2_min) setTimeout(function(){ $(".menu-text-l2").show(); $(".menu-title-l2 span").show(); },200);
         menu.l2_min = false;
         menu.l2_visible = true;
         menu.hide_l3();

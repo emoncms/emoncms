@@ -42,6 +42,7 @@
   display:inline-block;
   font-size:1rem;
   margin-left:3px;
+  vertical-align: middle;
 }
 
 .menu-tr { float:right; }
@@ -80,6 +81,16 @@ height:46px;
   min-height: calc(100vh - 96px);
 }
 
+.menu-title-l2 {
+    text-indent: 1rem;
+    padding: 1em 0 0.75em 0;
+    margin: 0;
+    text-transform: capitalize;
+    color: rgb(170, 170, 170);
+    border-bottom: 1px solid #444;
+    height:18px;
+}
+
 .menu-l2 ul {
   list-style:none;
   margin:0px;
@@ -95,7 +106,7 @@ height:46px;
   text-decoration: none;
   color: #fff;
   display: block;
-  padding: 17px 17px 17px 17px;
+  padding: 0.94rem;
   cursor:pointer;
   overflow:hidden;
 
