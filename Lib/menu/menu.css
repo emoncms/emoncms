@@ -54,6 +54,10 @@
   fill:#000;
 }
 
+.htop {
+height:46px;
+}
+
 /* -------------------------------------- */
 
 .menu-l2 {
@@ -141,8 +145,11 @@
   height:100%;
   background-color:#222;
   display:none;
-  padding-top:46px;
   z-index:1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* can also be: thin */
+  -ms-overflow-style: none;
 }
 
 .menu-l3 ul {
@@ -234,3 +241,29 @@ a.is_admin.grav-container:hover img.grav {
   margin: 0 -.1em;
 }
 /* eof gravitar */
+
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid white;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+}
+.arrow {
+  margin: 0.4em 0;
+  transform: scaleY(-1);
+  filter: FlipH;
+  /* transition: transform .15s ease-out; */
+}
+.collapsed .arrow {
+  transform: scaleY(1);
+  filter: none;
+}

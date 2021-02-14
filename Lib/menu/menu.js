@@ -17,6 +17,8 @@ var menu = {
     active_l2: false,
     active_l3: false,
     
+    mode: 'auto',
+    
     is_disabled: false,
     
     // html5 browser storage: checked in init
@@ -29,9 +31,14 @@ var menu = {
     
         // html5 browser storage: used to user preferences for menu
         if (typeof(Storage)!=="undefined") menu.store = true;
-    
-        var q_parts = q.split("/");
+        
+        var q_parts = q.split("#");
+        q_parts = q_parts[0].split("/");
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
+        
+        
+        console.log(controller)
+        
         // var action = false; if (q_parts[1]!=undefined) action = q_parts[1];
 
         menu.obj = obj;
@@ -63,7 +70,7 @@ var menu = {
                     }
                 }
             } else {
-                if (menu.obj[l1].href.indexOf(controller)===0) menu.active_l1 = l1;
+                if (menu.obj[l1].href!=undefined && menu.obj[l1].href.indexOf(controller)===0) menu.active_l1 = l1;
             }
         }
 
@@ -72,11 +79,12 @@ var menu = {
         menu.resize();
 
         // Initial state of l2 menu
+        /*
         if (menu.store && localStorage.menu_l2_min=='true') {
             $(".menu-l2").css('transition','none');
             menu.min_l2();
             $(".menu-l2").css('transition','all 0.3s ease-out');
-        }
+        }*/
     },
 
     // ------------------------------------------------------------------    
@@ -121,6 +129,7 @@ var menu = {
         });
 
         // Build level 2 menu (sidebar)
+        // var out = '<h3 class="l2-title mx-3" style="color:#aaa">'+menu.obj[menu.active_l1]['name']+'</h3>';
         var out = "";
         for (var z in keys) {
             let l2 = keys[z];
@@ -150,7 +159,7 @@ var menu = {
     // Level 3 (Sidebar submenu)
     // ------------------------------------------------------------------
     draw_l3: function () {
-        var out = "";
+        var out = '<div class="htop"></div><h3 class="l3-title mx-3" style="color:#aaa">'+menu.obj[menu.active_l1]['l2'][menu.active_l2]['name']+'</h3>';
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
             // Prepare active status
@@ -190,6 +199,7 @@ var menu = {
         $(".menu-l2").css("width","50px");
         $(".menu-l3").hide();
         $(".menu-text-l2").hide();
+        $(".l2-title").hide();
         
         var window_width = $(window).width();
         var max_width = $(".content-container").css("max-width").replace("px","");
@@ -207,7 +217,7 @@ var menu = {
 
     // If we expand l2 we also hide l3
     exp_l2: function () {
-        if (menu.l2_min) setTimeout(function(){ $(".menu-text-l2").show(); },200);
+        if (menu.l2_min) setTimeout(function(){ $(".menu-text-l2").show(); $(".l2-title").show(); },200);
         menu.l2_min = false;
         menu.l2_visible = true;
         menu.hide_l3();
@@ -247,24 +257,32 @@ var menu = {
         menu.height = $(window).height();
         
         if (!menu.is_disabled) {
-            if (menu.store && localStorage.menu_l2_min=='true') {
-                menu.min_l2();
-            } else {
+            //if (menu.store && localStorage.menu_l2_min=='true') {
+            //    menu.min_l2();
+            //} else {
             
-                if (menu.width>=576 && menu.width<992) {
-                    menu.min_l2();
-                } else if (menu.width<576) {
-                    menu.hide_l2();
-                    menu.hide_l3();
-                    
-                } else {
-                    if (menu.store && localStorage.menu_l2_min=='true') {
-                    
+                if (menu.mode=='auto') {
+                    if (menu.width>=576 && menu.width<992) {
+                        menu.min_l2();
+                    } else if (menu.width<576) {
+                        menu.hide_l2();
+                        menu.hide_l3();
+                        
                     } else {
-                        if (!menu.l3_visible) menu.exp_l2();
+                        //if (menu.store && localStorage.menu_l2_min=='true') {
+                        
+                        //} else {
+                            if (!menu.l3_visible) menu.exp_l2();
+                        //}
                     }
                 }
-            }
+                
+                if (menu.width>=992 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
+                    menu.mode = 'auto'
+                }
+                
+                
+            //}
             
             if (menu.width<576) {
                 $(".menu-text-l1").hide();
@@ -314,7 +332,8 @@ var menu = {
                 }
             }
             // Store l2 state to localStorage
-            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
+            // if (menu.store) localStorage.menu_l2_min = menu.l2_min;
+            menu.mode = 'manual'
         });
 
         $(".menu-l2").on("click","li div",function(event){
@@ -350,6 +369,7 @@ var menu = {
             }
             // Store l2 state to localStorage
             if (menu.store) localStorage.menu_l2_min = menu.l2_min;
+            menu.mode = 'manual'
         });
         
         /*

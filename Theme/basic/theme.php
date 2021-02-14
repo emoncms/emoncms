@@ -42,7 +42,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo time(); ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo time(); ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     <?php echo $svg_icons; // THEME ICONS ?>
