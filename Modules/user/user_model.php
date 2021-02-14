@@ -190,7 +190,7 @@ class User
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
                             $_SESSION['write'] = 1;
-                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['admin'] = $userData->admin;
                             $_SESSION['lang'] = $userData->language;
                             $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
@@ -222,7 +222,7 @@ class User
     }
 
 
-    public function register($username, $password, $email)
+    public function register($username, $password, $email, $timezone)
     {
         // Input validation, sanitisation and error reporting
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
@@ -233,6 +233,8 @@ class User
 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
+        
+        if (!$this->timezone_valid($timezone)) return array('success'=>false, 'message'=>_("Timezone is not valid"));
 
         // If we got here the username, password and email should all be valid
 
@@ -243,8 +245,8 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin) VALUES (?,?,?,?,?,?,0)");
-        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin) VALUES (?,?,?,?,?,?,?,0)");
+        $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone);
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
             $stmt->close();
@@ -312,7 +314,7 @@ class User
         $emailer->body("<p>To complete ".$this->appname." registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
         $result = $emailer->send();
         if (!$result['success']) {
-            $this->log->error("Email send returned error. emailto=" + $email . " message='" . $result['message'] . "'");
+            $this->log->error("Email send returned error. emailto=" . $email . " message='" . $result['message'] . "'");
         } else {
             $this->log->info("Email sent to $email");
         }
@@ -695,6 +697,14 @@ class User
             }
         }
         return $timezones;
+    }
+    
+    public function timezone_valid($_timezone) 
+    {
+        foreach (DateTimeZone::listIdentifiers() as $timezone) {
+            if ($timezone==$_timezone) return true;
+        }
+        return false;
     }
 
     public function get_salt($userid)

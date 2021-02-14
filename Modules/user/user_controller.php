@@ -85,7 +85,7 @@ function user_controller()
     {
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
+        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'),post('timezone'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
         if ($route->action == 'resend-verify' && $settings["interface"]["email_verification"]) {

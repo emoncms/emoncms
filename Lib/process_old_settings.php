@@ -47,7 +47,11 @@ $settings = array(
     'user'      => isset($mqtt_server["user"])?$mqtt_server["user"]:'',
     'password'  => isset($mqtt_server["password"])?$mqtt_server["password"]:'',
     'basetopic' => isset($mqtt_server["basetopic"])?$mqtt_server["basetopic"]:'emon',
-    'client_id' => isset($mqtt_server["client_id"])?$mqtt_server["client_id"]:'emoncms'
+    'client_id' => isset($mqtt_server["client_id"])?$mqtt_server["client_id"]:'emoncms',
+    'capath'    => isset($mqtt_server["capath"])?$mqtt_server["capath"]:null,
+    'certpath'  => isset($mqtt_server["certpath"])?$mqtt_server["certpath"]:null,
+    'keypath'   => isset($mqtt_server["keypath"])?$mqtt_server["keypath"]:null,
+    'keypw'     => isset($mqtt_server["keypwpath"])?$mqtt_server["keypw"]:null
 ),
 
 // Input
@@ -76,8 +80,8 @@ $settings = array(
         'enabled' => isset($feed_settings["redisbuffer"]["enabled"])?$feed_settings["redisbuffer"]["enabled"]:false,
         // Number of seconds to wait before write buffer to disk - user selectable option
         'sleep' => isset($feed_settings["redisbuffer"]["sleep"])?$feed_settings["redisbuffer"]["sleep"]:600
-    ),   
-    
+    ),
+
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
@@ -87,10 +91,18 @@ $settings = array(
     'cassandra'     => array('keyspace' => isset($feed_settings["cassandra"]["keyspace"])?$feed_settings["cassandra"]["keyspace"]:'emoncms'),
     // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     'virtualfeed'   => array('data_sampling' => false),
-    'mysqltimeseries'   => array('data_sampling' => false),
+    'mysqltimeseries' => array(
+        'data_sampling' => false,
+        'datadir'       => isset($feed_settings["mysql"]["datadir"])?$feed_settings["mysql"]["datadir"]:'',
+        'prefix'        => isset($feed_settings["mysql"]["prefix"])?$feed_settings["mysql"]["prefix"]:'feed_',
+        'generic'       => isset($feed_settings["mysql"]["generic"])?$feed_settings["mysql"]["generic"]:true,
+        'database'      => isset($feed_settings["mysql"]["database"])?$feed_settings["mysql"]["database"]:null,
+        'username'      => isset($feed_settings["mysql"]["username"])?$feed_settings["mysql"]["username"]:null,
+        'password'      => isset($feed_settings["mysql"]["password"])?$feed_settings["mysql"]["password"]:null
+    ),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => isset($max_datapoints)?$max_datapoints:8928,
-    
+    'max_datapoints' => isset($max_datapoints)?$max_datapoints:8928,
+
     // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
     // The thousands separator is not used (specified as "nothing")
     // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
@@ -181,13 +193,13 @@ $settings = array(
     
     'host'=>isset($smtp_email_settings["host"])?$smtp_email_settings["host"]:"smtp.gmail.com",
     // 25, 465, 587
-    'port'=>isset($smtp_email_settings["port"])?$smtp_email_settings["port"]:"465",  
+    'port'=>isset($smtp_email_settings["port"])?$smtp_email_settings["port"]:"465",
     'from_email' =>isset($smtp_email_settings["from_email"])?$smtp_email_settings["from_email"]:'noreply@emoncms.org',
     'from_name' =>isset($smtp_email_settings["from_name"])?$smtp_email_settings["from_name"]:'EmonCMS',
 
     // comment lines below that dont apply
     // ssl, tls
-    'encryption'=>isset($smtp_email_settings["encryption"])?$smtp_email_settings["encryption"]:"ssl", 
+    'encryption'=>isset($smtp_email_settings["encryption"])?$smtp_email_settings["encryption"]:"ssl",
     'username'=>isset($smtp_email_settings["username"])?$smtp_email_settings["username"]:"yourusername@gmail.com",
     'password'=>isset($smtp_email_settings["password"])?$smtp_email_settings["password"]:"yourpassword"
 ),

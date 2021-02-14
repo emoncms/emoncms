@@ -107,7 +107,9 @@
     if (window.delta==1) {
         var tmp = [];
         for (var n=1; n<data.length; n++) {
-            tmp.push([data[n-1][0], data[n][1]-data[n-1][1]]);
+            if (data[n][1]!=null && data[n-1][1]!=null) {
+                tmp.push([data[n-1][0], data[n][1]-data[n-1][1]]);
+            }
         }
         data = tmp;
     }

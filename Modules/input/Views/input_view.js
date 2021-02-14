@@ -837,8 +837,8 @@ function update(){
         
             // Associative array of devices by nodeid
             for (var z in result) {
-                devices[result[z].nodeid] = result[z]
-                devices[result[z].nodeid].inputs = []
+                devices[String(result[z].nodeid)] = result[z]
+                devices[String(result[z].nodeid)].inputs = []
             }
             update_inputs().done(function() {
                 // inputs list done downloading
@@ -868,7 +868,7 @@ function update_inputs() {
         
         // Assign inputs to devices
         for (var z in inputs) {
-            let nodeid = inputs[z].nodeid;
+            let nodeid = String(inputs[z].nodeid);
             
             // Device does not exist which means this is likely a new system or that the device was deleted
             // There needs to be a corresponding device for every node and so the system needs to recreate the device here

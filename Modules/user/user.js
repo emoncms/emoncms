@@ -36,13 +36,13 @@ var user = {
     return result;
   },
 
-  'register':function(username,password,email)
+  'register':function(username,password,email,timezone)
   {
     var result = {};
     $.ajax({
       type: "POST",
       url: path+"user/register.json",
-      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email),
+      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email)+"&timezone="+encodeURIComponent(timezone),
       dataType: "text",
       async: false,
       success: function(data_in)

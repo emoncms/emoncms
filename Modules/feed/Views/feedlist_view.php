@@ -95,7 +95,7 @@ body{padding:0!important}
 #feeds-to-delete { font-style:italic; }
 
 #deleteFeedModalSelectedItems{
-    postion:absolute;
+    position:absolute;
     overflow:hidden;
     text-align:left;
     background: #f5f5f5;
@@ -615,8 +615,6 @@ function nodeIntervalClass (feeds) {
     if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
     if (nodeMissed > 8) result.push('status-danger');
     return result.join(' ');
-
-    return result;
 }
 
 

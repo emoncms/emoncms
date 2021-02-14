@@ -3,7 +3,7 @@
 // Example emoncms settings.php file
 //
 // default-settings.php contains the default settings.
-// 
+//
 // Settings entered here override the default settings.
 // Enter only the settings you wish to customise here.
 //
@@ -69,12 +69,12 @@ $settings = array(
     // 'default_emailto' => 'root@localhost',
     // 'host'=>"smtp.gmail.com",
     // 25, 465, 587
-    // 'port'=>"465",  
+    // 'port'=>"465",
     // 'from_email' => 'noreply@emoncms.org',
     // 'from_name' => 'EmonCMS',
     // comment lines below that dont apply
     // ssl, tls
-    // 'encryption'=>"ssl", 
+    // 'encryption'=>"ssl",
     // 'username'=>"yourusername@gmail.com",
     // 'password'=>"yourpassword"
 ),

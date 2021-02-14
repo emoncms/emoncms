@@ -121,7 +121,7 @@
         new Mosquitto\Client($id,$cleanSession)
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
-    */ 
+    */
     $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
     
     $connected = false;
@@ -151,6 +151,13 @@
                 // SUBSCRIBE
                 $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
+                if(isset($settings['mqtt']['capath']) && $settings['mqtt']['capath'] !== null) {
+                    $log->warn("mqtt: using ssl");
+                    $mqtt_client->setTlsCertificates($settings['mqtt']['capath'],
+                                                     $settings['mqtt']['certpath'],
+                                                     $settings['mqtt']['keypath'],
+                                                     $settings['mqtt']['keypw']);
+                }
                 $mqtt_client->connect($settings['mqtt']['host'], $settings['mqtt']['port'], 5);
                 // moved subscribe to onConnect callback
 
@@ -263,6 +270,7 @@
                     if (is_numeric($inputtime)){
                         $log->info("Valid time in seconds used ".$inputtime);
                         $time = (int) $inputtime;
+                        unset($jsondata["time"]);
                     } elseif (is_string($inputtime)){
                         if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
@@ -312,8 +320,16 @@
                 $dbinputs = $input->get_inputs($userid);
 
                 if ($jsoninput) {
+                    $input_name = "";
+                    if ($route_len>=2) {
+                    // Input name is all the remaining parts connected together with _ and
+                    // added to front of input name.
+                        $input_name_parts = array();
+                        for ($i=1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
+                        $input_name = implode("_",$input_name_parts)."_";
+                    }
                     foreach ($jsondata as $key=>$value) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
                     }
                 } else if ($route_len>=2) {
                     // Input name is all the remaining parts connected together

@@ -88,6 +88,10 @@
     <tr><td><?php echo _("Insert new data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>
+    <tr><td><?php echo _("Insert multiple data points");?></td><td>
+    <?php $data = array(); for($i=0; $i<4; $i++) { $data[] = array(floor((time()+($i*10))*0.1)*10,100+50*$i); } ?> 
+		<a href="<?php echo $path; ?>feed/insert.json?id=0&data=<?php echo json_encode($data); ?>"><?php echo $path; ?>feed/insert.json?id=0&data=<?php echo json_encode($data); ?></a>
+	</td></tr>
     <tr><td><?php echo _("Update data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>

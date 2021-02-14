@@ -835,6 +835,50 @@ class Process_ProcessList
               "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
+              "name"=>_("max by input"),
+              "short"=>"max_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"max_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by input"),
+              "short"=>"min_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"min_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("max by feed"),
+              "short"=>"max_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"max_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by feed"),
+              "short"=>"min_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"min_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
            )
         );
         return $list;
@@ -971,6 +1015,36 @@ class Process_ProcessList
     {
         return $value - $this->input->get_last_value($id);
     }
+    
+    public function max_input($id, $time, $value)
+    {
+        $max_limit = $this->input->get_last_value($id);
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_input($id, $time, $value)
+    {
+        $min_limit = $this->input->get_last_value($id);
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
+    
+    public function max_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $max_limit = $timevalue['value']*1;
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $min_limit = $timevalue['value']*1;
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
 
     //---------------------------------------------------------------------------------------
     // Power to kwh
@@ -994,7 +1068,6 @@ class Process_ProcessList
             // kWh calculation
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
             $new_kwh = $last_kwh + $kwh_inc;
-            $this->log->info("power_to_kwh() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_time=$last_time time_now=$time_now");
         } else {
             // in the event that redis is flushed the last time will
             // likely be > 7200s ago and so kwh inc is not calculated
@@ -1040,7 +1113,6 @@ class Process_ProcessList
             # We are working in a new slot (new day) so don't increment it with the data from yesterday
             $new_kwh = $kwh_inc;
         }
-        $this->log->info("power_to_kwhd() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_slot=$last_slot current_slot=$current_slot");
         $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
@@ -1127,7 +1199,7 @@ class Process_ProcessList
         }
         $redis->hMset("process:ratechange:$feedid", array('time' => $time, 'value' => $value));
 
-        // return $ratechange;
+        return $ratechange;
     }
 
     public function save_to_input($inputid, $time, $value)
@@ -1177,9 +1249,6 @@ class Process_ProcessList
     //---------------------------------------------------------------------------------
     public function histogram($feedid, $time_now, $value)
     {
-
-        ///return $value;
-
         $feedname = "feed_" . trim($feedid) . "";
         $new_kwh = 0;
         // Allocate power values into pots of varying sizes
@@ -1376,7 +1445,6 @@ class Process_ProcessList
 
             $padding_mode = "join";
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
-            
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 

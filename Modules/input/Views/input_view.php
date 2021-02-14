@@ -189,7 +189,7 @@ input.checkbox-lg,
     border-width: 0;
 }
 .collapse.in .node-input {
-    height: 2.615em;
+    height: auto;
     transition: all .2s cubic-bezier(.23,1,.32,1);
     border-width: 1px;
 }
