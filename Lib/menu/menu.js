@@ -142,7 +142,10 @@ var menu = {
                 // Prepare active status
                 let active = ""; if (q.indexOf(item['href'])===0) { active = "active"; menu.active_l2 = l2 }
                 // Prepare icon
-                let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+                let icon = "";
+                if (item['icon']!=undefined) {
+                    icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+                }
                // Title
                 let title = item['name'];
                 if (item['title']!=undefined) title = item['title'];
