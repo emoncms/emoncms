@@ -1,6 +1,5 @@
 <?php global $path, $settings; ?>
 
-<script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>var _user = {lang:"<?php echo $_SESSION['lang']; ?>"};</script>
@@ -14,9 +13,7 @@
 
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/feed/Views/css/feedlist.css">
-
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/formats.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Modules/feed/Views/feedlist.css">
 
 <div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
@@ -54,22 +51,17 @@
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
 
-var template = false;
-
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 
 var feeds = {};
 var nodes = {};
-var selected_feeds = [];
+var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
-load_template(function() {
-    update_feed_list();
-});
-
 // auto refresh
+update_feed_list();
 setInterval(update_feed_list,5000);
 
 var firstLoad = true;
@@ -96,12 +88,6 @@ function update_feed_list() {
         for (var z in data) feeds[data[z].id] = data[z];
         nodes = {};
         for (var z in feeds) {
-            if (selected_feeds[feeds[z].id]!=undefined) {
-                feeds[z].selected = true;
-            } else {
-                feeds[z].selected = false;
-            }
-        
             var node = feeds[z].tag;
             if (nodes[node]==undefined) nodes[node] = [];
 
@@ -117,6 +103,7 @@ function update_feed_list() {
         // cache state in cookie
         if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
+        var out = "";
         
         // get node overview
         var node_size = {},
@@ -137,17 +124,79 @@ function update_feed_list() {
             1: _('Realtime'),
             2: _('Daily')
         }
+        // display nodes and feeds
+        var counter = 0;
+        for (var node in nodes) {
+            counter ++;
+            isCollapsed = !nodes_display[node];
+            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
+            out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+            out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
+            out += '      <h5 class="name" data-col="A">'+node+':</h5>';
+            out += '      <div class="public" class="text-center" data-col="E"></div>';
+            out += '      <div class="engine" data-col="G"></div>';
+            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="processlist" data-col="F"></div>';
+            out += '      <div class="node-feed-right pull-right">';
+            out += '        <div class="value" data-col="C"></div>';
+            out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
+            out += '      </div>';
+            out += '    </div>';
+            
+            out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
+            
+            for (var feed in nodes[node]) {
+                var feed = nodes[node][feed];
+                var feedid = feed.id;
+                var datatype = datatypes[feed.datatype] || '';
 
+                var title_lines = [feed.name,
+                                  '-----------------------',
+                                  _('Tag') + ': ' + feed.tag,
+                                  _('Feed ID') + ': ' + feedid,
+                                  _('Datatype') + ': ' + datatype]
+                
+                if(feed.engine == 5) {
+                    title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
+                }
+                var processListHTML = '';
+                if(feed.processList!=undefined && feed.processList.length > 0){
+                    processListHTML = processlist_ui ? processlist_ui.drawpreview(feed.processList, feed) : '';
+                }
+
+                // show the start time if available
+                if(feed.start_time > 0) {
+                    title_lines.push(_('Feed Start Time')+": "+feed.start_time);
+                    title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
+                }
+
+                row_title = title_lines.join("\n");
+
+                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                out += "<div class='name' data-col='A'>"+feed.name+"</div>";
+                
+                var publicfeed = "<i class='icon-lock'></i>";
+                if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                
+                out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
+                out += '  <div class="node-feed-right pull-right">';
+                if (feed.unit==undefined) feed.unit = "";
+                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
+                out += '  </div>';
+                out += '</div>';
+            }
+            
+            out += "</div>";
+            out += "</div>";
+        }
         $container = $('#table');
-        
-        $container.html(template({
-            feeds:feeds,
-            nodes:nodes,
-            nodes_display: nodes_display,
-            node_size:node_size,
-            node_time:node_time,
-            feed_engines:feed_engines
-        }));
+        $container.html(out);
 
         // reset the toggle state for all collapsable elements once data has loaded
         // css class "in" is used to remember the expanded state of the ".collapse" element
@@ -184,7 +233,7 @@ $("#table").on("click",".feed-graph-link",function(e) {
 $(".feed-graph").click(function(){
     var graph_feeds = [];
     for (var feedid in selected_feeds) {
-        graph_feeds.push(feedid);
+        if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
     window.location = path+feedviewpath+graph_feeds.join(",");      
 });
@@ -252,14 +301,8 @@ function feed_selection()
     var num_selected = 0;
     $(".feed-select").each(function(){
         var feedid = $(this).attr("feedid");
-        if ($(this)[0].checked==true) {
-            selected_feeds[feedid] = true;
-            num_selected += 1;
-        } else {
-            if (selected_feeds[feedid]!=undefined) {
-                delete selected_feeds[feedid];
-            }
-        }
+        selected_feeds[feedid] = $(this)[0].checked;
+        if (selected_feeds[feedid]==true) num_selected += 1;
     });
     
     if (num_selected>0) {
@@ -275,7 +318,7 @@ function feed_selection()
     }
 
     // There should only ever be one feed that is selected here:
-    var feedid = 0; for (var z in selected_feeds) { feedid = z; }
+    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
     // Only show feed process button for Virtual feeds
     if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
 }
@@ -289,30 +332,10 @@ function feed_selection()
 // -------------------------------------------------------------------------------------------------------
 watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
 
-
-Handlebars.registerHelper('format_size', function(bytes) { return format_size(bytes); });
-Handlebars.registerHelper('format_value', function(value) { return format_value(value); });
-
-Handlebars.registerHelper('format_time', function(time) {
-    var fv = format_time(time);
-    return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
-});
-
-function load_template(callback) {
-    $.ajax({
-        url: path+'Modules/feed/Views/feedlist_template.html',
-        cache: true,
-        success: function(source) {
-            template  = Handlebars.compile(source);
-            callback();
-        }               
-    });
-}
-
 </script>
 <?php /*
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_edit_modal.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_export_modal.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_delete_modal.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/virtualfeed_modal.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/feed_edit_modal.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/feed_export_modal.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/feed_delete_modal.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/virtualfeed_modal.js"></script>
 */?>

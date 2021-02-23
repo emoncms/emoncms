@@ -37,6 +37,10 @@ function feed_controller()
         if (($route->action == "view" || $route->action == "list") && $session['write']) {
             return view("Modules/feed/Views/feedlist_view.php");
         }
+        else if (($route->action == "viewhb") && $session['write']) {
+            return view("Modules/feed/Views/viewhb.php");
+        }
+        
         else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
         else if (!$session['read']) return ''; // empty strings force user back to login
         else return EMPTY_ROUTE; // this string displays error

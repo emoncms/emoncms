@@ -1,0 +1,39 @@
+{{#each nodes as | node |}}
+<div class="node accordion status-danger">
+   <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse{{@index}}">
+      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-down icon-indicator"></span></div>
+      <h5 class="name" data-col="A">{{@key}}:</h5>
+      <div class="public" data-col="E"></div>
+      <div class="engine" data-col="G"></div>
+      <div class="size text-center" data-col="H">{{format_size (lookup ../node_size @key)}}</div>
+      <div class="processlist" data-col="F"></div>
+      <div class="node-feed-right pull-right">
+         <div class="value" data-col="C"></div>
+         <div class="time" data-col="D">{{{format_time (lookup ../node_time @key)}}}</div>
+      </div>
+   </div>
+   <div id="collapse{{@index}}" class="node-feeds collapse tbody {{#if (lookup ../nodes_display @key)}}in{{/if}}" data-node="{{@key}}">
+      {{#each node as | feed |}}
+      <div class="status-danger node-feed feed-graph-link" feedid="{{feed.id}}" title="{{feed.name}}
+-----------------------
+Tag: {{@../key}}
+Feed ID: {{feed.id}}
+Datatype: Realtime
+Feed Interval: {{feed.interval}}s
+Feed Start Time: {{feed.start_time}}
+13 January 2016 09:00:00 UTC" data-toggle="tooltip">
+         <div class="select text-center" data-col="B"><input class="feed-select" type="checkbox" feedid="{{feed.id}}" {{#if feed.selected}} checked {{/if}}></div>
+         <div class="name" data-col="A">{{feed.name}}</div>
+         <div class="public text-center" data-col="E"><i class="icon-lock"></i></div>
+         <div class="engine" data-col="G">{{lookup ../../feed_engines feed.engine}}</div>
+         <div class="size text-center" data-col="H">{{format_size feed.size}}</div>
+         <div class="processlist" data-col="F"></div>
+         <div class="node-feed-right pull-right">
+            <div class="value" data-col="C">{{format_value feed.value}} {{feed.unit}}</div>
+            <div class="time" data-col="D">{{{format_time feed.time}}}</div>
+         </div>
+      </div>
+      {{/each}}
+   </div>
+</div>
+{{/each}}
