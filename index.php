@@ -362,8 +362,7 @@ if ($route->format == 'json') {
         
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
-         
-        $output['page_classes'][] = 'has-sidebar';
+        
         if (!$session['read']) {
             $output['page_classes'][] = 'collapsed manual';
         } else {
