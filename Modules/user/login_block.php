@@ -21,7 +21,9 @@ global $path, $settings;
     padding: 10px;
   }
   
-  .content-container { max-width:380px; }
+  .content-container { max-width:340px; }
+  
+  .container-fluid { padding:0px !important; }
   
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
