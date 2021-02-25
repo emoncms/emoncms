@@ -1,0 +1,86 @@
+.bg-ddd { background-color:#ddd; }
+.bg-f0 { background-color:#f0f0f0; }
+input[type=checkbox] { margin:0px !important; }
+.table td { white-space: nowrap; }
+
+.name { padding-right:50px !important; font-size:14px; }
+.time { padding-right:20px !important; }
+.value { text-align:right !important; }
+
+.table {
+  border-collapse:unset !important;
+}
+
+.table tr {
+  position:relative;
+  cursor:pointer;
+}
+
+.feeds tr:hover {
+  background-color:#f5f5f5;
+}
+
+.feeds tr:hover > .select::before {
+  width: 2px;
+}
+
+.table td {
+  position:relative;
+}
+
+.select::before {
+  content: '';
+  width: 0px;
+  background: #44b3e2;
+  height: 100%;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: width .2s ease-out;
+}
+
+.time::after {
+  background: #DC3545;
+  content: '';
+  width: .4em;
+  height: 100%;
+  display: block;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.feeds td {
+  border-top: 1px solid #fff !important;
+  font-size:16px;
+  line-height:25px;
+}
+
+.spacer {
+    height:10px;
+}
+
+.spacer td {
+    border:0;
+}
+
+.node td {
+  border-top: 0px solid #fff !important;
+  line-height:25px;
+}
+
+.node:hover {
+  background-color:#e3e3e3;
+}
+
+@media screen and (max-width: 992px) {
+  .public {display:none}
+  .engine {display:none}
+  .size {display:none}
+}
+
+@media screen and (max-width: 380px) {
+  .time {display:none}
+}

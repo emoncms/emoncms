@@ -18,7 +18,7 @@ function format_time(time) {
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
     
     secs = Math.abs(secs);
-    var color = "rgb(255,0,0)";
+    var color = "#DC3545";
     if (delta < 0) color = "rgb(60,135,170)"
     else if (secs < 25) color = "rgb(50,200,50)"
     else if (secs < 60) color = "rgb(240,180,20)"; 

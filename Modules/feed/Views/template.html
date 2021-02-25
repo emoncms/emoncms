@@ -1,0 +1,29 @@
+<table class="table">
+{{#each nodes as | node |}}
+  <tr class="node bg-ddd">
+    <td style="padding-left:12px; padding-top:11px"><span class="icon-chevron-down icon-indicator" style="opacity: 0.333"></span></td>
+    <td class="name"><b>{{@key}}:</b></td>
+    <td class="public"></td>
+    <td class="engine"></td>
+    <td class="size"></td>
+    <td width="100%"></td>  
+    <td class="time"></td>
+  </tr>
+  <tbody class="feeds bg-f0">
+  {{#each node as | feed |}}
+    <tr>
+      <td class="select" style="padding-left:12px"><input class="feed-select" type="checkbox" feedid="{{feed.id}}"></td>
+      <td class="name">{{feed.name}}</td>
+      <td class="public"><i class="icon-lock"></i></td>
+      <td class="engine">{{lookup ../../feed_engines feed.engine}}</td>
+      <td class="size">{{format_size feed.size}}</td>
+      <td class="value">{{format_value feed.value}}</td>
+      <td class="time">{{{format_time feed.time}}}</td>
+    </tr>
+  {{/each}}
+  </tbody>
+  <tr class="spacer">
+    <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+  </tr>
+{{/each}}
+</table>

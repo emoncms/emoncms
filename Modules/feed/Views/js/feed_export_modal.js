@@ -83,12 +83,11 @@ $("#export").click(function()
     var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
     if (export_timeformat) { export_timezone_offset = 0; }
 
-    if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
-    if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
-    if (export_start>=export_end) {alert("<?php echo _('Start date must be further back in time than end date.'); ?>"); return false; }
-    if (export_interval=="") {alert("<?php echo _('Please select interval to download.'); ?>"); return false; }
-
-    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
+    if (!export_start) {alert("Please enter a valid start date."); return false; }
+    if (!export_end) {alert("Please enter a valid end date."); return false; }
+    if (export_start>=export_end) {alert("Start date must be further back in time than end date."); return false; }
+    if (export_interval=="") {alert("Please select interval to download."); return false; }
+    
     var downloadsize = calculate_download_size(ids.length);
     
     if (ids.length>1) {
@@ -98,7 +97,7 @@ $("#export").click(function()
     }
 
     if (downloadsize>(downloadlimit*1048576)) {
-        var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
+        var r = confirm("Estimated download file size is large.\nServer could take a long time or abort depending on stored data size.\nLimit is "+downloadlimit+"MB.\n\nTry exporting anyway?");
         if (!r) return false;
     }
     window.open(url);
@@ -117,7 +116,7 @@ function calculate_download_size(feedcount){
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
     $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2));
-    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
+
     $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
     
     return downloadsize;

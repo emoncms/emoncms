@@ -123,12 +123,12 @@ function showSelectedFeeds(feed_inputs) {
     total_selected = Object.keys(titles).length;
     if (total_selected == 1) {
     // if only one is selected display it's id & name
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> <?php echo _('1 Input process associated with this feed') ?>':'';
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> 1 Input process associated with this feed':'';
         total_summary += '<h5>'+feedListShort+'</h5>';
     } else {
     // show a summary total if more than one are selected
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' <?php echo _('%s Input processes associated with these feeds') ?>'.replace('%s',total_linked))+'</span>' : '';
-        total_summary += '<h5 title="'+feedListShort+'"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected);
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' %s Input processes associated with these feeds'.replace('%s',total_linked))+'</span>' : '';
+        total_summary += '<h5 title="'+feedListShort+'">%s Feeds selected <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected);
     }
     total_summary += '</div>';
     $("#feeds-to-delete").html(total_summary); // show how many feeds have been selected
@@ -198,7 +198,7 @@ function initRelativeStartDateButtons(start_time){
         if (relativeTime < startDate) {
             $btn.hide() // hide button date is beyond start date
             $btn.css({'font-style':'italic', color:'#9a9eaa'});
-            $btn.attr('title',$btn.attr('title')+' - [<?php echo _('Out of range')?>]');
+            $btn.attr('title',$btn.attr('title')+' - [Out of range]');
         }
     })
     // open date picker on input focus
@@ -371,7 +371,7 @@ function enableTrim(start_time){
                 $input.focus();
                 return false;
             }else{
-                if(confirm("<?php echo _('This is a new feature. Consider backing up your data before you continue. OK to continue?') ?>") == true) {
+                if(confirm("This is a new feature. Consider backing up your data before you continue. OK to continue?") == true) {
                     $('#trim_start_time_container').removeClass('error');
                     // set to seconds from milliseconds
                     let start_time = start_date.getTime()/1000;
@@ -400,7 +400,7 @@ function enableTrim(start_time){
  * @return void
  */
 function disableTrim(){
-    $('#trimContainer').attr('title','<?php echo _('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#trimContainer').attr('title','"Trim" not available for this storage engine').addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button,input').addClass('disabled')
         .find('input').val('');
@@ -478,7 +478,7 @@ function enableClear(){
     $("#feedClear-confirm")
         .unbind('click')
         .click(function(){
-            if( confirm("<?php echo _('Are you sure you want to delete all the feeds data?') ?>") == true ){
+            if( confirm("Are you sure you want to delete all the feeds data?") == true ){
                 $modal = $('#feedDeleteModal');
                 $("#feedDelete-loader").fadeIn();
 
@@ -501,13 +501,13 @@ function enableClear(){
 function disableClear(){
     $("#feedClear-confirm").unbind();
 
-    $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#clearContainer').attr('title','"Clear" not available for this storage engine').addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button').addClass('disabled');
 }
 
 $("#feedDelete-confirm").click(function(){
-    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
+    if( confirm("Are you sure you want to delete?") == true) {
         for (let feedid in selected_feeds) {
             if (selected_feeds[feedid]) {
                 let response = feed.remove(feedid);

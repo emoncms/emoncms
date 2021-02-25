@@ -15,7 +15,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/feed/Views/css/feedlist.css">
-
+<link rel="stylesheet" href="<?php echo $path; ?>Modules/feed/Views/css/feedlist2.css?v=1">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/formats.js"></script>
 
 <div id="feed-header">
@@ -57,7 +57,8 @@
 var template = false;
 
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
-
+var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
+    
 var feeds = {};
 var nodes = {};
 var selected_feeds = [];
@@ -70,7 +71,7 @@ load_template(function() {
 });
 
 // auto refresh
-setInterval(update_feed_list,5000);
+// setInterval(update_feed_list,5000);
 
 var firstLoad = true;
 function update_feed_list() {
@@ -156,7 +157,6 @@ function update_feed_list() {
             setExpandButtonState($container.find('.collapsed').length == 0);
         }
         
-        autowidth($container) // set each column group to the same width
         } // end of for loop
     }); // end of ajax callback
 }// end of update_feed_list() function
@@ -280,16 +280,6 @@ function feed_selection()
     if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
 }
 
-// -------------------------------------------------------------------------------------------------------
-// Interface responsive
-//
-// The following implements the showing and hiding of the device fields depending on the available width
-// of the container and the width of the individual fields themselves. It implements a level of responsivness
-// that is one step more advanced than is possible using css alone.
-// -------------------------------------------------------------------------------------------------------
-watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
-
-
 Handlebars.registerHelper('format_size', function(bytes) { return format_size(bytes); });
 Handlebars.registerHelper('format_value', function(value) { return format_value(value); });
 
@@ -300,7 +290,7 @@ Handlebars.registerHelper('format_time', function(time) {
 
 function load_template(callback) {
     $.ajax({
-        url: path+'Modules/feed/Views/feedlist_template.html',
+        url: path+'Modules/feed/Views/template.html',
         cache: true,
         success: function(source) {
             template  = Handlebars.compile(source);
@@ -310,9 +300,10 @@ function load_template(callback) {
 }
 
 </script>
-<?php /*
+
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_edit_modal.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_export_modal.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_delete_modal.js"></script>
+<?php/*
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/virtualfeed_modal.js"></script>
 */?>
