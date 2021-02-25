@@ -114,23 +114,6 @@ input[type=text][class=variable-name-edit] {
     padding: 0px !important;
 }
 
-#emoncms-navbar .nav > .active > a {
-    background-color: #209ed3 !important;
-    box-shadow: none !important;
-}
-
-#emoncms-navbar .nav > li > a:hover,
-#emoncms-navbar .nav > li > a:focus,
-#emoncms-navbar .nav > .open > a {
-    background-color: #2eaadf !important;
-    outline: none;
-}
-
-#emoncms-navbar .nav > li > a {
-    color: #fff !important;
-    text-shadow: none !important;
-}
-
 .caret {
     border-top-color: #fff !important;
 }

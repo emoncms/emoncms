@@ -68,7 +68,7 @@ class VirtualFeed implements engine_methods
         $feedid = intval($feedid);
         $processList = $this->feed->get_processlist($feedid);
         if ($processList == '' || $processList == null) { 
-            return array('time'=>(int)$now, 'value'=>null);
+            return array('time'=>(int)$now, 'value'=>null);r
         }
         
         // Check if datatype is daily so that select over range is used rather than skip select approach

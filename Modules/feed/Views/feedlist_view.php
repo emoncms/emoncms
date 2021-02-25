@@ -63,7 +63,7 @@ var feeds = {};
 var nodes = {};
 var selected_feeds = [];
 var local_cache_key = 'feed_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+var nodes_display = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 load_template(function() {
@@ -116,7 +116,7 @@ function update_feed_list() {
             }
         }
         // cache state in cookie
-        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+        // if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
         
         // get node overview

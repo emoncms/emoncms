@@ -43,7 +43,7 @@ var devices = {};
 var inputs = {};
 var nodes = {};
 var local_cache_key = 'input_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+var nodes_display = {};
 // clear cookie value if not in correct format
 if (Array.isArray(nodes_display)) nodes_display = {};
 var selected_inputs = {};
@@ -127,7 +127,7 @@ var app = new Vue({
         collapsed: function(newVal) {
             // cache state in cookie
             if(!this.firstLoad) {
-                docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
+                // docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
             } else {
                 this.firstLoad = false;
             }
@@ -263,14 +263,14 @@ var app = new Vue({
         window.addEventListener('scroll', this.handleScroll);
         // load list collapsed state from previous visit
         this.firstLoad = true;
-        if(docCookies.hasItem(this.local_cache_key)) {
+        /*if(docCookies.hasItem(this.local_cache_key)) {
             var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
             if(Array.isArray(cached_state)) {
                 this.collapsed = cached_state
             } else {
                 this.collapsed = []
             }
-        }
+        }*/
     },
     destroyed () {
         window.removeEventListener('scroll', this.handleScroll);
@@ -1401,7 +1401,7 @@ $(function(){
         // cache state in cookie
         if(!firstLoad) {
             nodes_display[event.target.dataset.node] = event.type === 'show';
-            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+            //docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
             firstLoad = false;
         }
         console.log(event.target.dataset.node,nodes_display)

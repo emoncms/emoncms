@@ -341,56 +341,36 @@ if ($route->format == 'json') {
             }
         }
     }
-} elseif ($route->format == 'html') {
+} else if ($route->format == 'html') {
     // Select the theme
     $themeDir = "Theme/" . $settings["interface"]["theme"] . "/";
     if ($embed == 1) {
         print view($themeDir . "embed.php", $output);
     } else {
-        $menu = load_menu();
+        // Menu
+        $menu = array();
+        // Create initial entry for setup menu
+        $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "l2"=>array());
+        if (!$session["write"]) $menu["setup"]["name"] = "Emoncms";
         
-        // EMONCMS MENU
-        if ($session['write']) {
-            $menu['tabs'][] = array(
-                'icon'=>'menu',
-                'title'=> _("Emoncms"),
-                'text'=> _("Setup"),
-                'path' => 'feed/list',
-                'order' => 0,
-                'data'=> array(
-                    'sidebar' => '#sidebar_emoncms'
-                )
-            );
-        }
-
-        include_once("Lib/misc/nav_functions.php");
-        sortMenu($menu);
-        // debugMenu('sidebar');
+        // Itterates through installed modules to load module menus
+        load_menu();
+        // Pass menu through to output view - passed on the js based builder
+        $output['menu'] = $menu;
+        
         $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
-        $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
         
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
-
-        $output['sidebar'] = view(
-            $themeDir . "sidebar_view.php",
-            array(
-            'menu' => $menu,
-            'path' => $path,
-            'session' => $session,
-            'route' => $route
-            )
-        );
-        $output['page_classes'][] = 'has-sidebar';
+        
         if (!$session['read']) {
             $output['page_classes'][] = 'collapsed manual';
         } else {
-            if (!in_array("manual", $output['page_classes'])) {
-                $output['page_classes'][] = 'auto';
-            }
+            if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
         }
         print view($themeDir . "theme.php", $output);
     }
+
 } elseif ($route->format == 'text') {
     header('Content-Type: text/plain');
     print $output['content'];

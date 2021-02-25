@@ -1,18 +1,10 @@
 <?php
-    defined('EMONCMS_EXEC') or die('Restricted access');
-
-    $menu['sidebar']['emoncms'][] = array(
-        'text' => '',
-        'href' => '#', // items with no path or href are not shown,
-        'li_class' => 'divider',
-        'icon' => '',
-        'order' => 'b'
-    );
-
-    $menu['sidebar']['emoncms'][] = array(
-        'text' => _("Admin"),
-        'path' => 'admin/view',
-        'active' => 'admin',
+global $session;
+if ($session["admin"]) {
+    $menu['setup']['l2']['admin'] = array(
+        'name' => _("Admin"),
+        'href' => 'admin/view',
         'icon' => 'tasks',
-        'order' => 'b7'
+        'order' => 13
     );
+}
