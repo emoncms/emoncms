@@ -1,6 +1,8 @@
 <?php
+// engine_methods interface in shared_helper.php
+;include_once dirname(__FILE__) . '/shared_helper.php';
 
-class VirtualFeed
+class VirtualFeed implements engine_methods
 {
 
     private $mysqli;
@@ -54,28 +56,31 @@ class VirtualFeed
         return false; // Not supported by engine
     }
 
+    /**
+     * returns the feed's last value
+     *
+     * @param int $feedid
+     * @return bool|array
+     */
     public function lastvalue($feedid)
     {
+        $now = time();
         $feedid = intval($feedid);
         $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
+        if ($processList == '' || $processList == null) { 
+            return array('time'=>(int)$now, 'value'=>null);
+        }
         
         // Check if datatype is daily so that select over range is used rather than skip select approach
-        static $feed_datatype_cache = array(); // Array to hold the cache
-        if (isset($feed_datatype_cache[$feedid])) {
-            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
-        } else {
-            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-            $row = $result->fetch_array();
-            $datatype = $row['datatype'];
-            $feed_datatype_cache[$feedid] = $datatype; // Cache it
-        }
-        $now = time();
-        
+        $result = $this->mysqli->query("SELECT userid,datatype FROM feeds WHERE `id` = '$feedid'");
+        $row = $result->fetch_array();
+        $datatype = $row['datatype'];
+        $userid = $row['userid'];
+         
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         global $session,$user;
         require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($session['userid']));
+        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
 
         if ($datatype==2) { //daily
             $start=$process->process__getstartday($now); // start of day
@@ -111,16 +116,13 @@ class VirtualFeed
         $end = $start + ($dp * $interval);
         if ($dp<1) return false;
 
+
         // Check if datatype is daily so that select over range is used rather than skip select approach
-        static $feed_datatype_cache = array(); // Array to hold the cache
-        if (isset($feed_datatype_cache[$feedid])) {
-            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
-        } else {
-            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-            $row = $result->fetch_array();
-            $datatype = $row['datatype'];
-            $feed_datatype_cache[$feedid] = $datatype; // Cache it
-        }
+        $result = $this->mysqli->query("SELECT userid,datatype FROM feeds WHERE `id` = '$feedid'");
+        $row = $result->fetch_array();
+        $datatype = $row['datatype'];
+        $userid = $row['userid'];
+        
         if ($datatype==2) $dp = 0; // daily
 
         $this->log->info("get_data() feedid=$feedid start=$start end=$end int=$interval sk=$skipmissing li=$limitinterval");
@@ -131,7 +133,7 @@ class VirtualFeed
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         global $session,$user;
         require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($session['userid']));
+        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
 
         if ($dp > 0) 
         {
@@ -183,7 +185,7 @@ class VirtualFeed
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
         
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -208,11 +210,19 @@ class VirtualFeed
         for ($i=0; $i<$max; $i++){
             $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
             $value = $data[$i][1];
-            if ($value != null) $value = number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'');
-            fwrite($exportfh, $timenew.$csv_field_separator.$value."\n");
+            if ($value != null) $value = number_format($value,$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'');
+            fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].$value."\n");
         }
         fclose($exportfh);
         exit;
     }
-
+    public function clear($feedid) {
+        // clear all feed data but keep meta.
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+    
+    public function trim($feedid,$start_time) {
+        // clear all data upto a start_time
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
 }

@@ -1,15 +1,19 @@
-## Enabling MQTT
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+## Archived: Enabling MQTT
 MQTT is a "lightweight" messaging protocol, which enables the publishing of data from Emoncms, as well as subscribing to data from other connected devices. The emonPi uses MQTT to transfer data from emonHub to Emoncms.
 
 ### Preparation
 
-Before following this guide, it is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of Emoncms & emonHub on your Raspberry Pi, as well as a MQTT message broker such as [Mosquitto](http://mosquitto.org/) installed and running.
+Before following this guide, it is essential that emoncms was initially installed by following either the Raspbian Stretch, [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guides, or you have used git to install a working version of Emoncms & emonHub on your Raspberry Pi, as well as a MQTT message broker such as [Mosquitto](http://mosquitto.org/) installed and running.
 
 #### Update Emoncms:
 
     cd /var/www/emoncms && git pull
 
-#### Ensure packages are installed
+### Ensure packages are installed
 
 In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-repository]( http://mosquitto.org/2013/01/mosquitto-debian-repository) and [Mosquitto-PHP library](https://github.com/mgdm/Mosquitto-PHP):
 
@@ -17,13 +21,23 @@ In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-r
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
     
-If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
+If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository).
 
-If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
+### Create PHP extension files
 
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/cli/conf.d/20-mosquitto.ini'
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/apache2/conf.d/20-mosquitto.ini'
+Use **only one** of the following two options;
 
+**If using php5 (normally Raspbian Jessie or Wheezy)**
+
+    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosquitto.ini 1>&2
+    sudo php5enmod mosquitto
+    
+***- OR -***
+
+**If using php7.0 (normally Rasbian Stretch)**
+
+    printf "extension=mosquitto.so" | sudo tee /etc/php/7.0/mods-available/mosquitto.ini 1>&2
+    sudo phpenmod mosquitto
 
 ### Enable MQTT in Emoncms
 
@@ -41,47 +55,47 @@ Edit the settings file:
 
 In the settings file in the **MQTT** section change `$mqtt_enabled` from `false` to `true`, and also change the `$mqtt_server` IP address to that of your MQTT server. On the emonPi the host is `localhost` and authentication is enabled: `user => emonpi` and `password => emonpimqtt2016`.
 
-The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
+The `basetopic` option sets the base MQTT topic to which Emoncms subscribes. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
 
-### Run Emoncms phpmqtt_input script
+### Run Emoncms emoncms_mqtt script
 
-Install `phpmqtt_input` systemd unit script and make starts on boot: 
+Install `emoncms_mqtt` systemd unit script and make it start on boot:
 
 ```
-sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
-sudo systemctl daemon-reload
-sudo systemctl enable mqtt_input.service
+sudo ln -s /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.service /lib/systemd/system
+sudo systemctl enable emoncms_mqtt.service
 ```
 
 Start / stop / restart with:
 
 ```
-sudo systemctl start mqtt_input
-sudo systemctl stop mqtt_input    
-sudo systemctl restart mqtt_input
+sudo systemctl start emoncms_mqtt
+sudo systemctl stop emoncms_mqtt    
+sudo systemctl restart emoncms_mqtt
 ```
 
 View status / log snippet with:
 
-`sudo systemctl status mqtt_input -n50`
+`sudo systemctl status emoncms_mqtt -n50`
 
-*Where -nX is the number of log lines to view* 
+*Where -nX is the number of log lines to view*
 
-Log can be viewed as text and standard text manipulation tools can be applied: 
+Log can be viewed as text and standard text manipulation tools can be applied:
 
-`sudo journalctl -f -u mqtt_input -o cat | grep emonpi`
+`sudo journalctl -f -u emoncms_mqtt -o cat | grep emonpi`
 
 Or with a datestamp:
 
-`sudo journalctl -f -u mqtt_input -o short`
+`sudo journalctl -f -u emoncms_mqtt -o short`
 
 There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
 
-To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `mqtt_input`. 
+To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `emoncms_mqtt`.
 
 #### An alternative for systems not running systemd
 
-On older operating systems, or those not running systemd, the mqtt_input script can be run as a init.d daemon instead of the above which uses a systemd unit script instead. Install either this or the above, **Not both!**
+On older operating systems, or those not running systemd, the emoncms mqtt service can be run as a init.d daemon instead of the above which uses a systemd unit script instead. 
+Install either this or the above, **Not both!**
 
 Create a symlink to run the MQTT Input script as a daemon and set permissions
 ```
@@ -99,7 +113,7 @@ In the process 'Text' box add the topic, for example; `house/power/solar`
 
 #### emoncms as a subscriber
 
-[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emon`**, which mean Emoncms will subcribe to `emon/#` where # is any higher level topics.
+[basetopic] and user ID of the target Emoncms account can be set in settings.php. **Default basetopic = `emon`**, which means Emoncms will subscribe to `emon/#` where # is any higher level topics.
 
 E.g. Data posted to `emon/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
 

@@ -10,16 +10,8 @@
     global $path, $embed;
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
@@ -53,7 +45,6 @@
     colourt = "#" + colourt;
   }
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
 
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
@@ -70,11 +61,18 @@
   
   var dataA = get_feed_data_DMY(kwhdA,start,end,"daily");
   var dataB = get_feed_data_DMY(kwhdB,start,end,"daily");
+
+  // Find start of data series
+  var start_index = 0;
+  for (var n=0; n<dataA.length; n++) {
+      if (dataA[n][1]!=null) { start_index = n; break; }
+      if (dataB[n][1]!=null) { start_index = n; break; }
+  }
   
   if (delta==1) {
       var tmpA = [];
       var tmpB = [];
-      for (var n=1; n<dataA.length; n++) {
+      for (var n=start_index+1; n<dataA.length; n++) {
           tmpA.push([dataA[n-1][0], dataA[n][1]-dataA[n-1][1]]);
           tmpB.push([dataB[n-1][0], dataB[n][1]-dataB[n-1][1]]);
       }
@@ -98,11 +96,13 @@
   monthsA = get_months(dataA);
   monthsB = get_months(dataB);
 
-  $(window).resize(function(){
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
     bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
-  });
+  }
 
   bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
 

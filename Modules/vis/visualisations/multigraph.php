@@ -7,60 +7,76 @@
 -->
 
 <?php
-    global $path;
-    $embed = intval(get("embed"));
-    $mid = intval(get("mid"));
+    //global $path;
+    //$embed = (int)(get("embed"));
+    //$mid = intval(get("mid"));
 ?>
+<script>
+//still needed ?
+var srcIeScript = path+"Lib/flot/excanvas.min.js";
+document.write('<!--[if IE]><script language="javascript" type="text/javascript" src="'+srcIeScript+'"><\/script><![endif]-->');
 
-<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.touch.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
+//srcScripts includes all the needed js libraries
+var srcScripts = [];
+srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
+srcScripts.push(path+"Modules/vis/visualisations/common/api.js");
+srcScripts.push(path+"Modules/vis/visualisations/common/vis.helper.js");
+srcScripts.push(path+"Modules/vis/visualisations/multigraph/multigraph.js");
+srcScripts.push(path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
+srcScripts.push(path+"Lib/bootstrap/js/bootstrap.js");
+srcScripts.forEach(function(srcScript){
+  document.write('<script language="javascript" type="text/javascript" src="'+srcScript+'"><\/script>');
+});
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph/multigraph.js"></script>
-
-<link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-<link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-			   
-<?php if (!$embed) { ?>
-<h2><div id="multigraph_name"></div></h2>
-<?php } ?>
-
+//srcLinks includes all the needed css
+var srcLinks = [];
+srcLinks.push(path+"Lib/bootstrap/css/bootstrap.min.css");
+srcLinks.push(path+"Lib/bootstrap/css/bootstrap-responsive.min.css");
+srcLinks.push(path+"Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css");
+srcLinks.forEach(function(srcLink){
+  document.write('<link href="'+srcLink+'" rel="stylesheet">');
+});
+</script>
 
 <div id="multigraph"></div>
 
 <script id="source" language="javascript" type="text/javascript">
-
-    var mid = <?php echo $mid; ?>;
-    var path = "<?php echo $path; ?>";
-    var embed = <?php echo $embed; ?>;
-    var apikey = "<?php echo $apikey; ?>";
-    var multigraph_feedlist = {};
+    //we start by fetching some of the url parameters
+    //for user logged in emoncms, the url is like /vis/multigraph?mid=1&embed=0
+    //for visitors, the url can be /vis/multigraph?mid=1&embed=1&apikey=apikey_read
     
-    if (mid==0) $("body").css('background-color','#eee');
+    //we use the urlParams var provided by the helper : Modules/vis/visualisations/common/vis_helper.js
+    //working on firefox,chrome,edge
+    //ALTERNATIVE : use of the generic js function URLSearchParams
+    //does not work with IE/Edge !
+    //const url_Params = new URLSearchParams(window.location.search);
+    //console.log(window.location.search);
+    //console.log(urlParams);
+    var mid = urlParams.mid;
+    var embed = urlParams.embed;
+    var apikey = "" ;
+    if (urlParams.apikey) {apikey= urlParams.apikey;}
+    //var apikey="";
+    //if (url_Params.has("apikey")){
+    //  apikey = url_Params.get("apikey");
+    //}
+    var multigraphFeedlist = {};
+    
+    if (mid===0) $("body").css('background-color','#eee');
 
-    $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
+    $.ajax({
+        url: path+"vis/multigraph/get.json",
+        data: "&id="+mid,
+        dataType: 'json',
+        async: true,
         success: function(data)
         {
-            if (data['feedlist'] != undefined) multigraph_feedlist = data['feedlist'];
-            $("#multigraph_name").replaceWith('<?php echo _("Multigraph:"); ?>' + ' ' + data['name']);
-            multigraph_init("#multigraph");
-            vis_feed_data();
+            if (data['feedlist'] !== "undefined") {multigraphFeedlist = data['feedlist'];}
+            multigraphInit("#multigraph");
+            visFeedData();
         }
     });
 
 </script>
-

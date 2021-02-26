@@ -1,11 +1,15 @@
 .project
+.buildpath
+.settings*
 debian/emoncms*
 settings.php
+settings.ini
 old.settings.php
 emoncms.log
 .idea
 .vagrant/
 .env
+.vscode/*
 
 # Ignore all modules except core ones
 Modules/*
@@ -24,3 +28,5 @@ Modules/*/
 Theme/*
 Theme/*/
 !Theme/basic/
+
+/vendor/

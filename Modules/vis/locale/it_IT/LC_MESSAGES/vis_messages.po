@@ -1,0 +1,1036 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Vis\n"
+"POT-Creation-Date: 2020-03-16 00:17+0100\n"
+"PO-Revision-Date: 2020-03-16 00:28+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../Views/vis_main_view.php:38
+msgid "Visualisations"
+msgstr "Visualizzazione"
+
+#: ../Views/vis_main_view.php:43
+msgid "Select visualisation:"
+msgstr "Scegli:"
+
+#: ../Views/vis_main_view.php:48
+msgid "Set options:"
+msgstr "Impostazioni:"
+
+#: ../Views/vis_main_view.php:50
+msgid "Note:"
+msgstr "Nota:"
+
+#: ../Views/vis_main_view.php:50
+msgid ""
+"If a feed does not appear in the selection box, check that the type has been "
+"set on the feeds page."
+msgstr ""
+"Se un feed non appare  nella selezione, controlla il tipo di dato impostato "
+"nella pagina dei feed"
+
+#: ../Views/vis_main_view.php:55
+msgid "View"
+msgstr "Mostra"
+
+#: ../Views/vis_main_view.php:56
+msgid "Full screen"
+msgstr "A tutto schermo"
+
+#: ../Views/vis_main_view.php:61
+msgid "Embed in your website:"
+msgstr "Incorpora nel tuo sito web:"
+
+#: ../Views/vis_main_view.php:139 ../vis_langjs.php:64
+msgid ""
+"Some of the feeds selected are not public, to embed a visualisation publicly "
+"first make the feeds that you want to use public."
+msgstr "Alcuni feed non sono pubblici, per incorporare "
+
+#: ../Views/vis_main_view.php:139 ../vis_langjs.php:66
+msgid "To embed privately:"
+msgstr "Per incorporare privatamente:"
+
+#: ../Views/vis_main_view.php:186
+msgid "Off"
+msgstr "Off"
+
+#: ../Views/vis_main_view.php:186
+msgid "On"
+msgstr "On"
+
+#: ../vis_controller.php:11
+msgid "Restricted access"
+msgstr "Accesso non consentito"
+
+#: ../vis_controller.php:133
+msgid "Not configured"
+msgstr "Non configurato"
+
+#: ../vis_controller.php:133
+msgid "or"
+msgstr "o"
+
+#: ../vis_controller.php:133
+msgid "Authentication not valid"
+msgstr "Autenticazione non valida"
+
+#: ../vis_langjs.php:28
+msgid "Add"
+msgstr "Aggiungi"
+
+#: ../vis_langjs.php:29 ../visualisations/graph.php:59
+msgid "Advanced"
+msgstr "Avanzate"
+
+#: ../vis_langjs.php:30 ../visualisations/editrealtime.php:69
+msgid "Are you sure you want to delete?"
+msgstr "Sei sicuro di volerlo cancellare?"
+
+#: ../vis_langjs.php:31
+msgid "Auto refresh (secs)"
+msgstr "Aggiornamento automatico (sec)"
+
+#: ../vis_langjs.php:32
+msgid "Axis"
+msgstr "Asse"
+
+#: ../vis_langjs.php:33
+msgid "Bars"
+msgstr "Barre"
+
+#: ../vis_langjs.php:34
+msgid "Bar Width (%)"
+msgstr "Ampiezza barra (%)"
+
+#: ../vis_langjs.php:35
+msgid "Basic"
+msgstr "Base"
+
+#: ../vis_langjs.php:36 ../visualisations/editrealtime.php:73
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../vis_langjs.php:37
+msgid "Changed, press to save"
+msgstr "Modificato, premere per salvare"
+
+#: ../vis_langjs.php:38 ../vis_langjs.php:74
+msgid "Colour"
+msgstr "Colore"
+
+#: ../vis_langjs.php:39 ../visualisations/editdaily.php:52
+msgid "Delete"
+msgstr "Cancella"
+
+#: ../vis_langjs.php:40
+#, fuzzy
+msgid "Delete Multigraph"
+msgstr "Elimina multigrafo"
+
+#: ../vis_langjs.php:41 ../visualisations/editrealtime.php:74
+msgid "Delete permanently"
+msgstr "Elimina definitivamente"
+
+#: ../vis_langjs.php:42
+#, fuzzy
+msgid "Deleting a multigraph is permanent."
+msgstr "L'eliminazione di un multigrafo è permanente."
+
+#: ../vis_langjs.php:43
+msgid "Feeds"
+msgstr "Feeds"
+
+#: ../vis_langjs.php:44 ../vis_langjs.php:90
+msgid "Fill"
+msgstr "Riempi"
+
+#: ../vis_langjs.php:45
+#, fuzzy
+msgid "Floating time"
+msgstr "Tempo mobile"
+
+#: ../vis_langjs.php:46
+msgid "Graph Type"
+msgstr "Tipo di grafico"
+
+#: ../vis_langjs.php:47
+msgid "Left"
+msgstr "Sinistra"
+
+#: ../vis_langjs.php:48
+msgid "Lines"
+msgstr "Linee"
+
+#: ../vis_langjs.php:49
+msgid "Lines with Steps"
+msgstr "Linee con passi"
+
+#: ../vis_langjs.php:50
+#, fuzzy
+msgid "Make sure no Dashboard continue to use the deleted multigraph"
+msgstr ""
+"Assicurarsi che nessun Dashboard continui a utilizzare il multigrafo "
+"eliminato"
+
+#: ../vis_langjs.php:51
+msgid "Name"
+msgstr "Nome"
+
+#: ../vis_langjs.php:52
+#, fuzzy
+msgid "New multigraph"
+msgstr "Nuovo multigrafo"
+
+#: ../vis_langjs.php:53
+#, fuzzy
+msgid "No multigraphs created yet, click new to create one:"
+msgstr "Nessun multigrafo ancora creato, fare clic su nuovo per crearne uno:"
+
+#: ../vis_langjs.php:54
+msgid "Not modified"
+msgstr "Non modificato"
+
+#: ../vis_langjs.php:55
+msgid "Options :"
+msgstr "Opzioni :"
+
+#: ../vis_langjs.php:56
+msgid "Remove feed"
+msgstr "Rimuovere il feed"
+
+#: ../vis_langjs.php:57
+msgid "Right"
+msgstr "Destra"
+
+#: ../vis_langjs.php:58
+msgid "Saved"
+msgstr "Salvato"
+
+#: ../vis_langjs.php:59
+#, fuzzy
+msgid "Select Display Type:"
+msgstr "Selezionare Tipo di visualizzazione:"
+
+#: ../vis_langjs.php:60
+#, fuzzy
+msgid "Select multigraph:"
+msgstr "Selezionare multigrafo:"
+
+#: ../vis_langjs.php:61
+msgid "Show Legend"
+msgstr "Mostra Leggenda"
+
+#: ../vis_langjs.php:62
+#, fuzzy
+msgid "Show tag name"
+msgstr "Mostra nome tag"
+
+#: ../vis_langjs.php:63
+msgid "Skip missing data"
+msgstr "Ignora i dati mancanti"
+
+#: ../vis_langjs.php:65
+msgid "Stack"
+msgstr "Pila"
+
+#: ../vis_langjs.php:67
+msgid "Y axes limits"
+msgstr "Limiti degli assi Y"
+
+#: ../vis_langjs.php:70
+#, fuzzy
+msgid "0 = before value, 1 = after value"
+msgstr "0 - prima del valore, 1 dopo il valore"
+
+#: ../vis_langjs.php:71
+msgid "Bottom"
+msgstr "Basso"
+
+#: ../vis_langjs.php:72
+msgid "Bottom colour"
+msgstr "Colore inferiore"
+
+#: ../vis_langjs.php:73
+msgid "Bottom feed value"
+msgstr "Valore inferiore del feed"
+
+#: ../vis_langjs.php:75
+msgid "Consumption"
+msgstr "Consumo"
+
+#: ../vis_langjs.php:76
+#, fuzzy
+msgid "Consumption feed value"
+msgstr "Valore feed consumo"
+
+#: ../vis_langjs.php:77
+msgid "Currency"
+msgstr "Valuta"
+
+#: ../vis_langjs.php:78
+msgid "Currency position"
+msgstr "Posizione valuta"
+
+#: ../vis_langjs.php:79
+#, fuzzy
+msgid "Currency to show"
+msgstr "Valuta da mostrare"
+
+#: ../vis_langjs.php:80
+msgid "Data points"
+msgstr "Punti dati"
+
+#: ../vis_langjs.php:81
+msgid "Day"
+msgstr "Giorno"
+
+#: ../vis_langjs.php:82
+msgid "Decimal points"
+msgstr "Punti decimali"
+
+#: ../vis_langjs.php:83
+msgid "Default: 800"
+msgstr "Valore predefinito: 800"
+
+#: ../vis_langjs.php:84
+#, fuzzy
+msgid "Default visible window interval"
+msgstr "Intervallo finestra visibile predefinito"
+
+#: ../vis_langjs.php:85 ../vis_object.php:44 ../vis_object.php:56
+#: ../vis_object.php:65 ../vis_object.php:71 ../vis_object.php:77
+#: ../vis_object.php:82
+msgid "delta"
+msgstr "Delta"
+
+#: ../vis_langjs.php:86
+msgid "Depth"
+msgstr "Profondità"
+
+#: ../vis_langjs.php:87 ../vis_object.php:33 ../vis_object.php:42
+msgid "dp"
+msgstr "Decimali"
+
+#: ../vis_langjs.php:88
+msgid "Feed"
+msgstr "Feed"
+
+#: ../vis_langjs.php:89
+#, fuzzy
+msgid "Feed source"
+msgstr "Origine feed"
+
+#: ../vis_langjs.php:91
+msgid "Fill under line"
+msgstr "Riempi sotto la linea"
+
+#: ../vis_langjs.php:92
+msgid "Fill value"
+msgstr "Valore di riempimento"
+
+#: ../vis_langjs.php:93 ../visualisations/realtime.php:25
+msgid "hour"
+msgstr "ora"
+
+#: ../vis_langjs.php:94
+msgid "Hours"
+msgstr "Ore"
+
+#: ../vis_langjs.php:95 ../visualisations/graph.php:81
+msgid "Interval"
+msgstr "Intervallo"
+
+#: ../vis_langjs.php:96
+#, fuzzy
+msgid ""
+"Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for "
+"year"
+msgstr ""
+"Intervallo (secondi)-è possibile impostare \"d\" per il giorno, \"m\" per il "
+"mese o \"y\" per l'anno"
+
+#: ../vis_langjs.php:97 ../vis_object.php:52
+msgid "kwhd"
+msgstr "kwhd"
+
+#: ../vis_langjs.php:98
+#, fuzzy
+msgid "kwhd source"
+msgstr "sorgente kwhd"
+
+#: ../vis_langjs.php:99
+msgid "Kwh price"
+msgstr "Prezzo Kwh"
+
+#: ../vis_langjs.php:100
+#, fuzzy
+msgid "Line colour in hex. Blank is use default."
+msgstr ""
+"Colore della linea in esagono. Vuoto è utilizzare l'impostazione predefinita."
+
+#: ../vis_langjs.php:101
+#, fuzzy
+msgid "Managed on Visualization module"
+msgstr "Gestito sul modulo di visualizzazione"
+
+#: ../vis_langjs.php:102
+msgid "minute"
+msgstr "minuto"
+
+#: ../vis_langjs.php:103
+msgid "minutes"
+msgstr "minuti"
+
+#: ../vis_langjs.php:104 ../vis_object.php:45
+msgid "mode"
+msgstr "modalità"
+
+#: ../vis_langjs.php:105
+#, fuzzy
+msgid ""
+"Mode set to 'daily' can be used instead of interval for timezone based daily "
+"data"
+msgstr ""
+"La modalità impostata su 'giornaliera' può essere utilizzata al posto "
+"dell'intervallo per i dati giornalieri basati sul fuso orario"
+
+#: ../vis_langjs.php:106
+msgid "Month"
+msgstr "Mese"
+
+#: ../vis_langjs.php:107
+#, fuzzy
+msgid "Multigraph"
+msgstr "Multigrafo"
+
+#: ../vis_langjs.php:108
+msgid "Number of lines"
+msgstr "Numero di righe"
+
+#: ../vis_langjs.php:109
+msgid "Power"
+msgstr "Potenza"
+
+#: ../vis_langjs.php:110
+#, fuzzy
+msgid "Power to show"
+msgstr "Potere di mostrare"
+
+#: ../vis_langjs.php:111 ../vis_object.php:34 ../vis_object.php:43
+msgid "scale"
+msgstr "Scala"
+
+#: ../vis_langjs.php:112
+#, fuzzy
+msgid "Scale by"
+msgstr "Ridimensiona"
+
+#: ../vis_langjs.php:113
+#, fuzzy
+msgid "Set kwh price"
+msgstr "Impostare il prezzo kwh"
+
+#: ../vis_langjs.php:114
+msgid "Show difference between each bar"
+msgstr "Mostra differenza tra ogni barra"
+
+#: ../vis_langjs.php:115
+msgid "Solar"
+msgstr "Solare"
+
+#: ../vis_langjs.php:116
+#, fuzzy
+msgid "Solar feed value"
+msgstr "Valore dell'alimentazione solare"
+
+#: ../vis_langjs.php:117
+msgid "Threshold A"
+msgstr "Soglia A"
+
+#: ../vis_langjs.php:118
+msgid "Threshold A used"
+msgstr "Soglia A utilizzata"
+
+#: ../vis_langjs.php:119
+msgid "Threshold B"
+msgstr "Soglia B"
+
+#: ../vis_langjs.php:120
+msgid "Threshold B used"
+msgstr "Soglia B utilizzata"
+
+#: ../vis_langjs.php:121
+msgid "Top"
+msgstr "Alto"
+
+#: ../vis_langjs.php:122
+msgid "Top colour"
+msgstr "Colore superiore"
+
+#: ../vis_langjs.php:123
+#, fuzzy
+msgid "Top feed value"
+msgstr "Valore superiore del feed"
+
+#: ../vis_langjs.php:124
+#, fuzzy
+msgid "Ufac"
+msgstr "Ufaco"
+
+#: ../vis_langjs.php:125
+#, fuzzy
+msgid "Ufac value"
+msgstr "Valore Ufac"
+
+#: ../vis_langjs.php:126 ../vis_object.php:32 ../vis_object.php:41
+msgid "units"
+msgstr "Unità"
+
+#: ../vis_langjs.php:127
+msgid "Units"
+msgstr "Unità"
+
+#: ../vis_langjs.php:128
+msgid "Units to show"
+msgstr "Unità da visualizzare"
+
+#: ../vis_langjs.php:129
+msgid "Week"
+msgstr "Settimana"
+
+#: ../vis_langjs.php:130
+msgid "Year"
+msgstr "Anno"
+
+#: ../vis_langjs.php:131 ../vis_object.php:50
+msgid "Zoom"
+msgstr "Zoom"
+
+#: ../vis_langjs.php:132
+#, fuzzy
+msgid "Display power as kW"
+msgstr "Potenza di visualizzazione come kW"
+
+#: ../vis_menu.php:4
+msgid "Visualization"
+msgstr "Visualizzazione"
+
+#: ../vis_object.php:20
+msgid "RealTime"
+msgstr "Dati in tempo reale"
+
+#: ../vis_object.php:21 ../vis_object.php:29 ../vis_object.php:38
+#: ../vis_object.php:81 ../vis_object.php:90 ../vis_object.php:94
+#: ../vis_object.php:106 ../vis_object.php:111 ../vis_object.php:118
+#: ../vis_object.php:124 ../vis_object.php:140
+msgid "feed"
+msgstr "Feed"
+
+#: ../vis_object.php:22 ../vis_object.php:31 ../vis_object.php:39
+msgid "colour"
+msgstr "Colore"
+
+#: ../vis_object.php:23
+msgid "kW"
+msgstr "kW"
+
+#: ../vis_object.php:28
+msgid "RawData"
+msgstr "Grafico dati grezzi"
+
+#: ../vis_object.php:30 ../vis_object.php:141
+msgid "fill"
+msgstr "Riempimento"
+
+#: ../vis_object.php:37
+msgid "BarGraph"
+msgstr "Grafico a barre"
+
+#: ../vis_object.php:40
+msgid "interval"
+msgstr "Intervallo"
+
+#: ../vis_object.php:51 ../vis_object.php:75 ../vis_object.php:125
+msgid "power"
+msgstr "Potenza"
+
+#: ../vis_object.php:53
+msgid "currency"
+msgstr "Valuta"
+
+#: ../vis_object.php:54
+msgid "currency_after_val"
+msgstr "Valuta dopo valore"
+
+#: ../vis_object.php:55
+msgid "pricekwh"
+msgstr "Prezzo al kWh"
+
+#: ../vis_object.php:60 ../visualisations/stacked.php:20
+#: ../visualisations/stackedsolar.php:19
+msgid "Stacked"
+msgstr "Impilato"
+
+#: ../vis_object.php:61
+msgid "bottom"
+msgstr "Basso"
+
+#: ../vis_object.php:62
+msgid "top"
+msgstr "Alto"
+
+#: ../vis_object.php:63
+#, fuzzy
+msgid "colourt"
+msgstr "colorazione"
+
+#: ../vis_object.php:64
+#, fuzzy
+msgid "colourb"
+msgstr "colorb"
+
+#: ../vis_object.php:68
+#, fuzzy
+msgid "StackedSolar"
+msgstr "StackedSolar"
+
+#: ../vis_object.php:69
+msgid "solar"
+msgstr "solare"
+
+#: ../vis_object.php:70
+msgid "consumption"
+msgstr "Consumi"
+
+#: ../vis_object.php:74
+#, fuzzy
+msgid "SimpleZoom"
+msgstr "Lo zoom di zoom semplice"
+
+#: ../vis_object.php:76
+msgid "kwh"
+msgstr "kWh"
+
+#: ../vis_object.php:80
+#, fuzzy
+msgid "OrderBars"
+msgstr "OrderBar"
+
+#: ../vis_object.php:85
+#, fuzzy
+msgid "MultiGraph"
+msgstr "Multigrafica"
+
+#: ../vis_object.php:86
+msgid "mid"
+msgstr "m Id"
+
+#: ../vis_object.php:89
+msgid "EditRealtime"
+msgstr "Modifica Dati in tempo reale"
+
+#: ../vis_object.php:93
+#, fuzzy
+msgid "EditDaily"
+msgstr "ModificaGiornaliero"
+
+#: ../vis_object.php:105 ../visualisations/smoothie.php:15
+#, fuzzy
+msgid "Smoothie"
+msgstr "Frullato"
+
+#: ../vis_object.php:107
+#, fuzzy
+msgid "ufac"
+msgstr "ufac"
+
+#: ../vis_object.php:110
+msgid "Histgraph"
+msgstr "Istogramma:"
+
+#: ../vis_object.php:112
+#, fuzzy
+msgid "barwidth"
+msgstr "larghezza barra"
+
+#: ../vis_object.php:113
+msgid "start"
+msgstr "Inizio"
+
+#: ../vis_object.php:114
+msgid "end"
+msgstr "Fine"
+
+#: ../vis_object.php:117 ../visualisations/threshold.php:21
+msgid "Threshold"
+msgstr "Soglia"
+
+#: ../vis_object.php:119 ../vis_object.php:126
+msgid "thresholdA"
+msgstr "Soglia A"
+
+#: ../vis_object.php:120 ../vis_object.php:127
+msgid "thresholdB"
+msgstr "Soglia B"
+
+#: ../vis_object.php:123
+#, fuzzy
+msgid "OrderThreshold"
+msgstr "OrderThreshold (Soglia Ordine)"
+
+#: ../vis_object.php:130
+msgid "Compare"
+msgstr "Confronta"
+
+#: ../vis_object.php:131
+msgid "Feed A"
+msgstr "Feed A"
+
+#: ../vis_object.php:132
+msgid "Feed B"
+msgstr "Feed B"
+
+#: ../vis_object.php:139
+#, fuzzy
+msgid "Time Comparison"
+msgstr "Confronto temporale"
+
+#: ../vis_object.php:142
+msgid "depth"
+msgstr "profondità"
+
+#: ../vis_object.php:143
+msgid "data points"
+msgstr "punti dati"
+
+#: ../visualisations/bargraph.php:128
+msgid "Bar graph:"
+msgstr "Grafico a barre:"
+
+#: ../visualisations/compare.php:23
+#, fuzzy
+msgid "Feed calibration and comparison tool"
+msgstr "Strumento di calibrazione e confronto dell'alimentazione"
+
+#: ../visualisations/compare.php:24
+#, fuzzy
+msgid ""
+"Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for "
+"comparison below. If there is a difference between feed values adjust the "
+"calibration to see if the difference can be removed."
+msgstr ""
+"Utilizza questo strumento per confrontare due feed: FeedA e FeedB. Di "
+"seguito immettere gli ID feed per il confronto. Se c'è una differenza tra i "
+"valori di avanzamento, regolare la calibrazione per vedere se la differenza "
+"può essere rimossa."
+
+#: ../visualisations/compare.php:27
+msgid "Feed A ID"
+msgstr "Feed A ID"
+
+#: ../visualisations/compare.php:32
+msgid "Feed B ID"
+msgstr "Feed B ID"
+
+#: ../visualisations/compare.php:34
+msgid "Load"
+msgstr "Carica"
+
+#: ../visualisations/compare.php:38
+msgid "Feed B Calibration"
+msgstr "Feed B Calibrazione alimentazione"
+
+#: ../visualisations/compare.php:40
+msgid "Update"
+msgstr "Aggiorna"
+
+#: ../visualisations/compare.php:66
+#, fuzzy
+msgid "Difference between feeds (FeedB calibration applied - FeedA)"
+msgstr "Differenza tra i feed (calibrazione FeedB applicata - FeedA)"
+
+#: ../visualisations/compare.php:69
+msgid "FeedA vs FeedB"
+msgstr "FeedA vs FeedB"
+
+#: ../visualisations/compare.php:70
+#, fuzzy
+msgid "Relationship should be linear if measurements are the same"
+msgstr "La relazione deve essere lineare se le misurazioni sono uguali"
+
+#: ../visualisations/editdaily.php:22 ../visualisations/editrealtime.php:23
+msgid "Datapoint editor:"
+msgstr "Editor dei dati:"
+
+#: ../visualisations/editdaily.php:23 ../visualisations/editrealtime.php:24
+msgid ""
+"Click on a datapoint to select, then in the edit box below the graph enter "
+"in the new value. You can also add another datapoint by changing the time to "
+"a point in time that does not yet have a datapoint."
+msgstr ""
+"Clicca su un punto per selezionarlo, poi inserisci il nuovo valore nel box "
+"sotto il grafico. Puoi anche aggiungere un nuovo punto cambiando l'orario."
+
+#: ../visualisations/editdaily.php:49 ../visualisations/editrealtime.php:49
+msgid "Edit feed_"
+msgstr "Modifica feed_"
+
+#: ../visualisations/editdaily.php:49 ../visualisations/editrealtime.php:49
+msgid "@ time:"
+msgstr "@ orario:"
+
+#: ../visualisations/editdaily.php:49 ../visualisations/editrealtime.php:49
+msgid "new value:"
+msgstr "nuovo valore:"
+
+#: ../visualisations/editdaily.php:51 ../visualisations/editrealtime.php:51
+#: ../visualisations/editrealtime.php:57
+msgid "Save"
+msgstr "Salva"
+
+#: ../visualisations/editrealtime.php:52
+msgid "Delete data in window"
+msgstr "Cancella i dati in finestra"
+
+#: ../visualisations/editrealtime.php:56
+#, fuzzy
+msgid "Multiply data in the window by a float or a fraction"
+msgstr "Moltiplicare i dati nella finestra per un float o una frazione"
+
+#: ../visualisations/editrealtime.php:58
+#, fuzzy
+msgid ""
+"<br>To erase all the window with NAN > type NAN - To convert all the window "
+"to absolute values > type abs(x)"
+msgstr ""
+"<br>Per cancellare tutta la finestra con NAN > di tipo NAN - Per convertire "
+"tutta la finestra in valori assoluti > tipo abs(x)"
+
+#: ../visualisations/editrealtime.php:64
+msgid "Delete feed data"
+msgstr "Eliminare i dati del feed"
+
+#: ../visualisations/editrealtime.php:67
+#, fuzzy
+msgid "Deleting feed data in this window is permanent."
+msgstr "L'eliminazione dei dati del feed in questa finestra è permanente."
+
+#: ../visualisations/graph.php:23
+msgid "Data viewer"
+msgstr "Visualizzatore di dati"
+
+#: ../visualisations/graph.php:28
+msgid "D"
+msgstr "G"
+
+#: ../visualisations/graph.php:29
+msgid "W"
+msgstr "S"
+
+#: ../visualisations/graph.php:30
+msgid "M"
+msgstr "M"
+
+#: ../visualisations/graph.php:31
+msgid "Y"
+msgstr "A"
+
+#: ../visualisations/graph.php:44
+msgid "Stats"
+msgstr "Statistiche"
+
+#: ../visualisations/graph.php:47
+msgid "Mean"
+msgstr "Media"
+
+#: ../visualisations/graph.php:47
+msgid "Min"
+msgstr "Min"
+
+#: ../visualisations/graph.php:47
+msgid "Max"
+msgstr "Max"
+
+#: ../visualisations/graph.php:47
+msgid "Diff"
+msgstr "Diff."
+
+#: ../visualisations/graph.php:47
+msgid "Std Dev"
+msgstr "Scost. Std."
+
+#: ../visualisations/graph.php:47
+#, fuzzy
+msgid "npoints"
+msgstr "npoints"
+
+#: ../visualisations/graph.php:60
+#, fuzzy
+msgid "Apply smoothing (number of points):"
+msgstr "Applicare l'arrotondamento (numero di punti):"
+
+#: ../visualisations/graph.php:72
+msgid "API Request"
+msgstr "Richiesta API"
+
+#: ../visualisations/graph.php:75
+msgid "Start"
+msgstr "Inizio"
+
+#: ../visualisations/graph.php:78
+msgid "End"
+msgstr "Fine"
+
+#: ../visualisations/graph.php:84
+msgid "Skip missing"
+msgstr "Salta mancante"
+
+#: ../visualisations/graph.php:85
+#, fuzzy
+msgid "Limit interval"
+msgstr "Intervallo limite"
+
+#: ../visualisations/graph.php:87
+msgid "Resend"
+msgstr "Invia di nuovo"
+
+#: ../visualisations/graph.php:93 ../visualisations/graph.php:103
+msgid "Show CSV Output"
+msgstr "Mostra output CSV"
+
+#: ../visualisations/graph.php:104
+#, fuzzy
+msgid "Hide CSV Output"
+msgstr "Nascondi output CSV"
+
+#: ../visualisations/histgraph.php:35
+msgid "Histogram:"
+msgstr "Istogramma:"
+
+#: ../visualisations/orderbars.php:20
+msgid "Bar graph (ordered by height):"
+msgstr "Grafico a barre (ordinato):"
+
+#: ../visualisations/orderthreshold.php:22
+msgid "Threshold Order"
+msgstr "Soglia ordinata"
+
+#: ../visualisations/orderthreshold.php:29
+msgid "Reload"
+msgstr "Ricarica"
+
+#: ../visualisations/rawdata.php:47
+msgid "Mean:"
+msgstr "Media:"
+
+#: ../visualisations/rawdata.php:48
+msgid "Min:"
+msgstr "Minimo:"
+
+#: ../visualisations/rawdata.php:49
+msgid "Max:"
+msgstr "Massimo:"
+
+#: ../visualisations/rawdata.php:50
+msgid "Standard deviation:"
+msgstr "Deviazione standard:"
+
+#: ../visualisations/rawdata.php:51
+msgid "Datapoints in view:"
+msgstr "Punti di dati nella vista:"
+
+#: ../visualisations/rawdata.php:107
+msgid "Raw:"
+msgstr "Raw:"
+
+#: ../visualisations/realtime.php:19
+msgid "Realtime data:"
+msgstr "Dati in tempo reale:"
+
+#: ../visualisations/realtime.php:26 ../visualisations/realtime.php:27
+#: ../visualisations/realtime.php:28 ../visualisations/realtime.php:29
+msgid "min"
+msgstr "min"
+
+#: ../visualisations/simplezoom.php:20
+#, fuzzy
+msgid "Simpler kWh/d zoomer"
+msgstr "Più semplice kWh / d zoomer"
+
+#: ../visualisations/timecompare.php:46
+#, fuzzy
+msgid "Time Compare: "
+msgstr "Confronto orale:"
+
+#: ../visualisations/timestoredaily.php:85
+#, fuzzy
+msgid "Timestore Daily:"
+msgstr "Orario giornaliero:"
+
+#: ../visualisations/zoom.php:24
+#, fuzzy
+msgid "kWh/d Zoomer"
+msgstr "kWh/d zoomer"
+
+#: ../visualisations/zoom.php:121
+msgid "Total:"
+msgstr "Totale:"
+
+#: ../visualisations/zoom.php:121 ../visualisations/zoom.php:169
+msgid "kWh"
+msgstr "kWh"
+
+#: ../visualisations/zoom.php:121 ../visualisations/zoom.php:169
+msgid "Average:"
+msgstr "Media:"
+
+#: ../visualisations/zoom.php:121
+msgid "a week"
+msgstr "settimanali"
+
+#: ../visualisations/zoom.php:121
+msgid "a year"
+msgstr "annuali"
+
+#: ../visualisations/zoom.php:121
+msgid "Unit price:"
+msgstr "Prezzo per unità:"
+
+#~ msgid "ok"
+#~ msgstr "Ok"
+
+#~ msgid "Vis"
+#~ msgstr "Vis"
+
+#~ msgid "feedid"
+#~ msgstr "Feed ID"
+
+#~ msgid "Multiply data in window by:"
+#~ msgstr "Moltiplica i dati in finestra per:"
+
+#~ msgid "WARNING deleting feed data is permanent"
+#~ msgstr "ATTENZIONE l'eliminazione dei dati di un feed è permanente"
+
+#~ msgid "Are you sure you want to delete the data in this window?"
+#~ msgstr "Sei sicuro di voler eliminare i dati in questa finestra?"
+
+#~ msgid "Graph Raw Data:"
+#~ msgstr "Grafico dati grezzi:"
+
+#~ msgid ": Hover on bar for info, press to zoom in"
+#~ msgstr ": Passa sulla barra per informazioni, premi per zoommare"
+
+#~ msgid "Date / Time"
+#~ msgstr "Data / Ora"

@@ -14,17 +14,20 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 // Return all locale directory from all modules.
 // If one module has a language it will be detected
-function directoryLocaleScan($dir) {
+function directoryLocaleScan($dir)
+{
     if (isset($dir) && is_readable($dir)) {
-        $dlist = Array();
+        $dlist = array();
         $dir = realpath($dir);
 
-        $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
+        $dlist = glob($dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
 
-        foreach($objects as $entry => $object){
-            $entry = str_replace($dir, '', $entry);
-            if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
-        }
+        $dlist = array_map(
+            function ($item) {
+                return basename($item);
+            },
+            $dlist
+        );
 
         return array_unique($dlist);
     }
@@ -32,7 +35,7 @@ function directoryLocaleScan($dir) {
 
 function get_available_languages()
 {
-   return directoryLocaleScan(dirname(__FILE__));
+    return directoryLocaleScan(dirname(__FILE__));
 }
 
 
@@ -40,8 +43,7 @@ function lang_http_accept()
 {
     $langs = array();
 
-    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang)
-    {
+    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
@@ -49,61 +51,75 @@ function lang_http_accept()
         $splits = array();
 
         if (preg_match($pattern, $lang, $splits)) {
-            $a = $splits["primarytag"];
-            if (isset($splits["subtag"]) && $splits["subtag"]<> "") $a = $a."_".$splits["subtag"];
-            $langs[]=$a;
-        } else {
-            // No match
+            $langs[] = !empty($splits['subtag']) ? $splits["primarytag"] . "_" . $splits['subtag'] : $splits["primarytag"];
         }
     }
     return $langs;
 }
 
+/***
+ * take the values from the given list and save it as the user's language
+ * only takes supported language values.
+ * @param array $language - array returned by lang_http_accept() - without the validating values
+ */
 function set_lang($language)
 {
-    // set the first browser selected language
-    // TODO: iterate to find a suitable available language
+    global $settings;
+    // DEFAULT - from settings.php (if not in file use 'en_GB')
+    $fallback_language = $settings['interface']['default_language'];
 
-    // Chrome returns different HTTP_ACCEPT_LANGUAGE code than firefox!!!
-    // Firefox      Chrome
-    // -------------------
-    //  en_EN         en
-    //  es_ES         es
-    // ... so translation system does not work in Chrome!!!
-    // lets try to fix quickly
+    $supported_languages = array(
+        'cy' => 'cy_GB',
+        'da' => 'da_DK',
+        'es' => 'es_ES',
+        'fr' => 'fr_FR',
+        'it' => 'it_IT',
+        'nl' => 'nl_NL',
+        'en' => 'en_GB'
+    );
 
-    if (isset($language[0]))
-    {
-        $lang=$language[0];
+/**
+ * ORDER OF PREFERENCE WITH LANGUAGE SELECTION
+ * -------------------------------------------
+ * 1. non logged in users use the browser's language
+ * 2. logged in users use their saved language preference
+ * 3. logged in users without language saved uses `$default_language` from settings.php
+ * 4. else fallback is set to 'en_GB'
+*/
 
-        switch($lang) {
-            case 'cy': $lang='cy_GB'; break;
-            case 'da': $lang='da_DK'; break;
-            case 'en': $lang='en_EN'; break;
-            case 'es': $lang='es_ES'; break;
-            case 'fr': $lang='fr_FR'; break;
-            case 'it': $lang='it_IT'; break;
-            case 'nl': $lang='nl_NL'; break;
-            //case 'nl': $lang='nl_BE'; break; //to do??
-            default  : $lang='en_EN';
+    $lang = $fallback_language; // if not found use fallback
+
+    // loop through all given $language values
+    // if given language is a key or value in the above list use it
+    foreach ($language as $lang_code) {
+        $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
+        if (isset($supported_languages[$lang_code])) { // key check
+            $lang = $supported_languages[$lang_code];
+            break;
+        } elseif (in_array($lang_code, $supported_languages)) { // value check
+            $lang = $lang_code;
+            break;
         }
-
-        set_lang_by_user($lang);
     }
+    set_lang_by_user($lang);
 }
 
 function set_lang_by_user($lang)
 {
-    putenv("LC_ALL=$lang".'.UTF8');
-    setlocale(LC_ALL,$lang.'.UTF8');
+    $locale = $lang.'.UTF8';
+    define(LC_MESSAGES, $locale);
+    putenv("LC_ALL=$locale");
+    setlocale(LC_ALL, $locale);
 }
 
 function set_emoncms_lang($lang)
 {
-    // If no language defined use the language browser
-    if ($lang == '')
-        set_lang(lang_http_accept());
-    else
+    // If no language defined use the browser language
+    if ($lang == '') {
+        $browser_languages = lang_http_accept();
+        set_lang($browser_languages);
+    } else {
         set_lang_by_user($lang);
+    }
+    global $session;
 }
-

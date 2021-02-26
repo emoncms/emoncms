@@ -62,15 +62,15 @@ var app_graph = {
         });
         
         $("#showcsv").click(function(){
-            if ($("#showcsv").html()=="Show CSV Output") {
+            if ($("#showcsv").html()==_lang["Show CSV Output"]) {
                 app_graph.printcsv()
                 $("#csv").show();
                 app_graph.showcsv = 1;
-                $("#showcsv").html("Hide CSV Output");
+                $("#showcsv").html(_lang["Hide CSV Output"]);
             } else {
                 app_graph.showcsv = 0;
                 $("#csv").hide();
-                $("#showcsv").html("Show CSV Output");
+                $("#showcsv").html(_lang["Show CSV Output"]);
             }
         });
         

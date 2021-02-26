@@ -19,10 +19,10 @@
 <h2><?php echo _("Feed API");?></h2>
 
 <h3><?php echo _('Apikey authentication'); ?></h3>
-<p><?php echo _('If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:'); ?></p>
-<ul><li><?php echo _('Append on the URL of your request: &apikey=APIKEY'); ?></li>
+<p><?php echo _('If you want to call any of the following actions when you\'re not logged in, you have the option to authenticate with the API key:'); ?></p>
+<ul><li><?php echo _('Append to your request URL: &apikey=APIKEY'); ?></li>
 <li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
-<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY"'); ?></li></ul>
+<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY" e.g. curl http://127.0.0.1/emoncms/feed/value.json?id=1 -H "Authorization: Bearer APIKEY"');?></li></ul>
 <p><b><?php echo _('Read only:'); ?></b><br>
 <input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
 </p>
@@ -38,9 +38,9 @@
 <p><?php echo _("To use the json api the request url needs to include .json");?></p>
 
 
-<p><b>Read feed actions</b></p>
+<p><b><?php echo _("Read feed actions");?></b></p>
 <table class="table">
-    <tr><td><?php echo _("List feeds for autenticated user"); ?></td><td>
+    <tr><td><?php echo _("List feeds for authenticated user"); ?></td><td>
 		<a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a>
 	</td></tr>
     <tr><td><?php echo _("List public feeds for the given user"); ?></td><td>
@@ -57,7 +57,7 @@
 	</td></tr>
 </table>
 
-<p><b>Read feed data actions</b></p>
+<p><b><?php echo _("Read feed data actions");?></b></p>
 <table class="table">
 	<tr><td><?php echo _("Last updated time and value for feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/timevalue.json?id=1"><?php echo $path; ?>feed/timevalue.json?id=1</a>
@@ -83,28 +83,32 @@
 	
 </table>
 
-<p><b>Write feed data actions</b></p>
+<p><b><?php echo _("Write feed data actions");?></b></p>
 <table class="table">
-    <tr><td>Insert new data point</td><td>
+    <tr><td><?php echo _("Insert new data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>
-    <tr><td>Update data point</td><td>
+    <tr><td><?php echo _("Insert multiple data points");?></td><td>
+    <?php $data = array(); for($i=0; $i<4; $i++) { $data[] = array(floor((time()+($i*10))*0.1)*10,100+50*$i); } ?> 
+		<a href="<?php echo $path; ?>feed/insert.json?id=0&data=<?php echo json_encode($data); ?>"><?php echo $path; ?>feed/insert.json?id=0&data=<?php echo json_encode($data); ?></a>
+	</td></tr>
+    <tr><td><?php echo _("Update data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>
-    <tr><td>Delete data point</td><td>
+    <tr><td><?php echo _("Delete data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME"><?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME</a>
 	</td></tr>
 </table>
 
-<p><b>Feed setup actions</b></p>
+<p><b><?php echo _("Feed setup actions");?></b></p>
 <table class="table">
-	<tr><td>Create new feed</td><td>
+	<tr><td><?php echo _("Create new feed");?></td><td>
 		<a href='<?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}</a>
 	</td></tr>
-    <tr><td>Delete existent feed</td><td>
+    <tr><td><?php echo _("Delete existent feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/delete.json?id=0"><?php echo $path; ?>feed/delete.json?id=0</a>
 	</td></tr>
-    <tr><td>Update feed field</td><td>
+    <tr><td><?php echo _("Update feed field");?></td><td>
 		<a href="<?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}"><?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}</a>
 	</td></tr>
     <tr><td><?php echo _("Return total engines size");?></td><td>

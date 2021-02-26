@@ -12,12 +12,12 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $feed_settings;
+    global $mysqli, $redis, $session, $route, $user, $settings;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli,$redis, $settings['feed']);
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);
@@ -72,7 +72,19 @@
                         if (isset($option[3])) $default = $option[3]; else $default = "";
 
                         if ($type==0 || $type==1 || $type==2 || $type==3) {
-                            $feedid = (int) get($key);
+                            $feedid = get($key);
+                            
+                            // Option to use tag:name feed reference format
+                            // only works with feeds belonging to the active session
+                            if (!is_numeric($feedid)) {
+                                $tagname = explode(":",$feedid);
+                                if (count($tagname)==2) {
+                                    $feedid = $feed->exists_tag_name($session['userid'],$tagname[0],$tagname[1]);
+                                }
+                            } else {
+                                $feedid = (int) $feedid;
+                            }
+                            
                             if ($feedid) {
                               $f = $feed->get($feedid);
                               $array[$key] = $feedid;

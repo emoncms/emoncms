@@ -5,6 +5,7 @@
   Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   2016-12-20 - Expanded tables by : Nuno Chaveiro  nchaveiro(a)gmail.com  
 */
+
 var customtablefields = {
   'icon': {
     'draw': function(t,row,child_row,field) {
@@ -59,7 +60,7 @@ var customtablefields = {
   'processlist': {
     'draw': function (t,row,child_row,field) {
       var processlist = t.data[row][field];
-      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist);
+      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist,t.data[row]);
       else return "";
     }
   },
@@ -138,7 +139,36 @@ var customtablefields = {
       }
       return out;
     }
-  }
+  },
+  
+    'date': {
+        'draw': function (t,row,child_row,field) {
+            var date = new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes());
+        },
+        'edit':function (t,row,child_row,field) {
+            var date= new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            var day = date.getDate();
+            var month = date.getMonth() +1; // getMonth() returns 0-11
+            var year = date.getFullYear();
+            var hours= date.getHours();
+            var minutes = date.getMinutes();
+            return '<div class="input-append date" id="'+field +'-'+row+'-'+t.data[row][field]+'" data-format="dd/MM/yyyy hh:mm" data-date="'+day+'/'+month+'/'+year+' '+hours+':'+minutes+'"><input data-format="dd/MM/yyyy hh:mm" value="'+day+'/'+month+'/'+year+' '+hours+':'+minutes+'" type="text" /><span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>';
+        },
+        'save': function (t,row,child_row,field) { 
+            return parse_timepicker_time($("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").val());
+        }    
+    },
+  
+    'fixeddate': {
+        'draw': function (t,row,child_row,field) {
+            var date = new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes());
+        }
+    }
 }
 
 
@@ -148,27 +178,52 @@ function list_format_updated(time) {
   var servertime = (new Date()).getTime() - table.timeServerLocalOffset;
   var update = (new Date(time)).getTime();
 
+  var delta = servertime - update;
+  var secs = Math.abs(delta) / 1000;
+  var mins = secs / 60;
+  var hour = secs / 3600;
+  var day = hour / 24;
+
+  var updated = secs.toFixed(0) + "s";
+  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+  else if (secs.toFixed(0) == 0) updated = "now";
+  else if (day > 7 && delta > 0) updated = "inactive";
+  else if (day > 2) updated = day.toFixed(1) + " days";
+  else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+  else if (secs > 180) updated = mins.toFixed(0) + " mins";
+
+  secs = Math.abs(secs);
+  var color = "rgb(255,0,0)";
+  if (delta < 0) color = "rgb(60,135,170)"
+  else if (secs < 25) color = "rgb(50,200,50)"
+  else if (secs < 60) color = "rgb(240,180,20)"; 
+  else if (secs < (3600*2)) color = "rgb(255,125,20)"
+
+  return "<span style='color:"+color+";'>"+updated+"</span>";
+}
+
+// Calculate relative time
+function relative_time(time) {
+  time = time * 1000;
+  var servertime = (new Date()).getTime() - table.timeServerLocalOffset;
+  var update = (new Date(time)).getTime();
+
   var secs = (servertime-update)/1000;
   var mins = secs/60;
   var hour = secs/3600;
   var day = hour/24;
+  var year = day/365;
 
-  var updated = secs.toFixed(0) + "s";
-  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
-  else if (secs< 0) updated = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
-  else if (secs.toFixed(0) == 0) updated = "now";
-  else if (day>7) updated = "inactive";
-  else if (day>2) updated = day.toFixed(1)+" days";
-  else if (hour>2) updated = hour.toFixed(0)+" hrs";
-  else if (secs>180) updated = mins.toFixed(0)+" mins";
+  var relative_time = secs.toFixed(0) + "s";
+  if (update == 0) relative_time = "n/a";
+  else if (secs < 0) relative_time = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
+  else if (secs.toFixed(0) < 10) relative_time = "a few seconds";
+  else if (day>365) relative_time = year.toFixed(2)+" years";
+  else if (day>2) relative_time = day.toFixed(1)+" days";
+  else if (hour>2) relative_time = hour.toFixed(0)+" hrs";
+  else if (secs>180) relative_time = mins.toFixed(0)+" mins";
 
-  secs = Math.abs(secs);
-  var color = "rgb(255,0,0)";
-  if (secs<25) color = "rgb(50,200,50)"
-  else if (secs<60) color = "rgb(240,180,20)"; 
-  else if (secs<(3600*2)) color = "rgb(255,125,20)"
-
-  return "<span style='color:"+color+";'>"+updated+"</span>";
+  return relative_time
 }
 
 // Format value dynamically 
@@ -199,3 +254,16 @@ function list_format_size(bytes) {
     return (bytes/(1024*1024*1024)).toFixed(1)+"GB";
   }
 }
+
+  function parse_timepicker_time(timestr){
+    var tmp = timestr.split(" ");
+    if (tmp.length!=2) return false;
+
+    var date = tmp[0].split("/");
+    if (date.length!=3) return false;
+
+    var time = tmp[1].split(":");
+    if (time.length!=2) return false;
+
+    return new Date(date[2],date[1]-1,date[0],time[0],time[1],0).getTime() / 1000;
+  }

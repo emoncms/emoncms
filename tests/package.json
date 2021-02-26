@@ -1,0 +1,18 @@
+{
+  "name": "mhep-test-suite",
+  "version": "0.0.1",
+  "description": "Test suite using Selenium, WebdriverIO and Jasmine",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Carlos Alonso-Gabizon from Carbon Co-op",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "selenium-standalone": "^6.15.3",
+    "wdio-jasmine-framework": "^0.3.6",
+    "wdio-spec-reporter": "^0.1.5",
+    "webdriverajax": "^2.2.0",
+    "webdriverio": "^4.13.2"
+  }
+}

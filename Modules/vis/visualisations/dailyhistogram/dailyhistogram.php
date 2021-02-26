@@ -13,23 +13,20 @@
 
   global $path, $embed;
 
-  $power = get('power');
-  $kwhd = get('kwhd');
-  if (isset($_GET['whw'])) {$whw = $_GET['whw'];} else {$whw = 0;}	// Histogram feed
-  $apikey = get('apikey');
+  $power = (int) get('power');
+  $kwhd = (int) get('kwhd');
+  if (isset($_GET['whw'])) {$whw = (int) $_GET['whw'];} else {$whw = 0;}	// Histogram feed
+
   $currency = get('currency')?get('currency'):'&pound;';
+  $currency = preg_replace('/[^\w\s&;]/','',$currency);
+    
   $pricekwh = get('pricekwh')?get('pricekwh'):0.14;
+  $pricekwh = (float) $pricekwh;
+  
   ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/dailyhistogram/view.js"></script>
@@ -76,7 +73,6 @@
     var kwhd = <?php echo $kwhd; ?>;
     var whw = <?php echo $whw; ?>;
     var power = <?php echo $power; ?>;
-    var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";
 
     $('#placeholder').width($('#test').width()-60);

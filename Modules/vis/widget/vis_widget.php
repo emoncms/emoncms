@@ -3,6 +3,8 @@
 
     global $mysqli, $session;
 
+    load_language_files(dirname(__DIR__).'/locale', "vis_messages");
+
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);
     $multigraph_list = $multigraph->getlist($session['userid']);

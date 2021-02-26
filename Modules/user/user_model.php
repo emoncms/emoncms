@@ -17,14 +17,18 @@ class User
     private $mysqli;
     private $rememberme;
     private $enable_rememberme = false;
+    private $email_verification = false;
     private $redis;
     private $log;
+    public $appname;
 
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
-        global $enable_rememberme;
-        $this->enable_rememberme = $enable_rememberme;
+        global $settings;
+        $this->enable_rememberme = $settings["interface"]["enable_rememberme"];
+        $this->email_verification = $settings["interface"]["email_verification"];
+        $this->appname = $settings["interface"]["appname"];
 
         $this->mysqli = $mysqli;
 
@@ -41,87 +45,128 @@ class User
 
     public function apikey_session($apikey_in)
     {
-        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
         $session = array();
+        
+        // 1. Only allow alphanumeric characters
+        // if (!ctype_alnum($apikey_in)) return $session;
+        
+        // 2. Only allow 32 character length
+        if (strlen($apikey_in)!=32) return array();
 
         //----------------------------------------------------
-        // Check for apikey login
+        // Check redis cache first
         //----------------------------------------------------
-        if($this->redis && $this->redis->exists("writeapikey:$apikey_in"))
+        if($this->redis)
         {
-            $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
+            if ($this->redis->exists("writeapikey:$apikey_in")) {
+                $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
+                $session['read'] = 1;
+                $session['write'] = 1;
+                $session['admin'] = 0;
+                $session['lang'] = "en";      // API access is always in english
+                $session['username'] = "API"; // TBD
+                return $session;
+            }
+            
+            if ($this->redis->exists("readapikey:$apikey_in")) {
+                $session['userid'] = $this->redis->get("readapikey:$apikey_in");
+                $session['read'] = 1;
+                $session['write'] = 0;
+                $session['admin'] = 0;
+                $session['lang'] = "en";      // API access is always in english
+                $session['username'] = "API"; // TBD
+                return $session;
+            }
+        }
+        
+        //----------------------------------------------------
+        // If not in redis check mysql
+        //----------------------------------------------------
+        $stmt = $this->mysqli->prepare("SELECT id,username FROM users WHERE apikey_write=?");
+        $stmt->bind_param("s",$apikey_in);
+        $stmt->execute();
+        $stmt->bind_result($id,$username);
+        $result = $stmt->fetch();
+        $stmt->close();
+
+        if ($result && $id>0) {
+            $session['userid'] = $id;
             $session['read'] = 1;
             $session['write'] = 1;
             $session['admin'] = 0;
             $session['lang'] = "en"; // API access is always in english
-            $session['username'] = "API"; // TBD
-        }
-        else
-        {
-            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_write='$apikey_in'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
-                {
-                    $session['userid'] = $row['id'];
-                    $session['read'] = 1;
-                    $session['write'] = 1;
-                    $session['admin'] = 0;
-                    $session['lang'] = "en"; // API access is always in english
-                    $session['username'] = $row['username'];
-                    if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
-                }
-            }
-            else
-            {
-                $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
-                if ($result->num_rows == 1)
-                {
-                    $row = $result->fetch_array();
-                    if ($row['id'] != 0)
-                    {
-                        $session['userid'] = $row['id'];
-                        $session['read'] = 1;
-                        $session['write'] = 0;
-                        $session['admin'] = 0;
-                        $session['lang'] = "en";  // API access is always in english
-                        $session['username'] = $row['username'];
-                    }
-                }
-            }
+            $session['username'] = $username;
+            if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
+            return $session;
         }
 
-        //----------------------------------------------------
-        return $session;
+        $stmt = $this->mysqli->prepare("SELECT id,username FROM users WHERE apikey_read=?");
+        $stmt->bind_param("s",$apikey_in);
+        $stmt->execute();
+        $stmt->bind_result($id,$username);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        if ($result && $id>0) {
+            $session['userid'] = $id;
+            $session['read'] = 1;
+            $session['write'] = 0;
+            $session['admin'] = 0;
+            $session['lang'] = "en"; // API access is always in english
+            $session['username'] = $username;
+            if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
+            return $session;
+        }
+        
+        return array();
     }
     
     public function get_id_from_apikey($apikey_in) 
-    {    
-        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
+    {
+        if (strlen($apikey_in)!=32) return false;
+        // if (!ctype_alnum($apikey_in)) return false;
         
-        $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
-        if ($result->num_rows == 1) {
-            $row = $result->fetch_array();
-            return $row["id"];
-        } else {
-            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_write='$apikey_in'");
-            if ($result->num_rows == 1) {
-                $row = $result->fetch_array();
-                return $row["id"];
-            }
-        }
-        return false;
+        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE apikey_read=? OR apikey_write=?");
+        $stmt->bind_param("ss",$apikey_in,$apikey_in);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $stmt->fetch();
+        $stmt->close();
+        return $id;
     }
 
     public function emon_session_start()
     {
+        // useful for testing session and rememberme
+        // ini_set('session.gc_maxlifetime', 20);
+        // session_set_cookie_params(20);
+        
+        $cookie_params = session_get_cookie_params();
+        //name of cookie 
+        session_name('EMONCMS_SESSID'); 
+        //get subdir installation 
+        $cookie_params['path'] = dirname($_SERVER['SCRIPT_NAME']);
+        // Add a slash if the last character isn't already a slash
+        if (substr($cookie_params['path'], -1) !== '/')
+            $cookie_params['path'] .= '/';
+        //not pass cookie to javascript 
+        $cookie_params['httponly'] = 1; 
+        
+        session_set_cookie_params(
+            $cookie_params['lifetime'],
+            $cookie_params['path'],
+            $cookie_params['domain'],
+            $cookie_params['secure'],
+            $cookie_params['httponly'] 
+        );
         session_start();
 
         if ($this->enable_rememberme)
         {
-            if (isset($_SESSION['userid'])) {
-                // if session exists and was a remember me login and remember me cookie has expired
+            if (!empty($_SESSION['userid'])) {
+                // if rememberme emoncms cookie exists but is not valid then
+                // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
+                
                 if ((isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
                     $this->logout();
                 }
@@ -130,11 +175,10 @@ class User
                 $loginresult = $this->rememberme->login();
                 if ($loginresult)
                 {
-                    // Remember me login
-                    
                     // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
                     // without cuasing an error if it has not yet been created in the database.
                     // SELECT id,username,admin,language,startingpage FROM users WHERE id = '$loginresult'
+                    $loginresult = (int) $loginresult;
                     $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$loginresult'");
                     if ($result->num_rows < 1) {
                         $this->logout(); // user id does not exist
@@ -146,52 +190,51 @@ class User
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
                             $_SESSION['write'] = 1;
-                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['admin'] = $userData->admin;
                             $_SESSION['lang'] = $userData->language;
+                            $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             // There is a chance that an attacker has stolen the login token, so we store
                             // the fact that the user was logged in via RememberMe (instead of login form)
                             $_SESSION['cookielogin'] = true;
                         }
                     }
-                }
-                else
-                {
-                    if($this->rememberme->loginTokenWasInvalid()) {
-                        $this->logout(); // Stolen
-                    }
+                } else {
+                    // if($this->rememberme->loginTokenWasInvalid()) {
+                    //    $this->logout(); // Stolen
+                    // }
                 }
             }
         }
-
+        
         if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
         if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
+        if (isset($_SESSION['timezone'])) $session['timezone'] = $_SESSION['timezone']; else $session['timezone'] = '';
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
+        if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
 
         return $session;
     }
 
 
-    public function register($username, $password, $email)
+    public function register($username, $password, $email, $timezone)
     {
         // Input validation, sanitisation and error reporting
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
-
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
-        $username = $this->mysqli->real_escape_string($username);
-        // $password = $this->mysqli->real_escape_string($password);
-
         if ($this->get_id($username) != 0) return array('success'=>false, 'message'=>_("Username already exists"));
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
+        
+        if (!$this->timezone_valid($timezone)) return array('success'=>false, 'message'=>_("Timezone is not valid"));
 
         // If we got here the username, password and email should all be valid
 
@@ -202,68 +245,182 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES (?,?,?,?,?,?,0)");
-        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin) VALUES (?,?,?,?,?,?,?,0)");
+        $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone);
         if (!$stmt->execute()) {
-            return array('success'=>false, 'message'=>_("Error creating user"));
+            $error = $this->mysqli->error;
+            $stmt->close();
+            return array('success'=>false, 'message'=>_("Error creating user, mysql error: ".$error));
         }
 
         // Make the first user an admin
         $userid = $this->mysqli->insert_id;
         if ($userid == 1) $this->mysqli->query("UPDATE users SET admin = 1 WHERE id = '1'");
+        $stmt->close();
+        
+        // Email verification
+        if ($this->email_verification) {
+            $result = $this->send_verification_email($username);
+            if ($result['success']) return array('success'=>true, 'verifyemail'=>true, 'message'=>"Email verification email sent, please check your inbox");
+        } else {
+            return array('success'=>true, 'verifyemail'=>false, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
+        }        
+    }
+    
+    public function send_verification_email($username)
+    {
+        // check for valid username format
+        if (preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username)!=$username) return array('success'=>false, 'message'=>_("Invalid username"));
 
-        return array('success'=>true, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
+        // check that username exists and load email and verification status
+        if (!$stmt = $this->mysqli->prepare("SELECT id,email,email_verified FROM users WHERE username=?")) {
+            return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
+        }
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+        
+        $stmt->bind_result($id,$email,$email_verified);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        // exit if user does not exist
+        if (!$result || $id<1) return array('success'=>false, 'message'=>_("Username does not exist"));
+        // exit if account is already verified
+        if ($email_verified) return array('success'=>false, 'message'=>_("Email already verified"));
+        
+        // Create new verification key
+        $verification_key = md5(uniqid(mt_rand(), true));
+        // Save new verification key
+        $stmt = $this->mysqli->prepare("UPDATE users SET verification_key=? WHERE id=?");
+        $stmt->bind_param("si",$verification_key,$id);
+        $stmt->execute();
+        $stmt->close();
+        
+        // Send verification email
+        global $path;
+        $verification_link = $path."user/verify?email=$email&key=$verification_key";
+        
+        // $this->redis->rpush("emailqueue",json_encode(array(
+        //    "emailto"=>$email,
+        //    "type"=>"passwordrecovery",
+        //    "subject"=>'Emoncms email verification',
+        //    "message"=>"<p>To complete emoncms registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>"
+        // )));
+        
+        require "Lib/email.php";
+        $emailer = new Email();
+        $emailer->to(array($email));
+        $emailer->subject(ucfirst($this->appname).' email verification');
+        $emailer->body("<p>To complete ".$this->appname." registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
+        $result = $emailer->send();
+        if (!$result['success']) {
+            $this->log->error("Email send returned error. emailto=" . $email . " message='" . $result['message'] . "'");
+        } else {
+            $this->log->info("Email sent to $email");
+        }
+        
+        return array('success'=>true, 'message'=>_("Email verification email sent, please check your inbox"));
+    }
+    
+    public function verify_email($email,$verification_key)
+    {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
+        if (strlen($verification_key)!=32) return array('success'=>false, 'message'=>_("Invalid verification key"));
+        
+        $stmt = $this->mysqli->prepare("SELECT id,email_verified FROM users WHERE email=? AND verification_key=?");
+        $stmt->bind_param("ss",$email,$verification_key);
+        $stmt->execute();
+        $stmt->bind_result($id,$email_verified);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        if ($result && $id>0) {
+            if ($email_verified==0) {
+                $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='1' WHERE id=?");
+                $stmt->bind_param("i",$id);
+                $stmt->execute();
+                $stmt->close();
+                return array('success'=>true, 'message'=>"Email verified");
+            } else {
+                return array('success'=>false, 'message'=>"Email already verified");
+            }
+        }
+        
+        return array('success'=>false, 'message'=>"Invalid email or verification key");
     }
 
-    public function login($username, $password, $remembermecheck)
+    public function login($username, $password, $remembermecheck, $referrer='')
     {
         $remembermecheck = (int) $remembermecheck;
 
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
 
         // filter out all except for alphanumeric white space and dash
-        //if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        // if (!ctype_alnum($username))
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
-        $username = $this->mysqli->real_escape_string($username);
-        //$password = $this->mysqli->real_escape_string($password);
-
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        // SELECT id,password,admin,salt,language,startingpage FROM users WHERE id = '$loginresult'
-        $result = $this->mysqli->query("SELECT * FROM users WHERE username = '$username'");
+        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone FROM users WHERE username=?")) {
+            return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
+        }
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+        
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        //$result = $stmt->get_result();
+        //$userData = $result->fetch_object();
+        //$stmt->close();
+        
+        if (!$result) {
+            $ip_address = get_client_ip_env();
+            $this->log->error("Login: Username does not exist username:$username ip:$ip_address");
+        
+            return array('success'=>false, 'message'=>_("Username does not exist"));
+        }
+        if ($this->email_verification && !$email_verified) return array('success'=>false, 'message'=>_("Please verify email address"));
+        
+        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
 
-        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
-
-        $userData = $result->fetch_object();
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-
-        if ($hash != $userData->password)
+        if ($hash != $userData_password)
         {
-            return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
+            $ip_address = get_client_ip_env();
+            $this->log->error("Login: Incorrect password username:$username ip:$ip_address");
+            
+            return array('success'=>false, 'message'=>_("Incorrect password, if you're sure it's correct try clearing your browser cache"));
         }
         else
         {
             session_regenerate_id();
-            $_SESSION['userid'] = $userData->id;
+            $_SESSION['userid'] = $userData_id;
             $_SESSION['username'] = $username;
             $_SESSION['read'] = 1;
             $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData->admin;
-            $_SESSION['lang'] = $userData->language;
-            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
+            $_SESSION['admin'] = $userData_admin;
+            $_SESSION['lang'] = $userData_language;
+            $_SESSION['timezone'] = $userData_timezone;
+            $_SESSION['startingpage'] = $userData_startingpage;
                             
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
-                    $this->rememberme->createCookie($userData->id);
+                    if (!$this->rememberme->createCookie($userData_id)) {
+                        $this->logout();
+                        return array('success'=>false, 'message'=>_("Error creating rememberme cookie, try login without rememberme"));
+                    }
                 } else {
                     $this->rememberme->clearCookie();
                 }
             }
+            
+            if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
-            return array('success'=>true, 'message'=>_("Login successful"));
+            if(!empty($referrer)) $userData_startingpage = urldecode($referrer);
+            return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
     }
 
@@ -273,33 +430,39 @@ class User
     public function get_apikeys_from_login($username, $password)
     {
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
-
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
-        $username = $this->mysqli->real_escape_string($username);
-        //$password = $this->mysqli->real_escape_string($password);
-
-        $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_write,apikey_read FROM users WHERE username = '$username'");
-
-        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Incorrect authentication"));
-
-        $userData = $result->fetch_object();
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-
-        if ($hash != $userData->password)
-        {
+        $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,apikey_read FROM users WHERE username=?");
+        $stmt->bind_param("s",$username);
+        $stmt->execute();
+        //$result = $stmt->get_result();
+        //$userData = $result->fetch_object();
+        //$stmt->close();
+        
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_apikey_read);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        if (!$result) {
+            $ip_address = get_client_ip_env();
+            $this->log->error("get_apikeys_from_login: Incorrect authentication:$username ip:$ip_address");
             return array('success'=>false, 'message'=>_("Incorrect authentication"));
         }
-        else
-        {
-            return array('success'=>true, 'userid'=>$userData->id, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
+       
+        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
+
+        if ($hash != $userData_password) {
+            return array('success'=>false, 'message'=>_("Incorrect authentication"));
+        } else {
+            return array('success'=>true, 'userid'=>$userData_id, 'apikey_write'=>$userData_apikey_write, 'apikey_read'=>$userData_apikey_read);
         }
     }
 
     public function logout()
     {
-        if ($this->enable_rememberme) $this->rememberme->clearCookie(true);
+        $this->log->info("logout");
+        if ($this->enable_rememberme) $this->rememberme->clearCookie();
         session_unset();
         //session_regenerate_id(true);
         session_destroy();
@@ -307,7 +470,7 @@ class User
 
     public function change_password($userid, $old, $new)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
 
         if (strlen($old) < 4 || strlen($old) > 250) return array('success'=>false, 'message'=>_("Password length error"));
         if (strlen($new) < 4 || strlen($new) > 250) return array('success'=>false, 'message'=>_("Password length error"));
@@ -323,28 +486,38 @@ class User
             $hash = hash('sha256', $new);
             $salt = md5(uniqid(rand(), true));
             $password = hash('sha256', $salt . $hash);
-            $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
+
+            $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
+            $stmt->bind_param("ssi", $password, $salt, $userid);
+            $stmt->execute();
+            $stmt->close();
+            
             return array('success'=>true);
         }
         else
         {
+            $ip_address = get_client_ip_env();
+            $this->log->error("change_password: old password incorect ip:$ip_address");
             return array('success'=>false, 'message'=>_("Old password incorect"));
         }
     }
 
     public function passwordreset($username,$emailto)
     {
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if (!filter_var($emailto, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
-        $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$emailto'");
-
-        if ($result->num_rows==1)
+        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username=? AND email=?");
+        $stmt->bind_param("ss",$username_out,$emailto);
+        $stmt->execute();
+        $stmt->bind_result($userid);
+        $stmt->fetch();
+        $stmt->close();
+        
+        if ($userid!==false && $userid>0)
         {
-            $row = $result->fetch_array();
-
-            $userid = $row['id'];
-            if ($userid>0)
+            global $settings;
+            if ($settings["interface"]["enable_password_reset"]==true)
             {
                 // Generate new random password
                 $newpass = hash('sha256',md5(uniqid(rand(), true)));
@@ -354,51 +527,51 @@ class User
                 $hash = hash('sha256', $newpass);
                 $salt = md5(uniqid(rand(), true));
                 $password = hash('sha256', $salt . $hash);
-
-                // Save password and salt
-                $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
-
-                //------------------------------------------------------------------------------
-                global $enable_password_reset;
-                if ($enable_password_reset==true)
-                {
-                    require "Lib/email.php";
-                    $email = new Email();
-                    //$email->from(from);
-                    $email->to($emailto);
-                    $email->subject('Emoncms password reset');
-                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
-                    $result = $email->send();
-                    if (!$result['success']) {
-                        $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
-                    } else {
-                        $this->log->info("Email sent to $emailto");
-                    }
-                }
-                //------------------------------------------------------------------------------
-
+                
                 // Sent email with $newpass to $email
-                return array('success'=>true, 'message'=>"Password recovery email sent!");
+                require "Lib/email.php";
+                $email = new Email();
+                $email->to($emailto);
+                $email->subject(ucfirst($this->appname).' password reset');
+                $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
+                $result = $email->send();
+                if (!$result['success']) {
+                    return array('success'=>false, 'message'=>$result['message']);
+                    $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
+                } else {
+                    $this->log->info("Email sent to $emailto");
+                    // Save password and salt
+                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
+                    $stmt->bind_param("ssi", $password, $salt, $userid);
+                    $stmt->execute();
+                    $stmt->close();
+                    return array('success'=>true, 'message'=>"Password recovery email sent!");
+                }                
+            } else {
+                return array('success'=>false, 'message'=>"Password reset disabled");
             }
+        } else {
+            return array('success'=>false, 'message'=>"Invalid username or email");
         }
-
-        return array('success'=>false, 'message'=>"An error occured");
     }
 
     public function change_username($userid, $username)
     {
         if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As you are using a cookie based remember me login, please logout and log back in to change username"));
 
-        $userid = intval($userid);
+        $userid = (int) $userid;
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
 
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
 
-        $result = $this->mysqli->query("SELECT id FROM users WHERE username = '$username'");
-        $row = $result->fetch_array();
-        if (!$row[0])
+        $userid_from_username = $this->get_id($username);
+
+        if (!$userid_from_username)
         {
-            $this->mysqli->query("UPDATE users SET username = '$username' WHERE id = '$userid'");
+            $stmt = $this->mysqli->prepare("UPDATE users SET username = ? WHERE id = ?");
+            $stmt->bind_param("si", $username, $userid);
+            $stmt->execute();
+            $stmt->close();
             return array('success'=>true, 'message'=>_("Username updated"));
         }
         else
@@ -411,38 +584,48 @@ class User
     {
         if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As you are using a cookie based remember me login, please logout and log back in to change email"));
 
-        $userid = intval($userid);
+        $userid = (int) $userid;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
+        $stmt->close();
+
+        // $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
+        // $stmt->bind_param("i", $userid);
+        // $stmt->execute();
+        // $stmt->close();
+        
+        // global $session;
+        // $session['emailverified'] = 0;
+        // $_SESSION['emailverified'] = 0;
+        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 
     //---------------------------------------------------------------------------------------
     // Get by userid methods
     //---------------------------------------------------------------------------------------
-
-    public function get_convert_status($userid)
-    {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `convert` FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return array('convert'=>(int)$row['convert']);
-    }
-
     public function get_username($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['username'];
     }
 
+    public function get_name($userid)
+    {
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT name FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return $row['name'];
+    }
+
     public function get_email($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT email FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['email'];
@@ -450,23 +633,23 @@ class User
 
     public function get_apikey_read($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT `apikey_read` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
+        if (!$row = $result->fetch_object()) return false;
         return $row->apikey_read;
     }
 
     public function get_apikey_write($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT `apikey_write` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
+        if (!$row = $result->fetch_object()) return false;
         return $row->apikey_write;
     }
 
     public function get_lang($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT language FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['language'];
@@ -474,7 +657,8 @@ class User
 
     public function get_timezone_offset($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
+        if (!$userid) return false;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
         $now = new DateTime();
@@ -484,10 +668,14 @@ class User
 
     public function get_timezone($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return $row['timezone'];
+        $userid = (int) $userid;
+        if (!$userid) return false;
+        if ($result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';")) {
+            if ($row = $result->fetch_object()) {
+                return $row->timezone;
+            }
+        }
+        return false;
     }
 
     // List supported PHP timezones
@@ -510,10 +698,18 @@ class User
         }
         return $timezones;
     }
+    
+    public function timezone_valid($_timezone) 
+    {
+        foreach (DateTimeZone::listIdentifiers() as $timezone) {
+            if ($timezone==$_timezone) return true;
+        }
+        return false;
+    }
 
     public function get_salt($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT salt FROM users WHERE id = '$userid'");
         $row = $result->fetch_object();
         return $row->salt;
@@ -526,33 +722,37 @@ class User
     public function get_id($username)
     {
         if (!ctype_alnum($username)) return false;
-
-        $result = $this->mysqli->query("SELECT id FROM users WHERE username = '$username';");
-        $row = $result->fetch_array();
-        return $row['id'];
+        
+        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $stmt->fetch();
+        $stmt->close();
+        
+        return $id;
     }
 
     //---------------------------------------------------------------------------------------
     // Set by id methods
     //---------------------------------------------------------------------------------------
-
-    public function set_convert_status($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("UPDATE users SET `convert` = '1' WHERE id='$userid'");
-        return array('convert'=>1);
-    }
-
     public function set_user_lang($userid, $lang)
-    {
-        $this->mysqli->query("UPDATE users SET language = '$lang' WHERE id='$userid'");
+    {   
+        $stmt = $this->mysqli->prepare("UPDATE users SET language = ? WHERE id = ?");
+        $stmt->bind_param("si", $lang, $userid);
+        $stmt->execute();
+        $stmt->close();
     }
 
     public function set_timezone($userid,$timezone)
     {
-        $userid = intval($userid);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
-        $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
+        $userid = (int) $userid;
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$timezone);
+        
+        $stmt = $this->mysqli->prepare("UPDATE users SET timezone = ? WHERE id = ?");
+        $stmt->bind_param("si", $timezone, $userid);
+        $stmt->execute();
+        $stmt->close();
     }
 
     //---------------------------------------------------------------------------------------
@@ -561,50 +761,68 @@ class User
 
     public function get($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read FROM users WHERE id=$userid");
-        if (!$result) return array("success"=>false, "message"=>"Error fetching user data, you may need to run database update");
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read,tags FROM users WHERE id=$userid");
+        if (!$result) return array("success" => false, "message" => "Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
         return $data;
     }
 
     public function set($userid,$data)
     {
+        global $settings;
+        $default_locale = $settings["interface"]["default_language"];
+        $default_timezone = 'Europe/London';
         // Validation
         $userid = (int) $userid;
-        $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
-        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
-        $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
-        $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language);
+        if(!$data || $userid < 1) return array('success'=>false, 'message'=>_("Error updating user info"));
+
+        $gravatar = preg_replace('/[^\w\s\-.@]/','',$data->gravatar);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->name);
+        $location = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->location);
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$data->timezone);
+        $bio = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->bio);
+        $language = preg_replace('/[^\w\s\-.]/','',$data->language);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s\-.]/','', $data->tags);
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s\-?#=\/]/u','',$data->startingpage);
         
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u','',$data->startingpage);
-        
-        $_SESSION['lang'] = $language;
-        
-        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ? WHERE id = ?");
-        $stmt->bind_param("sssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
+        $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
+        $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
+
+        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
+        $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
         if (!$stmt->execute()) {
+            $stmt->close();
             return array('success'=>false, 'message'=>_("Error updating user info"));
         }
+        $stmt->close();
     }
 
     // Generates a new random read apikey
     public function new_apikey_read($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $apikey = md5(uniqid(mt_rand(), true));
-        $this->mysqli->query("UPDATE users SET apikey_read = '$apikey' WHERE id='$userid'");
+        
+        $stmt = $this->mysqli->prepare("UPDATE users SET apikey_read = ? WHERE id = ?");
+        $stmt->bind_param("si", $apikey, $userid);
+        $stmt->execute();
+        $stmt->close();
+        
         return $apikey;
     }
 
     // Generates a new random write apikey
     public function new_apikey_write($userid)
     {
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $apikey = md5(uniqid(mt_rand(), true));
-        $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
+        
+        $stmt = $this->mysqli->prepare("UPDATE users SET apikey_write = ? WHERE id = ?");
+        $stmt->bind_param("si", $apikey, $userid);
+        $stmt->execute();
+        $stmt->close();
+        
         return $apikey;
     }
 
@@ -614,4 +832,217 @@ class User
         $row = $result->fetch_row();
         return $row[0];
     }
+    
+    public function get_usernames_by_email($email) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+        $stmt = $this->mysqli->prepare("SELECT id,username FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();        
+        $stmt->bind_result($id,$username);
+        
+        $users = array();
+        while ($stmt->fetch()) {
+            $users[] = array("id"=>$id,"username"=>$username);
+        }
+        $stmt->close();
+        
+        return $users;
+    }
+    /**
+     * return true if input is not null
+     *
+     * @param mixed $var
+     * @return boolean
+     */
+    private function is_not_null ($var) {
+        return !is_null($var);
+    }
+    
+    /**
+     * saves user preferences
+     *
+     * only allows certain preferences. inputs santized
+     * 
+     * @param int $userid
+     * @return string json with prefs 
+     */
+    public function set_preferences ($userid, $preference) {
+        // $this->log->info("\n\n--raw input---------".var_export($preference,1));
+
+        $userid = (int) $userid;
+        
+        // convert string (json) to array
+        if(is_string($preference)) {
+            $preference = json_decode($preference, true);
+        }
+
+        // Sanitize features for each allowed property
+        $args = array(
+            'deviceView' => array(
+                'filter' => FILTER_VALIDATE_BOOLEAN,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            ),
+            'bookmarks' => array(),
+            'path' => array(
+                'filter' => FILTER_SANITIZE_MAGIC_QUOTES,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            ),
+            'text' => array(
+                'filter' => FILTER_SANITIZE_ENCODED,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            )
+        );
+        $args_keys = array_keys($args); // used to check for 'allowed' fields
+
+        // @see: https://www.php.net/manual/en/function.filter-var-array.php
+        $filtered = array();
+        foreach($preference as $key=>$value){
+            if(!is_array($value)) {
+                $value = html_entity_decode($value);
+                $value = json_decode($value, true);
+            }
+
+            if(in_array($key, $args_keys)) {
+                if (is_array($value)) {
+                    // if empty write empty value
+                    if(empty($value)){
+                        $filtered[$key] = array();
+                    }
+                    // sanitize array values
+                    foreach($value as $sub_key=>$sub_value) {
+                        if (is_array($sub_value)) {
+                            foreach($sub_value as $array_key=>$array_item) {
+                                $filter = $args[$array_key]['filter'];
+                                $flags = $args[$array_key]['flags'];
+                                // $filtered[$key][$sub_key] = filter_var($sub_value, $filter, $flags);
+                                $filtered[$key][$sub_key][$array_key] = $array_item;
+                            }
+                        }
+                    }
+                } else {
+                    // santize text values
+                    if (isset($args[$key])){
+                        if($value === "[]") {
+                            // nothing to filter if empty array
+                            $filtered[$key] = array();
+                        } else {
+                            // filter with above settings
+                            if(isset($args[$key]['filter'])) {
+                                if(!isset($args[$key]['flags'])) {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter']);
+                                } else {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter'], $args[$key]['flags']);
+                                }
+                            } else {
+                                $this->log->info("Input Error");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // if all filtered values are NULL return error message
+        if(count($filtered) > 0 && count(array_filter($filtered, 'is_null')) === count($filtered)){
+            $this->log->info(sprintf("%s() Input invalid. String(%s) = %s",__function__,strlen(json_encode($preference,true)),substr(json_encode($preference,true),0, 40).'…'));
+            return false;
+        }
+  
+        // overwrite the current settings with the filtered ones
+        $current_preferences = (array) $this->get_preferences($userid);
+        // array_merge only works on top level assoc arrays (not nested)
+        $preferences = array_merge($current_preferences,$filtered);
+        // encode the sanitized preferences as a JSON string
+        $json = json_encode($preferences, JSON_NUMERIC_CHECK);
+
+        // return error if mysql update not successful
+        $success = false;
+        $error = '';
+        if ($stmt = $this->mysqli->prepare("UPDATE users SET preferences = ? WHERE id = ?")) {
+            $stmt->bind_param("si", $json, $userid);
+            $success = $stmt->execute();
+            $error = $stmt->error;
+            $stmt->close();
+        } else {
+            $this->log->info("Error preparing SQL for user preferences");
+            return false;
+        }
+        
+        if(!$success){
+            $this->log->info("Error writing to user table");
+            return false;
+        } else {
+            $this->log->info(sprintf("%s() [OK]: %s", __function__, json_encode($preferences)));
+            return true;
+        }
+    }
+
+    /**
+     * returns all or individual user preference
+     * @param int $userid
+     * @param string $key
+     *
+     * @return array
+     */
+    public function get_preferences ($userid, $property = null) {
+        // $this->log->info('---get_preferences|$property|'.var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1),true));
+
+        $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
+        $preferences = false;
+        if ($stmt) {
+            $stmt->bind_param("i", $userid);
+            $stmt->execute();
+            $stmt->bind_result($preferences);
+            $success = $stmt->fetch();
+            $stmt->close();
+        }else{
+            $this->log->error('Please update database', $property);
+            return array('success'=>false,'message'=>_('Please update database'));
+        }
+        $json = json_decode($preferences,1);
+        // return data and/or success/error message
+        if (!empty($json)) {
+            // only return single property value if called with a $property param
+            if(!empty($property)) {
+                if(isset($json[$property]) && $json[$property]===false) {
+                    return false;
+                }elseif(!empty($json[$property])){
+                    $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                        __function__,
+                        $property,
+                        strlen(json_encode($json[$property],true)),
+                        substr(json_encode($json[$property],true),0, 50).'…')
+                    );
+
+                    return $json[$property];
+                }
+            } else {
+                $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                __function__,
+                $property,
+                strlen(json_encode($json,true)),
+                substr(json_encode($json,true),0, 50).'…')
+            );
+                return $json;
+            }
+        } else {
+            $this->log->info(sprintf('%s()|%s', __FUNCTION__, 'Empty User preferences'));
+            return false;
+        }
+    }
+    /**
+     * get array of user bookmarks
+     *
+     * @param int $userid
+     * @return array
+     */
+    public function getUserBookmarks($userid) {
+        $response = $this->get_preferences($userid, 'bookmarks');
+        $response = json_encode($response,true);
+        $bookmarks = html_entity_decode($response);
+        return json_decode($bookmarks,true);
+    }
+
 }
+

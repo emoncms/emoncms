@@ -1,0 +1,462 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Admin\n"
+"POT-Creation-Date: 2020-03-16 01:08+0100\n"
+"PO-Revision-Date: 2020-03-15 12:16+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../admin_controller.php:20
+msgid "406: Route not found"
+msgstr ""
+
+#: ../admin_controller.php:24
+msgid "Admin re-authentication required"
+msgstr ""
+
+#: ../admin_controller.php:533
+msgid "Not Admin"
+msgstr ""
+
+#: ../admin_controller.php:534 ../admin_controller.php:539
+msgid "Admin Authentication Required"
+msgstr ""
+
+#: ../admin_controller.php:540
+msgid "Session timed out or user not Admin"
+msgstr ""
+
+#: ../admin_controller.php:542
+msgid "Re-authenticate to see this page"
+msgstr ""
+
+#: ../admin_main_view.php:11
+msgid "Shutdown"
+msgstr ""
+
+#: ../admin_main_view.php:17
+msgid "Reboot"
+msgstr ""
+
+#: ../admin_main_view.php:60
+msgid "Administration"
+msgstr ""
+
+#: ../admin_main_view.php:69 ../admin_main_view.php:72 ../userlist_view.php:8
+msgid "Users"
+msgstr ""
+
+#: ../admin_main_view.php:70
+msgid "See a list of registered users"
+msgstr ""
+
+#: ../admin_main_view.php:82
+msgid "Updates"
+msgstr ""
+
+#: ../admin_main_view.php:83 ../admin_main_view.php:86
+#: ../admin_main_view.php:101
+msgid "OS, Packages, EmonHub, Emoncms & Firmware (If new version)"
+msgstr ""
+
+#: ../admin_main_view.php:86 ../admin_main_view.php:101
+msgid "Update All"
+msgstr ""
+
+#: ../admin_main_view.php:87
+msgid "Full Update"
+msgstr ""
+
+#: ../admin_main_view.php:96 ../admin_main_view.php:113
+msgid "Emoncms, Emoncms Modules and Services"
+msgstr ""
+
+#: ../admin_main_view.php:96 ../admin_main_view.php:112
+msgid "Update Emoncms Only"
+msgstr ""
+
+#: ../admin_main_view.php:97 ../admin_main_view.php:125
+msgid "Update EmonHub Only"
+msgstr ""
+
+#: ../admin_main_view.php:98 ../admin_main_view.php:138
+msgid "Select your hardware type and firmware version"
+msgstr ""
+
+#: ../admin_main_view.php:98 ../admin_main_view.php:137
+msgid "Update Firmware Only"
+msgstr ""
+
+#: ../admin_main_view.php:99 ../admin_main_view.php:160
+msgid ""
+"Run this after a manual emoncms update, after installing a new module or to "
+"check emoncms database status."
+msgstr ""
+
+#: ../admin_main_view.php:99 ../admin_main_view.php:159
+msgid "Update Database Only"
+msgstr ""
+
+#: ../admin_main_view.php:116
+msgid "Update Emoncms"
+msgstr ""
+
+#: ../admin_main_view.php:128
+msgid "Update EmonHub"
+msgstr ""
+
+#: ../admin_main_view.php:149
+msgid "Update Firmware"
+msgstr ""
+
+#: ../admin_main_view.php:162
+msgid "Update Database"
+msgstr ""
+
+#: ../admin_main_view.php:174
+msgid "Update Log"
+msgstr ""
+
+#: ../admin_main_view.php:177 ../admin_main_view.php:208
+msgid "View last entries on the logfile:"
+msgstr ""
+
+#: ../admin_main_view.php:187 ../admin_main_view.php:218
+msgid "Auto refresh"
+msgstr ""
+
+#: ../admin_main_view.php:189 ../admin_main_view.php:220
+msgid "Download Log"
+msgstr ""
+
+#: ../admin_main_view.php:190 ../admin_main_view.php:221
+msgid "Copy Log to clipboard"
+msgstr ""
+
+#: ../admin_main_view.php:205
+msgid "Emoncms Log"
+msgstr ""
+
+#: ../admin_main_view.php:259 ../admin_main_view.php:444
+msgid "Server Information"
+msgstr ""
+
+#: ../admin_main_view.php:262
+msgid "**Recommended** when pasting into forum"
+msgstr ""
+
+#: ../admin_main_view.php:262
+msgid "Server info copied to clipboard as Markdown [text/markdown]"
+msgstr ""
+
+#: ../admin_main_view.php:262
+msgid "Copy as Markdown"
+msgstr ""
+
+#: ../admin_main_view.php:263
+msgid "Formatted as plain text"
+msgstr ""
+
+#: ../admin_main_view.php:263
+msgid "Server info copied to clipboard as Text [text/plain]"
+msgstr ""
+
+#: ../admin_main_view.php:263
+msgid "Copy as Text"
+msgstr ""
+
+#: ../admin_main_view.php:268
+msgid "Services"
+msgstr ""
+
+#: ../admin_main_view.php:280
+msgid "Emoncms"
+msgstr ""
+
+#: ../admin_main_view.php:282 ../admin_main_view.php:352
+#: ../admin_main_view.php:369 ../admin_main_view.php:385
+#: ../admin_main_view.php:392
+msgid "Version"
+msgstr ""
+
+#: ../admin_main_view.php:283 ../admin_main_view.php:393
+msgid "Modules"
+msgstr ""
+
+#: ../admin_main_view.php:286
+msgid "URL"
+msgstr ""
+
+#: ../admin_main_view.php:287
+msgid "Branch"
+msgstr ""
+
+#: ../admin_main_view.php:288
+msgid "Describe"
+msgstr ""
+
+#: ../admin_main_view.php:292
+msgid "Git"
+msgstr ""
+
+#: ../admin_main_view.php:295 ../admin_main_view.php:347
+msgid "Server"
+msgstr ""
+
+#: ../admin_main_view.php:297
+msgid "OS"
+msgstr ""
+
+#: ../admin_main_view.php:298 ../admin_main_view.php:353
+#: ../admin_main_view.php:370 ../admin_main_view.php:386
+msgid "Host"
+msgstr ""
+
+#: ../admin_main_view.php:299 ../admin_main_view.php:354
+msgid "Date"
+msgstr ""
+
+#: ../admin_main_view.php:300 ../admin_main_view.php:377
+msgid "Uptime"
+msgstr ""
+
+#: ../admin_main_view.php:303
+msgid "Memory"
+msgstr ""
+
+#: ../admin_main_view.php:306
+msgid "RAM"
+msgstr ""
+
+#: ../admin_main_view.php:306 ../admin_main_view.php:312
+#: ../admin_main_view.php:333
+#, php-format
+msgid "Used: %s%%"
+msgstr ""
+
+#: ../admin_main_view.php:312
+msgid "Swap"
+msgstr ""
+
+#: ../admin_main_view.php:326
+msgid "Disk"
+msgstr ""
+
+#: ../admin_main_view.php:345 ../admin_main_view.php:412
+msgid "HTTP"
+msgstr ""
+
+#: ../admin_main_view.php:350
+msgid "MySQL"
+msgstr ""
+
+#: ../admin_main_view.php:355
+msgid "Stats"
+msgstr ""
+
+#: ../admin_main_view.php:359
+msgid "Redis"
+msgstr ""
+
+#: ../admin_main_view.php:362
+msgid "Redis Server"
+msgstr ""
+
+#: ../admin_main_view.php:364
+msgid "Python Redis"
+msgstr ""
+
+#: ../admin_main_view.php:367
+msgid "PHP Redis"
+msgstr ""
+
+#: ../admin_main_view.php:372
+msgid "Flush"
+msgstr ""
+
+#: ../admin_main_view.php:375 ../admin_main_view.php:419
+msgid "Size"
+msgstr ""
+
+#: ../admin_main_view.php:377
+#, php-format
+msgid "%s days"
+msgstr ""
+
+#: ../admin_main_view.php:383
+msgid "MQTT Server"
+msgstr ""
+
+#: ../admin_main_view.php:385
+#, php-format
+msgid "Mosquitto %s"
+msgstr ""
+
+#: ../admin_main_view.php:390
+msgid "PHP"
+msgstr ""
+
+#: ../admin_main_view.php:397
+msgid "Pi"
+msgstr ""
+
+#: ../admin_main_view.php:399
+msgid "Model"
+msgstr ""
+
+#: ../admin_main_view.php:400
+msgid "SoC"
+msgstr ""
+
+#: ../admin_main_view.php:401
+msgid "Serial num."
+msgstr ""
+
+#: ../admin_main_view.php:402
+msgid "Temperature"
+msgstr ""
+
+#: ../admin_main_view.php:403
+msgid "emonpiRelease"
+msgstr ""
+
+#: ../admin_main_view.php:404
+msgid "File-system"
+msgstr ""
+
+#: ../admin_main_view.php:410 ../admin_main_view.php:445
+msgid "Client Information"
+msgstr ""
+
+#: ../admin_main_view.php:414
+msgid "Browser"
+msgstr ""
+
+#: ../admin_main_view.php:415
+msgid "Language"
+msgstr ""
+
+#: ../admin_main_view.php:417
+msgid "Window"
+msgstr ""
+
+#: ../admin_main_view.php:421
+msgid "Screen"
+msgstr ""
+
+#: ../admin_main_view.php:423
+msgid "Resolution"
+msgstr ""
+
+#: ../admin_main_view.php:440
+msgid "Copied to clipboard"
+msgstr ""
+
+#: ../admin_main_view.php:441
+msgid "successful"
+msgstr ""
+
+#: ../admin_main_view.php:442
+msgid "unsuccessful"
+msgstr ""
+
+#: ../admin_main_view.php:443 ../admin_main_view.php:476
+msgid "Copy to clipboard: Ctrl+C, Enter"
+msgstr ""
+
+#: ../admin_main_view.php:446
+#, php-format
+msgid "Log level: %s"
+msgstr ""
+
+#: ../admin_menu.php:13
+msgid "Admin"
+msgstr ""
+
+#: ../admin_model.php:296
+msgid ""
+" (to show GPU temp execute this command from the console \"sudo usermod -G "
+"video www-data\" )"
+msgstr ""
+
+#: ../update_view.php:22
+msgid "Update database"
+msgstr ""
+
+#: ../update_view.php:27
+msgid "Apply changes"
+msgstr ""
+
+#: ../update_view.php:32
+msgid "Back"
+msgstr ""
+
+#: ../update_view.php:38
+msgid "Check for further updates"
+msgstr ""
+
+#: ../update_view.php:43
+msgid "Database is up to date "
+msgstr ""
+
+#: ../update_view.php:43
+msgid "Nothing to do"
+msgstr ""
+
+#: ../update_view.php:45 ../userlist_view.php:62
+msgid "Return to Administration Page"
+msgstr ""
+
+#: ../userlist_view.php:10
+msgid "Number of users:"
+msgstr ""
+
+#: ../userlist_view.php:27
+msgid "Order by"
+msgstr ""
+
+#: ../userlist_view.php:29 ../userlist_view.php:49
+msgid "Id"
+msgstr ""
+
+#: ../userlist_view.php:30 ../userlist_view.php:50
+msgid "Username"
+msgstr ""
+
+#: ../userlist_view.php:31 ../userlist_view.php:51
+msgid "Email"
+msgstr ""
+
+#: ../userlist_view.php:32
+msgid "Email Verified"
+msgstr ""
+
+#: ../userlist_view.php:36
+msgid "Ascending"
+msgstr ""
+
+#: ../userlist_view.php:37
+msgid "Descending"
+msgstr ""
+
+#: ../userlist_view.php:42
+msgid "User search"
+msgstr ""
+
+#: ../userlist_view.php:44
+msgid "Search"
+msgstr ""
+
+#: ../userlist_view.php:52
+msgid "Feeds"
+msgstr ""

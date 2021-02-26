@@ -12,15 +12,7 @@
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.touch.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
@@ -64,10 +56,9 @@
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
 
-  var feedid = "<?php echo $feedid; ?>";
+  var feedid = <?php echo $feedid; ?>;
   var feedname = "<?php echo $feedidname; ?>";
   var type = "<?php echo $type; ?>";
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $write_apikey; ?>";
 
   var timeWindow = (3600000*24.0*7);        //Initial time window
@@ -79,7 +70,7 @@
   function vis_feed_data() {
     start = Math.floor(start / 86400000) * 86400000;
     end = Math.ceil(end / 86400000) * 86400000;
-    var graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
+    var graph_data = get_feed_data(feedid,start,end,3600*24,1,0);
     //var stats = power_stats(graph_data);
     //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 

@@ -15,7 +15,7 @@ for i in "emoncms.log" "mysql.log" "redis/redis-server.log" "mysql/error.log" "a
 chown root:adm /var/log/apache2
 chown -R redis:redis /var/log/redis
 chown -R mysql:adm /var/log/mysql
-chown -R pi:pi /var/log/logrotate
+chown -R root:adm /var/log/logrotate
 fi
 # Restart Apache & Redis, now the directories are defined
 service apache2 restart

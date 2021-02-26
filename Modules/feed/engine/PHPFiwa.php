@@ -1,9 +1,11 @@
 <?php
-
 // This timeseries engine implements:
 // Fixed Interval With Averaging
 
-class PHPFiwa
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class PHPFiwa implements engine_methods
 {
     private $dir = "/var/lib/phpfiwa/";
     private $log;
@@ -322,7 +324,12 @@ class PHPFiwa
         return $data;
     }
     
-
+    /**
+     * Return the data for the given timerange - cf shared_helper.php
+     *
+     * @param integer $limitinterval not implemented
+     *
+     */
     public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
         $feedid = intval($feedid);
@@ -766,7 +773,7 @@ class PHPFiwa
     
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
 
@@ -866,11 +873,17 @@ class PHPFiwa
                 $average = $point_sum / $points_in_sum;
                 //$data[] = array($time*1000,$average);
                 $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                fwrite($exportfh, $timenew.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($average,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
             }
         }
         
         fclose($exportfh);
         exit;
+    }
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 }

@@ -1,7 +1,10 @@
 <?php
+    load_language_files("Modules/schedule/locale", "schedule_messages");
+    $menu['sidebar']['emoncms'][] = array(
+        'text' => dgettext("schedule_messages","Schedule"),
+        'path' => 'schedule/view',
+        'icon' => 'schedule',
+        'active' => 'schedule',
+        'order' => 'b3'
+    );
 
-    $domain = "messages";
-    bindtextdomain($domain, "Modules/schedule/locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
-
-    $menu_dropdown[] = array('name'=> dgettext($domain, "Schedule"),'icon'=>'icon-time', 'path'=>"schedule/view" , 'session'=>"write", 'order' => 1);

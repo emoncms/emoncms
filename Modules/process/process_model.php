@@ -13,11 +13,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class ProcessError {
     const NONE = 0;
     const TOO_MANY_ITERATIONS = 1;
+    const ACCESS_FORBIDDEN = 2;
 }
 
 class ProcessOriginType {
     const INPUT = 1;
     const VIRTUALFEED = 2;
+    const TASK = 3;
 }
 
 class Process
@@ -35,7 +37,10 @@ class Process
     
     private $log;
     private $modules_functions = array();
-
+    
+    private $process_list = array();
+    public $process_map = array();
+    
     public function __construct($mysqli,$input,$feed,$timezone)
     {
         $this->mysqli = $mysqli;
@@ -43,7 +48,13 @@ class Process
         $this->feed = $feed;
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
-        $this->get_process_list(); // Load modules modules
+        
+        $this->process_list = $this->get_process_list(); // Load modules modules
+        
+        // Build map of processids where set
+        foreach ($this->process_list as $k=>$v) {
+            if (isset($v['id_num'])) $this->process_map[$v['id_num']] = $k;
+        }
     }
 
     // Triggered when invoking inaccessible methods in this class context, it must be a module function then
@@ -73,7 +84,6 @@ class Process
         return $list;
     }
 
-
     public function input($time, $value, $processList, $options = null)
     {
         //$this->log->info("input() received time=$time\tvalue=$value");
@@ -85,23 +95,33 @@ class Process
         $pairs = explode(",",$processList);
         $total = count($pairs);
         $steps=0;
-        for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+        // if ($total>50) return false;
+
+        for ($this->proc_goto=0; $this->proc_goto<$total; $this->proc_goto++) {
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
+            
+            // Map ids to process key names
+            if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+            
             if (!isset($process_list[$processkey])) {
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
             }
-
             $arg = 0;
             if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
-
+            
             $process_function = $processkey;                               // get process key 'module.function'
-            if (strpos($processkey, '__') === FALSE)
-                $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
-            $value = $this->$process_function($arg,$time,$value,$options); // execute process function
-
+            if (strpos($processkey, '__') === FALSE) $process_function = $process_list[$processkey]["function"]; // Is this line needed??
+                
+            $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
+            if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
+                $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+            } else {
+                $value = $this->$process_function($arg,$time,$value,$options); // execute process function
+            }
+            
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }
@@ -119,6 +139,13 @@ class Process
                     case ProcessOriginType::VIRTUALFEED:
                          $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
                          break;
+                    case ProcessOriginType::TASK:
+                        if (file_exists("Modules/task/task_model.php")) {
+                            global $session, $redis;
+                            require_once "Modules/task/task_model.php";
+                            $this->task = new Task($this->mysqli, $redis, null);
+                            $this->task->set_processlist($session['userid'], $options['sourceid'], "process__error_found:0," . $processList);
+                        }
                 }
                 return false;
             }
@@ -126,26 +153,35 @@ class Process
         return $value;
     }
 
-
     private function load_modules() {
         $list = array();
-        $dir = scandir("Modules");
+
+        // Always load the process module processes first
+        $modules = array("process");
+        
+        // Scan all other modules for process lists
+        $dir = scandir("Modules");        
         for ($i=2; $i<count($dir); $i++) {
-            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-                $class = $this->get_module_class($dir[$i]);
-                if ($class != null) {
-                    $mod_process_list = $class->process_list();
-                    foreach($mod_process_list as $k => $v) {
-                        $processkey = strtolower($dir[$i]."__".$v[2]);
-                        $list[$processkey] = $v; // set list key as "module__function"
-                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
-                    }
+            $module = $dir[$i];
+            if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {
+                if ($module!="process") $modules[] = $module;
+            }
+        }
+        
+        // Load processes from selected modules
+        for ($i=0; $i<count($modules); $i++) {
+            $class = $this->get_module_class($modules[$i]);
+            if ($class != null) {
+                
+                $mod_process_list = $class->process_list();
+                
+                foreach($mod_process_list as $k => $v) {
+                    $processkey = strtolower($modules[$i]."__".$v['function']);
+                    $list[$processkey] = $v; // set list key as "module__function"
+                    //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
                 }
             }
         }
-        // Loads core process list from process module (with integer key for backward_compatibility)
-        $backward_compatible_list = "process__core_process_list"; 
-        $list+=$this->$backward_compatible_list();
         return $list;
     }
 

@@ -1,4 +1,5 @@
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path;
 
     $out = "";
@@ -25,6 +26,12 @@
 ?>
 <a href="<?php echo $path; ?>admin/db?apply=true" class="btn btn-info"><?php echo _('Apply changes'); ?></a>
 <?php } 
+    elseif ($applychanges && !empty($error)) {
+        echo '<div class="alert alert-danger"><p><b>Error:</b> The following error has occured:</b></p><br>'.$error.'</div>';
+?>
+<a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Back'); ?></a>
+
+<?php } 
     elseif ($out && $applychanges) {
         echo '<div class="alert alert-success"><p><b>Success:</b> The following changes have been applied</b></p><br>'.$out.'</div>';
 ?>
@@ -35,4 +42,5 @@
 <div class="alert alert-success">
     <b><?php echo _('Database is up to date '); ?></b> - <?php echo _('Nothing to do'); ?>
 </div>
+<a href="<?php echo $path; ?>admin/view" class="btn btn-info"><?php echo _('Return to Administration Page'); ?></a>
 <?php } ?>

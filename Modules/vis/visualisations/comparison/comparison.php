@@ -13,11 +13,14 @@
 
     global $path, $embed;
 
-    $power = get('power');
-    $kwhd = get('kwhd');
-    $apikey = get('apikey');
+    $power = (int) get('power');
+    $kwhd = (int) get('kwhd');
+    
     $currency = get('currency')?get('currency'):'&euro;';
+    $currency = preg_replace('/[^\w\s&;]/','',$currency);
+    
     $pricekwh = get('pricekwh')?get('pricekwh'):0.12;
+    $pricekwh = (float) $pricekwh;
 ?>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
@@ -88,7 +91,6 @@
     <script type="text/javascript">
         var kwhd = <?php echo $kwhd; ?>;
         var power = <?php echo $power; ?>;
-        var path = "<?php echo $path; ?>";
         var apikey = "<?php echo $apikey; ?>";
         var price = <?php echo $pricekwh ?>;
         var currency = "<?php echo $currency ?>";

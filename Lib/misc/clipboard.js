@@ -1,18 +1,17 @@
+function copyToClipboardCustomMsg(elem, msgElem, successMessage, errorMessage) {
+    successMessage = successMessage || 'Copied to the clipboard.';
+    errorMessage = errorMessage || 'Copy not supported.';
+    // get the element - if id passed and not htmlElement
+    if (msgElem =  typeof msgElem === "string" ? document.getElementById(msgElem) : msgElem) {
+        // set the user feedback and hide after 2s
+        msgElem.innerHTML = !copyToClipboard(elem) ? errorMessage : successMessage;
+        setTimeout(function() {
+            msgElem.innerHTML = "";
+        }, 2000);
+    }
+}
 function copyToClipboardMsg(elem, msgElem) {
-    var succeed = copyToClipboard(elem);
-    var msg;
-    if (!succeed) {
-        msg = "Copy not supported by this browser."
-    } else {
-        msg = "API key copied to the clipboard."
-    }
-    if (typeof msgElem === "string") {
-        msgElem = document.getElementById(msgElem);
-    }
-    msgElem.innerHTML = msg;
-    setTimeout(function() {
-        msgElem.innerHTML = "";
-    }, 2000);
+    copyToClipboardCustomMsg(elem, msgElem, 'API key copied to the clipboard.', 'Copy not supported by this browser.');
 }
 function copyToClipboard(elem) {
     // create hidden text element, if it doesn't already exist

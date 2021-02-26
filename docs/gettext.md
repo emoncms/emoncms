@@ -18,6 +18,10 @@ Create a folder on your server and copy and paste the following code into a php 
     textdomain($domain);
     
     echo _("HELLO_WORLD");
+
+    // replace above with helper function in core.php
+    load_language_files('path/to/locale/dir', $domain);
+    echo _("HELLO WORLD");
     ?>
     
 
@@ -83,11 +87,11 @@ To generate the locale for the default character set, run the following:
 
     $ sudo /etc/init.d/apache2 restart 
     
-To enable a language as a default for emonCMS you need to edit `locale.php` line 88
+To enable a language as a default for emonCMS you need to edit the `$default_language` variable in `settings.php` line 81
     
-    $ default  : $lang='en_US';
+    `$default_language = 'en_GB';`
 
-*Note: currently not all Emoncms strings have been translated*
+*Note: currently not all Emoncms strings have been translated, please contribue if you're able*
 
 
 This short guide is based on the following useful tutorials and QA:
