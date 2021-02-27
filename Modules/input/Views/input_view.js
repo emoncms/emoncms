@@ -74,11 +74,21 @@ var app = new Vue({
     data: {
         devices: {},
         col: {
+            dev: { B: 40,  // select
+                   A: 200, // device node id
+                   G: 200, // device description
+                   C: 50,  // config
+                   G: 200, // 
+                   H: 200, // 
+                   F: 0,  // 
+                   E: 100, // 
+                   D: 100, //      
+            },
             B: 40,  // select
             A: 200, // name
             G: 200, // description
             H: 200, // processList
-            F: 50,  // schedule
+            F: 0,  // schedule
             E: 100, // time
             D: 100, // value     
             C: 50,  // config       
@@ -944,12 +954,16 @@ function noProcessNotification(devices){
 // ---------------------------------------------------------------------------------------------
 function draw_devices() {
 
+    max_dev_nodeid_length = 0
+    max_dev_description_length = 0
     max_name_length = 0
     max_description_length = 0
     max_time_length = 0
     max_value_length = 0
     
     for (var nodeid in devices) {
+        if (devices[nodeid].nodeid.length > max_dev_nodeid_length) max_dev_nodeid_length = devices[nodeid].nodeid.length;
+        if (devices[nodeid].description.length > max_dev_description_length) max_dev_description_length = devices[nodeid].description.length;
         for (var z in devices[nodeid].inputs) {
             var input = devices[nodeid].inputs[z];
             
@@ -967,14 +981,20 @@ function draw_devices() {
             if (input.description.length>max_description_length) max_description_length = input.description.length;
             if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
             if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
-            
         }
     }
-    app.col.A = ((max_name_length * 8) + 30);
-    app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
-    app.col.D = ((max_value_length * 8) + 17);
-    app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
+    
+    app.col.A = ((max_name_length * 8) + 10);
+    app.col.G = ((max_description_length * 8) + 10); // additional padding to accomodate description length
+    app.col.D = ((max_value_length * 8) + 10);
+    app.col.E = ((max_time_length * 8) + 10); // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
+
+    app.col.dev.A = ((max_dev_nodeid_length * 8) + 10);
+    app.col.dev.G = ((max_dev_description_length * 8) + 10);
+    app.col.dev.D = app.col.D;
+    app.col.dev.E = app.col.E;
+    app.col.dev.H = app.col.H;
     
     resize_view();
 
@@ -986,9 +1006,45 @@ function draw_devices() {
 function resize_view() {
     // Hide columns
     var col_max = JSON.parse(JSON.stringify(app.col));
-    var rowWidth = $("#app").width();
-    hidden = {}
+    var rowWidth = $("#app").width() - 10;
     keys = Object.keys(app.col).sort();
+    
+    var columnsWidth = 0
+    for (k in keys) {
+        var key = keys[k]
+        if  (columnsWidth + col_max[key] > rowWidth){
+            var dif = rowWidth - columnsWidth;
+            columnsWidth += dif;
+            if (dif => 0) {
+                app.col[key] = dif;
+            }
+        } else {
+            app.col[key] = col_max[key]
+            columnsWidth += col_max[key];
+        }
+    }
+        
+    
+    var col_max = JSON.parse(JSON.stringify(app.col.dev));
+    keys = Object.keys(app.col.dev).sort();
+    
+    var columnsWidth = 0
+    for (k in keys) {
+        var key = keys[k]
+        if  (columnsWidth + col_max[key] > rowWidth){
+            var dif = rowWidth - columnsWidth;
+            columnsWidth += dif;
+            if (dif => 0) {
+                app.col.dev[key] = dif;
+            }
+        } else {
+            app.col.dev[key] = col_max[key]
+            columnsWidth += col_max[key];
+        }
+    }
+    
+
+
     // show tooltip with device key on click 
     $('#table [data-toggle="tooltip"]').tooltip({
         trigger: 'manual',
@@ -1005,17 +1061,6 @@ function resize_view() {
             $btn.attr('title', title);
         }
     )
-    
-    var columnsWidth = 0
-    for (k in keys) {
-        let key = keys[k]
-        columnsWidth += col_max[key];
-        hidden[key] = columnsWidth > rowWidth;
-    }
-    
-    for (var key in hidden) {
-        if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
-    }
 }
 
 

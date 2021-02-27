@@ -368,7 +368,7 @@ class MysqlTimeSeries implements engine_methods
                 // get datapoint using interpolation if necessary
                 $data[] = $this->get_datapoint_interpolated($feedid, $time * 1000);
             }
-            elseif($time > $range[1]['time']) {
+            elseif($time >= $range[1]['time']) {
                 // return latest feed value
                 $data[] = array($time *1000, (float) $range[1]['data']);
                 break;
@@ -443,6 +443,11 @@ class MysqlTimeSeries implements engine_methods
                     // get datapoint using interpolation if necessary
                     $result = $this->get_datapoint_interpolated($feedid, $split_time * 1000);
                     $value = $result[1];
+                }
+                elseif($time >= $range[1]['time']) {
+                    // return latest feed value
+                    $value =  (float) $range[1]['data'];
+                    break;
                 }
                 else {
                     $value = null;
