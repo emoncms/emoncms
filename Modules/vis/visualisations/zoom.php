@@ -64,7 +64,7 @@
   var embed = <?php echo $embed; ?>;
   var delta = <?php echo $delta; ?>;
   
-  var timeWindow = (3600000*24.0*365*5);   //Initial time window
+  var timeWindow = (3600000*24.0*365*10);   //Initial time window 10 years
   var start = +new Date - timeWindow;  //Get start time
   var end = +new Date; 
 
@@ -100,14 +100,14 @@
   start -= offset * 3600000;
   end -= offset * 3600000;
   get_feed_data_DMY_async(vis_feed_kwh_data_callback,null,kwhd,start,end,"daily"); // get 5 years of daily kw_data
-  
+
   //load feed kwh_data
   function vis_feed_kwh_data_callback(context,data){
   
     if (window.delta==1) {
         var tmp = [];
         for (var n=1; n<data.length; n++) {
-            if (data[n][1]!=null && data[n-1][1]!=null) {
+            if (data[n][1] != null && data[n-1][1] != null) {
                 tmp.push([data[n-1][0], data[n][1]-data[n-1][1]]);
             }
         }
@@ -117,7 +117,8 @@
     kwh_data = data;
     var total = 0, ndays=0;
     for (z in kwh_data) {
-      total += parseFloat(kwh_data[z][1]); ndays++;
+    if (kwh_data[z][1] == null) { kwh_data[z][1] = 0; } // fix when  get_feed_data_DMY_async return null
+        total += parseFloat(kwh_data[z][1]); ndays++;
     }
 
     bot_kwhd_text = "<?php echo _("Total:"); ?> "+(total).toFixed(0)+" <?php echo _("kWh"); ?> : "+add_currency((total*price), 0)+" | <?php echo _("Average:"); ?> "+(total/ndays).toFixed(1)+" <?php echo _("kWh"); ?> : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" <?php echo _("a week"); ?>, "+add_currency((total/ndays)*price*365, 0)+" <?php echo _("a year"); ?> | <?php echo _("Unit price:"); ?> "+add_currency(price, 2);
@@ -202,10 +203,10 @@
       var d = new Date();
       d.setTime(item.datapoint[0]);
       var mdate = new Date(item.datapoint[0]);
-      if (view==0) $("#out").html(" : "+mdate.format("yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d");
-      if (view==1) $("#out").html(" : "+mdate.format("mmm yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d ");
-      if (view==2) $("#out").html(" : "+mdate.format("dd mmm yyyy")+" | "+item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y");
-      if (view==3) $("#out").html(" : "+item.datapoint[1].toFixed(0)+" W");
+      if (view==0) $("#out").html(" : "+mdate.format("yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh : " + add_currency(item.datapoint[1]*price, 2) +" | Average: "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d, "+(item.datapoint[1]/years.days[item.dataIndex]*12).toFixed(0)+" kWh/m : "+add_currency(item.datapoint[1]/years.days[item.dataIndex]*price, 2)+"/d, "+add_currency(item.datapoint[1]/12*price, 0)+"/m");
+      else if (view==1) $("#out").html(" : "+mdate.format("mmm yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh : " + add_currency(item.datapoint[1]*price, 2)+" | Average: "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d, "+(item.datapoint[1]*12).toFixed(0)+" kWh/y : "+add_currency(item.datapoint[1]/months.days[item.dataIndex]*price, 2)+"/d, "+add_currency(item.datapoint[1]*12*price, 0)+"/y");
+      else if (view==2) $("#out").html(" : "+mdate.format("dd mmm yyyy")+" | "+item.datapoint[1].toFixed(1)+" kWh : "+add_currency(item.datapoint[1]*price, 2)+" | Average: "+(item.datapoint[1]*30).toFixed(0)+" kWh/m, "+(item.datapoint[1]*365).toFixed(0)+" kWh/y : "+add_currency(item.datapoint[1]*30*price, 0)+"/m, "+add_currency(item.datapoint[1]*price*365, 0)+"/y");
+      else if (view==3) $("#out").html(" : "+item.datapoint[1].toFixed(0)+" W");
     }
   });
 

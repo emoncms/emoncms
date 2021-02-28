@@ -121,7 +121,8 @@
         canvas: true,
         lines: { fill: true },
         series: { shadowSize: 0 },
-        xaxis: { tickLength:10, mode: "time", timezone: "browser", min: start, max: end }
+        xaxis: { tickLength:10, mode: "time", timezone: "browser", min: start, max: end },
+	touch: { pan: "x", scale: "x" }
       });
     }
 
