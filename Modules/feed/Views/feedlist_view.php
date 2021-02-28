@@ -76,9 +76,7 @@ function translate(property) {
 body{padding:0!important}
 .container-fluid { padding: 0px 10px 0px 10px; }
 
-#table {
-    margin-top:3rem
-}
+
 #footer {
     margin-left: 0px;
     margin-right: 0px;

@@ -5,6 +5,6 @@
         'path' => 'schedule/view',
         'icon' => 'schedule',
         'active' => 'schedule',
-        'order' => 'b3'
+        'order' => '6'
     );
 
