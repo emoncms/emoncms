@@ -162,7 +162,7 @@ body{padding:0!important}
     <h3><?php echo _('Feeds'); ?></h3>
 </div>
 
-<div class="controls" data-spy="affix" data-offset-top="100">
+<div id="controls-buttons" class="controls hide" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
@@ -397,9 +397,13 @@ var local_cache_key = 'feed_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+
+// Process list UI js
+processlist_ui.init(1); // virtual feed load before try to display
+
 // auto refresh
 update_feed_list();
-setInterval(update_feed_list,5000);
+updaterStart(update_feed_list, 5000);
 
 var firstLoad = true;
 function update_feed_list() {
@@ -413,13 +417,14 @@ function update_feed_list() {
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
-            //$("#feed-header").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
+	    $("#controls-buttons").hide();
+	    
         } else {
-            //$("#feed-header").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
+	    $("#controls-buttons").show();
         }
         feeds = {};
         for (var z in data) feeds[data[z].id] = data[z];
@@ -469,10 +474,10 @@ function update_feed_list() {
             out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
-            out += '      <h5 class="name" data-col="A">'+node+':</h5>';
+            out += '      <h5 class="name" data-col="A">'+node+'</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
-            out += '      <div class="engine" data-col="G"></div>';
-            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="engine" data-col="H"></div>';
+            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
             out += '      <div class="processlist" data-col="F"></div>';
             out += '      <div class="node-feed-right pull-right">';
             out += '        <div class="value" data-col="C"></div>';
@@ -518,8 +523,8 @@ function update_feed_list() {
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
-                out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="engine" data-col="H">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
@@ -546,6 +551,7 @@ function update_feed_list() {
         } // end of for loop
     }); // end of ajax callback
 }// end of update_feed_list() function
+
 
 // stop checkbox form opening graph view
 $("#table").on("click",".tbody .select",function(e) {
@@ -1113,7 +1119,7 @@ function enableTrim(start_time){
                     }
                     $("#feedDelete-loader").stop().fadeOut();
                     update_feed_list();
-                    updaterStart(update_feed_list, 5000);
+                    //updaterStart(update_feed_list, 5000);
                 }
             }
         });
@@ -1142,6 +1148,8 @@ $(".feed-delete").click(function(){
     $('#feedDeleteModal #deleteFeedText').show();
     $('#feedDeleteModal #deleteVirtualFeedText').hide();
     $('#feedDeleteModal').modal('show'); //show the delete modal
+
+    //updaterStart(update_feed_list, 0); // Disable when entering modal, need to find a triger to reenable on close...
 
     // get the list of input processlists that write to feeds
     let feed_processes = getFeedProcess();
@@ -1218,7 +1226,7 @@ function enableClear(){
                 }
                 $("#feedDelete-loader").stop().fadeOut();
                 update_feed_list();
-                updaterStart(update_feed_list, 5000);
+                //updaterStart(update_feed_list, 5000);
             }
         });
 }
@@ -1243,7 +1251,7 @@ $("#feedDelete-confirm").click(function(){
         
         setTimeout(function() {
             update_feed_list();
-            updaterStart(update_feed_list, 5000);
+            //updaterStart(update_feed_list, 5000);
             $('#feedDeleteModal').modal('hide');
             feed_selection();
         }, 5000);
@@ -1315,8 +1323,6 @@ $("#newfeed-save").click(function (){
     }
 });
 
-// Process list UI js
-processlist_ui.init(1); // is virtual feed
 
 $(".feed-process").click(function() {
     // There should only ever be one feed that is selected here:
