@@ -157,7 +157,8 @@
         bars: { show: true,align: "center",barWidth: (barwidth*1000),fill: true }
       },
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", minTickSize: [1, mode], tickLength: 1 }
+      xaxis: { mode: "time", timezone: "browser", minTickSize: [1, mode], tickLength: 1 },
+      touch: { pan: "x", scale: "x" }
     });
   }
 </script>
