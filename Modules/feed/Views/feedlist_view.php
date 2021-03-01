@@ -304,6 +304,4 @@ function load_template(callback) {
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_edit_modal.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_export_modal.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/feed_delete_modal.js"></script>
-<?php/*
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/js/virtualfeed_modal.js"></script>
-*/?>
