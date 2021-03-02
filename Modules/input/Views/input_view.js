@@ -83,6 +83,9 @@ var app = new Vue({
             D: 100, // value     
             C: 50,  // config       
         },
+        col_h: {
+            H: 'auto'
+        },
         selected: [],
         collapsed: [],
         paused: false,
@@ -975,6 +978,7 @@ function draw_devices() {
     app.col.D = ((max_value_length * 8) + 17);
     app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
+    app.col_h.H = 'auto'
     
     resize_view();
 
@@ -984,6 +988,7 @@ function draw_devices() {
 }
 
 function resize_view() {
+    
     // Hide columns
     var col_max = JSON.parse(JSON.stringify(app.col));
     var rowWidth = $("#app").width();
@@ -1014,7 +1019,13 @@ function resize_view() {
     }
     
     for (var key in hidden) {
-        if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
+        if (hidden[key]) {
+            app.col[key] = 0;
+            app.col_h[key] = 0;
+        } else {
+            app.col[key] = col_max[key]
+            app.col_h[key] = 'auto';
+        }
     }
 }
 
@@ -1303,10 +1314,8 @@ $("#save-processlist").click(function (){
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
 // debouncing causes odd rendering during resize - run this at all resize points...
-var resize_timeout = 0;
-$(window).on("resize",function() {
-    clearTimeout(resize_timeout)
-    resize_timeout = setTimeout(resize_view,40);
+$(window).on("window.resized",function() {
+    draw_devices();
 });
 
 

@@ -262,7 +262,7 @@ input.checkbox-lg,
                 </div>
                 <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
                 <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-                <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
+                <div class="processlist" data-col="H" :style="{width:col.H+'px', height:col_h.H}">
                     <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
                 </div>
                 <div class="buttons pull-right">
