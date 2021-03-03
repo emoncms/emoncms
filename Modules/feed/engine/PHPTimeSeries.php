@@ -214,6 +214,24 @@ class PHPTimeSeries implements engine_methods
         fclose($fh);
         return $array;
     }
+
+    public function get_value($feedid,$time)
+    {
+        $time = (int) $time;
+        
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir."feed_$feedid.MYD");
+        if ($filesize==0) return null;
+
+        $pos = $this->binarysearch($fh,$time,$filesize);
+        fseek($fh,$pos);
+        $d = fread($fh,9);
+        $array = @unpack("x/Itime/fvalue",$d);
+        
+        $value = null;
+        if (!is_nan($array['value'])) $value = (float) $array['value'];
+        return $value;
+    }
     
     /**
      * Return the data for the given timerange - cf shared_helper.php

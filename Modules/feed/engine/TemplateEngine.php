@@ -115,6 +115,17 @@ class TemplateEngine implements engine_methods
     }
 
     /**
+     * Get value at specified time
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $time in seconds
+    */
+    public function get_value($feedid,$time)
+    {
+        return null;
+    }
+
+    /**
      * Return the data for the given timerange - cf shared_helper.php
      *
      * please note that unix timestamps should be expressed in ms cause coming from the js

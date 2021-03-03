@@ -47,7 +47,11 @@ $settings = array(
     'user'      => isset($mqtt_server["user"])?$mqtt_server["user"]:'',
     'password'  => isset($mqtt_server["password"])?$mqtt_server["password"]:'',
     'basetopic' => isset($mqtt_server["basetopic"])?$mqtt_server["basetopic"]:'emon',
-    'client_id' => isset($mqtt_server["client_id"])?$mqtt_server["client_id"]:'emoncms'
+    'client_id' => isset($mqtt_server["client_id"])?$mqtt_server["client_id"]:'emoncms',
+    'capath'    => isset($mqtt_server["capath"])?$mqtt_server["capath"]:null,
+    'certpath'  => isset($mqtt_server["certpath"])?$mqtt_server["certpath"]:null,
+    'keypath'   => isset($mqtt_server["keypath"])?$mqtt_server["keypath"]:null,
+    'keypw'     => isset($mqtt_server["keypwpath"])?$mqtt_server["keypw"]:null
 ),
 
 // Input
