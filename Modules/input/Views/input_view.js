@@ -84,6 +84,7 @@ var app = new Vue({
             C: 50,  // config       
         },
         col_h: {
+            E: 'auto',
             H: 'auto'
         },
         selected: [],
@@ -979,6 +980,7 @@ function draw_devices() {
     app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
     app.col_h.H = 'auto'
+    app.col_h.E = 'auto'
     
     resize_view();
 
