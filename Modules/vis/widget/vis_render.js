@@ -16,11 +16,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","initzoom"],
-      "optionstype":["feedid","colour_picker","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , [["1", "1 "+_Tr_Vis("minute")],["5", "5 "+_Tr_Vis("minutes")],["15", "15 "+_Tr_Vis("minutes")],["30", "30 "+_Tr_Vis("minutes")],["60", "1 "+ _Tr_Vis("hour")]] ],
+      "options":["feedid","colour","initzoom","kw"],
+      "optionstype":["feedid","colour_picker","dropbox","boolean"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Zoom"),'kW'],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Default visible window interval"),_Tr_Vis("Display power as kW")],
+      "optionsdata": [ , , [["1", "1 "+_Tr_Vis("minute")],["5", "5 "+_Tr_Vis("minutes")],["15", "15 "+_Tr_Vis("minutes")],["30", "30 "+_Tr_Vis("minutes")],["60", "1 "+ _Tr_Vis("hour")]], ],
       "html":""
     },
 

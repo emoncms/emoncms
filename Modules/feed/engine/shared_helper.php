@@ -79,6 +79,14 @@ interface engine_methods{
      * @param float $value The value of the data point
     */
     public function update($feedid,$feedtime,$value);
+
+    /**
+     * Get value at specified time
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $time in seconds
+    */
+    // public function get_value($feedid,$time);
     
     /**
      * Return the data for the given timerange

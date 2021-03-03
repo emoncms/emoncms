@@ -155,20 +155,30 @@ class Process
 
     private function load_modules() {
         $list = array();
-        $dir = scandir("Modules");
+
+        // Always load the process module processes first
+        $modules = array("process");
+        
+        // Scan all other modules for process lists
+        $dir = scandir("Modules");        
         for ($i=2; $i<count($dir); $i++) {
             $module = $dir[$i];
             if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {
-                $class = $this->get_module_class($module);
-                if ($class != null) {
-                    
-                    $mod_process_list = $class->process_list();
-                    
-                    foreach($mod_process_list as $k => $v) {
-                        $processkey = strtolower($dir[$i]."__".$v['function']);
-                        $list[$processkey] = $v; // set list key as "module__function"
-                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
-                    }
+                if ($module!="process") $modules[] = $module;
+            }
+        }
+        
+        // Load processes from selected modules
+        for ($i=0; $i<count($modules); $i++) {
+            $class = $this->get_module_class($modules[$i]);
+            if ($class != null) {
+                
+                $mod_process_list = $class->process_list();
+                
+                foreach($mod_process_list as $k => $v) {
+                    $processkey = strtolower($modules[$i]."__".$v['function']);
+                    $list[$processkey] = $v; // set list key as "module__function"
+                    //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
                 }
             }
         }

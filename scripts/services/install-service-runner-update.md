@@ -14,7 +14,7 @@ The process is as follows:
 **Check the old version has been uninstalled**
 Install the service using the following commands (if redis is already installed skip that command):
 ```bash
-sudo pip install redis
+sudo pip3 install redis
 sudo ln -s /var/www/emoncms/scripts/services/service-runner/service-runner.service /lib/systemd/system
 sudo systemctl enable service-runner.service
 sudo systemctl start service-runner.service
@@ -24,7 +24,7 @@ systemctl status service-runner.service
 View the log with:
 `journalctl -f -u service-runner`
 
-Tested on Raspiban Stretch
+Tested on Raspbian Stretch
 
 ## Non Raspbian setup ##
 If you are not using Raspbian as your base OS you will need to change the **User** the service runs as.
@@ -50,7 +50,7 @@ This version was written by @greeebs using python and systemd instead of bash an
 https://github.com/emoncms/emoncms/pull/1025 for the discussion.
 The python service is far more efficient as a constant connection to redis can be kept open.
 
-To check which service is installed check `crontab -l`.  if there is an entry pointing to the bash script it is running the earlier version.
+To check which service is installed check `crontab -l`.  If there is an entry pointing to the bash script it is running the earlier version.
 
 To remove the old version (prior to installing the new version)
 ```

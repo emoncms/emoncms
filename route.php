@@ -131,13 +131,13 @@ class Route
         $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         
         // allow for method to be added as post variable
-        if(post('_method')=='DELETE') {
+        if (post('_method')=='DELETE') {
             $this->method = 'DELETE';
-        } elseif(post('_method')=='PUT') {
+        } elseif (post('_method')=='PUT') {
             $this->method = 'PUT';
-        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        } elseif (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
-        } elseif($requestMethod === 'OPTIONS') {
+        } elseif ($requestMethod === 'OPTIONS') {
             // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Headers: Authorization');

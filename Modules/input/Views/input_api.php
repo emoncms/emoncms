@@ -50,7 +50,7 @@ td:nth-of-type(2) { width:4%;}
     
     <tr><td><?php echo _('JSON format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300}</a></td></tr>
 
-    <tr><td><?php echo _('JSON format - with time (as a string in this example)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%22<?php echo date(DATE_ATOM);?>%22}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300,"time":"<?php echo date(DATE_ATOM);?>"}</a></td></tr>
+    <tr><td><?php echo _('JSON format - with time (as a string in this example)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%22<?php echo urlencode(date(DATE_ATOM));?>%22}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300,"time":"<?php echo urlencode(date(DATE_ATOM));?>"}</a></td></tr>
     
     <tr><td><?php echo _('JSON like format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
     
@@ -143,7 +143,7 @@ td:nth-of-type(2) { width:4%;}
 <p><b><?php echo _('Input actions'); ?></b></p>
 <table class="table">
 <tr><td><?php echo _('List of inputs with latest data'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/list"><?php echo $path; ?>input/list</a></td></tr>
-<tr><td><?php echo _('Get inputs configuration (last time and value not included)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/get_inputs"><?php echo $path; ?>input/get_inputs</a></td></tr>
+<tr><td><?php echo _('Get inputs configuration (last time and value not included)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/getinputs"><?php echo $path; ?>input/getinputs</a></td></tr>
 <tr><td><?php echo _('Set input fields'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/set?inputid=0&fields={'description':'Input Description'}"><?php echo $path; ?>input/set?inputid=0&fields={'description':'Input Description'}</a></td></tr>
 <tr><td><?php echo _('Delete an input'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/delete?inputid=0"><?php echo $path; ?>input/delete?inputid=0</a></td></tr>
 <tr><td><?php echo _('Clean inputs without a process list'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/clean"><?php echo $path; ?>input/clean</a></td></tr>

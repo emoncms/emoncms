@@ -6,8 +6,7 @@ $menu['right'][] = array(
     'text' => _("Add Bookmark"),
     'icon' => 'plus',
     'path' => 'user/bookmarks/add',
-    'order' => 0,
-    'text'=> _("Apps")
+    'order' => 0
 );
 $menu['user'][] = array(
     'text' => _("Bookmarks"),

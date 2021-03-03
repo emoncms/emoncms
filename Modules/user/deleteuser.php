@@ -4,14 +4,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function delete_user($userid,$mode) {
 
-    global $mysqli,$redis,$user,$feed_settings;
+    global $mysqli,$redis,$user,$settings;
 
     $result1 = $mysqli->query("SELECT id,apikey_read,apikey_write FROM users WHERE id=$userid");
     if ($user_row = $result1->fetch_object()){
         $result = "User $userid ".time()." ".date("Y-m-d H:i:s",time())."\n";
         
         require_once "Modules/feed/feed_model.php";
-        $feed = new Feed($mysqli,$redis,$feed_settings);
+        $feed = new Feed($mysqli,$redis,$settings["feed"]);
 
         require_once "Modules/input/input_model.php";
         $input = new Input($mysqli,$redis,$feed);

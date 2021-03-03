@@ -1,0 +1,543 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Input\n"
+"POT-Creation-Date: 2020-03-16 01:09+0100\n"
+"PO-Revision-Date: 2020-03-15 23:12+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../Views/input_api.php:8
+msgid "Input API"
+msgstr ""
+
+#: ../Views/input_api.php:9
+msgid "Apikey authentication"
+msgstr ""
+
+#: ../Views/input_api.php:10
+msgid ""
+"If you want to call any of the following actions when you're not logged in, "
+"you can authenticate with your API key:"
+msgstr ""
+
+#: ../Views/input_api.php:12
+msgid "Use POST parameter (Recommended): \"apikey=APIKEY\""
+msgstr ""
+
+#: ../Views/input_api.php:13
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr ""
+
+#: ../Views/input_api.php:14
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr ""
+
+#: ../Views/input_api.php:17
+msgid ""
+"Alternatively, use the encrypted input method to post data with higher "
+"security."
+msgstr ""
+
+#: ../Views/input_api.php:19
+msgid "Read only:"
+msgstr ""
+
+#: ../Views/input_api.php:22
+msgid "Read & Write:"
+msgstr ""
+
+#: ../Views/input_api.php:26
+msgid "Posting data to EmonCMS"
+msgstr ""
+
+#: ../Views/input_api.php:28
+msgid ""
+"The EmonCMS HTTP input API provides three ways of sending data to EmonCMS:"
+msgstr ""
+
+#: ../Views/input_api.php:30
+msgid ""
+"<b>input/post</b> - Post a single update from a node as either one data item "
+"or as a JSON data structure."
+msgstr ""
+
+#: ../Views/input_api.php:31
+msgid ""
+"<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a "
+"single update."
+msgstr ""
+
+#: ../Views/input_api.php:32
+msgid "<b>encryption</b> - An encrypted version of both of the above."
+msgstr ""
+
+#: ../Views/input_api.php:35
+msgid ""
+"If you're starting out with EmonCMS, 'input/post' is a good starting point "
+"for testing. This was emonCMS' original input method. The EmonPi/EmonBase "
+"uses the 'input/bulk' input method to post to a remote EmonCMS server as "
+"that method provides an option to efficiently upload buffered data after an "
+"internet connection outage. Combining multiple updates in a single input/"
+"bulk request also reduces bandwidth requirements. "
+msgstr ""
+
+#: ../Views/input_api.php:37
+msgid ""
+"For applications where HTTPS or TLS is not available, EmonCMS offers an in-"
+"built transport layer encryption solution where the EmonCMS apikey is used "
+"as the pre-shared key for encrypting the data with AES-128-CBC."
+msgstr ""
+
+#: ../Views/input_api.php:39
+msgid "input/post"
+msgstr ""
+
+#: ../Views/input_api.php:42
+msgid ""
+"The <b>fulljson</b> format is recommended for new integrations. It uses the "
+"PHP JSON decoder and the answer is also in json."
+msgstr ""
+
+#: ../Views/input_api.php:43
+msgid ""
+"The <b>json like</b> format is based on the CSV input parsing implementation "
+"and maintained for backward compatibility."
+msgstr ""
+
+#: ../Views/input_api.php:44
+msgid ""
+"The <b>node</b> parameter can be an unquoted string e.g: emontx or a number "
+"e.g: 10."
+msgstr ""
+
+#: ../Views/input_api.php:45
+msgid ""
+"Time is set as system time unless a <b>time</b> element is included. It can "
+"be either a parameter &time (unquoted) or as part of the JSON data "
+"structure. If both are included the parameter value will take precedence. "
+"Time is a UNIX timestamp and can be in seconds or a string PHP can decode "
+"(ISO8061 recommended). If you are having problems, ensure you are using "
+"seconds not milliseconds. If part of the JSON data structure is a string, "
+"the node value will report NULL"
+msgstr ""
+
+#: ../Views/input_api.php:46
+msgid ""
+"The input/post API is compatible with both GET and POST request methods "
+"(POST examples given use curl)."
+msgstr ""
+
+#: ../Views/input_api.php:49 ../Views/input_api.php:75
+#: ../Views/input_api.php:125 ../Views/input_dialog.php:113
+#: ../Views/input_dialog.php:114
+msgid "Description"
+msgstr ""
+
+#: ../Views/input_api.php:49
+msgid "HTTP Method"
+msgstr ""
+
+#: ../Views/input_api.php:49 ../Views/input_api.php:75
+#: ../Views/input_api.php:125
+msgid "Example"
+msgstr ""
+
+#: ../Views/input_api.php:51
+msgid "JSON format"
+msgstr ""
+
+#: ../Views/input_api.php:53
+msgid "JSON format - with time (as a string in this example)"
+msgstr ""
+
+#: ../Views/input_api.php:55
+msgid "JSON like format"
+msgstr ""
+
+#: ../Views/input_api.php:57
+msgid "CSV format"
+msgstr ""
+
+#: ../Views/input_api.php:59
+msgid "Set the input entry time manually"
+msgstr ""
+
+#: ../Views/input_api.php:61
+msgid "Node name as sub-action"
+msgstr ""
+
+#: ../Views/input_api.php:63
+msgid ""
+"To post data from a remote device you will need to include in the request "
+"url your write apikey. This give your device write access to your emoncms "
+"account, allowing it to post data."
+msgstr ""
+
+#: ../Views/input_api.php:63
+msgid ""
+"For example using the first json type request above just add the apikey to "
+"the end like this:"
+msgstr ""
+
+#: ../Views/input_api.php:65
+msgid "JSON format:"
+msgstr ""
+
+#: ../Views/input_api.php:66
+msgid "CSV format:"
+msgstr ""
+
+#: ../Views/input_api.php:69
+msgid "input/bulk"
+msgstr ""
+
+#: ../Views/input_api.php:71
+msgid "Efficiently upload multiple updates from multiple nodes."
+msgstr ""
+
+#: ../Views/input_api.php:75 ../Views/input_api.php:125
+msgid "Method"
+msgstr ""
+
+#: ../Views/input_api.php:77
+msgid "Example request:"
+msgstr ""
+
+#: ../Views/input_api.php:81
+msgid "The first number of each node is the time offset (see below)."
+msgstr ""
+
+#: ../Views/input_api.php:82
+msgid ""
+"The second number is the node id. This is the unique identifier for the "
+"wireless node."
+msgstr ""
+
+#: ../Views/input_api.php:83
+msgid ""
+"All the numbers after the first two, are data values. The second node here "
+"(node 17) has two data values: 1437 and 3164."
+msgstr ""
+
+#: ../Views/input_api.php:84
+msgid ""
+"Optional offset and time parameters allow the sender to set the time "
+"reference for the packets. If none is specified, it is assumed that the last "
+"packet just arrived. The time for the other packets is then calculated "
+"accordingly."
+msgstr ""
+
+#: ../Views/input_api.php:88
+msgid ""
+"Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):"
+msgstr ""
+
+#: ../Views/input_api.php:90
+msgid "Time offset format (-6 is -16 seconds to now):"
+msgstr ""
+
+#: ../Views/input_api.php:92
+msgid "Sentat format: (useful for sending as positive increasing time index)"
+msgstr ""
+
+#: ../Views/input_api.php:94
+msgid ""
+"Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
+"UTC))"
+msgstr ""
+
+#: ../Views/input_api.php:96
+msgid ""
+"Named feeds (similar to the main example but updates the keys \"data\" and "
+"\"anotherData\" for node 19)"
+msgstr ""
+
+#: ../Views/input_api.php:98
+msgid "Legacy format:"
+msgstr ""
+
+#: ../Views/input_api.php:100
+msgid "Time offset format:"
+msgstr ""
+
+#: ../Views/input_api.php:102
+msgid "Sentat format:"
+msgstr ""
+
+#: ../Views/input_api.php:104
+msgid "Absolute time format:"
+msgstr ""
+
+#: ../Views/input_api.php:107
+msgid "Encryption"
+msgstr ""
+
+#: ../Views/input_api.php:109
+msgid ""
+"For applications where HTTPS or TLS is not available, EmonCMS offers an in-"
+"built transport layer encryption solution where the emoncms apikey is used "
+"as the pre-shared key for encrypting the data with AES-128-CBC."
+msgstr ""
+
+#: ../Views/input_api.php:109
+msgid "There is a PHP example of how to generate an encrypted request here: "
+msgstr ""
+
+#: ../Views/input_api.php:132
+msgid "Fetching inputs, updating meta data and other actions"
+msgstr ""
+
+#: ../Views/input_api.php:135
+msgid "Input get"
+msgstr ""
+
+#: ../Views/input_api.php:137
+msgid "List all nodes and associated inputs:"
+msgstr ""
+
+#: ../Views/input_api.php:138
+msgid "List inputs for specific node:"
+msgstr ""
+
+#: ../Views/input_api.php:139
+msgid "Fetch specific input from node:"
+msgstr ""
+
+#: ../Views/input_api.php:143
+msgid "Input actions"
+msgstr ""
+
+#: ../Views/input_api.php:145
+msgid "List of inputs with latest data"
+msgstr ""
+
+#: ../Views/input_api.php:146
+msgid "Get inputs configuration (last time and value not included)"
+msgstr ""
+
+#: ../Views/input_api.php:147
+msgid "Set input fields"
+msgstr ""
+
+#: ../Views/input_api.php:148
+msgid "Delete an input"
+msgstr ""
+
+#: ../Views/input_api.php:149
+msgid "Clean inputs without a process list"
+msgstr ""
+
+#: ../Views/input_api.php:152
+msgid "Input process actions"
+msgstr ""
+
+#: ../Views/input_api.php:154
+msgid "Get input process list"
+msgstr ""
+
+#: ../Views/input_api.php:155
+msgid "Set input process list"
+msgstr ""
+
+#: ../Views/input_api.php:156
+msgid "Reset input process list"
+msgstr ""
+
+#: ../Views/input_dialog.php:64
+msgid "Delete Input"
+msgstr ""
+
+#: ../Views/input_dialog.php:68
+msgid ""
+"Deleting an Input will lose it name and configured Processlist.<br>A new "
+"blank input is automatic created by API data post if it does not already "
+"exists."
+msgstr ""
+
+#: ../Views/input_dialog.php:71
+msgid "Are you sure you want to delete?"
+msgstr ""
+
+#: ../Views/input_dialog.php:72 ../Views/input_dialog.php:103
+#: ../Views/input_view.php:212 ../input_menu.php:4
+msgid "Inputs"
+msgstr ""
+
+#: ../Views/input_dialog.php:87
+msgid "Cancel"
+msgstr ""
+
+#: ../Views/input_dialog.php:99
+msgid "Edit Input"
+msgstr ""
+
+#: ../Views/input_dialog.php:102
+msgid "Edit the input's name and description."
+msgstr ""
+
+#: ../Views/input_dialog.php:108 ../Views/input_dialog.php:109
+msgid "Name"
+msgstr ""
+
+#: ../Views/input_dialog.php:116 ../Views/input_dialog.php:147
+msgid "Save"
+msgstr ""
+
+#: ../Views/input_dialog.php:133
+msgid "Close"
+msgstr ""
+
+#: ../Views/input_dialog.php:134
+msgid "Save All"
+msgstr ""
+
+#: ../Views/input_dialog.php:145 ../Views/input_dialog.php:146
+msgid "Basic text only. Symbols allowed _-.@"
+msgstr ""
+
+#: ../Views/input_dialog.php:145
+msgid "name"
+msgstr ""
+
+#: ../Views/input_dialog.php:146
+msgid "description"
+msgstr ""
+
+#: ../Views/input_view.php:27
+msgid "ID"
+msgstr ""
+
+#: ../Views/input_view.php:28
+msgid "Value"
+msgstr ""
+
+#: ../Views/input_view.php:29
+msgid "Time"
+msgstr ""
+
+#: ../Views/input_view.php:30
+msgid "Updated"
+msgstr ""
+
+#: ../Views/input_view.php:31 ../Views/input_view.js:926
+msgid "Configure your device here"
+msgstr ""
+
+#: ../Views/input_view.php:32
+msgid "Show node key"
+msgstr ""
+
+#: ../Views/input_view.php:33 ../Views/input_view.php:253
+msgid "Configure device using device template"
+msgstr ""
+
+#: ../Views/input_view.php:34 ../Views/input_view.php:276
+msgid "Configure Input processing"
+msgstr ""
+
+#: ../Views/input_view.php:35 ../Views/input_view.js:1188
+#: ../Views/input_view.js:1219
+msgid "Saving"
+msgstr ""
+
+#: ../Views/input_view.php:36 ../Views/input_view.js:304
+msgid "Collapse"
+msgstr ""
+
+#: ../Views/input_view.php:37 ../Views/input_view.js:306
+msgid "Expand"
+msgstr ""
+
+#: ../Views/input_view.php:38 ../Views/input_view.php:237
+#, php-format
+msgid "Select all %s inputs"
+msgstr ""
+
+#: ../Views/input_view.php:39 ../Views/input_view.php:219
+msgid "Select all"
+msgstr ""
+
+#: ../Views/input_view.php:213
+msgid "Input API Help"
+msgstr ""
+
+#: ../Views/input_view.php:223 ../Views/input_view.js:377
+#: ../Views/input_view.js:490
+msgid "Delete"
+msgstr ""
+
+#: ../Views/input_view.php:224
+msgid "Edit"
+msgstr ""
+
+#: ../Views/input_view.php:250
+msgid "Show device key"
+msgstr ""
+
+#: ../Views/input_view.php:284 ../Views/input_view.php:299
+msgid "No inputs created"
+msgstr ""
+
+#: ../Views/input_view.php:285 ../Views/input_view.php:300
+msgid ""
+"Inputs are the main entry point for your monitoring device. Configure your "
+"device to post values here, you may want to follow the <a href=\"api\">Input "
+"API helper</a> as a guide for generating your request."
+msgstr ""
+
+#: ../Views/input_view.php:287 ../Views/input_view.php:304
+msgid "New device"
+msgstr ""
+
+#: ../Views/input_view.php:291
+msgid "Loading"
+msgstr ""
+
+#: ../input_model.php:606
+msgid "Invalid feed"
+msgstr ""
+
+#: ../input_model.php:613
+msgid "Invalid input"
+msgstr ""
+
+#: ../input_model.php:654
+msgid "Error setting processlist"
+msgstr ""
+
+#: ../Views/input_view.js:182 ../Views/input_view.js:186
+msgid "Please install the device module to enable this feature"
+msgstr ""
+
+#: ../Views/input_view.js:189
+msgid "No device key created"
+msgstr ""
+
+#: ../Views/input_view.js:404
+msgid "Deleted"
+msgstr ""
+
+#: ../Views/input_view.js:420
+msgid "Error"
+msgstr ""
+
+#: ../Views/input_view.js:548 ../Views/input_view.js:600
+#: ../Views/input_view.js:1277
+msgid "Saved"
+msgstr ""
+
+#: ../Views/input_view.js:692 ../Views/input_view.js:696
+#: ../Views/input_view.js:700
+msgid "Nothing changed"
+msgstr ""

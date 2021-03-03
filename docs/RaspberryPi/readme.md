@@ -1,6 +1,10 @@
-## Install Emoncms on Raspberry Pi (Raspbian Stretch)
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
+---
+
+## Archived: Install Emoncms on Raspberry Pi (Raspbian Stretch)
+
+This guide will install emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
 **Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).**
 
@@ -99,25 +103,26 @@ Add an emoncms database user and set that user's permissions. In the command bel
 
 ### Configure emoncms database settings
 
-Make a copy of default.settings.php and call it settings.php:
+Make a copy of example.settings.ini and call it settings.ini:
 
-    cd /var/www/emoncms && cp default.settings.php settings.php
+    cd /var/www/emoncms && cp example.settings.ini settings.ini
 
-Open settings.php in an editor:
+Open settings.ini in an editor:
 
-    nano settings.php
+    nano settings.ini
 
 Update your settings to use your Database 'user' & 'password', which will enable emoncms to access the database:
 
-    $server   = "localhost";
-    $database = "emoncms";
-    $username = "emoncms";
-    $password = "new_secure_password";
+    [sql]
+    server = "localhost"
+    database = "emoncms"
+    username = "emoncms"
+    password = "new_secure_password"
     
 Further down in settings is an optional 'data structure store' - Redis, which acts as a cache for the data produced by emoncms, to ensure that it is efficiently written to disk. To activate Redis, change 'false' to 'true'. :
 
-	//2 #### Redis
-	$redis_enabled = true;
+    [redis]
+    enabled = true
 
 Save and exit.
 Create a symlink to reference emoncms within the web root folder:

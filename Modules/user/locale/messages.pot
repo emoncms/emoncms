@@ -1,0 +1,361 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - User\n"
+"POT-Creation-Date: 2020-03-16 01:10+0100\n"
+"PO-Revision-Date: 2020-03-15 15:32+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../Views/bookmarks.php:1 ../user_menu.php:13
+msgid "Bookmarks"
+msgstr ""
+
+#: ../Views/bookmarks.php:3
+msgid ""
+"You can bookmark any page you're on by clicking the star icon (top right)"
+msgstr ""
+
+#: ../Views/bookmarks.php:7
+msgid "Rename or remove your bookmarks"
+msgstr ""
+
+#: ../Views/bookmarks.php:15 ../Views/bookmarks.php:33
+#: ../profile/profile.php:66 ../profile/profile.php:75
+#: ../profile/profile.php:100
+msgid "Save"
+msgstr ""
+
+#: ../Views/bookmarks.php:16 ../Views/bookmarks.php:34
+#: ../profile/profile.php:101 ../profile/profile.php:200
+msgid "Cancel"
+msgstr ""
+
+#: ../Views/bookmarks.php:18 ../profile/profile.php:63
+#: ../profile/profile.php:72
+msgid "Edit"
+msgstr ""
+
+#: ../Views/bookmarks.php:19 ../Views/bookmarks.php:37
+msgid "Delete"
+msgstr ""
+
+#: ../login_block.php:40 ../profile/profile.php:71
+msgid "Email"
+msgstr ""
+
+#: ../login_block.php:46 ../profile/profile.php:62
+msgid "Username"
+msgstr ""
+
+#: ../login_block.php:53
+msgid "Password"
+msgstr ""
+
+#: ../login_block.php:59
+msgid "Confirm password"
+msgstr ""
+
+#: ../login_block.php:70
+msgid "Remember me"
+msgstr ""
+
+#: ../login_block.php:74 ../user_menu.php:38
+msgid "Login"
+msgstr ""
+
+#: ../login_block.php:75 ../login_block.php:82 ../login_block.php:100
+msgid "or"
+msgstr ""
+
+#: ../login_block.php:76
+msgid "register"
+msgstr ""
+
+#: ../login_block.php:81
+msgid "Register"
+msgstr ""
+
+#: ../login_block.php:83 ../login_block.php:101
+msgid "login"
+msgstr ""
+
+#: ../profile/profile.php:54
+msgid "My account"
+msgstr ""
+
+#: ../profile/profile.php:58
+msgid "User ID"
+msgstr ""
+
+#: ../profile/profile.php:81
+msgid "Change Password"
+msgstr ""
+
+#: ../profile/profile.php:88
+msgid "Current password"
+msgstr ""
+
+#: ../profile/profile.php:92
+msgid "New password"
+msgstr ""
+
+#: ../profile/profile.php:96
+msgid "Repeat new password"
+msgstr ""
+
+#: ../profile/profile.php:107
+msgid "Write API Key"
+msgstr ""
+
+#: ../profile/profile.php:107 ../profile/profile.php:111
+msgid "Copy"
+msgstr ""
+
+#: ../profile/profile.php:111
+msgid "Read API Key"
+msgstr ""
+
+#: ../profile/profile.php:119
+msgid "Delete my account"
+msgstr ""
+
+#: ../profile/profile.php:122
+msgid "Mobile app"
+msgstr ""
+
+#: ../profile/profile.php:127
+msgid "Scan QR code from the iOS or Android app to connect:"
+msgstr ""
+
+#: ../profile/profile.php:129
+msgid "Or using a barcode scanner scan to view MyElectric graph"
+msgstr ""
+
+#: ../profile/profile.php:143
+msgid "My Profile"
+msgstr ""
+
+#: ../profile/profile.php:147
+msgid "Please update your database"
+msgstr ""
+
+#: ../profile/profile.php:181
+msgid "WARNING deleting an account is permanent"
+msgstr ""
+
+#: ../profile/profile.php:185
+msgid "Are you sure you want to delete your account?"
+msgstr ""
+
+#: ../profile/profile.php:189
+msgid "Your account has been successfully deleted."
+msgstr ""
+
+#: ../profile/profile.php:195
+msgid "Confirm password to delete:"
+msgstr ""
+
+#: ../profile/profile.php:201
+msgid "Delete permanently"
+msgstr ""
+
+#: ../profile/profile.php:202 ../user_menu.php:30
+msgid "Logout"
+msgstr ""
+
+#: ../profile/profile.php:242
+msgid "Gravatar"
+msgstr ""
+
+#: ../profile/profile.php:243
+msgid "Name"
+msgstr ""
+
+#: ../profile/profile.php:244
+msgid "Location"
+msgstr ""
+
+#: ../profile/profile.php:245
+msgid "Bio"
+msgstr ""
+
+#: ../profile/profile.php:246
+msgid "Timezone"
+msgstr ""
+
+#: ../profile/profile.php:247
+msgid "Language"
+msgstr ""
+
+#: ../profile/profile.php:248
+msgid "Starting page"
+msgstr ""
+
+#: ../profile/profile.php:375
+msgid "Passwords do not match"
+msgstr ""
+
+#: ../user_controller.php:163
+msgid "Preference Saved"
+msgstr ""
+
+#: ../user_controller.php:165
+msgid "Problem saving Preferences"
+msgstr ""
+
+#: ../user_controller.php:168
+msgid "Invalid parameters"
+msgstr ""
+
+#: ../user_controller.php:180
+msgid "Error getting data"
+msgstr ""
+
+#: ../user_controller.php:195
+msgid "Empty"
+msgstr ""
+
+#: ../user_menu.php:6
+msgid "Add Bookmark"
+msgstr ""
+
+#: ../user_menu.php:10
+msgid "Apps"
+msgstr ""
+
+#: ../user_menu.php:19
+msgid "My Account"
+msgstr ""
+
+#: ../user_model.php:228
+msgid "Missing username, password or email parameter"
+msgstr ""
+
+#: ../user_model.php:229 ../user_model.php:546
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr ""
+
+#: ../user_model.php:230 ../user_model.php:560
+msgid "Username already exists"
+msgstr ""
+
+#: ../user_model.php:232 ../user_model.php:325 ../user_model.php:492
+#: ../user_model.php:569
+msgid "Email address format error"
+msgstr ""
+
+#: ../user_model.php:234 ../user_model.php:544
+msgid "Username length error"
+msgstr ""
+
+#: ../user_model.php:235 ../user_model.php:461 ../user_model.php:462
+msgid "Password length error"
+msgstr ""
+
+#: ../user_model.php:251
+msgid "Error creating user, mysql error: "
+msgstr ""
+
+#: ../user_model.php:271
+msgid "Invalid username"
+msgstr ""
+
+#: ../user_model.php:275 ../user_model.php:365
+msgid "Database error, you may need to run database update"
+msgstr ""
+
+#: ../user_model.php:285 ../user_model.php:378
+msgid "Username does not exist"
+msgstr ""
+
+#: ../user_model.php:287
+msgid "Email already verified"
+msgstr ""
+
+#: ../user_model.php:320
+msgid "Email verification email sent, please check your inbox"
+msgstr ""
+
+#: ../user_model.php:326
+msgid "Invalid verification key"
+msgstr ""
+
+#: ../user_model.php:354 ../user_model.php:422
+msgid "Username or password empty"
+msgstr ""
+
+#: ../user_model.php:360
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+
+#: ../user_model.php:379
+msgid "Please verify email address"
+msgstr ""
+
+#: ../user_model.php:385
+msgid ""
+"Incorrect password, if you're sure it's correct try clearing your browser "
+"cache"
+msgstr ""
+
+#: ../user_model.php:403
+msgid "Error creating rememberme cookie, try login without rememberme"
+msgstr ""
+
+#: ../user_model.php:413
+msgid "Login successful"
+msgstr ""
+
+#: ../user_model.php:424
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr ""
+
+#: ../user_model.php:437 ../user_model.php:442
+msgid "Incorrect authentication"
+msgstr ""
+
+#: ../user_model.php:485
+msgid "Old password incorect"
+msgstr ""
+
+#: ../user_model.php:541
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change username"
+msgstr ""
+
+#: ../user_model.php:556
+msgid "Username updated"
+msgstr ""
+
+#: ../user_model.php:566
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change email"
+msgstr ""
+
+#: ../user_model.php:585
+msgid "Email updated"
+msgstr ""
+
+#: ../user_model.php:751 ../user_model.php:769
+msgid "Error updating user info"
+msgstr ""
+
+#: ../user_model.php:974
+msgid "Please update database"
+msgstr ""

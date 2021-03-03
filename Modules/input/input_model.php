@@ -94,7 +94,7 @@ class Input
 
     public function validate_access($dbinputs, $nodeid)
     {
-        global $session, $max_node_id_limit;
+        global $session, $settings;
         $success=true;
         $message = "";
         if (isset($session['deviceid']) && isset($session['nodeid'])) {
@@ -105,9 +105,9 @@ class Input
                 $success = false;
                 $message = "Node '$nodeid' does not belong to device.";
             }
-        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
+        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $settings["input"]["max_node_id_limit"] )) {
             $success = false;
-            $message = "Reached the maximal allowed number of different NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
+            $message = "Reached the maximal allowed number of different NodeIds, limit is ".$settings["input"]["max_node_id_limit"].". Node '$nodeid' was ignored.";
         }
         return array('success'=>$success, 'message'=>$message);
     }
@@ -233,12 +233,18 @@ class Input
             $this->load_to_redis($userid);
             $inputids = $this->redis->sMembers("user:inputs:$userid");
         }
-
+        
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
         
-        foreach ($result as $row) $dbinputs[] = $row;
+        // Indexed inputs pre master merge: 
+        // foreach ($result as $row) $dbinputs[] = $row;
+        foreach ($result as $row) {
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
+        }
         return $dbinputs;
     }
 
@@ -585,7 +591,8 @@ class Input
             $processlist_after = implode(",",$pairsout);
 
             if ($processlist_after!=$processlist) {
-                $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                if ($this->redis)
+                    $this->redis->hset("input:$inputid",'processList',$processlist_after);
                 $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
                 $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
             }

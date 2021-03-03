@@ -17,11 +17,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings;
+    global $mysqli, $redis, $user, $session, $route, $settings;
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$feed_settings);
+    $feed = new Feed($mysqli,$redis,$settings["feed"]);
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
@@ -51,13 +51,23 @@ function feed_controller()
                 if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
                 else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
             }
-            else if (isset($_GET['userid'])) return $feed->get_user_public_feeds(get('userid'));
+            else if (isset($_GET['userid'])) {
+                return $feed->get_user_public_feeds(get('userid'));
+            } else {
+                return false;
+            }
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds_with_meta($session['userid']);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
-            return $feed->get_id($session['userid'],get("name"));
+            if (isset($_GET["tag"]) && isset($_GET["name"])) {
+                return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
+            } else if (isset($_GET["name"])) {
+                return $feed->get_id($session['userid'],get("name"));
+            } else {
+                return false;
+            }
         } elseif ($route->action == "create" && $session['write']) {
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
@@ -92,6 +102,7 @@ function feed_controller()
             // return $_REQUEST;
             $singular = false;
             $feedids = array();
+            $results = array();
             if (isset($_GET['id'])) {
                 $feedids = explode(",", get('id'));
                 $singular = true;
@@ -116,7 +127,6 @@ function feed_controller()
                                 if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
                                 if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
                                 
-                                
                                 if (isset($_GET['interval'])) {
                                     $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                                 } else if (isset($_GET['mode'])) {
@@ -136,12 +146,15 @@ function feed_controller()
                             }
                         }
                     } else {
-                        $missing = $feedid;
+                        $missing[] = intval($feedid); //add feed id to array of missing ids
                     }
                 }
                 if (!empty($missing)) {
                     // return error if any feed ids not found
-                    return array('success'=>false, 'message'=> count($missing) .' feeds do not exist');
+                    if (count($missing) === 1) // if just one feed not found, return its id
+                        return array('success'=>false, 'message'=> "feed $missing[0] does not exist", 'feeds' => $missing);
+                    else
+                        return array('success'=>false, 'message'=> count($missing) .' feeds do not exist', 'feeds' => $missing);
                 } else {
                     
                     if ($singular && count($results)==1) {
@@ -169,7 +182,7 @@ function feed_controller()
                 if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                 {
                     if ($route->action == "timevalue") return $feed->get_timevalue($feedid);
-                    else if ($route->action == "value") return $feed->get_value($feedid); // null is a valid response
+                    else if ($route->action == "value") return $feed->get_value($feedid,get('time')); // null is a valid response
                     else if ($route->action == "get") return $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
@@ -212,13 +225,39 @@ function feed_controller()
                         }
 
                     // Insert datapoint
-                    } else if ($route->action == "insert") { 
-                        return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                    } else if ($route->action == "insert") {
+                        
+                        // Single data point
+                        if (isset($_GET['time']) || isset($_GET['value'])) {
+                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                        }
+
+                        // Single or multiple datapoints via json format
+                        // Format: [[UNIXTIME,VALUE],[UNIXTIME,VALUE],[UNIXTIME,VALUE]]
+                        $data = false;
+                        if (isset($_GET['data'])) {
+                            $data = json_decode($_GET['data']);
+                        } else if (isset($_POST['data'])) {
+                            $data = json_decode($_POST['data']);
+                        } else {
+                            return array('success'=>false, 'message'=>'missing data parameter');
+                        }
+                        if ($data==null) return array('success'=>false, 'message'=>'error decoding json');
+                        
+                        if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
+                        
+                        foreach ($data as $dp) {
+                            if (count($dp)==2) {
+                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
+                            }
+                        }
+                        return array('success'=>true);
 
                     // Update datapoint
                     } else if ($route->action == "update") {
                         if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
-                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'));
+                        $skipbuffer = false; if (isset($_GET['skipbuffer'])) $skipbuffer = true;
+                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'),$skipbuffer);
 
                     // Delete feed
                     } else if ($route->action == "delete") {
@@ -227,8 +266,12 @@ function feed_controller()
                     // scale range for PHPFINA
                     // added by Alexandre CUER - january 2019 
                     } else if ($route->action == "scalerange") {
-                        if ($f['engine'] == Engine::PHPFINA) 
-                            $result = $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
+
+                        if ($f['engine'] == Engine::PHPFINA) {
+                            return $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
+                        } else {
+                            return "scalerange only supported by phpfina engine";
+                        }
                         
                     // Clear feed
                     } else if ($route->action == "clear") {
@@ -255,11 +298,18 @@ function feed_controller()
                         } else if (isset($_GET['npoints'])) {
                             return $feed->upload_variable_interval($feedid,get("npoints"));
                         }
-                    }
-
-                    if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
-                        if ($route->action == "deletedatapoint") return $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
-                        else if ($route->action == "deletedatarange") return $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
+                    } else if ($route->action == "deletedatapoint") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                            return $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
+                        } else {
+                            return "deletedatapoint only supported by mysqltimeseries engine";
+                        }
+                    } else if ($route->action == "deletedatarange") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                            return $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
+                        } else {
+                            return "deletedatarange only supported by mysqltimeseries engine";
+                        }
                     }
                 }
             }

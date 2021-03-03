@@ -1,0 +1,54 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Basic Theme\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-16 01:11+0100\n"
+"PO-Revision-Date: 2020-03-15 17:09+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 2.3\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../menu_view.php:30
+msgid "Open/Close Sidebar"
+msgstr ""
+
+#: ../menu_view.php:78
+msgid "Add Bookmark"
+msgstr ""
+
+#: ../menu_view.php:84
+msgid "Remove Bookmark"
+msgstr ""
+
+#: ../menu_view.php:107
+msgid "Setup"
+msgstr ""
+
+#: ../menu_view.php:137
+msgid "Admin"
+msgstr ""
+
+#: ../sidebar_view.php:137
+msgid "Close"
+msgstr ""
+
+#: ../sidebar_view.php:189 ../sidebar_view.php:200
+msgid "Bookmarks"
+msgstr ""
+
+#: ../sidebar_view.php:201
+msgid "Edit"
+msgstr ""
+
+#: ../theme.php:81
+msgid "Powered by"
+msgstr ""

@@ -102,6 +102,13 @@ var feed = {
     return response;
   },
 
+  'get_value': function(feedid,time) 
+  {
+      var result = feed.get_data(feedid,time,time+1000,1,0,0);
+      if (result.length>0) return result[0];
+      return false;
+  },
+
   'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;

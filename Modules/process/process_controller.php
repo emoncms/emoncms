@@ -14,7 +14,7 @@ function process_controller()
 {
     //return array('content'=>"ok");
 
-    global $mysqli, $redis, $user, $session, $route, $feed_settings;
+    global $mysqli, $redis, $user, $session, $route, $settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
@@ -22,7 +22,7 @@ function process_controller()
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli,$redis, $settings["feed"]);
 
     require_once "Modules/input/input_model.php"; 
     $input = new Input($mysqli,$redis, $feed);

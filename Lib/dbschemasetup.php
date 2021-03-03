@@ -39,32 +39,39 @@ function db_schema_diff_datatype($spec, $current)
 {
     $changed = false;
 
-    $spec_default = isset($spec['default']) ? $spec['default'] : NULL;
+    $spec_default = isset($spec['default']) ? $spec['default'] : null;
     // Defaults for text fields are seemingly always returned
     // single-quoted from MySQL DESCRIBE statement
-    if ($spec['type'] == 'text' && $spec_default !== NULL) {
+    if ($spec['type'] == 'text' && $spec_default !== null) {
         $spec_default = "'$spec_default'";
     }
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
-
-    // Null handling is a little involved
-    if (isset($spec['Null']) && ($spec['Null'] === false || $spec['Null'] === "NO"))
-        $spec_null = "NO";
-    // Primary keys imply NOT NULL
-    else if (isset($spec['Key']))
-        $spec_null = "NO";
-    else
-        $spec_null = "YES";
-
-    if ($spec_null != $current['Null'])
+    // check if field Type changed
+    if ($spec['type'] !== $current['Type']) {
         $changed = true;
+    }
+    // Null handling is a little involved
+    if (isset($spec['Null']) && ($spec['Null'] === false || $spec['Null'] === "NO")) {
+        $spec_null = "NO";
+    }
+    // Primary keys imply NOT NULL
+    elseif (isset($spec['Key'])) {
+        $spec_null = "NO";
+    } else {
+        $spec_null = "YES";
+    }
+
+    if ($spec_null != $current['Null']) {
+        $changed = true;
+    }
 
     // 'extra' is a flag for auto_increment
     $spec_extra = isset($spec['Extra']) ? $spec['Extra'] : false;
-    if ($spec_extra && $current['Extra'] != "auto_increment")
+    if ($spec_extra && $current['Extra'] != "auto_increment") {
         $changed = true;
+    }
 
     return $changed;
 }
@@ -76,10 +83,11 @@ function db_schema_diff_key($spec, $current)
 {
     // 'key' is a flag for primary key
     $spec_primarykey = isset($spec['Key']) ? $spec['Key'] : false;
-    if ($spec_primarykey && $current['Key'] != "PRI")
+    if ($spec_primarykey && $current['Key'] != "PRI") {
         return true;
-    else
+    } else {
         return false;
+    }
 }
 
 //
@@ -89,7 +97,7 @@ function db_schema_diff_key($spec, $current)
 //   `id` int(11) NOT NULL auto_increment PRIMARY KEY
 //   `name` text
 //
-function db_schema_make_field($mysqli, $name, $spec, $add_key=true)
+function db_schema_make_field($mysqli, $name, $spec, $add_key = true)
 {
     // Start with name and basic type
     $str =  "`$name` ". $spec['type'];
@@ -101,22 +109,27 @@ function db_schema_make_field($mysqli, $name, $spec, $add_key=true)
 
     $null = false;
     // We accept either NO or false
-    if (isset($spec['Null']) && ($spec['Null'] === "NO" || $spec['Null'] === false))
+    if (isset($spec['Null']) && ($spec['Null'] === "NO" || $spec['Null'] === false)) {
         $null = true;
+    }
     // Primary keys imply NOT NULL
-    else if (isset($spec['Key']) && $spec['Key'])
+    elseif (isset($spec['Key']) && $spec['Key']) {
         $null = true;
+    }
 
-    if ($null)
+    if ($null) {
         $str .= " NOT NULL";
+    }
 
     // Auto-increment
-    if (isset($spec['Extra']) && $spec['Extra'])
+    if (isset($spec['Extra']) && $spec['Extra']) {
         $str .= " auto_increment";
+    }
 
     // Primary key
-    if ($add_key && isset($spec['Key']) && $spec['Key'])
+    if ($add_key && isset($spec['Key']) && $spec['Key']) {
         $str .= " PRIMARY KEY";
+    }
 
     // Return null if no changes to current field; full spec otherwise
     return $str;
@@ -125,8 +138,27 @@ function db_schema_make_field($mysqli, $name, $spec, $add_key=true)
 //
 // Given a table and a field name, return the SQL to create a new index
 //
-function db_schema_make_index($table, $field) {
+function db_schema_make_index($table, $field)
+{
     return "CREATE INDEX IX_{$table}_{$field} ON $table ($field)";
+}
+
+//
+// Make a compound key if the schema has more than one key
+//
+function db_schema_make_compound_key($schema)
+{
+    $fields = array();
+    foreach ($schema as $field => $spec) {
+        if (isset($spec['Key']) && $spec['Key']) {
+            array_push($fields, "`$field`");
+        }
+    }
+    if (count($fields) < 2) {
+        return "";
+    }
+    $fields = join(",", $fields);
+    return ", PRIMARY KEY ($fields)";
 }
 
 //
@@ -137,15 +169,15 @@ function db_schema_make_table($mysqli, $table, $schema, &$operations)
     // If table doesn't exist, create it from scratch
     $fields = array();
     $indexes = array();
-
+    $pk = db_schema_make_compound_key($schema);
     foreach ($schema as $field => $spec) {
-        $fields[] = db_schema_make_field($mysqli, $field, $spec);
+        $fields[] = db_schema_make_field($mysqli, $field, $spec, $pk === "");
         if (isset($spec['Index'])) {
             $indexes[] = $field;
         }
     }
 
-    $operations[] = "CREATE TABLE `$table` (" .join(', ', $fields). ") ENGINE=MYISAM";
+    $operations[] = "CREATE TABLE `$table` (" .join(', ', $fields). $pk . ") ENGINE=MYISAM";
 
     foreach ($indexes as $field) {
         $operations[] = db_schema_make_index($table, $field);
@@ -172,7 +204,7 @@ function db_schema_add_column($mysqli, $table, $field, $spec, &$operations)
 //
 function db_schema_update_column($mysqli, $table, $field, $spec, &$operations)
 {
-    $result = $mysqli->query("DESCRIBE $table `$field`");
+    $result = $mysqli->query("DESCRIBE `$table` `$field`");
     $current = $result->fetch_array();
 
     // Check if we 1. need to change type 2. need to add a primary key
@@ -274,7 +306,7 @@ function db_schema_test($mysqli)
 
     // Test 2
     $output = db_schema_make_field($mysqli, "tags", array('type' => 'text',
-                                                          'default' => NULL,
+                                                          'default' => null,
                                                           'Null' => true));
     $expected = "`tags` text";
     if ($output != $expected) {

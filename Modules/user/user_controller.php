@@ -16,13 +16,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function user_controller()
 {
-    global $mysqli, $redis, $user, $path, $session, $route , $enable_multi_user, $email_verification;
+    global $mysqli, $redis, $user, $path, $session, $route , $settings;
 
     $result = false;
 
     $allowusersregister = true;
     // Disables further user creation after first admin user is created
-    if ($enable_multi_user===false && $user->get_number_of_users()>0) {
+    if ($settings["interface"]["enable_multi_user"]==false && $user->get_number_of_users()>0) {
         $allowusersregister = false;
     }
 
@@ -36,7 +36,7 @@ function user_controller()
             $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
             $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
             $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
-            $referrer = filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL);
+            $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
             
             // load login template with the above parameters
             $result = view("Modules/user/login_block.php", array(
@@ -53,7 +53,7 @@ function user_controller()
             // decode url parameters
             $next = $path;
             $message = filter_var(urldecode(get('msg')), FILTER_SANITIZE_STRING);
-            $referrer = filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL);
+            $referrer = htmlentities(filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL));
             
             // encode url parameters to pass through to login page
             $msg = urlencode($message);
@@ -68,7 +68,7 @@ function user_controller()
             exit();
         }
         
-        if ($route->action == 'verify' && $email_verification && !$session['read'] && isset($_GET['key'])) { 
+        if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
             $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
@@ -85,10 +85,10 @@ function user_controller()
     {
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
+        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'),post('timezone'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
-        if ($route->action == 'resend-verify' && $email_verification) {
+        if ($route->action == 'resend-verify' && $settings["interface"]["email_verification"]) {
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
             $result = $user->send_verification_email($username);
         }

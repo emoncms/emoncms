@@ -14,8 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $redis, $openenergymonitor_dir, $admin_show_update, $path;
-    global $log, $log_location, $log_enabled, $log_level;
+    global $settings, $mysqli, $session, $route, $redis, $path, $log;
     
     $result = EMPTY_ROUTE;// display missing route message by default
     $message = _('406: Route not found');
@@ -23,7 +22,7 @@ function admin_controller()
     if(!$session['write']) {
         $result = ''; // empty result shows login page (now redirects once logged in)
         $message = _('Admin re-authentication required');
-    }   
+    }
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -34,17 +33,17 @@ function admin_controller()
     //placed some other variables here as well so they are grouped
     //together for the emonpi action even though they might not be used
     //in the subaction
-    $emoncms_logfile = "$log_location/emoncms.log";
-    $update_logfile = "$log_location/emonpiupdate.log";
-    $backup_logfile = "$log_location/emonpibackup.log";
+    $emoncms_logfile = $settings['log']['location']."/emoncms.log";
+    $update_logfile = $settings['log']['location']."/emonpiupdate.log";
+    $backup_logfile = $settings['log']['location']."/emonpibackup.log";
     $update_flag = "/tmp/emoncms-flag-update";
     $backup_flag = "/tmp/emonpibackup";
-    if (file_exists("$openenergymonitor_dir/EmonScripts")) {
-        $update_script = "$openenergymonitor_dir/EmonScripts/update/service-runner-update.sh";
+    if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
+        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
     } else {
-        $update_script = "$openenergymonitor_dir/emonpi/service-runner-update.sh";
+        $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
     }
-    $backup_file = "$openenergymonitor_dir/data/backup.tar.gz";
+    $backup_file = $settings['openenergymonitor_dir']."/data/backup.tar.gz";
     
     $log_levels = array(
         1 =>'INFO',
@@ -52,14 +51,13 @@ function admin_controller()
         3 =>'ERROR'
     );
 
-    $path_to_config = 'settings.php';
+    // $path_to_config = 'settings.php';
     
     if ($session['admin']) {
-        
         if ($route->format == 'html') {
             if ($route->action == 'view') {
                 require "Modules/admin/admin_model.php";
-                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi;
+                global $path, $emoncms_version, $shutdownPi;
 
                 // Shutdown / Reboot Code Handler
                 if (isset($_POST['shutdownPi'])) {
@@ -83,26 +81,35 @@ function admin_controller()
                 if(isset($services['feedwriter'])) {
                     $message = '<font color="red">Service is not running</font>';
                     if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
                     }
                     $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+                }
+                $redis_info = array();
+                if($settings['redis']['enabled']) {
+                    $redis_info = $redis->info();
+                    $redis_info['dbSize'] = $redis->dbSize();
+                    $phpRedisPattern = 'Redis Version =>';
+                    $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
+                    $pipRedisPattern = "Version: ";
+                    $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
                 }
 
                 $view_data = array(
                     'system'=>$system,
                     'services'=>$services,
-                    'admin_show_update'=>$admin_show_update,
+                    'admin_show_update'=>$settings['interface']['enable_update_ui'],
                     'shutdownPi'=>$shutdownPi,
-                    'log_enabled'=>$log_enabled,
+                    'log_enabled'=>$settings['log']['enabled'],
                     'update_log_filename'=>$update_logfile,
-                    'redis_enabled'=>$redis_enabled,
-                    'mqtt_enabled'=>$mqtt_enabled,
+                    'redis_enabled'=>$settings['redis']['enabled'],
+                    'mqtt_enabled'=>$settings['mqtt']['enabled'],
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
-                    'allow_emonpi_admin'=>$allow_emonpi_admin,
+                    'allow_emonpi_admin'=>$settings['interface']['enable_admin_ui'],
                     'emoncms_logfile'=>$emoncms_logfile,
-                    'redis'=>$redis,
-                    'feed_settings'=>$feed_settings,
+                    'redis_info'=>$redis_info,
+                    'feed_settings'=>$settings['feed'],
                     'emoncms_modules'=>$system['emoncms_modules'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),
                     'mqtt_version'=>Admin::mqtt_version(),
@@ -111,14 +118,13 @@ function admin_controller()
                     'disk_info'=> Admin::get_mountpoints($system['partitions']),
                     'v' => 3,
                     'log_levels' => $log_levels,
-                    'log_level'=>$log_level,
-                    'log_level_label' => $log_levels[$log_level],
-                    'path_to_config'=> $path_to_config
+                    'log_level'=>$settings['log']['level'],
+                    'log_level_label' => $log_levels[$settings['log']['level']]
+                    // 'path_to_config'=> $path_to_config
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
-
             else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
@@ -141,7 +147,6 @@ function admin_controller()
             {
                 return view("Modules/admin/userlist_view.php", array());
             }
-
             else if ($route->action == 'setuser' && $session['write'])
             {
                 $_SESSION['userid'] = intval(get('id'));
@@ -149,10 +154,9 @@ function admin_controller()
                 // stop any other code from running once http header sent
                 exit();
             }
-            
             else if ($route->action == 'downloadlog')
             {
-              if ($log_enabled) {
+              if ($settings['log']['enabled']) {
                 header("Content-Type: application/octet-stream");
                 header("Content-Transfer-Encoding: Binary");
                 header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
@@ -169,11 +173,10 @@ function admin_controller()
                 exit;
               }
             }
-
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";
-                if (!$log_enabled) return "Log is disabled";
+                if (!$settings['log']['enabled']) return "Log is disabled";
                 if (!file_exists($emoncms_logfile)) return "$emoncms_logfile does not exist";
                 
                 ob_start();
@@ -215,22 +218,34 @@ function admin_controller()
                 } //End PHP replacement for Tail
                 return trim(ob_get_clean());
             }
-
-            else if (($admin_show_update || $allow_emonpi_admin) && $route->action == 'emonpi') {
-                                
+            else if (($settings['interface']['enable_update_ui'] || $settings['interface']['enable_admin_ui']) && $route->action == 'emonpi') {
+                
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
                     $firmware="";
                     if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-                    if (!in_array($firmware,array("emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom","emontxv3cm"))) return "Invalid firmware type";
                     // Type: all, emoncms, firmware
                     $type="";
                     if (isset($_POST['type'])) $type = $_POST['type'];
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
+                    // Serial port
+                    $serial_port="ttyAMA0";
+                    if ($_POST['serial_port'] == "null") {
+                        $serial_port = "";
+                    }
+                    else if (isset($_POST['serial_port'])) {
+                        $serial_port = $_POST['serial_port'];
+                        if (!in_array($serial_port,array("ttyAMA0","ttyUSB0","ttyUSB1","ttyUSB2"))) return "Invalid serial port type";  
+                    }
                     
-                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
-                    return "service-runner trigger sent";
+                    if ($redis) {
+                        $redis->rpush("service-runner","$update_script $type $firmware $serial_port>$update_logfile");
+                        return "service-runner trigger sent";
+                    } else {
+                        return "redis not running";
+                    }
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -309,22 +324,21 @@ function admin_controller()
 
                 if ($route->subaction == 'fs' && $session['admin'])
                 {
-                  if (isset($_POST['argument'])) {
-                    $argument = $_POST['argument'];
+                    if (isset($_POST['argument'])) {
+                        $argument = $_POST['argument'];
                     }
-                  if ($argument == 'ro'){
-                    return passthru('rpi-ro');
-
-                  }
-                  if ($argument == 'rw'){
-                    return passthru('rpi-rw');
-                  }
+                    if ($argument == 'ro'){
+                        passthru('rpi-ro');
+                    }
+                    if ($argument == 'rw'){
+                        passthru('rpi-rw');
+                    }
                 }
             }
         }
         else if ($route->format == 'json')
         {
-            if ($route->action == 'redisflush' && $session['write'])
+            if ($route->action == 'redisflush' && $session['write'] && $redis)
             {
                 $redis->flushDB();
                 return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
@@ -399,7 +413,7 @@ function admin_controller()
             else if ($route->action == 'system' && $session['write'])
             {
                 require "Modules/admin/admin_model.php";
-                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi;
+                global $path, $emoncms_version, $shutdownPi;
 
                 // create array of installed services
                 $services = array();
@@ -418,7 +432,7 @@ function admin_controller()
                 if(isset($services['feedwriter'])) {
                     $message = 'Service is not running';
                     if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
                     }
                     $services['feedwriter']['text'] .= $message;
                 }
@@ -426,15 +440,15 @@ function admin_controller()
                 $view_data = array(
                     'system'=>$system,
                     'services'=>$services,
-                    'log_enabled'=>$log_enabled,
-                    'redis_enabled'=>$redis_enabled,
-                    'mqtt_enabled'=>$mqtt_enabled,
+                    'log_enabled'=>$settings['log']['enabled'],
+                    'redis_enabled'=>$settings['redis']['enabled'],
+                    'mqtt_enabled'=>$settings['mqtt']['enabled'],
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
                     'emoncms_logfile'=>$emoncms_logfile,
                     'update_log_filename'=> $update_logfile,
                     'redis'=>$redis,
-                    'feed_settings'=>$feed_settings,
+                    'feed_settings'=>$settings['feed'],
                     'emoncms_modules'=>$system['emoncms_modules'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),
                     'mqtt_version'=>Admin::mqtt_version(),
@@ -445,10 +459,21 @@ function admin_controller()
                 
                 return $view_data;
             }
+            else if ($route->action == 'resetwriteload' && $session['write'])
+            {
+                if ($redis) {
+                    $redis->del("diskstats:mmcblk0p1");
+                    $redis->del("diskstats:mmcblk0p2");
+                    $redis->del("diskstats:mmcblk0p3");
+                    $redis->del("diskstats:time");
+                }
+                return true;
+            }
+            /*
             else if ($route->action === 'loglevel' && $session['write']) {
                 // current values
                 $success = false;
-                $log_level_name = $log_levels[$log_level];
+                $log_level_name = $log_levels[$settings['log']['level']];
                 $message = '';
 
                 if ($route->method === 'POST') {
@@ -491,12 +516,12 @@ function admin_controller()
                     'log-level-name' => $log_level_name,
                     'message' => $message
                 );
-            }
+            }*/
         }
     } else {
         // not $session['admin']
 
-        if ($updatelogin===true) {
+        if ($settings['updatelogin']===true) {
             $route->format = 'html';
             if ($route->action == 'db')
             {

@@ -23,7 +23,7 @@ var processlist_ui =
   engines_hidden:[],
   has_redis: 0,
   
-  table: table,
+  table: typeof table !== "undefined" ? table : null,
 
   'draw':function(){
     var i = 0;
@@ -100,7 +100,11 @@ var processlist_ui =
                 arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
                 arg.title = _Tr("Feed")+" "+feedid
                 arg.icon = 'icon-list-alt'
-                arg.href = path+"graph/"+feedid
+                var feedviewpath = "graph/";
+                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+                    var feedviewpath = _SETTINGS.feedviewpath;
+                }
+                arg.href = [path, feedviewpath, feedid].join("");
                 lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
                 arg.text = 'Feedid "+feedid+" does not exists or was deleted'
@@ -245,7 +249,11 @@ var processlist_ui =
         badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
-        badge.href = badge.process.argtype == ProcessArg.FEEDID ? path+"graph/"+badge.value : false;
+        var feedviewpath = "graph/";
+        if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+            var feedviewpath = _SETTINGS.feedviewpath;
+        }
+        badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input
@@ -349,9 +357,19 @@ var processlist_ui =
   'events':function(){
     $("#processlist-ui #feed-engine").change(function(){
       var engine = $(this).val();
-      $("#feed-interval").hide();
-      if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
-
+      if (engine==6 || engine==5 || engine==4 || engine==1) {
+    	  $("#feed-interval").show();
+      }
+      else {
+          $("#feed-interval").hide();
+      }
+      if (engine==8 || engine==0) {
+    	  $("#feed-table").empty().show();
+      }
+      else {
+          $("#feed-table").hide();
+      }
+      
       var processid = $("#process-select").val();
       var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
@@ -365,7 +383,7 @@ var processlist_ui =
         $("#feed-interval option").show(); // Show all
         $("#feed-interval option").prop('disabled', false);  //for IE show
         $("#feed-interval").val(10);   // default to 10s
-      } 
+      }
     });
 
     $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
@@ -396,10 +414,15 @@ var processlist_ui =
             var feedtag = $('#new-feed-tag').val();
             var engine = $('#feed-engine').val();
             var datatype = process.datatype;
-
+            
             var options = {};
-            options = {interval:$('#feed-interval').val()};
-
+            if (engine==6 || engine==5 || engine==4 || engine==1) {
+              options = {"interval":$('#feed-interval').val()};
+            }
+            else if (engine==8 || engine==0) {
+              options = {"name":$('#feed-table').val()};
+            }
+            
             if (feedname == '') {
               alert('ERROR: Please enter a feed name');
               return false;
@@ -533,6 +556,7 @@ var processlist_ui =
         $("#new-feed-tag").hide();
         $('#feed-select').css({'border-radius': 4, 'border-right': 4})
         $("#feed-interval").hide();
+        $("#feed-table").hide();
         $("#feed-engine, .feed-engine-label").hide(); 
       }
       if (typeof nodes_display !== 'undefined') {
@@ -718,7 +742,9 @@ var processlist_ui =
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
+    if (window.table!=undefined && window.table.draw!=undefined) {
+        table.draw();
+    }
     if (typeof update == 'function') update()
   },
 
@@ -833,6 +859,8 @@ var processlist_ui =
       }
       $("#process-select").html(out);
       processlist_ui.initprogress();
+      // Automatic call of feed table update
+      if (typeof window.update_feed_list == 'function') update_feed_list();
     }});
 
     // Feeds Select List
