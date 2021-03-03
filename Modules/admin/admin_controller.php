@@ -225,14 +225,23 @@ function admin_controller()
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
                     $firmware="";
                     if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom","emontxv3cm"))) return "Invalid firmware type";
                     // Type: all, emoncms, firmware
                     $type="";
                     if (isset($_POST['type'])) $type = $_POST['type'];
                     if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
+                    // Serial port
+                    $serial_port="ttyAMA0";
+                    if ($_POST['serial_port'] == "null") {
+                        $serial_port = "";
+                    }
+                    else if (isset($_POST['serial_port'])) {
+                        $serial_port = $_POST['serial_port'];
+                        if (!in_array($serial_port,array("ttyAMA0","ttyUSB0","ttyUSB1","ttyUSB2"))) return "Invalid serial port type";  
+                    }
                     
                     if ($redis) {
-                        $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                        $redis->rpush("service-runner","$update_script $type $firmware $serial_port>$update_logfile");
                         return "service-runner trigger sent";
                     } else {
                         return "redis not running";

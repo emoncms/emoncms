@@ -848,6 +848,50 @@ class Process_ProcessList
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "nochange"=>true,
               "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used each half hour (kWh HH)</p>")
+          ),
+          array(
+              "name"=>_("max by input"),
+              "short"=>"max_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"max_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by input"),
+              "short"=>"min_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"min_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("max by feed"),
+              "short"=>"max_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"max_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by feed"),
+              "short"=>"min_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"min_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
            )
         );
         return $list;
@@ -983,6 +1027,36 @@ class Process_ProcessList
     public function subtract_input($id, $time, $value)
     {
         return $value - $this->input->get_last_value($id);
+    }
+    
+    public function max_input($id, $time, $value)
+    {
+        $max_limit = $this->input->get_last_value($id);
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_input($id, $time, $value)
+    {
+        $min_limit = $this->input->get_last_value($id);
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
+    
+    public function max_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $max_limit = $timevalue['value']*1;
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $min_limit = $timevalue['value']*1;
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
     }
 
     //---------------------------------------------------------------------------------------
@@ -1180,7 +1254,7 @@ class Process_ProcessList
         }
         $redis->hMset("process:ratechange:$feedid", array('time' => $time, 'value' => $value));
 
-        // return $ratechange;
+        return $ratechange;
     }
 
     public function save_to_input($inputid, $time, $value)
@@ -1619,6 +1693,8 @@ class Process_ProcessList
     public function add_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1626,6 +1702,8 @@ class Process_ProcessList
     public function sub_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1633,6 +1711,8 @@ class Process_ProcessList
     public function multiply_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1640,6 +1720,8 @@ class Process_ProcessList
     public function divide_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {
@@ -1652,6 +1734,8 @@ class Process_ProcessList
     public function reciprocal_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {

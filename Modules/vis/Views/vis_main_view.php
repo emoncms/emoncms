@@ -123,7 +123,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
           colour = colour.replace("#","");
           options.push($(this).attr("id")+"="+colour);
         } else {
-          options.push($(this).attr("id")+"="+$(this).val());
+          options.push($(this).attr("id")+"="+encodeURIComponent($(this).val()));
         }
         if ($(this).attr("otype")=='feed') publicfeed = $('option:selected', this).attr('public');
       }
@@ -160,7 +160,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
             colour = colour.replace("#","");
             options.push($(this).attr("id")+"="+colour);
           } else  {
-            options.push($(this).attr("id")+"="+$(this).val());
+            options.push($(this).attr("id")+"="+encodeURIComponent($(this).val()));
           }
         }
       });
