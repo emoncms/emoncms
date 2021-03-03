@@ -182,7 +182,7 @@ function feed_controller()
                 if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                 {
                     if ($route->action == "timevalue") return $feed->get_timevalue($feedid);
-                    else if ($route->action == "value") return $feed->get_value($feedid); // null is a valid response
+                    else if ($route->action == "value") return $feed->get_value($feedid,get('time')); // null is a valid response
                     else if ($route->action == "get") return $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
@@ -266,8 +266,9 @@ function feed_controller()
                     // scale range for PHPFINA
                     // added by Alexandre CUER - january 2019 
                     } else if ($route->action == "scalerange") {
+
                         if ($f['engine'] == Engine::PHPFINA) {
-                            $result = $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
+                            return $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
                         } else {
                             return "scalerange only supported by phpfina engine";
                         }

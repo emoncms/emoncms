@@ -82,7 +82,8 @@
       color: plotColour
     }], {
       canvas: true,
-      xaxis: { mode: null }, grid: { show: true, hoverable: true }
+      xaxis: { mode: null }, grid: { show: true, hoverable: true },
+      touch: {  pan: "x", scale: "x"  }
     });
     $('#loading').hide();
     }
