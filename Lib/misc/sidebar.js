@@ -1,3 +1,5 @@
+var resize_enabled = true;
+
 $(function(){
     // re-create the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
@@ -12,7 +14,7 @@ $(function(){
             show_sidebar();
         }
     });
- 
+
     highlightBookmarkButton();
 
     // open sidebar if active page link clicked
@@ -47,7 +49,7 @@ $(function(){
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
                 if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
-                
+
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -98,25 +100,27 @@ $(function(){
     });
 
     $(document).on('window.resized', function(){
-        if ($('body').hasClass('auto')) {
-            if ($(window).width() < 870) {
-                hide_sidebar();
-                document.body.classList.add('narrow');
-            }
-            if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
-                show_sidebar();
-                document.body.classList.remove('narrow');
-            }
-        } else {
-            if (!$(document.body).hasClass('collapsed')) {
+        if (resize_enabled) {
+            if ($('body').hasClass('auto')) {
                 if ($(window).width() < 870) {
-                    $(".content-container").css("margin","2.7rem 0 0 0");
-                } else {
-                    $('body').toggleClass('manual auto')
-                    $(".content-container").css("margin","2.7rem 0 0 15rem");
-                }   
+                    hide_sidebar();
+                    document.body.classList.add('narrow');
+                }
+                if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
+                    show_sidebar();
+                    document.body.classList.remove('narrow');
+                }
+            } else {
+                if (!$(document.body).hasClass('collapsed')) {
+                    if ($(window).width() < 870) {
+                        $(".content-container").css("margin","2.7rem 0 0 0");
+                    } else {
+                        $('body').toggleClass('manual auto')
+                        $(".content-container").css("margin","2.7rem 0 0 15rem");
+                    }
+                }
             }
-        }
+    }
     })
 
     // hide sidebar on load on narrow devices
@@ -129,9 +133,9 @@ $(function(){
         }, 500);
     }
 
-    /** 
+    /**
      * If menu 3rd level menu shown shrink 2nd level entries
-     * 
+     *
      * @param {object} [event] mouse event if triggered by click
      */
     function hideMenuItems(event) {
@@ -151,10 +155,10 @@ $(function(){
         }
         let active_menu = link.parents('.sidebar-menu').first();
         if(active_menu.length !== 1) return; // no menu found
-        
+
         let active_menu_name = active_menu.attr('id').split('-');
         active_menu_name.shift();
-        
+
         let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
         let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
@@ -168,8 +172,8 @@ $(function(){
         }
     }
 
-    function getQueryStringValue (key) {  
-        return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+    function getQueryStringValue (key) {
+        return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));
     }
 
     // add current page to user's bookmark list
@@ -244,7 +248,7 @@ $(function(){
                         .text(currentTitle).hide().fadeIn();
                         $menu.trigger('bookmarks:updated');
                         $nav.fadeIn();
-                        
+
                     } else {
                         // remove entry from menu
                         $.each($menu.find('li'), function(n, elem){
@@ -287,23 +291,29 @@ $(function(){
     });
 
 }); // end of jquery ready()
-    
+
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
     $('#sidebar').trigger('show.sidebar.collapse');
     $('body').removeClass('collapsed').addClass('expanded');
-    
+
     if ($(window).width() < 870) {
         $(".content-container").css("margin","2.7rem 0 0 0");
     } else {
         $(".content-container").css("margin","2.7rem 0 0 15rem");
     }
+    resize_enabled = false;
+    $(window).trigger('resize');
+    resize_enabled = true;
 }
 
 function hide_sidebar(options) {
     $('#sidebar').trigger('hide.sidebar.collapse');
     $('body').addClass('collapsed').removeClass('expanded');
     $(".content-container").css("margin","2.7rem auto 0 auto");
+    resize_enabled = false;
+    $(window).trigger('resize');
+    resize_enabled = true;
 }
 
 // backward compatible empty function
