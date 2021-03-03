@@ -182,7 +182,7 @@ function feed_controller()
                 if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                 {
                     if ($route->action == "timevalue") return $feed->get_timevalue($feedid);
-                    else if ($route->action == "value") return $feed->get_value($feedid); // null is a valid response
+                    else if ($route->action == "value") return $feed->get_value($feedid,get('time')); // null is a valid response
                     else if ($route->action == "get") return $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
@@ -225,8 +225,33 @@ function feed_controller()
                         }
 
                     // Insert datapoint
-                    } else if ($route->action == "insert") { 
-                        return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                    } else if ($route->action == "insert") {
+                        
+                        // Single data point
+                        if (isset($_GET['time']) || isset($_GET['value'])) {
+                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                        }
+
+                        // Single or multiple datapoints via json format
+                        // Format: [[UNIXTIME,VALUE],[UNIXTIME,VALUE],[UNIXTIME,VALUE]]
+                        $data = false;
+                        if (isset($_GET['data'])) {
+                            $data = json_decode($_GET['data']);
+                        } else if (isset($_POST['data'])) {
+                            $data = json_decode($_POST['data']);
+                        } else {
+                            return array('success'=>false, 'message'=>'missing data parameter');
+                        }
+                        if ($data==null) return array('success'=>false, 'message'=>'error decoding json');
+                        
+                        if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
+                        
+                        foreach ($data as $dp) {
+                            if (count($dp)==2) {
+                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
+                            }
+                        }
+                        return array('success'=>true);
 
                     // Update datapoint
                     } else if ($route->action == "update") {
@@ -241,8 +266,9 @@ function feed_controller()
                     // scale range for PHPFINA
                     // added by Alexandre CUER - january 2019 
                     } else if ($route->action == "scalerange") {
+
                         if ($f['engine'] == Engine::PHPFINA) {
-                            $result = $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
+                            return $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
                         } else {
                             return "scalerange only supported by phpfina engine";
                         }

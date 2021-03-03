@@ -92,7 +92,8 @@
     var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", fill: true}}], {
       canvas: true,
       grid: { show: true, hoverable: true },
-      yaxis: {min: 0}
+      yaxis: {min: 0},
+      touch: { pan: "x", scale: "x" }
     });
   }
 </script>

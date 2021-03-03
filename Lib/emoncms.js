@@ -70,7 +70,7 @@ $(function(){
         clearTimeout(resizeTimeout)
         resizeTimeout = setTimeout(function() {
             $.event.trigger("window.resized");
-        }, 200);
+        }, 100);
     })
 });
 
