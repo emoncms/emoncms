@@ -59,7 +59,6 @@
   var feedid = <?php echo $feedid; ?>;
   var feedname = "<?php echo $feedidname; ?>";
   var type = "<?php echo $type; ?>";
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $write_apikey; ?>";
 
   var timeWindow = (3600000*24.0*7);        //Initial time window

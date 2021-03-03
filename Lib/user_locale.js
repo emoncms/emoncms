@@ -25,4 +25,4 @@
     }
     document.getElementsByTagName("script")[0].parentNode.appendChild(script);
 
-})(typeof user !== 'undefined' ? user: null, typeof _locale_loaded !== 'undefined' ? _locale_loaded: null);
+})(typeof _user !== 'undefined' ? _user: null, typeof _locale_loaded !== 'undefined' ? _locale_loaded: null);

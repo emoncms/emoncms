@@ -214,6 +214,24 @@ class PHPTimeSeries implements engine_methods
         fclose($fh);
         return $array;
     }
+
+    public function get_value($feedid,$time)
+    {
+        $time = (int) $time;
+        
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir."feed_$feedid.MYD");
+        if ($filesize==0) return null;
+
+        $pos = $this->binarysearch($fh,$time,$filesize);
+        fseek($fh,$pos);
+        $d = fread($fh,9);
+        $array = @unpack("x/Itime/fvalue",$d);
+        
+        $value = null;
+        if (!is_nan($array['value'])) $value = (float) $array['value'];
+        return $value;
+    }
     
     /**
      * Return the data for the given timerange - cf shared_helper.php
@@ -222,6 +240,8 @@ class PHPTimeSeries implements engine_methods
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $settings;
+
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
@@ -232,7 +252,7 @@ class PHPTimeSeries implements engine_methods
         if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $settings['feed']['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (" . $settings['feed']['max_datapoints'] . "), increase request interval or time range, requested datapoints = $req_dp");
         
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
@@ -380,7 +400,7 @@ class PHPTimeSeries implements engine_methods
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
 
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -442,7 +462,7 @@ class PHPTimeSeries implements engine_methods
             $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // $last_time = 0 only occur in the first run
             if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $timenew.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].number_format($array['value'],$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'')."\n");
             }
         }
         fclose($exportfh);

@@ -20,6 +20,16 @@ Side nav
 .narrow .sidebar-inner .close {
   display: inline-block;
 }
+
+.sidebar-inner .divider {
+	min-height: 1rem;
+	height: 1rem;
+	background: #333 !important;
+}
+
+.sidebar-inner .divider a {
+	display: none !important;
+}
 /* -------------------------------------------------------------------
 Top nav
 --------------------------------------------------------------------*/
@@ -34,8 +44,29 @@ Top nav
 #emoncms-navbar .navbar-inner .nav {
   font-size: 1.25rem;
 }
+#emoncms-navbar .navbar-inner .nav a span{
+  font-size: 1rem;
+  padding-top: .1rem;
+}
+#emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+  display: none;
+}
+@media (min-width: 768px) {
+  #emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+    display: inline-block;
+  }
+}
+
+d-none d-md-block
 .navbar .nav > li > a {
   padding: .6em;
+}
+.navbar .nav {
+  float: none;
+}
+.navbar .navbar-inner:before,
+.navbar .navbar-inner:after {
+  content: none;
 }
 @media screen and (min-width: 380px) {
   #emoncms-navbar .navbar-inner .nav {
@@ -47,7 +78,7 @@ Top nav
 }
 
 #emoncms-navbar .navbar-inner .nav ul li{
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 #emoncms-navbar .navbar-inner .nav ul li a{
   padding: .5em 1em;
@@ -60,19 +91,16 @@ site-wide overriding css
 
 /* eof site css changes */
 
-
-
 /* -------------------------------------------------------------------
-Sidebar sub menus----------------------------------------------------*/
-
+Sidebar sub menus
+--------------------------------------------------------------------*/
 #sidebar {
   position: fixed;
   display: none;
   margin-top: 0px;
-  top: 2.7rem;
-  background: #333;
+  top: 2.5rem;
   z-index: 1000;
-  height: calc(100vh - 2.7rem);
+  height: calc(100vh - 2.5rem);
   margin-bottom: 2rem;
   
   left: 15rem;
@@ -90,20 +118,26 @@ Sidebar sub menus----------------------------------------------------*/
 }
 .sidebar-title {
   text-indent: 1rem;
-  background: #333;
   padding: 1em 0 0.75em 0;
   margin: 0;
   text-transform: capitalize;
 }
 #sidebar .close:hover {
-    text-decoration: none;
+  text-decoration: none;
+}
+
+@media screen and (min-width: 380px) {
+  #sidebar {
+    top: 2.7rem;
+    height: calc(100vh - 2.7rem);
+  }
 }
 
 
 /* -------------------------------------------------------------------
-gravitar icon in toolbar
+Gravatar icon in toolbar
 --------------------------------------------------------------------*/
-ul#right-nav li:last-child{
+ul#right-nav li.menu-user{
   padding-right: .125em;
   padding-left: .125em;
 }
@@ -137,7 +171,7 @@ a.is_admin.grav-container:hover img.grav {
 }
 .no-gravitar a.grav-container .icon.user {
   font-size: 1.66em;
-  margin-left: -.1em;
+  margin: 0 -.1em;
 }
 /* eof gravitar */
 
@@ -166,16 +200,16 @@ top navbar override
   background: #333;
   opacity: 0.3;
 }
-/* #left-nav li.active a:before {
-  background: #333;
-  height: 2px;
-} */
 
-/* sidebar status indicator */
-#left-nav > li > a:active,
-#left-nav > li > a:focus {
-  outline: none;
-}
+/* tabindex styling */
+/* don't render menu items when not active */
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse{display:none}
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in{display:block}
+
 #sidebar-toggle {
   display: none !important;
 }
@@ -226,9 +260,7 @@ top navbar override
 #emoncms-navbar .icon.folder-plus {
   margin-bottom: 1px;
 }
-body.dashboard.has-sidebar.fullwidth #footer {
-  margin-left: 0 !important;
-}
+
 /* eof navbar override */
 
 
@@ -245,41 +277,33 @@ body.dashboard.has-sidebar.fullwidth #footer {
   margin-bottom: 0;
   width: 15rem;
 }
-#sidebar-toggle-bar:active,
-#sidebar-toggle-bar:focus {
-  outline: none;
-}
+
 #sidebar_user_toggle {
   background: #333;
   padding-top: 0.6em !important;
   padding-bottom: 0.75em !important;
 }
-#sidebar_user_toggle:active,
-#sidebar_user_toggle:focus {
-  outline: none;
-}
+
 .expanded #sidebar_user_toggle,
 #sidebar_user_toggle:hover {
   background: #212121;
 }
-#footer_nav #sidebar_user_dropdown li {
-    border-bottom: 1px solid #444;
+#footer_nav #sidebar_bookmarks li {
+  border-bottom: 1px solid #444;
 }
-#footer_nav #sidebar_user_dropdown li a {
-  /* background: #212121; */
+#footer_nav #sidebar_bookmarks li a {
   padding: 0.67em 0.94em;
 }
-
-#footer_nav #sidebar_user_dropdown li a:hover {
-  /* background: #1b1b1b !important; */
+#bookmarks a:hover::after {
+    content: attr(data-edit)
 }
-
 #edit_bookmarks {
-    padding: .7em!important;
-    color: #545454!important;
-    transition: color .3s ease-out;
+  padding: .7em !important;
+  color: #545454!important;
+  transition: color .3s ease-out;
 }
-#edit_bookmarks:hover {
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
     color: #FFF!important;
 }
 
@@ -316,10 +340,6 @@ body.collapsed #sidebar-toggle-bar {
   margin-left: -0.2rem;
 }
 
-#sidebar-toggle-bar:active,
-#sidebar-toggle-bar:focus {
-  outline: none;
-}
 #sidebar-toggle-bar:hover:after {
   opacity: 0.8;
 }
@@ -391,10 +411,6 @@ Side nav: app list
 .include-container.collapse.in > li,
 .sidebar-menu li.collapse.in {
   border-bottom: 1px solid #444;
-}
-.sidebar-menu li a:focus,
-.sidebar-menu li a:active {
-  outline: none;
 }
 #sidebar svg.icon {
   margin-top: .1em;

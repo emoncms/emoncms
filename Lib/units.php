@@ -6,6 +6,7 @@ namespace emoncms\units;
 
 $config['units'] = array(
     array("short" => "W", "long" => "Watt"),
+    array("short" => "kW", "long" => "Kilowatt"),
     array("short" => "kWh", "long" => "Kilowatt Hour"),
     array("short" => "Wh", "long" => "Watt-Hour"),
     array("short" => "V", "long" => "Volt"),
@@ -23,9 +24,11 @@ $config['units'] = array(
 // list of PHP includes
 $includes = get_included_files();
 // if this script is not called directly (included)
-if(array_search(__FILE__, $includes)>0) {
+if (array_search(__FILE__, $includes)>0) {
     // set the UNIT const
-    if(!empty($config['units'])) define('UNITS', $config['units']);
+    if (!empty($config['units'])) {
+        define('UNITS', $config['units']);
+    }
 } else {
 // if this script is called directly (not included)
     // return the values as a json object

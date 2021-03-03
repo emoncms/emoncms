@@ -16,13 +16,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function user_controller()
 {
-    global $mysqli, $redis, $user, $path, $session, $route , $enable_multi_user, $email_verification;
+    global $mysqli, $redis, $user, $path, $session, $route , $settings;
 
     $result = false;
 
     $allowusersregister = true;
     // Disables further user creation after first admin user is created
-    if ($enable_multi_user===false && $user->get_number_of_users()>0) {
+    if ($settings["interface"]["enable_multi_user"]==false && $user->get_number_of_users()>0) {
         $allowusersregister = false;
     }
 
@@ -31,12 +31,14 @@ function user_controller()
     {
         if ($route->action == 'login' && !$session['read']) {
             $route_query = array();
+            // pass through the referring path
             parse_str($route->query, $route_query );
             $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
             $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
             $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
-            $referrer = filter_var(base64_decode(urldecode($ref)), FILTER_SANITIZE_URL);
-
+            $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
+            
+            // load login template with the above parameters
             $result = view("Modules/user/login_block.php", array(
                 'allowusersregister'=>$allowusersregister,
                 'verify'=>array(),
@@ -47,13 +49,26 @@ function user_controller()
         }
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         
-        if ($route->action == 'logout' && $session['read']) {
+        if ($route->action == 'logout') {
+            // decode url parameters
+            $next = $path;
+            $message = filter_var(urldecode(get('msg')), FILTER_SANITIZE_STRING);
+            $referrer = htmlentities(filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL));
+            
+            // encode url parameters to pass through to login page
+            $msg = urlencode($message);
+            $ref = base64_encode(urlencode($referrer));
+            if(!empty($ref)) {
+                $next = sprintf('%s?msg=%s&ref=%s',$path, $msg, $ref);
+            }
+
             $user->logout(); 
             call_hook('on_logout',[]);
-            header('Location: '.$path);
+            header('Location: '.$next);
+            exit();
         }
         
-        if ($route->action == 'verify' && $email_verification && !$session['read'] && isset($_GET['key'])) { 
+        if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
             $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
@@ -70,10 +85,10 @@ function user_controller()
     {
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
+        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'),post('timezone'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
-        if ($route->action == 'resend-verify' && $email_verification) {
+        if ($route->action == 'resend-verify' && $settings["interface"]["email_verification"]) {
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
             $result = $user->send_verification_email($username);
         }
@@ -95,7 +110,7 @@ function user_controller()
 
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
-        if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
+        if ($route->action == 'gettimezones') $result = $user->get_timezones();
         
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
@@ -142,8 +157,8 @@ function user_controller()
 
             switch ($route->method) {
                 case 'POST':
-                    if(!empty(post('preferences'))){
-                        $preferences = post('preferences');
+                    $preferences = post('preferences');
+                    if(!empty($preferences)){
                         if($resp = $user->set_preferences($userid, $preferences)) {
                             $result = array('success'=>true, 'message'=>_('Preference Saved'));
                         } else {

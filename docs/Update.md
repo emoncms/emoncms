@@ -34,21 +34,19 @@ The 'emonpi' repository currently contains the emoncms and wider system installa
 
 To create this directory from new:
 
-    sudo mkdir /opt/emon
-    sudo chown USER:USER /opt/emon
-    cd /opt/emon
+    sudo mkdir /opt/openenergymonitor
+    sudo chown USER:USER /opt/openenergymonitor
+    cd /opt/openenergymonitor
     git clone https://github.com/openenergymonitor/emonpi.git
 
-Tell your emoncms installation where to find the base directory, open /var/www/emoncms/settings.php
+Tell your emoncms installation where to find the openenergymonitor installation directory, open /var/www/emoncms/settings.php
 
-    $homedir = "/opt/emon";
+    $openenergymonitor_dir = "/opt/openenergymonitor";
+
+Tell your emoncms installation where to find the emoncms symlinked modules directory, open /var/www/emoncms/settings.php
+    
+    $emoncms_dir = "/opt/emoncms";
     
 Install or move existing symlinked emoncms modules such as postprocess, backup and sync to:
 
-    /opt/emon/modules
-    
-The update process is also compatible with a base directory at the user folder level e.g:
-
-    /home/USER
-    
-With symlinked modules installed at either /home/USER/modules/modulename or /home/USER/modulename.
+    /opt/emoncms/modules

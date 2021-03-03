@@ -45,7 +45,6 @@
   var thresholdA = <?php echo $thresholdA; ?>;
   var thresholdB = <?php echo $thresholdB; ?>;
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
 
   var timeWindow = (3600000*24.0*7);        //Initial time window
@@ -111,11 +110,13 @@
     i++;
   }
 
-  $(window).resize(function(){
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
     draw_ordered_kwhd_histogram();
-  });
+  }
 
   draw_ordered_kwhd_histogram();
 

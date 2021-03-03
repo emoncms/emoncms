@@ -43,7 +43,6 @@
 <script id="source" language="javascript" type="text/javascript">
   var barwidth = <?php echo $barwidth; ?>;       //Fetch table name
   var feedid = "<?php echo $feedid; ?>";         //Fetch table name
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var valid = "<?php echo $valid; ?>";
   // Eventually We can store the plot colors in the DB, and use a php command to stick it here
@@ -65,11 +64,13 @@
     if (valid) vis_feed_data(apikey,feedid);
     if (feedid == 0) plotGraph();
 
-    $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
-    plotGraph();
-    });
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    
+    function vis_resize() {
+      $('#graph').width($('#graph_bound').width());
+      if (embed) $('#graph').height($(window).height());
+      plotGraph();
+    }
 
     // Plot flot graph
     function plotGraph()
@@ -81,7 +82,8 @@
       color: plotColour
     }], {
       canvas: true,
-      xaxis: { mode: null }, grid: { show: true, hoverable: true }
+      xaxis: { mode: null }, grid: { show: true, hoverable: true },
+      touch: {  pan: "x", scale: "x"  }
     });
     $('#loading').hide();
     }

@@ -12,10 +12,20 @@ $(function(){
             show_sidebar();
         }
     });
+ 
+    highlightBookmarkButton();
 
     // open sidebar if active page link clicked
-    $('#left-nav li a').on('click', function(event){
-        event.preventDefault();
+    $('#left-nav li a').on('click', function(event) {
+        // if the link has a [data-is-link] attribute navigate to the link
+        if(!event.currentTarget.dataset.isLink) {
+            event.preventDefault();
+        } else {
+            var href = event.currentTarget.href;
+            window.location.href = href;
+            return false;
+        }
+
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
         const activeClass = 'active';
@@ -36,6 +46,8 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
+                if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
+                
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -43,12 +55,22 @@ $(function(){
                     if(!thirdLevelOpen) {
                         hide_sidebar();
                     } else {
-                        $('.third-level-indicator').toggleClass('hidden', true);
                         hideMenuItems(event);
+                        // @todo: make the sidebar show 2nd level and not hide_sidebar()
+                        hide_sidebar();
                     }
+                    if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
                 } else {
                     // enable correct sidebar inner based on clicked tab
-                    $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass);
+                    $sidebar_inner.addClass(activeClass).find('li a').each(function(){
+                        $(this)[0].tabIndex = "0";
+                    })
+                    $sidebar_inner.siblings('.sidebar-inner').each(function(i,n) {
+                        $(this).removeClass(activeClass);
+                        $(this).find('li a').each(function(j,m){
+                            $(this)[0].tabIndex = "-1";
+                        })
+                    })
                 }
             }
         }
@@ -57,56 +79,56 @@ $(function(){
     // on trigger sidebar hide/show
     $('#sidebar').on('hide.sidebar.collapse show.sidebar.collapse', function(event){
         // resize after slight delay
-        var interval = setInterval(function(){
-            if (typeof graph_resize === 'function'){
-                graph_resize();
+        var timeout = false
+        timeout = setTimeout(function(){
+            if(timeout) clearTimeout(timeout)
+            // if (typeof graph_resize === 'function'){
+            //     graph_resize();
+            // }
+            // if (typeof graph_draw === 'function'){
+            //     graph_draw();
+            // }
+            // @note: assumes the css animation takes 200ms
+            if(event.type === 'hide') {
+                $('#sidebar').trigger('hidden.sidebar.collapse')
+            }else{
+                $('#sidebar').trigger('shown.sidebar.collapse')
             }
-            if (typeof graph_draw === 'function'){
-                graph_draw();
-            }
-        }, 75);
-        // stop resizing
-        setTimeout(function(){
-            clearInterval(interval);
-        }, 300);
+        }, 200);
     });
 
-    // on finish sidebar hide/show
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse', function(event){
-        // resize once finished animating
-        if (typeof graph_resize === 'function'){
-            graph_resize();
-        }
-        if (typeof graph_draw === 'function'){
-            graph_draw();
-        }
-        if (typeof resize === 'function'){
-            resize();
-        }
-    });
-
-    // hide sidebar on smaller devices
-    window.addEventListener('resize', function(event) {
-        if ($(window).width() < 870) {
-            hide_sidebar();
-            document.body.classList.add('narrow');
-        }
-        if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
-            show_sidebar();
-            document.body.classList.remove('narrow');
+    $(document).on('window.resized', function(){
+        if ($('body').hasClass('auto')) {
+            if ($(window).width() < 870) {
+                hide_sidebar();
+                document.body.classList.add('narrow');
+            }
+            if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
+                show_sidebar();
+                document.body.classList.remove('narrow');
+            }
+        } else {
+            if (!$(document.body).hasClass('collapsed')) {
+                if ($(window).width() < 870) {
+                    $(".content-container").css("margin","2.7rem 0 0 0");
+                } else {
+                    $('body').toggleClass('manual auto')
+                    $(".content-container").css("margin","2.7rem 0 0 15rem");
+                }   
+            }
         }
     })
-    
+
     // hide sidebar on load on narrow devices
     if ($(window).width() < 870) {
         document.body.classList.add('narrow','collapsed');
-        $('#sidebar').trigger('hidden.sidebar.collapse');
         hide_sidebar();
         // allow narrow screens to expand sidebar after delay to avoid animation of hiding sidebar
         setTimeout(function(){
             document.body.classList.add('has-animation');
         }, 500);
     }
+
     /** 
      * If menu 3rd level menu shown shrink 2nd level entries
      * 
@@ -132,11 +154,9 @@ $(function(){
         
         let active_menu_name = active_menu.attr('id').split('-');
         active_menu_name.shift();
-        if(typeof path === 'undefined') {
-            var path = '';
-        }
-        let relative_path = window.location.pathname.replace(path,''); // eg /emoncms/feed/list
-        let controller = relative_path.replace('/emoncms/','').split('/')[0]; // eg. feed
+        
+        let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
+        let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);
 
@@ -147,11 +167,13 @@ $(function(){
             $menu.find('li').not('.active').toggleClass('in');
         }
     }
+
     function getQueryStringValue (key) {  
         return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
     }
+
     // add current page to user's bookmark list
-    $('#set-bookmark, #remove-bookmark').click(function(event){
+    $('#set-bookmark, #remove-bookmark').click(function(event) {
         event.preventDefault();
         var bookmarks = [];
         var $nav = $('#footer_nav');
@@ -160,8 +182,15 @@ $(function(){
         var $button = $(this);
         var $icon = $button.find('.icon');
         var remove = $icon.is('.star');
-        var currentTitle = $('h2').first().text();
+        var currentTitle = $('#sidebar .sidebar-menu li.active a').first().text();
+        if(currentTitle.length==0) currentTitle = $('h1').first().text();
+        if(currentTitle.length==0) currentTitle = $('h2').first().text();
         if(currentTitle.length==0) currentTitle = $('h3').first().text();
+        if(currentTitle.length==0) currentTitle = document.title;
+        if(currentTitle.toLowerCase().trim() === 'graphs') {
+            let graphName = $('#graphName').val()
+            if(graphName.length > 0) currentTitle = graphName
+        }
         if(getQueryStringValue("name")) {
             currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
         }
@@ -200,7 +229,7 @@ $(function(){
                     bookmarks: JSON.stringify(bookmarks)
                 }
             }, function(data) {
-                var $menu = $('#sidebar_user_dropdown');
+                var $menu = $('#sidebar_bookmarks');
                 var $template = $('#bookmark_link');
                 if(data.success) {
                     // saved successfully change icon
@@ -213,9 +242,9 @@ $(function(){
                             title: currentTitle
                         })
                         .text(currentTitle).hide().fadeIn();
-                        $('#sidebar_user_dropdown').trigger('bookmarks:updated');
+                        $menu.trigger('bookmarks:updated');
                         $nav.fadeIn();
-
+                        
                     } else {
                         // remove entry from menu
                         $.each($menu.find('li'), function(n, elem){
@@ -224,7 +253,7 @@ $(function(){
                             if(relative === currentPage) {
                                 $li.animate({height:0},function(){
                                     $(this).remove();
-                                    $('#sidebar_user_dropdown').trigger('bookmarks:updated');
+                                    $menu.trigger('bookmarks:updated');
                                     setTimeout(function(){
                                         if($menu.find('li').length == 0) {
                                             $nav.fadeOut();
@@ -244,34 +273,41 @@ $(function(){
     $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
     // setTimeout(hideMenuItems, 100);
-    
+
+    // save a cookie to remember user's choice to hide or show the bookmarks
+    $('#sidebar_bookmarks').on('show hide', function(event) {
+        var bookmarks_collapsed = event.type !== 'show';
+        docCookies.setItem('bookmarks_collapsed', bookmarks_collapsed)
+    })
+
+    $(document).keyup(function(e) {
+        if (e.keyCode == 27) { // escape key maps to keycode `27`
+            $('.navbar .dropdown').removeClass('open')
+        }
+    });
+
 }); // end of jquery ready()
-
-
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('show.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('shown.sidebar.collapse');
-    }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
-}
-function hide_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
-    $('#sidebar').trigger('hide.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('hidden.sidebar.collapse');
-    }, 350);
-    $('body').addClass('collapsed').removeClass('expanded');
+    
+    if ($(window).width() < 870) {
+        $(".content-container").css("margin","2.7rem 0 0 0");
+    } else {
+        $(".content-container").css("margin","2.7rem 0 0 15rem");
+    }
 }
 
+function hide_sidebar(options) {
+    $('#sidebar').trigger('hide.sidebar.collapse');
+    $('body').addClass('collapsed').removeClass('expanded');
+    $(".content-container").css("margin","2.7rem auto 0 auto");
+}
 
 // backward compatible empty function
 if(typeof init_sidebar !== 'function') var init_sidebar = function(){}
-
-
 
 // get/set document cookies
 var docCookies = {
@@ -315,9 +351,28 @@ var docCookies = {
     }
   };
 
+// if bookmarks has url hash fragment (eg. controller/view/#fragment) - js must be used to show
+// @todo : this might not be needed to be done in php now?
+// @see : https://github.com/emoncms/emoncms/blob/master/Theme/basic/menu_view.php#L66
+function highlightBookmarkButton() {
+    if (typeof user_bookmarks !== 'undefined') {
+        var currentPageIsBookmarked = false
+        for (n in user_bookmarks) {
+            let bookmark = user_bookmarks[n]
+            if (path + bookmark.path === window.location.href) {
+                currentPageIsBookmarked = true
+            }
+        }
+        if (currentPageIsBookmarked) {
+            $('#remove-bookmark').parent().removeClass('d-none')
+            $('#set-bookmark').parent().addClass('d-none')
+        } else {
+            $('#remove-bookmark').parent().addClass('d-none')
+            $('#set-bookmark').parent().removeClass('d-none')
+        }
+    }
+}
 
-// save a cookie to remember user's choice to hide or show the bookmarks
-$('#sidebar_user_dropdown').on('show hide', function(event) {
-    var bookmarks_collapsed = event.type !== 'show';
-    docCookies.setItem('bookmarks_collapsed', bookmarks_collapsed)
-})
+window.addEventListener('hashchange', function(event) {
+    highlightBookmarkButton()
+});

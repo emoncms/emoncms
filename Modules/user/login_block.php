@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $enable_rememberme, $enable_password_reset, $theme;
+global $path, $settings;
 
 ?>
 <style>
@@ -31,7 +31,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_login.png" alt="Login" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
         <div id="login-form">
@@ -64,7 +64,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                 <div id="loginmessage"></div>
 
                 <div class="form-group login-item">
-                    <?php if ($enable_rememberme) { ?>
+                    <?php if ($settings["interface"]["enable_rememberme"]) { ?>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?>
@@ -123,22 +123,21 @@ if (verify.success!=undefined) {
     }
 }
 
-
+var passwordreset = "<?php echo $settings['interface']['enable_password_reset']; ?>";
 $(document).ready(function() {
-    var passwordreset = "<?php echo $enable_password_reset; ?>";
     if (!passwordreset) $("#passwordreset-link").hide();
 });
 
 $("#passwordreset-link").on("click", function(){
-        $("#passwordresetblock").collapse('show');
-        $("#loginblock").collapse('hide');
-        $("#passwordresetmessage").html("");
+    $("#passwordresetblock").collapse('show');
+    $("#loginblock").collapse('hide');
+    $("#passwordresetmessage").html("");
 });
 
 $("#passwordreset-link-cancel").on("click", function(){
-        $("#passwordresetblock").collapse('hide');
-        $("#loginblock").collapse('show');
-        $("#loginmessage").html("");
+    $("#passwordresetblock").collapse('hide');
+    $("#loginblock").collapse('show');
+    $("#loginmessage").html("");
 });
 
 $("#passwordreset-submit").click(function(){
@@ -163,6 +162,8 @@ $("#register-link").click(function(){
     $(".register-item").show();
     $("#loginmessage").html("");
     register_open = true;
+    $(this).trigger('registration:shown')
+    if (passwordreset) $("#passwordreset-link").hide();
     return false;
 });
 
@@ -171,6 +172,8 @@ $("#cancel-link").click(function(){
     $(".register-item").hide();
     $("#loginmessage").html("");
     register_open = false;
+    $(this).trigger('registration:hidden')
+    if (passwordreset) $("#passwordreset-link").show();
     return false;
 });
 
@@ -234,7 +237,14 @@ function register(){
     }
     else
     {
-        var result = user.register(username,password,email);
+        // Set user timezone automatically using current browser timezone
+        var user_timezone = 'UTC';
+        if (Intl!=undefined) {
+            user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            console.log(user_timezone);
+        }
+            
+        var result = user.register(username,password,email,user_timezone);
 
         if (result.success==undefined) {
             $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
@@ -275,5 +285,31 @@ function resend_verify()
          }
       } 
     });
+}
+
+$(function() {
+    focusFirst()
+    $(document).on('registration:shown registration:hidden',focusFirst)
+    $("#passwordresetblock").on('hidden',focusFirst)
+    $("#passwordresetblock").on('shown', function(event){
+        focusFirst(event, '#passwordreset-username')
+    })
+})
+/**
+ * set focus on first input element
+ * @param {TouchEvent|MouseEvent|jQuery.Event} event
+ * @param {string} selector
+ * @return void
+ */
+function focusFirst(event,selector) {
+    var elem
+    if(!event) event = {type:'none'}
+    if(!selector) {
+        elem = $(':text:visible').first()
+    } else {
+        elem = $(selector).first()
+    }
+    if(!elem || !elem.hasOwnProperty('length') || elem.length === 0) return
+    elem.focus()
 }
 </script>

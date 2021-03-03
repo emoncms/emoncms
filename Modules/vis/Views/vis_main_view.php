@@ -71,7 +71,6 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <div id="visurl"></div>
 
 <script type="application/javascript">
-  var path = "<?php echo $path; ?>";
   var feedlist = <?php echo json_encode($feedlist); ?>;
   var widgets = <?php echo json_encode($visualisations); ?>;
   var embed = 0;
@@ -124,7 +123,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
           colour = colour.replace("#","");
           options.push($(this).attr("id")+"="+colour);
         } else {
-          options.push($(this).attr("id")+"="+$(this).val());
+          options.push($(this).attr("id")+"="+encodeURIComponent($(this).val()));
         }
         if ($(this).attr("otype")=='feed') publicfeed = $('option:selected', this).attr('public');
       }
@@ -161,7 +160,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
             colour = colour.replace("#","");
             options.push($(this).attr("id")+"="+colour);
           } else  {
-            options.push($(this).attr("id")+"="+$(this).val());
+            options.push($(this).attr("id")+"="+encodeURIComponent($(this).val()));
           }
         }
       });
@@ -227,7 +226,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   }
 
   function vis_resize() {
-    var width = $("#vispage").width() - 325;
+    var width = $("#vispage").width() - 349;
     if (width < 320) width = 320;
     var height = width * 0.5625;
     var vistype = $("#visselect").val();

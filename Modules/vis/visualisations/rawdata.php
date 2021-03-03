@@ -54,14 +54,12 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-console.log(urlParams);
-
 var feedid = <?php echo $feedid; ?>;
 var feedname = "<?php echo $feedidname; ?>";
-var path = "<?php echo $path; ?>";
 var apikey = "<?php echo $apikey; ?>";
 var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
+var previousPoint = false;
 
 var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
@@ -106,7 +104,7 @@ var data = [];
 $(function() {
 
     if (embed==false) {
-        $("#vis-title").html("<br><h2><?php echo _("Raw:") ?> "+feedname+"<h2>");
+        $("#vis-title").html("<h2><?php echo _("Raw:") ?> "+feedname+"<h2>");
         $("#info").show();
     }
     draw();
@@ -218,8 +216,10 @@ $(function() {
         view.end = ranges.xaxis.to;
         draw();
     });
+
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
-    $(window).resize(function(){
+    function vis_resize() {
         var width = placeholder_bound.width();
         var height = width * 0.5;
 
@@ -229,7 +229,7 @@ $(function() {
 
         if (embed) placeholder.height($(window).height()-top_offset);
         plot();
-    });
+    }
     
 });
 </script>

@@ -72,7 +72,6 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var valid = "<?php echo $valid; ?>";
 
@@ -105,11 +104,13 @@
   
   vis_feed_data();
 
-  $(window).resize(function(){
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     //if (embed) $('#graph').height($(window).height());
     plot();
-  });
+  }
 
   function vis_feed_data()
   {

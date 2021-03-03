@@ -33,7 +33,6 @@
 
   var feedid = "<?php echo $feedid; ?>";
   var feedname = "<?php echo $feedidname; ?>";
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var delta = <?php echo $delta; ?>;
   
@@ -52,12 +51,14 @@
   var graph_data = [];
   vis_feed_data();
 
-  $(window).resize(function(){
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     plot();
-  });
+  }
 
   function vis_feed_data()
   {
@@ -91,7 +92,8 @@
     var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", fill: true}}], {
       canvas: true,
       grid: { show: true, hoverable: true },
-      yaxis: {min: 0}
+      yaxis: {min: 0},
+      touch: { pan: "x", scale: "x" }
     });
   }
 </script>

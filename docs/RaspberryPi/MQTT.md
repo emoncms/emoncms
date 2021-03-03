@@ -1,4 +1,8 @@
-## Enabling MQTT
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+## Archived: Enabling MQTT
 MQTT is a "lightweight" messaging protocol, which enables the publishing of data from Emoncms, as well as subscribing to data from other connected devices. The emonPi uses MQTT to transfer data from emonHub to Emoncms.
 
 ### Preparation

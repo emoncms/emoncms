@@ -7,9 +7,6 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-
-
-
 // logic starts here
 // -------------------------------------------------------
 // creates all second and third level menus with their associated hierarch
@@ -29,12 +26,14 @@ http://localhost/emoncms/example/1
 
 
 --------- EXAMPLE END */
+load_language_files("Theme/locale", "theme_messages");
 
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 $third_level_open_status = array();
 $default_nav = 'emoncms';
+if ($session['profile']) $default_nav = 'dashboard';
 // blank menus
 $second_level_menus = array(); // sidebars & dropdowns
 $third_level_menus = array(); // sub menu sidebars
@@ -42,43 +41,6 @@ $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
 global $mysqli,$user;
-require_once "Modules/dashboard/dashboard_model.php";
-$dashboard = new Dashboard($mysqli);
-$default_dashboard = array();
-foreach($dashboard->get_list($session['userid'],false,false) as $item){
-    if($item['main']===true){
-        $default_dash = $item;
-    }
-    if($item['published']===true){
-        $fav_dash[] = $item;
-    }
-}
-// ADD DEFAULT DASHBOARD
-if (!empty($default_dash)) {
-    $bookmarks[] = array(
-        'text' => _('Default Dashboard'),
-        'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
-        'icon' => 'star',
-        'order'=> 999,
-        'path' => 'dashboard/view?id='.$default_dash['id']
-    );
-}
-/*
-// ADD BOOKMARKED DASHBOARDS
-if (!empty($fav_dash)) {
-    $orderbase = 999;
-    foreach($fav_dash as $fav) {
-        $bookmarks[] = array(
-            'text' => $fav['name'],
-            'path' => 'dashboard/view?id='.$fav['id'],
-            'order'=> $orderbase++,
-            'icon' => 'dashboard',
-            'title'=> $fav['description']
-        );
-    }
-}
-*/
-
 
 // build the individual menu parts
 foreach($menu['sidebar'] as $menu_key => $sub_menu) {
@@ -94,6 +56,7 @@ foreach($menu['sidebar'] as $menu_key => $sub_menu) {
                 foreach($third_level_items as $third_level_index => $third_level_item) {
                     if(is_menu_item($third_level_item)) {
                         $third_level_item['li_class'] = 'collapse in';
+                        $third_level_item['attr'] = array('tabindex'=>'-1');
                         $third_level_menus[$menu_key][$controller_name][] = makeListLink($third_level_item);
                     } else {
                         $third_level_includes[$menu_key][$controller_name][] = $third_level_item;
@@ -147,6 +110,7 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
                     // active 2nd level menu item (parent)
                     if ($route->controller === getPathController(getKeyValue('path', $item))) {
                         $item['li_class'][] = 'in';
+                        if( empty($item['text'])) $item['text'] = "";
                         if( empty($item['title'])) $item['title'] = stripslashes($item['text']);
                         $item['text'].='<span class="pull-right third-level-indicator">';
                         $item['text'].='  <svg class="icon"><use xlink:href="#icon-arrow_back"></use></svg>';
@@ -170,35 +134,26 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     }
     // activate active menu item or default menu
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
-    
-    $_close = _('Close');
+    $_close = dgettext('theme_messages','Close');
 
-
-
-// logic ends here (should be in a controller or model??)
+// logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
 // -------------------------------------------------------
 // view starts here
-
-
-
-
-
     echo <<<SIDEBARSTART
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
-        <a href="#" style="padding: .8em" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
+        <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 class="sidebar-title">{$menu_key}</h4>
-
 SIDEBARSTART;
 
     if(!empty($markup)) {
-        printf(tab(4).'<ul id="menu-%s" class="nav sidebar-menu">%s'.tab(4).'</ul>', $menu_key, tab(5).implode(tab(5),$markup));
+        printf(tab(2).'<ul id="menu-%s" class="nav sidebar-menu">%s'.tab(2).'</ul>', $menu_key, tab(3).implode(tab(3),$markup));
 
         // module specific menu - set in menu file in each module directory
         if(!empty($third_level_menus[$menu_key])) {
             foreach($third_level_menus[$menu_key] as $item_key => $_menu) {
                 $active2 = $item_key === $route->controller ? 'in': '';
                 $markup2 = sprintf(tab(5).'<ul class="nav sidebar-menu sub-nav">%s'.tab(5).'</ul>', tab(6).implode(tab(6), $_menu));
-                printf(tab(4).'<section class="collapse %s" id="%s-%s-sidebar-include">%s'.tab(4).'</section>'."\n", $active2, $menu_key, $item_key, $markup2);
+                printf(tab(3).'<section class="collapse %s" id="%s-%s-sidebar-include">%s'.tab(3).'</section>'."\n", $active2, $menu_key, $item_key, $markup2);
             }
         }
         
@@ -206,12 +161,12 @@ SIDEBARSTART;
         if(!empty($third_level_includes[$menu_key])) {
             foreach($third_level_includes[$menu_key] as $include_key => $include) {
                 $active3 = $include_key === $route->controller ? 'in': '';
-                $markup3 = "\n\t".implode("\n\t", $include);
+                $markup3 = tab(3).implode(tab(3), $include);
                 printf(tab(4).'<section class="collapse %s include-container" id="%s-%s-sidebar-include">%s'.tab(4).'</section>'."\n", $active3, $menu_key, $include_key, $markup3);
             }
         }
     }
-    echo tab(3)."</div>";
+    echo tab(1)."</div>";
 }
 ?>
 
@@ -228,23 +183,24 @@ if (session_status() == PHP_SESSION_NONE) {
 $expanded = true;
 
 if($session['write']){ ?>
-                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
+            <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
                 <?php
                     echo makeLink(array(
-                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+                        'text' => dgettext('theme_messages','Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
                         'class'=> array('d-none',!$expanded ? 'collapsed':''),
                         'href' => '#',
                         'id' => 'sidebar_user_toggle',
                         'data' => array(
                             'toggle' => 'collapse',
-                            'target' => '#sidebar_user_dropdown'
+                            'target' => '#sidebar_bookmarks'
                         )
                     ));
                 ?>
-                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">Bookmarks 
-                    <a id="edit_bookmarks" class="btn btn-inverse btn-sm btn-link pull-right" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">
+                        <?php echo dgettext('theme_messages','Bookmarks'); ?>
+                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo dgettext('theme_messages','Edit'); ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
                     </h4>
-                    <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+                    <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
                     <?php 
                         // bookmarks
                         // make menu item link to the original and not the bookmark 
@@ -263,35 +219,12 @@ if($session['write']){ ?>
                     </ul>
                     <!-- used to add more bookmarks -->
                     <template id="bookmark_link"><li><a href=""></a></li></template>
-                </div>
+            </div>
+            <script>
+                <?php if ($bookmarks) { ?>
+    var user_bookmarks = <?php echo json_encode($bookmarks, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>
+                <?php } else { ?>
+    var user_bookmarks = []
+                <?php } ?>
+            </script>
 <?php } ?>
-
-<?php
-
-
-// view ends here
-// -------------------------------------------------------
-// assets start here  (should be in a .js or .css file??)
-
-
-?>
-                <script>
-                    // manage the open/close of the user menu in the sidebar
-                    var list = document.getElementById('sidebar_user_dropdown');
-                    var user_toggle = document.getElementById('sidebar_user_toggle');
-                    if(user_toggle) {
-                        user_toggle.addEventListener('click', function(event){
-                            if(list.parentNode) list.parentNode.classList.toggle('expanded');
-                            event.preventDefault();
-                        })
-                    }
-                    document.querySelectorAll('a[data-toggle="collapse"]').forEach(function(item){
-                        item.addEventListener('click', function(event){
-                            event.preventDefault();
-                        });
-                        var sidebar_footer = document.getElementById('footer_nav');
-                    })
-
-                </script>
-                <style>
-                </style>

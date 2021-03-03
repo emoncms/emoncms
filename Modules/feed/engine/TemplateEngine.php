@@ -91,6 +91,20 @@ class TemplateEngine implements engine_methods
     }
 
     /**
+     * scale a portion of a feed
+     * added by Alexandre CUER - january 2019 
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $start unix time stamp in ms of the start of the data range
+     * @param integer $end unix time stamp in ms of the end of the data rage
+     * @param float $scale : numeric value for the scaling 
+    */
+    public function scalerange($id,$start,$end,$scale)
+    {
+    
+    }
+
+    /**
      * Get array with last time and value from a feed
      *
      * @param integer $feedid The id of the feed
@@ -98,6 +112,17 @@ class TemplateEngine implements engine_methods
     public function lastvalue($feedid)
     {
         return array('time'=>time(), 'value'=>0);
+    }
+
+    /**
+     * Get value at specified time
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $time in seconds
+    */
+    public function get_value($feedid,$time)
+    {
+        return null;
     }
 
     /**
@@ -116,6 +141,16 @@ class TemplateEngine implements engine_methods
         $data[] = array($time,$value);
 
         return $data;
+    }
+
+    public function get_data_DMY($id,$start,$end,$mode,$timezone)
+    {
+    
+    }
+    
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
+    {
+    
     }
 
     public function export($feedid,$start)
@@ -148,7 +183,48 @@ class TemplateEngine implements engine_methods
         }
     }
 
-
+    public function get_average($id,$start,$end,$interval)
+    {
+    
+    }
+    
+    public function get_average_DMY($id,$start,$end,$mode,$timezone)
+    {
+    
+    }
+    
+    public function upload_fixed_interval($id,$start,$interval,$npoints)
+    {
+    
+    }
+    
+    public function upload_variable_interval($feedid,$npoints)
+    {
+    
+    }
+    
+    /**
+     * Clear feed
+     *
+     * @param integer $feedid
+     * @return boolean true == success
+     */
+    public function clear($feedid)
+    {
+    
+    }
+    
+    /**
+     * clear out data from file before $start_time
+     *
+     * @param integer $feedid
+     * @param integer $start_time new timestamp to start the feed data from
+     * @return boolean
+     */
+    public function trim($feedid,$start_time) 
+    {
+    
+    }
 // #### \/ Below engine public specific methods
 
 

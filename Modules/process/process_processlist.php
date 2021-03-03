@@ -40,9 +40,9 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $log;
+        global $settings, $log;
         
-        if ($mqtt_enabled && !$this->mqtt)
+        if ($settings['mqtt']['enabled'] && !$this->mqtt)
         {
             // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
             if (class_exists("Mosquitto\Client")) {
@@ -117,7 +117,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
-              "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\">Creating kWh per day bar graphs from Accumulating kWh </a></p>")
+              "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>5,
@@ -505,7 +505,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh </a></p>")
+              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>35,
@@ -809,7 +809,77 @@ class Process_ProcessList
                 "unit"=>"",
                 "group"=>_("Calibration"),
                 "description"=>_("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
-            )
+            ),
+            array(
+              "name"=>_("kWh Accumulator"),
+              "short"=>"kwhacc",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"kwh_accumulator",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"kWh",
+              "group"=>_("Main"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "requireredis"=>true,
+              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
+              "name"=>_("Log to feed (Join)"),
+              "short"=>"log_join",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"log_to_feed_join",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"",
+              "group"=>_("Main"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "nochange"=>true,
+              "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
+              "name"=>_("max by input"),
+              "short"=>"max_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"max_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by input"),
+              "short"=>"min_inp",
+              "argtype"=>ProcessArg::INPUTID,
+              "function"=>"min_input",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("max by feed"),
+              "short"=>"max_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"max_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("min by feed"),
+              "short"=>"min_feed",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"min_feed",
+              "datafields"=>0,
+              "datatype"=>DataType::UNDEFINED,
+              "unit"=>"",
+              "group"=>_("Feed"),
+              "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           )
         );
         return $list;
     }
@@ -887,6 +957,13 @@ class Process_ProcessList
         return $value;
     }
 
+    public function log_to_feed_join($id, $time, $value)
+    {
+        $padding_mode = "join";
+        $this->feed->insert_data($id, $time, $time, $value, $padding_mode);
+        return $value;
+    }
+
     public function abs_value($arg, $time, $value)
     {
         return abs($value);
@@ -938,6 +1015,36 @@ class Process_ProcessList
     {
         return $value - $this->input->get_last_value($id);
     }
+    
+    public function max_input($id, $time, $value)
+    {
+        $max_limit = $this->input->get_last_value($id);
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_input($id, $time, $value)
+    {
+        $min_limit = $this->input->get_last_value($id);
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
+    
+    public function max_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $max_limit = $timevalue['value']*1;
+        if ($value>$max_limit) $value = $max_limit;
+        return $value;
+    }
+    
+    public function min_feed($id, $time, $value)
+    {
+        $timevalue = $this->feed->get_timevalue($id);
+        $min_limit = $timevalue['value']*1;
+        if ($value<$min_limit) $value = $min_limit;
+        return $value;
+    }
 
     //---------------------------------------------------------------------------------------
     // Power to kwh
@@ -961,7 +1068,6 @@ class Process_ProcessList
             // kWh calculation
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
             $new_kwh = $last_kwh + $kwh_inc;
-            $this->log->info("power_to_kwh() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_time=$last_time time_now=$time_now");
         } else {
             // in the event that redis is flushed the last time will
             // likely be > 7200s ago and so kwh inc is not calculated
@@ -1007,7 +1113,6 @@ class Process_ProcessList
             # We are working in a new slot (new day) so don't increment it with the data from yesterday
             $new_kwh = $kwh_inc;
         }
-        $this->log->info("power_to_kwhd() feedid=$feedid last_kwh=$last_kwh kwh_inc=$kwh_inc new_kwh=$new_kwh last_slot=$last_slot current_slot=$current_slot");
         $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
@@ -1094,7 +1199,7 @@ class Process_ProcessList
         }
         $redis->hMset("process:ratechange:$feedid", array('time' => $time, 'value' => $value));
 
-        // return $ratechange;
+        return $ratechange;
     }
 
     public function save_to_input($inputid, $time, $value)
@@ -1144,9 +1249,6 @@ class Process_ProcessList
     //---------------------------------------------------------------------------------
     public function histogram($feedid, $time_now, $value)
     {
-
-        ///return $value;
-
         $feedname = "feed_" . trim($feedid) . "";
         $new_kwh = 0;
         // Allocate power values into pots of varying sizes
@@ -1343,11 +1445,42 @@ class Process_ProcessList
 
             $padding_mode = "join";
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
-            
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 
         return $totalwh;
+    }
+    
+    public function kwh_accumulator($feedid, $time, $value)
+    {
+        $max_power = 25000;
+        $totalkwh = $value;
+        
+        global $redis;
+        if (!$redis) return $value; // return if redis is not available
+
+        if ($redis->exists("process:kwhaccumulator:$feedid")) {
+            $last_input = $redis->hmget("process:kwhaccumulator:$feedid",array('time','value'));
+    
+            $last_feed  = $this->feed->get_timevalue($feedid);
+            $totalkwh = $last_feed['value'];
+            
+            $time_diff = $time - $last_feed['time'];
+            $val_diff = $value - $last_input['value'];
+            
+            if ($time_diff>0) {
+                $power = ($val_diff * 3600000) / $time_diff;
+            
+                if ($val_diff>0 && $power<$max_power) $totalkwh += $val_diff;
+            }
+
+            $padding_mode = "join";
+            $this->feed->insert_data($feedid, $time, $time, $totalkwh, $padding_mode);
+            
+        }
+        $redis->hMset("process:kwhaccumulator:$feedid", array('time' => $time, 'value' => $value));
+
+        return $totalkwh;
     }
     
     public function publish_to_mqtt($topic, $time, $value)
@@ -1433,7 +1566,7 @@ class Process_ProcessList
     // Set data_sampling to false in settings.php to allow precise average feed data calculation. It will be 10x slower!
     public function source_feed_data_time($feedid, $time, $value, $options)
     {
-        global $data_sampling;
+        global $settings;
         $starttime = microtime(true);
         $value = null;
         if (isset($options['start']) && isset($options['end'])) {
@@ -1444,7 +1577,7 @@ class Process_ProcessList
             } else {
                 $interval = ($end - $start);
             }
-            if ($data_sampling) {
+            if ($settings["feed"]["virtualfeed"]["data_sampling"]) {
                 // To speed up reading, but will miss some average data
                 $meta=$this->feed->get_meta($feedid);
                 if (isset($meta->interval) && (int)$meta->interval > 1) {
@@ -1495,7 +1628,7 @@ class Process_ProcessList
             // logging 
             $endtime = microtime(true);
             $timediff = $endtime - $starttime;
-            $this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
+            $this->log->info("source_feed_data_time() ". ($settings["feed"]["virtualfeed"]["data_sampling"] ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
         } else {
             $this->log->info("source_feed_data_time() NODATA feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval value=$value ");
         }
@@ -1505,6 +1638,8 @@ class Process_ProcessList
     public function add_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1512,6 +1647,8 @@ class Process_ProcessList
     public function sub_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1519,6 +1656,8 @@ class Process_ProcessList
     public function multiply_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1526,6 +1665,8 @@ class Process_ProcessList
     public function divide_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {
@@ -1538,6 +1679,8 @@ class Process_ProcessList
     public function reciprocal_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {

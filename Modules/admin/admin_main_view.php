@@ -53,6 +53,20 @@ eot;
         <dd class="col-sm-10 col-8 border-box px-1 {$value_css}">{$value}</dd>
 listItem;
     }
+    
+    function list_serial_ports() {
+        $ports = array();
+        for ($i=0; $i<5; $i++) {
+            if (file_exists("/dev/ttyAMA$i")) {
+                $ports[] = "ttyAMA$i";
+            }  
+            if (file_exists("/dev/ttyUSB$i")) {
+                $ports[] = "ttyUSB$i";
+            }
+        }
+        return $ports;
+    }
+    
 ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
@@ -71,7 +85,7 @@ listItem;
         </div>
         <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
     </section>
-
+    
     <?php 
     // UPDATES 
     // -------------------
@@ -120,7 +134,7 @@ listItem;
     // EMONHUB UPDATE
     // -------------------
     ?>
-    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update EmonHub Only'); ?></h4>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
@@ -132,17 +146,24 @@ listItem;
     // EMONPI UPDATE
     // -------------------
     ?>
-    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Firmware Only'); ?></h4>
             <p><?php echo _('Select your hardware type and firmware version'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
         </div>
         <div class="input-append">
+            <select id="select_serial_port">
+                <?php foreach (list_serial_ports() as $port) { ?>
+                <option><?php echo $port; ?></option>
+                <?php } ?>
+            </select>
             <select id="selected_firmware">
+                <option value="none">none</option>
                 <option value="emonpi">EmonPi</option>
                 <option value="rfm69pi">RFM69Pi</option>
                 <option value="rfm12pi">RFM12Pi</option>
+                <option value="emontxv3cm">EmonTxV3CM</option>
                 <option value="custom">Custom</option>
             </select>
             <button class="update btn btn-info" type="firmware"><?php echo _('Update Firmware'); ?></button>
@@ -153,7 +174,7 @@ listItem;
     // DATABASE UPDATE
     // -------------------
     ?>
-    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left span6 ml-0">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Database Only'); ?></h4>
             <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
@@ -166,32 +187,34 @@ listItem;
     <?php
     // UPDATE LOG FILE VIEWER
     // -------------------
-    if (is_file($update_log_filename)) { ?>
+    //if (is_file($update_log_filename)) { ?>
+    <div id="update-logfile-view" class="hide">
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 text-right px-1 border-top">
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Update Log'); ?></h3>
             <p><?php
-            if(is_writable($update_log_filename)) {
+            // if(is_readable($update_log_filename)) {
                 echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'), $update_log_filename);
-            } else {
-                echo '<div class="alert alert-warn">';
-                echo sprintf('The log file has no write permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
-                echo "</div>";
-            } ?></p>
+            // } else {
+                //echo '<div class="alert alert-warn">';
+                //echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
+                //echo "</div>";
+            // } ?></p>
         </div>
         <div>
-            <?php if(is_writable($update_log_filename)) { ?>
+            <?php // if(is_readable($update_log_filename)) { ?>
                 <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>
                 <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
                 <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
-            <?php } ?>
+            <?php // } ?>
         </div>
     </section>
     <pre id="update-log-bound"><div id="update-log"></div></pre>
+    </div>
     
-    <?php } ?>
+    <?php //} ?>
 
     <?php
     // LOG FILE VIEWER
@@ -201,16 +224,16 @@ listItem;
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Emoncms Log'); ?></h3>
             <p><?php
-            if(is_writable($log_filename)) {
-                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$log_filename);
+            if(is_writable($emoncms_logfile)) {
+                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$emoncms_logfile);
             } else {
                 echo '<div class="alert alert-warn">';
-                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
+                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
                 echo '<small></div>';
             } ?></p>
         </div>
         <div>
-            <?php if(is_writable($log_filename)) { ?>
+            <?php if(is_writable($emoncms_logfile)) { ?>
                 <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>
@@ -222,25 +245,27 @@ listItem;
     
     <section>
         <pre id="logreply-bound"><div id="logreply"></div></pre>
-        <?php if(is_writable($path_to_config)) { ?>
+        <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
         <div id="log-level" class="dropup btn-group">
-            <a class="btn btn-small dropdown-toggle btn-<?php echo $log_level_css?> text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
+            <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
             <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
             <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <?php foreach ($log_levels as $key=>$value) {
                     $active = $key === $log_level ? ' active':'';
-                    echo sprintf('<li><a href="#" data-key="%s" class="btn btn-%s %s">%s</a></li>', $key, $log_levels_css[$key], $active, $value);
+                    printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
                 }?>
+
             </ul>
         </div>
         <?php } else { ?>
-            <span id="log-level" class="btn-small dropdown-toggle btn-<?php echo $log_level_css?> text-uppercase">
+            <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase">
                 <?php echo sprintf('Log Level: %s', $log_level_label) ?>
             </span>
         <?php } ?>
     </section>
+    
     <?php } ?>
 
     <?php 
@@ -312,7 +337,13 @@ listItem;
             
         </dl>
 
+        <div class="input-prepend" style="float:right; padding-top:5px">
+            <span class="add-on">Write Load Period</span>
+            <button id="resetwriteload" class="btn btn-info">Reset</button>
+        </div>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
+        <br>
+        
         <dl class="row">
             <?php 
             foreach($disk_info as $mount_info) {
@@ -320,7 +351,8 @@ listItem;
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
-                        'Free'=>$mount_info['free']
+                        'Free'=>$mount_info['free'],
+                        'Write Load'=>$mount_info['writeload']
                     ))
                 );
             }
@@ -336,7 +368,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MySQL'); ?></h4>
         <dl class="row">
             <?php echo row(_('Version'), $system['db_version']); ?>
-            <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
+            <?php echo row(_('Host'), $system['db_server'] . ' (' . $system['db_ip'] . ')'); ?>
             <?php echo row(_('Date'), $system['db_date']); ?>
             <?php echo row(_('Stats'), $system['db_stat']); ?>
         </dl>
@@ -344,14 +376,24 @@ listItem;
         <?php if ($redis_enabled) : ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+            <?php
+            $redis_version_lines[] = row(_('Redis Server'), $redis_info['redis_version']);
+            if(!empty($redis_info['pipRedis'])) {
+                $redis_version_lines[] = row(_('Python Redis'), $redis_info['pipRedis']);
+            }
+            if(!empty($redis_info['phpRedis'])) {
+                $redis_version_lines[] = row(_('PHP Redis'), $redis_info['phpRedis']);
+            }
+            echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
             <?php 
             $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
-            $redis_keys = sprintf('%s keys',$redis->dbSize());
-            $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
-            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
-            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+            $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
+            $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
+            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
+            ?>
+            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
+            
         </dl>
         <?php endif; ?>
 
@@ -366,16 +408,17 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
         <dl class="row">
         <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
-        <?php echo row(_('Modules'), implode(' | ', $php_modules), '', 'overflow-hidden'); ?>
+        <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
         </dl>
 
         <?php if (!empty(implode('',$rpi_info))) : ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
         <dl class="row">
             <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
-            <?php echo row(_('SoC'), $rpi_info['hw']) ?>
+            <!-- <?php echo row(_('SoC'), $rpi_info['hw']) ?> -->
             <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
-            <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
+            <?php echo row(_('CPU Temperature'), $rpi_info['cputemp']) ?>
+            <?php echo row(_('GPU Temperature'), $rpi_info['gputemp']) ?>
             <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
             <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
         </dl>
@@ -445,7 +488,7 @@ function copyTextToClipboard(text, message) {
   try {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
+    // console.log('Copying text command was ' + msg);
     snackbar(message || 'Copied to clipboard');
   } 
   catch(err) {
@@ -463,17 +506,16 @@ function markdownStringify(md) {
     // indent values
     .replace(/\:-/g,':\t')
     // start titles on new lines
-    .replace(/- \*\*/g,'\t')
+    .replace(/ {4}- \*\*/g,'\n\t\t')
+    .replace(/^- \*\*/mg,'\n\t')
     // remove bold
     .replace(/\*\*/g,'')
     // remove heading
-    .replace(/##(.)/gm,'\n')
+    .replace(/##(.)/gm,'\n\n')
     // remove orphan new lines
     .replace(/\n /g,'')
     // replace unrequired whitespace
-    .replace(/\n{2,}/g,'\n\n')
-    .replace(/\s{4}/g,'\n\t')
-    .replace(/\s{2,}\n/gm,'\n')
+    .replace(/\n{2,}/g,'\n')
 }
 /**
  * attempt to convert <html> to markdown (text/markdown)
@@ -557,7 +599,8 @@ function markdownify(markup) {
     .replace(/\n{2,} /g,"\n\n")
     .replace(/\n{3,}/g,"\n\n")
     // add newline before level 2 title
-    .replace(/\n?##/g,'\n##')
+    .replace(/\n?#{2}/g,'\n##')
+    .replace(/([\w\(\)])\n*#{2}/g,"$1\n\n\r##")
     .trim()
 }
 /**
@@ -607,7 +650,8 @@ $("#copyserverinfo_md").on('click', function(event) {
 });
 
 // copy value (and title) to clipboard when clicked
-$("dd").on('click', function(event) {
+$(".row dd").on('click', function(event) {
+    if(event.target.tagName==='BUTTON') return
     let $this = $(this),
         title = $this.prev('dt').text().trim(),
         markup = $this.clone().find('script').remove().end().html()
@@ -619,7 +663,7 @@ $("dd").on('click', function(event) {
     );
 });
 // copy title (and value) to clipboard when clicked
-$("dt").on('click', function(event) {
+$(".row dt").on('click', function(event) {
     let $this = $(this),
         title = $this.text().trim(),
         markup = $this.next('dd').clone().find('script').remove().end().html()
@@ -700,6 +744,7 @@ function refresherStart(func, interval){
 // push value to updates logfile viewer
 function refresh_updateLog(result){
     output_logfile(result, $("#update-log"));
+    if (result!="<?php echo $update_log_filename; ?> does not exist") $("#update-logfile-view").show();
 }
 // push value to emoncms logfile viewer
 function refresh_log(result){
@@ -740,8 +785,9 @@ $("#getlog").click(function() {
 // update all button clicked
 $(".update").click(function() {
   var type = $(this).attr("type");
+  var serial_port = $("#select_serial_port").val();
   var firmware = $("#selected_firmware").val();
-  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware, async: true, success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
     {
       // update with latest value
       refresh_updateLog(result);
@@ -783,6 +829,14 @@ $("#redisflush").click(function() {
     {
       var data = JSON.parse(result);
       $("#redisused").html(data.dbsize+" keys ("+data.used+")");
+    }
+  });
+});
+
+$("#resetwriteload").click(function() {
+  $.ajax({ url: path+"admin/resetwriteload.json", async: true, dataType: "text", success: function(result)
+    {
+      location.reload(); 
     }
   });
 });
@@ -833,10 +887,11 @@ $('#log-level ul li a').click(function(event){
     .done(function(response) {
         // make the dropdown toggle show the new setting
         if(response.hasOwnProperty('success') && response.success!==false) {
-            $toggle.removeClass('btn-warning btn-danger btn-inverse').addClass('btn-'+response['css-class']);
             $toggle.find('.log-level-name').text(_('log level: %s').replace('%s',response['log-level-name']));
             // highlight the current dropdown element as active
-            $btn.addClass('active').siblings().removeClass('active');
+            $btn.addClass('active');
+            $btn.parents('li').siblings().find('a').removeClass('active');
+
             notify(_('Log level set to: %s').replace('%s',response['log-level-name']),'success');
         } else {
             notify(_('Log level not set'), 'error', response.hasOwnProperty('message') ? response.message: '');

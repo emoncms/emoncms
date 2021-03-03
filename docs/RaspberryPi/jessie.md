@@ -1,4 +1,8 @@
-## Install Emoncms on Raspberry Pi (Raspbian Jessie)
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+## Archived: Install Emoncms on Raspberry Pi (Raspbian Jessie)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.
 
@@ -134,8 +138,8 @@ Create a symlink to reference emoncms within the web root folder:
 
 Set write permissions for the emoncms logfile:
 
-`sudo touch /var/log/emoncms.log` followed by  
-`sudo chmod 666 /var/log/emoncms.log`
+`sudo touch /var/log/emoncms/emoncms.log` followed by  
+`sudo chmod 666 /var/log/emoncms/emoncms.log`
 
 ### In an internet browser, load emoncms:
 

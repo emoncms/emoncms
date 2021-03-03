@@ -1,3 +1,5 @@
+// JSHint settings
+/* globals path */
 
 var input = {
 
@@ -48,6 +50,10 @@ var input = {
     'delete_multiple':function(ids)
     {
         $.ajax({ url: path+"input/delete.json", data: "inputids="+JSON.stringify(ids), async: false, success: function(data){} });
+    },
+
+    delete_multiple_async: function(ids) {
+        return $.getJSON(path + "input/delete.json", {inputids: JSON.stringify(ids)})
     },
 
     // Process

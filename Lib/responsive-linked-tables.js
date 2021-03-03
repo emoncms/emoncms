@@ -118,6 +118,11 @@ $(function() {
 
 // Calculate and color updated time
 function list_format_updated(time) {
+    var fv = list_format_updated_obj(time);
+    return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
+}
+
+function list_format_updated_obj(time) {
     time = time * 1000;
     var servertime = new Date().getTime(); // - table.timeServerLocalOffset;
     var update = new Date(time).getTime();
@@ -143,7 +148,7 @@ function list_format_updated(time) {
     else if (secs < 60) color = "rgb(240,180,20)"; 
     else if (secs < (3600*2)) color = "rgb(255,125,20)"
     
-    return "<span class='last-update' style='color:" + color + ";'>" + updated + "</span>";
+    return {color:color,value:updated};
 }
 
 // Format value dynamically
