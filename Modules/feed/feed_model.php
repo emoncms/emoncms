@@ -547,7 +547,7 @@ class Feed
                 if ($lastvalue = $this->EngineClass($engine)->lastvalue($id)) {
                     $this->redis->hMset("feed:$id", array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
                 } else {
-                    $lastvalue = array('time'=>0,'value'=>0);
+                    $lastvalue = array('time'=>null,'value'=>null);
                 }
             }
         }

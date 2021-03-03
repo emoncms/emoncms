@@ -1638,6 +1638,8 @@ class Process_ProcessList
     public function add_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1645,6 +1647,8 @@ class Process_ProcessList
     public function sub_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1652,6 +1656,8 @@ class Process_ProcessList
     public function multiply_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1659,6 +1665,8 @@ class Process_ProcessList
     public function divide_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {
@@ -1671,6 +1679,8 @@ class Process_ProcessList
     public function reciprocal_by_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+
+        if ($value==null || $last==null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {

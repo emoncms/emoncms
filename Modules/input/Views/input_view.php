@@ -1,4 +1,4 @@
-<?php $v=6; ?>
+<?php $v=7; ?>
 
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
@@ -237,12 +237,12 @@ input.checkbox-lg,
                 <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="'<?php echo addslashes(_("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
             </div>
 
-            <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
+            <h5 class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">
                 <span>{{ nodeid }} 
                     <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
                 </span>
             </h5>
-            <span class="description" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
+            <span class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
             <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
             <div class="buttons pull-right">
                 <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
@@ -261,13 +261,13 @@ input.checkbox-lg,
                     <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
                 </div>
                 <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
-                <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-                <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
+                <div class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
+                <div class="processlist" data-col="H" :style="{width:col.H+'px', height:col_h.H}">
                     <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
                 </div>
                 <div class="buttons pull-right">
                     <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                    <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
+                    <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', height:col_h.E, color:input.time_color}">
                         {{ input.time_value }}
                     </span>
                     <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
@@ -323,3 +323,4 @@ input.checkbox-lg,
     _SETTINGS['feedviewpath'] = "<?php if(isset($feedviewpath)) echo $feedviewpath; ?>";
 </script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+
