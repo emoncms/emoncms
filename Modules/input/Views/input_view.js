@@ -83,6 +83,10 @@ var app = new Vue({
             D: 100, // value     
             C: 50,  // config       
         },
+        col_h: {
+            E: 'auto',
+            H: 'auto'
+        },
         selected: [],
         collapsed: [],
         paused: false,
@@ -829,10 +833,16 @@ function update(){
     if (DEVICE_MODULE) {
         var def = $.Deferred()
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
+        
+            if (result.message!=undefined && result.message=="Username or password empty") {
+                window.location.href = "/";
+                return false;
+            }
+        
             // Associative array of devices by nodeid
             for (var z in result) {
-                devices[result[z].nodeid] = result[z]
-                devices[result[z].nodeid].inputs = []
+                devices[String(result[z].nodeid)] = result[z]
+                devices[String(result[z].nodeid)].inputs = []
             }
             update_inputs().done(function() {
                 // inputs list done downloading
@@ -850,14 +860,19 @@ function update_inputs() {
     var requestTime = (new Date()).getTime();
     return $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
         if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-          
+        
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+        
         // Associative array of inputs by id
         inputs = {};
         for (var z in data) inputs[data[z].id] = data[z];
         
         // Assign inputs to devices
         for (var z in inputs) {
-            let nodeid = inputs[z].nodeid;
+            let nodeid = String(inputs[z].nodeid);
             
             // Device does not exist which means this is likely a new system or that the device was deleted
             // There needs to be a corresponding device for every node and so the system needs to recreate the device here
@@ -938,7 +953,12 @@ function draw_devices() {
     max_time_length = 0
     max_value_length = 0
     
+    // This part works out the column widths based on string length of largest entry in column
     for (var nodeid in devices) {
+    
+        if (devices[nodeid].nodeid.length > max_name_length) max_name_length = devices[nodeid].nodeid.length;
+        if (devices[nodeid].description.length > max_description_length) max_description_length = devices[nodeid].description.length;
+        
         for (var z in devices[nodeid].inputs) {
             var input = devices[nodeid].inputs[z];
             
@@ -956,14 +976,24 @@ function draw_devices() {
             if (input.description.length>max_description_length) max_description_length = input.description.length;
             if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
             if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
-            
         }
     }
-    app.col.A = ((max_name_length * 8) + 30);
-    app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
-    app.col.D = ((max_value_length * 8) + 17);
-    app.col.E = ((max_time_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
-    app.col.H = 200
+
+    // Conversion of string length to px width
+    app.col = {
+        B: 40,                                   // select
+        A: ((max_name_length * 8) + 30),         // name          +30
+        G: ((max_description_length * 8) + 70),  // description   +70
+        H: 200,                                  // processList
+        F: 50,                                   // schedule
+        E: ((max_time_length * 8) + 40),         // time          +40 (needs to accomodate weeks/days/hours/minutes/s)
+        D: ((max_value_length * 8) + 17),        // value         +17
+        C: 50                                    // config        
+    };
+    
+    // Column height used when hiding columns
+    app.col_h.H = 'auto'
+    app.col_h.E = 'auto'
     
     resize_view();
 
@@ -975,9 +1005,27 @@ function draw_devices() {
 function resize_view() {
     // Hide columns
     var col_max = JSON.parse(JSON.stringify(app.col));
-    var rowWidth = $("#app").width();
+    var rowWidth = $("#app").width() - 0;       // Originally 0 offset removed here
     hidden = {}
     keys = Object.keys(app.col).sort();
+    
+    var columnsWidth = 0
+    for (k in keys) {
+        let key = keys[k]
+        columnsWidth += col_max[key];
+        hidden[key] = columnsWidth > rowWidth;
+    }
+    
+    for (var key in hidden) {
+        if (hidden[key]) {
+            app.col[key] = 0;
+            app.col_h[key] = 0;
+        } else {
+            app.col[key] = col_max[key]
+            app.col_h[key] = 'auto';
+        }
+    }
+
     // show tooltip with device key on click 
     $('#table [data-toggle="tooltip"]').tooltip({
         trigger: 'manual',
@@ -994,17 +1042,6 @@ function resize_view() {
             $btn.attr('title', title);
         }
     )
-    
-    var columnsWidth = 0
-    for (k in keys) {
-        let key = keys[k]
-        columnsWidth += col_max[key];
-        hidden[key] = columnsWidth > rowWidth;
-    }
-    
-    for (var key in hidden) {
-        if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
-    }
 }
 
 
@@ -1292,10 +1329,8 @@ $("#save-processlist").click(function (){
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
 // debouncing causes odd rendering during resize - run this at all resize points...
-var resize_timeout = 0;
-$(window).on("resize",function() {
-    clearTimeout(resize_timeout)
-    resize_timeout = setTimeout(resize_view,40);
+$(window).on("window.resized",function() {
+    draw_devices();
 });
 
 
@@ -1396,3 +1431,4 @@ $(function(){
         console.log(event.target.dataset.node,nodes_display)
     })
 })
+

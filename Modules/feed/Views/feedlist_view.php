@@ -95,7 +95,7 @@ body{padding:0!important}
 #feeds-to-delete { font-style:italic; }
 
 #deleteFeedModalSelectedItems{
-    postion:absolute;
+    position:absolute;
     overflow:hidden;
     text-align:left;
     background: #f5f5f5;
@@ -405,6 +405,11 @@ var firstLoad = true;
 function update_feed_list() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+    
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
@@ -610,8 +615,6 @@ function nodeIntervalClass (feeds) {
     if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
     if (nodeMissed > 8) result.push('status-danger');
     return result.join(' ');
-
-    return result;
 }
 
 
@@ -814,7 +817,7 @@ function showSelectedFeeds(feed_inputs) {
     for(s in selected) {
         titles[s] = selected[s].tag+":"+selected[s].name;
         // virtual feed processes
-        if ( selected[s].hasOwnProperty('processList') && selected[s].processList.length > 0 ) {
+        if ( selected[s].hasOwnProperty('processList') && selected[s].processList && selected[s].processList.length > 0 ) {
             linked.push(selected[s]);
             let virtualProcesses = processlist_ui.decode(selected[s].processList);
             for(p in virtualProcesses) {
@@ -1454,3 +1457,4 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 </script>
+

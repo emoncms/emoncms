@@ -122,29 +122,44 @@ function convertToPlotlist(multigraphFeedlist) {
   return plotlist;
 }
 
-function plot() {
-  $.plot($("#graph"), plotdata, {
-    canvas: true,
-    grid: { show: true, hoverable: true, clickable: true },
-    xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
-    selection: { mode: "x" },
-    legend: { show: showlegend, position: "nw", toggle: true },
-    toggle: { scale: "visible" },
-    touch: { pan: "x", scale: "x" },
-    yaxis: { min: view.ymin , max: view.ymax},
-    y2axis: { min: view.y2min , max: view.y2max}
-  });
+
+
+/*
+ Handle Feeds
+*/
+function visFeedData() {
+    if (typeof multigraphFeedlist !== "undefined" && typeof multigraphFeedlist[0] !== "undefined" && typeof multigraphFeedlist[0]["autorefresh"] !== "undefined") {
+        var now = new Date().getTime();
+        var timeWindow = view.end - view.start;
+        if (now - view.end < 2000 * multigraphFeedlist[0]["autorefresh"]) {
+        view.end = now;
+        view.start = view.end - timeWindow;
+            visFeedDataOri();
+            clearTimeout(eventRefresh); // Cancel any pending event
+            eventRefresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
+        } else {
+            visFeedDataOri();
+        }
+    } else {
+        visFeedDataOri();
+    }
 }
 
-//load feed data to multigraph plot
-function visFeedDataCallback(context,data) {
-  var i = context["index"];
-  context["plotlist"].plot.data = data;
-  if (context["plotlist"].plot.data) {
-    plotdata[parseInt(i,10)] = context["plotlist"].plot;
-  }
+
+// Ignore load request spurts
+function visFeedDataOri() {
+  datetimepicker1.setLocalDate(new Date(view.start));
+  datetimepicker2.setLocalDate(new Date(view.end));
+  datetimepicker1.setEndDate(new Date(view.end));
+  datetimepicker2.setStartDate(new Date(view.start));
+
+  clearTimeout(eventVisFeedData); // Cancel any pending events
+  eventVisFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
+  if (typeof multigraphFeedlist !== "undefined" && multigraphFeedlist.length !== plotdata.length) {plotdata = [];}
   plot();
 }
+
+
 
 // Load relevant feed data asynchronously
 function visFeedDataDelayed() {
@@ -170,39 +185,30 @@ function visFeedDataDelayed() {
   }
 }
 
-// Ignore load request spurts
-function visFeedDataOri() {
-  datetimepicker1.setLocalDate(new Date(view.start));
-  datetimepicker2.setLocalDate(new Date(view.end));
-  datetimepicker1.setEndDate(new Date(view.end));
-  datetimepicker2.setStartDate(new Date(view.start));
-
-  clearTimeout(eventVisFeedData); // Cancel any pending events
-  eventVisFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
-  if (typeof multigraphFeedlist !== "undefined" && multigraphFeedlist.length !== plotdata.length) {plotdata = [];}
+//load feed data to multigraph plot
+function visFeedDataCallback(context,data) {
+  var i = context["index"];
+  context["plotlist"].plot.data = data;
+  if (context["plotlist"].plot.data) {
+    plotdata[parseInt(i,10)] = context["plotlist"].plot;
+  }
   plot();
 }
 
-/*
- Handle Feeds
-*/
-function visFeedData() {
-    if (typeof multigraphFeedlist !== "undefined" && typeof multigraphFeedlist[0] !== "undefined" && typeof multigraphFeedlist[0]["autorefresh"] !== "undefined") {
-        var now = new Date().getTime();
-        var timeWindow = view.end - view.start;
-        if (now - view.end < 2000 * multigraphFeedlist[0]["autorefresh"]) {
-        view.end = now;
-        view.start = view.end - timeWindow;
-            visFeedDataOri();
-            clearTimeout(eventRefresh); // Cancel any pending event
-            eventRefresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
-        } else {
-            visFeedDataOri();
-        }
-    } else {
-        visFeedDataOri();
-    }
+function plot() {
+  $.plot($("#graph"), plotdata, {
+    canvas: true,
+    grid: { show: true, hoverable: true, clickable: true },
+    xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
+    selection: { mode: "x" },
+    legend: { show: showlegend, position: "nw", toggle: true },
+    toggle: { scale: "visible" },
+    touch: { pan: "x", scale: "x" },
+    yaxis: { min: view.ymin , max: view.ymax},
+    y2axis: { min: view.y2min , max: view.y2max}
+  });
 }
+
 
 function multigraphInit(element) {
   // Get start and end time of multigraph view

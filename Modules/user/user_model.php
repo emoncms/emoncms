@@ -190,7 +190,7 @@ class User
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
                             $_SESSION['write'] = 1;
-                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['admin'] = $userData->admin;
                             $_SESSION['lang'] = $userData->language;
                             $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
@@ -222,7 +222,7 @@ class User
     }
 
 
-    public function register($username, $password, $email)
+    public function register($username, $password, $email, $timezone)
     {
         // Input validation, sanitisation and error reporting
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
@@ -233,6 +233,8 @@ class User
 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
+        
+        if (!$this->timezone_valid($timezone)) return array('success'=>false, 'message'=>_("Timezone is not valid"));
 
         // If we got here the username, password and email should all be valid
 
@@ -250,6 +252,7 @@ class User
 
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, mqtthash, admin) VALUES (?,?,?,?,?,?,?,0)");
         $stmt->bind_param("sssssss", $username, $hash, $email, $salt, $apikey_read, $apikey_write, $mqtthash);
+
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
             $stmt->close();
@@ -325,7 +328,7 @@ class User
         $emailer->body("<p>To complete ".$this->appname." registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
         $result = $emailer->send();
         if (!$result['success']) {
-            $this->log->error("Email send returned error. emailto=" + $email . " message='" . $result['message'] . "'");
+            $this->log->error("Email send returned error. emailto=" . $email . " message='" . $result['message'] . "'");
         } else {
             $this->log->info("Email sent to $email");
         }
@@ -388,13 +391,21 @@ class User
         //$userData = $result->fetch_object();
         //$stmt->close();
         
-        if (!$result) return array('success'=>false, 'message'=>_("Username does not exist"));
+        if (!$result) {
+            $ip_address = get_client_ip_env();
+            $this->log->error("Login: Username does not exist username:$username ip:$ip_address");
+        
+            return array('success'=>false, 'message'=>_("Username does not exist"));
+        }
         if ($this->email_verification && !$email_verified) return array('success'=>false, 'message'=>_("Please verify email address"));
         
         $hash = hash('sha256', $userData_salt . hash('sha256', $password));
 
         if ($hash != $userData_password)
         {
+            $ip_address = get_client_ip_env();
+            $this->log->error("Login: Incorrect password username:$username ip:$ip_address");
+            
             return array('success'=>false, 'message'=>_("Incorrect password, if you're sure it's correct try clearing your browser cache"));
         }
         else
@@ -447,7 +458,11 @@ class User
         $result = $stmt->fetch();
         $stmt->close();
         
-        if (!$result) return array('success'=>false, 'message'=>_("Incorrect authentication"));
+        if (!$result) {
+            $ip_address = get_client_ip_env();
+            $this->log->error("get_apikeys_from_login: Incorrect authentication:$username ip:$ip_address");
+            return array('success'=>false, 'message'=>_("Incorrect authentication"));
+        }
        
         $hash = hash('sha256', $userData_salt . hash('sha256', $password));
 
@@ -499,6 +514,8 @@ class User
         }
         else
         {
+            $ip_address = get_client_ip_env();
+            $this->log->error("change_password: old password incorect ip:$ip_address");
             return array('success'=>false, 'message'=>_("Old password incorect"));
         }
     }
@@ -537,6 +554,7 @@ class User
                 $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
                 $result = $email->send();
                 if (!$result['success']) {
+                    return array('success'=>false, 'message'=>$result['message']);
                     $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
                 } else {
                     $this->log->info("Email sent to $emailto");
@@ -547,10 +565,12 @@ class User
                     $stmt->close();
                     return array('success'=>true, 'message'=>"Password recovery email sent!");
                 }                
+            } else {
+                return array('success'=>false, 'message'=>"Password reset disabled");
             }
+        } else {
+            return array('success'=>false, 'message'=>"Invalid username or email");
         }
-
-        return array('success'=>false, 'message'=>"An error occured");
     }
 
     public function change_username($userid, $username)
@@ -695,6 +715,14 @@ class User
             }
         }
         return $timezones;
+    }
+    
+    public function timezone_valid($_timezone) 
+    {
+        foreach (DateTimeZone::listIdentifiers() as $timezone) {
+            if ($timezone==$_timezone) return true;
+        }
+        return false;
     }
 
     public function get_salt($userid)

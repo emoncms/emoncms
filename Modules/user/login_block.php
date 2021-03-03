@@ -237,7 +237,14 @@ function register(){
     }
     else
     {
-        var result = user.register(username,password,email);
+        // Set user timezone automatically using current browser timezone
+        var user_timezone = 'UTC';
+        if (Intl!=undefined) {
+            user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            console.log(user_timezone);
+        }
+            
+        var result = user.register(username,password,email,user_timezone);
 
         if (result.success==undefined) {
             $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");

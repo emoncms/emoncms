@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-10-28 23:09+0100\n"
-"PO-Revision-Date: 2019-10-28 23:23+0100\n"
+"PO-Revision-Date: 2020-09-24 14:21+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 2.4.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/vis_main_view.php:38
@@ -246,7 +246,7 @@ msgstr "Limites axes Y"
 
 #: ../../../vis_langjs.php:70
 msgid "0 = before value, 1 = after value"
-msgstr ""
+msgstr "0 = avant valeur, 1 = après valeur"
 
 #: ../../../vis_langjs.php:71
 msgid "Bottom"
@@ -816,19 +816,19 @@ msgstr "Visualiseur de données"
 
 #: ../../../visualisations/graph.php:28
 msgid "D"
-msgstr ""
+msgstr "J"
 
 #: ../../../visualisations/graph.php:29
 msgid "W"
-msgstr ""
+msgstr "S"
 
 #: ../../../visualisations/graph.php:30
 msgid "M"
-msgstr ""
+msgstr "M"
 
 #: ../../../visualisations/graph.php:31
 msgid "Y"
-msgstr ""
+msgstr "A"
 
 #: ../../../visualisations/graph.php:44
 msgid "Stats"
@@ -896,11 +896,11 @@ msgstr "Masquer sortie CSV"
 
 #: ../../../visualisations/histgraph.php:35
 msgid "Histogram:"
-msgstr ""
+msgstr "Histogramme :"
 
 #: ../../../visualisations/multigraph.php:51
 msgid "Multigraph:"
-msgstr ""
+msgstr "Multi graphique :"
 
 #: ../../../visualisations/orderbars.php:20
 msgid "Bar graph (ordered by height):"
@@ -908,7 +908,7 @@ msgstr "Bar graph (trié par hauteur):"
 
 #: ../../../visualisations/orderthreshold.php:22
 msgid "Threshold Order"
-msgstr "Threshold Order"
+msgstr "Ordre seuil"
 
 #: ../../../visualisations/orderthreshold.php:29
 msgid "Reload"
@@ -936,11 +936,11 @@ msgstr "Points de données dans la vue :"
 
 #: ../../../visualisations/rawdata.php:106
 msgid "Raw:"
-msgstr ""
+msgstr "Brut :"
 
 #: ../../../visualisations/realtime.php:19
 msgid "Realtime data:"
-msgstr ""
+msgstr "Données temps réel :"
 
 #: ../../../visualisations/realtime.php:26
 #: ../../../visualisations/realtime.php:27
@@ -967,7 +967,7 @@ msgstr ""
 
 #: ../../../visualisations/zoom.php:121
 msgid "Total:"
-msgstr "Total:"
+msgstr "Total :"
 
 #: ../../../visualisations/zoom.php:121 ../../../visualisations/zoom.php:169
 msgid "kWh"

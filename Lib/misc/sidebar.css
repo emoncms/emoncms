@@ -20,6 +20,16 @@ Side nav
 .narrow .sidebar-inner .close {
   display: inline-block;
 }
+
+.sidebar-inner .divider {
+	min-height: 1rem;
+	height: 1rem;
+	background: #333 !important;
+}
+
+.sidebar-inner .divider a {
+	display: none !important;
+}
 /* -------------------------------------------------------------------
 Top nav
 --------------------------------------------------------------------*/

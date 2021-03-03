@@ -1,0 +1,317 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - Schedule\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-03-15 23:39+0100\n"
+"PO-Revision-Date: 2020-03-15 23:51+0100\n"
+"Last-Translator: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language-Team: \n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/schedule_api.php:9
+msgid "Schedule API"
+msgstr "API di pianificazione"
+
+#: ../../../Views/schedule_api.php:10
+msgid "Apikey authentication"
+msgstr "Apikey autenticazione"
+
+#: ../../../Views/schedule_api.php:11
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
+msgstr ""
+
+#: ../../../Views/schedule_api.php:12
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Aggiungi all'URL della tua richiesta: &apikey=APIKEY"
+
+#: ../../../Views/schedule_api.php:13
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Utilizzare il parametro POST: \"apikey=APIKEY\""
+
+#: ../../../Views/schedule_api.php:14
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Aggiungere l'intestazione HTTP: \"Authorization: Bearer APIKEY\""
+
+#: ../../../Views/schedule_api.php:15
+msgid "Read only:"
+msgstr "Sola lettura:"
+
+#: ../../../Views/schedule_api.php:18
+msgid "Read & Write:"
+msgstr "Lettura & Scrittura"
+
+#: ../../../Views/schedule_api.php:22
+msgid "Available HTML URLs"
+msgstr "URL HTML disponibili"
+
+#: ../../../Views/schedule_api.php:24
+msgid "The schedule list view"
+msgstr "Visualizzazione elenco delle pianificazioni"
+
+#: ../../../Views/schedule_api.php:25
+msgid "This page"
+msgstr "Questa pagina"
+
+#: ../../../Views/schedule_api.php:28
+msgid "Available JSON commands"
+msgstr "Comandi JSON disponibili"
+
+#: ../../../Views/schedule_api.php:29
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr ""
+
+#: ../../../Views/schedule_api.php:31
+#, fuzzy
+msgid "Schedule process actions"
+msgstr "Pianificare le azioni del processo"
+
+#: ../../../Views/schedule_api.php:33
+msgid "List schedules"
+msgstr "Elenco pianificazioni"
+
+#: ../../../Views/schedule_api.php:34
+#, fuzzy
+msgid "Get schedule details"
+msgstr "Ottenere i dettagli della pianificazioneGet schedule details"
+
+#: ../../../Views/schedule_api.php:35
+#, fuzzy
+msgid "Get only the expression"
+msgstr "Ottenere solo l'espressioneGet only the expression"
+
+#: ../../../Views/schedule_api.php:36
+msgid "Add a schedule"
+msgstr "Aggiungi pianificazione"
+
+#: ../../../Views/schedule_api.php:37 ../../../Views/schedule_view.php:41
+msgid "Delete schedule"
+msgstr "Elimina pianificazione"
+
+#: ../../../Views/schedule_api.php:38
+msgid "Update schedule"
+msgstr "Aggiorna scheda"
+
+#: ../../../Views/schedule_api.php:39
+msgid "Test the expression"
+msgstr "Testare l'espressione"
+
+#: ../../../Views/schedule_api.php:43
+msgid "Expression documentation"
+msgstr "Documentazione sulle espressioni"
+
+#: ../../../Views/schedule_api.php:44
+#, fuzzy
+msgid "Expression is used to specify active range."
+msgstr "Espressione viene utilizzata per specificare l'intervallo attivo."
+
+#: ../../../Views/schedule_api.php:45
+#, fuzzy
+msgid ""
+"Granularity is day light saving time, month, day, week day, hour and minute."
+msgstr ""
+"La granularità è giorno luce risparmio di tempo, mese, giorno, giorno della "
+"settimana, ora e minuto."
+
+#: ../../../Views/schedule_api.php:46
+#, fuzzy
+msgid ""
+"Expression is built mixing basic blocks with operation characters. An hour "
+"is always required. All other basic blocks are optional and can be mixed on "
+"the same expression to build complex schedule rules. Ranges must be ordered "
+"older-newer. White spaces are ignored and can be ommited."
+msgstr ""
+"Espressione è costruito mescolando blocchi di base con caratteri di "
+"operazione. È sempre necessaria un'ora. Tutti gli altri blocchi di base sono "
+"facoltativi e possono essere combinati sulla stessa espressione per creare "
+"regole di pianificazione complesse. Gli intervalli devono essere ordinati "
+"più vecchi di quelli più recenti. Gli spazi vuoti vengono ignorati e possono "
+"essere ommita."
+
+#: ../../../Views/schedule_api.php:47
+#, fuzzy
+msgid ""
+"Timezone of expression is the same of the user account that created or "
+"edited it. If the expression is public, timezones conversions are automatic "
+"taken in account between owner and user."
+msgstr ""
+"Il fuso orario dell'espressione è lo stesso dell'account utente che lo ha "
+"creato o modificato. Se l'espressione è pubblica, le conversioni di fusi "
+"orari vengono eseguite automaticamente nell'account tra proprietario e "
+"utente."
+
+#: ../../../Views/schedule_api.php:48
+msgid "Basic blocks:"
+msgstr "Blocchi di base:"
+
+#: ../../../Views/schedule_api.php:55
+#, fuzzy
+msgid "Operation characters:"
+msgstr "Caratteri dell'operazione:"
+
+#: ../../../Views/schedule_api.php:62
+msgid "Expression examples:"
+msgstr "Esempi di espressioni:"
+
+#: ../../../Views/schedule_view.php:18
+msgid "Schedule Help"
+msgstr "Guida Pianificazioni"
+
+#: ../../../Views/schedule_view.php:19 ../../../Views/schedule_view.php:22
+msgid "Schedules"
+msgstr "Pianificazioni"
+
+#: ../../../Views/schedule_view.php:24
+msgid "No schedules"
+msgstr "Nessuna pianificazione"
+
+#: ../../../Views/schedule_view.php:25
+#, fuzzy
+msgid ""
+"There are no public schedules and you have not created your own yet. Please "
+"add a new schedule.<br><br>For help and examples on how to configure a "
+"schedule, read the <a href=\"api#expression\">Expression documentation</a>."
+msgstr ""
+"Non ci sono orari pubblici e non hai ancora creato il tuo. Aggiungere una "
+"nuova pianificazione.<br><br>Per informazioni ed esempi su come configurare "
+"una pianificazione, leggere la <a href=\"api#expression\">documentazione "
+"sull'espressione</a>."
+
+#: ../../../Views/schedule_view.php:34
+msgid "New schedule"
+msgstr "Nuova pianificazione"
+
+#: ../../../Views/schedule_view.php:44
+msgid "Deleting a schedule is permanent."
+msgstr "L'eliminazione di una pianificazione è permanente."
+
+#: ../../../Views/schedule_view.php:46
+#, fuzzy
+msgid ""
+"If you have an Input or Feed Processlist that use this schedule, after "
+"deleting it, review that process list or it will be in error freezing other "
+"process lists."
+msgstr ""
+"Se si dispone di un elenco di processi di input o feed che utilizzano questa "
+"pianificazione, dopo averla eliminato, esaminare tale elenco di processi o "
+"verrà visualizzato un errore durante il blocco di altri elenchi di processi."
+
+#: ../../../Views/schedule_view.php:48
+msgid "Are you sure you want to delete?"
+msgstr "Sei sicuro di volerlo cancellare?"
+
+#: ../../../Views/schedule_view.php:52
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../../../Views/schedule_view.php:53
+msgid "Delete permanently"
+msgstr "Elimina definitivamente"
+
+#: ../../../Views/schedule_view.php:66
+msgid "Name"
+msgstr "Nome"
+
+#: ../../../Views/schedule_view.php:67
+msgid "Expression"
+msgstr "Espressione"
+
+#: ../../../Views/schedule_view.php:68
+msgid "Public"
+msgstr "Pubblico"
+
+#: ../../../schedule_menu.php:4 ../../../schedule_processlist.php:41
+#: ../../../schedule_processlist.php:52 ../../../schedule_processlist.php:63
+#: ../../../schedule_processlist.php:74
+msgid "Schedule"
+msgstr "Pianificazione"
+
+#: ../../../schedule_processlist.php:34
+msgid "If !schedule, ZERO"
+msgstr "Se !pianificata, ZERO"
+
+#: ../../../schedule_processlist.php:42
+#, fuzzy
+msgid ""
+"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value "
+"is ZEROed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+"<p>Verifica se il tempo NON è compreso nell'intervallo di pianificazione. Se "
+"NON nella pianificazione, il valore è .ERAOed.</p><p>È possibile utilizzare "
+"questo per ottenere un feed per ciascuna delle tariffe multi-tasso dà il "
+"vostro fornitore. Aggiungere il processo 'Ripristina originale' prima di "
+"questo processo per registrare il valore di input in un feed diverso per "
+"ogni pianificazione nello stesso elenco di elaborazione</p>"
+
+#: ../../../schedule_processlist.php:45
+msgid "If !schedule, NULL"
+msgstr "Se !pianificata, NULL"
+
+#: ../../../schedule_processlist.php:53
+#, fuzzy
+msgid ""
+"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value "
+"is NULLed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+"<p>Verifica se il tempo NON è compreso nell'intervallo di pianificazione. Se "
+"NON nella pianificazione, il valore è NULLed.</p><p>È possibile utilizzare "
+"questo per ottenere un feed per ciascuna delle tariffe multi-tasso dà il "
+"vostro fornitore. Aggiungere il processo 'Ripristina originale' prima di "
+"questo processo per registrare il valore di input in un feed diverso per "
+"ogni pianificazione nello stesso elenco di elaborazione</p>"
+
+#: ../../../schedule_processlist.php:56
+msgid "If schedule, ZERO"
+msgstr "Se pianificata, ZERO"
+
+#: ../../../schedule_processlist.php:64
+#, fuzzy
+msgid ""
+"<p>Validates if time is in range of schedule. If in schedule, value is "
+"ZEROed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+"<p>Verifica se il tempo è compreso nell'intervallo di pianificazione. Se "
+"nella pianificazione, il valore è .ERAOed.</p><p>È possibile utilizzare "
+"questo per ottenere un feed per ciascuna delle tariffe multi-tasso dà il "
+"vostro fornitore. Aggiungere il processo 'Ripristina originale' prima di "
+"questo processo per registrare il valore di input in un feed diverso per "
+"ogni pianificazione nello stesso elenco di elaborazione</p>"
+
+#: ../../../schedule_processlist.php:67
+msgid "If schedule, NULL"
+msgstr "Se pianificata, NULL"
+
+#: ../../../schedule_processlist.php:75
+#, fuzzy
+msgid ""
+"<p>Validates if time is in range of schedule. If in schedule, value is "
+"NULLed.</p><p>You can use this to get a feed for each of the multi-rate "
+"tariff rate your provider gives. Add the 'Reset to Original' process before "
+"this process to log the input value to a different feed for each schedule on "
+"the same processing list</p>"
+msgstr ""
+"<p>Verifica se il tempo è compreso nell'intervallo di pianificazione. Se "
+"nella pianificazione, il valore è NULLed.</p><p>È possibile utilizzare "
+"questo per ottenere un feed per ciascuna delle tariffe multi-tasso dà il "
+"vostro fornitore. Aggiungere il processo 'Ripristina originale' prima di "
+"questo processo per registrare il valore di input in un feed diverso per "
+"ogni pianificazione nello stesso elenco di elaborazione</p>"

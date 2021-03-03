@@ -61,11 +61,18 @@
   
   var dataA = get_feed_data_DMY(kwhdA,start,end,"daily");
   var dataB = get_feed_data_DMY(kwhdB,start,end,"daily");
+
+  // Find start of data series
+  var start_index = 0;
+  for (var n=0; n<dataA.length; n++) {
+      if (dataA[n][1]!=null) { start_index = n; break; }
+      if (dataB[n][1]!=null) { start_index = n; break; }
+  }
   
   if (delta==1) {
       var tmpA = [];
       var tmpB = [];
-      for (var n=1; n<dataA.length; n++) {
+      for (var n=start_index+1; n<dataA.length; n++) {
           tmpA.push([dataA[n-1][0], dataA[n][1]-dataA[n-1][1]]);
           tmpB.push([dataB[n-1][0], dataB[n][1]-dataB[n-1][1]]);
       }
@@ -146,7 +153,8 @@
         bars: { show: true,align: "center",barWidth: (barwidth*1000),fill: true }
       },
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", minTickSize: [1, mode], tickLength: 1 }
+      xaxis: { mode: "time", timezone: "browser", minTickSize: [1, mode], tickLength: 1 },
+      touch: { pan: "x", scale: "x" }
     });
   }
 </script>
