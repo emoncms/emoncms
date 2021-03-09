@@ -16,112 +16,114 @@ global $path, $settings;
 
 ?>
 <style>
-  .main {
-    max-width: 320px;
-    margin: 0 auto;
-    padding: 10px;
-  }
-  
+    .main {
+        max-width: 320px;
+        margin: 0 auto;
+        padding: 27px 10px;
+    }
+
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
-<br>
-
-
-
 
 <div class="main">
-  <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login" width="256" height="46" />
-        
-    <div class="login-container">
-        <div id="login-form">
-            <div id="loginblock">
-                <div class="form-group register-item" style="display:none">
-                    <label><?php echo _('Email'); ?>
-                        <input type="text" name="email" tabindex="1"/>
-                    </label>
-                </div>
+    <div class="well">
+        <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login"
+             width="256" height="46"/>
 
-                <div class="form-group">
-                    <label><?php echo _('Username'); ?>
-                        <input type="text" tabindex="2" autocomplete="on" name="username"  />
-                    </label>
-                </div>
-
-                <div class="form-group">
-                    <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
-                    <label><?php echo _('Password'); ?>
-                        <input type="password" tabindex="3" autocomplete="on" name="password" />
-                    </label>
-                </div>
-
-                <div class="form-group register-item" style="display:none">
-                    <label><?php echo _('Confirm password'); ?>
-                        <input id="confirm-password" type="password" name="confirm-password" tabindex="4"/>
-                    </label>
-                </div>
-
-                <div id="loginmessage"></div>
-
-                <div class="form-group login-item">
-                    <?php if ($settings["interface"]["enable_rememberme"]) { ?>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?>
+        <div class="login-container">
+            <div id="login-form">
+                <div id="loginblock">
+                    <form>
+                        <div class="form-group register-item" style="display:none">
+                            <label><?php echo _('Email'); ?>
+                                <input type="text" name="email" tabindex="1"/>
                             </label>
                         </div>
-                    <?php } ?>
-                    <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo _('Login'); ?></button>
-                    <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp;' ?>
-                        <a id="register-link" href="#"><?php echo _('register'); ?></a>
-                    <?php } ?>
+
+                        <div class="form-group">
+                            <label><?php echo _('Username'); ?>
+                                <input type="text" tabindex="2" autocomplete="username" name="username"/>
+                            </label>
+                        </div>
+
+                        <div class="form-group">
+                            <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
+                            <label><?php echo _('Password'); ?>
+                                <input type="password" tabindex="3" autocomplete="password" name="password"/>
+                            </label>
+                        </div>
+
+                        <div class="form-group register-item" style="display:none">
+                            <label><?php echo _('Confirm password'); ?>
+                                <input id="confirm-password" type="password" name="confirm-password" tabindex="4"/>
+                            </label>
+                        </div>
+
+                        <div id="loginmessage"></div>
+
+                        <div class="form-group login-item">
+                            <?php if ($settings["interface"]["enable_rememberme"]) { ?>
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" tabindex="5" id="rememberme" value="1"
+                                               name="rememberme"><?php echo '&nbsp;' . _('Remember me'); ?>
+                                    </label>
+                                </div>
+                            <?php } ?>
+                            <button id="login" class="btn btn-primary" tabindex="6"
+                                    type="submit"><?php echo _('Login'); ?></button>
+                            <?php if ($allowusersregister) {
+                                echo '&nbsp;' . _('or') . '&nbsp;' ?>
+                                <a id="register-link" href="#"><?php echo _('register'); ?></a>
+                            <?php } ?>
+                        </div>
+
+                        <div class="form-group register-item" style="display:none">
+                            <button id="register" class="btn btn-primary"
+                                    type="button"><?php echo _('Register'); ?></button>
+                            <?php echo '&nbsp;' . _('or') . '&nbsp;' ?>
+                            <a id="cancel-link" href="#"><?php echo _('login'); ?></a>
+                        </div>
+                    </form>
                 </div>
 
-                <div class="form-group register-item" style="display:none">
-                    <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button>
-                    <?php echo '&nbsp;'._('or').'&nbsp;' ?>
-                    <a id="cancel-link" href="#"><?php echo _('login'); ?></a>
+                <div id="passwordresetblock" class="collapse">
+                    <div class="form-group">
+                        <label>Existing account name
+                            <input id="passwordreset-username" type="text"/>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Account email address
+                            <input id="passwordreset-email" type="text"/>
+                        </label>
+                    </div>
+                    <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
+                    <?php echo '&nbsp;' . _('or') . '&nbsp;' ?>
+                    <a id="passwordreset-link-cancel" href="#"><?php echo _('login'); ?></a>
                 </div>
-
+                <div id="passwordresetmessage"></div>
+                <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
+                <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
             </div>
-
-            <div id="passwordresetblock" class="collapse">
-                <div class="form-group">
-                    <label>Existing account name
-                        <input id="passwordreset-username" type="text" />
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>Account email address
-                        <input id="passwordreset-email" type="text" />
-                    </label>
-                </div>
-                <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
-                <?php echo '&nbsp;'._('or').'&nbsp;' ?>
-                <a id="passwordreset-link-cancel" href="#"><?php echo _('login'); ?></a>
-            </div>
-            <div id="passwordresetmessage"></div>
-            <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
-            <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
         </div>
     </div>
-  </div>
 </div>
 
 <script>
-"use strict";
+    "use strict";
 
-var verify = <?php echo json_encode($verify); ?>;
-var register_open = false;
-$("body").addClass("body-login");
+    var verify = <?php echo json_encode($verify); ?>;
+    var register_open = false;
+    $("body").addClass("body-login");
 
-if (verify.success!=undefined) {
-    if (verify.success) {
-        $("#loginmessage").html("<div class='alert alert-success'> "+verify.message+"</div>");
-    } else {
-        $("#loginmessage").html("<div class='alert alert-error'> "+verify.message+"</div>");
+    if (verify.success != undefined) {
+        if (verify.success) {
+            $("#loginmessage").html("<div class='alert alert-success'> " + verify.message + "</div>");
+        } else {
+            $("#loginmessage").html("<div class='alert alert-error'> " + verify.message + "</div>");
+        }
     }
-}
 
 var passwordreset = "<?php echo $settings['interface']['enable_password_reset']; ?>";
 $(document).ready(function() {

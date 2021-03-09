@@ -84,27 +84,29 @@ function languagecode_to_name($langs) {
         </div>
 
         <div id="change-password-form" style="display:none">
-            <div class="account-item">
-                <span class="muted"><?php echo _('Current password'); ?></span>
-                <br><input id="oldpassword" type="password" />
-            </div>
-            <div class="account-item">
-                <span class="muted"><?php echo _('New password'); ?></span>
-                <br><input id="newpassword" type="password" />
-            </div>
-            <div class="account-item">
-                <span class="muted"><?php echo _('Repeat new password'); ?></span>
-                <br><input id="repeatnewpassword" type="password" />
-            </div>
-            <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
-            <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
-            <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
+            <form>
+                <div class="account-item">
+                    <span class="muted"><?php echo _('Current password'); ?></span>
+                    <br><input id="oldpassword" type="password" autocomplete="current-password"/>
+                </div>
+                <div class="account-item">
+                    <span class="muted"><?php echo _('New password'); ?></span>
+                    <br><input id="newpassword" type="password" autocomplete="new-password"/>
+                </div>
+                <div class="account-item">
+                    <span class="muted"><?php echo _('Repeat new password'); ?></span>
+                    <br><input id="repeatnewpassword" type="password" autocomplete="new-password"/>
+                </div>
+                <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
+                <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
+                <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>"/>
+            </form>
         </div>
-        
+
         <br>
         <div id="account">
-          <div class="account-item">
-              <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php echo _('Copy'); ?></button>
+            <div class="account-item">
+                <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php echo _('Copy'); ?></button>
               <span class="writeapikey" id="copyapiwrite"></span>
           </div>
           <div class="account-item">
@@ -188,12 +190,14 @@ function languagecode_to_name($langs) {
         <div class="delete-account-s2" style="display:none">
         <p><b><?php echo _('Your account has been successfully deleted.'); ?></b></p>
         </div>
-        
+
         <pre id="deleteall-output"></pre>
-        
+
         <div class="delete-account-s1">
-            <p><?php echo _('Confirm password to delete:'); ?><br>
-            <input id="delete-account-password" type="password" /></p>
+            <form>
+                <p><?php echo _('Confirm password to delete:'); ?><br>
+                    <input id="delete-account-password" type="password" autocomplete="off"/></p>
+            </form>
         </div>
     </div>
     <div class="modal-footer">
