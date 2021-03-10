@@ -882,10 +882,10 @@ class Process_ProcessList
            ),
            array(
               "id_num"=>60,
-              "name"=>_("scale input"),
+              "name"=>_("pow10 input"),
               "short"=>"s inp",
               "argtype"=>ProcessArg::INPUTID,
-              "function"=>"scale_input",
+              "function"=>"pow10_input",
               "datafields"=>0,
               "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
@@ -993,6 +993,12 @@ class Process_ProcessList
         return abs($value);
     }
 
+    //---------------------------------------------------------------------------------------
+    // Combines a value and scale input, multiplies the value by 10^scale
+    //
+    // These split value and scale inputs are output from the Modbus interface of solar edge
+    // inverters.
+    //---------------------------------------------------------------------------------------
     public function value_and_scale($arg, $time, $value) 
     {
         $scale = $value & 0xFFFF; // Right 16 bits are the scale
@@ -1000,7 +1006,7 @@ class Process_ProcessList
           $scale = -(($scale ^ 0xFFFF)+1);		
         }
         
-        $val = $value >> 16; // Left 16 vits are the value
+        $val = $value >> 16; // Left 16 bits are the value
 
         // Apply scale factor to the value
         return $val * pow(10, $scale);
@@ -1015,9 +1021,9 @@ class Process_ProcessList
     }
 
     //---------------------------------------------------------------------------------------
-    // Scales current value using another input.  Current value is multiplied by 10^input
+    // Scales current value by 10 to the power of another input.
     //---------------------------------------------------------------------------------------
-    public function scale_input($id, $time, $value)
+    public function pow10_input($id, $time, $value)
     {
         $input_value = $this->input->get_last_value($id);
         return $value * pow(10, $input_value);
