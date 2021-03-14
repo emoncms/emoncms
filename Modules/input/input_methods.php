@@ -111,7 +111,8 @@ class InputMethods
                     $log->info("Time from parameter used");
                 } elseif (array_key_exists('time',$jsondataLC)){
                     $inputtime = $jsondataLC['time'];
-
+                    // remove time key so as not to create a related input
+                    unset($jsondata['time']);
                     // validate time
                     if (is_numeric($inputtime)){
                         $log->info("Valid time in seconds used ".$inputtime);
