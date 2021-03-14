@@ -298,7 +298,7 @@ class User
         
         // Send verification email
         global $path;
-        $verification_link = $path."user/verify?email=$email&key=$verification_key";
+        $verification_link = $path."user/verify?email=".urlencode($email)."&key=$verification_key";
         
         // $this->redis->rpush("emailqueue",json_encode(array(
         //    "emailto"=>$email,
