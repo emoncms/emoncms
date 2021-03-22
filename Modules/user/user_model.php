@@ -214,6 +214,7 @@ class User
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
         if (isset($_SESSION['timezone'])) $session['timezone'] = $_SESSION['timezone']; else $session['timezone'] = '';
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
+        if (isset($_SESSION['gravatar'])) $session['gravatar'] = $_SESSION['gravatar']; else $session['gravatar'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
         if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
@@ -366,13 +367,13 @@ class User
 
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone FROM users WHERE username=?")) {
+        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone,gravatar FROM users WHERE username=?")) {
             return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
         }
         $stmt->bind_param("s",$username);
         $stmt->execute();
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone);
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone,$userData_gravatar);
         $result = $stmt->fetch();
         $stmt->close();
         
@@ -408,7 +409,8 @@ class User
             $_SESSION['lang'] = $userData_language;
             $_SESSION['timezone'] = $userData_timezone;
             $_SESSION['startingpage'] = $userData_startingpage;
-                            
+            $_SESSION['gravatar'] = $userData_gravatar;
+                                        
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
                     if (!$this->rememberme->createCookie($userData_id)) {
@@ -791,6 +793,7 @@ class User
         
         $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
         $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
+        $_SESSION['gravatar'] = !empty($gravatar) ? $gravatar : '';
 
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
         $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);

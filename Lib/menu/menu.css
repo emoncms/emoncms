@@ -49,6 +49,7 @@
 
 .menu-tr ul {
   list-style:none;
+  margin:0;
 }
 
 .dropdown-menu svg.icon {
@@ -204,14 +205,7 @@ height:46px;
 /* -------------------------------------------------------------------
 Gravatar icon in toolbar
 --------------------------------------------------------------------*/
-ul#right-nav li.menu-user{
-  padding-right: .125em;
-  padding-left: .125em;
-}
-.navbar .nav > li > a.grav-container {
-  padding: .25em;
-  display: block;
-}
+
 a.grav-container img.grav {
   max-height: 1.2em;
 }
@@ -221,20 +215,16 @@ a.grav-container img.grav {
 a.grav-container:hover img.grav {
   border-color: #dedede;
 }
-a.is_admin.grav-container:hover img.grav {
-  border-color: #efefef;
-}
 .no-gravitar a.grav-container {
   border-radius: 50%;
   background: #c5c5c5;
-  padding: 0 !important;
-  text-align: center;
   width: 1.36em;
   height: 1.36em;
   line-height: 1.37em;
   border: 2px solid #ccc;
   overflow: hidden;
   margin: 0.2em;
+  font-size:1.5rem;
 }
 
 .no-gravitar a.grav-container:hover {
@@ -245,30 +235,15 @@ a.is_admin.grav-container:hover img.grav {
   font-size: 1.66em;
   margin: 0 -.1em;
 }
-/* eof gravitar */
 
-.arrow-up {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid white;
+.gravitar a.grav-container {
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 6px;
+  font-size:1.5rem;
 }
 
-.arrow-down {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid white;
+.gravitar a.grav-container:hover {
+	background: #2eaadf;
 }
-.arrow {
-  margin: 0.4em 0;
-  transform: scaleY(-1);
-  filter: FlipH;
-  /* transition: transform .15s ease-out; */
-}
-.collapsed .arrow {
-  transform: scaleY(1);
-  filter: none;
-}
+

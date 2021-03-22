@@ -54,16 +54,20 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             <div class="menu-tr"><ul>
             
             <?php if ($session["write"]) { ?>
-            <li class="no-gravitar dropdown" style="font-size:1.5rem"><a id="user-dropdown" href="#" title="<?php echo $session["username"]; ?> (Admin)" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown"><svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg></a>
-                
+            <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
+            <?php if (!$session["gravatar"]) { ?>
+                <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
+            <?php } else { ?>
+                <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
+            <?php } ?>
+            </a>
+
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <li><a href="<?php echo $path; ?>user/view" title="My Account" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> My Account</a></li>
                     <li class="divider"><a href="#"></a></li>
                     <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
                 </ul>
             </li>
-
-
             <?php } ?>
             
             </ul></div>
