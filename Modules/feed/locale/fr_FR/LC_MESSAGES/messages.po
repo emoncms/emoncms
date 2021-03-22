@@ -100,8 +100,8 @@ msgid "Get all feed fields"
 msgstr "Obtenir tous les champs du flux"
 
 #: ../../../Views/feedapi_view.php:55
-msgid "Get feed meta (PHPFina, PHPFiwa)"
-msgstr "Obtenir les meta du flux (PHPFina, PHPFiwa)"
+msgid "Get feed meta (PHPFina)"
+msgstr "Obtenir les meta du flux (PHPFina)"
 
 #: ../../../Views/feedapi_view.php:60
 msgid "Read feed data actions"

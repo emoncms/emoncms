@@ -58,10 +58,6 @@ class Feed
                     require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
                     $engines[$e] =  new PHPFina($this->settings['phpfina']);
                     break;
-                case (string)Engine::PHPFIWA :
-                    require "Modules/feed/engine/PHPFiwa.php";          // Fixed interval with averaging
-                    $engines[$e] = new PHPFiwa($this->settings['phpfiwa']);
-                    break;
                 case (string)Engine::REDISBUFFER :
                     require "Modules/feed/engine/RedisBuffer.php";      // Redis buffer for low-write mode
                     $engines[$e] = new RedisBuffer($this->redis,$this->settings['redisbuffer'],$this);
@@ -84,8 +80,12 @@ class Feed
                     $engines[$e] = new CassandraEngine($this->settings['cassandra']);
                     break;
                 default :
-                    $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
-                    throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
+                    $this->log->error("EngineClass() Engine id '".$e."' is not supported.");        
+                    // throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
+                    // Load blank template engine here to avoid errors that otherwise break the interface                 
+                    require "Modules/feed/engine/TemplateEngine.php";
+                    $engines[$e] =  new TemplateEngine(false);
+                    break;
             }
             $this->log->info("EngineClass() Autoloaded new instance of '".get_class($engines[$e])."'.");
             return $engines[$e];
@@ -124,7 +124,6 @@ class Feed
             if (isset($options_in->empty)) $options['empty'] = $options_in->empty;
         }
         else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
-        else if ($engine == Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
         
         $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
         $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
@@ -1020,10 +1019,6 @@ class Feed
     // PHPTimeSeries specific functions that we need to make available to the controller
     public function phptimeseries_export($feedid,$start) {
         return $this->EngineClass(Engine::PHPTIMESERIES)->export($feedid,$start);
-    }
-
-    public function phpfiwa_export($feedid,$start,$layer) {
-        return $this->EngineClass(Engine::PHPFIWA)->export($feedid,$start,$layer);
     }
 
     public function phpfina_export($feedid,$start) {

@@ -195,7 +195,6 @@ function feed_controller()
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
                         elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));
-                        elseif ($f['engine']==Engine::PHPFIWA) return $feed->phpfiwa_export($feedid,get('start'),get('layer'));
                         elseif ($f['engine']==Engine::PHPFINA) return $feed->phpfina_export($feedid,get('start'));
                     }
                 }

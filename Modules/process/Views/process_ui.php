@@ -141,7 +141,6 @@
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
                                         <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
-                                        <option value="6">PHPFIWA Fixed Interval With Averaging</option>
                                         <option value="5">PHPFINA Fixed Interval No Averaging</option>
                                         <option value="2">PHPTIMESERIES Variable Interval No Averaging</option>
                                         <option value="0">MYSQL TimeSeries</option>

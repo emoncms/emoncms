@@ -395,7 +395,7 @@ var nodes = {};
 var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
-var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 // auto refresh
 update_feed_list();
@@ -996,7 +996,6 @@ function isSelectionValidForTrim(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
@@ -1168,7 +1167,6 @@ function isSelectionValidForClear(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode

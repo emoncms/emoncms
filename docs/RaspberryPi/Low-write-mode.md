@@ -16,8 +16,6 @@ Before following this guide;
 
 1. It is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of emoncms on your Raspberry Pi
 
-1. Because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.  
-
 Update emoncms to current version:
 
     cd /var/www/emoncms && git pull
@@ -113,8 +111,7 @@ Install feedwriter service:
 
 In the section:
 * **Redis**, change `$redis_enabled` from `false` to `true`  
-* **Redis Low-write mode** change `enabled` from `false` to `true`, and _optionally_ change `sleep` to a number (in seconds) which emoncms must cache before writing to disk.  
-* **Engine settings**, change `//,Engine::PHPFIWA // 6` to `Engine::PHPFIWA   // 6` to disable PHPFIWA being an option for future feed selection.
+* **Redis Low-write mode** change `enabled` from `false` to `true`, and _optionally_ change `sleep` to a number (in seconds) which emoncms must cache before writing to disk.
 
 Save & exit, then power off your Raspberry Pi:
 

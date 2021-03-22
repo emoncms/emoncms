@@ -19,7 +19,7 @@ i.e. You should end up with all the files in the directory public_html/emoncms/
 
 4) In your shared hosting /home/username folder create a folder called emoncmsdata to hold your emoncms feed data.  
 (Note: NOT public_html as the data files should not be publicly accessible).  
-Then create three folders within your emoncmsdata folder called: phpfiwa, phpfina and phptimeseries
+Then create three folders within your emoncmsdata folder called: phpfina and phptimeseries
 
 5) In the emoncms app directory make a copy of example.settings.ini and call it settings.ini.  
 
