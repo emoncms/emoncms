@@ -1,6 +1,6 @@
 <?php
 // engine_methods interface in shared_helper.php
-;include_once dirname(__FILE__) . '/shared_helper.php';
+include_once dirname(__FILE__) . '/shared_helper.php';
 
 class VirtualFeed implements engine_methods
 {
@@ -68,7 +68,7 @@ class VirtualFeed implements engine_methods
         $feedid = intval($feedid);
         $processList = $this->feed->get_processlist($feedid);
         if ($processList == '' || $processList == null) { 
-            return array('time'=>(int)$now, 'value'=>null);r
+            return array('time'=>(int)$now, 'value'=>null);
         }
         
         // Check if datatype is daily so that select over range is used rather than skip select approach
