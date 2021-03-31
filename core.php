@@ -299,11 +299,10 @@ function load_sidebar()
 
 function http_request($method, $url, $data)
 {
-
     $options = array();
-    $urlencoded = http_build_query($data);
     
     if ($method=="GET") {
+        $urlencoded = http_build_query($data);
         $url = "$url?$urlencoded";
     } elseif ($method=="POST") {
         $options[CURLOPT_POST] = 1;
