@@ -76,7 +76,7 @@ msgstr "Обновить Всё"
 
 #: ../admin_main_view.php:87
 msgid "Full Update"
-msgstr ""
+msgstr "Полное Обновление"
 
 #: ../admin_main_view.php:96 ../admin_main_view.php:113
 msgid "Emoncms, Emoncms Modules and Services"
