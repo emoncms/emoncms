@@ -72,7 +72,7 @@ msgstr ""
 
 #: ../admin_main_view.php:86 ../admin_main_view.php:101
 msgid "Update All"
-msgstr ""
+msgstr "Обновить Всё"
 
 #: ../admin_main_view.php:87
 msgid "Full Update"
