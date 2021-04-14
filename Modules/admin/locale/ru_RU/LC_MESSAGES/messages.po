@@ -23,7 +23,7 @@ msgstr "406: Путь не найден"
 
 #: ../admin_controller.php:24
 msgid "Admin re-authentication required"
-msgstr "Требуется повторная авторизация Администратора"
+msgstr "Требуется повторная аутентификация Администратора"
 
 #: ../admin_controller.php:533
 msgid "Not Admin"
@@ -31,7 +31,7 @@ msgstr "Не Администратор"
 
 #: ../admin_controller.php:534 ../admin_controller.php:539
 msgid "Admin Authentication Required"
-msgstr "Требуется авторизация Администратора"
+msgstr "Требуется аутентификация Администратора"
 
 #: ../admin_controller.php:540
 msgid "Session timed out or user not Admin"
