@@ -84,7 +84,7 @@ msgstr ""
 
 #: ../admin_main_view.php:96 ../admin_main_view.php:112
 msgid "Update Emoncms Only"
-msgstr ""
+msgstr "Обновить только Emoncms"
 
 #: ../admin_main_view.php:97 ../admin_main_view.php:125
 msgid "Update EmonHub Only"
