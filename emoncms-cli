@@ -83,6 +83,7 @@ function runMigrations() {
         }
         die();
     }
+
     // Set charset to utf8
     $mysqli->set_charset("utf8");
 
@@ -90,4 +91,7 @@ function runMigrations() {
     if (!db_check($mysqli, $settings["sql"]["database"])) {
         db_schema_setup($mysqli, load_db_schema(), true);
     }
+
+
+    echo "Migrations successfully executed\n";
 }
