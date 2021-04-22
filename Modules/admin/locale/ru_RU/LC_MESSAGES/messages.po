@@ -464,4 +464,4 @@ msgstr "Поиск"
 
 #: ../userlist_view.php:52
 msgid "Feeds"
-msgstr "Очереди сообщений/новостей"
+msgstr "Ленты"
