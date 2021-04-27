@@ -28,7 +28,7 @@ switch ($commandName) {
         runMigrations();
         break;
     default:
-        echo "${commandName} is and invalid command\n\n";
+        echo "${commandName} is an invalid command\n\n";
         printAvailableCommands();
         exit(1);
 }
@@ -50,23 +50,6 @@ function runMigrations() {
         echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
         die;
     }
-    
-    $mysqli = @new mysqli(
-        $settings["sql"]["server"],
-        $settings["sql"]["username"],
-        $settings["sql"]["password"],
-        $settings["sql"]["database"],
-        $settings["sql"]["port"]
-    );
-    
-    if ($mysqli->connect_error) {
-        echo "Can't connect to database, please verify credentials/configuration in settings.ini<br />";
-        if ($settings["display_errors"]) {
-            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
-          die;
-        }
-    }
-    
     
     $mysqli = @new mysqli(
         $settings["sql"]["server"],
