@@ -8,14 +8,14 @@ if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
 define('EMONCMS_EXEC', 1);
 
 
-const COMMAND_MIGRATE = "migrate";
+const COMMAND_DB_UPDATE = "dbupdate";
 const COMMANDS = [
-    COMMAND_MIGRATE => "Run database migrations"
+    COMMAND_DB_UPDATE => "Run database migrations"
 ];
 
 if ($argc <= 1) {
     echo "Welcome to the Emoncms CLI tool\n\n";
-    echo "Usage: comoncms-cli <command>\n\n";
+    echo "Usage: emoncms-cli <command>\n\n";
     printAvailableCommands();
 
     exit(0);
@@ -24,7 +24,7 @@ if ($argc <= 1) {
 $commandName = $argv[1];
 
 switch ($commandName) {
-    case COMMAND_MIGRATE:
+    case COMMAND_DB_UPDATE:
         runMigrations();
         break;
     default:
