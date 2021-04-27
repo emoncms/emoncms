@@ -7,7 +7,7 @@ if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
 
 define('EMONCMS_EXEC', 1);
 
-const COMMAND_DB_UPDATE = "dbupdate";
+const COMMAND_DB_UPDATE = "admin:dbupdate";
 const COMMANDS = [
     COMMAND_DB_UPDATE => "Run database migrations"
 ];

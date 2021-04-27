@@ -15,5 +15,5 @@ Running the CLI without any arguments will print all available commands that can
 Running this command will run any pending migrations that need to be run. Typically this is done after upgrades that have changes to the database schema.
 
 ```bash
-./emoncms-cli dbupgrade
+./emoncms-cli admin:dbupdate
 ```
