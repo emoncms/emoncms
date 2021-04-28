@@ -1,6 +1,8 @@
 # CLI
 
-Bundled with emoncms is a simple CLI tool that right now can be used to update the configured database to ensure the schema is up to date.
+Bundled with Emoncms is a simple CLI tool that right now can be used to update the configured database to ensure the schema is up to date.
+
+This tool resides in the `scripts/` directory.
 
 ## Print usage
 
