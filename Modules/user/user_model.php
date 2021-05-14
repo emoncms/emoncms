@@ -234,7 +234,10 @@ class User
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
         
-        if (!$this->timezone_valid($timezone)) return array('success'=>false, 'message'=>_("Timezone is not valid"));
+        if (!$this->timezone_valid($timezone)) {
+            // use default UTC timezone if timezone is not valid
+            $timezone = "UTC";
+        }
 
         // If we got here the username, password and email should all be valid
 
@@ -298,7 +301,7 @@ class User
         
         // Send verification email
         global $path;
-        $verification_link = $path."user/verify?email=$email&key=$verification_key";
+        $verification_link = $path."user/verify?email=".urlencode($email)."&key=$verification_key";
         
         // $this->redis->rpush("emailqueue",json_encode(array(
         //    "emailto"=>$email,
