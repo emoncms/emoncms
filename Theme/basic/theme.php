@@ -10,10 +10,12 @@
   http://openenergymonitor.org
 */
 global $settings;
-global $ltime,$path,$emoncms_version,$menu;
+global $ltime,$path,$emoncms_version,$menu,$session;
 load_language_files("Theme/locale", "theme_messages");
 
-$v = 10;
+$q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
+
+$v = 14;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
@@ -37,34 +39,40 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo time(); ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
+    <?php echo $svg_icons; // THEME ICONS ?>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <?php echo $mainmenu; ?>
-        </div>
+        <div class="menu-top">
+            <div class="menu-l1"><ul></ul></div>
+            <div class="menu-tr"><ul>
+            
+            <?php if ($session["write"]) { ?>
+            <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
+            <?php if (!$session["gravatar"]) { ?>
+                <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
+            <?php } else { ?>
+                <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
+            <?php } ?>
+            </a>
 
-        <?php if (isset($submenu) && ($submenu)) { ?>
-            <div id="submenu">
-                <div class="container">
-                    <?php echo $submenu; ?>
-                </div>
-            </div>
-            <br>
-        <?php } ?>
-        
-        <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
-            </div>
+                <ul class="dropdown-menu pull-right" style="font-size:1rem">
+                    <li><a href="<?php echo $path; ?>user/view" title="My Account" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> My Account</a></li>
+                    <li class="divider"><a href="#"></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
+                </ul>
+            </li>
+            <?php } ?>
+            
+            </ul></div>
         </div>
-        
+        <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls"></div></div><div class="menu-l3"><ul></ul></div>
         <?php
         $contentContainerClasses[] = 'content-container';
         
@@ -74,6 +82,12 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             $contentContainerClasses[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+            <script>
+            // Draw menu just before drawing content but after defining content-container
+            var path = "<?php echo $path; ?>";
+            var q = "<?php echo $q; ?>"+location.search+location.hash;
+            menu.init(<?php echo json_encode($menu); ?>);
+            </script>
             <?php echo $content; ?>
         </main>
     </div><!-- eof #wrap -->
@@ -85,10 +99,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
 
 <!-- ICONS --------------------------------------------- -->
-<?php
-    // THEME ICONS
-    echo $svg_icons;
-?>
+
 
 <?php
     // MODULE ICONS
@@ -109,3 +120,4 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 ?>
 </body>
 </html>
+

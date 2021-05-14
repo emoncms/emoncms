@@ -72,12 +72,6 @@ function user_controller()
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
             $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
-
-        if ($route->action == 'bookmarks' && $session['write']) {
-            $bookmarks = $user->getUserBookmarks($session['userid']);
-            $result = view("Modules/user/Views/bookmarks.php", array('path'=>$path, 'bookmarks'=>$bookmarks));
-        }
-
     }
 
     // JSON API
@@ -149,56 +143,6 @@ function user_controller()
                 }
             } else {
                 $result = "missing mode field";
-            }
-        }
-        // set user peferences
-        if ($route->action == 'preferences' && $session['read']) {
-            $userid = $session['userid'];
-
-            switch ($route->method) {
-                case 'POST':
-                    $preferences = post('preferences');
-                    if(!empty($preferences)){
-                        if($resp = $user->set_preferences($userid, $preferences)) {
-                            $result = array('success'=>true, 'message'=>_('Preference Saved'));
-                        } else {
-                            $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
-                        }
-                    } else {
-                        $result = array('success'=>false, 'message'=>_('Invalid parameters'));
-                    }
-                    break;
-                default:
-                    $property = prop('preferences') ? prop('preferences') : false;
-                    if (!$property) {
-                        $preferences = $user->get_preferences($userid);
-                    } else {
-                        $preferences = $user->get_preferences($userid, $property);
-                    }
-                    if(!empty($preferences)){
-                        if(isset($preferences['success']) && $preferences['success']===false){
-                            $error_msg = !empty($preferences['message']) ? $preferences['message'] : _('Error getting data');
-                            // return message if get_preferences() returns error message
-                            $result = array('success'=>false, 'message'=>$error_msg);
-                        }else{
-                            if (!$property) {
-                                // return all the keys if none passed
-                                $result = array('success'=>true, 'preferences'=>$preferences);
-                            } else {
-                                // just return the value if preference key supplied
-                                $result = $preferences;
-                            }
-                        }
-                    } else {
-                        if (!$property) {
-                            // "none found" if get_preferences() returns empty result
-                            $result = array('success'=>true, 'message'=>_('Empty'));
-                        } else {
-                            // return null value if specific key 
-                            $result = null;
-                        }
-                    }
-                    return $result;
             }
         }
     }

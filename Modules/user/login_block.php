@@ -18,9 +18,12 @@ global $path, $settings;
 <style>
   .main {
     max-width: 320px;
-    margin: 0 auto;
     padding: 10px;
   }
+  
+  .content-container { max-width:340px; }
+  
+  .container-fluid { padding:0px !important; }
   
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
@@ -110,6 +113,8 @@ global $path, $settings;
 
 <script>
 "use strict";
+
+menu.disable();
 
 var verify = <?php echo json_encode($verify); ?>;
 var register_open = false;

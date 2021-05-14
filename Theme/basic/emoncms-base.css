@@ -8,6 +8,7 @@ html,body{height: initial!important}
 #wrap,#footer {
     transition: margin .3s ease-out;
 }
+
 .fullwidth.collapsed #wrap,
 .fullwidth.collapsed #footer{
     margin-left: 0!important;
@@ -15,10 +16,10 @@ html,body{height: initial!important}
 
 #wrap main.content-container{
   height: 100%;
-  margin-top: 2.7rem;
+  /*margin-top: 2.7rem;
   margin-left: 15rem;
   margin-bottom: 0;
-  margin-right: 0;
+  margin-right: 0;*/
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
@@ -27,6 +28,16 @@ body.collapsed #wrap main.content-container{
   margin-left: auto;
   margin-right: auto;
 } 
+
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
 
 /*-------------------------------------*/
 /* utilities */
@@ -258,39 +269,10 @@ body.collapsed #wrap main.content-container{
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/*-------------------------------------*/
 
-/* override topnav styling in tabs */
-#emoncms-navbar .nav.nav-tabs > li > a {
-    color: #999!important;
-}
-#emoncms-navbar .nav.nav-tabs > li.active > a {
-    color: #EFEFEF!important;
-}
-#emoncms-navbar .nav.nav-tabs > li > a:hover {
-    color: #FFF!important;
-}
-
-
-/* 
- * #sidebar above #wrap on narrow screens
- */
- body {
-   padding: 0;
-   margin: 0;
- }
- @media only screen and (min-width:870px) {
-  .fullwidth.has-sidebar #wrap,
-  .fullwidth.has-sidebar #footer {
-    /*margin-left: 15rem!important;*/
-  }
-  .fullwidth.has-sidebar.collapsed #wrap,
-  .fullwidth.has-sidebar.collapsed #footer {
-    margin-left: 0px!important;
-  }
-  #sidebar {
-    position: fixed;
-  }
+body {
+ padding: 0;
+ margin: 0;
 }
 
 html {
