@@ -177,16 +177,24 @@ height:46px;
 
 .menu-l3 li a {
   text-decoration: none;
-  color: #fff;
+  color: #ccc;
   display: block;
   padding: 0.94em;
 }
 
 .menu-l3 li a:hover {
-  background-color:#222;
+  color: #fff;
 }
 
 .menu-text-l3 {}
+
+.menu-l3 .active {
+  color: #fff;
+}
+
+.l3-title { 
+  line-height:30px;
+}
 
 /* -------------------------------------- */
 

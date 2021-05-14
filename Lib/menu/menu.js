@@ -37,7 +37,7 @@ var menu = {
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
         
         
-        console.log(controller)
+        console.log("menu controller: "+controller)
         
         // var action = false; if (q_parts[1]!=undefined) action = q_parts[1];
 
@@ -140,7 +140,8 @@ var menu = {
                 out += '<li style="height:'+item['divider']+'"></li>';
             } else {
                 // Prepare active status
-                let active = ""; if (q.indexOf(item['href'])===0) { active = "active"; menu.active_l2 = l2 }
+                var r = this.route(item['href'])
+                let active = ""; if (q.indexOf(r.controller)===0) { active = "active"; menu.active_l2 = l2 }
                 // Prepare icon
                 let icon = "";
                 if (item['icon']!=undefined) {
@@ -167,6 +168,7 @@ var menu = {
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
             // Prepare active status
+            
             active = ""; if (q.indexOf(item['href'])===0) active = "active";
             // Menu item
             out += '<li><a href="'+path+item['href']+'" class="'+active+'">'+item['name']+'</a></li>';
@@ -348,7 +350,7 @@ var menu = {
             // Set active class to current menu
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
-            if (item['l3']==undefined) {
+            if (item['l3']==undefined || (item['href_active']!=undefined && item['href_active'])) {
                 window.location = path+item['href']
             } else {
                 if (!menu.l3_visible) {
@@ -392,5 +394,22 @@ var menu = {
         $(window).resize(function(){
             menu.resize();
         });
+    },
+    
+    route: function(q) {
+        var route = {
+            controller: false,
+            action: false,
+            subaction: false
+        }
+        
+        var q_parts = q.split("#");
+        q_parts = q_parts[0].split("/");
+        
+        if (q_parts[0]!=undefined) route.controller = q_parts[0];
+        if (q_parts[1]!=undefined) route.action = q_parts[0];
+        if (q_parts[2]!=undefined) route.subaction = q_parts[0];
+                
+        return route
     }
 };
