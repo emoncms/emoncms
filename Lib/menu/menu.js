@@ -333,6 +333,7 @@ var menu = {
                     } else if (menu.l2_visible && !menu.l3_visible && menu.l2_min) { 
                         menu.hide_l2();
                     } else if (menu.l2_visible && menu.l2_min && menu.l3_visible) {
+                        menu.exp_l2();
                         menu.hide_l3();
                     }
                 }
