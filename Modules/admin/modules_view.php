@@ -13,19 +13,18 @@
       <th>Branch</th>
       <th></th>
     </tr>
-    <tr v-for="item in components">
-      <td>{{ item.name }}<br><span style="font-size:12px">{{ item.url }}</span></td>
+    <tr v-for="item, key in components">
+      <td>{{ item.name }}<br><span style="font-size:12px"><b>Location:</b> {{ item.location }}</span><br><span style="font-size:12px"><b>URL:</b> <a :href="item.url">{{ item.url }}</a></span></td>
       <td>{{ item.version }}</td>
       <td>{{ item.describe }}</td>
-      <td></td>
-      <td>
-        <select v-model="item.branch">
-          <option>stable</option>
-          <option>master</option>
-          <option>menu_v3</option>
+      <td><span v-if="item.local_changes!=''" :title="item.local_changes" class="label label-important">Yes</span><span class="label label-success" v-else>No</span></td>
+      <td v-if="item.local_changes==''">
+        <select v-model="item.branch" @change="switch_branch(key)">
+          <option v-for="branch in item.branches_available">{{ branch }}</option>
         </select>
       </td>
-      <td><button class="btn">Update</button></td>
+      <td v-else>{{ item.branch }}</td>
+      <td><button class="btn" v-if="item.local_changes==''">Update</button></td>
     </tr>
 
   </table>
@@ -40,6 +39,19 @@ var components = <?php echo json_encode($components); ?>;
         el: '#app',
         data: {
             components: components
+        },
+        methods: {
+            switch_branch: function(name) {
+                console.log("switch_branch: "+name+" "+components[name].branch)
+                $.ajax({                                      
+                    url: path+'admin/switch-module-branch',                         
+                    data: "module="+name+"&branch="+components[name].branch,
+                    dataType: 'text',
+                    success: function(result) { 
+                        console.log(result)
+                    } 
+                });   
+            }
         }
     });
 
