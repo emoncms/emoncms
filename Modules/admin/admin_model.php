@@ -184,9 +184,13 @@ class Admin {
               foreach ($components as $name=>$component) {
                   $path = $components[$name]["path"];
                   $components[$name]["describe"] = @exec("git -C $path describe");
-                  $components[$name]["branch"] = str_replace("* ","",@exec("git -C $path branch --contains HEAD"));
+                  $components[$name]["branch"] = str_replace("* ","",@exec("git -C $path rev-parse --abbrev-ref HEAD"));
                   $components[$name]["local_changes"] = @exec("git -C $path diff-index HEAD --");
                   $components[$name]["url"] = @exec("git -C $path ls-remote --get-url origin");
+                  
+                  if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
+                      $components[$name]["branches_available"][] = $components[$name]["branch"];
+                  }
               }             
           }   
           

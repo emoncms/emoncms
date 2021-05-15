@@ -55,7 +55,7 @@ var app = new Vue({
 function switch_module_branch(module,branch) {
     $.ajax({                                      
         url: path+'admin/switch-module-branch',                         
-        data: "module="+name+"&branch="+components[name].branch,
+        data: "module="+module+"&branch="+branch,
         dataType: 'text',
         success: function(result) { 
             console.log(result)

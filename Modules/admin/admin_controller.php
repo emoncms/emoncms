@@ -136,7 +136,7 @@ function admin_controller()
             {
                 $route->format = "json";
                 require "Modules/admin/admin_model.php";
-                return Admin::component_list(false);
+                return Admin::component_list(true);
             }
             else if ($route->action == 'switch-module-branch') {
                 $route->format = "text";
@@ -148,12 +148,16 @@ function admin_controller()
                 if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
                 
                 if (!isset($components[$module])) return "invalid module";
-                if (!in_array($branch,$components[$module]["branches_available"])) return "invalid branch";
+                $module_path = $components[$module]["path"];     
+                
+                // if branch is not in available branches, check that it is not the current branch
+                if (!in_array($branch,$components[$module]["branches_available"])) {
+                    $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
+                    if ($branch!=$current_branch) return "invalid branch";
+                }
                 
                 $script = "/opt/openenergymonitor/EmonScripts/other/switch_branch.sh";
-                $module = $components[$module]["path"];     
-                  
-                $redis->rpush("service-runner","$script $module $branch>$update_logfile");
+                $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
                 return "cmd sent";
             }
             // ----------------------------------------------------------------
