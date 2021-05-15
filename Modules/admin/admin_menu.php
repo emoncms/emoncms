@@ -4,7 +4,30 @@ if ($session["admin"]) {
     $menu['setup']['l2']['admin'] = array(
         'name' => _("Admin"),
         'href' => 'admin/view',
+        'href_active' => true,
         'icon' => 'tasks',
-        'order' => 13
+        'order' => 13,
+
+        "l3"=>array(
+            "info"=>array(
+                "name"=>_("System Info"),
+                "href"=>"admin/view", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "modules"=>array(
+                "name"=>_("Modules"),
+                "href"=>"admin/modules", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "users"=>array(
+                "name"=>_("Users"),
+                "href"=>"admin/users", 
+                "order"=>1, 
+                "icon"=>"input"
+            )
+        )
+
     );
 }

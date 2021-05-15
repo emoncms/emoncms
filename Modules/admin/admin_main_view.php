@@ -74,17 +74,6 @@ listItem;
 <h2><?php echo _('Administration'); ?></h2>
 
 <div class="admin-container">
-    <?php 
-    // USERS 
-    // -------------------
-    ?>
-    <section class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 text-right pb-2 px-1">
-        <div class="text-left">
-            <h3 class="mt-1 mb-0"><?php echo _('Users'); ?></h3>
-            <p><?php echo _('See a list of registered users') ?></p>
-        </div>
-        <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
-    </section>
     
     <?php 
     // UPDATES 

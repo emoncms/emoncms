@@ -125,6 +125,10 @@ function admin_controller()
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
+            else if ($route->action == 'modules') {
+                require "Modules/admin/admin_model.php";
+                return view("Modules/admin/modules_view.php", array("components"=>Admin::component_list()));
+            }
             else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
@@ -142,7 +146,12 @@ function admin_controller()
                 $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
                 return view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
             }
-
+            else if ($route->action == 'componentlist' && $session['write'])
+            {
+                $route->format = "json";
+                require "Modules/admin/admin_model.php";
+                return Admin::component_list();
+            }
             else if ($route->action == 'users' && $session['write'])
             {
                 return view("Modules/admin/userlist_view.php", array());

@@ -131,6 +131,55 @@ class Admin {
                      );
       }
 
+      public static function component_list() 
+      {
+          global $settings;
+          
+          $components = array();
+          
+          // Emoncms core
+          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+          if (file_exists($emoncms_path."/version.txt")) {
+              $git_describe = @exec("git -C $emoncms_path describe");
+              $git_branch = @exec("git -C $emoncms_path branch --contains HEAD");
+              $git_branch = str_replace("* ","",$git_branch);
+              $git_URL = @exec("git -C $emoncms_path ls-remote --get-url origin");
+              $components["emoncms"] = array("name"=>"Emoncms Core","version"=>file_get_contents($emoncms_path."/version.txt"),"describe"=>$git_describe, "branch"=>$git_branch, "url"=>$git_URL);
+          }
+          
+          foreach (array("/var/www/emoncms/Modules","/opt/emoncms/modules","/opt/openenergymonitor") as $path) {
+              
+              $directories = glob("$path/*", GLOB_ONLYDIR);                          // Use glob to get all the folder names only
+              
+              foreach($directories as $module_fullpath) {                            // loop through the folders
+
+                  if (!is_link($module_fullpath)) {
+
+                      $module_fullpath_parts = explode("/",$module_fullpath);
+                      $module_name = $module_fullpath_parts[count($module_fullpath_parts)-1];
+                      
+                      if (file_exists($module_fullpath."/module.json")) {                         // JSON Version informatmion exists
+                          $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
+                          $module_long_name = $module_name;
+                          if (isset($json->name)) $module_long_name = $json->name;
+                          if (isset($json->version)) $module_version = $json->version; 
+                          if ($module_version!="") {
+                              $git_describe = @exec("git -C $module_fullpath describe");
+                              $git_branch = @exec("git -C $module_fullpath branch --contains HEAD");
+                              $git_branch = str_replace("* ","",$git_branch);
+                              $git_URL = @exec("git -C $module_fullpath ls-remote --get-url origin");
+                              $components[$module_name] = array("name"=>ucfirst($module_long_name),"version"=>$module_version,"describe"=>$git_describe,"branch"=>$git_branch, "url"=>$git_URL);
+                          }
+                      }
+                  }
+              }
+          
+          }
+          
+          return $components;
+      }
+      
+
       /**
        * return array of mounted partitions
        *
