@@ -24,7 +24,7 @@
         </select>
       </td>
       <td v-else>{{ item.branch }}</td>
-      <td><button class="btn" v-if="item.local_changes==''">Update</button></td>
+      <td><button class="btn" v-if="item.local_changes==''" @click="update(key)">Update</button></td>
     </tr>
 
   </table>
@@ -35,24 +35,32 @@
 
 var components = <?php echo json_encode($components); ?>;
 
-    var app = new Vue({
-        el: '#app',
-        data: {
-            components: components
+var app = new Vue({
+    el: '#app',
+    data: {
+        components: components
+    },
+    methods: {
+        switch_branch: function(name) {
+            console.log("switch_branch: "+name+" "+components[name].branch)
+            switch_module_branch(name,components[name].branch)  
         },
-        methods: {
-            switch_branch: function(name) {
-                console.log("switch_branch: "+name+" "+components[name].branch)
-                $.ajax({                                      
-                    url: path+'admin/switch-module-branch',                         
-                    data: "module="+name+"&branch="+components[name].branch,
-                    dataType: 'text',
-                    success: function(result) { 
-                        console.log(result)
-                    } 
-                });   
-            }
+        update: function(name) {
+            console.log("switch_branch: "+name+" "+components[name].branch)
+            switch_module_branch(name,components[name].branch)
         }
-    });
+    }
+});
+
+function switch_module_branch(module,branch) {
+    $.ajax({                                      
+        url: path+'admin/switch-module-branch',                         
+        data: "module="+name+"&branch="+components[name].branch,
+        dataType: 'text',
+        success: function(result) { 
+            console.log(result)
+        } 
+    });   
+}
 
 </script>
