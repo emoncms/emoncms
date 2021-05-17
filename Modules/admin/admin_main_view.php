@@ -182,6 +182,18 @@ listItem;
         <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
     </aside>
 
+    <?php 
+    // COMPONENTS VIEW
+    // -------------------
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
+        <div class="text-left span6 ml-0">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Component manager'); ?></h4>
+            <p><?php echo _('Selectively update system components or switch between branches'); ?></p>
+        </div>
+        <a href="<?php echo $path; ?>admin/components" class="btn btn-info"><?php echo _('Components'); ?></a>
+    </aside>
+
     <?php } ?>
 
     <?php

@@ -27,6 +27,8 @@ function get_application_path()
     } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
         $proto = "https";
+    } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
+        $proto = "https";
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
@@ -146,6 +148,16 @@ function prop($index)
         $val = stripslashes($val);
     }
     return $val;
+}
+
+function request_header($index)
+{
+   $val = null;
+   $headers = apache_request_headers();
+   if (isset($headers[$index])) {
+        $val = $headers[$index];
+  }
+  return $val;
 }
 
 
@@ -287,11 +299,10 @@ function load_sidebar()
 
 function http_request($method, $url, $data)
 {
-
     $options = array();
-    $urlencoded = http_build_query($data);
     
     if ($method=="GET") {
+        $urlencoded = http_build_query($data);
         $url = "$url?$urlencoded";
     } elseif ($method=="POST") {
         $options[CURLOPT_POST] = 1;

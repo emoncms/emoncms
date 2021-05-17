@@ -1,0 +1,77 @@
+#!/usr/bin/env php
+<?php
+
+if (!in_array(PHP_SAPI, ['cli', 'phpdbg', 'embed'], true)) {
+    echo 'Warning: The console should be invoked via the CLI version of PHP, not the '.PHP_SAPI.' SAPI'.PHP_EOL;
+}
+
+define('EMONCMS_EXEC', 1);
+
+const COMMAND_DB_UPDATE = "admin:dbupdate";
+const COMMANDS = [
+    COMMAND_DB_UPDATE => "Run database migrations"
+];
+
+if ($argc <= 1) {
+    echo "Welcome to the Emoncms CLI tool\n\n";
+    echo "Usage: emoncms-cli <command>\n\n";
+    printAvailableCommands();
+
+    exit(0);
+}
+
+$commandName = $argv[1];
+
+switch ($commandName) {
+    case COMMAND_DB_UPDATE:
+        runMigrations();
+        break;
+    default:
+        echo "${commandName} is an invalid command\n\n";
+        printAvailableCommands();
+        exit(1);
+}
+
+function printAvailableCommands() {
+    echo "Available commands:\n";
+    foreach (COMMANDS as $command => $help) {
+        echo "- {$command} - {$help}";
+    }
+    echo "\n";
+}
+
+function runMigrations() {
+    require "process_settings.php";
+
+    if (!extension_loaded('mysql') && !extension_loaded('mysqli')) {
+        echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
+        die;
+    }
+    
+    $mysqli = @new mysqli(
+        $settings["sql"]["server"],
+        $settings["sql"]["username"],
+        $settings["sql"]["password"],
+        $settings["sql"]["database"],
+        $settings["sql"]["port"]
+    );
+    
+    if ($mysqli->connect_error) {
+        echo "Can't connect to database, please verify credentials/configuration in settings.ini<br />";
+        if ($settings["display_errors"]) {
+            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+        }
+        die();
+    }
+
+    // Set charset to utf8
+    $mysqli->set_charset("utf8");
+
+    require "Lib/dbschemasetup.php";
+    if (!db_check($mysqli, $settings["sql"]["database"])) {
+        db_schema_setup($mysqli, load_db_schema(), true);
+    }
+
+
+    echo "Migrations successfully executed\n";
+}

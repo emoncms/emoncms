@@ -377,6 +377,31 @@ class PHPFina implements engine_methods
         return false;
     }
 
+
+    /**
+     * Return the data for the given timerange - cf shared_helper.php
+     *
+    */
+    public function get_value($name,$time)
+    {        
+        $time = (int) $time;
+        
+        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        $meta->npoints = $this->get_npoints($name);
+        
+        $fh = fopen($this->dir.$name.".dat", 'rb');
+        
+        $value = null;
+        $pos = round(($time - $meta->start_time) / $meta->interval);
+        if ($pos>=0 && $pos < $meta->npoints) {
+            fseek($fh,$pos*4);
+            $val = unpack("f",fread($fh,4));
+            if (!is_nan($val[1])) $value = (float) $val[1];
+        }
+        
+        return $value;
+    }
+
     /**
      * Return the data for the given timerange - cf shared_helper.php
      *
