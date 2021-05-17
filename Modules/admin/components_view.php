@@ -1,9 +1,20 @@
 <?php global $path; ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+<style>
+pre {
+    height:12rem;
+    color:#fff;
+    background-color:#300a24;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+</style>
 
 <h3>Components</h3>
 
 <p>Selectively update system components or switch between branches</p>
+
+<pre id="update-log-bound"><div id="update-log"></div></pre>
 
 <div id="app">
 
@@ -78,6 +89,8 @@ function component_update(name,branch) {
         dataType: 'text',
         success: function(result) { 
             console.log(result)
+            start_update_log()
+            log_end = "- component updated"
         } 
     });   
 }
@@ -89,8 +102,32 @@ function update_all_components(branch) {
         dataType: 'text',
         success: function(result) { 
             console.log(result)
+            start_update_log();
+            log_end = "- all components updated"
         } 
     });   
+}
+
+// -------------------------------------
+// Log window
+// -------------------------------------
+
+var interval = false
+var log_end = "";
+
+function start_update_log(log_end) {
+    clearInterval(interval)
+    interval = setInterval(update_log,500)
+}
+
+function update_log() {
+    $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result) {
+        $("#update-log").html(result)
+        
+        if (result.indexOf(log_end)!=-1) {
+            clearInterval(interval);
+        }
+    }});
 }
 
 </script>
