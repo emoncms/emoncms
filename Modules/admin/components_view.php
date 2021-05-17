@@ -14,12 +14,12 @@ pre {
 
 <p>Selectively update system components or switch between branches</p>
 
-<pre id="update-log-bound"><div id="update-log"></div></pre>
+<pre id="update-log-bound" style="display:none"><div id="update-log"></div></pre>
 
 <div id="app">
 
 <div class="input-prepend input-append">
-    <span class="add-on">Switch all components to</span>
+    <span class="add-on">Update or switch all components to</span>
     <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
     <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
     <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
@@ -118,14 +118,20 @@ var log_end = "";
 function start_update_log(log_end) {
     clearInterval(interval)
     interval = setInterval(update_log,500)
+    $("#update-log-bound").slideDown();
 }
 
 function update_log() {
     $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result) {
         $("#update-log").html(result)
+        scrollable = $("#update-log").parent('pre')[0];
+        if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
         
         if (result.indexOf(log_end)!=-1) {
             clearInterval(interval);
+            setTimeout(function() {
+                $("#update-log-bound").slideUp();            
+            },3000);
         }
     }});
 }
