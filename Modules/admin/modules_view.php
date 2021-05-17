@@ -2,7 +2,18 @@
 
 <h3>Components</h3>
 
+<p>Selectively update system components or switch between branches</p>
+
 <div id="app">
+
+<div class="input-prepend input-append">
+    <span class="add-on">Switch all components to</span>
+    <button v-if="!all_custom"class="btn btn-success">Stable</button>
+    <button v-if="!all_custom" class="btn btn-warning">Master</button>
+    <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
+    <input v-if="all_custom" type="text" value="menu_v3" style="width:100px">
+    <button v-if="all_custom" class="btn">Switch</button>
+</div>
 
   <table class="table table-bordered">
     <tr>
@@ -38,6 +49,7 @@ var components = <?php echo json_encode($components); ?>;
 var app = new Vue({
     el: '#app',
     data: {
+        all_custom: false,
         components: components
     },
     methods: {

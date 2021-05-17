@@ -156,7 +156,7 @@ function admin_controller()
                     if ($branch!=$current_branch) return "invalid branch";
                 }
                 
-                $script = "/opt/openenergymonitor/EmonScripts/other/switch_branch.sh";
+                $script = "/opt/openenergymonitor/EmonScripts/update/update_component.sh";
                 $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
                 return "cmd sent";
             }
