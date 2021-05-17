@@ -1,4 +1,5 @@
-<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<?php global $path; ?>
+<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <h3>Components</h3>
 

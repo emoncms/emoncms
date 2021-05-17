@@ -128,7 +128,7 @@ function admin_controller()
             // ----------------------------------------------------------------
             // Components
             // ----------------------------------------------------------------
-            else if ($route->action == 'components') {
+            else if ($route->action == 'components' && $session['write']) {
                 require "Modules/admin/admin_model.php";
                 return view("Modules/admin/components_view.php", array("components"=>Admin::component_list()));
             }
