@@ -55,19 +55,19 @@ var app = new Vue({
     methods: {
         switch_branch: function(name) {
             console.log("switch_branch: "+name+" "+components[name].branch)
-            switch_module_branch(name,components[name].branch)  
+            component_update(name,components[name].branch)  
         },
         update: function(name) {
-            console.log("switch_branch: "+name+" "+components[name].branch)
-            switch_module_branch(name,components[name].branch)
+            console.log("update: "+name+" "+components[name].branch)
+            component_update(name,components[name].branch)
         }
     }
 });
 
-function switch_module_branch(module,branch) {
+function component_update(name,branch) {
     $.ajax({                                      
-        url: path+'admin/switch-module-branch',                         
-        data: "module="+module+"&branch="+branch,
+        url: path+'admin/component-update',                         
+        data: "module="+name+"&branch="+branch,
         dataType: 'text',
         success: function(result) { 
             console.log(result)

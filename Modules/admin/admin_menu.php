@@ -15,9 +15,9 @@ if ($session["admin"]) {
                 "order"=>1, 
                 "icon"=>"input"
             ),
-            "modules"=>array(
-                "name"=>_("Modules"),
-                "href"=>"admin/modules", 
+            "components"=>array(
+                "name"=>_("Components"),
+                "href"=>"admin/components", 
                 "order"=>1, 
                 "icon"=>"input"
             ),

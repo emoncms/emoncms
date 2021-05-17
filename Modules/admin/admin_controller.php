@@ -126,19 +126,27 @@ function admin_controller()
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
             // ----------------------------------------------------------------
-            // Modules
+            // Components
             // ----------------------------------------------------------------
-            else if ($route->action == 'modules') {
+            else if ($route->action == 'components') {
                 require "Modules/admin/admin_model.php";
-                return view("Modules/admin/modules_view.php", array("components"=>Admin::component_list()));
+                return view("Modules/admin/components_view.php", array("components"=>Admin::component_list()));
             }
-            else if ($route->action == 'componentlist' && $session['write'])
+            else if ($route->action == 'components-installed' && $session['write'])
             {
                 $route->format = "json";
                 require "Modules/admin/admin_model.php";
                 return Admin::component_list(true);
             }
-            else if ($route->action == 'switch-module-branch') {
+            else if ($route->action == 'components-available' && $session['write']) {
+                $route->format = "json";
+                if (file_exists("/opt/openenergymonitor/EmonScripts/components_available.json")) {
+                    return json_decode(file_get_contents("/opt/openenergymonitor/EmonScripts/components_available.json"));
+                } else {
+                    return false;
+                }
+            }
+            else if ($route->action == 'component-update' && $session['write']) {
                 $route->format = "text";
 
                 require "Modules/admin/admin_model.php";                
