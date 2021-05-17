@@ -168,6 +168,24 @@ function admin_controller()
                 $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
                 return "cmd sent";
             }
+            else if ($route->action == 'components-update-all' && $session['write']) {
+                $route->format = "text";
+                if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
+                
+                // Validate branch
+                require "Modules/admin/admin_model.php";
+                $available_branches = array();
+                foreach (Admin::component_list(false) as $c) {
+                    foreach ($c["branches_available"] as $b) {
+                        if (!in_array($b,$available_branches)) $available_branches[] = $b;
+                    }
+                }
+                if (!in_array($branch,$available_branches)) return "invalid branch";
+                
+                $script = "/opt/openenergymonitor/EmonScripts/update/update_all_components.sh";
+                $redis->rpush("service-runner","$script $branch>$update_logfile");
+                return "cmd sent";
+            }
             // ----------------------------------------------------------------
             // DB
             // ----------------------------------------------------------------

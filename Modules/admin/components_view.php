@@ -9,11 +9,11 @@
 
 <div class="input-prepend input-append">
     <span class="add-on">Switch all components to</span>
-    <button v-if="!all_custom"class="btn btn-success">Stable</button>
-    <button v-if="!all_custom" class="btn btn-warning">Master</button>
+    <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
+    <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
     <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
-    <input v-if="all_custom" type="text" value="menu_v3" style="width:100px">
-    <button v-if="all_custom" class="btn">Switch</button>
+    <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
+    <button v-if="all_custom" class="btn" @click="all('custom')">Switch</button>
 </div>
 
   <table class="table table-bordered">
@@ -51,6 +51,7 @@ var app = new Vue({
     el: '#app',
     data: {
         all_custom: false,
+        custom_branch: "",
         components: components
     },
     methods: {
@@ -61,6 +62,11 @@ var app = new Vue({
         update: function(name) {
             console.log("update: "+name+" "+components[name].branch)
             component_update(name,components[name].branch)
+        },
+        all: function(branch) {
+            if (branch=='custom') branch = this.custom_branch
+            console.log("update all: "+branch)
+            update_all_components(branch)
         }
     }
 });
@@ -69,6 +75,17 @@ function component_update(name,branch) {
     $.ajax({                                      
         url: path+'admin/component-update',                         
         data: "module="+name+"&branch="+branch,
+        dataType: 'text',
+        success: function(result) { 
+            console.log(result)
+        } 
+    });   
+}
+
+function update_all_components(branch) {
+    $.ajax({                                      
+        url: path+'admin/components-update-all',                         
+        data: "branch="+branch,
         dataType: 'text',
         success: function(result) { 
             console.log(result)
