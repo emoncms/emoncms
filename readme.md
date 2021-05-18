@@ -161,4 +161,3 @@ For developers: The following lists the locations of the files that define emonc
 - Cloud hosted platform - http://emoncms.org
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Homepage](https://openenergymonitor.org)
-
