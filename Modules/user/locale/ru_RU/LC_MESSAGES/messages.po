@@ -1,0 +1,375 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 10.2.0 - User\n"
+"POT-Creation-Date: 2020-03-16 01:10+0100\n"
+"PO-Revision-Date: 2021-05-18 16:57+0300\n"
+"Last-Translator:  <gnoksel@gmail.com>\n"
+"Language-Team: Russian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.3\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;_n:1,2;_n_noop:1,2;_nx:1,2;"
+"_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ..\n"
+"Language: ru\n"
+
+#: ../Views/bookmarks.php:1 ../user_menu.php:13
+msgid "Bookmarks"
+msgstr "Закладки"
+
+#: ../Views/bookmarks.php:3
+msgid ""
+"You can bookmark any page you're on by clicking the star icon (top right)"
+msgstr ""
+"Вы можете заложить любую страницу кликнув на иконку звезы (вверху справа)"
+
+#: ../Views/bookmarks.php:7
+msgid "Rename or remove your bookmarks"
+msgstr "Переименовать или удалить ваши закладки"
+
+#: ../Views/bookmarks.php:15 ../Views/bookmarks.php:33
+#: ../profile/profile.php:66 ../profile/profile.php:75
+#: ../profile/profile.php:100
+msgid "Save"
+msgstr "Сохранить"
+
+#: ../Views/bookmarks.php:16 ../Views/bookmarks.php:34
+#: ../profile/profile.php:101 ../profile/profile.php:200
+msgid "Cancel"
+msgstr "Отменить"
+
+#: ../Views/bookmarks.php:18 ../profile/profile.php:63
+#: ../profile/profile.php:72
+msgid "Edit"
+msgstr "Редектировать"
+
+#: ../Views/bookmarks.php:19 ../Views/bookmarks.php:37
+msgid "Delete"
+msgstr "Удалить"
+
+#: ../login_block.php:40 ../profile/profile.php:71
+msgid "Email"
+msgstr ""
+
+#: ../login_block.php:46 ../profile/profile.php:62
+msgid "Username"
+msgstr "Пользователь"
+
+#: ../login_block.php:53
+msgid "Password"
+msgstr "Пароль"
+
+#: ../login_block.php:59
+msgid "Confirm password"
+msgstr "Подтвеждение пароля"
+
+#: ../login_block.php:70
+msgid "Remember me"
+msgstr ""
+
+#: ../login_block.php:74 ../user_menu.php:38
+msgid "Login"
+msgstr "Залогиниться"
+
+#: ../login_block.php:75 ../login_block.php:82 ../login_block.php:100
+msgid "or"
+msgstr "или"
+
+#: ../login_block.php:76
+msgid "register"
+msgstr "зарегистрироваться"
+
+#: ../login_block.php:81
+msgid "Register"
+msgstr "Регистрация"
+
+#: ../login_block.php:83 ../login_block.php:101
+msgid "login"
+msgstr ""
+
+#: ../profile/profile.php:54
+msgid "My account"
+msgstr "Мой аккаунт"
+
+#: ../profile/profile.php:58
+msgid "User ID"
+msgstr "ID пользователя"
+
+#: ../profile/profile.php:81
+msgid "Change Password"
+msgstr "Сменить пароль"
+
+#: ../profile/profile.php:88
+msgid "Current password"
+msgstr "Текущий пароль"
+
+#: ../profile/profile.php:92
+msgid "New password"
+msgstr "Новый пароль"
+
+#: ../profile/profile.php:96
+msgid "Repeat new password"
+msgstr "Повторите новый парель"
+
+#: ../profile/profile.php:107
+msgid "Write API Key"
+msgstr "Записать ключ API"
+
+#: ../profile/profile.php:107 ../profile/profile.php:111
+msgid "Copy"
+msgstr "Копировать"
+
+#: ../profile/profile.php:111
+msgid "Read API Key"
+msgstr "Прочитаь ключ API"
+
+#: ../profile/profile.php:119
+msgid "Delete my account"
+msgstr "Удалить мой аккаунт"
+
+#: ../profile/profile.php:122
+msgid "Mobile app"
+msgstr "Мобильное приложение"
+
+#: ../profile/profile.php:127
+msgid "Scan QR code from the iOS or Android app to connect:"
+msgstr "Просканируйте QR код из приложения iOS или Android для соединения:"
+
+#: ../profile/profile.php:129
+msgid "Or using a barcode scanner scan to view MyElectric graph"
+msgstr "Или исппользуя сканер штрих-кода просканируйтеч для просмотра графика MyElectic"
+
+#: ../profile/profile.php:143
+msgid "My Profile"
+msgstr "Мой профиль"
+
+#: ../profile/profile.php:147
+msgid "Please update your database"
+msgstr "Пожалуйста обновите вашу базу данных"
+
+#: ../profile/profile.php:181
+msgid "WARNING deleting an account is permanent"
+msgstr "ОСТОРОЖНО! удаление аккаунта не обратимо"
+
+#: ../profile/profile.php:185
+msgid "Are you sure you want to delete your account?"
+msgstr "Вы уверены что хотите удалить аккаунт?"
+
+#: ../profile/profile.php:189
+msgid "Your account has been successfully deleted."
+msgstr "Ваш аккаунт успешно удалён."
+
+#: ../profile/profile.php:195
+msgid "Confirm password to delete:"
+msgstr "Подтвердите паролем удаление:"
+
+#: ../profile/profile.php:201
+msgid "Delete permanently"
+msgstr "Удалить не обратимо"
+
+#: ../profile/profile.php:202 ../user_menu.php:30
+msgid "Logout"
+msgstr "Выход"
+
+#: ../profile/profile.php:242
+msgid "Gravatar"
+msgstr ""
+
+#: ../profile/profile.php:243
+msgid "Name"
+msgstr "Имя"
+
+#: ../profile/profile.php:244
+msgid "Location"
+msgstr "Расположение"
+
+#: ../profile/profile.php:245
+msgid "Bio"
+msgstr "Биография"
+
+#: ../profile/profile.php:246
+msgid "Timezone"
+msgstr "Временная зона"
+
+#: ../profile/profile.php:247
+msgid "Language"
+msgstr "Язык"
+
+#: ../profile/profile.php:248
+msgid "Starting page"
+msgstr "Стартовая страница"
+
+#: ../profile/profile.php:375
+msgid "Passwords do not match"
+msgstr "Пароль не совпадает"
+
+#: ../user_controller.php:163
+msgid "Preference Saved"
+msgstr "Настройки сохранены"
+
+#: ../user_controller.php:165
+msgid "Problem saving Preferences"
+msgstr "Проблемы сохранения настроек"
+
+#: ../user_controller.php:168
+msgid "Invalid parameters"
+msgstr "Неверные параметры"
+
+#: ../user_controller.php:180
+msgid "Error getting data"
+msgstr "Ошибка получения данных"
+
+#: ../user_controller.php:195
+msgid "Empty"
+msgstr "Пусто"
+
+#: ../user_menu.php:6
+msgid "Add Bookmark"
+msgstr "Добавить закладку"
+
+#: ../user_menu.php:10
+msgid "Apps"
+msgstr "Приложения"
+
+#: ../user_menu.php:19
+msgid "My Account"
+msgstr "Мой аккаунт"
+
+#: ../user_model.php:228
+msgid "Missing username, password or email parameter"
+msgstr "Пропущено имя пользователя, пароль или email"
+
+#: ../user_model.php:229 ../user_model.php:546
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Имя пользователя может содержать только символы a-z и 0-9"
+
+#: ../user_model.php:230 ../user_model.php:560
+msgid "Username already exists"
+msgstr "Пользователья с таим именем уже существует"
+
+#: ../user_model.php:232 ../user_model.php:325 ../user_model.php:492
+#: ../user_model.php:569
+msgid "Email address format error"
+msgstr "Email не соответсвует формату"
+
+#: ../user_model.php:234 ../user_model.php:544
+msgid "Username length error"
+msgstr "Ошибка длинны имени пользователя"
+
+#: ../user_model.php:235 ../user_model.php:461 ../user_model.php:462
+msgid "Password length error"
+msgstr "Ошибка длинны пароля"
+
+#: ../user_model.php:251
+msgid "Error creating user, mysql error: "
+msgstr "Ошибка создания пользователя, ошибка mysql: "
+
+#: ../user_model.php:271
+msgid "Invalid username"
+msgstr "Не правильное имя пользователя"
+
+#: ../user_model.php:275 ../user_model.php:365
+msgid "Database error, you may need to run database update"
+msgstr "Обишка базы данных, возможно вам следует запустить обновление базы данных"
+
+#: ../user_model.php:285 ../user_model.php:378
+msgid "Username does not exist"
+msgstr "Пльзователь не существут"
+
+#: ../user_model.php:287
+msgid "Email already verified"
+msgstr "Email уже веревицировать"
+
+#: ../user_model.php:320
+msgid "Email verification email sent, please check your inbox"
+msgstr "Письмо верификации почты послано, пожалуйста проверьте Входящие"
+
+#: ../user_model.php:326
+msgid "Invalid verification key"
+msgstr "Не верный ключ верификации"
+
+#: ../user_model.php:354 ../user_model.php:422
+msgid "Username or password empty"
+msgstr "Имя пользователя или пароль пусты"
+
+#: ../user_model.php:360
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+"Имя пользователя должно содержать только a-z 0-9 дефис и подчеркивание. Если "
+"вы создали учетную запись до того, как это правило вступило в силу, введите "
+"свое имя пользователя без знаков, отличных от a-z 0-9 подчеркивания дефис, "
+"для входа и не стесняйтесь изменять свое имя пользователя на странице профиля."
+
+#: ../user_model.php:379
+msgid "Please verify email address"
+msgstr "Пожалуйста, верифицируйте email адресс"
+
+#: ../user_model.php:385
+msgid ""
+"Incorrect password, if you're sure it's correct try clearing your browser "
+"cache"
+msgstr ""
+"Неверный пароль, если вы уверены в его корректности - почистите кэш вашего "
+"браузера"
+
+#: ../user_model.php:403
+msgid "Error creating rememberme cookie, try login without rememberme"
+msgstr ""
+"Ошибка создания файла cookie \"запомнить меня\", попробуйте войти "
+"без него"
+
+#: ../user_model.php:413
+msgid "Login successful"
+msgstr "Вход выполнен успешено"
+
+#: ../user_model.php:424
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr "Имя пользователя может содержать a-z 0-9 дефис и подчёркивание"
+
+#: ../user_model.php:437 ../user_model.php:442
+msgid "Incorrect authentication"
+msgstr "Аутентификация не удалась"
+
+#: ../user_model.php:485
+msgid "Old password incorect"
+msgstr "Старый пароль не верен"
+
+#: ../user_model.php:541
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change username"
+msgstr ""
+"Поскольку вы используете логин на основе куки-файлов, выйдите из системы "
+"и войдите снова, чтобы изменить имя пользователя."
+
+#: ../user_model.php:556
+msgid "Username updated"
+msgstr "Имя пользователя обновлено"
+
+#: ../user_model.php:566
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change email"
+msgstr ""
+"Поскольку вы используете логин на основе куки-файлов, выйдите из системы "
+"и войдите снова, чтобы изменить адрес электронной почты"
+
+#: ../user_model.php:585
+msgid "Email updated"
+msgstr "Email обновлён"
+
+#: ../user_model.php:751 ../user_model.php:769
+msgid "Error updating user info"
+msgstr "Ошибка обновления информации о пользователе"
+
+#: ../user_model.php:974
+msgid "Please update database"
+msgstr "Пожалуйста обновите базу данных"
