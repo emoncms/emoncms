@@ -6,6 +6,10 @@
     "support": {
         "forum": "https://community.openenergymonitor.org/"
     },
+    "require": {
+        "gettext/gettext": "^4.8.2",
+        "gettext/languages": "^2.6.0"
+    },
     "require-dev": {
         "php-parallel-lint/php-parallel-lint": "^1.2.0"
     },

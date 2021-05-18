@@ -1,0 +1,179 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Welsh translation of user module\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-02-24 09:52+0100\n"
+"PO-Revision-Date: 2013-02-24 09:52+0100\n"
+"Last-Translator: Trystan <trystan.lea@googlemail.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: /var/www/framework/Modules/user/.\n"
+"X-Poedit-Language: Welsh\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-SearchPath-0: /var/www/framework/Modules/user/.\n"
+
+#: /var/www/framework/Modules/user/./login_block.php:33
+msgid "Username:"
+msgstr "Enw defnyddiwr:"
+
+#: /var/www/framework/Modules/user/./login_block.php:38
+msgid "Email:"
+msgstr "E-bost:"
+
+#: /var/www/framework/Modules/user/./login_block.php:43
+msgid "Password:"
+msgstr "Cyfrinair:"
+
+#: /var/www/framework/Modules/user/./login_block.php:48
+msgid "Confirm password:"
+msgstr "Cadarnhau cyfrinair:"
+
+#: /var/www/framework/Modules/user/./login_block.php:56
+msgid "register"
+msgstr "cofrestru"
+
+#: /var/www/framework/Modules/user/./login_block.php:60
+msgid "Register"
+msgstr "Cofrestru"
+
+#: /var/www/framework/Modules/user/./login_block.php:61
+msgid "cancel"
+msgstr "canslo"
+
+#: /var/www/framework/Modules/user/./user_model.php:93
+msgid "Missing username, password or email paramater"
+msgstr "Mae enw defnyddiwr, cyfrinair neu e-bost ar goll"
+
+#: /var/www/framework/Modules/user/./user_model.php:95
+#: /var/www/framework/Modules/user/./user_model.php:204
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Rhaid i enw defnyddiwr ond yn cynnwys a-z 0-9"
+
+#: /var/www/framework/Modules/user/./user_model.php:99
+#: /var/www/framework/Modules/user/./user_model.php:215
+msgid "Username already exists"
+msgstr "Enw defnyddiwr wedi cael ei gymryd yn barod"
+
+#: /var/www/framework/Modules/user/./user_model.php:101
+#: /var/www/framework/Modules/user/./user_model.php:222
+msgid "Email address format error"
+msgstr "Mae gwall yn fformat e-bost"
+
+#: /var/www/framework/Modules/user/./user_model.php:103
+#: /var/www/framework/Modules/user/./user_model.php:202
+msgid "Username length error"
+msgstr "Mae gwall yn hyd enw defnyddiwr"
+
+#: /var/www/framework/Modules/user/./user_model.php:104
+#: /var/www/framework/Modules/user/./user_model.php:175
+#: /var/www/framework/Modules/user/./user_model.php:176
+msgid "Password length error"
+msgstr "Mae gwall yn hyd cyfrinair"
+
+#: /var/www/framework/Modules/user/./user_model.php:127
+msgid "Username or password empty"
+msgstr "Mae'r enw defnyddiwr neu gyfrinair yn gwag"
+
+#: /var/www/framework/Modules/user/./user_model.php:130
+msgid "Username must only contain a-z and 0-9 characters, if you created an account before this rule was in place enter your username without the non a-z 0-9 characters to login and feel free to change your username on the profile page."
+msgstr "Rhaid i enw defnyddiwr ddim ond cynnwys a-z a 0-9"
+
+#: /var/www/framework/Modules/user/./user_model.php:137
+msgid "Username does not exist"
+msgstr "Nid ywr enw defnyddiwr yn bodoli"
+
+#: /var/www/framework/Modules/user/./user_model.php:144
+msgid "Incorrect password"
+msgstr "Cyfrinair presenol"
+
+#: /var/www/framework/Modules/user/./user_model.php:157
+msgid "Login successful"
+msgstr "Mewngofnodi llwyddiannus"
+
+#: /var/www/framework/Modules/user/./user_model.php:195
+msgid "Old password incorect"
+msgstr "Hen cyfrinair anghywir"
+
+#: /var/www/framework/Modules/user/./user_model.php:211
+msgid "Username updated"
+msgstr "Enw defnyddiwr"
+
+#: /var/www/framework/Modules/user/./user_model.php:225
+msgid "Email updated"
+msgstr "E-bost wedi ei diweddaru"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:17
+msgid "My account"
+msgstr "Fy nghyfrif"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:21
+msgid "Username"
+msgstr "Enw defnyddiwr"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:25
+#: /var/www/framework/Modules/user/./profile/profile.php:34
+#: /var/www/framework/Modules/user/./profile/profile.php:57
+msgid "Save"
+msgstr "Cadw"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:30
+msgid "Email"
+msgstr "E-bost:"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:39
+msgid "Change Password"
+msgstr "Newid Cyfrinair"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:45
+msgid "Current password"
+msgstr "Cyfrinair presenol"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:49
+msgid "New password"
+msgstr "Cyfrinair newydd"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:53
+msgid "Repeat new password"
+msgstr "Ailadrodd cyfrinair newydd"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:58
+msgid "Cancel"
+msgstr "Canslo"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:64
+msgid "My Profile"
+msgstr "Fy Proffil"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:78
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:79
+msgid "Name"
+msgstr "Enw"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:80
+msgid "Location"
+msgstr "Lleoliad"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:81
+msgid "Timezone"
+msgstr "Cylchfa amser"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:82
+msgid "Language"
+msgstr "Iaith"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:83
+msgid "Bio"
+msgstr "Bywgraffiad"
+
+#: /var/www/framework/Modules/user/./profile/profile.php:205
+msgid "Passwords do not match"
+msgstr "Nid yw'r cyfrinair yn matchio"
+
