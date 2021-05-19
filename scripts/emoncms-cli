@@ -41,7 +41,7 @@ function printAvailableCommands() {
 }
 
 function runMigrations() {
-    require "process_settings.php";
+    require_once "process_settings.php";
 
     if (!extension_loaded('mysql') && !extension_loaded('mysqli')) {
         echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
@@ -67,11 +67,17 @@ function runMigrations() {
     // Set charset to utf8
     $mysqli->set_charset("utf8");
 
-    require "Lib/dbschemasetup.php";
-    if (!db_check($mysqli, $settings["sql"]["database"])) {
-        db_schema_setup($mysqli, load_db_schema(), true);
+    require_once "core.php";
+    require_once "Lib/dbschemasetup.php";
+    $updates = db_schema_setup($mysqli, load_db_schema(), true);
+
+    if (count($updates) === 0) {
+        echo "No migrations to run\n";
+        exit(0);
     }
 
-
+    foreach ($updates as $update) {
+        echo "$update \n";
+    }
     echo "Migrations successfully executed\n";
 }
