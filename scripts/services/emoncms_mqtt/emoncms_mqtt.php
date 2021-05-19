@@ -1,11 +1,4 @@
 <?php
-
-    // TBD: support user target in message schema
-    $mqttsettings = array(
-        'userid' => 1
-    );
-
-
     /*
     
     **MQTT input interface script**
@@ -108,9 +101,14 @@
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
+    
+    $timezone = 'UTC';
+    if (!$settings["mqtt"]["multiuser"]) {
+        $timezone = $user->get_timezone($settings["mqtt"]["userid"]);
+    }
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+    $process = new Process($mysqli,$input,$feed,$timezone);
 
     $device = false;
     if (file_exists("Modules/device/device_model.php")) {
@@ -296,10 +294,6 @@
             $log->info($topic." ".$value);
             $count ++;
             
-            #Emoncms user ID TBD: incorporate on message via authentication mechanism
-            global $mqttsettings;
-            $userid = $mqttsettings['userid'];
-            
             $inputs = array();
             
             // 1. Filter out basetopic
@@ -309,11 +303,22 @@
             $route_len = count($route);
             
             if ($route_len>=1) {
-            
-                // Userid is first entry
-                // if (is_numeric($route[0])) $userid = (int) $route[0];
-                // Node id is second entry
-                $nodeid = $route[0];
+                
+                if ($settings["mqtt"]["multiuser"]) {
+                    // Userid is first entry
+                    $userid = (int) $route[0];
+                    // Node id is second entry
+                    $nodeid = $route[1];
+                    // minimum route length is 3 /emon/userid/nodeid
+                    $min_route_len = 3;
+                } else {
+                    // Userid from settings
+                    $userid = $settings["mqtt"]["userid"];
+                    // Node id is first entry
+                    $nodeid = $route[0];
+                    // minimum route length is 2 /emon/nodeid
+                    $min_route_len = 2;
+                }
                 // Filter nodeid, pre input create, to avoid duplicate inputs
                 $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
                 
@@ -321,20 +326,20 @@
 
                 if ($jsoninput) {
                     $input_name = "";
-                    if ($route_len>=2) {
-                    // Input name is all the remaining parts connected together with _ and
-                    // added to front of input name.
+                    if ($route_len>=$min_route_len) {
+                        // Input name is all the remaining parts connected together with _ and
+                        // added to front of input name.
                         $input_name_parts = array();
-                        for ($i=1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
+                        for ($i=$min_route_len-1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
                         $input_name = implode("_",$input_name_parts)."_";
                     }
                     foreach ($jsondata as $key=>$value) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
                     }
-                } else if ($route_len>=2) {
+                } else if ($route_len>=$min_route_len) {
                     // Input name is all the remaining parts connected together
                     $input_name_parts = array();
-                    for ($i=1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
+                    for ($i=$min_route_len-1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
                     $input_name = implode("_",$input_name_parts);
                 
                     $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name, "value"=>$value);
@@ -365,6 +370,9 @@
                 $name = $i['name'];
                 $value = $i['value'];
                 
+                if ($settings["mqtt"]["multiuser"]) {
+                    $process->timezone = $user->get_timezone($userid);
+                }
                 // Filter name, pre input create, to avoid duplicate inputs
                 $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
                 
