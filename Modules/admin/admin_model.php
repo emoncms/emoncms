@@ -131,6 +131,74 @@ class Admin {
                      );
       }
 
+      public static function component_list($git_info=true) 
+      {
+          global $settings;
+          
+          $components = array();
+          
+          // Emoncms core
+          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+          if (file_exists($emoncms_path."/version.txt")) {
+              $components["emoncms"] = array(
+                  "name"=>"Emoncms Core",
+                  "version"=>file_get_contents($emoncms_path."/version.txt"),
+                  "path"=>$emoncms_path,
+                  "location"=>$emoncms_path,
+                  "branches_available"=>array("stable","master","menu_v3"),
+                  "requires"=>array()
+              );
+          }
+          
+          foreach (array("/var/www/emoncms/Modules","/opt/emoncms/modules","/opt/openenergymonitor") as $path) {
+              
+              $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
+              
+              foreach($directories as $module_fullpath) {                                           // loop through the folders
+
+                  if (!is_link($module_fullpath)) {
+
+                      $fullpath_parts = explode("/",$module_fullpath);
+                      $name = $fullpath_parts[count($fullpath_parts)-1];
+                      
+                      if (file_exists($module_fullpath."/module.json")) {                           // JSON Version informatmion exists
+                          $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
+                          
+                          if (isset($json->version) && $json->version!="") {
+                              $components[$name] = array(
+                                  "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                                  "version"=>$json->version,
+                                  "path"=>$module_fullpath,
+                                  "location"=>isset($json->location)?$json->location:$path,
+                                  "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                                  "requires"=>isset($json->requires)?$json->requires:array()
+                              );
+                          }
+                      }
+                  }
+              }
+          
+          }
+          
+          if ($git_info) {
+              foreach ($components as $name=>$component) {
+                  $path = $components[$name]["path"];
+                  $components[$name]["describe"] = @exec("git -C $path describe");
+                  $components[$name]["branch"] = str_replace("* ","",@exec("git -C $path rev-parse --abbrev-ref HEAD"));
+                  $components[$name]["local_changes"] = @exec("git -C $path diff-index HEAD --");
+                  $components[$name]["url"] = @exec("git -C $path ls-remote --get-url origin");
+                  
+                  if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
+                      $components[$name]["branches_available"][] = $components[$name]["branch"];
+                  }
+              }             
+          }   
+          
+          
+          return $components;
+      }
+      
+
       /**
        * return array of mounted partitions
        *
