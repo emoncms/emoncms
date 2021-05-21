@@ -33,8 +33,6 @@ function directoryLocaleScan($dir)
         );
     }
 
-    var_dump($directoryList);
-
     return array_unique($directoryList);
 }
 
