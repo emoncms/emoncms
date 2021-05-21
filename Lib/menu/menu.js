@@ -105,12 +105,14 @@ var menu = {
             // Prepare icon
             let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
             // Title
-            let title = item['name'];
-            if (item['title']!=undefined) title = item['title'];
-            // Menu item
-            out += '<li><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></li>';
-            // Build level 3 menu (sidebar sub menu) if active
-            // if (active && item['sub']!=undefined) active_l2 = l2;
+            if (item['name']!=undefined) {
+                let title = item['name'];
+                if (item['title']!=undefined) title = item['title'];
+                // Menu item
+                out += '<li><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></li>';
+                // Build level 3 menu (sidebar sub menu) if active
+                // if (active && item['sub']!=undefined) active_l2 = l2;
+            }
         }
         $(".menu-l1 ul").html(out);
         
