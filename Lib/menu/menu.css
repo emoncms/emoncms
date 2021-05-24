@@ -56,10 +56,6 @@
   margin:0;
 }
 
-.menu-tr li {
-  display: inline-block;
-}
-
 .menu-tr li div {
   text-decoration: none;
   color: #fff;

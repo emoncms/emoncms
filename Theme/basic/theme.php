@@ -71,8 +71,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
             <?php } else { ?>
             <li>
               <a href="<?php echo $path; ?>" title="Login">
-                <div>
-                <svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
+                <div class="tr-login"><svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
               </a>
             </li>
             <?php } ?>
