@@ -65,6 +65,7 @@ class User
                 $session['admin'] = 0;
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
+                $session['gravatar'] = '';
                 return $session;
             }
             
@@ -75,6 +76,7 @@ class User
                 $session['admin'] = 0;
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
+                $session['gravatar'] = '';
                 return $session;
             }
         }
@@ -96,6 +98,7 @@ class User
             $session['admin'] = 0;
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
+            $session['gravatar'] = '';
             if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
             return $session;
         }
@@ -114,6 +117,7 @@ class User
             $session['admin'] = 0;
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
+            $session['gravatar'] = '';
             if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
             return $session;
         }
