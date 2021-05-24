@@ -103,6 +103,10 @@ height:46px;
   overflow:hidden;  
 }
 
+.menu-l2 li a {
+text-decoration:none;
+}
+
 .menu-l2 li div {
   text-decoration: none;
   color: #fff;

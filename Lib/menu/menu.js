@@ -147,11 +147,22 @@ var menu = {
                 if (item['icon']!=undefined) {
                     icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
                 }
-               // Title
+                
+                // Title
                 let title = item['name'];
                 if (item['title']!=undefined) title = item['title'];
-                // Menu item
-                out += '<li><div l2='+l2+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></li>';
+
+                // Create link if applicable
+                let href = ''
+                if (item['l3']==undefined) {
+                    href = 'href="'+path+item['href']+'"'
+                } else {
+                    if (item['default']!=undefined) {
+                        href = 'href="'+path+item['default']+'"'
+                    }
+                }
+                // Menu item                
+                out += '<li><a '+href+'><div l2='+l2+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></a></li>';
             }
         }
         
@@ -351,20 +362,12 @@ var menu = {
             // Set active class to current menu
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
-            if (item['l3']==undefined) {
-                if (item['href']!=undefined && item['href']) {
-                    window.location = path+item['href']
-                }
-            } else {
-                if (item['href_active']!=undefined && item['href_active']) {
-                    window.location = path+item['href_active']
+            if (item['l3']!=undefined && item['default']==undefined) {
+                if (!menu.l3_visible) {
+                    // Expand sub menu
+                    menu.draw_l3();
                 } else {
-                    if (!menu.l3_visible) {
-                        // Expand sub menu
-                        menu.draw_l3();
-                    } else {
-                        menu.min_l2();
-                    }
+                    menu.min_l2();
                 }
             }
         });
