@@ -141,9 +141,7 @@ var menu = {
             if (item['divider']!=undefined && item['divider']) {
                 out += '<li style="height:'+item['divider']+'"></li>';
             } else {
-                // Prepare active status
-                var r = this.route(item['href'])
-                let active = ""; if (q.indexOf(r.controller)===0) { active = "active"; menu.active_l2 = l2 }
+                let active = ""; if (q.indexOf(item['href'])===0) { active = "active"; menu.active_l2 = l2 }
                 // Prepare icon
                 let icon = "";
                 if (item['icon']!=undefined) {
@@ -353,14 +351,20 @@ var menu = {
             // Set active class to current menu
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
-            if (item['l3']==undefined || (item['href_active']!=undefined && item['href_active'])) {
-                window.location = path+item['href']
+            if (item['l3']==undefined) {
+                if (item['href']!=undefined && item['href']) {
+                    window.location = path+item['href']
+                }
             } else {
-                if (!menu.l3_visible) {
-                    // Expand sub menu
-                    menu.draw_l3();
+                if (item['href_active']!=undefined && item['href_active']) {
+                    window.location = path+item['href_active']
                 } else {
-                    menu.min_l2();
+                    if (!menu.l3_visible) {
+                        // Expand sub menu
+                        menu.draw_l3();
+                    } else {
+                        menu.min_l2();
+                    }
                 }
             }
         });
