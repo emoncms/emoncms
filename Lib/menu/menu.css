@@ -56,6 +56,24 @@
   margin:0;
 }
 
+.menu-tr li {
+  display: inline-block;
+}
+
+.menu-tr li div {
+  text-decoration: none;
+  color: #fff;
+  height: 24px;
+  padding: 11px 13px 11px 13px;
+  cursor:pointer;
+  font-size:1.5rem;
+  background-color:#5abce5;
+}
+
+.menu-tr li div:hover {
+  background-color:#2eaade;
+}
+
 .dropdown-menu svg.icon {
   fill:#000;
 }

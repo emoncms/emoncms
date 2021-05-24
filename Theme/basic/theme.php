@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 15;
+$v = 17;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
@@ -68,8 +68,14 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
                     <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
                 </ul>
             </li>
+            <?php } else { ?>
+            <li>
+              <a href="<?php echo $path; ?>" title="Login">
+                <div>
+                <svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
+              </a>
+            </li>
             <?php } ?>
-            
             </ul></div>
         </div>
         <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls"></div></div><div class="menu-l3"><ul></ul></div>
