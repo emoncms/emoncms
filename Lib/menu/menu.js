@@ -109,7 +109,11 @@ var menu = {
                 let title = item['name'];
                 if (item['title']!=undefined) title = item['title'];
                 // Menu item
-                out += '<li><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></li>';
+                let href='';
+                if (item['default']!=undefined) {
+                    href = 'href="'+path+item['default']+'"';
+                }
+                out += '<li><a '+href+' onclick="return false;"><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></a></li>';
                 // Build level 3 menu (sidebar sub menu) if active
                 // if (active && item['sub']!=undefined) active_l2 = l2;
             }

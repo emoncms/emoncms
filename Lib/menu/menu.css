@@ -19,7 +19,11 @@
   display: inline-block;
 }
 
-.menu-l1 li > div {
+.menu-l1 li a {
+  text-decoration: none;
+}
+
+.menu-l1 li div {
   text-decoration: none;
   color: #fff;
 

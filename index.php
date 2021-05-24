@@ -350,7 +350,7 @@ if ($route->format == 'json') {
         // Menu
         $menu = array();
         // Create initial entry for setup menu
-        $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "l2"=>array());
+        $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
         if (!$session["write"]) $menu["setup"]["name"] = "Emoncms";
         
         // Itterates through installed modules to load module menus
