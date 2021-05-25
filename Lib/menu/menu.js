@@ -165,6 +165,9 @@ var menu = {
                         href = 'href="'+path+item['default']+'"'
                     }
                 }
+                // Disable link for active menu items
+                if (active=="active") href = '';
+                
                 // Menu item                
                 out += '<li><a '+href+'><div l2='+l2+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></a></li>';
             }
@@ -366,7 +369,7 @@ var menu = {
             // Set active class to current menu
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
-            if (item['l3']!=undefined && item['default']==undefined) {
+            if (item['l3']!=undefined) {
                 if (!menu.l3_visible) {
                     // Expand sub menu
                     menu.draw_l3();

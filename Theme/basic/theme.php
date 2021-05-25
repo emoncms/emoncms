@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 17;
+$v = 18;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
