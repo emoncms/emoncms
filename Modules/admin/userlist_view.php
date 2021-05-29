@@ -144,7 +144,7 @@ function table_draw() {
       } else {
           out += "<tr>";
       }
-      out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id="+users[z].id+"'>view</a></td>";
+      out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id="+users[z].id+"'><?php echo _('view'); ?></a></td>";
       out += "<td>"+users[z].id+"</td>";
       out += "<td>"+users[z].username+"</td>";
       out += "<td>"+users[z].email+"</td>";
