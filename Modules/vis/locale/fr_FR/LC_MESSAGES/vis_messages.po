@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-28 23:09+0100\n"
-"PO-Revision-Date: 2020-09-24 14:21+0200\n"
+"POT-Creation-Date: 2021-05-25 11:50+0200\n"
+"PO-Revision-Date: 2021-05-25 11:53+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/vis_main_view.php:38
@@ -455,7 +455,7 @@ msgstr "Seuil B utilisé"
 
 #: ../../../vis_langjs.php:121
 msgid "Top"
-msgstr "HAut"
+msgstr "Haut"
 
 #: ../../../vis_langjs.php:122
 msgid "Top colour"
@@ -474,7 +474,7 @@ msgid "Ufac value"
 msgstr "Valeur ufac"
 
 #: ../../../vis_langjs.php:126 ../../../vis_object.php:32
-#: ../../../vis_object.php:41 ../../../vis_object.php:102
+#: ../../../vis_object.php:41 ../../../vis_object.php:119
 msgid "units"
 msgstr "unités"
 
@@ -513,10 +513,10 @@ msgstr "RealTime"
 #: ../../../vis_object.php:21 ../../../vis_object.php:29
 #: ../../../vis_object.php:38 ../../../vis_object.php:81
 #: ../../../vis_object.php:90 ../../../vis_object.php:94
-#: ../../../vis_object.php:101 ../../../vis_object.php:106
-#: ../../../vis_object.php:111 ../../../vis_object.php:118
-#: ../../../vis_object.php:124 ../../../vis_object.php:136
-#: ../../../vis_object.php:140
+#: ../../../vis_object.php:101 ../../../vis_object.php:111
+#: ../../../vis_object.php:118 ../../../vis_object.php:123
+#: ../../../vis_object.php:130 ../../../vis_object.php:136
+#: ../../../vis_object.php:143
 msgid "feed"
 msgstr "flux"
 
@@ -533,7 +533,7 @@ msgstr "kW"
 msgid "RawData"
 msgstr "RawData"
 
-#: ../../../vis_object.php:30 ../../../vis_object.php:141
+#: ../../../vis_object.php:30 ../../../vis_object.php:112
 msgid "fill"
 msgstr "remplissage"
 
@@ -546,7 +546,7 @@ msgid "interval"
 msgstr "intervalle"
 
 #: ../../../vis_object.php:51 ../../../vis_object.php:75
-#: ../../../vis_object.php:125
+#: ../../../vis_object.php:137
 msgid "power"
 msgstr "puissance"
 
@@ -613,7 +613,7 @@ msgstr "MultiGraph"
 
 #: ../../../vis_object.php:86
 msgid "mid"
-msgstr ""
+msgstr "mid"
 
 #: ../../../vis_object.php:89
 msgid "EditRealtime"
@@ -623,77 +623,77 @@ msgstr "EditRealtime"
 msgid "EditDaily"
 msgstr "EditDaily"
 
-#: ../../../vis_object.php:100
-msgid "Daily from Multiple (BETA)"
-msgstr "Daily from Multiple (BETA)"
-
-#: ../../../vis_object.php:105 ../../../visualisations/smoothie.php:15
+#: ../../../vis_object.php:100 ../../../visualisations/smoothie.php:15
 msgid "Smoothie"
 msgstr "Smoothie"
 
-#: ../../../vis_object.php:107
+#: ../../../vis_object.php:102
 msgid "ufac"
 msgstr "ufac"
 
-#: ../../../vis_object.php:110
-msgid "Histgraph"
-msgstr "Histgraph"
-
-#: ../../../vis_object.php:112
-msgid "barwidth"
-msgstr "largeur barre"
-
-#: ../../../vis_object.php:113
-msgid "start"
-msgstr "début"
-
-#: ../../../vis_object.php:114
-msgid "end"
-msgstr "fin"
-
-#: ../../../vis_object.php:117 ../../../visualisations/threshold.php:21
-msgid "Threshold"
-msgstr "Seuil"
-
-#: ../../../vis_object.php:119 ../../../vis_object.php:126
-msgid "thresholdA"
-msgstr "seuil A"
-
-#: ../../../vis_object.php:120 ../../../vis_object.php:127
-msgid "thresholdB"
-msgstr "seuil B"
-
-#: ../../../vis_object.php:123
-msgid "OrderThreshold"
-msgstr "OrderThreshold"
-
-#: ../../../vis_object.php:130
+#: ../../../vis_object.php:105
 msgid "Compare"
 msgstr "Compare"
 
-#: ../../../vis_object.php:131
+#: ../../../vis_object.php:106
 msgid "Feed A"
 msgstr "Flux A"
 
-#: ../../../vis_object.php:132
+#: ../../../vis_object.php:107
 msgid "Feed B"
 msgstr "Flux B"
 
-#: ../../../vis_object.php:135
-msgid "Graph (BETA)"
-msgstr "Graph (BETA)"
-
-#: ../../../vis_object.php:139
+#: ../../../vis_object.php:110
 msgid "Time Comparison"
 msgstr "Time Comparison"
 
-#: ../../../vis_object.php:142
+#: ../../../vis_object.php:113
 msgid "depth"
 msgstr "profondeur"
 
-#: ../../../vis_object.php:143
+#: ../../../vis_object.php:114
 msgid "data points"
 msgstr "points de données"
+
+#: ../../../vis_object.php:117
+msgid "Timestore Daily (Deprecated)"
+msgstr "Timestore Daily (Obsolète)"
+
+#: ../../../vis_object.php:122
+msgid "Histgraph (Deprecated)"
+msgstr "Histgraph (Obsolère)"
+
+#: ../../../vis_object.php:124
+msgid "barwidth"
+msgstr "largeur barre"
+
+#: ../../../vis_object.php:125
+msgid "start"
+msgstr "début"
+
+#: ../../../vis_object.php:126
+msgid "end"
+msgstr "fin"
+
+#: ../../../vis_object.php:129
+msgid "Threshold (Deprecated)"
+msgstr "Threshold (Obsolète)"
+
+#: ../../../vis_object.php:131 ../../../vis_object.php:138
+msgid "thresholdA"
+msgstr "seuil A"
+
+#: ../../../vis_object.php:132 ../../../vis_object.php:139
+msgid "thresholdB"
+msgstr "seuil B"
+
+#: ../../../vis_object.php:135
+msgid "OrderThreshold (Deprecated)"
+msgstr "OrderThreshold (Obsolète)"
+
+#: ../../../vis_object.php:142
+msgid "Graph (Deprecated)"
+msgstr "Graph (Obsolète)"
 
 #: ../../../visualisations/bargraph.php:128
 msgid "Bar graph:"
@@ -898,10 +898,6 @@ msgstr "Masquer sortie CSV"
 msgid "Histogram:"
 msgstr "Histogramme :"
 
-#: ../../../visualisations/multigraph.php:51
-msgid "Multigraph:"
-msgstr "Multi graphique :"
-
 #: ../../../visualisations/orderbars.php:20
 msgid "Bar graph (ordered by height):"
 msgstr "Bar graph (trié par hauteur):"
@@ -934,7 +930,7 @@ msgstr "Écart-type : "
 msgid "Datapoints in view:"
 msgstr "Points de données dans la vue :"
 
-#: ../../../visualisations/rawdata.php:106
+#: ../../../visualisations/rawdata.php:107
 msgid "Raw:"
 msgstr "Brut :"
 
@@ -953,6 +949,10 @@ msgstr "min"
 msgid "Simpler kWh/d zoomer"
 msgstr ""
 
+#: ../../../visualisations/threshold.php:21
+msgid "Threshold"
+msgstr "Seuil"
+
 #: ../../../visualisations/timecompare.php:46
 msgid "Time Compare: "
 msgstr "Comparaison de temps :"
@@ -965,29 +965,41 @@ msgstr ""
 msgid "kWh/d Zoomer"
 msgstr ""
 
-#: ../../../visualisations/zoom.php:121
+#: ../../../visualisations/zoom.php:124
 msgid "Total:"
 msgstr "Total :"
 
-#: ../../../visualisations/zoom.php:121 ../../../visualisations/zoom.php:169
+#: ../../../visualisations/zoom.php:124 ../../../visualisations/zoom.php:172
 msgid "kWh"
 msgstr "kWh"
 
-#: ../../../visualisations/zoom.php:121 ../../../visualisations/zoom.php:169
+#: ../../../visualisations/zoom.php:124 ../../../visualisations/zoom.php:172
 msgid "Average:"
 msgstr "Moyenne :"
 
-#: ../../../visualisations/zoom.php:121
+#: ../../../visualisations/zoom.php:124
 msgid "a week"
 msgstr "une semaine"
 
-#: ../../../visualisations/zoom.php:121
+#: ../../../visualisations/zoom.php:124
 msgid "a year"
 msgstr "une année"
 
-#: ../../../visualisations/zoom.php:121
+#: ../../../visualisations/zoom.php:124
 msgid "Unit price:"
 msgstr "Prix unitaire :"
+
+#~ msgid "Daily from Multiple (BETA)"
+#~ msgstr "Daily from Multiple (BETA)"
+
+#~ msgid "Histgraph"
+#~ msgstr "Histgraph"
+
+#~ msgid "Graph (BETA)"
+#~ msgstr "Graph (BETA)"
+
+#~ msgid "Multigraph:"
+#~ msgstr "Multi graphique :"
 
 #~ msgid "Vis"
 #~ msgstr "Visualisation"

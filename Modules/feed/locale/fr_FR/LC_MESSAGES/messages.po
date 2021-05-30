@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-28 10:56+0200\n"
-"PO-Revision-Date: 2020-08-28 10:56+0200\n"
+"POT-Creation-Date: 2021-05-25 11:47+0200\n"
+"PO-Revision-Date: 2021-05-25 11:47+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/feedapi_view.php:19
@@ -148,50 +148,54 @@ msgid "Insert new data point"
 msgstr "Insérer un nouveau point de données"
 
 #: ../../../Views/feedapi_view.php:91
+msgid "Insert multiple data points"
+msgstr "Insérer plusieurs points de données"
+
+#: ../../../Views/feedapi_view.php:95
 msgid "Update data point"
 msgstr "Mettre à jour un point de données"
 
-#: ../../../Views/feedapi_view.php:94
+#: ../../../Views/feedapi_view.php:98
 msgid "Delete data point"
 msgstr "Supprimer un point de données"
 
-#: ../../../Views/feedapi_view.php:99
+#: ../../../Views/feedapi_view.php:103
 msgid "Feed setup actions"
 msgstr "Actions de paramétrage de flux"
 
-#: ../../../Views/feedapi_view.php:101
+#: ../../../Views/feedapi_view.php:105
 msgid "Create new feed"
 msgstr "Créer un nouveau flux"
 
-#: ../../../Views/feedapi_view.php:104
+#: ../../../Views/feedapi_view.php:108
 msgid "Delete existent feed"
 msgstr "Supprimer un flux existant"
 
-#: ../../../Views/feedapi_view.php:107
+#: ../../../Views/feedapi_view.php:111
 msgid "Update feed field"
 msgstr "Mettre à jour un champ de flux"
 
-#: ../../../Views/feedapi_view.php:110
+#: ../../../Views/feedapi_view.php:114
 msgid "Return total engines size"
 msgstr "Retourner la taille totale des moteurs"
 
-#: ../../../Views/feedapi_view.php:113
+#: ../../../Views/feedapi_view.php:117
 msgid "Return buffer points pending write"
 msgstr "Retourner les points de tampon en attente d'écriture"
 
-#: ../../../Views/feedapi_view.php:118
+#: ../../../Views/feedapi_view.php:122
 msgid "Virtual feed process actions"
 msgstr "Actions de traitements des flux virtuels"
 
-#: ../../../Views/feedapi_view.php:120
+#: ../../../Views/feedapi_view.php:124
 msgid "Get feed process list"
 msgstr "Obtenir la liste des traitements de flux"
 
-#: ../../../Views/feedapi_view.php:121
+#: ../../../Views/feedapi_view.php:125
 msgid "Set feed process list"
 msgstr "Définir la liste des traitements de flux"
 
-#: ../../../Views/feedapi_view.php:122
+#: ../../../Views/feedapi_view.php:126
 msgid "Reset feed process list"
 msgstr "Réinitialiser la liste des traitements de flux"
 
@@ -650,23 +654,23 @@ msgstr "La limite est"
 msgid "Try exporting anyway?"
 msgstr "Essayer l'exportation dans tous les cas?"
 
-#: ../../../feed_model.php:1085
+#: ../../../feed_model.php:1099
 msgid "Invalid proccess for Virtual Feed, try another."
 msgstr "Traitement non valide pour ce Flux Virtuel, essayez en un autre."
 
-#: ../../../feed_model.php:1095
+#: ../../../feed_model.php:1109
 msgid "Invalid feed"
 msgstr "Flux non valide"
 
-#: ../../../feed_model.php:1097
+#: ../../../feed_model.php:1111
 msgid "Cannot use virtual feed as source"
 msgstr "Ne peut pas utiliser le Flux Virtuel comme source"
 
-#: ../../../feed_model.php:1104
+#: ../../../feed_model.php:1118
 msgid "Invalid input"
 msgstr "Source non valide"
 
-#: ../../../feed_model.php:1145
+#: ../../../feed_model.php:1159
 msgid "Error setting processlist"
 msgstr "Erreur définition liste de traitement"
 

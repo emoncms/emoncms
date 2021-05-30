@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-28 11:19+0200\n"
-"PO-Revision-Date: 2020-08-28 11:20+0200\n"
+"POT-Creation-Date: 2021-05-25 11:49+0200\n"
+"PO-Revision-Date: 2021-05-25 11:49+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 2.4.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/bookmarks.php:1 ../../../user_menu.php:12
@@ -242,70 +242,66 @@ msgstr "Mon Compte"
 msgid "Missing username, password or email parameter"
 msgstr "Il manque le nom d'utilisateur, le mot de passe ou l'adresse email"
 
-#: ../../../user_model.php:229 ../../../user_model.php:565
+#: ../../../user_model.php:229 ../../../user_model.php:568
 msgid "Username must only contain a-z and 0-9 characters"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9] et des "
 "lettres [a-z]"
 
-#: ../../../user_model.php:230 ../../../user_model.php:579
+#: ../../../user_model.php:230 ../../../user_model.php:582
 msgid "Username already exists"
 msgstr "Désolé, ce nom d'utilisateur existe déjà"
 
-#: ../../../user_model.php:232 ../../../user_model.php:327
-#: ../../../user_model.php:508 ../../../user_model.php:588
+#: ../../../user_model.php:232 ../../../user_model.php:330
+#: ../../../user_model.php:511 ../../../user_model.php:591
 msgid "Email address format error"
 msgstr "Le format de l'adresse email est incorrect"
 
-#: ../../../user_model.php:234 ../../../user_model.php:563
+#: ../../../user_model.php:234 ../../../user_model.php:566
 msgid "Username length error"
 msgstr "La longueur du nom d'utilisateur est incorrecte"
 
-#: ../../../user_model.php:235 ../../../user_model.php:475
-#: ../../../user_model.php:476
+#: ../../../user_model.php:235 ../../../user_model.php:478
+#: ../../../user_model.php:479
 msgid "Password length error"
 msgstr "La longueur du mot de passe est incorrect"
 
-#: ../../../user_model.php:237
-msgid "Timezone is not valid"
-msgstr "Le fuseau horaire n'est pas valide"
-
-#: ../../../user_model.php:253
+#: ../../../user_model.php:256
 msgid "Error creating user, mysql error: "
 msgstr "Erreur lors de la création de l'utilisateur, erreur mysql :"
 
-#: ../../../user_model.php:273
+#: ../../../user_model.php:276
 msgid "Invalid username"
 msgstr "Nom utilisateur non valide"
 
-#: ../../../user_model.php:277 ../../../user_model.php:367
+#: ../../../user_model.php:280 ../../../user_model.php:370
 msgid "Database error, you may need to run database update"
 msgstr ""
 "Erreur de base de données, vous devrez peut-être exécuter la mise à jour de "
 "base de données"
 
-#: ../../../user_model.php:287 ../../../user_model.php:384
+#: ../../../user_model.php:290 ../../../user_model.php:387
 msgid "Username does not exist"
 msgstr "Cet utilisateur n'existe pas"
 
-#: ../../../user_model.php:289
+#: ../../../user_model.php:292
 msgid "Email already verified"
 msgstr "Email déjà vérifié"
 
-#: ../../../user_model.php:322
+#: ../../../user_model.php:325
 msgid "Email verification email sent, please check your inbox"
 msgstr ""
 "Email de vérification envoyé, veuillez vérifier votre boîte de réception"
 
-#: ../../../user_model.php:328
+#: ../../../user_model.php:331
 msgid "Invalid verification key"
 msgstr "Clé de vérification non valide"
 
-#: ../../../user_model.php:356 ../../../user_model.php:432
+#: ../../../user_model.php:359 ../../../user_model.php:435
 msgid "Username or password empty"
 msgstr "L'identifiant ou le mot de passe saisi est vide"
 
-#: ../../../user_model.php:362
+#: ../../../user_model.php:365
 msgid ""
 "Username must only contain a-z 0-9 dash and underscore, if you created an "
 "account before this rule was in place enter your username without the non a-"
@@ -318,11 +314,11 @@ msgstr ""
 "passe habituel et éventuellement modifier votre nom d'utilisateur depuis la "
 "page de configuration de votre profil."
 
-#: ../../../user_model.php:386
+#: ../../../user_model.php:389
 msgid "Please verify email address"
 msgstr "S'il vous plaît vérifier l'adresse e-mail"
 
-#: ../../../user_model.php:395
+#: ../../../user_model.php:398
 msgid ""
 "Incorrect password, if you're sure it's correct try clearing your browser "
 "cache"
@@ -330,31 +326,31 @@ msgstr ""
 "Mot de passe incorrect, si vous êtes sûr de votre mot de passe, "
 "rafraîchissez le cache de votre navigateur"
 
-#: ../../../user_model.php:413
+#: ../../../user_model.php:416
 msgid "Error creating rememberme cookie, try login without rememberme"
 msgstr ""
 "Erreur lors de la création du cookie de connexion automatique, essayez de "
 "vous connecter sans l'option se souvenir de moi"
 
-#: ../../../user_model.php:423
+#: ../../../user_model.php:426
 msgid "Login successful"
 msgstr "Connexion réussie"
 
-#: ../../../user_model.php:434
+#: ../../../user_model.php:437
 msgid "Username must only contain a-z 0-9 dash and underscore"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9], des "
 "lettres [a-z], des tirets et des soulignés"
 
-#: ../../../user_model.php:450 ../../../user_model.php:456
+#: ../../../user_model.php:453 ../../../user_model.php:459
 msgid "Incorrect authentication"
 msgstr "Authentification incorrecte"
 
-#: ../../../user_model.php:501
+#: ../../../user_model.php:504
 msgid "Old password incorect"
 msgstr "Ancien mot de passe incorrect"
 
-#: ../../../user_model.php:560
+#: ../../../user_model.php:563
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change username"
@@ -362,11 +358,11 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement de nom d'utilisateur il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:575
+#: ../../../user_model.php:578
 msgid "Username updated"
 msgstr "Nom d'utilisateur mis à jour"
 
-#: ../../../user_model.php:585
+#: ../../../user_model.php:588
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change email"
@@ -374,17 +370,20 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement d'adresse email il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:604
+#: ../../../user_model.php:607
 msgid "Email updated"
 msgstr "Email mis à jour"
 
-#: ../../../user_model.php:778 ../../../user_model.php:796
+#: ../../../user_model.php:781 ../../../user_model.php:799
 msgid "Error updating user info"
 msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
-#: ../../../user_model.php:1001
+#: ../../../user_model.php:1004
 msgid "Please update database"
 msgstr "Mettre à jour la base de données s'il vous plait"
+
+#~ msgid "Timezone is not valid"
+#~ msgstr "Le fuseau horaire n'est pas valide"
 
 #~ msgid "Bookmarked dashboards can be managed here"
 #~ msgstr "Les tableaux de bord mis en favoris peuvent être gérés ici"
