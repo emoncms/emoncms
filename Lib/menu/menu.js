@@ -10,37 +10,23 @@ var menu = {
     l2_min: false,
 
     last_active_l1: false,
-    last_active_l2: false,
-    last_active_l3: false,
 
     active_l1: false,
     active_l2: false,
-    active_l3: false,
     
     mode: 'auto',
     
     is_disabled: false,
     
-    // html5 browser storage: checked in init
-    store: false,
-    
     // ------------------------------------------------------------------
     // Init Menu
     // ------------------------------------------------------------------    
     init: function(obj,session) {
-    
-        // html5 browser storage: used to user preferences for menu
-        if (typeof(Storage)!=="undefined") menu.store = true;
-        
+                
         var q_parts = q.split("#");
         q_parts = q_parts[0].split("/");
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
         
-        
-        console.log("menu controller: "+controller)
-        
-        // var action = false; if (q_parts[1]!=undefined) action = q_parts[1];
-
         menu.obj = obj;
         
         // Detect and merge in any custom menu definition created by a view
@@ -58,14 +44,11 @@ var menu = {
                         for (var l3 in menu.obj[l1]['l2'][l2]['l3']) {
                             if (menu.obj[l1]['l2'][l2]['l3'][l3].href.indexOf(controller)===0) {
                                 menu.active_l1 = l1;
-                                //active_l2 = l2;
-                                //active_l3 = l3;
                             }
                         }
                     } else {
                         if (menu.obj[l1]['l2'][l2].href.indexOf(controller)===0) {
                             menu.active_l1 = l1;
-                            // active_l2 = l2;
                         }
                     }
                 }
@@ -77,24 +60,12 @@ var menu = {
         menu.draw_l1();
         menu.events();
         menu.resize();
-
-        // Initial state of l2 menu
-        /*
-        if (menu.store && localStorage.menu_l2_min=='true') {
-            $(".menu-l2").css('transition','none');
-            menu.min_l2();
-            $(".menu-l2").css('transition','all 0.3s ease-out');
-        }*/
     },
 
     // ------------------------------------------------------------------    
     // L1 menu is the top bar menu
     // ------------------------------------------------------------------    
     draw_l1: function () {
-        // Sort level 1 by order property
-        // menu.sort(function(a, b) {
-        //     return a["order"] - b["order"];
-        // });
 
         // Build level 1 menu (top bar)
         var out = "";
@@ -281,32 +252,21 @@ var menu = {
         menu.height = $(window).height();
         
         if (!menu.is_disabled) {
-            //if (menu.store && localStorage.menu_l2_min=='true') {
-            //    menu.min_l2();
-            //} else {
             
-                if (menu.mode=='auto') {
-                    if (menu.width>=576 && menu.width<992) {
-                        menu.min_l2();
-                    } else if (menu.width<576) {
-                        menu.hide_l2();
-                        menu.hide_l3();
-                        
-                    } else {
-                        //if (menu.store && localStorage.menu_l2_min=='true') {
-                        
-                        //} else {
-                            if (!menu.l3_visible) menu.exp_l2();
-                        //}
-                    }
+            if (menu.mode=='auto') {
+                if (menu.width>=576 && menu.width<992) {
+                    menu.min_l2();
+                } else if (menu.width<576) {
+                    menu.hide_l2();
+                    menu.hide_l3();
+                } else {
+                    if (!menu.l3_visible) menu.exp_l2();
                 }
-                
-                if (menu.width>=992 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
-                    menu.mode = 'auto'
-                }
-                
-                
-            //}
+            }
+            
+            if (menu.width>=992 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
+                menu.mode = 'auto'
+            }
             
             if (menu.width<576) {
                 $(".menu-text-l1").hide();
@@ -351,13 +311,11 @@ var menu = {
                     } else if (menu.l2_visible && !menu.l3_visible && menu.l2_min) { 
                         menu.hide_l2();
                     } else if (menu.l2_visible && menu.l2_min && menu.l3_visible) {
-                        menu.exp_l2();
+                        menu.min_l2();
                         menu.hide_l3();
                     }
                 }
             }
-            // Store l2 state to localStorage
-            // if (menu.store) localStorage.menu_l2_min = menu.l2_min;
             menu.mode = 'manual'
         });
 
@@ -390,23 +348,8 @@ var menu = {
             } else {
                 menu.min_l2();
             }
-            // Store l2 state to localStorage
-            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
             menu.mode = 'manual'
         });
-        
-        /*
-        $(".menu-l2").click(function(){
-            if (menu.l2_min && menu.l3_visible) {
-                menu.hide_l3();
-            } else if (menu.l2_min && !menu.l3_visible) {
-                menu.hide_l2();
-            } else {
-                menu.min_l2();
-            }
-            // Store l2 state to localStorage
-            if (menu.store) localStorage.menu_l2_min = menu.l2_min;
-        });*/
         
         $(window).resize(function(){
             menu.resize();
