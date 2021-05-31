@@ -83,7 +83,7 @@ height:46px;
 .menu-l2 {
   width:240px;
   height: 100%;
-  background-color:#333;
+  background-color:var(--bg-l2);
   display:inline-block;
   position:fixed;
   top:0px;
@@ -105,8 +105,8 @@ height:46px;
     padding: 1em 0 0.75em 0;
     margin: 0;
     text-transform: capitalize;
-    color: rgb(170, 170, 170);
-    border-bottom: 1px solid #444;
+    color: var(--l2-title);
+    border-bottom: 1px solid var(--l2-border);
     height:18px;
 }
 
@@ -117,7 +117,7 @@ height:46px;
 }
 
 .menu-l2 li {
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid var(--l2-border);
   overflow:hidden;  
 }
 
@@ -127,7 +127,7 @@ text-decoration:none;
 
 .menu-l2 li div {
   text-decoration: none;
-  color: #fff;
+  color: var(--l2-text);
   display: block;
   padding: 0.94rem;
   cursor:pointer;
@@ -136,11 +136,11 @@ text-decoration:none;
 }
 
 .menu-l2 li div:hover {
-  background-color:#222;
+  background-color:var(--bg-l2-hover);
 }
 
 .menu-l2 .active {
-  background-color:#222;
+  background-color:var(--bg-l2-active);
 }
 
 .menu-text-l2 {
@@ -149,7 +149,7 @@ text-decoration:none;
 
 #menu-l2-controls {
   text-decoration: none;
-  color: #fff;
+  color: var(--l2-text);
   display: block;
   cursor:pointer;
   overflow:hidden;
@@ -166,7 +166,7 @@ text-decoration:none;
 }
 
 #menu-l2-controls:hover {
-  background-color:#222;
+  background-color:var(--bg-l2-hover);
 }
 
 /* -------------------------------------- */
@@ -177,7 +177,7 @@ text-decoration:none;
   left:50px;
   width:240px;
   height:100%;
-  background-color:#222;
+  background-color:var(--bg-l3);
   display:none;
   z-index:1000;
   overflow-y: auto;
@@ -193,28 +193,29 @@ text-decoration:none;
 }
 
 .menu-l3 li {
-  border-bottom: 1px solid #333;
+  border-bottom: 1px solid var(--l3-border);
   line-height: 20px;
 }
 
 .menu-l3 li a {
   text-decoration: none;
-  color: #ccc;
+  color: var(--l3-text);
   display: block;
   padding: 0.94em;
 }
 
 .menu-l3 li a:hover {
-  color: #fff;
+  color: var(--l3-text-hover);
 }
 
 .menu-text-l3 {}
 
 .menu-l3 .active {
-  color: #fff;
+  color: var(--l3-text-active);
 }
 
 .l3-title { 
+  color: var(--l3-title);
   line-height:30px;
 }
 

@@ -160,7 +160,7 @@ var menu = {
     // ------------------------------------------------------------------
     draw_l3: function () {
         console.log("draw_l3");
-        var out = '<div class="htop"></div><h3 class="l3-title mx-3" style="color:#aaa">'+menu.obj[menu.active_l1]['l2'][menu.active_l2]['name']+'</h3>';
+        var out = '<div class="htop"></div><h3 class="l3-title mx-3">'+menu.obj[menu.active_l1]['l2'][menu.active_l2]['name']+'</h3>';
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
             // Prepare active status

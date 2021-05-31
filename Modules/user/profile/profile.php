@@ -143,13 +143,18 @@ function languagecode_to_name($langs) {
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
         
-        <div class="input-prepend">
+        <div class="input-prepend input-append">
           <span class="add-on">Select theme color</span>
-          <select id="themecolor">
+          <select id="themecolor" style="width:100px">
             <option value="black">Black</option>  
-            <option value="blue" selected>Blue</option>
+            <option value="blue">Blue</option>
             <option value="sun">Sun</option>
             <option value="copper">Copper</option>
+          </select>
+          <span class="add-on">Sidebar</span>   
+          <select id="themesidebar" style="width:100px">
+            <option value="dark">Dark</option>  
+            <option value="light">Light</option>
           </select>
         </div>
         
@@ -432,5 +437,12 @@ function languagecode_to_name($langs) {
         $("html").removeClass('theme-'+current_themecolor).addClass('theme-'+themecolor);
         localStorage.setItem('themecolor', themecolor);
         current_themecolor = themecolor
+    });
+    $("#themesidebar").val(current_themesidebar);
+    $("#themesidebar").change(function() {
+        themesidebar = $(this).val();
+        $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
+        localStorage.setItem('themesidebar', themesidebar);
+        current_themesidebar = themesidebar
     });
 </script>

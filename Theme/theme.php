@@ -15,13 +15,13 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 21;
+$v = 26;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","copper","black"])) {
     $settings["interface"]["themecolor"] = "standard";
 }
 ?>
-<html class="theme-<?php echo $settings["interface"]["themecolor"]; ?>">
+<html class="theme-<?php echo $settings["interface"]["themecolor"]; ?> sidebar-dark">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1">
@@ -40,6 +40,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+    
+    <script>
+    var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
+    var current_themesidebar = "dark";
+    </script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     <?php echo $svg_icons; // THEME ICONS ?>
 </head>

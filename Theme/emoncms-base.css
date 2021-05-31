@@ -49,6 +49,36 @@ http://openenergymonitor.org
   --bg-menu-tr: #df792d;
   --bg-menu-tr-hover: #df792d;
 }
+
+.sidebar-dark {
+  --bg-l2: #333;
+  --l2-border: #444;
+  --l2-title: #ccc;
+  --l2-text: #fff;
+  --bg-l2-active:#222;
+  --bg-l2-hover:#222;
+  --bg-l3:#222;
+  --l3-border:#333;
+  --l3-text:#ccc;
+  --l3-title: #ccc;
+  --l3-text-active:#fff;
+  --l3-text-hover:#fff;
+}
+
+.sidebar-light {
+  --bg-l2: #eaeaea;
+  --l2-border: #fff;
+  --l2-title: #000;
+  --l2-text: #000;
+  --bg-l2-active:#ddd;
+  --bg-l2-hover:#ddd;
+  --bg-l3:#f3f3f3;
+  --l3-border:#fff;
+  --l3-text:#333;
+  --l3-title: #333;
+  --l3-text-active:#000;
+  --l3-text-hover:#000;
+}
 /* ------------------------------ */
 
 

@@ -121,12 +121,20 @@ window.onerror = function(msg, source, lineno, colno, error) {
 /* Simple theme color switcher using localStorage */
 if (typeof localStorage !== 'undefined') {
     var themecolor = localStorage.getItem('themecolor');
-    var current_themecolor = $("html").attr("class").split("theme-")[1];
     if (themecolor===null) {
         themecolor = current_themecolor
     }
     if (themecolor!=current_themecolor) {
         $("html").removeClass('theme-'+current_themecolor).addClass('theme-'+themecolor);
         current_themecolor = themecolor
+    }
+    
+    var themesidebar = localStorage.getItem('themesidebar');
+    if (themesidebar===null) {
+        themesidebar = current_themesidebar
+    }
+    if (themesidebar!=current_themesidebar) {
+        $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
+        current_themesidebar = themesidebar
     }
 }
