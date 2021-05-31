@@ -34,7 +34,7 @@ global $path, $settings;
 
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
         <div id="login-form">
