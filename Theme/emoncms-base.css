@@ -116,6 +116,13 @@ html,body{height: initial!important}
     margin-left: 0!important;
 }
 
+.container-fluid { padding: 0px 10px 0px 10px; }
+
+@media (min-width: 768px) {
+    .container-fluid { padding: 0px 20px 0px 20px; }
+}    
+    
+
 #wrap main.content-container{
   height: 100%;
   /*margin-top: 2.7rem;

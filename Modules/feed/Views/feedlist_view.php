@@ -74,16 +74,11 @@ function translate(property) {
 
 <style>
 body{padding:0!important}
-.container-fluid { padding: 0px 10px 0px 10px; }
 
 #table {
     margin-top:3rem
 }
 #footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-.navbar-fixed-top {
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -107,10 +102,6 @@ body{padding:0!important}
 }
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
-@media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
-}
-
 
 .node .accordion-toggle{
     border-bottom: 1px solid white;
