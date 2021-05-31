@@ -3,10 +3,10 @@
 .menu-top {
   height:46px;
   width:100%;
-  background-color:#44b3e2;
   z-index:1001;
   position:fixed;
   top:0px;
+  background-color:var(--bg-menu-top);
 }
 
 .menu-l1 ul {
@@ -33,12 +33,12 @@
   font-size:1.5rem;
 }
 
-.menu-l1 li > div:hover {
-  background-color:#209ed3;
+.menu-l1 li:hover {
+  background-color:var(--bg-menu-top-hover);
 }
 
 .menu-l1 .active {
-  background-color:#209ed3;
+  background-color:var(--bg-menu-top-active);
 }
 
 .menu-l1 { float:left; }
@@ -63,11 +63,11 @@
   padding: 11px 13px 11px 13px;
   cursor:pointer;
   font-size:1.5rem;
-  background-color:#5abce5;
+  background-color:var(--bg-menu-tr);
 }
 
 .menu-tr li div:hover {
-  background-color:#2eaade;
+  background-color:var(--bg-menu-tr-hover);
 }
 
 .dropdown-menu svg.icon {
@@ -274,6 +274,6 @@ a.grav-container:hover img.grav {
 }
 
 .gravitar a.grav-container:hover {
-	background: #2eaadf;
+	background: var(--bg-menu-top-hover);
 }
 

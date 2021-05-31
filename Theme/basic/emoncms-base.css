@@ -1,3 +1,57 @@
+/*
+All Emoncms code is released under the GNU Affero General Public License.
+See COPYRIGHT.txt and LICENSE.txt.
+
+---------------------------------------------------------------------
+Emoncms - open source energy visualisation
+Part of the OpenEnergyMonitor project:
+http://openenergymonitor.org
+
+*/
+
+
+/* ------------------------------ */
+/* Colour schemes */
+/* ------------------------------ */
+
+.theme-standard, .theme-blue {
+  --bg-menu-top: #44b3e2;
+  --bg-menu-top-hover: #209ed3;
+  --bg-menu-top-active: #209ed3;
+  --bg-body-login: #1d8dbc;
+  --bg-menu-tr: #1d8dbc;
+  --bg-menu-tr-hover: #1d8dbc;
+}
+
+.theme-black {
+  --bg-menu-top: #555;
+  --bg-menu-top-hover: #444;
+  --bg-menu-top-active: #444;
+  --bg-body-login: #333;
+  --bg-menu-tr: #333;
+  --bg-menu-tr-hover: #333;
+}
+
+.theme-sun {
+  --bg-menu-top: #ffbe14;
+  --bg-menu-top-hover: #f7a90c;
+  --bg-menu-top-active: #f7a90c;
+  --bg-body-login: #f7a90c;
+  --bg-menu-tr: #f7a90c;
+  --bg-menu-tr-hover: #f7a90c;
+}
+
+.theme-copper {
+  --bg-menu-top: #e28743;
+  --bg-menu-top-hover: #df792d;
+  --bg-menu-top-active: #df792d;
+  --bg-body-login: #df792d;
+  --bg-menu-tr: #df792d;
+  --bg-menu-tr-hover: #df792d;
+}
+/* ------------------------------ */
+
+
 html,body{height: initial!important}
 
 #wrap{
@@ -37,6 +91,207 @@ svg.icon {
   stroke: currentColor;
   fill: currentColor;
   vertical-align: -0.15em;
+}
+
+/*-------------------------------------*/
+/* Previously in emon-blue.css */
+/*-------------------------------------*/
+
+.body-login {
+    background-color:var(--bg-body-login);
+}
+
+#login-form input[type="text"], #login-form input[type="password"] {
+    width: 94%;
+}
+
+#push, #footer {
+    height: 30px;
+}
+
+#footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+
+#footer span {
+    color: #999;
+}
+
+div#account {
+    width:250px;
+}
+
+/* Used user/profile/profile.php */
+.account-item {
+    margin-bottom:10px;
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+    #footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
+    display: inherit !important;
+}
+
+/* dashboardeditor */
+.scrollable-menu {
+    height: auto;
+    max-height: 333px;
+    overflow-y: auto;
+}
+
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+        url(ajax-loader.gif)
+        center
+        no-repeat;
+}
+
+.caret {
+    border-top-color: #fff !important;
+}
+
+.text-larger {
+    font-size: larger
+}
+
+.expand-all .icon-resize-small {
+    display: none
+}
+.expand-all.in .icon-resize-small {
+    display: inline-block
+}
+.expand-all.in .icon-resize-full {
+    display: none
+}
+
+/* collapsable groups of items */
+.node.accordion {
+    line-height: 41px;
+}
+
+.node .accordion-toggle {
+    background: #ddd;
+    height: 41px;
+}
+.node .accordion-toggle:hover {
+    background-color: #e3e3e3;
+}
+
+/* dropdown indicator */
+.node .has-indicator .icon-indicator {
+    opacity: 0.333;
+    float: none;
+}
+
+.node .select input {margin-top: -1px}
+.node .collapse {
+    width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
+}
+.node .collapse > * {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #fff;
+    background: #f0f0f0;
+}
+.node .collapse > *:hover {
+    background-color: #f5f5f5;
+}
+.node .collapse > *:before {
+    content: '';
+    width: 0px;
+    background: #44b3e2;
+    height: 100%;
+    display: block;
+    position: absolute;
+    transition: width .2s ease-out;
+}
+.node .collapse > *:hover:before {
+    width: 2px;
+}
+.node .collapse > *:last-child {
+    border-bottom-width: 0
+}
+.node > * > * ,
+.node > * > * > * ,
+.node > * > * > .pull-right > * {
+    float: left;
+    min-height: 1px;
+}
+.pull-right{float:right!important}
+.line-height-expanded{line-height: 2;}
+.line-height-normal{line-height: 1.5;}
+.cursor-pointer{ cursor: pointer; }
+
+/* input_view interface */
+.device-key,
+.device-schedule,
+.device-configure,
+.device-last-updated {
+    border-left: 1px solid #eee;
+    color: white;
+}
+
+.device-key:hover {background-color:#eaeaea;}
+.device-configure:hover {background-color:#eaeaea;}
+.label-container{padding-top:.6em; display:inline-block; min-width:200px}
+
+/* #table used by device, input, profile, feedlist, schedule view */
+#table .accordion {
+    margin-bottom: .5em
+}
+
+/* Used by dashboard designer */
+.controls {
+    transition: all .2s ease-out
+}
+.controls.affix:before {
+    content: '';
+    background: #209ed3;
+    opacity: 0.85;
+    width: 100%;
+    display: block;
+    position: fixed;
+    z-index: -1;
+    height: 2.5rem;
+    left: 0;
+    margin-top: -.3rem;
+}
+.controls.affix > * {
+    z-index: 2
+}
+.controls.affix {
+    z-index: 2;
+    top: 2.5rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position:absolute;}
+
+@media only screen and (max-width:979px) {
+    .controls.affix{top:0}
+}
+@media only screen and (min-width:870px) {
+    body{font-size:16px}
 }
 
 /*-------------------------------------*/

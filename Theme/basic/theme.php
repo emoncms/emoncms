@@ -15,16 +15,16 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 18;
+$v = 21;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
 }
-if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])) {
+if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","copper","black"])) {
     $settings["interface"]["themecolor"] = "standard";
 }
 ?>
-<html>
+<html class="theme-<?php echo $settings["interface"]["themecolor"]; ?>">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -38,7 +38,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
@@ -49,7 +48,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-        <div class="menu-top">
+        <div class="menu-top bg-menu-top">
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
             
