@@ -342,10 +342,8 @@ if ($route->format == 'json') {
         }
     }
 } else if ($route->format == 'html') {
-    // Select the theme
-    $themeDir = "Theme/" . $settings["interface"]["theme"] . "/";
     if ($embed == 1) {
-        print view($themeDir . "embed.php", $output);
+        print view("Theme/embed.php", $output);
     } else {
         // Menu
         $menu = array();
@@ -358,7 +356,7 @@ if ($route->format == 'json') {
         // Pass menu through to output view - passed on the js based builder
         $output['menu'] = $menu;
         
-        $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
+        $output['svg_icons'] = view("Theme/svg_icons.svg", array());
         
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
@@ -368,7 +366,7 @@ if ($route->format == 'json') {
         } else {
             if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
         }
-        print view($themeDir . "theme.php", $output);
+        print view("Theme/theme.php", $output);
     }
 
 } elseif ($route->format == 'text') {
