@@ -142,6 +142,17 @@ function languagecode_to_name($langs) {
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
+        
+        <div class="input-prepend">
+          <span class="add-on">Select theme color</span>
+          <select id="themecolor">
+            <option value="black">Black</option>  
+            <option value="blue" selected>Blue</option>
+            <option value="sun">Sun</option>
+            <option value="copper">Copper</option>
+          </select>
+        </div>
+        
     </div>
 </div>
 
@@ -412,5 +423,14 @@ function languagecode_to_name($langs) {
         $.ajax({url: path+"user/logout.json", dataType: 'text', success: function(result){
             window.location = path;
         }});
+    });
+    
+    // Theme selection used in conjunction with code in Lib/emoncms.js
+    $("#themecolor").val(current_themecolor);
+    $("#themecolor").change(function() {
+        themecolor = $(this).val();
+        $("html").removeClass('theme-'+current_themecolor).addClass('theme-'+themecolor);
+        localStorage.setItem('themecolor', themecolor);
+        current_themecolor = themecolor
     });
 </script>
