@@ -143,21 +143,26 @@ function languagecode_to_name($langs) {
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
         
-        <div class="input-prepend input-append">
-          <span class="add-on">Select theme color</span>
-          <select id="themecolor" style="width:100px">
-            <option value="black">Black</option>  
-            <option value="blue">Blue</option>
-            <option value="sun">Sun</option>
-            <option value="copper">Copper</option>
-          </select>
-          <span class="add-on">Sidebar</span>   
-          <select id="themesidebar" style="width:100px">
-            <option value="dark">Dark</option>  
-            <option value="light">Light</option>
-          </select>
-        </div>
-        
+        <table class="table table-hover">
+          <tr>
+            <td class="muted" style="width:150px">Theme colour</td>
+            <td>
+              <div class="color-box themecolor" name="blue" style="background-color:#44b3e2"></div>
+              <div class="color-box themecolor" name="black" style="background-color:#555"></div>
+              <div class="color-box themecolor" name="sun" style="background-color:#ffbe14"></div>
+              <div class="color-box themecolor" name="yellow2" style="background-color:#dfc72d"></div>
+              <div class="color-box themecolor" name="copper" style="background-color:#e28743"></div> 
+              <div class="color-box themecolor" name="green" style="background-color:#4eaa05"></div> 
+            </td>
+          </tr>
+          <tr>
+            <td class="muted" style="width:150px">Sidebar colour</td>
+            <td>
+              <div class="color-box sidebarcolor" name="dark" style="background-color:#333"></div>
+              <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
+            </td>
+          </tr>
+        </table>
     </div>
 </div>
 
@@ -431,18 +436,23 @@ function languagecode_to_name($langs) {
     });
     
     // Theme selection used in conjunction with code in Lib/emoncms.js
-    $("#themecolor").val(current_themecolor);
-    $("#themecolor").change(function() {
-        themecolor = $(this).val();
+    
+    $(".themecolor[name='"+current_themecolor+"']").addClass("color-box-active");
+    $(".themecolor").click(function() {
+        themecolor = $(this).attr("name");
         $("html").removeClass('theme-'+current_themecolor).addClass('theme-'+themecolor);
         localStorage.setItem('themecolor', themecolor);
+        $(".themecolor[name='"+current_themecolor+"']").removeClass("color-box-active"); 
+        $(".themecolor[name='"+themecolor+"']").addClass("color-box-active");    
         current_themecolor = themecolor
     });
-    $("#themesidebar").val(current_themesidebar);
-    $("#themesidebar").change(function() {
-        themesidebar = $(this).val();
+    $(".sidebarcolor[name='"+current_themesidebar+"']").addClass("color-box-active");
+    $(".sidebarcolor").click(function() {
+        themesidebar = $(this).attr("name");
         $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
         localStorage.setItem('themesidebar', themesidebar);
+        $(".sidebarcolor[name='"+current_themesidebar+"']").removeClass("color-box-active"); 
+        $(".sidebarcolor[name='"+themesidebar+"']").addClass("color-box-active"); 
         current_themesidebar = themesidebar
     });
 </script>

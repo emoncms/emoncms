@@ -41,13 +41,31 @@ http://openenergymonitor.org
   --bg-menu-tr-hover: #f7a90c;
 }
 
+.theme-yellow2 {
+  --bg-menu-top: #dfc72d;
+  --bg-menu-top-hover: #C8B328;
+  --bg-menu-top-active: #C8B328;
+  --bg-body-login: #C8B328;
+  --bg-menu-tr: #C8B328;
+  --bg-menu-tr-hover: #C8B328;
+}
+
 .theme-copper {
-  --bg-menu-top: #e28743;
-  --bg-menu-top-hover: #df792d;
-  --bg-menu-top-active: #df792d;
-  --bg-body-login: #df792d;
-  --bg-menu-tr: #df792d;
-  --bg-menu-tr-hover: #df792d;
+  --bg-menu-top: #e97b00;
+  --bg-menu-top-hover: #d16e00;
+  --bg-menu-top-active: #d16e00;
+  --bg-body-login: #d16e00;
+  --bg-menu-tr: #d16e00;
+  --bg-menu-tr-hover: #d16e00;
+}
+
+.theme-green {
+  --bg-menu-top: #4eaa05;
+  --bg-menu-top-hover: #469904;
+  --bg-menu-top-active: #469904;
+  --bg-body-login: #469904;
+  --bg-menu-tr: #469904;
+  --bg-menu-tr-hover: #469904;
 }
 
 .sidebar-dark {
@@ -553,6 +571,23 @@ div#account {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.color-box {
+    margin-right:2px;
+    width:20px;
+    height:20px;
+    display:inline-block;
+    border: 2px solid #ddd;
+    cursor:pointer;
+}
+
+.color-box-active {
+    border: 2px solid #000;
+}
+
+.color-box:hover {
+    border: 2px solid #000;
 }
 
 body {
