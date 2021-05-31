@@ -12,30 +12,28 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-
-// Work around for Alpine Linux
-if (!defined('GLOB_BRACE')) define('GLOB_BRACE', 0);
-
-
 // Return all locale directory from all modules.
 // If one module has a language it will be detected
 function directoryLocaleScan($dir)
 {
+    $directoryList = array();
+
     if (isset($dir) && is_readable($dir)) {
-        $dlist = array();
+
         $dir = realpath($dir);
 
-        $dlist = glob($dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
+        $directoryList = glob($dir."/Modules/*/locale/*", GLOB_ONLYDIR);
+        $directoryList = array_merge($directoryList, glob($dir."/Theme/*/locale/*", GLOB_ONLYDIR));
 
-        $dlist = array_map(
+        $directoryList = array_map(
             function ($item) {
                 return basename($item);
             },
-            $dlist
+            $directoryList
         );
-
-        return array_unique($dlist);
     }
+
+    return array_unique($directoryList);
 }
 
 function get_available_languages()

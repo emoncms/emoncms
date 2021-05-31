@@ -1639,7 +1639,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1648,7 +1648,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1657,7 +1657,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1666,7 +1666,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {
