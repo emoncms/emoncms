@@ -10,7 +10,7 @@
   http://openenergymonitor.org
 */
 global $path,$settings;
-$v = 8;
+$v = 10;
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","copper","black"])) {
     $settings["interface"]["themecolor"] = "standard";
 }
@@ -27,10 +27,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
 
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
         
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+        <script>
+        var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
+        var current_themesidebar = "dark";
+        </script>
         <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     </head>
     <body>
