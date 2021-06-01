@@ -501,7 +501,7 @@ class User
             $stmt->execute();
             $stmt->close();
             
-            return array('success'=>true);
+            return array('success'=>true, 'message'=>_("Password updated successfully"));
         }
         else
         {
