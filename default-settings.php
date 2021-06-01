@@ -48,7 +48,9 @@ $_settings = array(
     'user'      => '',
     'password'  => '',
     'basetopic' => 'emon',
-    'client_id' => 'emoncms'
+    'client_id' => 'emoncms',
+    'userid'    => 1,
+    'multiuser' => false
 ),
 
 // Input
