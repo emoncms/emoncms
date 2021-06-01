@@ -120,7 +120,6 @@
                                         <option value="0">Any type</option>
                                         <option value="1">Realtime</option>
                                         <option value="2">Daily</option>
-                                        <option value="3">Histogram</option>
                                     </select>
                                 </div>
                             </div>

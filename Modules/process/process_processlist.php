@@ -272,9 +272,9 @@ class Process_ProcessList
               "datafields"=>2,
               "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
-              "group"=>_("Power & Energy"),
+              "group"=>_("Deleted"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input</b>: power in Watts.</p>")
+              "description"=>_("")
            ),
            array(
               "id_num"=>17,
@@ -1244,64 +1244,9 @@ class Process_ProcessList
         return $value;
     }*/
 
-    //---------------------------------------------------------------------------------
-    // This method converts power to energy vs power (Histogram)
-    //---------------------------------------------------------------------------------
+    // No longer supported
     public function histogram($feedid, $time_now, $value)
     {
-        $feedname = "feed_" . trim($feedid) . "";
-        $new_kwh = 0;
-        // Allocate power values into pots of varying sizes
-        if ($value < 500) {
-            $pot = 50;
-
-        } elseif ($value < 2000) {
-            $pot = 100;
-
-        } else {
-            $pot = 500;
-        }
-
-        $new_value = round($value / $pot, 0, PHP_ROUND_HALF_UP) * $pot;
-
-        $time = $this->getstartday($time_now);
-
-        // Get the last time
-        $lastvalue = $this->feed->get_timevalue($feedid);
-        $last_time = $lastvalue['time'];
-
-        // kWh calculation
-        $time_elapsed = ($time_now - $last_time);   
-        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
-            $kwh_inc = ($time_elapsed * $value) / 3600000;
-        } else {
-            $kwh_inc = 0;
-        }
-
-        // Get last value
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
-
-        if (!$result) return $value;
-
-        $last_row = $result->fetch_array();
-
-        if (!$last_row)
-        {
-            $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
-
-            $this->feed->set_timevalue($feedid, $new_value, $time_now);
-            $new_kwh = $kwh_inc;
-        }
-        else
-        {
-            $last_kwh = $last_row['data'];
-            $new_kwh = $last_kwh + $kwh_inc;
-        }
-
-        // update kwhd feed
-        $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
-
-        $this->feed->set_timevalue($feedid, $new_value, $time_now);
         return $value;
     }
 

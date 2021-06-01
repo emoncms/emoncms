@@ -71,10 +71,6 @@ class Feed
                     require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
                     $engines[$e] = new MysqlMemory($this->mysqli);
                     break;
-                case "histogram" :
-                    require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
-                    $engines[$e] = new Histogram($this->mysqli);
-                    break;
                 case (string)Engine::CASSANDRA :
                     require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
                     $engines[$e] = new CassandraEngine($this->settings['cassandra']);
@@ -114,9 +110,6 @@ class Feed
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
         
-        // Histogram engine requires MYSQL
-        if ($engine != Engine::MYSQL && $datatype == DataType::HISTOGRAM) $engine = Engine::MYSQL;
-        
         $options = array();
         if ($engine == Engine::MYSQL || $engine == Engine::MYSQLMEMORY) {
             if (!empty($options_in->name)) $options['name'] = $options_in->name;
@@ -148,12 +141,7 @@ class Feed
                 ));
             }
             
-            $engineresult = false;
-            if ($datatype==DataType::HISTOGRAM) {
-                $engineresult = $this->EngineClass("histogram")->create($feedid,$options);
-            } else {
-                $engineresult = $this->EngineClass($engine)->create($feedid,$options);
-            }
+            $engineresult = $this->EngineClass($engine)->create($feedid,$options);
 
             if ($engineresult !== true)
             {
@@ -1000,22 +988,7 @@ class Feed
     public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
         return $this->EngineClass(Engine::MYSQL)->delete_data_range($feedid,$start,$end);
     }
-
-
-    // Histogram specific functions that we need to make available to the controller
-    public function histogram_get_power_vs_kwh($feedid,$start,$end) {
-        return $this->EngineClass("histogram")->get_power_vs_kwh($feedid,$start,$end);
-    }
-
-    public function histogram_get_kwhd_atpower($feedid, $min, $max) {
-        return $this->EngineClass("histogram")->get_kwhd_atpower($feedid, $min, $max);
-    }
-
-    public function histogram_get_kwhd_atpowers($feedid, $points) {
-        return $this->EngineClass("histogram")->get_kwhd_atpowers($feedid, $points);
-    }
-
-
+    
     // PHPTimeSeries specific functions that we need to make available to the controller
     public function phptimeseries_export($feedid,$start) {
         return $this->EngineClass(Engine::PHPTIMESERIES)->export($feedid,$start);

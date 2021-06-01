@@ -371,7 +371,7 @@ var processlist_ui =
       }
       
       var processid = $("#process-select").val();
-      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
       if (datatype==2) {
         $("#feed-interval option").hide();          // Hide all
