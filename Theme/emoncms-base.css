@@ -322,13 +322,13 @@ div#account {
 }
 .controls.affix:before {
     content: '';
-    background: #209ed3;
-    opacity: 0.85;
+    background: var(--bg-menu-top-active);
+    opacity: 0.90;
     width: 100%;
     display: block;
     position: fixed;
     z-index: -1;
-    height: 2.5rem;
+    height: 2.6rem;
     left: 0;
     margin-top: -.3rem;
 }
@@ -337,7 +337,7 @@ div#account {
 }
 .controls.affix {
     z-index: 2;
-    top: 2.5rem;
+    top: 2.9rem;
     padding: .3rem 0;
 }
 .controls.affix-top{position:absolute;}

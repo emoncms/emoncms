@@ -1,5 +1,6 @@
 <?php
     global $path, $settings;
+    $v=1;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
@@ -9,7 +10,7 @@
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
-<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script>
 
 /**
@@ -63,14 +64,14 @@ function translate(property) {
 </script>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 
 <style>
 body{padding:0!important}
