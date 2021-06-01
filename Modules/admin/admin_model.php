@@ -150,7 +150,7 @@ class Admin {
                   "version"=>file_get_contents($emoncms_path."/version.txt"),
                   "path"=>$emoncms_path,
                   "location"=>$emoncms_path,
-                  "branches_available"=>array("stable","master","menu_v3"),
+                  "branches_available"=>array("stable","master"),
                   "requires"=>array()
               );
           }
