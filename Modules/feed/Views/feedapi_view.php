@@ -65,6 +65,9 @@
 	<tr><td><?php echo _("Last value of a given feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/value.json?id=1"><?php echo $path; ?>feed/value.json?id=1</a>
 	</td></tr>
+  <tr><td><?php echo _("Fetch a value at a given time");?></td><td>
+		<a href="<?php echo $path; ?>feed/value.json?id=1&time=UNIXTIME"><?php echo $path; ?>feed/value.json?id=1&time=UNIXTIME</a>
+	</td></tr>
     <tr><td><?php echo _("Last value for multiple feeds");?></td><td>
 		<a href="<?php echo $path; ?>feed/fetch.json?ids=1,2,3"><?php echo $path; ?>feed/fetch.json?ids=1,2,3</a>
 	</td></tr>

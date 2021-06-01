@@ -239,71 +239,27 @@ function load_language_files($path, $domain = 'messages')
 
 function load_menu()
 {
+    global $menu;
     $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++) {
-        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php")) {
-                load_language_files("Modules/".$dir[$i]."/locale");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link')
+        {
+            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
+            {
+                // load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
     }
-    // add old menu structure if module not updated
-    // @todo: remove this once all users updated (2019-02-15)
-    if (isset($menu_dropdown_config)) {
-        foreach ($menu_dropdown_config as $item) {
-            if (!empty($item['name'])) {
-                $item['text'] = $item['name'];
-            }
-            $item['icon'] .= ' icon-white';
-            $menu['sidebar']['setup'][] = $item;
-        }
-    }
-
-    return $menu;
-}
-
-function load_sidebar()
-{
-    global $route;
-    $sidebar = array(); // Sidebar 1st level nav
-    $sidebar_footer = array(); // Sidebar footer
-    $sidebar_sub = array(); // Sidebar 2nd level nav
-
-    $dir = $route->controller;
-    $path = implode(DIRECTORY_SEPARATOR, array('Modules', $dir, $dir . "_menu.php"));
-    
-    if (is_file($path)) {
-        require $path;
-    }
-
-    if (!empty($sidebar)) {
-        $sidebar['sidebar'] = $sidebar;
-    }
-    if (!empty($subnav)) {
-        $sidebar['subnav'] = $subnav;
-    }
-    if (!empty($sidebar_footer)) {
-        $sidebar['footer'] = $sidebar_footer;
-    }
-
-    if (!empty($sidebar_includes)) {
-        foreach ($sidebar_includes as $file) {
-            if (file_exists($file)) {
-                $sidebar['includes'][] = view($file);
-            }
-        }
-    }
-    return $sidebar;
 }
 
 function http_request($method, $url, $data)
 {
-
     $options = array();
-    $urlencoded = http_build_query($data);
     
     if ($method=="GET") {
+        $urlencoded = http_build_query($data);
         $url = "$url?$urlencoded";
     } elseif ($method=="POST") {
         $options[CURLOPT_POST] = 1;

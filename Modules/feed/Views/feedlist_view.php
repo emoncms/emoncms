@@ -74,16 +74,11 @@ function translate(property) {
 
 <style>
 body{padding:0!important}
-.container-fluid { padding: 0px 10px 0px 10px; }
 
 #table {
     margin-top:3rem
 }
 #footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-.navbar-fixed-top {
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -107,10 +102,6 @@ body{padding:0!important}
 }
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
-@media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
-}
-
 
 .node .accordion-toggle{
     border-bottom: 1px solid white;
@@ -394,7 +385,7 @@ var feeds = {};
 var nodes = {};
 var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+var nodes_display = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 // auto refresh
@@ -438,7 +429,7 @@ function update_feed_list() {
             }
         }
         // cache state in cookie
-        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+        // if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
         var out = "";
         

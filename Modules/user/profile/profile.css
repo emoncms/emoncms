@@ -1,0 +1,52 @@
+[v-cloak] { display: none; }
+
+.content-container {
+  max-width:980px;
+}
+.writeapikey, .readapikey  {
+  width:100px;
+  overflow:none;
+  display:inline-block;
+}
+
+#app tr .icon-pencil {
+    display:none;
+    cursor:pointer;
+}
+
+#app tr .icon-share {
+    display:none;
+    cursor:pointer;
+}
+
+#app tr:hover .icon-pencil {
+    display:block;
+}
+
+#app tr:hover .icon-share {
+    display:block;
+}
+
+#app input, select, .input-append {
+    margin:0px;
+}
+
+#app input[type='text'] {
+    width:150px;
+}
+
+.table td:nth-child(1) {
+    width:150px;
+}
+
+@media (max-width: 576px) {
+
+  .table td:nth-child(1) {
+      width:90px;
+  }
+
+  .apikey {
+    width:180px;
+    overflow:hidden;
+  }
+}
