@@ -1,4 +1,5 @@
 <?php
+    $v=1;
     /**
      * View specific functions
      *
@@ -212,7 +213,7 @@ listItem;
             <?php // } ?>
         </div>
     </section>
-    <pre id="update-log-bound"><div id="update-log"></div></pre>
+    <pre id="update-log-bound" class="log"><div id="update-log"></div></pre>
     </div>
     
     <?php //} ?>
@@ -245,7 +246,7 @@ listItem;
     </section>
     
     <section>
-        <pre id="logreply-bound"><div id="logreply"></div></pre>
+        <pre id="logreply-bound" class="log"><div id="logreply"></div></pre>
         <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
         <div id="log-level" class="dropup btn-group">
             <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">

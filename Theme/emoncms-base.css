@@ -350,6 +350,81 @@ div#account {
 }
 
 /*-------------------------------------*/
+/* Log windows */
+/* used by: admin page, emonhub config */
+/* backup, postprocess modules
+/*-------------------------------------*/
+.log {
+    /*width:100%;*/
+    height:12rem;
+    margin:0px;
+    padding:0px;
+    
+    color:#fff;
+    background-color:#300a24;
+    overflow: scroll;
+    overflow-x: hidden;
+    /*font-size:14px;*/
+}
+
+.log div {
+    padding-left:10px;
+    padding-top:10px;
+}
+
+/* Used to create log level selector */
+#log-level {
+    position: absolute;
+    right: .2rem;
+    bottom: 0;
+}
+#log-level .dropdown-menu {
+    background: 0;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+}
+#log-level .dropdown-menu .active {
+    font-weight: bold;
+}
+#log-level .dropdown-menu .btn {
+    border: 0;
+    border-radius: 0;
+    background-image: none;
+}
+#log-level li:first-child .btn {
+    border-radius: .3em .3em 0 0;
+}
+#log-level li:last-child .btn {
+    border-radius: 0 0 .3em .3em;
+}
+
+/* Similar to a modal, used for notifications */
+/* on the admin and emonhub config pages      */
+/* when log level is changed e.g INFO to DEBUG*/
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+#snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+/*-------------------------------------*/
 /* utilities */
 /*-------------------------------------*/
 

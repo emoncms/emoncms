@@ -1,20 +1,11 @@
 <?php global $path; ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<style>
-pre {
-    height:12rem;
-    color:#fff;
-    background-color:#300a24;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-</style>
 
 <h3><?php echo _('Components'); ?></h3>
 
 <p><?php echo _('Selectively update system components or switch between branches'); ?></p>
 
-<pre id="update-log-bound" style="display:none"><div id="update-log"></div></pre>
+<pre id="update-log-bound" class="log" style="display:none"><div id="update-log"></div></pre>
 
 <div id="app">
 
