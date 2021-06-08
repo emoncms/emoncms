@@ -95,88 +95,54 @@ class VirtualFeed implements engine_methods
         if ($dataValue !== null) $dataValue = (float) $dataValue ;
         return array('time'=>(int)$now, 'value'=>$dataValue);  // datavalue can be float or null, dont cast!
     }
-
-    // 1 - Calculates date slots for given start, end and interval. Representing about a pixel on the x axis of the graph for each time slot.
-    // 2 - If feed is realtime slots are calculated based on interval, if daily, slots date is at its datetime midnight of user timezone.
-    // 3 - Executes virtual feed processlist for each slot individually.
-    // 4-  First processor of virtual feed processlist should be the source_feed_data_time() this will get data from a slot.
-    // 5 - Agreggates all slots time and processed data.
-    // 6 - Returns data to the graph.
+    
+    // Executes virtual feed processlist for each timestamp in range
+    // Note !!! This early reworked version only implements the basic get_data method
+    // it needs to be extended to handle averaged data requests and daily, monthly modes 
+    // with the source data generation handled by the respective source feed engines themselves
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
-        $start = round($start/1000);
-        $end = round($end/1000);
-        $interval = intval($interval); // time gap in seconds
-                
-        if ($interval<1) $interval = 1;
-        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
-        $end = $start + ($dp * $interval);
-        if ($dp<1) return false;
-
-
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        $result = $this->mysqli->query("SELECT userid,datatype FROM feeds WHERE `id` = '$feedid'");
-        $row = $result->fetch_array();
-        $datatype = $row['datatype'];
-        $userid = $row['userid'];
+        if ($processList == '' || $processList == null) return false;
         
-        if ($datatype==2) $dp = 0; // daily
+        $start = $start * 0.001;
+        $end = $end * 0.001;
 
-        $this->log->info("get_data() feedid=$feedid start=$start end=$end int=$interval sk=$skipmissing li=$limitinterval");
+        $interval = (int) $interval; // time gap in seconds
+        if ($interval<1) $interval = 1;
+        
+        $start = floor($start/$interval)*$interval;
+        $end = ceil($end/$interval)*$interval;
+        
+        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
+        if ($dp<1) return false;
 
         $data = array();
         $dataValue = null;
         
+        // Get userid associated with feed
+        $userid = $this->feed->get_field($feedid,"userid");
+        
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
-        global $session,$user;
+        global $user;
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
 
-        if ($dp > 0) 
-        {
-            $range = $end - $start; // windows duration in seconds
-            $td = $range / $dp;    // time duration for each datapoint
-            $t = $start; $tb = 0;  // time between t and tb
-            for ($i=0; $i<$dp; $i++)
-            {
-                $tb = $start + intval(($i+1)*$td); //next end time
-                $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
-                $dataValue = $process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
-                    
-                if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                    $time = $t * 1000;
-                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
-                    $data[] = array($time, $dataValue);
-                }
-                $t = $tb; // next start time
+        // Todo: Include here options to select request mode: e.g daily, monthly, averaging
+        $opt_timearray = array('start' => $start, 'end' => $end, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
+
+        for ($time=$start; $time<$end; $time+=$interval) {
+            $dataValue = $process->input($time, $dataValue, $processList, $opt_timearray); // execute processlist 
+                
+            if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
+                if ($dataValue !== null) $dataValue = (float) $dataValue;
+                $data[] = array($time*1000, $dataValue);
             }
-        }
-        else {
-            //daily virtual feed
-             $startslot=$process->process__getstartday($start); // start of day for user timezone
-             $endslot=$process->process__getstartday($end); // end of day for user timezone
-            
-             if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
-             while ($startslot<$endslot)
-             {
-                $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
-                $dataValue = $process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
-                    
-                if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                    $time = $startslot * 1000;
-                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
-                    $data[] = array($time, $dataValue);
-                }
-                $startslot +=86400; // inc a day
-             }
         }
 
         return $data;
     }
-
 
     public function export($feedid,$start)
     {

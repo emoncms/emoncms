@@ -816,15 +816,16 @@ var processlist_ui =
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
-        //hide sendEmail and Publish to MQTT from virtual feeds
-        if (processlist_ui.contexttype == 1 && (
-          processlist_ui.processlist[z]['feedwrite'] == true ||
-          processlist_ui.processlist[z]['function'] == "sendEmail" || 
-          processlist_ui.processlist[z]['function'] == "publish_to_mqtt"))
-        {
-            continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
-        }
         var group = processlist_ui.processlist[z]['group'];
+        
+        // hide the following from virtual feeds
+        if (processlist_ui.contexttype == 1) {
+          if (processlist_ui.processlist[z]['feedwrite'] == true) continue;
+          if (processlist_ui.processlist[z]['function'] == "sendEmail") continue;
+          if (processlist_ui.processlist[z]['function'] == "publish_to_mqtt") continue;
+          if (group=="Feed" || group=="Input") continue;
+        }
+
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
           continue;  // in input context and group name is virtual? dont show on input processlist selector
         }
