@@ -77,7 +77,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Main"),
-              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>PHPFina</b> is the recommended feed engine it is a basic fixed interval timeseries engine.</li><li><b>PHPTimeseries</b> is for data posted at a non regular interval such as on state change.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
            ),
@@ -259,7 +259,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "description"=>_("<p>Output feed is the difference between the current value and the last</p>")
            ),
@@ -272,9 +272,9 @@ class Process_ProcessList
               "datafields"=>2,
               "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
-              "group"=>_("Power & Energy"),
+              "group"=>_("Deleted"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input</b>: power in Watts.</p>")
+              "description"=>_("")
            ),
            array(
               "id_num"=>17,
@@ -505,7 +505,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>35,
@@ -821,7 +821,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "name"=>_("Log to feed (Join)"),
@@ -832,7 +832,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Main"),
-              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
@@ -1244,64 +1244,9 @@ class Process_ProcessList
         return $value;
     }*/
 
-    //---------------------------------------------------------------------------------
-    // This method converts power to energy vs power (Histogram)
-    //---------------------------------------------------------------------------------
+    // No longer supported
     public function histogram($feedid, $time_now, $value)
     {
-        $feedname = "feed_" . trim($feedid) . "";
-        $new_kwh = 0;
-        // Allocate power values into pots of varying sizes
-        if ($value < 500) {
-            $pot = 50;
-
-        } elseif ($value < 2000) {
-            $pot = 100;
-
-        } else {
-            $pot = 500;
-        }
-
-        $new_value = round($value / $pot, 0, PHP_ROUND_HALF_UP) * $pot;
-
-        $time = $this->getstartday($time_now);
-
-        // Get the last time
-        $lastvalue = $this->feed->get_timevalue($feedid);
-        $last_time = $lastvalue['time'];
-
-        // kWh calculation
-        $time_elapsed = ($time_now - $last_time);   
-        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
-            $kwh_inc = ($time_elapsed * $value) / 3600000;
-        } else {
-            $kwh_inc = 0;
-        }
-
-        // Get last value
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
-
-        if (!$result) return $value;
-
-        $last_row = $result->fetch_array();
-
-        if (!$last_row)
-        {
-            $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
-
-            $this->feed->set_timevalue($feedid, $new_value, $time_now);
-            $new_kwh = $kwh_inc;
-        }
-        else
-        {
-            $last_kwh = $last_row['data'];
-            $new_kwh = $last_kwh + $kwh_inc;
-        }
-
-        // update kwhd feed
-        $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
-
-        $this->feed->set_timevalue($feedid, $new_value, $time_now);
         return $value;
     }
 
@@ -1422,7 +1367,7 @@ class Process_ProcessList
     
     public function wh_accumulator($feedid, $time, $value)
     {
-        $max_power = 25000;
+        $max_power = 60000; // in Watt
         $totalwh = $value;
         
         global $redis;
@@ -1453,7 +1398,7 @@ class Process_ProcessList
     
     public function kwh_accumulator($feedid, $time, $value)
     {
-        $max_power = 25000;
+        $max_power = 60000; // in Watt
         $totalkwh = $value;
         
         global $redis;
@@ -1639,7 +1584,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1648,7 +1593,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1657,7 +1602,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1666,7 +1611,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {

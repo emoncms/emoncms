@@ -54,7 +54,7 @@ $(function() {
         // debounce the call to save the current state to a local storage (cookie)
         clearTimeout(save_node_state_timeout)
         save_node_state_timeout = setTimeout(function(){
-            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+            // docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         },100)
     })
     // record the state change before animation starts

@@ -1,4 +1,4 @@
-<?php $v=7; ?>
+<?php $v=8; ?>
 
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
@@ -42,8 +42,6 @@
 </script>
 <style>
 
-.container-fluid { padding: 0px 10px 0px 10px; }
-
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -61,7 +59,6 @@ input[type="checkbox"] { margin:0px; }
 #noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
 
 @media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
     .modal-wide{
         width:650px;
         margin-left:-325px

@@ -64,13 +64,11 @@ $settings = array(
 "feed"=>array(
     // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
     // Place a ',' as the first character on all uncommented engines lines but first.
-    // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
     'engines_hidden'=>isset($feed_settings["engines_hidden"])?$feed_settings["engines_hidden"]:array(
     // Engine::MYSQL         // 0  Mysql traditional
     //,Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
     //,Engine::PHPTIMESERIES // 2
     //,Engine::PHPFINA      // 5
-    //,Engine::PHPFIWA      // 6
     //,Engine::CASSANDRA    // 10 Apache Cassandra
     ),
 
@@ -82,10 +80,9 @@ $settings = array(
         'sleep' => isset($feed_settings["redisbuffer"]["sleep"])?$feed_settings["redisbuffer"]["sleep"]:600
     ),
 
-    // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
+    // Engines working folder. Default is /var/lib/phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
-    'phpfiwa'       => array('datadir'  => isset($feed_settings["phpfiwa"]["datadir"])?$feed_settings["phpfiwa"]["datadir"]:'/var/lib/phpfiwa/'),
     'phpfina'       => array('datadir'  => isset($feed_settings["phpfina"]["datadir"])?$feed_settings["phpfina"]["datadir"]:'/var/lib/phpfina/'),
     'phptimeseries' => array('datadir'  => isset($feed_settings["phptimeseries"]["datadir"])?$feed_settings["phptimeseries"]["datadir"]:'/var/lib/phptimeseries/'),
     'cassandra'     => array('keyspace' => isset($feed_settings["cassandra"]["keyspace"])?$feed_settings["cassandra"]["keyspace"]:'emoncms'),

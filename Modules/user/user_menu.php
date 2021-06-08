@@ -1,19 +1,9 @@
 <?php
-
+global $session;
+if ($session["write"]) $menu["setup"]["l2"]['user'] = array("name"=>"My Account","href"=>"user/view", "order"=>12, "icon"=>"user");
+/*
 global $session;
 
-$menu['right'][] = array(
-    'text' => _("Add Bookmark"),
-    'icon' => 'plus',
-    'path' => 'user/bookmarks/add',
-    'order' => 0
-);
-$menu['user'][] = array(
-    'text' => _("Bookmarks"),
-    'path' => 'user/bookmarks',
-    'icon' => 'star',
-    'order' => 2
-);
 $menu['user'][] = array(
     'text' => _("My Account"),
     'icon' => 'user',
@@ -40,4 +30,4 @@ $menu['user'][] = array(
     'path' => '/',
     'public' => true,
     'public_only' => true
-);
+);*/

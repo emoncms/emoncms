@@ -1,3 +1,105 @@
+/*
+All Emoncms code is released under the GNU Affero General Public License.
+See COPYRIGHT.txt and LICENSE.txt.
+
+---------------------------------------------------------------------
+Emoncms - open source energy visualisation
+Part of the OpenEnergyMonitor project:
+http://openenergymonitor.org
+
+*/
+
+
+/* ------------------------------ */
+/* Colour schemes */
+/* ------------------------------ */
+
+.theme-standard, .theme-blue {
+  --bg-menu-top: #44b3e2;
+  --bg-menu-top-hover: #209ed3;
+  --bg-menu-top-active: #209ed3;
+  --bg-body-login: #1d8dbc;
+  --bg-menu-tr: #1d8dbc;
+  --bg-menu-tr-hover: #1d8dbc;
+}
+
+.theme-black {
+  --bg-menu-top: #555;
+  --bg-menu-top-hover: #444;
+  --bg-menu-top-active: #444;
+  --bg-body-login: #333;
+  --bg-menu-tr: #333;
+  --bg-menu-tr-hover: #333;
+}
+
+.theme-sun {
+  --bg-menu-top: #ffbe14;
+  --bg-menu-top-hover: #f7a90c;
+  --bg-menu-top-active: #f7a90c;
+  --bg-body-login: #f7a90c;
+  --bg-menu-tr: #f7a90c;
+  --bg-menu-tr-hover: #f7a90c;
+}
+
+.theme-yellow2 {
+  --bg-menu-top: #dfc72d;
+  --bg-menu-top-hover: #C8B328;
+  --bg-menu-top-active: #C8B328;
+  --bg-body-login: #C8B328;
+  --bg-menu-tr: #C8B328;
+  --bg-menu-tr-hover: #C8B328;
+}
+
+.theme-copper {
+  --bg-menu-top: #e97b00;
+  --bg-menu-top-hover: #d16e00;
+  --bg-menu-top-active: #d16e00;
+  --bg-body-login: #d16e00;
+  --bg-menu-tr: #d16e00;
+  --bg-menu-tr-hover: #d16e00;
+}
+
+.theme-green {
+  --bg-menu-top: #4eaa05;
+  --bg-menu-top-hover: #469904;
+  --bg-menu-top-active: #469904;
+  --bg-body-login: #469904;
+  --bg-menu-tr: #469904;
+  --bg-menu-tr-hover: #469904;
+}
+
+.sidebar-dark {
+  --bg-l2: #333;
+  --l2-border: #444;
+  --l2-title: #ccc;
+  --l2-text: #fff;
+  --bg-l2-active:#222;
+  --bg-l2-hover:#222;
+  --bg-l3:#222;
+  --l3-border:#333;
+  --l3-text:#ccc;
+  --l3-title: #ccc;
+  --l3-text-active:#fff;
+  --l3-text-hover:#fff;
+}
+
+.sidebar-light {
+  --bg-l2: #eaeaea;
+  --l2-border: #fff;
+  --l2-title: #000;
+  --l2-text: #000;
+  --bg-l2-active:#ddd;
+  --bg-l2-hover:#ddd;
+  --bg-l3:#f3f3f3;
+  --l3-border:#fff;
+  --l3-text:#333;
+  --l3-title: #333;
+  --l3-text-active:#000;
+  --l3-text-hover:#000;
+}
+/* ------------------------------ */
+
+
 html,body{height: initial!important}
 
 #wrap{
@@ -8,17 +110,25 @@ html,body{height: initial!important}
 #wrap,#footer {
     transition: margin .3s ease-out;
 }
+
 .fullwidth.collapsed #wrap,
 .fullwidth.collapsed #footer{
     margin-left: 0!important;
 }
 
+.container-fluid { padding: 0px 10px 0px 10px; }
+
+@media (min-width: 768px) {
+    .container-fluid { padding: 0px 20px 0px 20px; }
+}    
+    
+
 #wrap main.content-container{
   height: 100%;
-  margin-top: 2.7rem;
+  /*margin-top: 2.7rem;
   margin-left: 15rem;
   margin-bottom: 0;
-  margin-right: 0;
+  margin-right: 0;*/
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
@@ -27,6 +137,292 @@ body.collapsed #wrap main.content-container{
   margin-left: auto;
   margin-right: auto;
 } 
+
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+
+/*-------------------------------------*/
+/* Previously in emon-blue.css */
+/*-------------------------------------*/
+
+.body-login {
+    background-color:var(--bg-body-login);
+}
+
+#login-form input[type="text"], #login-form input[type="password"] {
+    width: 94%;
+}
+
+#push, #footer {
+    height: 30px;
+}
+
+#footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+
+#footer span {
+    color: #999;
+}
+
+div#account {
+    width:250px;
+}
+
+/* Used user/profile/profile.php */
+.account-item {
+    margin-bottom:10px;
+}
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+    #footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
+    display: inherit !important;
+}
+
+/* dashboardeditor */
+.scrollable-menu {
+    height: auto;
+    max-height: 333px;
+    overflow-y: auto;
+}
+
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+        url(ajax-loader.gif)
+        center
+        no-repeat;
+}
+
+.caret {
+    border-top-color: #fff !important;
+}
+
+.text-larger {
+    font-size: larger
+}
+
+.expand-all .icon-resize-small {
+    display: none
+}
+.expand-all.in .icon-resize-small {
+    display: inline-block
+}
+.expand-all.in .icon-resize-full {
+    display: none
+}
+
+/* collapsable groups of items */
+.node.accordion {
+    line-height: 41px;
+}
+
+.node .accordion-toggle {
+    background: #ddd;
+    height: 41px;
+}
+.node .accordion-toggle:hover {
+    background-color: #e3e3e3;
+}
+
+/* dropdown indicator */
+.node .has-indicator .icon-indicator {
+    opacity: 0.333;
+    float: none;
+}
+
+.node .select input {margin-top: -1px}
+.node .collapse {
+    width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
+}
+.node .collapse > * {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #fff;
+    background: #f0f0f0;
+}
+.node .collapse > *:hover {
+    background-color: #f5f5f5;
+}
+.node .collapse > *:before {
+    content: '';
+    width: 0px;
+    background: #44b3e2;
+    height: 100%;
+    display: block;
+    position: absolute;
+    transition: width .2s ease-out;
+}
+.node .collapse > *:hover:before {
+    width: 2px;
+}
+.node .collapse > *:last-child {
+    border-bottom-width: 0
+}
+.node > * > * ,
+.node > * > * > * ,
+.node > * > * > .pull-right > * {
+    float: left;
+    min-height: 1px;
+}
+.pull-right{float:right!important}
+.line-height-expanded{line-height: 2;}
+.line-height-normal{line-height: 1.5;}
+.cursor-pointer{ cursor: pointer; }
+
+/* input_view interface */
+.device-key,
+.device-schedule,
+.device-configure,
+.device-last-updated {
+    border-left: 1px solid #eee;
+    color: white;
+}
+
+.device-key:hover {background-color:#eaeaea;}
+.device-configure:hover {background-color:#eaeaea;}
+.label-container{padding-top:.6em; display:inline-block; min-width:200px}
+
+/* #table used by device, input, profile, feedlist, schedule view */
+#table .accordion {
+    margin-bottom: .5em
+}
+
+/* Used by dashboard designer */
+.controls {
+    transition: all .2s ease-out
+}
+.controls.affix:before {
+    content: '';
+    background: var(--bg-menu-top-active);
+    opacity: 0.90;
+    width: 100%;
+    display: block;
+    position: fixed;
+    z-index: -1;
+    height: 2.6rem;
+    left: 0;
+    margin-top: -.3rem;
+}
+.controls.affix > * {
+    z-index: 2
+}
+.controls.affix {
+    z-index: 2;
+    top: 2.9rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position:absolute;}
+
+@media only screen and (max-width:979px) {
+    .controls.affix{top:0}
+}
+@media only screen and (min-width:870px) {
+    body{font-size:16px}
+}
+
+/*-------------------------------------*/
+/* Log windows */
+/* used by: admin page, emonhub config */
+/* backup, postprocess modules
+/*-------------------------------------*/
+.log {
+    /*width:100%;*/
+    height:12rem;
+    margin:0px;
+    padding:0px;
+    
+    color:#fff;
+    background-color:#300a24;
+    overflow: scroll;
+    overflow-x: hidden;
+    /*font-size:14px;*/
+}
+
+.log div {
+    padding-left:10px;
+    padding-top:10px;
+}
+
+/* Used to create log level selector */
+#log-level {
+    position: absolute;
+    right: .2rem;
+    bottom: 0;
+}
+#log-level .dropdown-menu {
+    background: 0;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+}
+#log-level .dropdown-menu .active {
+    font-weight: bold;
+}
+#log-level .dropdown-menu .btn {
+    border: 0;
+    border-radius: 0;
+    background-image: none;
+}
+#log-level li:first-child .btn {
+    border-radius: .3em .3em 0 0;
+}
+#log-level li:last-child .btn {
+    border-radius: 0 0 .3em .3em;
+}
+
+/* Similar to a modal, used for notifications */
+/* on the admin and emonhub config pages      */
+/* when log level is changed e.g INFO to DEBUG*/
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+#snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
 
 /*-------------------------------------*/
 /* utilities */
@@ -258,39 +654,27 @@ body.collapsed #wrap main.content-container{
     text-overflow: ellipsis;
     white-space: nowrap;
 }
-/*-------------------------------------*/
 
-/* override topnav styling in tabs */
-#emoncms-navbar .nav.nav-tabs > li > a {
-    color: #999!important;
-}
-#emoncms-navbar .nav.nav-tabs > li.active > a {
-    color: #EFEFEF!important;
-}
-#emoncms-navbar .nav.nav-tabs > li > a:hover {
-    color: #FFF!important;
+.color-box {
+    margin-right:2px;
+    width:20px;
+    height:20px;
+    display:inline-block;
+    border: 2px solid #ddd;
+    cursor:pointer;
 }
 
+.color-box-active {
+    border: 2px solid #000;
+}
 
-/* 
- * #sidebar above #wrap on narrow screens
- */
- body {
-   padding: 0;
-   margin: 0;
- }
- @media only screen and (min-width:870px) {
-  .fullwidth.has-sidebar #wrap,
-  .fullwidth.has-sidebar #footer {
-    /*margin-left: 15rem!important;*/
-  }
-  .fullwidth.has-sidebar.collapsed #wrap,
-  .fullwidth.has-sidebar.collapsed #footer {
-    margin-left: 0px!important;
-  }
-  #sidebar {
-    position: fixed;
-  }
+.color-box:hover {
+    border: 2px solid #000;
+}
+
+body {
+ padding: 0;
+ margin: 0;
 }
 
 html {

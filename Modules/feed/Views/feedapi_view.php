@@ -52,7 +52,7 @@
     <tr><td><?php echo _("Get all feed fields");?></td><td>
 		<a href="<?php echo $path; ?>feed/aget.json?id=1"><?php echo $path; ?>feed/aget.json?id=1</a>
 	</td></tr>
-	  <tr><td><?php echo _("Get feed meta (PHPFina, PHPFiwa)");?></td><td>
+	  <tr><td><?php echo _("Get feed meta (PHPFina)");?></td><td>
 		<a href="<?php echo $path; ?>feed/getmeta.json?id=1"><?php echo $path; ?>feed/getmeta.json?id=1</a>
 	</td></tr>
 </table>
@@ -65,17 +65,14 @@
 	<tr><td><?php echo _("Last value of a given feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/value.json?id=1"><?php echo $path; ?>feed/value.json?id=1</a>
 	</td></tr>
+  <tr><td><?php echo _("Fetch a value at a given time");?></td><td>
+		<a href="<?php echo $path; ?>feed/value.json?id=1&time=UNIXTIME"><?php echo $path; ?>feed/value.json?id=1&time=UNIXTIME</a>
+	</td></tr>
     <tr><td><?php echo _("Last value for multiple feeds");?></td><td>
 		<a href="<?php echo $path; ?>feed/fetch.json?ids=1,2,3"><?php echo $path; ?>feed/fetch.json?ids=1,2,3</a>
 	</td></tr>
     <tr><td><?php echo _("Returns feed data");?></td><td>
 		<a href="<?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=5"><?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=5</a>
-	</td></tr>
-    <tr><td><?php echo _("Returns histogram data");?></td><td>
-		<a href="<?php echo $path; ?>feed/histogram.json?id=0&start=UNIXTIME&end=UNIXTIME"><?php echo $path; ?>feed/histogram.json?id=0&start=UNIXTIME&end=UNIXTIME</a>
-	</td></tr>
-    <tr><td><?php echo _("Returns kwh consumed in a given power band using histogram data type");?></td><td>
-		<a href="<?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max="><?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max=</a>
 	</td></tr>
     <tr><td><?php echo _("Export CSV data (timeformat=1: provides date time string format)");?></td><td>
 		<a href="<?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1"><?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1=</a>

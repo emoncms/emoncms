@@ -4,7 +4,6 @@
       0 - feed realtime or daily
       1 - feed realtime
       2 - feed daily
-      3 - feed histogram
       4 - boolean
       5 - text
       6 - float value
@@ -46,7 +45,6 @@
             )
         ),
         
-        //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
         'zoom'=> array('label'=>dgettext('vis_messages','Zoom'), 'options'=>array(
             array('power',dgettext('vis_messages','power'),1),
             array('kwhd',dgettext('vis_messages','kwhd'),0),
@@ -56,7 +54,6 @@
             array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        //'comparison'=> array('options'=>array(array('feedid',3))),
         'stacked'=> array('label'=>dgettext('vis_messages','Stacked'), 'options'=>array(
             array('bottom',dgettext('vis_messages','bottom'),0),
             array('top',dgettext('vis_messages','top'),0),
@@ -112,31 +109,6 @@
             array('fill',dgettext('vis_messages','fill'),7,1),
             array('depth',dgettext('vis_messages','depth'),7,3),
             array('npoints',dgettext('vis_messages','data points'),7,800)
-        )),
-        
-        'timestoredaily'=> array('label'=>dgettext('vis_messages','Timestore Daily (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1),
-            array('units',dgettext('vis_messages','units'),5,'kWh'))
-        ),
-        
-        'histgraph'=> array('label'=>dgettext('vis_messages','Histgraph (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('barwidth',dgettext('vis_messages','barwidth'),7,50),
-            array('start',dgettext('vis_messages','start'),7,0),
-            array('end',dgettext('vis_messages','end'),7,0))
-        ),  
-
-        'threshold'=> array('label'=>dgettext('vis_messages','Threshold (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500))
-        ),      
-
-        'orderthreshold'=> array('label'=>dgettext('vis_messages','OrderThreshold (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('power',dgettext('vis_messages','power'),1),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500)
         )),
         
         'graph'=> array('label'=>dgettext('vis_messages','Graph (Deprecated)'), 'options'=>array(
