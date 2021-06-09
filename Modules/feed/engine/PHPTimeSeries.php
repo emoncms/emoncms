@@ -6,6 +6,7 @@ class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     private $log;
+    private $fh = array();
     
     private $writebuffer = array();
 
@@ -714,4 +715,39 @@ class PHPTimeSeries implements engine_methods
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 
+    /**
+     * Abstracted open, read and close methods
+     *
+     */
+    public function open($id,$mode) {
+        $filename = $this->dir."feed_$id.MYD";
+        $this->fh[$id] = @fopen($filename,$mode);
+
+        if (!$this->fh[$id]) {
+            $this->log->warn("PHPTimeSeries:fopendata could not open $filename");
+            return false;
+        }
+        
+        if (!flock($this->fh[$id], LOCK_EX)) {
+            $this->log->warn("PHPTimeSeries:fopendata $filename locked by another process");
+            fclose($this->fh[$id]);
+            return false;
+        }
+    }
+    
+    public function write($id,$time,$value) {
+        fwrite($this->fh[$id], pack("CIf",249,$time,$value));
+    }
+    
+    public function read($id,$pos) {
+    
+    }
+    
+    public function read_range($id,$pos,$len=1) {
+    
+    }
+    
+    public function close($id) {
+        fclose($this->fh[$id]);
+    }
 }

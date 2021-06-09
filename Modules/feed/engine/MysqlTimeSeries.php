@@ -387,8 +387,8 @@ class MysqlTimeSeries implements engine_methods
     */
     public function get_data_DMY($feedid, $start, $end, $mode, $timezone)
     {
-        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
-
+        if (!in_array($mode,array("daily","weekly","monthly","annual"))) return false;
+        
         $feedid = (int) $feedid;
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -449,7 +449,7 @@ class MysqlTimeSeries implements engine_methods
 
     public function get_data_DMY_time_of_day($feedid, $start, $end, $mode, $timezone, $split)
     {
-        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
+        if (!in_array($mode,array("daily","weekly","monthly","annual"))) return false;
 
         $feedid = (int) $feedid;
         $start = intval($start/1000);
@@ -523,6 +523,30 @@ class MysqlTimeSeries implements engine_methods
             $n++;
         }
         return $data;
+    }
+    
+    /**
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601 (NOT CURRENTLY SUPPORTED IN MYSQL)
+     * @param integer $csv pipe output as csv                                            (NOT CURRENTLY SUPPORTED IN MYSQL)
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
+     */
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    {
+        if (in_array($interval,array("daily","weekly","monthly","annual"))) {
+            return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
+            return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+        } else {
+            return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
+            return $this->get_average($feedid, $start, $end, $interval);
+        }
     }
 
     public function export($feedid, $start)
