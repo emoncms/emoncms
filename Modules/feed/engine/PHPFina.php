@@ -12,6 +12,10 @@ class PHPFina implements engine_methods
     private $writebuffer = array();
     private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
+    
+    private $fh = array();
+    private $meta = array();
+    private $pos = array();
 
     /**
      * Constructor.
@@ -1090,5 +1094,46 @@ class PHPFina implements engine_methods
         $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
-
+    
+    /**
+     * Abstracted open, read and close methods
+     *
+     */
+    public function open($id,$mode) {
+        $this->meta[$id] = $this->get_meta($id);
+        $this->fh[$id] = fopen($this->dir.$id.".dat", $mode);
+        $this->pos[$id] = 0;
+        return $this->meta[$id];
+    }
+    
+    public function read($id,$pos) {
+        // If in data range read from dat file
+        if ($pos>=0 && $pos < $this->meta[$id]->npoints) {
+            // Only seek if necessary
+            if ($pos!=$this->pos[$id]) fseek($this->fh[$id],4*$pos);
+            $tmp = unpack("f",fread($this->fh[$id],4));
+            $this->pos[$id] = $pos+1;
+            return $tmp[1];
+        }
+        return NAN;
+    }
+    
+    public function read_range($id,$pos,$len=1) {
+        $tmp = array();
+        // If in data range read from dat file
+        if ($pos>=0 && $pos < $this->meta[$id]->npoints) {
+            // Only seek if necessary
+            if ($pos!=$this->pos[$id]) fseek($this->fh[$id],4*$pos);
+            $tmp = unpack("f*",fread($this->fh[$id],4*$len));
+            $this->pos[$id] = $pos+$len;
+            $pos = $this->pos[$id];
+        }
+        return $tmp;
+    }
+    
+    public function close($id) {
+        $this->meta[$id] = false;
+        $this->pos[$id] = 0;
+        fclose($this->fh[$id]);
+    }
 }
