@@ -541,11 +541,17 @@ class MysqlTimeSeries implements engine_methods
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         if (in_array($interval,array("daily","weekly","monthly","annual"))) {
-            return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
-            return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+            if (!$average) {
+                return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
+            } else {
+                return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+            }
         } else {
-            return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
-            return $this->get_average($feedid, $start, $end, $interval);
+            if (!$average) {
+                return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
+            } else {
+                return $this->get_average($feedid, $start, $end, $interval);
+            }
         }
     }
 
@@ -732,6 +738,7 @@ class MysqlTimeSeries implements engine_methods
 // #### \/ Below are buffer write methods
 
     // Insert data in post buffer
+    /*
     public function post_bulk_prepare($feedid,$time,$value,$arg=null)
     {
         $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
@@ -766,7 +773,7 @@ class MysqlTimeSeries implements engine_methods
             }
         }
         $this->writebuffer = array(); // clear buffer
-    }
+    }*/
 
 
 

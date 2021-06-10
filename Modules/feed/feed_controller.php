@@ -27,7 +27,8 @@ function feed_controller()
     $input = new Input($mysqli,$redis,$feed);
     
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+    $user_timezone = $user->get_timezone($session['userid']);
+    $process = new Process($mysqli,$input,$feed,$user_timezone);
 
     if ($route->format == 'html')
     {
@@ -72,8 +73,6 @@ function feed_controller()
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             return $feed->update_user_feeds_size($session['userid']);
-        } elseif ($route->action == "buffersize" && $session['write']) {
-            return $feed->get_buffer_size();
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
         } elseif ($route->action == "fetch") {
@@ -96,7 +95,7 @@ function feed_controller()
         // ----------------------------------------------------------------------------
         // Multi feed actions
         // ----------------------------------------------------------------------------
-        } else if (in_array($route->action,array("data","average"))) {
+        } else if ($route->action=="data") {
             // get data for a list of existing feeds
             $result = array('success'=>false, 'message'=>'bad parameters');
             // return $_REQUEST;
@@ -117,32 +116,23 @@ function feed_controller()
                         // if public or belongs to user
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
-                        
                             $results[$key] = array('feedid'=>$feedid);
                             
-                            // feed/data ----------------------------------------------
-                            if ($route->action=="data") {
-                                $skipmissing = 1;
-                                $limitinterval = 1;
-                                if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
-                                if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
-                                
-                                if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
-                                } else if (isset($_GET['mode'])) {
-                                    if (isset($_GET['split'])) {
-                                        $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
-                                    } else {
-                                        $results[$key]['data'] = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
-                                    }
-                                }
-                            // feed/average --------------------------------------------   
-                            } else if ($route->action == 'average') {
-                                if (isset($_GET['mode'])) {
-                                    $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
-                                } else if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
-                                } 
+                            // get(index,exist_if_missing,default)
+                            $start = get('start',true);
+                            $end = get('end',true);
+                            $interval = get('interval',true);
+                            $average = get('average',false,0);
+                            $timezone = get('timezone',false,$user_timezone);
+                            $timeformat = get('timeformat',false,'unix');
+                            $csv = get('csv',false,0);
+                            $skipmissing = get('skipmissing',false,0);
+                            $limitinterval = get('limitinterval',false,0);
+                            
+                            if (!isset($_GET['split'])) {
+                                $results[$key]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+                            } else {
+                                $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,get('split'));
                             }
                         }
                     } else {
@@ -219,12 +209,11 @@ function feed_controller()
                             return $feed->set_feed_fields($feedid, get('fields'));
                         }
 
-                    // Insert datapoint
-                    } else if ($route->action == "insert") {
+                    } else if ($route->action == "post") {
                         
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
-                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                             return $feed->post($feedid,time(),get("time"),get("value"));
                         }
 
                         // Single or multiple datapoints via json format
@@ -243,16 +232,10 @@ function feed_controller()
                         
                         foreach ($data as $dp) {
                             if (count($dp)==2) {
-                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
+                                $feed->post($feedid,$dp[0],$dp[0],$dp[1]);
                             }
                         }
                         return array('success'=>true);
-
-                    // Update datapoint
-                    } else if ($route->action == "update") {
-                        if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
-                        $skipbuffer = false; if (isset($_GET['skipbuffer'])) $skipbuffer = true;
-                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'),$skipbuffer);
 
                     // Delete feed
                     } else if ($route->action == "delete") {

@@ -541,80 +541,8 @@ class PHPTimeSeries implements engine_methods
     }
 
 // #### /\ Above are required methods
-
-
-// #### \/ Below are buffer write methods
-
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($feedid,$timestamp,$value,$arg=null)
-    {
-        $feedid = (int) $feedid;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-
-        $filename = "feed_$feedid.MYD";
-        $npoints = $this->get_npoints($feedid);
-
-        if (!isset($this->writebuffer[$feedid])) {
-            $this->writebuffer[$feedid] = "";
-        }
-
-        // If there is data then read last value
-        if ($npoints>=1) {
-            static $lastvalue_static_cache = array(); // Array to hold the cache
-            if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
-                $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid);
-            }           
-            if ($timestamp<=$lastvalue_static_cache[$feedid]['time']) {
-                // if data is in past, its not supported, could call update here to fix on file before continuing
-                // but really this should not happen for past data has process_feed_buffer uses update for that.
-                $this->log->warn("post_bulk_prepare() data in past, nothing saved.  feedid=$feedid timestamp=$timestamp last=".$lastvalue_static_cache[$feedid]['time']." value=$value");
-                return $value;
-            }
-        }
-
-        $this->writebuffer[$feedid] .= pack("CIf",249,$timestamp,$value);
-        $lastvalue_static_cache[$feedid] = array('time'=>$timestamp,'value'=>$value); // Set static cache last value
-        return $value;
-    }
-
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
-    public function post_bulk_save()
-    {
-        $byteswritten = 0;
-        foreach ($this->writebuffer as $feedid=>$data)
-        {
-            $filename = $this->dir."feed_$feedid.MYD";
-            // Auto-correction if something happens to the datafile, it gets partitally written to
-            // this will correct the file size to always be an integer number of 4 bytes.
-            clearstatcache($filename);
-            if (@filesize($filename)%9 != 0) {
-                $npoints = floor(filesize($filename)/9.0);
-                $fh = fopen($filename,"c");
-                fseek($fh,$npoints*9.0);
-                fwrite($fh,$data);
-                fclose($fh);
-                print "PHPTIMESERIES: FIXED DATAFILE WITH INCORRECT LENGHT\n";
-                $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                fwrite($fh,$data);
-                fclose($fh);
-            }
-            
-            $byteswritten += strlen($data);
-        }
-        $this->writebuffer = array(); // Clear writebuffer
-
-        return $byteswritten;
-    }
-    
     
 // #### \/ Below engine public specific methods
-
 
 // #### \/ Bellow are engine private methods    
 

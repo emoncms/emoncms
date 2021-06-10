@@ -234,22 +234,6 @@ class PHPFina implements engine_methods
         
         return $value;
     }
-    
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($feedid,$timestamp,$value)
-    {
-        if (isset($this->writebuffer[$feedid]) && strlen($this->writebuffer[$feedid]) > 0) {
-            $this->post_bulk_save();// if data on buffer, flush buffer now, then update it
-            $this->log->info("update() $feedid with buffer");
-        }
-        return $this->post($feedid,$timestamp,$value);  //post can also update 
-    }
 
     /**
      * scale a portion of a feed
@@ -589,18 +573,6 @@ class PHPFina implements engine_methods
     // to ensure consistent results and avoid code duplication
     // mapping of original function calls are left in here for
     // compatibility with rest of emoncms application
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
-    }
-    public function get_data_DMY($feedid,$start,$end,$interval,$timezone) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,0,$timezone);
-    }
-    public function get_average($feedid,$start,$end,$interval) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,1);
-    }
-    public function get_average_DMY($feedid,$start,$end,$interval,$timezone) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
-    }
     public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
         $this->get_data_combined($feedid,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
@@ -743,155 +715,7 @@ class PHPFina implements engine_methods
 
 // #### /\ Above are required methods
 
-
-// #### \/ Below are buffer write methods
-
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($feedid,$timestamp,$value,$padding_mode)
-    {   
-        $feedid = (int) $feedid;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-        $this->log->info("post_bulk_prepare() feedid=$feedid timestamp=$timestamp value=$value");
-        
-        // Check timestamp range
-        $now = time();
-        $start = $now-(3600*24*365*5); // 5 years in past
-        $end = $now+(3600*48);         // 48 hours in future
-        if ($timestamp<$start || $timestamp>$end) {
-            $this->log->warn("post_bulk_prepare() timestamp out of range");
-            return false;
-        }
-
-        // Check meta data file exists
-        if (!$meta = $this->get_meta($feedid)) {
-            $this->log->warn("post_bulk_prepare() failed to fetch meta feedid=$feedid");
-            return false;
-        }
-
-        $meta->npoints = $this->get_npoints($feedid);
-
-        // Calculate interval that this datapoint belongs too
-        $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-
-        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->start_time==0) {
-            if ($meta->npoints == 0) {
-                $meta->start_time = $timestamp;
-                $this->create_meta($feedid,$meta);
-                $this->log->info("post_bulk_prepare() start_time=0 setting meta start_time=$timestamp");
-            } else {
-                $this->log->error("post_bulk_prepare() start_time=0, npoints>0");
-                return false;
-            }
-        }
-        
-        if ($timestamp < $meta->start_time) {
-            $this->log->warn("post_bulk_prepare() timestamp=$timestamp older than feed starttime=$meta->start_time feedid=$feedid");
-            return false; // in the past
-        }
-
-        // Calculate position in base data file of datapoint
-        $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
-        $last_pos = $meta->npoints - 1;
-        
-        $this->log->info("post_bulk_prepare() pos=$pos last_pos=$last_pos timestampinterval=$timestamp");
-        
-        if ($pos>$last_pos) {
-            $npadding = ($pos - $last_pos)-1;
-            
-            if ($npadding>$this->maxpadding) {
-                $this->log->warn("post() padding max block size exeeded id=$feedid, $npadding dp");
-                return false;
-            }
-            
-            if (!isset($this->writebuffer[$feedid])) {
-                $this->writebuffer[$feedid] = "";    
-            }
-            
-            if ($npadding>0) {
-                $padding_value = NAN;
-                if ($padding_mode!=null) {
-                    if (!isset($this->lastvalue_cache[$feedid])) { // Not set, cache it from file data
-                        $lastvalue = $this->lastvalue($feedid);
-                        $this->lastvalue_cache[$feedid] = $lastvalue['value'];
-                    }
-                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $this->lastvalue_cache[$feedid];
-                }
-                
-                for ($n=0; $n<$npadding; $n++)
-                {
-                    if ($padding_mode!=null) $padding_value += $div; 
-                    $this->writebuffer[$feedid] .= pack("f",$padding_value);
-                    //$this->log->info("post_bulk_prepare() ##### paddings ". ((4*$meta->npoints) + (4*$n)) ." $n $padding_mode $padding_value");
-                }
-            }
-            
-            $this->writebuffer[$feedid] .= pack("f",$value);
-            $this->lastvalue_cache[$feedid] = $value; // cache last value
-            
-            //$this->log->info("post_bulk_prepare() ##### value saved $value");
-        } else {
-            // if data is in past, its not supported, could call update here to fix on file before continuing
-            // but really this should not happen for past data has process_feed_buffer uses update for that.
-            // so this must be data posted in less time of the feed interval and can be ignored
-            
-            // This error crouds out the log's but is behaviour expected if data is coming in at a quicker interval than the feed interval
-            // EmonPi posts at 5s where feed engine default size is 10s which means a log entry for every datapoint with this uncommented
-            // $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
-        }
-        
-        return $value;
-    }
-
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
-    public function post_bulk_save()
-    {
-        $byteswritten = 0;
-        foreach ($this->writebuffer as $feedid=>$data) {
-            // Auto-correction if something happens to the datafile, it gets partitally written to
-            // this will correct the file size to always be an integer number of 4 bytes.
-            $filename = $this->dir.$feedid.".dat";
-            clearstatcache($filename);
-            if (@filesize($filename)%4 != 0) {
-                $npoints = floor(filesize($filename)/4.0);
-                $fh = fopen($filename,"c");
-                if (!$fh) {
-                    $this->log->warn("post_bulk_save() could not open data file '$filename'");
-                    return false;
-                }
-
-                fseek($fh,$npoints*4.0);
-                fwrite($fh,$data);
-                fclose($fh);
-                print "PHPFINA: FIXED DATAFILE WITH INCORRECT LENGHT '$filename'\n";
-                $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                if (!$fh) {
-                    $this->log->warn("save() could not open data file '$filename'");
-                    return false;
-                }
-                fwrite($fh,$data);
-                fclose($fh);
-            }
-            
-            $byteswritten += strlen($data);
-        }
-        
-        $this->writebuffer = array(); // clear buffer
-        
-        return $byteswritten;
-    }
-
-
-
 // #### \/ Below engine specific methods
-
 
 // #### \/ Bellow are engine private methods 
     
@@ -942,18 +766,6 @@ class PHPFina implements engine_methods
         $start = (int) $start;
         $interval = (int) $interval;
         $npoints = (int) $npoints;
-        /*
-        // Initial implementation using post_bulk_prepare
-        if (!$fh=fopen('php://input','r')) return false;
-        for ($i=0; $i<$npoints; $i++) {
-            $time = $start + ($interval * $i);
-            $tmp = unpack("f",fread($fh,4));
-            $value = $tmp[1];
-            $this->post_bulk_prepare($id,$time,$value,null);
-        }
-        $this->post_bulk_save();
-        fclose($fh);
-        */
         
         // Faster direct block write method
         
@@ -1006,9 +818,9 @@ class PHPFina implements engine_methods
             $time = $tmp[1];
             $value = $tmp[2];
             //print $time." ".$value."\n";
-            $this->post_bulk_prepare($feedid,$time,$value,null);
+            //$this->post_bulk_prepare($feedid,$time,$value,null);
         }
-        $this->post_bulk_save();
+        // $this->post_bulk_save();
 
         fclose($fh);
         

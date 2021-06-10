@@ -170,11 +170,6 @@ class Feed
 
         $engine = $this->get_engine($feedid);
 
-        if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer delete
-            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
-        }
-
         // Call to engine delete method
         $this->EngineClass($engine)->delete($feedid);
 
@@ -196,11 +191,6 @@ class Feed
 
         $engine = $this->get_engine($feedid);
 
-        if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer delete
-            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
-        }
-
         // Call to engine trim method
         $response = $this->EngineClass($engine)->trim($feedid, $start_time);
 
@@ -214,11 +204,6 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->get_engine($feedid);
-
-        if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer delete
-            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
-        }
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
@@ -317,19 +302,6 @@ class Feed
             $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
             if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
             $total += $size;
-        }
-        return $total;
-    }
-
-    // Get REDISBUFFER date value elements pending save to a feed
-    public function get_buffer_size()
-    {
-        $total = 0;
-        if ($this->redis) {
-            $feedids = $this->redis->sMembers("feed:bufferactive");
-            foreach ($feedids as $feedid) {
-                $total += $this->EngineClass(Engine::REDISBUFFER)->get_feed_size($feedid);
-            }
         }
         return $total;
     }
@@ -567,74 +539,21 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        
         // Maximum request size
-        $period = ($end-$start)*0.001;
-        $req_dp = round($period / $outinterval);
-        if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
+        // $period = ($end-$start)*0.001;
+        // $req_dp = round($period / $interval);
+        // if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
 
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');        
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_data
-        $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
-
-        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
-            // Add redisbuffer cache if available
-            if ($data && $skipmissing) {
-                $bufferstart=end($data)[0];
-            } else {
-                $bufferstart = $start;
-            }
-            
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
-            
-            if (!empty($bufferdata)) {
-                $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
-
-                // Merge buffered data into base data timeslots (over-writing null values where they exist)
-                if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
-                    $outintervalms = $outinterval * 1000;
-
-                    // Convert buffered data to associative array - by timestamp
-                    $bufferdata_assoc = array();
-                    for ($z=0; $z<count($bufferdata); $z++) {
-                        $time = floor($bufferdata[$z][0]*0.001/$outinterval)*$outinterval;
-                        $bufferdata_assoc[$time] = $bufferdata[$z][1];
-                    }
-                    
-                    // Merge data into base data
-                    for ($z=0; $z<count($data); $z++) {
-                        $time = $data[$z][0];
-                        if (isset($bufferdata_assoc["".$time*0.001]) && $data[$z][1]==null) {
-                            $data[$z][1] = $bufferdata_assoc["".$time*0.001];
-                        }
-                    }
-                    
-                } else {
-                    $data = array_merge($data, $bufferdata);
-                }
-            }
-        }
-
-        return $data;
-    }
-    
-    public function get_data_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-        
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
-        
-        $timezone = $this->get_timezone($feedid);
-        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
-        return $data;
+        return $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
     }
     
     public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
@@ -649,29 +568,6 @@ class Feed
         $timezone = $this->get_timezone($feedid);    
         $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
         return $data;
-    }
-    
-    public function get_average($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-        
-        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
-    }
-    
-    public function get_average_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-        
-        $timezone = $this->get_timezone($feedid);
-        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
     public function csv_export($feedid,$start,$end,$interval,$average,$timeformat)
@@ -879,52 +775,18 @@ class Feed
         }
     }
 
-    public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
-    {
-        $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $updatetime = intval($updatetime);
-        if ($feedtime == null) $feedtime = $updatetime;
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
-
-        $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer post
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime,'arg'=>$arg);
-            $this->EngineClass(Engine::REDISBUFFER)->post($feedid,$feedtime,$value,$args);
-        } else {
-            // Call to engine post
-            $this->EngineClass($engine)->post($feedid,$feedtime,$value,$arg);
-        }
-
-        $this->set_timevalue($feedid, $value, $updatetime);
-
-        return $value;
-    }
-
-    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
+    public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
-        $updatetime = intval($updatetime);
+        $updatetime = (int) $updatetime;
         if ($feedtime == null) $feedtime = $updatetime;
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
+        $feedtime = (int) $feedtime;
+        $value = (float) $value;
 
         $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
-            // Call to buffer update
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime);
-            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);
-        } else {
-            // Call to engine update
-            $this->EngineClass($engine)->update($feedid,$feedtime,$value);
-        }
-
+        $this->EngineClass($engine)->post($feedid,$feedtime,$value,$arg);
         if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
