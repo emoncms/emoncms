@@ -100,7 +100,7 @@ class VirtualFeed implements engine_methods
     // Note !!! This early reworked version only implements the basic get_data method
     // it needs to be extended to handle averaged data requests and daily, monthly modes 
     // with the source data generation handled by the respective source feed engines themselves
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $feedid = (int) $feedid;
         $processList = $this->feed->get_processlist($feedid);
