@@ -35,17 +35,17 @@ class PHPFina implements engine_methods
     /**
      * Create feed
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param integer $id The id of the feed to be created
      * @param array $options for the engine
     */
-    public function create($feedid,$options)
+    public function create($id,$options)
     {
-        $feedid = (int)$feedid;
+        $id = (int)$id;
         $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
         
         // Check to ensure we dont overwrite an existing feed
-        $feedname = "$feedid.meta";
+        $feedname = "$id.meta";
         if (!file_exists($this->dir.$feedname)) {
             // Set initial feed meta data
             $meta = new stdClass();
@@ -54,12 +54,12 @@ class PHPFina implements engine_methods
             $meta->npoints = 0;
 
             // Save meta data
-            $msg=$this->create_meta($feedid,$meta);
+            $msg=$this->create_meta($id,$meta);
             if ($msg !== true) {
                 return $msg;
             }
 
-            $fh = @fopen($this->dir.$feedid.".dat", 'c+');
+            $fh = @fopen($this->dir.$id.".dat", 'c+');
             if (!$fh) {
                 $error = error_get_last();
                 $msg = "could not create meta data file ".$error['message'];
@@ -67,7 +67,7 @@ class PHPFina implements engine_methods
                 return $msg;
             }
             fclose($fh);
-            $this->log->info("create() feedid=$feedid");
+            $this->log->info("create() feedid=$id");
         }
 
         if (file_exists($this->dir.$feedname)) {
@@ -82,25 +82,26 @@ class PHPFina implements engine_methods
     /**
      * Delete feed
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param integer $id The id of the feed to be created
     */
-    public function delete($feedid)
+    public function delete($id)
     {
-        $feedid = (int)$feedid;
-        if (!$meta = $this->get_meta($feedid)) return false;
-        unlink($this->dir.$feedid.".meta");
-        unlink($this->dir.$feedid.".dat");
+        $id = (int)$id;
+        if (!$meta = $this->get_meta($id)) return false;
+        unlink($this->dir.$id.".meta");
+        unlink($this->dir.$id.".dat");
+        if ($this->redis) $this->redis->del("phpfina:buffer:$id");
     }
     
     /**
      * Gets engine metadata
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param integer $id The id of the feed to be created
     */
-    public function get_meta($feedid)
+    public function get_meta($id)
     {
-        $feedid = (int) $feedid;
-        $feedname = "$feedid.meta";
+        $id = (int) $id;
+        $feedname = "$id.meta";
 
         if (!file_exists($this->dir.$feedname)) {
             $this->log->warn("get_meta() meta file does not exist '".$this->dir.$feedname."'");
@@ -119,13 +120,13 @@ class PHPFina implements engine_methods
         fclose($metafile);
         
         $meta->npoints = 0;
-        if (file_exists($this->dir.$feedid.".dat")) {
-            clearstatcache($this->dir.$feedid.".dat");
-            $meta->npoints += floor(filesize($this->dir.$feedid.".dat")/4.0);
+        if (file_exists($this->dir.$id.".dat")) {
+            clearstatcache($this->dir.$id.".dat");
+            $meta->npoints += floor(filesize($this->dir.$id.".dat")/4.0);
         }
         
         $meta->bufferlen = 0;
-        if ($this->redis) $meta->bufferlen = $this->redis->llen("phpfina:buffer:$feedid");
+        if ($this->redis) $meta->bufferlen = $this->redis->llen("phpfina:buffer:$id");
         $meta->npoints += $meta->bufferlen;
         $meta->buffer_start = $meta->npoints - $meta->bufferlen;
 
@@ -142,18 +143,18 @@ class PHPFina implements engine_methods
     /**
      * Returns engine occupied size in bytes
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param integer $id The id of the feed to be created
     */
-    public function get_feed_size($feedid)
+    public function get_feed_size($id)
     {
-        if (!$meta = $this->get_meta($feedid)) return false;
-        return (16 + filesize($this->dir.$feedid.".dat"));
+        if (!$meta = $this->get_meta($id)) return false;
+        return (16 + filesize($this->dir.$id.".dat"));
     }
 
     /**
      * Adds a data point to the feed
      *
-     * @param integer $feedid The id of the feed to add to
+     * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
      * @param array $arg optional padding mode argument
@@ -274,12 +275,18 @@ class PHPFina implements engine_methods
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
      *
-     * @param integer $feedid The id of the feed
+     * @param integer $id The id of the feed
      * @param integer $start unix time stamp in ms of the start of the data range
      * @param integer $end unix time stamp in ms of the end of the data rage
      * @param float $scale : numeric value for the scaling 
     */
     public function scalerange($id,$start,$end,$scale){
+    
+        // Save buffer before processing feed data
+        if ($meta->bufferlen>0) {
+            $this->save_buffer($id);
+        }
+    
         //echo("test on $scale not started");
         //case1: NAN
         if(preg_match("/^NAN$/i",$scale)){
@@ -371,31 +378,20 @@ class PHPFina implements engine_methods
     /**
      * Get array with last time and value from a feed
      *
-     * @param integer $feedid The id of the feed
+     * @param integer $id The id of the feed
     */
-    public function lastvalue($feedid)
+    public function lastvalue($id)
     {
-        $feedid = (int)$feedid;
-        $this->log->info("lastvalue() $feedid");
+        $id = (int) $id;
         
-        // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($feedid)) return false;
-
-        if ($meta->npoints>0) {
-            $fh = fopen($this->dir.$feedid.".dat", 'rb');
-            $size = filesize($this->dir.$feedid.".dat");
-            fseek($fh,$size-4);
-            $d = fread($fh,4);
-            fclose($fh);
-
-            $value = null;
-            $val = unpack("f",$d);
-            $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            if (!is_nan($val[1])) {
-                $value = (float) $val[1];
-            } 
-            return array('time'=>(int)$time, 'value'=>$value);
-        }
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta->npoints) return false;
+        
+        $this->open($id, 'rb');
+        $value = $this->read($id,$meta->npoints-1);
+        $this->close($id);
+        return array('time'=>$meta->end_time, 'value'=>$value);
+        
         return false;
     }
 
@@ -404,27 +400,22 @@ class PHPFina implements engine_methods
      * Return the data for the given timerange - cf shared_helper.php
      *
     */
-    public function get_value($name,$time)
+    public function get_value($id,$time)
     {        
+        $id = (int) $id;
         $time = (int) $time;
         
-        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        if (!$meta = $this->get_meta($id)) return false;
         
-        $fh = fopen($this->dir.$name.".dat", 'rb');
-        
-        $value = null;
+        $this->open($id, 'rb');
         $pos = round(($time - $meta->start_time) / $meta->interval);
-        if ($pos>=0 && $pos < $meta->npoints) {
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
-            if (!is_nan($val[1])) $value = (float) $val[1];
-        }
-        
+        $value = $this->read($id,$pos);
+        $this->close($id);
         return $value;
     }
 
     /**
-     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $id The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $interval output data point interval
@@ -436,9 +427,9 @@ class PHPFina implements engine_methods
      * @param integer $limitinterval limit interval to feed interval
      * @return void or array
      */
-    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        $feedid = (int) $feedid;
+        $id = (int) $id;
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
         
@@ -460,7 +451,7 @@ class PHPFina implements engine_methods
         // Load feed meta data
         // If meta data file does not exist exit
         // todo: combine npoints and end_time into get_meta
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($id)) return false;
         
         $fullres = false;
         if ($interval=="original") $interval = $meta->interval;
@@ -510,12 +501,12 @@ class PHPFina implements engine_methods
         }
         
         if ($csv) {
-            $helperclass->csv_header($feedid);
+            $helperclass->csv_header($id);
         } else {
             $data = array();
         }
         
-        $this->open($feedid, 'rb');
+        $this->open($id, 'rb');
  
         // seek only once for full resolution export
         $first_seek = false;
@@ -554,7 +545,7 @@ class PHPFina implements engine_methods
                 $dp_to_read = $pos_end-$pos_start;
                 
                 if ($dp_to_read) {
-                    $tmp = $this->read_range($feedid,$pos_start,$dp_to_read);
+                    $tmp = $this->read_range($id,$pos_start,$dp_to_read);
                     for ($x=0; $x<$dp_to_read; $x++) {
                         if (!is_nan($tmp[$x])) {
                             $sum += $tmp[$x];
@@ -567,7 +558,7 @@ class PHPFina implements engine_methods
                 
             } else {
                 if ($time>=$meta->start_time && $time<=$meta->end_time) {                
-                    $value = $this->read($feedid,$pos_start);
+                    $value = $this->read($id,$pos_start);
                     if (is_nan($value)) $value = null;
                 }
             }
@@ -582,7 +573,7 @@ class PHPFina implements engine_methods
             
             $time = $div_end;
         }
-        $this->close($feedid);
+        $this->close($id);
                 
         if ($csv) {
             $helperclass->csv_close();
@@ -597,13 +588,13 @@ class PHPFina implements engine_methods
     // to ensure consistent results and avoid code duplication
     // mapping of original function calls are left in here for
     // compatibility with rest of emoncms application
-    public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
-        $this->get_data_combined($feedid,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
+    public function csv_export($id,$start,$end,$interval,$average,$timezone,$timeformat) {
+        $this->get_data_combined($id,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
     
     // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
-    {
+    {        
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
         $start = intval($start/1000);
@@ -617,7 +608,7 @@ class PHPFina implements engine_methods
 
         $data = array();
         
-        $fh = fopen($this->dir.$id.".dat", 'rb');
+        $this->open($id, 'rb');
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
@@ -650,21 +641,9 @@ class PHPFina implements engine_methods
                 $split_offset = (int) (((float)$splitpoint) * 3600.0);
 
                 $pos = round((($time+$split_offset) - $meta->start_time) / $meta->interval);
-                $value = null;
-
-                if ($pos>=0 && $pos < $meta->npoints)
-                {
-                    // read from the file
-                    fseek($fh,$pos*4);
-                    $val = unpack("f",fread($fh,4));
-
-                    // add to the data array if its not a nan value
-                    if (!is_nan($val[1])) {
-                        $value = $val[1];
-                    } else {
-                        $value = null;
-                    }
-                }
+                
+                $value = $this->read($id,$pos);
+                if (is_nan($value)) $value = null;
 
                 $split_values[] = $value;
             }
@@ -674,7 +653,7 @@ class PHPFina implements engine_methods
             $date->modify($modify);
             $n++;
         }
-        fclose($fh);
+        $this->close($id);
         return $data;
     }
 
@@ -687,6 +666,11 @@ class PHPFina implements engine_methods
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return false;
+
+        // Save buffer before export
+        if ($meta->bufferlen>0) {
+            $this->save_buffer($id);
+        }
         
         // There is no need for the browser to cache the output
         header("Cache-Control: no-cache, no-store, must-revalidate");
@@ -737,9 +721,9 @@ class PHPFina implements engine_methods
 
 // #### \/ Bellow are engine private methods 
     
-    private function create_meta($feedid, $meta)
+    private function create_meta($id, $meta)
     {
-        $feedname = $feedid . ".meta";
+        $feedname = $id . ".meta";
         $metafile = @fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
@@ -782,6 +766,11 @@ class PHPFina implements engine_methods
         // Load feed meta to fetch start time and interval
         if (!$meta = $this->get_meta($id)) return false;
         
+        // Save local buffer before import
+        if ($meta->bufferlen>0) {
+            $this->save_buffer($id);
+        }
+        
         if ($meta->start_time==0 && $meta->npoints != 0) {
             $this->log->warn("upload() start time is zero but data in feed =$id");
             return false;
@@ -805,9 +794,9 @@ class PHPFina implements engine_methods
         return true;
     }
     
-    public function upload_variable_interval($feedid,$npoints)
+    public function upload_variable_interval($id,$npoints)
     {
-        $feedid = (int) $feedid;
+        $id = (int) $id;
         $npoints = (int) $npoints;
         
         if (!$fh=fopen('php://input','r')) return false;
@@ -817,7 +806,7 @@ class PHPFina implements engine_methods
             $time = $tmp[1];
             $value = $tmp[2];
             //print $time." ".$value."\n";
-            //$this->post_bulk_prepare($feedid,$time,$value,null);
+            //$this->post_bulk_prepare($id,$time,$value,null);
         }
         // $this->post_bulk_save();
 
@@ -829,15 +818,15 @@ class PHPFina implements engine_methods
     /**
      * delete feed .dat, re-create blank .dat and .meta with same interval
      *
-     * @param integer $feedid
+     * @param integer $id
      * @return boolean true == success
      */
-    public function clear($feedid) {
-        $feedid = (int)$feedid;
-        $meta = $this->get_meta($feedid);
+    public function clear($id) {
+        $id = (int)$id;
+        $meta = $this->get_meta($id);
         if (!$meta) return false;
         $meta->start_time = 0;
-        $datafilePath = $this->dir.$feedid.".dat";
+        $datafilePath = $this->dir.$id.".dat";
         $f = @fopen($datafilePath, "r+");
         if (!$f) {
             $this->log->error("unable to open $datafilePath for reading");
@@ -845,32 +834,38 @@ class PHPFina implements engine_methods
         } else {
             ftruncate($f, 0);
             fclose($f);
-        }
-        
-        if ($this->redis) $this->redis->del("phpfina:buffer:$feedid");
+        }        
+        if ($this->redis) $this->redis->del("phpfina:buffer:$id");
             
-        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
-        $this->create($feedid,array('interval'=>$meta->interval));
+        $this->create_meta($id, $meta); // create meta first to avoid $this->create() from creating new one
+        $this->create($id,array('interval'=>$meta->interval));
 
-        $this->log->info("Feed $feedid datapoints deleted");
+        $this->log->info("Feed $id datapoints deleted");
         return array('success'=>true,'message'=>"Feed cleared successfully");
     }
     
     /**
      * clear out data from file before $start_time
      *
-     * @param integer $feedid
+     * @param integer $id
      * @param integer $start_time new timestamp to start the feed data from
      * @return boolean
      */
-    public function trim($feedid,$start_time) {
-        $meta = $this->get_meta($feedid); // get .dat meta info
+    public function trim($id,$start_time) {
+    
+        $meta = $this->get_meta($id); // get .dat meta info
+        
+        // Save local buffer before trim
+        if ($meta->bufferlen>0) {
+            $this->save_buffer($id);
+        }
+        
         $bytesize = $meta->npoints * 4.0; // total .dat file size
         if($bytesize <= 0) return array('success'=>false,'message'=>'Empty data file, nothing to trim.'); // empty data file - nothing to trim
         if($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range'); //new start_time out of range
         
         $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
-        $datFileName = $this->dir.$feedid.'.dat';
+        $datFileName = $this->dir.$id.'.dat';
         // non php file handling
         // ----------------------
         // $tmpFileName = $this->dir.'temp-trim.tmp';
@@ -902,7 +897,7 @@ class PHPFina implements engine_methods
 
         $this->log->info(".data file trimmed to $writtenBytes bytes");
         $meta->start_time = $start_time;
-        $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
+        $this->create_meta($id, $meta); // set the new start time in the feed's meta
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
     
