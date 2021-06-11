@@ -162,7 +162,7 @@ interface engine_methods{
      * @param integer $skipmissing Skip null values from returned data (used by some engines)
      * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
     */
-    public function get_data_combined($feedid,$start,$end,$interval,$skipmissing,$limitinterval);
+    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
     
     /**
      * return data in csv format

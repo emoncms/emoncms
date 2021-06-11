@@ -235,71 +235,6 @@ class PHPTimeSeries implements engine_methods
     }
     
     /**
-     * Return the data for the given timerange - cf shared_helper.php
-     *
-     * @param integer $limitinterval When set to 1 , return the calculated timestamp if difference between calculated and hardcoded timestamps (based on metadata) is less than $interval - When set to 0, return the harcoded timestamp
-    */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
-    {
-        global $settings;
-
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        $interval= (int) $interval;
-
-        // Minimum interval
-        if ($interval<1) $interval = 1;
-        // End must be larger than start
-        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
-        // Maximum request size
-        $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $settings['feed']['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (" . $settings['feed']['max_datapoints'] . "), increase request interval or time range, requested datapoints = $req_dp");
-        
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-
-        if ($filesize==0) return array();
-        
-        $data = array();
-        $time = $start;
-        $atime = 0;
-
-        while ($time<=$end)
-        {
-            $pos = $this->binarysearch($fh,$time,0,$filesize-9);
-            fseek($fh,$pos);
-            $d = fread($fh,9);
-            $array = @unpack("x/Itime/fvalue",$d);
-            $dptime = $array['time'];
-
-            $value = null;
-
-            $lasttime = $atime;
-            $atime = $time;
-
-            if ($limitinterval)
-            {
-                $diff = abs($dptime-$time);
-                if ($diff<$interval) {
-                    $value = $array['value'];
-                } 
-            } else {
-                $value = $array['value'];
-                $atime = $array['time'];
-            }
-            if ($value !== null) $value = (float) $value ;
-
-            if ($atime!=$lasttime) {
-                if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);
-            }
-
-            $time += $interval;
-        }
-
-        return $data;
-    }
-    
-    /**
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
@@ -475,18 +410,6 @@ class PHPTimeSeries implements engine_methods
     // to ensure consistent results and avoid code duplication
     // mapping of original function calls are left in here for
     // compatibility with rest of emoncms application
-    public function get_data_v2($feedid,$start,$end,$interval,$skipmissing,$limitinterval) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
-    }
-    public function get_data_DMY($feedid,$start,$end,$interval,$timezone) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,0,$timezone);
-    }
-    public function get_average($feedid,$start,$end,$interval) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,1);
-    }
-    public function get_average_DMY($feedid,$start,$end,$interval,$timezone) {
-        return $this->get_data_combined($feedid,$start,$end,$interval,1,$timezone);
-    }
     public function csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat) {
         $this->get_data_combined($feedid,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }

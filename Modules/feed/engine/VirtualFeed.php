@@ -100,7 +100,7 @@ class VirtualFeed implements engine_methods
     // Note !!! This early reworked version only implements the basic get_data method
     // it needs to be extended to handle averaged data requests and daily, monthly modes 
     // with the source data generation handled by the respective source feed engines themselves
-    public function get_data_combined($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval)
     {
         $feedid = (int) $feedid;
         $processList = $this->feed->get_processlist($feedid);
@@ -120,17 +120,21 @@ class VirtualFeed implements engine_methods
 
         $data = array();
         $dataValue = null;
-        
-        // Get userid associated with feed
-        $userid = $this->feed->get_field($feedid,"userid");
-        
+                
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
-        global $user;
         require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
+        $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
 
         // Todo: Include here options to select request mode: e.g daily, monthly, averaging
-        $opt_timearray = array('start' => $start, 'end' => $end, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
+        $opt_timearray = array(
+            'sourceid'=>$feedid, 
+            'start' => $start, 
+            'end' => $end, 
+            'interval' => $interval, 
+            'average' => $average, 
+            'timezone' => $timezone,
+            'sourcetype' => ProcessOriginType::VIRTUALFEED
+        );
 
         for ($time=$start; $time<$end; $time+=$interval) {
             $dataValue = $process->input($time, $dataValue, $processList, $opt_timearray); // execute processlist 

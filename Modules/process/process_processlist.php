@@ -1519,7 +1519,7 @@ class Process_ProcessList
         // Load feed to data cache if it has not yet been loaded
         // Todo: Include options to fetch averaged data, or data aligned to daily, monthly interval modes here
         if (!isset($this->data_cache[$feedid])) {
-            $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],0,0);
+            $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],$options['average'],$options['timezone'],'unix',false,0,0);
         }
         
         // Find position of data point that we are interested in
