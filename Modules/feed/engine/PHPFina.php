@@ -237,8 +237,7 @@ class PHPFina implements engine_methods
                 $val = unpack("f",fread($fh,4));
                 $last_val = (float) $val[1];
             } else {
-                $buffer_pos = $last_pos-$meta->buffer_start;
-                $last_val = $this->buffer_get_value($id,$buffer_pos);
+                $last_val = $this->buffer_get_value($id,$last_pos-$meta->buffer_start);
             }
             
             $padding_value = $last_val;

@@ -71,11 +71,9 @@ $_settings = array(
     ,Engine::CASSANDRA    // 10 Apache Cassandra
     ),
 
-    // Redis Low-write mode
+    // In process of rework
     'redisbuffer'   => array(
-        // If enabled is true, requires redis enabled and feedwriter service running
         'enabled' => false,
-        // Number of seconds to wait before write buffer to disk - user selectable option
         'sleep' => 60
     ),
     

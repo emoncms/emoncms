@@ -88,14 +88,6 @@ function admin_controller()
                     	}
                     }
                 }
-                // add custom messages for feedwriter service
-                if(isset($services['feedwriter'])) {
-                    $message = '<font color="red">Service is not running</font>';
-                    if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
-                    }
-                    $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
-                }
                 $redis_info = array();
                 if($settings['redis']['enabled']) {
                     $redis_info = $redis->info();
@@ -504,14 +496,6 @@ function admin_controller()
                             'running' => $value['SubState']==='running'
                         );
                     }
-                }
-                // add custom messages for feedwriter service
-                if(isset($services['feedwriter'])) {
-                    $message = 'Service is not running';
-                    if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
-                    }
-                    $services['feedwriter']['text'] .= $message;
                 }
 
                 $view_data = array(

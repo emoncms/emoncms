@@ -1,7 +1,4 @@
-# feedwriter.php
-'Low write' service will write feed data to engine in batch at certain times
-
-# phpmqtt_input.php
+# emoncms_mqtt.php
 MQTT input interface script, subscribes to MQTT topics. See [MQTT install nodes for documentation](https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md) 
 
 # input_queue_processor.php

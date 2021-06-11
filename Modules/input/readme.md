@@ -7,7 +7,7 @@ With this redis based input que post rate from a sequential free running post be
 To use it just switch the controller's around. Rename que_input_controller.php to input_controller.php
 
 You will also need to use the worker process which works through the queue.
-Which can be found in the scripts directory in the root emoncms folder. Change rpi in `./scripts/feedwriter`:
+Which can be found in the scripts directory in the root emoncms folder.
 
 ```
 RPI_BIN="/path/to/emoncms/scripts/input_queue_processor.php"

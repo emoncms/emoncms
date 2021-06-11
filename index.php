@@ -20,7 +20,7 @@ require "route.php";
 require "param.php";
 require "locale.php";
 
-$emoncms_version = ($settings['feed']['redisbuffer']['enabled'] ? "low-write " : "") . version();
+$emoncms_version = version();
 
 $path = get_application_path();
 $sidebarFixed = true;

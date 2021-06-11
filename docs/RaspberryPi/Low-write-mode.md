@@ -96,23 +96,6 @@ Ensure all redis databases have been removed from `/var/lib/redis` with:
     
     sudo su -c 'rm -rf /var/lib/redis/*'
 
-#### Configure Feedwriter
-
-Install feedwriter service:
-
-    sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
-    sudo systemctl enable feedwriter.service
-    sudo systemctl start feedwriter.service
-    systemctl status feedwriter.service
-
-#### Enable Low-write mode in emoncms
-
-    nano /var/www/emoncms/settings.php
-
-In the section:
-* **Redis**, change `$redis_enabled` from `false` to `true`  
-* **Redis Low-write mode** change `enabled` from `false` to `true`, and _optionally_ change `sleep` to a number (in seconds) which emoncms must cache before writing to disk.
-
 Save & exit, then power off your Raspberry Pi:
 
     sudo poweroff

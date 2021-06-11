@@ -722,17 +722,6 @@ $(window).resize(function() {
 });
 var logrunning = false;
 var updatelogrunning = false;
-<?php if ($feed_settings['redisbuffer']['enabled']) { ?>
-  getBufferSize();
-<?php } ?>
-function getBufferSize() {
-  $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
-    {
-      var data = JSON.parse(result);
-      $("#bufferused").html( data + " feed points pending write");
-    }
-  });
-}
 
 // setInterval() markers
 var updates_log_interval;

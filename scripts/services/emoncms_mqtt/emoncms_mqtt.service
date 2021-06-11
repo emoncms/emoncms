@@ -64,7 +64,7 @@ RestartSec=60
 
 # Tag things in the log
 # If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
-# View with: sudo journalctl -f -u feedwriter -o cat
+# View with: sudo journalctl -f -u emoncms_mqtt -o cat
 SyslogIdentifier=emoncms_mqtt
 
 [Install]
