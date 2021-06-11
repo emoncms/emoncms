@@ -56,7 +56,7 @@ class Feed
                     break;
                 case (string)Engine::PHPFINA :
                     require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
-                    $engines[$e] =  new PHPFina($this->settings['phpfina']);
+                    $engines[$e] =  new PHPFina($this->settings['phpfina'],$this->redis);
                     break;
                 case (string)Engine::REDISBUFFER :
                     require "Modules/feed/engine/RedisBuffer.php";      // Redis buffer for low-write mode
