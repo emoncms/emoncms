@@ -16,6 +16,7 @@ class PHPFina implements engine_methods
     private $pos = array();
 
     private $redis = false;
+    private $buffer_enabled = false;
 
     /**
      * Constructor.
@@ -25,6 +26,7 @@ class PHPFina implements engine_methods
     public function __construct($settings,$redis=false)
     {
         $this->redis = $redis;
+        if ($this->redis) $this->buffer_enabled = true;
         
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
         $this->log = new EmonLogger(__FILE__);
@@ -90,7 +92,7 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$id.".meta");
         unlink($this->dir.$id.".dat");
-        if ($this->redis) $this->redis->del("phpfina:buffer:$id");
+        if ($this->buffer_enabled) $this->buffer_clear($id);
     }
     
     /**
@@ -125,10 +127,10 @@ class PHPFina implements engine_methods
             $meta->npoints += floor(filesize($this->dir.$id.".dat")/4.0);
         }
         
-        $meta->bufferlen = 0;
-        if ($this->redis) $meta->bufferlen = $this->redis->llen("phpfina:buffer:$id");
-        $meta->npoints += $meta->bufferlen;
-        $meta->buffer_start = $meta->npoints - $meta->bufferlen;
+        $meta->buffer_length = 0;
+        if ($this->buffer_enabled) $meta->buffer_length = $this->buffer_get_length($id);
+        $meta->npoints += $meta->buffer_length;
+        $meta->buffer_start = $meta->npoints - $meta->buffer_length;
 
         if ($meta->start_time>0 && $meta->npoints==0) {
             $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
@@ -205,8 +207,8 @@ class PHPFina implements engine_methods
                 fwrite($fh,pack("f",$value));
                 fclose($fh);
             } else {
-                // Update a value in the buffer
-                $this->redis->lset("phpfina:buffer:$id",$pos-$meta->buffer_start,$value);
+                $buffer_pos = $pos-$meta->buffer_start;
+                $this->buffer_set_value($id,$buffer_pos,$value);
             }
             return $value;
         }
@@ -235,14 +237,15 @@ class PHPFina implements engine_methods
                 $val = unpack("f",fread($fh,4));
                 $last_val = (float) $val[1];
             } else {
-                $last_val = $this->redis->lrange("phpfina:buffer:$id",$last_pos,$last_pos)[0]; 
+                $buffer_pos = $last_pos-$meta->buffer_start;
+                $last_val = $this->buffer_get_value($id,$buffer_pos);
             }
             
             $padding_value = $last_val;
             $div = ($value - $last_val) / ($padding+1);
         }
         
-        if (!$this->redis) {
+        if (!$this->buffer_enabled) {
             // If the buffer is not enabled write new datapoint and padding directly to data file
             $buffer = "";
             for ($i=0; $i<$padding; $i++) {
@@ -257,16 +260,16 @@ class PHPFina implements engine_methods
             // If the buffer is enabled write new datapoint and padding to the buffer
             for ($i=0; $i<$padding; $i++) {
                 if ($padding_mode!=null) $padding_value += $div;
-                $this->redis->rpush("phpfina:buffer:$id",$padding_value);
+                $this->buffer_append($id,$padding_value);
             }
-            $this->redis->rpush("phpfina:buffer:$id",$value);
+            $this->buffer_append($id,$value);
         }
         
         fclose($fh);
         
         // Persist buffer
-        if (($meta->bufferlen*$meta->interval)>=300) {
-            $this->save_buffer($id);
+        if (($meta->buffer_length*$meta->interval)>=300) {
+            $this->buffer_save($id);
         }
         return $value;
     }
@@ -283,8 +286,8 @@ class PHPFina implements engine_methods
     public function scalerange($id,$start,$end,$scale){
     
         // Save buffer before processing feed data
-        if ($meta->bufferlen>0) {
-            $this->save_buffer($id);
+        if ($meta->buffer_length) {
+            $this->buffer_save($id);
         }
     
         //echo("test on $scale not started");
@@ -668,8 +671,8 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($id)) return false;
 
         // Save buffer before export
-        if ($meta->bufferlen>0) {
-            $this->save_buffer($id);
+        if ($meta->buffer_length) {
+            $this->buffer_save($id);
         }
         
         // There is no need for the browser to cache the output
@@ -767,8 +770,8 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($id)) return false;
         
         // Save local buffer before import
-        if ($meta->bufferlen>0) {
-            $this->save_buffer($id);
+        if ($meta->buffer_length) {
+            $this->buffer_save($id);
         }
         
         if ($meta->start_time==0 && $meta->npoints != 0) {
@@ -835,7 +838,7 @@ class PHPFina implements engine_methods
             ftruncate($f, 0);
             fclose($f);
         }        
-        if ($this->redis) $this->redis->del("phpfina:buffer:$id");
+        if ($meta->buffer_length) $this->buffer_clear($id);
             
         $this->create_meta($id, $meta); // create meta first to avoid $this->create() from creating new one
         $this->create($id,array('interval'=>$meta->interval));
@@ -856,8 +859,8 @@ class PHPFina implements engine_methods
         $meta = $this->get_meta($id); // get .dat meta info
         
         // Save local buffer before trim
-        if ($meta->bufferlen>0) {
-            $this->save_buffer($id);
+        if ($meta->buffer_length) {
+            $this->buffer_save($id);
         }
         
         $bytesize = $meta->npoints * 4.0; // total .dat file size
@@ -924,7 +927,7 @@ class PHPFina implements engine_methods
         // If in tmpfs data range read from tmp file
         if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
             $buffer_pos = $pos-$this->meta[$id]->buffer_start;
-            $value = $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
+            $value = $this->buffer_get_value($id,$buffer_pos);
             if ($value=="NAN") $value = null; else $value = (float) $value;
             return $value;
         }
@@ -968,15 +971,34 @@ class PHPFina implements engine_methods
      * Abstracted buffer
      *
      */
-    public function save_buffer($id) 
+    public function buffer_get_length($id) {
+        return $this->redis->llen("phpfina:buffer:$id");
+    }
+    
+    public function buffer_clear($id) {
+        $this->redis->del("phpfina:buffer:$id");
+    }
+     
+    public function buffer_set_value($id,$pos,$value) {
+        $this->redis->lset("phpfina:buffer:$id",$pos,$value);
+    }
+    
+    public function buffer_get_value($id,$pos) {
+        return $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
+    }
+    
+    public function buffer_append($id,$value) {
+        $this->redis->rpush("phpfina:buffer:$id",$value);
+    }
+                  
+    public function buffer_save($id) 
     {
         // 1. read contents of buffer
-        $bufferlen = $this->redis->llen("phpfina:buffer:$id");
-        if (!$bufferlen) return false;
+        if (!$buffer_length = $this->buffer_get_length($id)) return false;
         
         $buffer = "";
-        $values = $this->redis->lrange("phpfina:buffer:$id",0,$bufferlen);
-        for ($n=0; $n<$bufferlen; $n++) {
+        $values = $this->redis->lrange("phpfina:buffer:$id",0,$buffer_length);
+        for ($n=0; $n<$buffer_length; $n++) {
             $value = $values[$n];
             if ($value=='NAN') $value = NAN;
             $buffer .= pack("f",$value);
