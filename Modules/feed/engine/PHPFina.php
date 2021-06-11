@@ -927,9 +927,7 @@ class PHPFina implements engine_methods
         // If in tmpfs data range read from tmp file
         if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
             $buffer_pos = $pos-$this->meta[$id]->buffer_start;
-            $value = $this->buffer_get_value($id,$buffer_pos);
-            if ($value=="NAN") $value = null; else $value = (float) $value;
-            return $value;
+            return $this->buffer_get_value($id,$buffer_pos);
         }
         return NAN;
     }
@@ -951,11 +949,7 @@ class PHPFina implements engine_methods
         // If in tmpfs data range read from tmp file
         if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
             $values = $this->buffer_get_values($id,$pos-$this->meta[$id]->buffer_start,$from_tmp);
-            for ($i=0; $i<count($values); $i++) {
-                if ($values[$i]=='NAN') $values[$i] = null; else $values[$i] = (float) $values[$i];
-            }
             $tmp = array_merge($tmp,$values);
-            $this->pos[$id] = $pos+$from_tmp;
         }
         return $tmp;
     }
@@ -984,11 +978,17 @@ class PHPFina implements engine_methods
     }
     
     public function buffer_get_value($id,$pos) {
-        return $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
+        $value = $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
+        if ($value=="NAN") $value = NAN; else $value = (float) $value;
+        return $value;
     }
     
     public function buffer_get_values($id,$start_pos,$end_pos) {
-        return $this->redis->lrange("phpfina:buffer:$id",$start_pos,$end_pos);
+        $values = $this->redis->lrange("phpfina:buffer:$id",$start_pos,$end_pos);
+        for ($i=0; $i<count($values); $i++) {
+            if ($values[$i]=='NAN') $values[$i] = NAN; else $values[$i] = (float) $values[$i];
+        }
+        return $values;
     }
     
     public function buffer_append($id,$value) {
@@ -1002,10 +1002,8 @@ class PHPFina implements engine_methods
         
         $buffer = "";
         $values = $this->buffer_get_values($id,0,$buffer_length);
-        for ($n=0; $n<$buffer_length; $n++) {
-            $value = $values[$n];
-            if ($value=='NAN') $value = NAN;
-            $buffer .= pack("f",$value);
+        for ($i=0; $i<count($values); $i++) {
+            $buffer .= pack("f",$values[$n]);
         }
         
         // 2. persist to disk
