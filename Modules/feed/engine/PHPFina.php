@@ -950,7 +950,7 @@ class PHPFina implements engine_methods
         }
         // If in tmpfs data range read from tmp file
         if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
-            $values = $this->redis->lrange("phpfina:buffer:$id",$pos-$this->meta[$id]->buffer_start,$from_tmp);
+            $values = $this->buffer_get_values($id,$pos-$this->meta[$id]->buffer_start,$from_tmp);
             for ($i=0; $i<count($values); $i++) {
                 if ($values[$i]=='NAN') $values[$i] = null; else $values[$i] = (float) $values[$i];
             }
@@ -987,6 +987,10 @@ class PHPFina implements engine_methods
         return $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
     }
     
+    public function buffer_get_values($id,$start_pos,$end_pos) {
+        return $this->redis->lrange("phpfina:buffer:$id",$start_pos,$end_pos);
+    }
+    
     public function buffer_append($id,$value) {
         $this->redis->rpush("phpfina:buffer:$id",$value);
     }
@@ -997,7 +1001,7 @@ class PHPFina implements engine_methods
         if (!$buffer_length = $this->buffer_get_length($id)) return false;
         
         $buffer = "";
-        $values = $this->redis->lrange("phpfina:buffer:$id",0,$buffer_length);
+        $values = $this->buffer_get_values($id,0,$buffer_length);
         for ($n=0; $n<$buffer_length; $n++) {
             $value = $values[$n];
             if ($value=='NAN') $value = NAN;
@@ -1010,7 +1014,7 @@ class PHPFina implements engine_methods
         fclose($fh);
         
         // 3. clear buffer
-        $this->redis->del("phpfina:buffer:$id");
+        $this->buffer_clear($id);
     }
 
     /**
