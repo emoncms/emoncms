@@ -12,7 +12,7 @@ class PHPFina implements engine_methods
     private $maxpadding = 3153600; // 1 year @ 10s
     
     private $fh = array();
-    private $meta = array();
+    public $meta = array();
     private $pos = array();
 
     private $redis = false;
@@ -908,8 +908,12 @@ class PHPFina implements engine_methods
      *
      */
     public function open($id,$mode) {
-        $this->meta[$id] = $this->get_meta($id);
-        $this->fh[$id] = fopen($this->dir.$id.".dat", $mode);
+        if (!$this->meta[$id] = $this->get_meta($id)) return false;
+        
+        if (!$this->fh[$id] = fopen($this->dir.$id.".dat", $mode)) {
+            $this->log->error("PHPFina could not open $id.dat");      
+            return false;
+        }
         $this->pos[$id] = 0;
         return $this->meta[$id];
     }
@@ -1006,6 +1010,9 @@ class PHPFina implements engine_methods
         }
         
         // 2. persist to disk
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // CONSIDER using c+ here and writing from defined position!!
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         $fh = fopen($this->dir.$id.".dat", "a");
         fwrite($fh, $buffer);
         fclose($fh);
