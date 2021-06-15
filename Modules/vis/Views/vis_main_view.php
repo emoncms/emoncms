@@ -195,7 +195,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
             multigraphs_name[multigraphs[indice]['id']] = multigraphs[indice]['name'];
             options +="<option value='"+multigraphs[indice]['id']+"'>"+multigraphs[indice]['id']+": "+multigraphs[indice]['name']+"</option>";
         }
-        var out = "<div class='alert'>No multigraphs created yet, create one via the multigraph tab !</div>";
+        var out = "<option>create a multigraph with a Temp. feed and a RH feed</div>";
         if (options){
             out = "<option>Select multigraph:</option>"+options;
         }
