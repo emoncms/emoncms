@@ -148,7 +148,7 @@
         // --------------------------------------------------------------------------------
         'psychrograph' => array ('label'=>dgettext('vis_messages','Psychrometric Diagram'), 'action'=>'psychrograph', 'options'=>array(
             array('mid',dgettext('vis_messages','mid'),8),
-            array('hrtohabs',dgettext('vis_messages','% to abso.'),4),
+            array('hrtohabs',dgettext('vis_messages','% to abso.'),4, 1),
             array('givoni',dgettext('vis_messages','givoni style?'),4)
         ))
         // --------------------------------------------------------------------------------     
