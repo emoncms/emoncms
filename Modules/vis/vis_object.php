@@ -143,7 +143,7 @@
             array('feedid',dgettext('vis_messages','feed'),1)
         )),
 		
-		// --------------------------------------------------------------------------------
+        // --------------------------------------------------------------------------------
         // psychrographic diagrams to appreciate summer confort
         // --------------------------------------------------------------------------------
         'psychrograph' => array ('label'=>dgettext('vis_messages','Psychrometric Diagram'), 'action'=>'psychrograph', 'options'=>array(
