@@ -114,6 +114,18 @@ function vis_widgetlist(){
       "optionsdata":[multigraphsDropBoxOptions], // Gets multigraphs from vis_widget.php multigraphsDropBoxOptions variable
       "html":""
     },
+	
+	"psychrograph":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["mid","hrtohabs","givoni"],
+      "optionstype":["dropbox","boolean","boolean"],
+      "optionsname":[_Tr_Vis("Multigraph"),_Tr_Vis("calulate habs"),_Tr_Vis("view givoni graph")],
+      "optionshint":[_Tr_Vis("Managed on Visualization module"),_Tr_Vis(""),_Tr_Vis("")],
+      "optionsdata":[multigraphsDropBoxOptions],
+      "html":""
+    },
 
     "timestoredaily":
     {
