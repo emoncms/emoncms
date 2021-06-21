@@ -64,7 +64,7 @@ class Feed
                     break;
                 case (string)Engine::PHPTIMESERIES :
                     require "Modules/feed/engine/PHPTimeSeries.php";    // Variable interval no averaging
-                    $engines[$e] = new PHPTimeSeries($this->settings['phptimeseries']);
+                    $engines[$e] = new PHPTimeSeries($this->settings['phptimeseries'],$this->redis);
                     break;
                 case (string)Engine::MYSQLMEMORY : 
                     require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
