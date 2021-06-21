@@ -121,7 +121,7 @@ function admin_controller()
                     'emoncms_logfile'=>$emoncms_logfile,
                     'redis_info'=>$redis_info,
                     'feed_settings'=>$settings['feed'],
-                    'emoncms_modules'=>$system['emoncms_modules'],
+                    'component_summary'=>$system['component_summary'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),
                     'mqtt_version'=>Admin::mqtt_version(),
                     'rpi_info'=> Admin::get_rpi_info(),

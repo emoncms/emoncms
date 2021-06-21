@@ -300,7 +300,6 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
         <dl class="row">
             <?php echo row(_('Version'),$emoncms_version); ?>
-            <?php echo row(_('Modules'), $emoncms_modules); ?>
             <?php
             $git_parts = array(
                 row(_('URL'), $system['git_URL'],'','overflow-hidden'),
@@ -310,6 +309,7 @@ listItem;
             $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
         ?>
             <?php echo row(_('Git'), $git_details); ?>
+            <?php echo row(_('Components'), $component_summary); ?>
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
