@@ -6,22 +6,22 @@ class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     public $log;
-    private $fh = array();
-    private $npoints = array();
-    private $pos = array();
+    private $redis = false;
+    private $buffer_enabled = false;
     
     /**
      * Constructor.
      *
      * @api
     */
-    public function __construct($settings)
+    public function __construct($settings,$redis)
     {
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
         $this->log = new EmonLogger(__FILE__);
+        $this->redis = $redis;
+        if ($this->redis) $this->buffer_enabled = true;
     }
-
-// #### \/ Below are required methods
+    
     /**
      * Create feed
      *
@@ -30,8 +30,9 @@ class PHPTimeSeries implements engine_methods
     */
     public function create($id,$options)
     {
-        if (!$this->open($id,"a")) return false;
-        $this->close($id);
+        $id = (int) $id;
+        if (!$fh = $this->open($id,"a")) return false;
+        fclose($fh);
         return true;
     }
 
@@ -42,7 +43,25 @@ class PHPTimeSeries implements engine_methods
     */
     public function delete($id)
     {
+        $id = (int) $id;
+        
         unlink($this->dir."feed_$id.MYD");
+        if ($this->buffer_enabled) {
+            $this->redis->del("vits:$id");
+        }
+    }
+    
+    public function trim($id,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    
+    public function clear($id){
+        $id = (int) $id;
+        
+        if (!$fh = $this->open($id,"r+")) return false;
+        ftruncate($fh, 0);
+        fclose($fh);
+        return true;
     }
 
     /**
@@ -52,6 +71,8 @@ class PHPTimeSeries implements engine_methods
     */
     public function get_meta($id)
     {
+        $id = (int) $id;
+        
         $meta = new stdClass();
         $meta->id = $id;
         
@@ -59,21 +80,23 @@ class PHPTimeSeries implements engine_methods
         $meta->end_time = 0;
         $meta->interval = 1;
         
-        $this->open($id,'rb');
-        if ($this->npoints[$id]) {
+        if (!$fh = $this->open($id,'rb')) return false;
+
+        if ($npoints = $this->get_npoints($id)) {
             // Start time
-            $array = $this->read($id,0);
-            $meta->start_time = $array['time'];
+            $dp = unpack("x/Itime/fvalue",fread($fh,9));
+            $meta->start_time = $dp['time'];
             // End time
-            $array = $this->read($id,$this->npoints[$id]-1);
-            $meta->end_time = $array['time'];
-            $meta->end_value = $array['value'];
+            fseek($fh,($npoints-1)*9);
+            $dp = unpack("x/Itime/fvalue",fread($fh,9));            
+            $meta->end_time = $dp['time'];
+            $meta->end_value = $dp['value'];
             
             if ($meta->end_time>$meta->start_time) {
-                $meta->interval = ($meta->end_time - $meta->start_time) / ($this->npoints[$id]-1);
+                $meta->interval = ($meta->end_time - $meta->start_time) / ($npoints-1);
             }
         }
-        $this->close($id);
+        fclose($fh);
         return $meta;
     }
 
@@ -84,17 +107,19 @@ class PHPTimeSeries implements engine_methods
     */
     public function get_feed_size($id)
     {
+        $id = (int) $id;
+        clearstatcache($this->dir."feed_$id.MYD");
         return filesize($this->dir."feed_$id.MYD");
     }
 
-    // POST OR UPDATE
-    //
-    // - fix if filesize is incorrect (not a multiple of 9)
-    // - append if file is empty
-    // - append if datapoint is in the future
-    // - update if datapoint is older than last datapoint value
+    
+    private function get_npoints($id) {
+        clearstatcache($this->dir."feed_$id.MYD");
+        return floor(@filesize($this->dir."feed_$id.MYD")/9.0);
+    }
+    
     /**
-     * Adds a data point to the feed
+     * Adds or updates a datapoint
      *
      * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
@@ -107,35 +132,83 @@ class PHPTimeSeries implements engine_methods
         $time = (int) $time;
         $value = (float) $value;
         
-        if (!$this->open($id,'c+')) return false;
-        $this->post_open($id,$time,$value);
-        $this->close($id);
-        
-        return $value;
+        if ($this->buffer_enabled) {
+            return $this->post_buffer($id,$time,$value);
+        } else {
+            return $this->post_direct($id,$time,$value);  
+        }
     }
-    
-    // Pre opened
-    public function post_open($id,$time,$value)
+
+    private function post_direct($id,$time,$value)
     {
+        if (!$fh = $this->open($id,'c+')) return false;
+        
         // Check if datapoint is in the past 
-        if ($this->npoints[$id]) {
-            $dp = $this->read($id,$this->npoints[$id]-1);
-            if ($time<=$dp['time']) {
-                // if not: search for existing datapoint at time
-                $pos = $this->binarysearch($id,$time,true);
-                if ($pos!=-1) {
+        if ($npoints = $this->get_npoints($id)) {
+            fseek($fh,($npoints-1)*9);
+            $dp = @unpack("x/Itime/fvalue",fread($fh,9));
+
+            if ($time==$dp['time']) {
+                // if last dp we know position
+                fseek($fh,($npoints-1)*9);
+                fwrite($fh,pack("CIf",249,$time,$value));
+                
+            } else if ($time<$dp['time']) {
+                // if older: search for datapoint at specified time
+                $dp = $this->binarysearch($fh,$time,$npoints,true);
+                if ($dp!=-1) {
                     // update existing datapoint
-                    $this->write($id,$pos,$time,$value);
+                    fseek($fh, $dp[0]*9);
+                    fwrite($fh,pack("CIf",249,$time,$value));                
                 }
-                $this->close($id);
+                fclose($fh);
                 return $value;
             }
         }
-
         // Otherwise append a new value
-        $this->write($id,$this->npoints[$id],$time,$value);
-        $this->npoints[$id]++;
-    }    
+        fseek($fh, $npoints*9);
+        fwrite($fh,pack("CIf",249,$time,$value));
+        fclose($fh);
+        return $value;
+    }
+    
+    private function post_buffer($id,$time,$value)
+    { 
+        $npoints = $this->get_npoints($id);
+        $buffer_start_time = $this->buffer_get_start_time($id);
+        
+        $buffer_end_time = false;
+        // Update datapoint if in the buffer 
+        if ($buffer_start_time && $time>=$buffer_start_time) {
+            $buffer_end_time = $this->buffer_get_end_time($id);
+            if ($time<=$buffer_end_time) {
+                // Replace with updated value
+                $this->buffer_update($id,$time,$value);
+                return $value;
+            }
+        } else if ($npoints) {
+            // Update datapoint if in the persisted file
+            if (!$fh = $this->open($id,'c+')) return false;
+            $dp = $this->binarysearch($fh,$time,$npoints,true);
+            if ($dp!=-1) {
+                if ($dp[2]!=$value) {
+                    // update existing datapoint
+                    fseek($fh, $dp[0]*9);
+                    fwrite($fh,pack("CIf",249,$time,$value));
+                }
+                fclose($fh);   
+                return $value;
+            }
+        }
+        $this->redis->zAdd("vits:$id",$time,$value);
+        
+        // Auto save after set period
+        if (($buffer_end_time-$buffer_start_time)>=300) {
+            $this->buffer_save($id);
+        }
+        
+        return $value;
+    }
 
     /**
      * Get array with last time and value from a feed
@@ -145,30 +218,49 @@ class PHPTimeSeries implements engine_methods
     public function lastvalue($id)
     {
         $id = (int) $id;
-        $dp = false;
         
-        if (!$this->open($id,'rb')) return false;
-        if ($this->npoints[$id]) {
-            $dp = $this->read($id,$this->npoints[$id]-1);
+        $dp = $this->redis->zRange("vits:$id",-1,-1, array('withscores' => true));
+        if (count($dp)) {
+            $value = key($dp);
+            $time = $dp[$value];
+            return array('time'=>$time, 'value'=>$value);
+        } else {
+            if (!$npoints = $this->get_npoints($id)) return false;
+            if (!$fh = $this->open($id,'rb')) return false;
+            
+            fseek($fh,($npoints-1)*9);
+            $dp = unpack("x/Itime/fvalue",fread($fh,9));
+            fclose($fh);
+            return array('time'=>$dp['time'], 'value'=>$dp['value']);
         }
-        $this->close($id);
-        return $dp;
     }
 
+    /**
+     * Get feed value at specified time
+     *
+     * @param integer $id The id of the feed
+     * @param integer $time The unix timestamp of the data point, in seconds
+    */
     public function get_value($id,$time)
     {
         $id = (int) $id;
         $time = (int) $time;
-        $value = false;
-         
-        if (!$this->open($id,'rb')) return false;
-        if ($this->npoints[$id]) {
-            $pos = $this->binarysearch($id,$time);
-            if ($pos==-1) return false;
-            $dp = $this->read($id,$pos);
-            $value = $dp['value'];
+        $value = null;
+        
+        $buffer_start_time = $this->buffer_get_start_time($id);
+        if ($buffer_start_time!==false && $time>=$buffer_start_time) {
+            // Fetch value from buffer
+            $dp = $this->redis->zRangeByScore("vits:$id",$time,"+inf", array('limit' => array(0,1)));
+            if (count($dp)>0) $value = $dp[0];
+        } else {
+            // Fetch value from file
+            if (!$fh = $this->open($id,'rb')) return false;        
+            if ($npoints = $this->get_npoints($id)) {
+                $dp = $this->binarysearch($fh,$time,$npoints,false);
+                if ($dp!=-1) $value = $dp[2];
+            }
+            fclose($fh);
         }
-        $this->close($id);
         return $value;
     }
     
@@ -247,15 +339,24 @@ class PHPTimeSeries implements engine_methods
         } else {
             $data = array();
         }
+
+        $npoints = $this->get_npoints($id);
         
-        if (!$this->open($id,'rb')) return false;
+        if (!$fh = $this->open($id,'rb')) return false;
         
         // Get starting position
-        $pos_start = $this->binarysearch($id,$time);
+        if ($average) {
+            $start_dp = $this->binarysearch($fh,$time,$npoints);
+            if ($start_dp==-1) {
+                $start_dp = array($npoints);
+            }
+        }
+        
+        $buffer_start_time = $this->buffer_get_start_time($id);
         
         if ($interval!="original") {
             while($time<=$end)
-            {   
+            {               
                 $div_start = $time;
                 
                 // Advance position
@@ -266,21 +367,83 @@ class PHPTimeSeries implements engine_methods
                     $div_end = $date->getTimestamp();
                 }
                 
-                // find end position (which is also the next start position)
-                // pos_end - pos_start = number of datapoints to average
-                $pos_end = $this->binarysearch($id,$div_end);
-                $dp_to_read = ($pos_end-$pos_start);
-                
                 $value = null;
                 
-                if ($average && $pos_start!=-1 && $dp_to_read>1) {
-                    $value = $this->sum_range($id,$pos_start,$dp_to_read);
-                } else {
-                    $dp = $this->read($id,$pos_start);
-                    if (abs($dp['time']-$div_start)<$interval_check) {
-                        $value = $dp['value'];
+                if (!$average) {
+                    if ($buffer_start_time!==false && $time>=$buffer_start_time) {
+                        // Find closest value to $time within this interval
+                        $dp = $this->redis->zRangeByScore("vits:$id",$time,($time+$interval-1), array('limit' => array(0,1)));
+                        if (count($dp)>0) $value = $dp[0];
+                    } else {
+                        // returns nearest datapoint that is >= search time
+                        $result = $this->binarysearch($fh,$time,$npoints);
+                        if ($result!=-1) {
+                            // check that datapoint is within interval
+                            if (($result[1]-$time)<$interval) {
+                                $value = $result[2];
+                            }
+                        }
                     }
-                    if (is_nan($value)) $value = null;
+                } else {
+                    $sum = 0;
+                    $n = 0;
+
+                    if ($buffer_start_time===false || $div_start<$buffer_start_time) {
+                    
+                        $next_start_dp = $this->binarysearch($fh,$div_end,$npoints);
+                        
+                    
+                        // if end_dp is -1 it means we have a search time that
+                        // is greater than the last datapoint in the series
+                        // if this is the case we read up to the last datapoint
+                        if ($next_start_dp==-1) {
+                            $next_start_dp = array($npoints);
+                        } else if ($next_start_dp[1]>$div_end) {
+                            // withing valid data range end_dp should always be
+                            // greater or equall to end. If it is greater then 
+                            // we need to limit the range to the previous datapoint
+                            $next_start_dp[0] -= 1;
+                            // if end_dp is now less than 0 it means the end search
+                            // time is before the start of our timeseries
+                            if ($next_start_dp[0]<0) {
+                                // return null;
+                                $next_start_dp[0] = 0;
+                            }       
+                        }      
+                        
+                        $len = $next_start_dp[0]-$start_dp[0];
+                        if ($len) {
+                            fseek($fh,$start_dp[0]*9);
+                            $s = fread($fh,$len*9);
+                            $s2 = "";
+                            for ($x=0; $x<$len; $x++) {
+                                $s2 .= substr($s,($x*9)+5,4);
+                            }
+                            $tmp = unpack("f*",$s2);
+                            for ($x=0; $x<count($tmp); $x++) {
+                                if (!is_nan($tmp[$x+1])) {
+                                    // print $tmp[$x+1]."\n";
+                                    $sum += $tmp[$x+1];
+                                    $n++;
+                                }
+                            }
+                        }
+                        
+                        $start_dp[0] = $next_start_dp[0];    
+                    }
+                    
+                    if ($buffer_start_time!==false && $div_end>=$buffer_start_time) {
+
+                        $dps = $this->redis->zRangeByScore("vits:$id",$time,$div_end-1);
+                        foreach ($dps as $i=>$v) {
+                            // print $v." B\n";
+                            $sum += $v;
+                            $n ++;
+                        }
+                    } 
+                    
+                    if ($n>0) $value = $sum / $n;
+                
                 }
                 
                 if ($value!==null || $skipmissing===0) {
@@ -292,14 +455,14 @@ class PHPTimeSeries implements engine_methods
                 }
                 
                 $time = $div_end;
-                $pos_start = $pos_end;
             }
         } else {
             // Export original data
+            /**
             $n = 0;
-            fseek($this->fh[$id],0);
-            while($time<=$end && $n<$this->npoints[$id]) {
-                $dp = unpack("x/Itime/fvalue",fread($this->fh[$id],9));
+            fseek($fh,0);
+            while($time<=$end && $n<$npoints) {
+                $dp = unpack("x/Itime/fvalue",fread($fh,9));
                 $time = $dp['time']; $value = $dp['value'];
                 
                 if ($csv) { 
@@ -308,10 +471,10 @@ class PHPTimeSeries implements engine_methods
                     $data[] = array($time*1000,$value);
                 }
                 $n++;
-            }
+            }*/
         }
         
-        $this->close($id);
+        fclose($fh);
         
         if ($csv) {
             $helperclass->csv_close();
@@ -321,11 +484,7 @@ class PHPTimeSeries implements engine_methods
         }
     }
     
-    // The following were all previously implemented seperatly
-    // and are now replaced by the combined implementation above 
-    // to ensure consistent results and avoid code duplication
-    // mapping of original function calls are left in here for
-    // compatibility with rest of emoncms application
+    // Remove use combined method directly
     public function csv_export($id,$start,$end,$interval,$average,$timezone,$timeformat) {
         $this->get_data_combined($id,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
@@ -351,12 +510,9 @@ class PHPTimeSeries implements engine_methods
         // Write to output stream
         $fh = @fopen( 'php://output', 'w' );
 
-        $primaryfeedname = $this->dir.$feedname;
-        $primary = fopen($primaryfeedname, 'rb');
-        $primarysize = filesize($primaryfeedname);
-
-        //$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
-
+        if (!$primary = $this->open($id,'rb')) return false;
+        $primarysize = $this->get_npoints($id)*9;
+        
         $localsize = $start;
         $localsize = intval($localsize / 9) * 9;
         if ($localsize<0) $localsize = 0;
@@ -379,13 +535,8 @@ class PHPTimeSeries implements engine_methods
         exit;
     }
 
-// #### /\ Above are required methods
-    
-// #### \/ Below engine public specific methods
-
-// #### \/ Bellow are engine private methods
-    
-    private function binarysearch($id,$time,$exact=false)
+    // returns nearest datapoint that is >= search time
+    private function binarysearch($fh,$time,$npoints,$exact=false)
     {
         // Binary search works by finding the file midpoint and then asking if
         // the datapoint we want is in the first half or the second half
@@ -399,142 +550,56 @@ class PHPTimeSeries implements engine_methods
         // 30 here is our max number of itterations
         // the position should usually be found within
         // 20 itterations.
-        if ($this->npoints[$id]==0) return -1;
-        $start = 0; $end = $this->npoints[$id]-1;
-        $last = -1;
+        
+        if ($npoints==0) return -1;
+        $start = -1; $end = $npoints-1;
         
         for ($i=0; $i<30; $i++)
         {
-            // Get the value in the middle of our range
-            $mid = $start + round(($end-$start)*0.5);
-            if ($mid==$last) return -1;
+            $mid = $start + ceil(($end-$start)*0.5);
+            if ($mid<0) {
+                print "ERROR: mid<0 should not happen\n";
+            }
 
-            fseek($this->fh[$id],$mid*9);
-            $d = fread($this->fh[$id],9);
-            $array = @unpack("x/Itime/fvalue",$d);
-            $this->pos[$id] = $mid+1;
+            fseek($fh,$mid*9);
+            $dp = @unpack("x/Itime/fvalue",fread($fh,9));
 
-            // If it is the value we want then exit
-            if ($time==$array['time']) return $mid;
-
-            // If the query range is as small as it can be 1 datapoint wide: exit
-            if (($end-$start)==1) {
-                if (!$exact) {
-                    return ($mid-1);
-                } else {
-                    return -1;
-                }
+            if ($dp['time']==$time) {
+                return array($mid,$dp['time'],$dp['value']);
             }
             
-            // If the time of the last middle of the range is
-            // more than our query time then next itteration is lower half
-            // less than our query time then nest ittereation is higher half
-            if ($time>$array['time']) $start = $mid; else $end = $mid;
+            if (($end-$start)==1) {
+                if (!$exact && $dp['time']>$time) {
+                    return array($mid,$dp['time'],$dp['value']);
+                }
+                return -1;
+            }
             
-            $last = $mid;
+            if ($time>$dp['time']) $start = $mid; else $end = $mid;
         }
         return -1;
     }
 
-    public function trim($id,$start_time){
-        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
-    }
-    
-    public function clear($id){
-    
-        if (!$this->open($id,"r+")) return false;
-        ftruncate($this->fh[$id], 0);
-        $this->close($id);
-        
-        $this->npoints[$id] = 0;
-        $this->pos[$id] = 0;
-        
-        return true;
-    }
-
     /**
-     * Abstracted open, read and close methods
+     * Abstracted open method
      *
      */
-    public function open($id,$mode) {
-
-        $this->pos[$id] = 0;
-
+    private function open($id,$mode) {
+    
         $filename = $this->dir."feed_$id.MYD";
-        if (!$this->fh[$id] = @fopen($filename,$mode)) {
+        if (!$fh = @fopen($filename,$mode)) {
             $error = error_get_last();
             $this->log->warn("PHPTimeSeries: could not open $filename ".$error['message']);
             return false;
         }
 
-        if (!flock($this->fh[$id], LOCK_EX)) {
+        if (!flock($fh, LOCK_EX)) {
             $this->log->warn("PHPTimeSeries: $filename locked by another process");
-            fclose($this->fh[$id]);
+            fclose($fh);
             return false;
         }
         
-        clearstatcache($this->dir."feed_$id.MYD");
-        $this->npoints[$id] = floor(filesize($this->dir."feed_$id.MYD")/9.0);
-        
-        return true;
-    }
-    
-    public function write($id,$pos,$time,$value) {
-        if ($pos!=$this->pos[$id]) fseek($this->fh[$id], $pos*9);
-        fwrite($this->fh[$id], pack("CIf",249,$time,$value));
-        $this->pos[$id] = $pos+1;
-    }
-    
-    public function read($id,$pos) {
-        if ($pos!=$this->pos[$id]) fseek($this->fh[$id],$pos*9);
-        $timevalue = unpack("x/Itime/fvalue",fread($this->fh[$id],9));
-        $this->pos[$id] = $pos+1;
-        return $timevalue;
-    }
-    
-    public function read_range($id,$pos,$len=1) {
-        fseek($this->fh[$id],$pos);
-        // read division in one block, much faster!
-        $s = fread($this->fh[$id],$len*9.0);
-        $s2 = "";
-        for ($x=0; $x<$len; $x++) {
-            $s2 .= substr($s,($x*9)+5,4);
-        }
-        $tmp = unpack("f*",$s2);
-        $values = array();
-        for ($x=0; $x<count($tmp); $x++) {
-            if (!is_nan($tmp[$x+1])) {
-                $values[] = $tmp[$x+1];
-                $n++;
-            }
-        }
-        return $values;
-    }
-
-    public function sum_range($id,$pos,$len=1) {
-        $sum = 0;
-        $n = 0;
-        fseek($this->fh[$id],$pos*9);
-        // read division in one block, much faster!
-        $s = fread($this->fh[$id],$len*9);
-        $s2 = "";
-        for ($x=0; $x<$len; $x++) {
-            $s2 .= substr($s,($x*9)+5,4);
-        }
-        $tmp = unpack("f*",$s2);
-        for ($x=0; $x<count($tmp); $x++) {
-            if (!is_nan($tmp[$x+1])) {
-                $sum += $tmp[$x+1];
-                $n++;
-            }
-        }
-        if ($n>0) $value = 1.0*$sum/$n; else $value = null;
-        
-        return $value;
-    }
-    
-    public function close($id) {
-        fclose($this->fh[$id]);
+        return $fh;
     }
     
     /**
@@ -542,13 +607,69 @@ class PHPTimeSeries implements engine_methods
      *
      */
     public function print_all($id) {  
-        $this->open($id,"rb");
-        
-        for ($pos=0; $pos<$this->npoints[$id]; $pos++) {
-            $dp = unpack("x/Itime/fvalue",fread($this->fh[$id],9));
-            print $dp['time']." ".$dp['value']."\n";
-        
+
+        $sum = 0;
+        $n = 0;
+                
+        if ($fh = $this->open($id,"rb")) {        
+            for ($n=0; $n<$this->get_npoints($id); $n++) {
+                $dp = @unpack("x/Itime/fvalue",fread($fh,9));
+                print $dp['time']." ".$dp['value']."\n";
+                $sum += $dp['value'];
+            }
+            fclose($fh);
         }
-        $this->close($id);
+        
+        $data = $this->redis->zRange("vits:$id",0,-1,true);
+        foreach ($data as $value=>$time) {
+            print $time." ".$value." B\n";
+            $sum += $value;
+            $n++;
+        }
+        
+        print "average: ".($sum/$n)."\n";
+    }
+    
+    // Buffer methods
+    
+    private function buffer_get_start_time($id) {
+        $dp = $this->redis->zRange("vits:$id",0,0,true);
+        if (count($dp)) {
+            return $dp[key($dp)];
+        }
+        return false;
+    }
+
+    private function buffer_get_end_time($id) {
+        $dp = $this->redis->zRange("vits:$id",-1,-1,true);
+        if (count($dp)) {
+            return $dp[key($dp)];
+        }
+        return false;
+    }
+    
+    private function buffer_update($id,$time,$value) {
+        if ($this->redis->zRemRangeByScore("vits:$id",$time,$time)) {
+            $this->redis->zAdd("vits:$id",$time,$value);
+        }
+    }
+    
+    public function buffer_save($id) {
+    
+        $data = $this->redis->zRange("vits:$id",0,-1,true);
+        if (count($data)) {
+            $npoints = $this->get_npoints($id);
+
+            $buffer = "";
+            foreach ($data as $value=>$time) {
+                $buffer .= pack("CIf",249,$time,$value);    
+            }
+            
+            if (!$fh = $this->open($id,'c+')) return false;
+            fseek($fh, $npoints*9);
+            fwrite($fh,$buffer);
+            fclose($fh);  
+        }
+        $this->redis->zremrangebyrank("vits:$id",0,-1);
     }
 }
