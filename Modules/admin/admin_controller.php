@@ -109,16 +109,11 @@ function admin_controller()
                 $view_data = array(
                     'system'=>$system,
                     'services'=>$services,
-                    'admin_show_update'=>$settings['interface']['enable_update_ui'],
                     'shutdownPi'=>$shutdownPi,
-                    'log_enabled'=>$settings['log']['enabled'],
-                    'update_log_filename'=>$update_logfile,
                     'redis_enabled'=>$settings['redis']['enabled'],
                     'mqtt_enabled'=>$settings['mqtt']['enabled'],
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
-                    'allow_emonpi_admin'=>$settings['interface']['enable_admin_ui'],
-                    'emoncms_logfile'=>$emoncms_logfile,
                     'redis_info'=>$redis_info,
                     'feed_settings'=>$settings['feed'],
                     'component_summary'=>$system['component_summary'],
@@ -127,14 +122,34 @@ function admin_controller()
                     'rpi_info'=> Admin::get_rpi_info(),
                     'ram_info'=> Admin::get_ram($system['mem_info']),
                     'disk_info'=> Admin::get_mountpoints($system['partitions']),
-                    'v' => 3,
-                    'log_levels' => $log_levels,
-                    'log_level'=>$settings['log']['level'],
-                    'log_level_label' => $log_levels[$settings['log']['level']]
-                    // 'path_to_config'=> $path_to_config
+                    'v' => 3
                 );
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
+            }
+            // ----------------------------------------------------------------
+            // Updates
+            // ----------------------------------------------------------------
+            else if ($route->action == 'update' && $session['write']) {
+                return view("Modules/admin/update_view.php", array(
+                    'path'=>$path,
+                    'admin_show_update'=>$settings['interface']['enable_update_ui'],
+                    'allow_emonpi_admin'=>$settings['interface']['enable_admin_ui'],
+                    'update_log_filename'=> $update_logfile           
+                ));
+            }
+            // ----------------------------------------------------------------
+            // Emoncms log
+            // ----------------------------------------------------------------
+            else if ($route->action == 'emoncmslog' && $session['write']) {
+                return view("Modules/admin/emoncms_log_view.php", array(
+                    'path'=>$path,
+                    'log_enabled'=>$settings['log']['enabled'],
+                    'emoncms_logfile'=>$emoncms_logfile,
+                    'log_levels' => $log_levels,
+                    'log_level'=>$settings['log']['level'],
+                    'log_level_label' => $log_levels[$settings['log']['level']]          
+                ));
             }
             // ----------------------------------------------------------------
             // Components
@@ -215,7 +230,7 @@ function admin_controller()
                     'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
                 );
                 $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
-                return view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
+                return view("Modules/admin/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
             }            
             // ----------------------------------------------------------------
             // Users
@@ -523,7 +538,6 @@ function admin_controller()
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
                     'emoncms_logfile'=>$emoncms_logfile,
-                    'update_log_filename'=> $update_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$settings['feed'],
                     'emoncms_modules'=>$system['emoncms_modules'],
@@ -611,7 +625,7 @@ function admin_controller()
                     'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
                 ));
 
-                return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
+                return array('content'=>view("Modules/admin/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
             }
         } else {
             // user not admin level display login

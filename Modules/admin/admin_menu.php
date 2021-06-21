@@ -15,9 +15,21 @@ if ($session["admin"]) {
                 "order"=>1, 
                 "icon"=>"input"
             ),
+            "update"=>array(
+                "name"=>_("Update"),
+                "href"=>"admin/update", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
             "components"=>array(
                 "name"=>_("Components"),
                 "href"=>"admin/components", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "log"=>array(
+                "name"=>_("Emoncms Log"),
+                "href"=>"admin/emoncmslog", 
                 "order"=>1, 
                 "icon"=>"input"
             ),
