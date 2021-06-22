@@ -44,11 +44,9 @@ class PHPTimeSeries implements engine_methods
     public function delete($id)
     {
         $id = (int) $id;
+        if ($this->buffer_enabled) $this->buffer_clear($id);
         
         unlink($this->dir."feed_$id.MYD");
-        if ($this->buffer_enabled) {
-            $this->redis->del("vits:$id");
-        }
     }
     
     public function trim($id,$start_time){
@@ -57,6 +55,7 @@ class PHPTimeSeries implements engine_methods
     
     public function clear($id){
         $id = (int) $id;
+        if ($this->buffer_enabled) $this->buffer_clear($id);
         
         if (!$fh = $this->open($id,"r+")) return false;
         ftruncate($fh, 0);
@@ -174,9 +173,9 @@ class PHPTimeSeries implements engine_methods
     
     private function post_buffer($id,$time,$value)
     { 
+
         $npoints = $this->get_npoints($id);
         $buffer_start_time = $this->buffer_get_start_time($id);
-        
         $buffer_end_time = false;
         // Update datapoint if in the buffer 
         if ($buffer_start_time && $time>=$buffer_start_time) {
@@ -196,15 +195,15 @@ class PHPTimeSeries implements engine_methods
                     fseek($fh, $dp[0]*9);
                     fwrite($fh,pack("CIf",249,$time,$value));
                 }
-                fclose($fh);   
+                fclose($fh);
                 return $value;
             }
         }
-        $this->redis->zAdd("vits:$id",$time,$value);
+        $this->buffer_add($id,$time,$value);
         
         // Auto save after set period
         if (($buffer_end_time-$buffer_start_time)>=300) {
-            $this->buffer_save($id);
+             $this->buffer_save($id);
         }
         
         return $value;
@@ -219,20 +218,17 @@ class PHPTimeSeries implements engine_methods
     {
         $id = (int) $id;
         
-        $dp = $this->redis->zRange("vits:$id",-1,-1, array('withscores' => true));
-        if (count($dp)) {
-            $value = key($dp);
-            $time = $dp[$value];
-            return array('time'=>$time, 'value'=>$value);
-        } else {
-            if (!$npoints = $this->get_npoints($id)) return false;
-            if (!$fh = $this->open($id,'rb')) return false;
-            
-            fseek($fh,($npoints-1)*9);
-            $dp = unpack("x/Itime/fvalue",fread($fh,9));
-            fclose($fh);
-            return array('time'=>$dp['time'], 'value'=>$dp['value']);
+        if ($this->buffer_enabled) {
+            if ($dp = $this->buffer_last_value($id)) return $dp;
         }
+
+        if (!$npoints = $this->get_npoints($id)) return false;
+        if (!$fh = $this->open($id,'rb')) return false;
+        
+        fseek($fh,($npoints-1)*9);
+        $dp = unpack("x/Itime/fvalue",fread($fh,9));
+        fclose($fh);
+        return array('time'=>$dp['time'], 'value'=>$dp['value']);
     }
 
     /**
@@ -245,22 +241,26 @@ class PHPTimeSeries implements engine_methods
     {
         $id = (int) $id;
         $time = (int) $time;
-        $value = null;
-        
-        $buffer_start_time = $this->buffer_get_start_time($id);
-        if ($buffer_start_time!==false && $time>=$buffer_start_time) {
-            // Fetch value from buffer
-            $dp = $this->redis->zRangeByScore("vits:$id",$time,"+inf", array('limit' => array(0,1)));
-            if (count($dp)>0) $value = $dp[0];
-        } else {
-            // Fetch value from file
-            if (!$fh = $this->open($id,'rb')) return false;        
-            if ($npoints = $this->get_npoints($id)) {
-                $dp = $this->binarysearch($fh,$time,$npoints,false);
-                if ($dp!=-1) $value = $dp[2];
+
+        if ($this->buffer_enabled) {
+            $buffer_start_time = $this->buffer_get_start_time($id);
+            if ($buffer_start_time!==false && $time>=$buffer_start_time) {
+                if ($value = $this->buffer_get_value($id,$time,"+inf")) {
+                    return $value;
+                } else {
+                    return null;
+                }
             }
-            fclose($fh);
         }
+
+        // Fetch value from file
+        if (!$fh = $this->open($id,'rb')) return false;   
+        $value = null;         
+        if ($npoints = $this->get_npoints($id)) {
+            $dp = $this->binarysearch($fh,$time,$npoints,false);
+            if ($dp!=-1) $value = $dp[2];
+        }
+        fclose($fh);
         return $value;
     }
     
@@ -372,8 +372,11 @@ class PHPTimeSeries implements engine_methods
                 if (!$average) {
                     if ($buffer_start_time!==false && $time>=$buffer_start_time) {
                         // Find closest value to $time within this interval
-                        $dp = $this->redis->zRangeByScore("vits:$id",$time,($time+$interval-1), array('limit' => array(0,1)));
-                        if (count($dp)>0) $value = $dp[0];
+                        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,($time+$interval-1), array('limit' => array(0,1)));
+                        if (count($dp)>0) {
+                            $f = explode("|",$dp[0]);    
+                            $value = (float) $f[1];
+                        }
                     } else {
                         // returns nearest datapoint that is >= search time
                         $result = $this->binarysearch($fh,$time,$npoints);
@@ -434,10 +437,12 @@ class PHPTimeSeries implements engine_methods
                     
                     if ($buffer_start_time!==false && $div_end>=$buffer_start_time) {
 
-                        $dps = $this->redis->zRangeByScore("vits:$id",$time,$div_end-1);
+                        $dps = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,$div_end-1);
                         foreach ($dps as $i=>$v) {
                             // print $v." B\n";
-                            $sum += $v;
+                            $f = explode("|",$v);    
+                            $value = (float) $f[1];
+                            $sum += $value;
                             $n ++;
                         }
                     } 
@@ -620,20 +625,33 @@ class PHPTimeSeries implements engine_methods
             fclose($fh);
         }
         
-        $data = $this->redis->zRange("vits:$id",0,-1,true);
+        $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
         foreach ($data as $value=>$time) {
+            $f = explode("|",$value);    
+            $value = (float) $f[1];
             print $time." ".$value." B\n";
             $sum += $value;
             $n++;
         }
         
-        print "average: ".($sum/$n)."\n";
+        if ($n>0) print "average: ".($sum/$n)."\n";
     }
     
-    // Buffer methods
+    /**
+     * Buffer methods
+     *
+     */
+    
+    private function buffer_add($id,$time,$value) {
+        $this->redis->zAdd("phptimeseries:buffer:$id",(int)$time,dechex((int)$time)."|".$value);
+    }
+    
+    private function buffer_clear($id) {
+        $this->redis->del("phptimeseries:buffer:$id");
+    }
     
     private function buffer_get_start_time($id) {
-        $dp = $this->redis->zRange("vits:$id",0,0,true);
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",0,0,true);
         if (count($dp)) {
             return $dp[key($dp)];
         }
@@ -641,27 +659,50 @@ class PHPTimeSeries implements engine_methods
     }
 
     private function buffer_get_end_time($id) {
-        $dp = $this->redis->zRange("vits:$id",-1,-1,true);
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",-1,-1,true);
         if (count($dp)) {
             return $dp[key($dp)];
         }
         return false;
     }
     
+    private function buffer_last_value($id) {
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",-1,-1, array('withscores' => true));
+        if (!count($dp)) return false;
+        
+        $key = key($dp);
+        $time = $dp[$key];
+        $f = explode("|",$key);    
+        $value = (float) $f[1];
+        return array('time'=>$time, 'value'=>$value);
+    }
+    
+    private function buffer_get_value($id,$start,$end) {
+        // Fetch value from buffer
+        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$start,$end, array('limit' => array(0,1)));
+        if (count($dp)>0) {
+            $f = explode("|",$dp[0]);    
+            return (float) $f[1];
+        }
+        return false;
+    }
+    
     private function buffer_update($id,$time,$value) {
-        if ($this->redis->zRemRangeByScore("vits:$id",$time,$time)) {
-            $this->redis->zAdd("vits:$id",$time,$value);
+        if ($this->redis->zRemRangeByScore("phptimeseries:buffer:$id",$time,$time)) {
+            $this->redis->zAdd("phptimeseries:buffer:$id",(int)$time,dechex((int)$time)."|".$value);
         }
     }
     
     public function buffer_save($id) {
     
-        $data = $this->redis->zRange("vits:$id",0,-1,true);
+        $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
         if (count($data)) {
             $npoints = $this->get_npoints($id);
 
             $buffer = "";
             foreach ($data as $value=>$time) {
+                $f = explode("|",$value);    
+                $value = (float) $f[1];
                 $buffer .= pack("CIf",249,$time,$value);    
             }
             
@@ -670,6 +711,6 @@ class PHPTimeSeries implements engine_methods
             fwrite($fh,$buffer);
             fclose($fh);  
         }
-        $this->redis->zremrangebyrank("vits:$id",0,-1);
+        $this->redis->zremrangebyrank("phptimeseries:buffer:$id",0,-1);
     }
 }
