@@ -8,12 +8,10 @@ include_once dirname(__FILE__) . '/shared_helper.php';
 class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
-    private $log;
+    public $log;
     private $maxpadding = 3153600; // 1 year @ 10s
     
-    private $fh = array();
-    public $meta = array();
-    private $pos = array();
+    private $pos = false;
 
     private $redis = false;
     private $buffer_enabled = false;
@@ -89,10 +87,15 @@ class PHPFina implements engine_methods
     public function delete($id)
     {
         $id = (int)$id;
-        if (!$meta = $this->get_meta($id)) return false;
-        unlink($this->dir.$id.".meta");
-        unlink($this->dir.$id.".dat");
-        if ($this->buffer_enabled) $this->buffer_clear($id);
+        if (file_exists($this->dir.$id.".meta")) {
+            unlink($this->dir.$id.".meta");
+        }
+        if (file_exists($this->dir.$id.".dat")) {
+            unlink($this->dir.$id.".dat");
+        }
+        if ($this->buffer_enabled) {
+            $this->buffer_clear($id);
+        }
     }
     
     /**
@@ -113,6 +116,7 @@ class PHPFina implements engine_methods
         // Open and read meta data file
         // The start_time and interval are saved as two consecutive unsigned integers
         $meta = new stdClass();
+        $meta->id = $id;
         $metafile = fopen($this->dir.$feedname, 'rb');
         fseek($metafile,8);
         $tmp = unpack("I",fread($metafile,4)); 
@@ -224,10 +228,12 @@ class PHPFina implements engine_methods
             return false;
         }
 
-        if (!$fh = fopen($this->dir.$id.".dat", 'c+')) {
-            $this->log->warn("post() could not open data file id=$id");
-            return false;
+        if ($this->buffer_enabled) {
+            $mode = 'rb';
+        } else {
+            $mode = 'c+';
         }
+        if (!$fh = $this->open($id,$mode)) return false;
         
         $padding_value = NAN;
         if ($padding>0 && $padding_mode!=null) {
@@ -388,13 +394,11 @@ class PHPFina implements engine_methods
         
         if (!$meta = $this->get_meta($id)) return false;
         if (!$meta->npoints) return false;
-        
-        $this->open($id, 'rb');
-        $value = $this->read($id,$meta->npoints-1);
-        $this->close($id);
+        if (!$fh = $this->open($id,"rb")) return false;
+
+        $value = $this->read($fh,$meta,$meta->npoints-1);
+        $this->close($fh);
         return array('time'=>$meta->end_time, 'value'=>$value);
-        
-        return false;
     }
 
 
@@ -408,11 +412,12 @@ class PHPFina implements engine_methods
         $time = (int) $time;
         
         if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta->npoints) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
         
-        $this->open($id, 'rb');
         $pos = round(($time - $meta->start_time) / $meta->interval);
-        $value = $this->read($id,$pos);
-        $this->close($id);
+        $value = $this->read($fh,$meta,$pos);
+        $this->close($fh);
         return $value;
     }
 
@@ -508,11 +513,11 @@ class PHPFina implements engine_methods
             $data = array();
         }
         
-        $this->open($id, 'rb');
+        if (!$fh = $this->open($id,"rb")) return false;
  
         // seek only once for full resolution export
         $first_seek = false;
-             
+        
         while($time<=$end)
         {   
             $div_start = $time;
@@ -547,7 +552,7 @@ class PHPFina implements engine_methods
                 $dp_to_read = $pos_end-$pos_start;
                 
                 if ($dp_to_read) {
-                    $tmp = $this->read_range($id,$pos_start,$dp_to_read);
+                    $tmp = $this->read_range($fh,$meta,$pos_start,$dp_to_read);
                     for ($x=0; $x<$dp_to_read; $x++) {
                         if (!is_nan($tmp[$x])) {
                             $sum += $tmp[$x];
@@ -559,10 +564,8 @@ class PHPFina implements engine_methods
                 if ($n>0) $value = 1.0*$sum/$n;
                 
             } else {
-                if ($time>=$meta->start_time && $time<=$meta->end_time) {                
-                    $value = $this->read($id,$pos_start);
-                    if (is_nan($value)) $value = null;
-                }
+                $value = $this->read($fh,$meta,$pos_start);
+                if (is_nan($value)) $value = null;
             }
             
             if ($value!==null || $skipmissing===0) {
@@ -575,7 +578,7 @@ class PHPFina implements engine_methods
             
             $time = $div_end;
         }
-        $this->close($id);
+        $this->close($fh);
                 
         if ($csv) {
             $helperclass->csv_close();
@@ -610,7 +613,7 @@ class PHPFina implements engine_methods
 
         $data = array();
         
-        $this->open($id, 'rb');
+        if (!$fh = $this->open($id,"rb")) return false;
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
@@ -644,7 +647,7 @@ class PHPFina implements engine_methods
 
                 $pos = round((($time+$split_offset) - $meta->start_time) / $meta->interval);
                 
-                $value = $this->read($id,$pos);
+                $value = $this->read($fh,$meta,$pos);
                 if (is_nan($value)) $value = null;
 
                 $split_values[] = $value;
@@ -655,7 +658,7 @@ class PHPFina implements engine_methods
             $date->modify($modify);
             $n++;
         }
-        $this->close($id);
+        $this->close($fh);
         return $data;
     }
 
@@ -907,60 +910,57 @@ class PHPFina implements engine_methods
      * Abstracted open, read and close methods
      *
      */
-    public function open($id,$mode) {
-        if (!$this->meta[$id] = $this->get_meta($id)) return false;
-        
-        if (!$this->fh[$id] = fopen($this->dir.$id.".dat", $mode)) {
+    public function open($id,$mode) {        
+        if (!$fh = @fopen($this->dir.$id.".dat", $mode)) {
             $this->log->error("PHPFina could not open $id.dat");      
             return false;
         }
-        $this->pos[$id] = 0;
-        return $this->meta[$id];
+        $this->pos = 0;
+        return $fh;
     }
     
-    public function read($id,$pos) {
+    public function read($fh,$meta,$pos) {
+        if ($pos<0 || $pos >= $meta->npoints) return NAN;
+        
         // If in data range read from dat file
-        if ($pos>=0 && $pos < $this->meta[$id]->buffer_start) {
+        if ($pos < $meta->buffer_start) {
             // Only seek if necessary
-            if ($pos!=$this->pos[$id]) fseek($this->fh[$id],4*$pos);
-            $tmp = unpack("f",fread($this->fh[$id],4));
-            $this->pos[$id] = $pos+1;
+            if ($pos!=$this->pos) fseek($fh,4*$pos);
+            $tmp = unpack("f",fread($fh,4));
+            $this->pos = $pos+1;
             return $tmp[1];
+        } else {
+            // If in tmpfs data range read from tmp file
+            $buffer_pos = $pos-$meta->buffer_start;
+            return $this->buffer_get_value($meta->id,$buffer_pos);
         }
-        // If in tmpfs data range read from tmp file
-        if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
-            $buffer_pos = $pos-$this->meta[$id]->buffer_start;
-            return $this->buffer_get_value($id,$buffer_pos);
-        }
-        return NAN;
     }
     
-    private function read_range($id,$pos,$len=1) {
+    private function read_range($fh,$meta,$pos,$len=1) {
         $tmp = array();
         // Work out if we need to read from the redis buffer
-        $from_tmp = $pos+$len-$this->meta[$id]->buffer_start;
+        $from_tmp = $pos+$len-$meta->buffer_start;
         if ($from_tmp<0) $from_tmp = 0;
             
         // If in persisted data range read from dat file
-        if ($pos>=0 && $pos < $this->meta[$id]->buffer_start) {
+        if ($pos>=0 && $pos < $meta->buffer_start) {
             // Only seek if necessary
-            if ($pos!=$this->pos[$id]) fseek($this->fh[$id],4*$pos);
-            $tmp = array_values(unpack("f*",fread($this->fh[$id],4*($len-$from_tmp))));
-            $this->pos[$id] = $pos+($len-$from_tmp);
-            $pos = $this->pos[$id];
+            if ($pos!=$this->pos) fseek($fh,4*$pos);
+            $tmp = array_values(unpack("f*",fread($fh,4*($len-$from_tmp))));
+            $this->pos = $pos+($len-$from_tmp);
+            $pos = $this->pos;
         }
         // If in tmpfs data range read from tmp file
-        if ($pos>=$this->meta[$id]->buffer_start && $pos < $this->meta[$id]->npoints) {
-            $values = $this->buffer_get_values($id,$pos-$this->meta[$id]->buffer_start,$from_tmp);
+        if ($pos>=$meta->buffer_start && $pos < $meta->npoints) {
+            $values = $this->buffer_get_values($meta->id,$pos-$meta->buffer_start,$from_tmp);
             $tmp = array_merge($tmp,$values);
         }
         return $tmp;
     }
     
-    public function close($id) {
-        $this->meta[$id] = false;
-        $this->pos[$id] = 0;
-        fclose($this->fh[$id]);
+    public function close($fh) {
+        $this->pos = 0;
+        fclose($fh);
     }
 
     
@@ -981,7 +981,7 @@ class PHPFina implements engine_methods
     }
     
     public function buffer_get_value($id,$pos) {
-        $value = $this->redis->lrange("phpfina:buffer:$id",$buffer_pos,$buffer_pos)[0];
+        $value = $this->redis->lrange("phpfina:buffer:$id",$pos,$pos)[0];
         if ($value=="NAN") $value = NAN; else $value = (float) $value;
         return $value;
     }
@@ -1000,20 +1000,21 @@ class PHPFina implements engine_methods
                   
     public function buffer_save($id) 
     {
+        if (!$meta = $this->get_meta($id)) return false;
+        
         // 1. read contents of buffer
         if (!$buffer_length = $this->buffer_get_length($id)) return false;
         
         $buffer = "";
         $values = $this->buffer_get_values($id,0,$buffer_length);
-        for ($i=0; $i<count($values); $i++) {
+        
+        for ($n=0; $n<count($values); $n++) {
             $buffer .= pack("f",$values[$n]);
         }
         
         // 2. persist to disk
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // CONSIDER using c+ here and writing from defined position!!
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        $fh = fopen($this->dir.$id.".dat", "a");
+        $fh = fopen($this->dir.$id.".dat", "c+");
+        fseek($fh,$meta->buffer_start*4);
         fwrite($fh, $buffer);
         fclose($fh);
         
@@ -1025,15 +1026,39 @@ class PHPFina implements engine_methods
      * Used for testing
      *
      */
-    public function print_all($id) {  
-        $this->open($id,"rb");
-        $values = $this->read_range($id,0,$this->meta[$id]->npoints);
+    public function print_all($id) {
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
 
-        for ($pos=0; $pos<$this->meta[$id]->npoints; $pos++) {
-            $timestamp = $this->meta[$id]->start_time + ($this->meta[$id]->interval * $pos);
-            print $pos." ".$timestamp." ".$values[$pos]."\n";
+        $sum = 0;
+        $sn = 0;
+        
+        for ($n=0; $n<$meta->buffer_start; $n++) {
+            $time = $meta->start_time + ($meta->interval * $n);
+            $tmp = unpack("f",fread($fh,4));
+            $value = $tmp[1];
+            if (is_nan($value)) $value = null;
+            print $n." ".$time." ".$value."\n";
+            if ($value!=null) {
+                $sum += $value;
+                $sn ++;
+            }
         }
-        $this->close($id);
+        $this->close($fh);
+        
+        for ($n=$meta->buffer_start; $n<$meta->npoints; $n++) {
+            $time = $meta->start_time + ($meta->interval * $n);
+            $buffer_pos = $n-$meta->buffer_start;
+            $value = $this->buffer_get_value($id,$buffer_pos);
+            if (is_nan($value)) $value = null;
+            print $n." ".$time." ".$value." B\n";
+            if ($value!=null) {
+                $sum += $value;
+                $sn ++;
+            }
+        }
+
+        if ($sn>0) print "average: ".($sum/$sn)."\n";
     }
      
 }

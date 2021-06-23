@@ -151,7 +151,9 @@ class PHPTimeSeries implements engine_methods
                 // if last dp we know position
                 fseek($fh,($npoints-1)*9);
                 fwrite($fh,pack("CIf",249,$time,$value));
-                
+                fclose($fh);
+                return $value;
+                                
             } else if ($time<$dp['time']) {
                 // if older: search for datapoint at specified time
                 $dp = $this->binarysearch($fh,$time,$npoints,true);
@@ -619,19 +621,21 @@ class PHPTimeSeries implements engine_methods
         if ($fh = $this->open($id,"rb")) {        
             for ($n=0; $n<$this->get_npoints($id); $n++) {
                 $dp = @unpack("x/Itime/fvalue",fread($fh,9));
-                print $dp['time']." ".$dp['value']."\n";
+                print $n." ".$dp['time']." ".$dp['value']."\n";
                 $sum += $dp['value'];
             }
             fclose($fh);
         }
         
-        $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
-        foreach ($data as $value=>$time) {
-            $f = explode("|",$value);    
-            $value = (float) $f[1];
-            print $time." ".$value." B\n";
-            $sum += $value;
-            $n++;
+        if ($this->buffer_enabled) {
+            $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
+            foreach ($data as $value=>$time) {
+                $f = explode("|",$value);    
+                $value = (float) $f[1];
+                print $n." ".$time." ".$value." B\n";
+                $sum += $value;
+                $n++;
+            }
         }
         
         if ($n>0) print "average: ".($sum/$n)."\n";
