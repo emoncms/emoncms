@@ -75,32 +75,6 @@ function get_feed_data_DMY_async(callback,context,feedID,start,end,mode){
   });
 }
 
-// Get histogram data
-function get_histogram_data(feedID,start,end){
-  var feedIn = [];
-  $.ajax({                  
-    url: path+'feed/histogram.json',             
-    data: "id="+feedID+"&start="+start+"&end="+end+"&apikey="+apikey,  
-    dataType: 'json',               
-    async: false,
-    success: function(dt) { feedIn = dt; }
-  });
-  return feedIn;
-}
-
-// Get kwh per day at power range
-function get_kwhatpower(feedid,rmin,rmax){
-  var feedIn = [];
-  $.ajax({                    
-    url: path+'feed/kwhatpower.json',             
-    data: "id="+feedid+"&min="+rmin+"&max="+rmax+"&apikey="+apikey,
-    dataType: 'json',
-    async: false,            
-    success: function(dt) { feedIn = dt; } 
-  });
-  return feedIn;
-}
-
 // Get feed data
 function get_multigraph(apikey){
   var apikey = "";

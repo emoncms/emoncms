@@ -371,7 +371,7 @@ var processlist_ui =
       }
       
       var processid = $("#process-select").val();
-      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
       if (datatype==2) {
         $("#feed-interval option").hide();          // Hide all
@@ -548,7 +548,7 @@ var processlist_ui =
         // If there's only one feed engine to choose from then dont show feed engine selector
         // CHAVEIRO: Commented for now so user can see what processor it's using.
         //var processid = $('#process-select').val();
-        //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
+        //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA
         //if (engines.length > 1) 
         $("#feed-engine, .feed-engine-label").show();
     } else {
@@ -648,8 +648,8 @@ var processlist_ui =
     $feedTypeSelect = $('#feed-data-type');
     var prc = this.processlist[processid].function;     // process function
     var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
-    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
-    var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
+    var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY
     
     var feedgroups = [];
     for (z in this.feedlist) {

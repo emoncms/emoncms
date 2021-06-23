@@ -1,5 +1,8 @@
 <?php
 
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
 class TemplateEngine implements engine_methods
 {
     private $log;
@@ -25,8 +28,7 @@ class TemplateEngine implements engine_methods
     */
     public function create($feedid,$options)
     {
-        $this->log->info("create() dummy feed feedid=$feedid");
-        return true; // if successful 
+        return true;
     }
 
     /**
@@ -133,14 +135,7 @@ class TemplateEngine implements engine_methods
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $data = array();
-
-        // example of datapoint format
-        $time = time() * 1000; // time in milliseconds
-        $value = 123.4; 
-        $data[] = array($time,$value);
-
-        return $data;
+        return array();
     }
 
     public function get_data_DMY($id,$start,$end,$mode,$timezone)

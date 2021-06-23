@@ -12,7 +12,7 @@ Create an account on the backup emoncms installation and note down the mysql cre
 
 - Set $remote_server and $remote_apikey to correspond to the remote emoncms account you wish to download from.
 - Set $link\_to\_local\_emoncms to true if you wish to access your data within a local installation of emoncms. Set $local\_emoncms\_location and $local\_emoncms\_userid to link to your local emoncms installation.
-- Set $link\_to\_local\_emoncms to false if you just want to download the data without linking to a local emoncms install (non-mysql data only). Set $dir to the directory on your computer you wish to download the data. Manually create the folders: phpfina, phpfiwa, phptimeseries, phptimestore within this folder.
+- Set $link\_to\_local\_emoncms to false if you just want to download the data without linking to a local emoncms install (non-mysql data only). Set $dir to the directory on your computer you wish to download the data. Manually create the folders: phpfina, phptimeseries, phptimestore within this folder.
 
 3) Run the backup script from terminal with:
 
@@ -38,7 +38,6 @@ You can make a direct directory copy of the /var/lib/mysql/emoncms folder if the
 
 Make a backup copy of the feed data folders on your system, the default locations on linux are:
 
-    /var/lib/phpfiwa
     /var/lib/phpfina
     /var/lib/phptimeseries
     /var/lib/timestore

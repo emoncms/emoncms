@@ -110,8 +110,8 @@ msgstr "Ottenere tutti i campi del feedGet all feed fields"
 
 #: ../../../Views/feedapi_view.php:55
 #, fuzzy
-msgid "Get feed meta (PHPFina, PHPFiwa)"
-msgstr "Ottenere feed meta (PHPFina, PHPFiwa)"
+msgid "Get feed meta (PHPFina)"
+msgstr "Ottenere feed meta (PHPFina)"
 
 #: ../../../Views/feedapi_view.php:60
 #, fuzzy

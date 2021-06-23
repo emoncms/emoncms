@@ -184,8 +184,8 @@ msgstr ""
 #~ msgid "Get all feed fields"
 #~ msgstr "Obtenir tous les champs du flux"
 
-#~ msgid "Get feed meta (PHPFina, PHPFiwa)"
-#~ msgstr "Obtenir les meta du flux (PHPFina, PHPFiwa)"
+#~ msgid "Get feed meta (PHPFina)"
+#~ msgstr "Obtenir les meta du flux (PHPFina)"
 
 #~ msgid "Read feed data actions"
 #~ msgstr "Actions de données de flux en lecture"

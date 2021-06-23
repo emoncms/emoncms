@@ -1,5 +1,6 @@
 <?php
     global $path, $settings;
+    $v=1;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
@@ -9,7 +10,7 @@
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
-<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script>
 
 /**
@@ -63,27 +64,22 @@ function translate(property) {
 </script>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 
 <style>
 body{padding:0!important}
-.container-fluid { padding: 0px 10px 0px 10px; }
 
 #table {
     margin-top:3rem
 }
 #footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-.navbar-fixed-top {
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -107,10 +103,6 @@ body{padding:0!important}
 }
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
-@media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
-}
-
 
 .node .accordion-toggle{
     border-bottom: 1px solid white;
@@ -394,8 +386,8 @@ var feeds = {};
 var nodes = {};
 var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
-var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+var nodes_display = {};
+var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 // auto refresh
 update_feed_list();
@@ -438,7 +430,7 @@ function update_feed_list() {
             }
         }
         // cache state in cookie
-        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+        // if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
         var out = "";
         
@@ -996,7 +988,6 @@ function isSelectionValidForTrim(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
@@ -1168,7 +1159,6 @@ function isSelectionValidForClear(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode

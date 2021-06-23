@@ -68,13 +68,24 @@ function admin_controller()
                 $services = array();
                 $system = Admin::system_information();
                 foreach($system['services'] as $key=>$value) {
-                    if (!is_null($system['services'][$key])) {
-                        $services[$key] = array(
+                    if (!is_null($system['services'][$key])) {    // If the service was found on this system
+                        
+                        // Populate service status fields
+                    	$services[$key] = array(
                             'state' => ucfirst($value['ActiveState']),
                             'text' => ucfirst($value['SubState']),
-                            'cssClass' => $value['SubState']==='running' ? 'success': 'danger',
                             'running' => $value['SubState']==='running'
                         );
+                    	
+                    	// Set 'cssClass' based on service's configuration and current status
+                    	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+                    		$services[$key]['cssClass'] = 'masked';
+                    		$services[$key]['text'] = 'Masked';
+                    	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+                    		$services[$key]['cssClass'] = 'success';
+                    	} else {                                       // Assume service is in danger
+                    		$services[$key]['cssClass'] = 'danger';
+                    	}
                     }
                 }
                 // add custom messages for feedwriter service
@@ -110,7 +121,7 @@ function admin_controller()
                     'emoncms_logfile'=>$emoncms_logfile,
                     'redis_info'=>$redis_info,
                     'feed_settings'=>$settings['feed'],
-                    'emoncms_modules'=>$system['emoncms_modules'],
+                    'component_summary'=>$system['component_summary'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),
                     'mqtt_version'=>Admin::mqtt_version(),
                     'rpi_info'=> Admin::get_rpi_info(),
@@ -125,6 +136,70 @@ function admin_controller()
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
+            // ----------------------------------------------------------------
+            // Components
+            // ----------------------------------------------------------------
+            else if ($route->action == 'components' && $session['write']) {
+                require "Modules/admin/admin_model.php";
+                return view("Modules/admin/components_view.php", array("components"=>Admin::component_list()));
+            }
+            else if ($route->action == 'components-installed' && $session['write'])
+            {
+                $route->format = "json";
+                require "Modules/admin/admin_model.php";
+                return Admin::component_list(true);
+            }
+            else if ($route->action == 'components-available' && $session['write']) {
+                $route->format = "json";
+                if (file_exists("/opt/openenergymonitor/EmonScripts/components_available.json")) {
+                    return json_decode(file_get_contents("/opt/openenergymonitor/EmonScripts/components_available.json"));
+                } else {
+                    return false;
+                }
+            }
+            else if ($route->action == 'component-update' && $session['write']) {
+                $route->format = "text";
+
+                require "Modules/admin/admin_model.php";                
+                $components = Admin::component_list(false);
+                
+                if (!isset($_GET['module'])) return "missing module parameter"; else $module = $_GET['module'];
+                if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
+                
+                if (!isset($components[$module])) return "invalid module";
+                $module_path = $components[$module]["path"];     
+                
+                // if branch is not in available branches, check that it is not the current branch
+                if (!in_array($branch,$components[$module]["branches_available"])) {
+                    $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
+                    if ($branch!=$current_branch) return "invalid branch";
+                }
+                
+                $script = "/opt/openenergymonitor/EmonScripts/update/update_component.sh";
+                $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
+                return "cmd sent";
+            }
+            else if ($route->action == 'components-update-all' && $session['write']) {
+                $route->format = "text";
+                if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
+                
+                // Validate branch
+                require "Modules/admin/admin_model.php";
+                $available_branches = array();
+                foreach (Admin::component_list(false) as $c) {
+                    foreach ($c["branches_available"] as $b) {
+                        if (!in_array($b,$available_branches)) $available_branches[] = $b;
+                    }
+                }
+                if (!in_array($branch,$available_branches)) return "invalid branch";
+                
+                $script = "/opt/openenergymonitor/EmonScripts/update/update_all_components.sh";
+                $redis->rpush("service-runner","$script $branch>$update_logfile");
+                return "cmd sent";
+            }
+            // ----------------------------------------------------------------
+            // DB
+            // ----------------------------------------------------------------
             else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
@@ -141,8 +216,10 @@ function admin_controller()
                 );
                 $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
                 return view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
-            }
-
+            }            
+            // ----------------------------------------------------------------
+            // Users
+            // ----------------------------------------------------------------
             else if ($route->action == 'users' && $session['write'])
             {
                 return view("Modules/admin/userlist_view.php", array());
