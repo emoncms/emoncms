@@ -49,18 +49,47 @@ class PHPTimeSeries implements engine_methods
         unlink($this->dir."feed_$id.MYD");
     }
     
-    public function trim($id,$start_time){
-        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    public function trim($id,$start_time) {
+        $id = (int) $id; 
+        // Save local buffer before trim
+        if ($this->buffer_enabled) $this->buffer_save($id);
+        if (!$npoints = $this->get_npoints($id)) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
+        
+        if (!$fh = $this->open($id,'rb')) {
+            return array('success'=>false,'message'=>'Error opening data file');
+        }
+
+        $dp = $this->binarysearch($fh,$start_time,$npoints);
+        if ($dp==-1) return array('success'=>false,'message'=>'Invalid start time');
+        
+        fseek($fh,$dp[0]*9);
+        if (!$binary_data = @fread($fh,$npoints-$dp[0])) {
+            $this->log->error("Error reading $datFileName");
+            return array('success'=>false,'message'=>'Error reading data file');
+        }
+        fclose($fh);
+
+        if (!$fh = $this->open($id,'wb')) {
+            return array('success'=>false,'message'=>'Error opening data file');
+        }
+        $writtenBytes = fwrite($fh,$binary_data);
+        fclose($fh);
+
+        $this->log->info(".data file trimmed to $writtenBytes bytes");
+        return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
     
     public function clear($id){
+    
         $id = (int) $id;
         if ($this->buffer_enabled) $this->buffer_clear($id);
         
         if (!$fh = $this->open($id,"r+")) return false;
         ftruncate($fh, 0);
         fclose($fh);
-        return true;
+
+        $this->log->info("Feed $id datapoints deleted");
+        return array('success'=>true,'message'=>"Feed cleared successfully");
     }
 
     /**
@@ -489,11 +518,6 @@ class PHPTimeSeries implements engine_methods
         } else {
             return $data;
         }
-    }
-    
-    // Remove use combined method directly
-    public function csv_export($id,$start,$end,$interval,$average,$timezone,$timeformat) {
-        $this->get_data_combined($id,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
 
     public function export($id,$start)

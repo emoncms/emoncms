@@ -588,15 +588,6 @@ class PHPFina implements engine_methods
         }
     }
     
-    // The following were all previously implemented seperatly
-    // and are now replaced by the combined implementation above 
-    // to ensure consistent results and avoid code duplication
-    // mapping of original function calls are left in here for
-    // compatibility with rest of emoncms application
-    public function csv_export($id,$start,$end,$interval,$average,$timezone,$timeformat) {
-        $this->get_data_combined($id,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
-    }
-    
     // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
     {        
@@ -827,23 +818,17 @@ class PHPFina implements engine_methods
      * @return boolean true == success
      */
     public function clear($id) {
-        $id = (int)$id;
-        $meta = $this->get_meta($id);
-        if (!$meta) return false;
-        $meta->start_time = 0;
-        $datafilePath = $this->dir.$id.".dat";
-        $f = @fopen($datafilePath, "r+");
-        if (!$f) {
-            $this->log->error("unable to open $datafilePath for reading");
-            return array('success'=>false,'message'=>'Error opening data file');
-        } else {
-            ftruncate($f, 0);
-            fclose($f);
-        }        
-        if ($meta->buffer_length) $this->buffer_clear($id);
-            
-        $this->create_meta($id, $meta); // create meta first to avoid $this->create() from creating new one
-        $this->create($id,array('interval'=>$meta->interval));
+    
+        $id = (int) $id;
+        if ($this->buffer_enabled) $this->buffer_clear($id);
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$fh = $this->open($id,'r+')) return false;
+        ftruncate($fh, 0);
+        fclose($fh);       
+
+        // Reset meta start_time to zero
+        $meta->start_time = 0;       
+        $this->create_meta($id, $meta);
 
         $this->log->info("Feed $id datapoints deleted");
         return array('success'=>true,'message'=>"Feed cleared successfully");
@@ -857,52 +842,35 @@ class PHPFina implements engine_methods
      * @return boolean
      */
     public function trim($id,$start_time) {
-    
-        $meta = $this->get_meta($id); // get .dat meta info
-        
+        $id = (int) $id; 
         // Save local buffer before trim
-        if ($meta->buffer_length) {
-            $this->buffer_save($id);
-        }
-        
-        $bytesize = $meta->npoints * 4.0; // total .dat file size
-        if($bytesize <= 0) return array('success'=>false,'message'=>'Empty data file, nothing to trim.'); // empty data file - nothing to trim
-        if($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range'); //new start_time out of range
-        
-        $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
-        $datFileName = $this->dir.$id.'.dat';
-        // non php file handling
-        // ----------------------
-        // $tmpFileName = $this->dir.'temp-trim.tmp';
-        // exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
-        // exec(sprintf("cp %s %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
-        // exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
-        // $writtenBytes = filesize($datFileName);
+        if ($this->buffer_enabled) $this->buffer_save($id);
 
-        $fh = @fopen($datFileName,'rb');
-        if (!$fh){
-            $this->log->error("unable to open $datFileName for reading");
+        if (!$meta = $this->get_meta($id)) return array('success'=>false,'message'=>'Could not open meta file');
+        if (!$meta->npoints) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
+        if ($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range');
+        
+        $start_pos = ceil(($start_time - $meta->start_time) / $meta->interval);
+        
+        if (!$fh = $this->open($id,'rb')) {
             return array('success'=>false,'message'=>'Error opening data file');
         }
-        fseek($fh,$start_bytes);
-        $tmp = @fread($fh,$bytesize-$start_bytes);
-        if (!$tmp){
+        fseek($fh,$start_pos*4);
+        if (!$binary_data = @fread($fh,$meta->npoints-$start_pos)) {
             $this->log->error("Error reading $datFileName");
             return array('success'=>false,'message'=>'Error reading data file');
         }
         fclose($fh);
-        
-        $fh = @fopen($datFileName,'wb');
-        if (!$fh){
-            $this->log->error("unable to open $datFileName for writing");
-            return array('success'=>false,'message'=>'Error writing to data file');
+
+        if (!$fh = $this->open($id,'wb')) {
+            return array('success'=>false,'message'=>'Error opening data file');
         }
-        $writtenBytes = fwrite($fh,$tmp);
+        $writtenBytes = fwrite($fh,$binary_data);
         fclose($fh);
 
         $this->log->info(".data file trimmed to $writtenBytes bytes");
         $meta->start_time = $start_time;
-        $this->create_meta($id, $meta); // set the new start time in the feed's meta
+        $this->create_meta($id, $meta); // set the new start time in the feed meta file
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
     

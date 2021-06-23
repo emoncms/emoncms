@@ -581,8 +581,8 @@ class Feed
 
         $engine = $this->get_engine($feedid);
         $timezone = $this->get_timezone($feedid);
-        // Call to engine csv_export method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$interval,$average,$timezone,$timeformat);
+        
+        return $this->EngineClass($engine)->get_data_combined($id,$start*1000,$end*1000,$interval,$average,$timezone,$timeformat,true);
     }
 
     // Prepare export multi data

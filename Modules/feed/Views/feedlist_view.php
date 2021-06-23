@@ -992,7 +992,7 @@ function isSelectionValidForTrim(){
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
         const CASSANDRA = 10;    // Cassandra
     */
-    let allowed_engines = [0,5,8] // array of allowed storage engines
+    let allowed_engines = [0,2,5,8] // array of allowed storage engines
     for (var feedid in selected_feeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
@@ -1163,7 +1163,7 @@ function isSelectionValidForClear(){
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
         const CASSANDRA = 10;    // Cassandra
     */
-    let allowed_engines = [0,5,8]; // array of allowed storage engines 
+    let allowed_engines = [0,2,5,8]; // array of allowed storage engines 
     for (var feedid in selected_feeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
