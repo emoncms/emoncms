@@ -80,24 +80,15 @@ class Admin {
               }
           }
         }
-        $emoncms_modules = "";
-        $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-        $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
-        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-            if ($emoncms_modules != "")  $emoncms_modules .= " | ";
-            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
-              $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-              $jsonAppName = $json->{'name'};
-              $jsonVersion = $json->{'version'};
-              if ($jsonAppName) {
-                $emoncmsModuleFolder = $jsonAppName;
-              }
-              if ($jsonVersion) {
-                $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
-              }
-            }
-            $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+        
+        // Component summary
+        $component_summary = array();
+        $components = Admin::component_list(false);
+        foreach ($components as $component) {
+            $component_summary[] = $component["name"]." v".$component["version"];
         }
+        $component_summary = implode(" | ",$component_summary);
+        
         return array('date' => date('Y-m-d H:i:s T'),
                      'system' => $system,
                      'kernel' => $kernel,
@@ -129,7 +120,7 @@ class Admin {
                      'php_modules' => get_loaded_extensions(),
                      'mem_info' => $meminfo,
                      'partitions' => Admin::disk_list(),
-                     'emoncms_modules' => $emoncms_modules,
+                     'component_summary' => $component_summary,
                      'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
                      'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
                      'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
@@ -155,7 +146,8 @@ class Admin {
               );
           }
           
-          foreach (array("/var/www/emoncms/Modules","/opt/emoncms/modules","/opt/openenergymonitor") as $path) {
+          $emoncms_www = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+          foreach (array("$emoncms_www/Modules",$settings['emoncms_dir']."/modules",$settings['openenergymonitor_dir']) as $path) {
               
               $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
               

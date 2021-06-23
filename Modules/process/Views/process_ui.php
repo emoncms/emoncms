@@ -3,8 +3,6 @@
     global $path, $settings;
     load_language_files("Modules/process/locale", "process_messages");
     
-    $v=6;
-    
     // settings.ini parse_ini_file does not convert [0,6,8,10] into an array
     // while settings.php engines_hidden will be an array
     // we convert here the array form to a string which is then passed below
