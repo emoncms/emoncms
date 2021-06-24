@@ -100,7 +100,7 @@
 <p><b><?php echo _("Feed setup actions");?></b></p>
 <table class="table">
 	<tr><td><?php echo _("Create new feed");?></td><td>
-		<a href='<?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}</a>
+		<a href='<?php echo $path; ?>feed/create.json?tag=Test&name=Power&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?tag=Test&name=Power&engine=5&options={"interval":10}</a>
 	</td></tr>
     <tr><td><?php echo _("Delete existent feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/delete.json?id=0"><?php echo $path; ?>feed/delete.json?id=0</a>

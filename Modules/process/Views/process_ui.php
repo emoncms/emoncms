@@ -147,7 +147,7 @@
                                     <select id="feed-interval" class="input-mini">
                                         <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>
                                         <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="10">10<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="10" selected>10<?php echo dgettext('process_messages','s'); ?></option>
                                         <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
                                         <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
                                         <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>

@@ -28,7 +28,6 @@
         'id':{'type':"fixed"},
         'name':{'type':"text"},
         'tag':{'type':"text"},
-        'datatype':{'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
 
         // Actions
         'edit-action':{'title':'', 'type':"edit"},
@@ -38,10 +37,10 @@
       table.groupby = 'tag';
 
       table.data = [
-        {id:1,name:'house power',tag:'house',datatype:1},
-        {id:2,name:'house kWhd',tag:'house',datatype:2},
-        {id:3,name:'solar power',tag:'solar',datatype:1},
-        {id:4,name:'solar kWhd',tag:'solar',datatype:2}
+        {id:1,name:'house power',tag:'house'},
+        {id:2,name:'house kWhd',tag:'house'},
+        {id:3,name:'solar power',tag:'solar'},
+        {id:4,name:'solar kWhd',tag:'solar'}
       ];
 
       table.draw();

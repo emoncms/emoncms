@@ -315,10 +315,6 @@ class MysqlTimeSeries implements engine_methods
         $end = $start + ($dp * $interval);
         if ($dp < 1) return false;
 
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        $data_type = $this->get_data_type($feedid);
-        if ($data_type == 2) $dp = 0;
-
         $table = $this->get_table_name($feedid);
         $range = $end - $start; // window duration in seconds
         $data = array();
@@ -635,10 +631,6 @@ class MysqlTimeSeries implements engine_methods
         if ($dp < 1) return false;
         if ($end == 0) $end = time();
 
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        $data_type = $this->get_data_type($feedid);
-        if ($data_type == 2) $dp = 0;
-
         $table = $this->get_table_name($feedid);
         $file = $table.".csv";
 
@@ -854,17 +846,6 @@ class MysqlTimeSeries implements engine_methods
     }
 
 // #### \/ Bellow are engine private methods
-
-    private function get_data_type($feedid)
-    {
-        if ($this->redis) {
-            return $this->redis->hget("feed:$feedid", "datatype");
-        }
-        global $mysqli;
-        $result = $mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-        $row = $result->fetch_array();
-        return $row["datatype"];
-    }
 
     // Search time in buffer if found update its value and return true
     private function writebuffer_update_time($feedid, $time, $newvalue)

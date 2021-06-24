@@ -70,7 +70,7 @@ function feed_controller()
                 return false;
             }
         } elseif ($route->action == "create" && $session['write']) {
-            return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
+            return $feed->create($session['userid'],get('tag'),get('name'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             return $feed->update_user_feeds_size($session['userid']);
         // To "fetch" multiple feed values in a single request
