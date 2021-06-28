@@ -403,7 +403,7 @@ class PHPTimeSeries implements engine_methods
                 if (!$average) {
                     if ($buffer_start_time!==false && $time>=$buffer_start_time) {
                         // Find closest value to $time within this interval
-                        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,($time+$interval-1), array('limit' => array(0,1)));
+                        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,($div_end-1), array('limit' => array(0,1)));
                         if (count($dp)>0) {
                             $f = explode("|",$dp[0]);    
                             $value = (float) $f[1];
@@ -413,7 +413,7 @@ class PHPTimeSeries implements engine_methods
                         $result = $this->binarysearch($fh,$time,$npoints);
                         if ($result!=-1) {
                             // check that datapoint is within interval
-                            if (($result[1]-$time)<$interval) {
+                            if ($result[1]<$div_end) {
                                 $value = $result[2];
                             }
                         }
