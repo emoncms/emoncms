@@ -406,12 +406,40 @@ body{padding:0!important}
     </div>
     <div class="modal-body">
     
-    <textarea></textarea>
+    <div id="import-alert" class="alert alert-danger hide" style="margin-bottom:15px"></div>
+    
+    <label>Paste CSV: <i>(Format: unix timestamp, value)</i></label>
+    <textarea id="import-textarea" style="width:515px" rows=8 autocomplete="off"></textarea>
+    
+    <label>Select or create new feed:</label>
+                            
+    <div class="input-prepend input-append">
+        <span class="add-on">Feed</span>
+        <select id="import-feed-select" style="width:130px"></select>
+        <span class="import-new-feed">
+            <input id="import-feed-tag" type="text" style="width:150px" placeholder="Tag" />
+            <input id="import-feed-name" type="text" style="width:150px" placeholder="Name" />
+        </span>
+    </div>
+    
+    <div class="input-prepend input-append import-new-feed">
+        <span class="add-on">Engine</span>
+        <select id="import-feed-engine" style="width:280px">
+            <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
+            <option value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+            <?php } ?>
+        </select>
+        <select id="import-feed-interval" style="width:60px">
+            <?php foreach (Engine::available_intervals() as $i) { ?>
+            <option value="<?php echo $i["interval"]; ?>"><?php echo $i["description"]; ?></option>
+            <?php } ?>
+        </select>
+    </div>
     
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="newfeed-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
+        <button id="importData" class="btn btn-primary"><?php echo _('Import'); ?></button>
     </div>
 </div>
 <?php require "Modules/process/Views/process_ui.php"; ?>
@@ -427,6 +455,11 @@ var local_cache_key = 'feed_nodes_display';
 var nodes_display = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 var engines_hidden = JSON.parse(<?php echo json_encode($settings["feed"]['engines_hidden']); ?>);
+
+var import_data = [];
+var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
+var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
+
 // auto refresh
 update_feed_list();
 setInterval(update_feed_list,5000);
@@ -567,7 +600,10 @@ function update_feed_list() {
         }
         
         autowidth($container) // set each column group to the same width
+        draw_import_feed_select();
         } // end of for loop
+        
+
     }); // end of ajax callback
 }// end of update_feed_list() function
 
@@ -1519,5 +1555,129 @@ function parse_timepicker_time(timestr){
 
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
+
+// -------------------------------------------------------------------------------
+// Validate pasted data for import
+// -------------------------------------------------------------------------------
+$("#import-textarea").change(function() {
+
+    $("#import-alert").html("").hide();
+
+    var content = $(this).val();
+    if (content=="") return false;
+    
+    var lines = content.split("\n");
+    
+    import_data = [];
+    
+    // 1. Check format of pasted data
+    for (var i=0; i<lines.length; i++) {
+        var time_value_str = lines[i].split(",");
+        if (time_value_str.length!=2) {
+            $("#import-alert").html("<b>Error:</b> invalid number of columns").show();
+            return false;
+        }
+        
+        var time = time_value_str[0].trim();
+        var value = time_value_str[1].trim();
+        if (value=='null') value = null;
+        
+        if (isNaN(time)) {
+            $("#import-alert").html("<b>Error:</b> invalid time: "+time).show();
+            return false;
+        } else {
+            time = parseInt(time);
+        }
+
+        if (isNaN(value)) {
+            $("#import-alert").html("<b>Error:</b> invalid value: "+value).show();
+            return false;
+        } else {
+            value = parseFloat(value);
+        }
+        
+        import_data.push([time,value]);
+    }
+
+    if (import_data.length==1) {
+        $("#import-alert").html("<b>Format valid:</b> 1 data point").removeClass("alert-danger").addClass("alert-success").show();
+    }
+    
+    else if (import_data.length>1) {
+        
+        // 2. Check interval of pasted data
+        var interval = false;
+        var fixed_interval = true;
+        for (var i=1; i<import_data.length; i++) {
+            this_interval = import_data[i][0] - import_data[i-1][0]
+            if (this_interval>0) {
+                if (interval!=false && this_interval!=interval) {
+                    fixed_interval = false;
+                    break;
+                }
+                interval = this_interval;
+            } else {
+                if (this_interval<0) {
+                    $("#import-alert").html("<b>Error:</b> datapoint "+import_data[i][0]+" is older than previous data point").show();
+                    return false;
+                }
+            }
+        }
+        
+        if (!fixed_interval && import_data.length>2) {
+            interval = (import_data[import_data.length-1][0] - import_data[0][0])/(import_data.length-1);
+        }
+        
+        var message = "<b>Format valid:</b> "+import_data.length+" data points";
+        if (interval!==false) message += ", "+(fixed_interval?"fixed interval "+interval+"s":"variable interval, average: "+(interval.toFixed(1))+"s");
+        $("#import-alert").html(message).removeClass("alert-danger").addClass("alert-success").show();
+        
+        if (available_intervals.indexOf(interval)!=-1) {
+            $("#import-feed-interval").val(interval);
+        }
+    }
+
+});
+
+var import_select_drawn = false;
+
+function draw_import_feed_select() {
+    if (!import_select_drawn) {
+        import_select_drawn = true;
+        
+        var out = "<option value=-1>CREATE NEW:</option>";
+        for (var n in nodes) {
+          out += "<optgroup label='"+n+"'>";
+          for (var f in nodes[n]) {
+              out += "<option value="+nodes[n][f]['id']+">"+nodes[n][f].name+"</option>";
+          }
+          out += "</optgroup>";
+        }
+        $("#import-feed-select").html(out);
+    }
+}
+
+$("#import-feed-select").change(function(){
+    var feedid = $(this).val();
+    console.log(feedid);
+    if (feedid==-1) {
+        $(".import-new-feed").show();
+    } else {
+        $(".import-new-feed").hide();
+    }
+});
+
+$("#import-feed-engine").change(function(){
+    var engine = $(this).val();
+    if (engine==5) {
+        $("#import-feed-interval").show();
+    } else {
+        $("#import-feed-interval").hide();
+    }
+});
+
+$("#importData").click(function() {
+    alert("Feed: "+$("#import-feed-select").val()+"\n"+JSON.stringify(import_data));
+});
 </script>
 
