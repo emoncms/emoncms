@@ -65,6 +65,11 @@ var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
+var backgroundColour = urlParams.colourbg;
+if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+$("body").css("background-color","#"+backgroundColour);
+
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;
