@@ -21,7 +21,7 @@ except ModuleNotFoundError as err:
 
 # Check if redis available for emoncms -> script link
 redis = True
-try: 
+try:
     import redis
 except ModuleNotFoundError as err:
     redis = False
@@ -65,7 +65,6 @@ def reset():
   GPIO.cleanup()
 
 if device=="/dev/ttyAMA0" and rpi: reset()
-
 # -------------------------------------------------------------
 if redis:
     try:
@@ -75,6 +74,7 @@ if redis:
 # -------------------------------------------------------------
 try:
     ser = serial.Serial(device, baudrate)
+    ser.reset_input_buffer()
 except:
     print("Could not open serial port "+str(device)+" "+str(baudrate))
     sys.exit(0)

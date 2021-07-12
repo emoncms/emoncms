@@ -145,7 +145,14 @@ function admin_controller()
                 return view("Modules/admin/firmware_view.php", array());
             }
             else if ($route->action == 'serialmonitor') {
-                if ($route->subaction == 'start') {
+                if ($route->subaction == 'running') {
+                    $route->format = "text";      
+                    @exec('pidof -x start.sh', $exec);
+                    $pid = False;
+                    if (isset($exec[0])) $pid = $exec[0];
+                    return $pid;
+                }
+                else if ($route->subaction == 'start') {
                     $route->format = "text";
                     $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
                     $baudrate = 38400;
@@ -153,14 +160,24 @@ function admin_controller()
                     $redis->rpush("service-runner","$script $baudrate $device");
                     return "service-runner serialmonitor start"; 
                 }
-
-                if ($route->subaction == 'log') {
+                else if ($route->subaction == 'stop') {
+                    $route->format = "text";  
+                    $redis->rpush("serialmonitor","exit");
+                    return "serialmonitor stop command sent";
+                }
+                else if ($route->subaction == 'log') {
                     $route->format = "text";
                     $out = "";
                     while($redis->llen('serialmonitor-log')) {
                         $out .= $redis->lpop('serialmonitor-log')."\n";
                     }
                     return $out;
+                }
+                else if ($route->subaction == 'cmd') {
+                    $route->format = "text";
+                    $cmd = $_GET['cmd'];
+                    $redis->rpush("serialmonitor",$cmd);
+                    return "serialmonitor cmd sent";
                 }
             }
             // ----------------------------------------------------------------
