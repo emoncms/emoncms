@@ -102,12 +102,16 @@ while True:
             except KeyboardInterrupt:
                 sys.exit(0)
             print (linestr)
+            if redis:
+                r.rpush('serialmonitor-log',linestr)
 
     # Redis
     if redis:
         cmd_count = r.llen('serialmonitor')
         if cmd_count:
             cmd = r.lpop('serialmonitor').decode()
+            if cmd=="exit":
+                sys.exit(0)
             ser.write((cmd+"\r\n").encode())
 # -------------------------------------------------------------
 

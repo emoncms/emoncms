@@ -144,6 +144,25 @@ function admin_controller()
             else if ($route->action == 'firmware' && $session['write']) {
                 return view("Modules/admin/firmware_view.php", array());
             }
+            else if ($route->action == 'serialmonitor') {
+                if ($route->subaction == 'start') {
+                    $route->format = "text";
+                    $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
+                    $baudrate = 38400;
+                    $device = "/dev/ttyAMA0";
+                    $redis->rpush("service-runner","$script $baudrate $device");
+                    return "service-runner serialmonitor start"; 
+                }
+
+                if ($route->subaction == 'log') {
+                    $route->format = "text";
+                    $out = "";
+                    while($redis->llen('serialmonitor-log')) {
+                        $out .= $redis->lpop('serialmonitor-log')."\n";
+                    }
+                    return $out;
+                }
+            }
             // ----------------------------------------------------------------
             // Emoncms log
             // ----------------------------------------------------------------
