@@ -27,6 +27,12 @@ if ($session["admin"]) {
                 "order"=>1, 
                 "icon"=>"input"
             ),
+            "firmware"=>array(
+                "name"=>_("Firmware"),
+                "href"=>"admin/firmware", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
             "log"=>array(
                 "name"=>_("Emoncms Log"),
                 "href"=>"admin/emoncmslog", 

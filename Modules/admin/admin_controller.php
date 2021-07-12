@@ -139,6 +139,12 @@ function admin_controller()
                 ));
             }
             // ----------------------------------------------------------------
+            // Firmware
+            // ----------------------------------------------------------------
+            else if ($route->action == 'firmware' && $session['write']) {
+                return view("Modules/admin/firmware_view.php", array());
+            }
+            // ----------------------------------------------------------------
             // Emoncms log
             // ----------------------------------------------------------------
             else if ($route->action == 'emoncmslog' && $session['write']) {

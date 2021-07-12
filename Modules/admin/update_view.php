@@ -19,7 +19,7 @@
 
 <h3><?php echo _('Update'); ?></h3>
 
-<div class="admin-container"
+<div class="admin-container">
     
     <?php 
     // UPDATES 
