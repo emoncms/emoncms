@@ -64,14 +64,14 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             </a>
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
-                    <li><a href="<?php echo $path; ?>user/view" title="My Account" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> My Account</a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo _("My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo _("My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
-                    <li><a href="<?php echo $path; ?>user/logout" title="Logout" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> Logout</a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo _("Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo _("Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
             <li>
-              <a href="<?php echo $path; ?>" title="Login">
+              <a href="<?php echo $path; ?>" title="<?php echo _("Login"); ?>">
                 <div class="tr-login"><svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
               </a>
             </li>
