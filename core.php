@@ -247,7 +247,9 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                load_language_files("Modules/".$dir[$i]."/locale");
+				if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot"))
+                load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
+				else load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
