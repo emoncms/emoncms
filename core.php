@@ -247,7 +247,7 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                // load_language_files("Modules/".$dir[$i]."/locale");
+                load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
