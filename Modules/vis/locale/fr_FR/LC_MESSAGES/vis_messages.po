@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-25 11:50+0200\n"
-"PO-Revision-Date: 2021-05-25 11:53+0200\n"
+"POT-Creation-Date: 2021-07-14 08:07+0200\n"
+"PO-Revision-Date: 2021-07-14 08:07+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.3\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/vis_main_view.php:38
@@ -300,8 +300,8 @@ msgstr "Défaut : 800"
 msgid "Default visible window interval"
 msgstr "Intervalle de fenêtre visible par défaut"
 
-#: ../../../vis_langjs.php:85 ../../../vis_object.php:44
-#: ../../../vis_object.php:56 ../../../vis_object.php:65
+#: ../../../vis_langjs.php:85 ../../../vis_object.php:46
+#: ../../../vis_object.php:57 ../../../vis_object.php:65
 #: ../../../vis_object.php:71 ../../../vis_object.php:77
 #: ../../../vis_object.php:82
 msgid "delta"
@@ -311,8 +311,8 @@ msgstr "delta"
 msgid "Depth"
 msgstr "Profondeur"
 
-#: ../../../vis_langjs.php:87 ../../../vis_object.php:33
-#: ../../../vis_object.php:42
+#: ../../../vis_langjs.php:87 ../../../vis_object.php:34
+#: ../../../vis_object.php:44
 msgid "dp"
 msgstr "dp"
 
@@ -352,7 +352,7 @@ msgstr ""
 "Intervalle (secondes) - vous pouvez définir \"d\" pour jour, \"m\" pour "
 "mois, ou \"y\" pour année"
 
-#: ../../../vis_langjs.php:97 ../../../vis_object.php:52
+#: ../../../vis_langjs.php:97 ../../../vis_object.php:53
 msgid "kwhd"
 msgstr "kwhd"
 
@@ -380,7 +380,7 @@ msgstr "minute"
 msgid "minutes"
 msgstr "minutes"
 
-#: ../../../vis_langjs.php:104 ../../../vis_object.php:45
+#: ../../../vis_langjs.php:104 ../../../vis_object.php:47
 msgid "mode"
 msgstr "mode"
 
@@ -412,8 +412,8 @@ msgstr "Puissance"
 msgid "Power to show"
 msgstr "Puissance à afficher"
 
-#: ../../../vis_langjs.php:111 ../../../vis_object.php:34
-#: ../../../vis_object.php:43
+#: ../../../vis_langjs.php:111 ../../../vis_object.php:35
+#: ../../../vis_object.php:45
 msgid "scale"
 msgstr "échelle"
 
@@ -473,8 +473,8 @@ msgstr "Ufac"
 msgid "Ufac value"
 msgstr "Valeur ufac"
 
-#: ../../../vis_langjs.php:126 ../../../vis_object.php:32
-#: ../../../vis_object.php:41 ../../../vis_object.php:119
+#: ../../../vis_langjs.php:126 ../../../vis_object.php:33
+#: ../../../vis_object.php:43
 msgid "units"
 msgstr "unités"
 
@@ -494,7 +494,7 @@ msgstr "Semaine"
 msgid "Year"
 msgstr "Année"
 
-#: ../../../vis_langjs.php:131 ../../../vis_object.php:50
+#: ../../../vis_langjs.php:131 ../../../vis_object.php:51
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -502,28 +502,31 @@ msgstr "Zoom"
 msgid "Display power as kW"
 msgstr "Afficher la puissance en kW"
 
-#: ../../../vis_menu.php:4
+#: ../../../vis_menu.php:6
 msgid "Visualization"
 msgstr "Visualisation"
 
-#: ../../../vis_object.php:20
+#: ../../../vis_object.php:19
 msgid "RealTime"
 msgstr "RealTime"
 
-#: ../../../vis_object.php:21 ../../../vis_object.php:29
-#: ../../../vis_object.php:38 ../../../vis_object.php:81
+#: ../../../vis_object.php:20 ../../../vis_object.php:29
+#: ../../../vis_object.php:39 ../../../vis_object.php:81
 #: ../../../vis_object.php:90 ../../../vis_object.php:94
 #: ../../../vis_object.php:101 ../../../vis_object.php:111
-#: ../../../vis_object.php:118 ../../../vis_object.php:123
-#: ../../../vis_object.php:130 ../../../vis_object.php:136
-#: ../../../vis_object.php:143
+#: ../../../vis_object.php:118
 msgid "feed"
 msgstr "flux"
 
-#: ../../../vis_object.php:22 ../../../vis_object.php:31
-#: ../../../vis_object.php:39
+#: ../../../vis_object.php:21 ../../../vis_object.php:31
+#: ../../../vis_object.php:40
 msgid "colour"
 msgstr "couleur"
+
+#: ../../../vis_object.php:22 ../../../vis_object.php:32
+#: ../../../vis_object.php:41
+msgid "colourbg"
+msgstr "couleur bg"
 
 #: ../../../vis_object.php:23
 msgid "kW"
@@ -537,28 +540,27 @@ msgstr "RawData"
 msgid "fill"
 msgstr "remplissage"
 
-#: ../../../vis_object.php:37
+#: ../../../vis_object.php:38
 msgid "BarGraph"
 msgstr "BarGraph"
 
-#: ../../../vis_object.php:40
+#: ../../../vis_object.php:42
 msgid "interval"
 msgstr "intervalle"
 
-#: ../../../vis_object.php:51 ../../../vis_object.php:75
-#: ../../../vis_object.php:137
+#: ../../../vis_object.php:52 ../../../vis_object.php:75
 msgid "power"
 msgstr "puissance"
 
-#: ../../../vis_object.php:53
+#: ../../../vis_object.php:54
 msgid "currency"
 msgstr "devise"
 
-#: ../../../vis_object.php:54
+#: ../../../vis_object.php:55
 msgid "currency_after_val"
 msgstr "devise_après_val"
 
-#: ../../../vis_object.php:55
+#: ../../../vis_object.php:56
 msgid "pricekwh"
 msgstr "prixkwh"
 
@@ -611,7 +613,7 @@ msgstr "OrderBars"
 msgid "MultiGraph"
 msgstr "MultiGraph"
 
-#: ../../../vis_object.php:86
+#: ../../../vis_object.php:86 ../../../vis_object.php:125
 msgid "mid"
 msgstr "mid"
 
@@ -656,46 +658,22 @@ msgid "data points"
 msgstr "points de données"
 
 #: ../../../vis_object.php:117
-msgid "Timestore Daily (Deprecated)"
-msgstr "Timestore Daily (Obsolète)"
-
-#: ../../../vis_object.php:122
-msgid "Histgraph (Deprecated)"
-msgstr "Histgraph (Obsolère)"
-
-#: ../../../vis_object.php:124
-msgid "barwidth"
-msgstr "largeur barre"
-
-#: ../../../vis_object.php:125
-msgid "start"
-msgstr "début"
-
-#: ../../../vis_object.php:126
-msgid "end"
-msgstr "fin"
-
-#: ../../../vis_object.php:129
-msgid "Threshold (Deprecated)"
-msgstr "Threshold (Obsolète)"
-
-#: ../../../vis_object.php:131 ../../../vis_object.php:138
-msgid "thresholdA"
-msgstr "seuil A"
-
-#: ../../../vis_object.php:132 ../../../vis_object.php:139
-msgid "thresholdB"
-msgstr "seuil B"
-
-#: ../../../vis_object.php:135
-msgid "OrderThreshold (Deprecated)"
-msgstr "OrderThreshold (Obsolète)"
-
-#: ../../../vis_object.php:142
 msgid "Graph (Deprecated)"
 msgstr "Graph (Obsolète)"
 
-#: ../../../visualisations/bargraph.php:128
+#: ../../../vis_object.php:124
+msgid "Psychrometric Diagram"
+msgstr "Psychrometric Diagram"
+
+#: ../../../vis_object.php:126
+msgid "% to abso."
+msgstr ""
+
+#: ../../../vis_object.php:127
+msgid "givoni style?"
+msgstr "Style givoni ?"
+
+#: ../../../visualisations/bargraph.php:132
 msgid "Bar graph:"
 msgstr "Graphique à barres : "
 
@@ -894,21 +872,9 @@ msgstr "Afficher sortie CSV"
 msgid "Hide CSV Output"
 msgstr "Masquer sortie CSV"
 
-#: ../../../visualisations/histgraph.php:35
-msgid "Histogram:"
-msgstr "Histogramme :"
-
 #: ../../../visualisations/orderbars.php:20
 msgid "Bar graph (ordered by height):"
 msgstr "Bar graph (trié par hauteur):"
-
-#: ../../../visualisations/orderthreshold.php:22
-msgid "Threshold Order"
-msgstr "Ordre seuil"
-
-#: ../../../visualisations/orderthreshold.php:29
-msgid "Reload"
-msgstr "Recharger"
 
 #: ../../../visualisations/rawdata.php:47
 msgid "Mean:"
@@ -930,7 +896,7 @@ msgstr "Écart-type : "
 msgid "Datapoints in view:"
 msgstr "Points de données dans la vue :"
 
-#: ../../../visualisations/rawdata.php:107
+#: ../../../visualisations/rawdata.php:112
 msgid "Raw:"
 msgstr "Brut :"
 
@@ -949,17 +915,9 @@ msgstr "min"
 msgid "Simpler kWh/d zoomer"
 msgstr ""
 
-#: ../../../visualisations/threshold.php:21
-msgid "Threshold"
-msgstr "Seuil"
-
 #: ../../../visualisations/timecompare.php:46
 msgid "Time Compare: "
 msgstr "Comparaison de temps :"
-
-#: ../../../visualisations/timestoredaily.php:85
-msgid "Timestore Daily:"
-msgstr ""
 
 #: ../../../visualisations/zoom.php:24
 msgid "kWh/d Zoomer"
@@ -988,6 +946,45 @@ msgstr "une année"
 #: ../../../visualisations/zoom.php:124
 msgid "Unit price:"
 msgstr "Prix unitaire :"
+
+#~ msgid "Timestore Daily (Deprecated)"
+#~ msgstr "Timestore Daily (Obsolète)"
+
+#~ msgid "Histgraph (Deprecated)"
+#~ msgstr "Histgraph (Obsolère)"
+
+#~ msgid "barwidth"
+#~ msgstr "largeur barre"
+
+#~ msgid "start"
+#~ msgstr "début"
+
+#~ msgid "end"
+#~ msgstr "fin"
+
+#~ msgid "Threshold (Deprecated)"
+#~ msgstr "Threshold (Obsolète)"
+
+#~ msgid "thresholdA"
+#~ msgstr "seuil A"
+
+#~ msgid "thresholdB"
+#~ msgstr "seuil B"
+
+#~ msgid "OrderThreshold (Deprecated)"
+#~ msgstr "OrderThreshold (Obsolète)"
+
+#~ msgid "Histogram:"
+#~ msgstr "Histogramme :"
+
+#~ msgid "Threshold Order"
+#~ msgstr "Ordre seuil"
+
+#~ msgid "Reload"
+#~ msgstr "Recharger"
+
+#~ msgid "Threshold"
+#~ msgstr "Seuil"
 
 #~ msgid "Daily from Multiple (BETA)"
 #~ msgstr "Daily from Multiple (BETA)"
