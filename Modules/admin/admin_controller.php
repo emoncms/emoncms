@@ -211,21 +211,22 @@ function admin_controller()
     if ($route->action == 'update-start') {
         $route->format = "text";
         if (!$redis) return "redis not running";
-        if (!isset($_POST['firmware'])) return "missing parameter: firmware";
         if (!isset($_POST['type'])) return "missing parameter: type";
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
+        if (!isset($_POST['hardware'])) return "missing parameter: hardware";
         
-        $firmware = $_POST['firmware'];
-        if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","emontx"))) return "Invalid firmware type";
-
         $type = $_POST['type'];
         if (!in_array($type,array("all","emoncms","firmware"))) return "Invalid update type";
         
         $serial_port = $_POST['serial_port'];
         require "Modules/admin/admin_model.php";     
         if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
+
+        $hardware = $_POST['hardware'];        
+        $firmware_available = Admin::firmware_available();
+        if (!isset($firmware_available->$hardware) && $hardware!="none") return "invalid hardware";
         
-        $redis->rpush("service-runner","$update_script $type $firmware $serial_port>$update_logfile");
+        $redis->rpush("service-runner","$update_script $type $hardware $serial_port>$update_logfile");
         return "service-runner trigger sent";
     }
     

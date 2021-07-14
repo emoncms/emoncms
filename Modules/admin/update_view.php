@@ -169,21 +169,32 @@ $("#getupdatelog").click(function() {
 });
 // update all button clicked
 $(".update").click(function() {
-  var type = $(this).attr("type");
-  var serial_port = $("#select_serial_port").val();
-  var firmware = $("#selected_hardware").val().toLowerCase();
-  $.ajax({ type: "POST", url: path+"admin/update-start", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
-    {
-      // update with latest value
-      refresh_updateLog(result);
-      // autoupdate every 1s
-      updates_log_interval = refresherStart(getUpdateLog, 1000)
-    }
-  });
+    var type = $(this).attr("type");
+    var serial_port = $("#select_serial_port").val();
+    var hardware = $("#selected_hardware").val();
+    var firmware_version = $("#selected_firmware_version").val();
+    
+    $.ajax({ 
+        type: "POST", 
+        url: path+"admin/update-start", 
+        data: "type="+type+"&serial_port="+serial_port+"&hardware="+hardware+"&firmware_version="+firmware_version, 
+        async: true, 
+        success: function(result) {
+            // update with latest value
+            refresh_updateLog(result);
+            // autoupdate every 1s
+            updates_log_interval = refresherStart(getUpdateLog, 1000)
+        }
+    });
 });
 
 $("#selected_hardware").change(function(){
-    var hardware = $(this).val();    
+    var hardware = $(this).val(); 
+    if (hardware=="none") {
+        $("#selected_firmware_version").html("<option>none</option>");
+        return;
+    }
+       
     var out = "";
     for (var z in firmware_available[hardware]) {
         var version = firmware_available[hardware][z].version;
