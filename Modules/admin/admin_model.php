@@ -13,6 +13,79 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Admin {
+
+    /**
+     * get running status of service
+     *
+     * @param string $name
+     * @return bool|null true == running | false == stopped | null == not installed
+     */
+    public static function full_system_information() {
+        global $redis, $settings, $emoncms_version;
+        // create array of installed services
+        $services = array();
+        $system = Admin::system_information();
+        
+        foreach($system['services'] as $key=>$value) {
+            if (!is_null($system['services'][$key])) {    // If the service was found on this system
+                
+                // Populate service status fields
+            	$services[$key] = array(
+                    'state' => ucfirst($value['ActiveState']),
+                    'text' => ucfirst($value['SubState']),
+                    'running' => $value['SubState']==='running'
+                );
+            	
+            	// Set 'cssClass' based on service's configuration and current status
+            	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+            		$services[$key]['cssClass'] = 'masked';
+            		$services[$key]['text'] = 'Masked';
+            	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+            		$services[$key]['cssClass'] = 'success';
+            	} else {                                       // Assume service is in danger
+            		$services[$key]['cssClass'] = 'danger';
+            	}
+            }
+        }
+        // add custom messages for feedwriter service
+        if(isset($services['feedwriter'])) {
+            $message = '<font color="red">Service is not running</font>';
+            if ($services['feedwriter']['running']) {
+                $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
+            }
+            $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+        }
+        $redis_info = array();
+        if($settings['redis']['enabled']) {
+            $redis_info = $redis->info();
+            $redis_info['dbSize'] = $redis->dbSize();
+            $phpRedisPattern = 'Redis Version =>';
+            $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
+            $pipRedisPattern = "Version: ";
+            $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+        }
+
+        return array(
+            'system'=>$system,
+            'services'=>$services,
+            'redis_enabled'=>$settings['redis']['enabled'],
+            'mqtt_enabled'=>$settings['mqtt']['enabled'],
+            'emoncms_version'=>$emoncms_version,
+            'redis_info'=>$redis_info,
+            'feed_settings'=>$settings['feed'],
+            'component_summary'=>$system['component_summary'],
+            'php_modules'=>Admin::php_modules($system['php_modules']),
+            'mqtt_version'=>Admin::mqtt_version(),
+            'rpi_info'=> Admin::get_rpi_info(),
+            'ram_info'=> Admin::get_ram($system['mem_info']),
+            'disk_info'=> Admin::get_mountpoints($system['partitions']),
+            'v' => 3
+        );
+    }
+
+
+
+
     /**
      * get running status of service
      *

@@ -73,6 +73,8 @@ function controller($controller_name)
 
 function view($filepath, array $args = array())
 {
+    global $path;
+    $args['path'] = $path;
     $content = '';
     if (file_exists($filepath)) {
         extract($args);

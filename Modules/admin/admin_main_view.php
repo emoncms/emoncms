@@ -535,28 +535,6 @@ $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
 
-$('#log-level ul li a').click(function(event){
-    event.preventDefault();
-    var $btn = $(this);
-    var $toggle = $btn.parents('ul').prev('.btn');
-    var key = $btn.data('key');
-    var data = {level:key};
-    $.post( path+"admin/loglevel.json",data)
-    .done(function(response) {
-        // make the dropdown toggle show the new setting
-        if(response.hasOwnProperty('success') && response.success!==false) {
-            $toggle.find('.log-level-name').text(_('log level: %s').replace('%s',response['log-level-name']));
-            // highlight the current dropdown element as active
-            $btn.addClass('active');
-            $btn.parents('li').siblings().find('a').removeClass('active');
-
-            notify(_('Log level set to: %s').replace('%s',response['log-level-name']),'success');
-        } else {
-            notify(_('Log level not set'), 'error', response.hasOwnProperty('message') ? response.message: '');
-        }
-    });
-})
-
 function snackbar(text) {
     var snackbar = document.getElementById("snackbar");
     snackbar.innerHTML = text;
