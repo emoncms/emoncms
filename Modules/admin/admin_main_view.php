@@ -503,7 +503,7 @@ function getBufferSize() {
 
 
 $("#redisflush").click(function() {
-  $.ajax({ url: path+"admin/redisflush.json", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/redisflush", async: true, dataType: "text", success: function(result)
     {
       var data = JSON.parse(result);
       $("#redisused").html(data.dbsize+" keys ("+data.used+")");
@@ -512,7 +512,7 @@ $("#redisflush").click(function() {
 });
 
 $("#resetwriteload").click(function() {
-  $.ajax({ url: path+"admin/resetwriteload.json", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/resetwriteload", async: true, dataType: "text", success: function(result)
     {
       location.reload(); 
     }
@@ -521,13 +521,13 @@ $("#resetwriteload").click(function() {
 
 $("#haltPi").click(function() {
   if(confirm('Please confirm you wish to shutdown your Pi, please wait 30 secs before disconnecting the power...')) {
-    $.post( location.href, { shutdownPi: "halt" } );
+    $.post( path+"admin/shutdown" );
   }
 });
 
 $("#rebootPi").click(function() {
   if(confirm('Please confirm you wish to reboot your Pi, this will take approximately 30 secs to complete...')) {
-    $.post( location.href, { shutdownPi: "reboot" } );
+    $.post( path+"admin/reboot" );
   }
 });
 
