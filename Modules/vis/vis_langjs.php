@@ -30,6 +30,7 @@ LANG_JS_VIS["Advanced"] = '<?php echo addslashes(dgettext('vis_messages',"Advanc
 LANG_JS_VIS["Are you sure you want to delete?"] = '<?php echo addslashes(dgettext('vis_messages',"Are you sure you want to delete?")); ?>';
 LANG_JS_VIS["Auto refresh (secs)"] = '<?php echo addslashes(dgettext('vis_messages',"Auto refresh (secs)")); ?>';
 LANG_JS_VIS["Axis"] = '<?php echo addslashes(dgettext('vis_messages',"Axis")); ?>';
+LANG_JS_VIS["Background colour"] = '<?php echo addslashes(dgettext('vis_messages',"Background colour")); ?>';
 LANG_JS_VIS["Bars"] = '<?php echo addslashes(dgettext('vis_messages',"Bars")); ?>';
 LANG_JS_VIS["Bar Width (%)"] = '<?php echo addslashes(dgettext('vis_messages',"Bar Width (%)")); ?>';
 LANG_JS_VIS["Basic"] = '<?php echo addslashes(dgettext('vis_messages',"Basic")); ?>';
@@ -68,9 +69,12 @@ LANG_JS_VIS["Y axes limits"] = '<?php echo addslashes(dgettext('vis_messages',"Y
 
 // vis_render.js
 LANG_JS_VIS["0 = before value, 1 = after value"] = '<?php echo addslashes(dgettext('vis_messages',"0 = before value, 1 = after value")); ?>';
+LANG_JS_VIS["Background"] = '<?php echo addslashes(dgettext('vis_messages',"Background")); ?>';
+LANG_JS_VIS["Background colour in hex. Blank is use default."] = '<?php echo addslashes(dgettext('vis_messages',"Background colour in hex. Blank is use default.")); ?>';
 LANG_JS_VIS["Bottom"] = '<?php echo addslashes(dgettext('vis_messages',"Bottom")); ?>';
 LANG_JS_VIS["Bottom colour"] = '<?php echo addslashes(dgettext('vis_messages',"Bottom colour")); ?>';
 LANG_JS_VIS["Bottom feed value"] = '<?php echo addslashes(dgettext('vis_messages',"Bottom feed value")); ?>';
+LANG_JS_VIS["calulate habs"] = '<?php echo addslashes(dgettext('vis_messages',"calulate habs")); ?>';
 LANG_JS_VIS["Colour"] = '<?php echo addslashes(dgettext('vis_messages',"Colour")); ?>';
 LANG_JS_VIS["Consumption"] = '<?php echo addslashes(dgettext('vis_messages',"Consumption")); ?>';
 LANG_JS_VIS["Consumption feed value"] = '<?php echo addslashes(dgettext('vis_messages',"Consumption feed value")); ?>';
@@ -84,6 +88,7 @@ LANG_JS_VIS["Default: 800"] = '<?php echo addslashes(dgettext('vis_messages',"De
 LANG_JS_VIS["Default visible window interval"] = '<?php echo addslashes(dgettext('vis_messages',"Default visible window interval")); ?>';
 LANG_JS_VIS["delta"] = '<?php echo addslashes(dgettext('vis_messages',"delta")); ?>';
 LANG_JS_VIS["Depth"] = '<?php echo addslashes(dgettext('vis_messages',"Depth")); ?>';
+LANG_JS_VIS["Display power as kW"] = '<?php echo addslashes(dgettext('vis_messages',"Display power as kW")); ?>';
 LANG_JS_VIS["dp"] = '<?php echo addslashes(dgettext('vis_messages',"dp")); ?>';
 LANG_JS_VIS["Feed"] = '<?php echo addslashes(dgettext('vis_messages',"Feed")); ?>';
 LANG_JS_VIS["Feed source"] = '<?php echo addslashes(dgettext('vis_messages',"Feed source")); ?>';
@@ -126,8 +131,8 @@ LANG_JS_VIS["Ufac value"] = '<?php echo addslashes(dgettext('vis_messages',"Ufac
 LANG_JS_VIS["units"] = '<?php echo addslashes(dgettext('vis_messages',"units")); ?>';
 LANG_JS_VIS["Units"] = '<?php echo addslashes(dgettext('vis_messages',"Units")); ?>';
 LANG_JS_VIS["Units to show"] = '<?php echo addslashes(dgettext('vis_messages',"Units to show")); ?>';
+LANG_JS_VIS["view givoni graph"] = '<?php echo addslashes(dgettext('vis_messages',"view givoni graph")); ?>';
 LANG_JS_VIS["Week"] = '<?php echo addslashes(dgettext('vis_messages',"Week")); ?>';
 LANG_JS_VIS["Year"] = '<?php echo addslashes(dgettext('vis_messages',"Year")); ?>';
 LANG_JS_VIS["Zoom"] = '<?php echo addslashes(dgettext('vis_messages',"Zoom")); ?>';
-LANG_JS_VIS["Display power as kW"] = '<?php echo addslashes(dgettext('vis_messages',"Display power as kW")); ?>';
 //END 
