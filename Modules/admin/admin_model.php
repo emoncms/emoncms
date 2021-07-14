@@ -31,6 +31,14 @@ class Admin {
         return $ports;
     }
 
+    public static function firmware_available() {
+        global $settings;
+        if (file_exists($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json")) {
+            return json_decode(file_get_contents($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json"));
+        }
+        return array();
+    }
+
     /**
      * get running status of service
      *

@@ -11,9 +11,8 @@
 }
 
 </style>
-<h3>Firmware</h3>
 
-<h4>Serial Monitor</h4>
+<h3>Serial Monitor</h3>
 
 <div id="emonhub-running-notice" class="alert hide">
   <b>Note:</b> EmonHub is currently running and may conflict with serial monitor 

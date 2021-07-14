@@ -39,27 +39,38 @@
     // -------------------
     ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1">
-        <div class="text-left">
+        <div class="text-left" style="margin-bottom:10px">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Firmware Only'); ?></h4>
             <p><?php echo _('Select your hardware type and firmware version'); ?></p>
-            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
+
+            <div class="input-prepend" style="margin-bottom:0px">
+                <span class="add-on">Select port:</span>
+                <select id="select_serial_port">
+                    <?php foreach ($serial_ports as $port) { ?>
+                    <option><?php echo $port; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+            
+            <div class="input-prepend" style="margin-bottom:0px">
+                <span class="add-on">Hardware:</span>     
+                <select id="selected_hardware">
+                    <option value="none">none</option>
+                    <?php foreach ($firmware_available as $hardware=>$firmware_options) { ?>
+                    <option><?php echo $hardware; ?></option>
+                    <?php } ?>
+                </select>
+            </div>
+
+            <div class="input-prepend" style="margin-bottom:0px">
+                <span class="add-on">Firmware version:</span>     
+                <select id="selected_firmware_version">
+                    <option value="none">none</option>
+                </select>
+            </div>
         </div>
-        <div class="input-append">
-            <select id="select_serial_port">
-                <?php foreach ($serial_ports as $port) { ?>
-                <option><?php echo $port; ?></option>
-                <?php } ?>
-            </select>
-            <select id="selected_firmware">
-                <option value="none">none</option>
-                <option value="emonpi">EmonPi</option>
-                <option value="rfm69pi">RFM69Pi</option>
-                <option value="rfm12pi">RFM12Pi</option>
-                <option value="emontxv3cm">EmonTxV3CM</option>
-                <option value="custom">Custom</option>
-            </select>
-            <button class="update btn btn-info" type="firmware"><?php echo _('Update Firmware'); ?></button>
-        </div>
+        
+        <button id="update-firmware" class="btn btn-info"><?php echo _('Update Firmware'); ?></button>
     </aside>
 
     <?php 
@@ -106,6 +117,8 @@
 </div>
 <div id="snackbar" class=""></div>
 <script>
+
+var firmware_available = <?php echo json_encode($firmware_available); ?>;
 
 var logFileDetails;
 $("#copyupdatelogfile").on('click', function(event) {
@@ -158,7 +171,7 @@ $("#getupdatelog").click(function() {
 $(".update").click(function() {
   var type = $(this).attr("type");
   var serial_port = $("#select_serial_port").val();
-  var firmware = $("#selected_firmware").val();
+  var firmware = $("#selected_hardware").val().toLowerCase();
   $.ajax({ type: "POST", url: path+"admin/update-start", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
     {
       // update with latest value
@@ -169,16 +182,38 @@ $(".update").click(function() {
   });
 });
 
-$("#rfm69piupdate").click(function() {
-  $.ajax({ type: "POST", url: path+"admin/update-start", data: "argument=rfm69pi", async: true, success: function(result)
-    {
-      // update with latest value
-      refresh_updateLog(result);
-      // autoupdate every 1s
-      updates_log_interval = refresherStart(getUpdateLog, 1000)
+$("#selected_hardware").change(function(){
+    var hardware = $(this).val();    
+    var out = "";
+    for (var z in firmware_available[hardware]) {
+        var version = firmware_available[hardware][z].version;
+        var description = firmware_available[hardware][z].description;
+        if (description!="") description = " - "+description;
+        out += "<option value='"+version+"'>"+version+description+"</option>";
     }
-  });
+    $("#selected_firmware_version").html(out);
 });
+
+$("#update-firmware").click(function() {
+    var serial_port = $("#select_serial_port").val();
+    var hardware = $("#selected_hardware").val();
+    var firmware_version = $("#selected_firmware_version").val();
+    
+    $.ajax({ 
+        type: "POST", 
+        url: path+"admin/update-firmware", 
+        data: "serial_port="+serial_port+"&hardware="+hardware+"&firmware_version="+firmware_version, 
+        async: true, 
+        success: function(result) {
+            // update with latest value
+            refresh_updateLog(result);
+            // autoupdate every 1s
+            updates_log_interval = refresherStart(getUpdateLog, 1000)
+        }
+    });
+});
+
+
 // shrink log file viewers
 $('[data-dismiss="log"]').click(function(event){
     event.preventDefault();

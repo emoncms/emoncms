@@ -90,7 +90,8 @@ function admin_controller()
         require "Modules/admin/admin_model.php";
         return view("Modules/admin/update_view.php", array(
             'update_log_filename'=> $update_logfile,
-            'serial_ports'=>Admin::listSerialPorts()    
+            'serial_ports'=>Admin::listSerialPorts(),
+            'firmware_available'=>Admin::firmware_available()
         ));
     }
             
@@ -102,7 +103,7 @@ function admin_controller()
     } 
     
     // Firmware view
-    if ($route->action == 'firmware') {
+    if ($route->action == 'serial') {
         $route->format = 'html';
         require "Modules/admin/admin_model.php";
         return view("Modules/admin/firmware_view.php", array(
@@ -210,25 +211,52 @@ function admin_controller()
     if ($route->action == 'update-start') {
         $route->format = "text";
         if (!$redis) return "redis not running";
-        // Get update argument e.g. 'emonpi' or 'rfm69pi'
-        $firmware="";
-        if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-        if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom","emontxv3cm"))) return "Invalid firmware type";
-        // Type: all, emoncms, firmware
-        $type="";
-        if (isset($_POST['type'])) $type = $_POST['type'];
-        if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
-        // Serial port
-        $serial_port="ttyAMA0";
-        if ($_POST['serial_port'] == "null") {
-            $serial_port = "";
-        }
-        else if (isset($_POST['serial_port'])) {
-            $serial_port = $_POST['serial_port'];
-            if (!in_array($serial_port,array("ttyAMA0","ttyUSB0","ttyUSB1","ttyUSB2"))) return "Invalid serial port type";  
-        }
+        if (!isset($_POST['firmware'])) return "missing parameter: firmware";
+        if (!isset($_POST['type'])) return "missing parameter: type";
+        if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
+        
+        $firmware = $_POST['firmware'];
+        if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","emontx"))) return "Invalid firmware type";
+
+        $type = $_POST['type'];
+        if (!in_array($type,array("all","emoncms","firmware"))) return "Invalid update type";
+        
+        $serial_port = $_POST['serial_port'];
+        require "Modules/admin/admin_model.php";     
+        if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
         
         $redis->rpush("service-runner","$update_script $type $firmware $serial_port>$update_logfile");
+        return "service-runner trigger sent";
+    }
+    
+    if ($route->action == 'update-firmware') {
+        $route->format = "text";
+        if (!$redis) return "redis not running";
+        if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
+        if (!isset($_POST['hardware'])) return "missing parameter: hardware";
+        if (!isset($_POST['firmware_version'])) return "missing parameter: firmware_version";
+
+        $serial_port = $_POST['serial_port'];
+        require "Modules/admin/admin_model.php";     
+        if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
+        
+        $hardware = $_POST['hardware'];
+        $firmware_version = $_POST['firmware_version'];
+        
+        $firmware_available = Admin::firmware_available();
+        if (!isset($firmware_available->$hardware)) return "invalid hardware";
+        
+        $valid = false;
+        foreach ($firmware_available->$hardware as $firmware_option) {
+            if ($firmware_version==$firmware_option->version) {
+                $valid = true;
+                break;
+            }
+        }
+        if (!$valid) return "invalid firmware version";
+
+        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh"; 
+        $redis->rpush("service-runner","$update_script $serial_port $hardware $firmware_version>$update_logfile");
         return "service-runner trigger sent";
     }
     

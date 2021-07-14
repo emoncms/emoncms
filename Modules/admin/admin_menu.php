@@ -28,8 +28,8 @@ if ($session["admin"]) {
                 "icon"=>"input"
             ),
             "firmware"=>array(
-                "name"=>_("Firmware"),
-                "href"=>"admin/firmware", 
+                "name"=>_("Serial Monitor"),
+                "href"=>"admin/serial", 
                 "order"=>1, 
                 "icon"=>"input"
             ),
