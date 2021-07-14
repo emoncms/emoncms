@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-28 10:59+0200\n"
-"PO-Revision-Date: 2020-08-28 11:18+0200\n"
+"POT-Creation-Date: 2021-07-14 07:45+0200\n"
+"PO-Revision-Date: 2021-07-14 07:45+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/process_api.php:5
@@ -79,11 +79,11 @@ msgstr "Actions de traitement"
 msgid "List all supported process"
 msgstr "Lister tous les traitements supportés"
 
-#: ../../../Views/process_ui.php:50
+#: ../../../Views/process_ui.php:48
 msgid "process list setup"
 msgstr "paramétrage liste des traitements"
 
-#: ../../../Views/process_ui.php:53
+#: ../../../Views/process_ui.php:51
 msgid ""
 "Processes are executed sequentially with the result value being passed down "
 "for further processing to the next processor on this processing list."
@@ -92,55 +92,55 @@ msgstr ""
 "transmise pour traitement ultérieur au processus suivant sur cette liste de "
 "traitement."
 
-#: ../../../Views/process_ui.php:55
+#: ../../../Views/process_ui.php:53
 msgid "You have no processes defined"
 msgstr "Vous n'avez aucun traitement défini"
 
-#: ../../../Views/process_ui.php:60
+#: ../../../Views/process_ui.php:58
 msgid "Order"
 msgstr "Ordre"
 
-#: ../../../Views/process_ui.php:61
+#: ../../../Views/process_ui.php:59
 msgid "Process"
 msgstr "Traitement"
 
-#: ../../../Views/process_ui.php:63
+#: ../../../Views/process_ui.php:61
 msgid "Arg"
 msgstr "Argument"
 
-#: ../../../Views/process_ui.php:64
+#: ../../../Views/process_ui.php:62
 msgid "Latest"
 msgstr "Dernière valeur"
 
-#: ../../../Views/process_ui.php:65
+#: ../../../Views/process_ui.php:63
 msgid "Actions"
 msgstr "Actions"
 
-#: ../../../Views/process_ui.php:72
+#: ../../../Views/process_ui.php:70
 msgid "Add process"
 msgstr "Ajouter un traitement"
 
-#: ../../../Views/process_ui.php:77
+#: ../../../Views/process_ui.php:75
 msgid "Edit process"
 msgstr "Modifier un traitement"
 
-#: ../../../Views/process_ui.php:85 ../../../process_langjs.php:44
+#: ../../../Views/process_ui.php:83 ../../../process_langjs.php:44
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../Views/process_ui.php:86
+#: ../../../Views/process_ui.php:84
 msgid "Type value..."
 msgstr "Saisir valeur..."
 
-#: ../../../Views/process_ui.php:92 ../../../process_langjs.php:43
+#: ../../../Views/process_ui.php:90 ../../../process_langjs.php:43
 msgid "Text"
 msgstr "Texte"
 
-#: ../../../Views/process_ui.php:93
+#: ../../../Views/process_ui.php:91
 msgid "Type text..."
 msgstr "Saisir texte..."
 
-#: ../../../Views/process_ui.php:99 ../../../process_langjs.php:35
+#: ../../../Views/process_ui.php:97 ../../../process_langjs.php:35
 #: ../../../process_processlist.php:145 ../../../process_processlist.php:157
 #: ../../../process_processlist.php:198 ../../../process_processlist.php:212
 #: ../../../process_processlist.php:224 ../../../process_processlist.php:354
@@ -148,22 +148,22 @@ msgstr "Saisir texte..."
 msgid "Input"
 msgstr "Source"
 
-#: ../../../Views/process_ui.php:108
+#: ../../../Views/process_ui.php:106
 msgid "Schedule"
 msgstr "Planification"
 
-#: ../../../Views/process_ui.php:117
+#: ../../../Views/process_ui.php:115
 msgid "Data"
 msgstr "Données"
 
-#: ../../../Views/process_ui.php:129 ../../../process_langjs.php:33
+#: ../../../Views/process_ui.php:126 ../../../process_langjs.php:33
 #: ../../../process_processlist.php:445 ../../../process_processlist.php:457
 #: ../../../process_processlist.php:469 ../../../process_processlist.php:481
 #: ../../../process_processlist.php:869 ../../../process_processlist.php:880
 msgid "Feed"
 msgstr "Flux"
 
-#: ../../../Views/process_ui.php:133
+#: ../../../Views/process_ui.php:130
 msgid ""
 "Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - "
 "_ : and spaces"
@@ -171,11 +171,11 @@ msgstr ""
 "Veuillez saisir une étiquette de flux composée de lettres alphabétiques, A-Z "
 "a-z 0-9 - _ : et espaces"
 
-#: ../../../Views/process_ui.php:133
+#: ../../../Views/process_ui.php:130
 msgid "Tag"
 msgstr "Étiquette"
 
-#: ../../../Views/process_ui.php:135
+#: ../../../Views/process_ui.php:132
 msgid ""
 "Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - "
 "_ : and spaces"
@@ -183,39 +183,39 @@ msgstr ""
 "Veuillez saisir un nom de flux composé de lettres alphabétiques, A-Z a-z 0-9 "
 "- _ : et espaces"
 
-#: ../../../Views/process_ui.php:135
+#: ../../../Views/process_ui.php:132
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../Views/process_ui.php:140
+#: ../../../Views/process_ui.php:137
 msgid "Engine"
 msgstr "Moteur"
 
-#: ../../../Views/process_ui.php:152
+#: ../../../Views/process_ui.php:148
 msgid "Select interval"
 msgstr "Sélectionner intervalle"
 
+#: ../../../Views/process_ui.php:149 ../../../Views/process_ui.php:150
+#: ../../../Views/process_ui.php:151 ../../../Views/process_ui.php:152
 #: ../../../Views/process_ui.php:153 ../../../Views/process_ui.php:154
-#: ../../../Views/process_ui.php:155 ../../../Views/process_ui.php:156
-#: ../../../Views/process_ui.php:157 ../../../Views/process_ui.php:158
 msgid "s"
 msgstr "s"
 
+#: ../../../Views/process_ui.php:155 ../../../Views/process_ui.php:156
+#: ../../../Views/process_ui.php:157 ../../../Views/process_ui.php:158
 #: ../../../Views/process_ui.php:159 ../../../Views/process_ui.php:160
-#: ../../../Views/process_ui.php:161 ../../../Views/process_ui.php:162
-#: ../../../Views/process_ui.php:163 ../../../Views/process_ui.php:164
 msgid "m"
 msgstr "m"
 
-#: ../../../Views/process_ui.php:165
+#: ../../../Views/process_ui.php:161
 msgid "h"
 msgstr "h"
 
-#: ../../../Views/process_ui.php:166
+#: ../../../Views/process_ui.php:162
 msgid "d"
 msgstr "j"
 
-#: ../../../Views/process_ui.php:169
+#: ../../../Views/process_ui.php:165
 msgid ""
 "Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 "
 "and _ characters"
@@ -223,27 +223,27 @@ msgstr ""
 "Veuillez saisir un nom de table composé de lettres alphabétiques, A-Z a-z "
 "0-9 - _ : et espaces"
 
-#: ../../../Views/process_ui.php:169
+#: ../../../Views/process_ui.php:165
 msgid "Table"
 msgstr "Table"
 
-#: ../../../Views/process_ui.php:176
+#: ../../../Views/process_ui.php:172
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../../../Views/process_ui.php:181 ../../../process_langjs.php:32
+#: ../../../Views/process_ui.php:177 ../../../process_langjs.php:32
 msgid "Edit"
 msgstr "Modifier"
 
-#: ../../../Views/process_ui.php:184
+#: ../../../Views/process_ui.php:180
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/process_ui.php:195
+#: ../../../Views/process_ui.php:191
 msgid "Close"
 msgstr "Fermer"
 
-#: ../../../Views/process_ui.php:196 ../../../process_langjs.php:40
+#: ../../../Views/process_ui.php:192 ../../../process_langjs.php:40
 msgid "Not modified"
 msgstr "Non modifié"
 
@@ -387,8 +387,7 @@ msgid "Power to kWh/d"
 msgstr "Power to kWh/d"
 
 #: ../../../process_processlist.php:131 ../../../process_processlist.php:171
-#: ../../../process_processlist.php:275 ../../../process_processlist.php:340
-#: ../../../process_processlist.php:366
+#: ../../../process_processlist.php:340 ../../../process_processlist.php:366
 msgid "Power & Energy"
 msgstr "Puissance & Énergie"
 
@@ -443,8 +442,8 @@ msgid "kWh to kWh/d (OLD)"
 msgstr "kWh to kWh/d (OLD)"
 
 #: ../../../process_processlist.php:185 ../../../process_processlist.php:236
-#: ../../../process_processlist.php:288 ../../../process_processlist.php:301
-#: ../../../process_processlist.php:314
+#: ../../../process_processlist.php:275 ../../../process_processlist.php:288
+#: ../../../process_processlist.php:301 ../../../process_processlist.php:314
 msgid "Deleted"
 msgstr "Supprimé"
 
@@ -522,17 +521,6 @@ msgstr ""
 #: ../../../process_processlist.php:268
 msgid "Histogram"
 msgstr "Histogram"
-
-#: ../../../process_processlist.php:277
-msgid ""
-"Creates a histogram of energy binned by power ranges. For each power range "
-"on the x-axis, this processor will aggregate the total energy of the stream "
-"while it was in that power range.<p><b>Input</b>: power in Watts.</p>"
-msgstr ""
-"Crée un histogramme de l'énergie regroupée par plages de puissance. Pour "
-"chaque plage de puissance sur l'axe des x, ce traitement va agréger "
-"l'énergie totale du flux alors qu'il se trouvait dans cette plage de "
-"puissance.<p><b>Input</b>: puissance en Watts.</p>"
 
 #: ../../../process_processlist.php:281
 msgid "Daily Average"
@@ -1066,7 +1054,6 @@ msgstr ""
 "matérielle.</p>"
 
 #: ../../../process_processlist.php:814
-#| msgid "Wh Accumulator"
 msgid "kWh Accumulator"
 msgstr "kWh Accumulator"
 
@@ -1093,7 +1080,6 @@ msgstr ""
 "rel='noopener'>Guide: Daily kWh</a></p>"
 
 #: ../../../process_processlist.php:827
-#| msgid "Log to feed"
 msgid "Log to feed (Join)"
 msgstr "Log to feed (Join)"
 
@@ -1117,7 +1103,6 @@ msgstr ""
 "rel='noopener'>Guide: Daily kWh</a><br><br>"
 
 #: ../../../process_processlist.php:840
-#| msgid "x input"
 msgid "max by input"
 msgstr "max by input"
 
@@ -1132,7 +1117,6 @@ msgstr ""
 "ultérieur par le traitement suivant dans la liste de traitement.</p>"
 
 #: ../../../process_processlist.php:851
-#| msgid "x input"
 msgid "min by input"
 msgstr "min by input"
 
@@ -1153,6 +1137,17 @@ msgstr ""
 #: ../../../process_processlist.php:873
 msgid "min by feed"
 msgstr "min by feed"
+
+#~ msgid ""
+#~ "Creates a histogram of energy binned by power ranges. For each power "
+#~ "range on the x-axis, this processor will aggregate the total energy of "
+#~ "the stream while it was in that power range.<p><b>Input</b>: power in "
+#~ "Watts.</p>"
+#~ msgstr ""
+#~ "Crée un histogramme de l'énergie regroupée par plages de puissance. Pour "
+#~ "chaque plage de puissance sur l'axe des x, ce traitement va agréger "
+#~ "l'énergie totale du flux alors qu'il se trouvait dans cette plage de "
+#~ "puissance.<p><b>Input</b>: puissance en Watts.</p>"
 
 #~ msgid "Type feed tag..."
 #~ msgstr "Saisir étiquette du flux..."
