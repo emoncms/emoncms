@@ -78,7 +78,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     
     // System information view
-    if ($route->action == 'view') {
+    if ($route->action == 'info') {
         $route->format = 'html';
         require "Modules/admin/admin_model.php";
         return view("Modules/admin/admin_main_view.php",Admin::full_system_information());
@@ -182,7 +182,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // System update
     // ----------------------------------------------------------------------------------------       
-    if ($route->action == 'update') {
+    if ($route->action == 'update-start') {
         $route->format = "text";
         if (!$redis) return "redis not running";
         // Get update argument e.g. 'emonpi' or 'rfm69pi'
@@ -207,7 +207,7 @@ function admin_controller()
         return "service-runner trigger sent";
     }
     
-    if ($route->action == 'getupdatelog') {
+    if ($route->action == 'update-log') {
         $route->format = "text";
         if (!file_exists($update_logfile)) return "$update_logfile does not exist";
         ob_start();
@@ -215,7 +215,7 @@ function admin_controller()
         return trim(ob_get_clean());
     }
     
-    if ($route->action == 'downloadupdatelog') {
+    if ($route->action == 'update-log-download') {
         header("Content-Type: application/octet-stream");
         header("Content-Transfer-Encoding: Binary");
         header("Content-disposition: attachment; filename=\"" . basename($update_logfile) . "\"");

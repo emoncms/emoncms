@@ -112,7 +112,7 @@
                 <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>
-                <a href="<?php echo $path; ?>admin/downloadupdatelog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
+                <a href="<?php echo $path; ?>admin/update-log-download" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
                 <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
             <?php // } ?>
         </div>
@@ -175,7 +175,7 @@ $(".update").click(function() {
   var type = $(this).attr("type");
   var serial_port = $("#select_serial_port").val();
   var firmware = $("#selected_firmware").val();
-  $.ajax({ type: "POST", url: path+"admin/update", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/update-start", data: "type="+type+"&firmware="+firmware+"&serial_port="+serial_port, async: true, success: function(result)
     {
       // update with latest value
       refresh_updateLog(result);
@@ -186,7 +186,7 @@ $(".update").click(function() {
 });
 
 $("#rfm69piupdate").click(function() {
-  $.ajax({ type: "POST", url: path+"admin/update", data: "argument=rfm69pi", async: true, success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/update-start", data: "argument=rfm69pi", async: true, success: function(result)
     {
       // update with latest value
       refresh_updateLog(result);
@@ -202,7 +202,7 @@ $('[data-dismiss="log"]').click(function(event){
 })
 getUpdateLog();
 function getUpdateLog() {
-  $.ajax({ url: path+"admin/getupdatelog", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
     {
       refresh_updateLog(result);
       if (result.indexOf("System update done")!=-1) {
