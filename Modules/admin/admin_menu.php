@@ -4,7 +4,7 @@ if ($session["admin"]) {
     $menu['setup']['l2']['admin'] = array(
         'name' => _("Admin"),
         'href' => 'admin',
-        'default' => 'admin/view',
+        'default' => 'admin/info',
         'icon' => 'tasks',
         'order' => 13,
 

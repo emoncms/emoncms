@@ -157,6 +157,7 @@ function admin_controller()
         if ($route->subaction == 'stop') return Admin::setService("$name.service",'stop');
         if ($route->subaction == 'restart') return Admin::setService("$name.service",'restart');
         if ($route->subaction == 'disable') return Admin::setService("$name.service",'disable');
+        if ($route->subaction == 'enable') return Admin::setService("$name.service",'enable');
         return false;
     }
     
