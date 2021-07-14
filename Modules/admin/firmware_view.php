@@ -5,14 +5,42 @@
   max-width:1150px;
 }
 
+#emonhub-running-notice, #emonhub-stopped-notice {
+  padding: 8px 8px 8px 14px;
+  line-height:31px;
+}
+
 </style>
 <h3>Firmware</h3>
 
 <h4>Serial Monitor</h4>
-<div class="input-prepend input-append">
-  <button id="start" class="btn hide">Start</button>
-  <button id="stop" class="btn hide">Stop</button>
+
+<div id="emonhub-running-notice" class="alert hide">
+  <b>Note:</b> EmonHub is currently running and may conflict with serial monitor 
+  <button id="stopEmonHub" class="btn" style="float:right">Stop EmonHub</button>
 </div>
+
+<div id="emonhub-stopped-notice" class="alert alert-success hide">
+  <b>Note:</b> EmonHub is currently stopped and will not interfere with serial monitor
+  <button id="startEmonHub" class="btn" style="float:right">Start EmonHub</button>
+</div>
+
+<div class="input-prepend input-append start-options hide">
+  <button id="start" class="btn">Start</button>
+  <select id="serialport">
+    <?php foreach ($serial_ports as $port) { ?>
+    <option><?php echo $port; ?></option>
+    <?php } ?>
+  </select>  
+  <select id="baudrate">
+    <option>9600</option>
+    <option selected>38400</option>
+    <option>115200</option>
+  </select>
+</div>
+
+<button id="stop" class="btn hide">Stop</button>
+
 <div class="input-prepend input-append send-cmd">
   <span class="add-on">Send command</span>
   <input id="cmd" type="text" style="width:300px" />
@@ -47,10 +75,10 @@ function is_running() {
         success: function(pid) {
             if (pid) {
                 $("#stop").show();
-                $("#start").hide();
+                $(".start-options").hide();
                 $(".send-cmd").show();
             } else {
-                $("#start").show();
+                $(".start-options").show();
                 $("#stop").hide();
                 $(".send-cmd").hide();
                 $("#log").html("Serialmonitor is not running, click start to start!");
@@ -59,12 +87,48 @@ function is_running() {
     });
 }
 
+function is_emonhub_running() {
+    $.ajax({ 
+        url: path+"admin/service/status?name=emonhub",
+        async: true, 
+        dataType: "json", 
+        success: function(result) {
+            if (result.ActiveState=="active") {
+                $("#emonhub-running-notice").show();
+                $("#emonhub-stopped-notice").hide();
+            } else {
+                $("#emonhub-running-notice").hide();
+                $("#emonhub-stopped-notice").show();
+            }
+        }
+    });
+}
+
+function setService(name,action) {
+    $.ajax({ 
+        url: path+"admin/service/"+action+"?name="+name,
+        async: true, 
+        dataType: "json", 
+        success: function(result) {
+        
+        }
+    });
+}
+
+is_emonhub_running();
+setInterval(is_emonhub_running,2000);
+
 is_running();
 setInterval(is_running,2000);
 
 $("#start").click(function() {
+    var serialport = $("#serialport").val();
+    var baudrate = $("#baudrate").val();
+    
     $.ajax({ 
+        type: "POST",
         url: path+"admin/serialmonitor/start", 
+        data: "baudrate="+baudrate+"&serialport="+serialport,
         async: true, 
         dataType: "text", 
         success: function(result) {
@@ -103,6 +167,14 @@ $("#send").click(function() {
             // alert(result);
         } 
     });
+});
+
+$("#stopEmonHub").click(function() {
+    setService("emonhub","stop");
+});
+
+$("#startEmonHub").click(function() {
+    setService("emonhub","start");
 });
 
 

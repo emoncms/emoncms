@@ -87,8 +87,10 @@ function admin_controller()
     // System update view
     if ($route->action == 'update') {
         $route->format = 'html';
+        require "Modules/admin/admin_model.php";
         return view("Modules/admin/update_view.php", array(
-            'update_log_filename'=> $update_logfile           
+            'update_log_filename'=> $update_logfile,
+            'serial_ports'=>Admin::listSerialPorts()    
         ));
     }
             
@@ -102,7 +104,10 @@ function admin_controller()
     // Firmware view
     if ($route->action == 'firmware') {
         $route->format = 'html';
-        return view("Modules/admin/firmware_view.php", array());
+        require "Modules/admin/admin_model.php";
+        return view("Modules/admin/firmware_view.php", array(
+            'serial_ports'=>Admin::listSerialPorts()
+        ));
     }
     
     // Emoncms log view
@@ -133,6 +138,26 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // System info page actions
     // ----------------------------------------------------------------------------------------
+    
+    if ($route->action == 'service') {
+        $route->format = 'json';
+        // Validate service name
+        if (!isset($_GET['name'])) {
+            return "missing name parameter";
+        }
+        $name = $_GET['name'];
+        require "Modules/admin/admin_model.php";     
+        if (!in_array($name,Admin::get_services_list())) {
+            return "invalid service";
+        }
+        
+        if ($route->subaction == 'status') return Admin::getServiceStatus("$name.service");
+        if ($route->subaction == 'start') return Admin::setService("$name.service",'start');
+        if ($route->subaction == 'stop') return Admin::setService("$name.service",'stop');
+        if ($route->subaction == 'restart') return Admin::setService("$name.service",'restart');
+        if ($route->subaction == 'disable') return Admin::setService("$name.service",'disable');
+        return false;
+    }
     
     if ($route->action == 'shutdown') {
         $route->format = 'text';
@@ -235,8 +260,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // Component manager
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'components-installed' && $session['write'])
-    {
+    if ($route->action == 'components-installed' && $session['write']) {
         $route->format = "json";
         require "Modules/admin/admin_model.php";
         return Admin::component_list(true);
@@ -306,10 +330,19 @@ function admin_controller()
         }
         if ($route->subaction == 'start') {
             $route->format = "text";
+            
+            if (!isset($_POST['serialport'])) return "missing parameter: serialport";
+            if (!isset($_POST['baudrate'])) return "missing parameter: baudrate";
+            
+            $serialport = $_POST['serialport'];
+            $baudrate = (int) $_POST['baudrate'];
+            
+            require "Modules/admin/admin_model.php";
+            if (!in_array($serialport,Admin::listSerialPorts())) return "invalid serial port";
+            if (!in_array($baudrate,array(9600,38400,115200))) return "invalid baud rate";
+            
             $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
-            $baudrate = 38400;
-            $device = "/dev/ttyAMA0";
-            $redis->rpush("service-runner","$script $baudrate $device");
+            $redis->rpush("service-runner","$script $baudrate /dev/$serialport");
             return "service-runner serialmonitor start"; 
         }
         if ($route->subaction == 'stop') {

@@ -11,7 +11,7 @@ if ($session["admin"]) {
         "l3"=>array(
             "info"=>array(
                 "name"=>_("System Info"),
-                "href"=>"admin/view", 
+                "href"=>"admin/info", 
                 "order"=>1, 
                 "icon"=>"input"
             ),

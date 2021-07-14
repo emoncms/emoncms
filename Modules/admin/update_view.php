@@ -1,20 +1,4 @@
-<?php
-    $v=1;
-
-    function list_serial_ports() {
-        $ports = array();
-        for ($i=0; $i<5; $i++) {
-            if (file_exists("/dev/ttyAMA$i")) {
-                $ports[] = "ttyAMA$i";
-            }  
-            if (file_exists("/dev/ttyUSB$i")) {
-                $ports[] = "ttyUSB$i";
-            }
-        }
-        return $ports;
-    }
-    
-?>
+<?php $v=1; ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
 <h3><?php echo _('Update'); ?></h3>
@@ -62,7 +46,7 @@
         </div>
         <div class="input-append">
             <select id="select_serial_port">
-                <?php foreach (list_serial_ports() as $port) { ?>
+                <?php foreach ($serial_ports as $port) { ?>
                 <option><?php echo $port; ?></option>
                 <?php } ?>
             </select>

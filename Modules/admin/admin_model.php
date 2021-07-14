@@ -14,6 +14,23 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Admin {
 
+    public static function get_services_list() {
+        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+    }
+    
+    public static function listSerialPorts() {
+        $ports = array();
+        for ($i=0; $i<5; $i++) {
+            if (file_exists("/dev/ttyAMA$i")) {
+                $ports[] = "ttyAMA$i";
+            }  
+            if (file_exists("/dev/ttyUSB$i")) {
+                $ports[] = "ttyUSB$i";
+            }
+        }
+        return $ports;
+    }
+
     /**
      * get running status of service
      *
@@ -117,6 +134,14 @@ class Admin {
         }
         return $return;
     }
+    
+    public static function setService($name,$action) {
+        global $redis;
+        if (!$redis) return "could not $action service, redis required";
+        $script = "/var/www/emoncms/scripts/service-action.sh $name $action";
+        $redis->rpush("service-runner","$script");
+        return "service-runner trigger sent for $script";
+    }
 
     /**
      * Retrieve server information
@@ -131,16 +156,9 @@ class Admin {
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
         $services = array();
-        $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
-        $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
-        $services['emoncms_mqtt'] = Admin::getServiceStatus('emoncms_mqtt.service');
-        $services['feedwriter'] = Admin::getServiceStatus('feedwriter.service');
-        $services['service-runner'] = Admin::getServiceStatus('service-runner.service');
-        $services['emonPiLCD'] = Admin::getServiceStatus('emonPiLCD.service');
-        $services['redis-server'] = Admin::getServiceStatus('redis-server.service');
-        $services['mosquitto'] = Admin::getServiceStatus('mosquitto.service');
-        $services['demandshaper'] = Admin::getServiceStatus('demandshaper.service');
-
+        foreach (Admin::get_services_list() as $service) {
+            $services[$service] = Admin::getServiceStatus("$service.service");
+        }
         //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
