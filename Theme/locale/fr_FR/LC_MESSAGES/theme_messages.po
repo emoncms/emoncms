@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-20 11:42+0200\n"
-"PO-Revision-Date: 2019-10-20 12:07+0200\n"
+"POT-Creation-Date: 2021-07-14 08:10+0200\n"
+"PO-Revision-Date: 2021-07-14 08:10+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,41 +14,45 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.4\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../basic/menu_view.php:30
-msgid "Open/Close Sidebar"
-msgstr "Ouvrir/Fermer la barre latérale"
+#: ../../../theme.php:67
+msgid "My Account"
+msgstr "Mon Compte"
 
-#: ../../../basic/menu_view.php:78
-msgid "Add Bookmark"
-msgstr "Ajouter un signet"
+#: ../../../theme.php:69
+msgid "Logout"
+msgstr "Déconnexion"
 
-#: ../../../basic/menu_view.php:84
-msgid "Remove Bookmark"
-msgstr "Retirer le signet"
+#: ../../../theme.php:74
+msgid "Login"
+msgstr "Connexion"
 
-#: ../../../basic/menu_view.php:107
-msgid "Setup"
-msgstr "Paramétrage"
-
-#: ../../../basic/menu_view.php:138
-msgid "Admin"
-msgstr "Administration"
-
-#: ../../../basic/sidebar_view.php:140
-msgid "Close"
-msgstr "Fermer"
-
-#: ../../../basic/sidebar_view.php:192 ../../../basic/sidebar_view.php:203
-msgid "Bookmarks"
-msgstr "Signets"
-
-#: ../../../basic/sidebar_view.php:204
-msgid "Edit"
-msgstr "Modifier"
-
-#: ../../../basic/theme.php:83
+#: ../../../theme.php:101
 msgid "Powered by"
 msgstr "Propulsé par"
+
+#~ msgid "Open/Close Sidebar"
+#~ msgstr "Ouvrir/Fermer la barre latérale"
+
+#~ msgid "Add Bookmark"
+#~ msgstr "Ajouter un signet"
+
+#~ msgid "Remove Bookmark"
+#~ msgstr "Retirer le signet"
+
+#~ msgid "Setup"
+#~ msgstr "Paramétrage"
+
+#~ msgid "Admin"
+#~ msgstr "Administration"
+
+#~ msgid "Close"
+#~ msgstr "Fermer"
+
+#~ msgid "Bookmarks"
+#~ msgstr "Signets"
+
+#~ msgid "Edit"
+#~ msgstr "Modifier"

@@ -571,3 +571,4 @@ function notify(message, css_class, more_info) {
     snackbar(message);
 }
 </script>
+

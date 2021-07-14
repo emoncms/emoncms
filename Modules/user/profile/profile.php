@@ -162,7 +162,7 @@ global $path; $v=2;
 
 <table class="table table-hover">
   <tr>
-    <td class="muted">Theme colour</td>
+    <td class="muted"><?php echo _('Theme colour'); ?></td>
     <td>
       <div class="color-box themecolor" name="blue" style="background-color:#44b3e2"></div>
       <div class="color-box themecolor" name="black" style="background-color:#555"></div>
@@ -173,7 +173,7 @@ global $path; $v=2;
     </td>
   </tr>
   <tr>
-    <td class="muted">Sidebar colour</td>
+    <td class="muted"><?php echo _('Sidebar colour'); ?></td>
     <td>
       <div class="color-box sidebarcolor" name="dark" style="background-color:#333"></div>
       <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>

@@ -184,7 +184,7 @@ class Process_ProcessList
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>10,
@@ -234,7 +234,7 @@ class Process_ProcessList
               "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Deleted"),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>14,
@@ -274,7 +274,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>17,
@@ -287,7 +287,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>18,
@@ -300,7 +300,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>19,
@@ -313,7 +313,7 @@ class Process_ProcessList
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>20,

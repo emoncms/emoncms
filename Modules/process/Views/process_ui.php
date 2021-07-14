@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings;
-    load_language_files("Modules/process/locale", "process_messages");
+    load_language_files(dirname(__DIR__).'/locale', "process_messages");
     
     // settings.ini parse_ini_file does not convert [0,6,8,10] into an array
     // while settings.php engines_hidden will be an array
