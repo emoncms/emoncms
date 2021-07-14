@@ -1,6 +1,6 @@
 <?php
 global $session;
-if ($session["write"]) $menu["setup"]["l2"]['user'] = array("name"=>"My Account","href"=>"user/view", "order"=>12, "icon"=>"user");
+if ($session["write"]) $menu["setup"]["l2"]['user'] = array("name"=>_('My Account'),"href"=>"user/view", "order"=>12, "icon"=>"user");
 /*
 global $session;
 
