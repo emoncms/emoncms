@@ -247,11 +247,11 @@ class User
         // If we got here the username, password and email should all be valid
 
         $hash = hash('sha256', $password);
-        $salt = md5(uniqid(mt_rand(), true));
+        $salt = bin2hex(random_bytes(16));
         $password = hash('sha256', $salt . $hash);
 
-        $apikey_write = md5(uniqid(mt_rand(), true));
-        $apikey_read = md5(uniqid(mt_rand(), true));
+        $apikey_write = bin2hex(random_bytes(16));
+        $apikey_read = bin2hex(random_bytes(16));
 
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin) VALUES (?,?,?,?,?,?,?,0)");
         $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone);
@@ -297,7 +297,7 @@ class User
         if ($email_verified) return array('success'=>false, 'message'=>_("Email already verified"));
         
         // Create new verification key
-        $verification_key = md5(uniqid(mt_rand(), true));
+        $verification_key = bin2hex(random_bytes(16));
         // Save new verification key
         $stmt = $this->mysqli->prepare("UPDATE users SET verification_key=? WHERE id=?");
         $stmt->bind_param("si",$verification_key,$id);
@@ -812,7 +812,7 @@ class User
     public function new_apikey_read($userid)
     {
         $userid = (int) $userid;
-        $apikey = md5(uniqid(mt_rand(), true));
+        $apikey = bin2hex(random_bytes(16));
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_read = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);
@@ -826,7 +826,7 @@ class User
     public function new_apikey_write($userid)
     {
         $userid = (int) $userid;
-        $apikey = md5(uniqid(mt_rand(), true));
+        $apikey = bin2hex(random_bytes(16));
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_write = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);

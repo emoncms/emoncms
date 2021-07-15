@@ -25,6 +25,7 @@ global $path; $v=2;
     <tr>
       <td class="muted"><?php echo _('User ID'); ?></td>    
       <td>{{ user.id }}</td>
+      <td></td>
       <td><button class="btn btn-small btn-danger" @click="delete_account()"><?php echo _('Delete account'); ?></button></td>
     </tr>
     <tr>
@@ -37,6 +38,7 @@ global $path; $v=2;
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.username" @click="show_edit('username')"></i></td>
+      <td></td>
     </tr>
     <tr>
       <td class="muted"><?php echo _('Email'); ?></td>
@@ -48,16 +50,19 @@ global $path; $v=2;
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.email" @click="show_edit('email')"></i></td>
+      <td></td>
     </tr>
     <tr>
       <td class="muted"><?php echo _('Write API Key'); ?></td>    
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo _("Write API Key copied to clipboard"); ?>')"></i></td>
+      <td><button class="btn btn-small" @click="new_apikey('write')">Generate New</button></td>
     </tr>
     <tr>
       <td class="muted"><?php echo _('Read API Key'); ?></td>    
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo _("Read API Key copied to clipboard"); ?>')"></i></td>
+      <td><button class="btn btn-small" @click="new_apikey('read')">Generate New</button></td>
     </tr>
     <tr>
       <td class="muted"><?php echo _('Password'); ?></td>    
@@ -81,6 +86,7 @@ global $path; $v=2;
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.password" @click="show_edit('password')"></i></td>
+      <td></td>
     </tr>
   </table>
 
@@ -231,8 +237,23 @@ global $path; $v=2;
     </div>
 </div>
 
+<div id="modalNewApikey" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="modalNewApikeyLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="modalNewApikeyLabel">Generate a new <span id="apikey_type"></span> API key</h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('Are you sure you want to generate a new apikey?'); ?></p>
+        <p><?php echo _("All devices using the current key will need to be updated with the new key."); ?></p>
+    </div>
+    <div class="modal-footer">
+        <button id="cancel_generate_apikey" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirm_generate_apikey" class="btn btn-primary"><?php echo _('Generate'); ?></button>
+    </div>
+</div>
+
 <script>
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
 var str_passwords_do_not_match = "<?php echo _('Passwords do not match'); ?>";
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>        <p><?php echo _('Are you sure you want to generate a new apikey?'); ?></p>

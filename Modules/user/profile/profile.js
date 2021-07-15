@@ -124,6 +124,10 @@ var app = new Vue({
             $.ajax({type:"POST",url: path+"user/deleteall.json", data: "mode=dryrun", dataType: 'text', success: function(result){
                 $("#deleteall-output").html(result);
             }});
+        },
+        new_apikey: function(type) {
+            $("#apikey_type").html(type);
+            $('#modalNewApikey').modal('show');
         }
     }
 });
@@ -158,6 +162,14 @@ $("#confirmdelete").click(function() {
 $("#logoutdelete").click(function() {
     $.ajax({url: path+"user/logout.json", dataType: 'text', success: function(result){
         window.location = path;
+    }});
+});
+
+$("#confirm_generate_apikey").click(function() {
+    var type = $("#apikey_type").html();
+    $.ajax({ url: path+"user/newapikey"+type+".json", dataType: 'json', success: function(result){
+        app.user['apikey_'+type] = result;
+        $('#modalNewApikey').modal('hide');
     }});
 });
 
