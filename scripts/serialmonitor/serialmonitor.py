@@ -79,6 +79,7 @@ except:
     print("Could not open serial port "+str(device)+" "+str(baudrate))
     sys.exit(0)
 # -------------------------------------------------------------
+linestr = ""
 while True:
     # Check for standard input or serial input (timeout of .2 sec):
     try:
@@ -95,16 +96,20 @@ while True:
     # If serial input, read from serial    
     if ser in inp:
         while ser.in_waiting:
-            linestr = ""
+            # linestr = ""
             try:
-                linestr = ser.readline().rstrip().decode()
+                linestr = linestr + ser.read().decode()
             except UnicodeDecodeError:
                 pass
             except KeyboardInterrupt:
                 sys.exit(0)
-            print (linestr)
-            if redis:
-                r.rpush('serialmonitor-log',linestr)
+            
+            if "\r\n" in linestr:
+                linestr = linestr.rstrip()
+                print (linestr)
+                if redis:
+                    r.rpush('serialmonitor-log',linestr)
+                linestr = ""
 
     # Redis
     if redis:

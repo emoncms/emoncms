@@ -156,7 +156,16 @@ $("#stop").click(function() {
 });
 
 $("#send").click(function() {
-    var cmd = $("#cmd").val();
+    send_cmd($("#cmd").val())
+});
+
+$("#cmd").on('keyup', function (e) {
+    if (e.key === 'Enter' || e.keyCode === 13) {
+        send_cmd($("#cmd").val())
+    }
+});
+
+function send_cmd(cmd) {
     $.ajax({ 
         url: path+"admin/serialmonitor/cmd",
         data: "cmd="+cmd, 
@@ -166,7 +175,7 @@ $("#send").click(function() {
             // alert(result);
         } 
     });
-});
+}
 
 $("#stopEmonHub").click(function() {
     setService("emonhub","stop");
