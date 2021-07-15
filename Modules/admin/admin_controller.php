@@ -390,9 +390,13 @@ function admin_controller()
         }
         if ($route->subaction == 'cmd') {
             $route->format = "text";
-            $cmd = $_GET['cmd'];
-            $redis->rpush("serialmonitor",$cmd);
-            return "serialmonitor cmd sent";
+            $cmd = "";
+            if (isset($_GET['cmd'])) $cmd = $_GET['cmd'];
+            if (isset($_POST['cmd'])) $cmd = $_POST['cmd'];
+            if ($cmd!="") {
+                $redis->rpush("serialmonitor",$cmd);
+                return "serialmonitor cmd sent: $cmd";
+            }
         }
     }
     

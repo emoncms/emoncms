@@ -117,8 +117,8 @@ while True:
         if cmd_count:
             cmd = r.lpop('serialmonitor').decode()
             if cmd=="exit":
-                sys.exit(0)
-            if cmd!="":
+                sys.exit(0)   
+            elif cmd!="":
                 ser.write((cmd+"\r\n").encode())
 # -------------------------------------------------------------
 

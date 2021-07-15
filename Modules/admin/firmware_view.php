@@ -167,8 +167,9 @@ $("#cmd").on('keyup', function (e) {
 
 function send_cmd(cmd) {
     $.ajax({ 
+        type: 'POST',
         url: path+"admin/serialmonitor/cmd",
-        data: "cmd="+cmd, 
+        data: "cmd="+encodeURIComponent(cmd), 
         async: true, 
         dataType: "text", 
         success: function(result) {
