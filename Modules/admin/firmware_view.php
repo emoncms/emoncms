@@ -38,7 +38,7 @@
   </select>
 </div>
 
-<button id="stop" class="btn hide">Stop</button>
+<button id="stop" class="btn hide" style="margin-bottom:10px">Stop</button>
 
 <div class="input-prepend input-append send-cmd">
   <span class="add-on">Send command</span>

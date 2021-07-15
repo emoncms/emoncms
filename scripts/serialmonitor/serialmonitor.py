@@ -89,7 +89,8 @@ while True:
     # If standard input, write to serial
     if sys.stdin in inp:
         line = sys.stdin.readline().rstrip()
-        ser.write((line+"\r\n").encode())
+        if line!="":
+            ser.write((line+"\r\n").encode())
   
     # If serial input, read from serial    
     if ser in inp:
@@ -112,6 +113,7 @@ while True:
             cmd = r.lpop('serialmonitor').decode()
             if cmd=="exit":
                 sys.exit(0)
-            ser.write((cmd+"\r\n").encode())
+            if cmd!="":
+                ser.write((cmd+"\r\n").encode())
 # -------------------------------------------------------------
 
