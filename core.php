@@ -324,3 +324,14 @@ function get_client_ip_env()
     }
     return $ipaddress;
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Generate secure key
+// ---------------------------------------------------------------------------------------------------------
+function generate_secure_key($length) {
+    if (function_exists('random_bytes')) {
+        return bin2hex(random_bytes($length));
+    } else {
+        return bin2hex(openssl_random_pseudo_bytes($length));
+    }
+}

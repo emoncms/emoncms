@@ -256,4 +256,4 @@ global $path; $v=2;
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
 var str_passwords_do_not_match = "<?php echo _('Passwords do not match'); ?>";
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>        <p><?php echo _('Are you sure you want to generate a new apikey?'); ?></p>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>
