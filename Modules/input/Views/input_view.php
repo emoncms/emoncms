@@ -37,7 +37,7 @@
             'Expand': "<?php echo _('Expand'); ?>",
             'Select all %s inputs': "<?php echo _('Select all %s inputs'); ?>",
             'Select all': "<?php echo _('Select all'); ?>",
-			'Please install the device module to enable this feature': "<?php echo _('Please install the device module to enable this feature'); ?>"
+            'Please install the device module to enable this feature': "<?php echo _('Please install the device module to enable this feature'); ?>"
         }
     }
 </script>
