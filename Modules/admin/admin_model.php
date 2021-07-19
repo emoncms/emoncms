@@ -28,6 +28,9 @@ class Admin {
                 $ports[] = "ttyUSB$i";
             }
         }
+        if (count($ports)==0) {
+            $ports[] = "none";
+        }
         return $ports;
     }
 
