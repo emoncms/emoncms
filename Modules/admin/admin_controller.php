@@ -226,7 +226,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }        
-        $redis->rpush("service-runner","$update_script $type $serial_port $firmware_key>$update_logfile");
+        $redis->rpush("service-runner","$update_script $type $firmware_key $serial_port>$update_logfile");
         return "service-runner trigger sent";
     }
     
