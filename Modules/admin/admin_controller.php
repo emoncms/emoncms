@@ -219,7 +219,7 @@ function admin_controller()
 
         $firmware_key = $_POST['firmware_key'];        
         $firmware_available = Admin::firmware_available();
-        if (!isset($firmware_available->$firmware_key)) return "invalid firmware";
+        if (!isset($firmware_available->$firmware_key) && $firmware_key!="none") return "invalid firmware";
 
         if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
             $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
