@@ -52,19 +52,35 @@
                 </select>
             </div>
             
+            <?php
+            $hardware_options = array();
+            foreach ($firmware_available as $firmware) {
+                if (!in_array($firmware->hardware,$hardware_options)) {
+                    $hardware_options[] = $firmware->hardware;
+                }
+            }
+            ?>
             <div class="input-prepend" style="margin-bottom:0px">
                 <span class="add-on">Hardware:</span>     
                 <select id="selected_hardware">
                     <option value="none">none</option>
-                    <?php foreach ($firmware_available as $hardware=>$firmware_options) { ?>
+                    <?php foreach ($hardware_options as $hardware) { ?>
                     <option><?php echo $hardware; ?></option>
                     <?php } ?>
                 </select>
             </div>
 
             <div class="input-prepend" style="margin-bottom:0px">
-                <span class="add-on">Firmware version:</span>     
-                <select id="selected_firmware_version">
+                <span class="add-on">Radio format:</span>     
+                <select id="selected_radio_format">
+                    <option value="rfm69n">Native RFM69 (New)</option>
+                    <option value="jeelib" selected>JeeLib</option>
+                </select>
+            </div>
+            <br>
+            <div class="input-prepend" style="margin-bottom:0px; margin-top:10px">
+                <span class="add-on">Firmware:</span>     
+                <select id="selected_firmware" style="width:552px">
                     <option value="none">none</option>
                 </select>
             </div>
@@ -171,13 +187,12 @@ $("#getupdatelog").click(function() {
 $(".update").click(function() {
     var type = $(this).attr("type");
     var serial_port = $("#select_serial_port").val();
-    var hardware = $("#selected_hardware").val();
-    var firmware_version = $("#selected_firmware_version").val();
+    var firmware_key = $("#selected_firmware").val();
     
     $.ajax({ 
         type: "POST", 
         url: path+"admin/update-start", 
-        data: "type="+type+"&serial_port="+serial_port+"&hardware="+hardware+"&firmware_version="+firmware_version, 
+        data: "type="+type+"&serial_port="+serial_port+"&firmware_key="+firmware_key, 
         async: true, 
         success: function(result) {
             // update with latest value
@@ -189,31 +204,41 @@ $(".update").click(function() {
 });
 
 $("#selected_hardware").change(function(){
-    var hardware = $(this).val(); 
+    draw_firmware_select_list();
+});
+
+$("#selected_radio_format").change(function(){
+    draw_firmware_select_list();
+});
+
+function draw_firmware_select_list() {
+    var hardware = $("#selected_hardware").val(); 
+    var radio_format = $("#selected_radio_format").val();
+    
     if (hardware=="none") {
-        $("#selected_firmware_version").html("<option>none</option>");
+        $("#selected_firmware").html("<option>none</option>");
         return;
     }
        
     var out = "";
-    for (var z in firmware_available[hardware]) {
-        var version = firmware_available[hardware][z].version;
-        var description = firmware_available[hardware][z].description;
-        if (description!="") description = " - "+description;
-        out += "<option value='"+version+"'>"+version+description+"</option>";
+    for (var firmware_key in firmware_available) {
+        var firmware = firmware_available[firmware_key];
+        if (firmware.hardware==hardware && firmware.radio_format==radio_format) {
+            out += "<option value='"+firmware_key+"'>"+firmware.description+", "+firmware.radio_format+", v"+firmware.version+"</option>";
+        }
     }
-    $("#selected_firmware_version").html(out);
-});
+    $("#selected_firmware").html(out);
+}
+
 
 $("#update-firmware").click(function() {
     var serial_port = $("#select_serial_port").val();
-    var hardware = $("#selected_hardware").val();
-    var firmware_version = $("#selected_firmware_version").val();
+    var firmware_key = $("#selected_firmware").val();
     
     $.ajax({ 
         type: "POST", 
         url: path+"admin/update-firmware", 
-        data: "serial_port="+serial_port+"&hardware="+hardware+"&firmware_version="+firmware_version, 
+        data: "serial_port="+serial_port+"&firmware_key="+firmware_key,
         async: true, 
         success: function(result) {
             // update with latest value

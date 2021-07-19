@@ -22,13 +22,7 @@ function admin_controller()
     
     $emoncms_logfile = $settings['log']['location']."/emoncms.log";
     $update_logfile = $settings['log']['location']."/update.log";
-    
-    if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
-        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
-    } else {
-        $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
-    }
-    
+        
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -214,20 +208,25 @@ function admin_controller()
         if (!$redis) return "redis not running";
         if (!isset($_POST['type'])) return "missing parameter: type";
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
-        if (!isset($_POST['hardware'])) return "missing parameter: hardware";
+        if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
         
         $type = $_POST['type'];
-        if (!in_array($type,array("all","emoncms","firmware"))) return "Invalid update type";
+        if (!in_array($type,array("all","emoncms"))) return "Invalid update type";
         
         $serial_port = $_POST['serial_port'];
         require "Modules/admin/admin_model.php";     
         if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
 
-        $hardware = $_POST['hardware'];        
+        $firmware_key = $_POST['firmware_key'];        
         $firmware_available = Admin::firmware_available();
-        if (!isset($firmware_available->$hardware) && $hardware!="none") return "invalid hardware";
-        
-        $redis->rpush("service-runner","$update_script $type $hardware $serial_port>$update_logfile");
+        if (!isset($firmware_available->$firmware_key)) return "invalid firmware";
+
+        if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
+            $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
+        } else {
+            $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
+        }        
+        $redis->rpush("service-runner","$update_script $type $serial_port $firmware_key>$update_logfile");
         return "service-runner trigger sent";
     }
     
@@ -235,30 +234,18 @@ function admin_controller()
         $route->format = "text";
         if (!$redis) return "redis not running";
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
-        if (!isset($_POST['hardware'])) return "missing parameter: hardware";
-        if (!isset($_POST['firmware_version'])) return "missing parameter: firmware_version";
+        if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
 
         $serial_port = $_POST['serial_port'];
         require "Modules/admin/admin_model.php";     
         if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
         
-        $hardware = $_POST['hardware'];
-        $firmware_version = $_POST['firmware_version'];
-        
+        $firmware_key = $_POST['firmware_key'];        
         $firmware_available = Admin::firmware_available();
-        if (!isset($firmware_available->$hardware)) return "invalid hardware";
+        if (!isset($firmware_available->$firmware_key)) return "invalid firmware";
         
-        $valid = false;
-        foreach ($firmware_available->$hardware as $firmware_option) {
-            if ($firmware_version==$firmware_option->version) {
-                $valid = true;
-                break;
-            }
-        }
-        if (!$valid) return "invalid firmware version";
-
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh"; 
-        $redis->rpush("service-runner","$update_script $serial_port $hardware $firmware_version>$update_logfile");
+        $redis->rpush("service-runner","$update_script $serial_port $firmware_key>$update_logfile");
         return "service-runner trigger sent";
     }
     
