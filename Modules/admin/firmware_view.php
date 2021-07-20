@@ -60,7 +60,7 @@ function update_log() {
         success: function(result) {
             if (result) {
                 console.log(result)
-                $("#log").append(result);
+                $("#log").append(htmlEntities(result));
             }
         }
     });
@@ -186,6 +186,8 @@ $("#startEmonHub").click(function() {
     setService("emonhub","start");
 });
 
-
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 </script>
