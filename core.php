@@ -205,9 +205,8 @@ function put($index)
 
 function version()
 {
-    $version_file = file_get_contents('./version.txt');
-    $version = filter_var($version_file, FILTER_SANITIZE_STRING);
-    return $version;
+    $version_file = json_decode(file_get_contents('./version.json'));
+    return $version_file->version;
 }
 
 

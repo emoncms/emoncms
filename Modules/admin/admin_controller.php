@@ -22,7 +22,7 @@ function admin_controller()
     
     $emoncms_logfile = $settings['log']['location']."/emoncms.log";
     $update_logfile = $settings['log']['location']."/update.log";
-        
+    $old_update_logfile = $settings['log']['location']."/emonpiupdate.log";    
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -251,10 +251,19 @@ function admin_controller()
     
     if ($route->action == 'update-log') {
         $route->format = "text";
-        if (!file_exists($update_logfile)) return "$update_logfile does not exist";
-        ob_start();
-        passthru("cat " . $update_logfile);
-        return trim(ob_get_clean());
+        if (file_exists($update_logfile)) {
+            ob_start();
+            passthru("cat " . $update_logfile);
+            return trim(ob_get_clean());
+        }
+        else if (file_exists($old_update_logfile)) {
+            ob_start();
+            passthru("cat " . $old_update_logfile);
+            return trim(ob_get_clean());
+        }
+        else {
+            return "$update_logfile does not exist";
+        }
     }
     
     if ($route->action == 'update-log-download') {
@@ -267,6 +276,10 @@ function admin_controller()
         if (file_exists($update_logfile)) {
             ob_start();
             readfile($update_logfile);
+            echo(trim(ob_get_clean()));
+        } else if (file_exists($old_update_logfile)) {
+            ob_start();
+            readfile($old_update_logfile);
             echo(trim(ob_get_clean()));
         } else {
             echo($update_logfile . " does not exist!");

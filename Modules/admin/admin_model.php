@@ -232,24 +232,27 @@ class Admin {
       public static function component_list($git_info=true) 
       {
           global $settings;
+          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
           
           $components = array();
           
           // Emoncms core
-          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
-          if (file_exists($emoncms_path."/version.txt")) {
-              $components["emoncms"] = array(
-                  "name"=>"Emoncms Core",
-                  "version"=>file_get_contents($emoncms_path."/version.txt"),
-                  "path"=>$emoncms_path,
-                  "location"=>$emoncms_path,
-                  "branches_available"=>array("stable","master"),
-                  "requires"=>array()
-              );
+          if (file_exists($emoncms_path."/version.json")) {                           // JSON Version informatmion exists
+              $json = json_decode(file_get_contents($emoncms_path."/version.json"));  // Get JSON version information
+              if (isset($json->version) && $json->version!="") {
+                  $name = "emoncms";
+                  $components[$name] = array(
+                      "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                      "version"=>$json->version,
+                      "path"=>$emoncms_path,
+                      "location"=>isset($json->location)?$json->location:$emoncms_path,
+                      "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                      "requires"=>isset($json->requires)?$json->requires:array()
+                  );
+              }
           }
           
-          $emoncms_www = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
-          foreach (array("$emoncms_www/Modules",$settings['emoncms_dir']."/modules",$settings['openenergymonitor_dir']) as $path) {
+          foreach (array("$emoncms_path/Modules",$settings['emoncms_dir']."/modules",$settings['openenergymonitor_dir']) as $path) {
               
               $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
               
