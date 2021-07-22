@@ -91,7 +91,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <script>
             // Draw menu just before drawing content but after defining content-container
             var path = "<?php echo $path; ?>";
-            var q = "<?php echo $q; ?>"+location.search+location.hash;
+            var q = "<?php echo preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q); ?>"+location.search+location.hash;
             menu.init(<?php echo json_encode($menu); ?>);
             </script>
             <?php echo $content; ?>
