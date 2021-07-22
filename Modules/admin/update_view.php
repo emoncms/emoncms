@@ -259,6 +259,10 @@ getUpdateLog();
 function getUpdateLog() {
   $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
     {
+      if (result=="Admin re-authentication required") {
+          window.location = "/";
+      }
+    
       refresh_updateLog(result);
       if (result.indexOf("System update done")!=-1) {
           clearInterval(updates_log_interval);

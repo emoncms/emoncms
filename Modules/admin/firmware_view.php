@@ -58,6 +58,9 @@ function update_log() {
         async: true, 
         dataType: "text", 
         success: function(result) {
+            if (result=="Admin re-authentication required") {
+                window.location = "/";
+            }        
             if (result) {
                 console.log(result)
                 $("#log").append(htmlEntities(result));

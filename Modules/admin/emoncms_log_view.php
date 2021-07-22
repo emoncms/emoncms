@@ -82,6 +82,11 @@ function refresherStart(func, interval){
 
 // push value to emoncms logfile viewer
 function refresh_log(result){
+
+    if (result=="Admin re-authentication required") {
+        window.location = "/";
+    }
+
     output_logfile(result, $("#logreply"));
 }
 // display content in container and scroll to the bottom
