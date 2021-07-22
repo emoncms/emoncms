@@ -530,7 +530,6 @@ class User
             {
                 // Generate new random password
                 $newpass = hash('sha256',generate_secure_key(16));
-                $newpass = substr($newpass, 0, 10);
 
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
