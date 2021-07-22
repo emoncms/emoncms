@@ -76,14 +76,18 @@ listItem;
     <div id="serverinfo-container">
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
         <dl class="row">
-            <?php
-            foreach ($services as $key=>$value):
-                echo row(
-                    sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
-                    sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
-                );
-            endforeach;
-        ?>
+            <?php foreach ($services as $key=>$value) { ?>
+                <dt class="col-sm-2 col-4 text-truncate"><span class="badge-<?php echo $value['cssClass']; ?> badge"></span> <?php echo $key; ?></dt>
+                <dd class="col-sm-10 col-8 border-box px-1"><strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
+                  <div class="btn-group" role="group" style="float:right">
+                  <?php if ($value['state']!="Active") { ?><button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button><?php } ?>
+                  <?php if ($value['state']=="Active") { ?><button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button><?php } ?>
+                  <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
+                  <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                  <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
+                  </div>
+                </dd>
+            <?php } ?>
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
@@ -548,5 +552,19 @@ function notify(message, css_class, more_info) {
     // @todo: show more information in the user notifications
     snackbar(message);
 }
+
+$(".service-action").click(function() {
+
+    var name = $(this).attr("service_key");
+    var action = $(this).attr("service_action");
+    console.log(action+" "+name)
+    
+    $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "text", success: function(result) {
+        setTimeout(function() {
+            location.reload();
+        },1000);
+    }});
+});
+
 </script>
 
