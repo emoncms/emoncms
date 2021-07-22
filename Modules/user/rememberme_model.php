@@ -203,7 +203,7 @@ class Rememberme {
     // Create a pseudo-random token.
     // ---------------------------------------------------------------------------------------------------------
     private function createToken() {
-            return bin2hex(random_bytes(16));
+            return generate_secure_key(16);
     }
     // ---------------------------------------------------------------------------------------------------------
     private function getCookieValues()

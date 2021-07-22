@@ -92,6 +92,7 @@ function is_emonhub_running() {
         async: true, 
         dataType: "json", 
         success: function(result) {
+            if (result==null) return false;
             if (result.ActiveState=="active") {
                 $("#emonhub-running-notice").show();
                 $("#emonhub-stopped-notice").hide();
