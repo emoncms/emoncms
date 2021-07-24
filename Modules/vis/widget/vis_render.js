@@ -126,52 +126,6 @@ function vis_widgetlist(){
       "optionsdata":[multigraphsDropBoxOptions],
       "html":""
     },
-
-    "timestoredaily":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","units","initzoom"],
-      "optionstype":["feedid","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Units"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Units to show"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-        
-    "histgraph":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr_Vis("Feed")],
-      "optionshint":[_Tr_Vis("Feed source")],
-      "html":""
-    },
-
-    "threshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB","initzoom"],
-      "optionstype":["feedid","value","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-
-    "orderthreshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","power","thresholdA","thresholdB"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Power"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Power"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used")],
-      "html":""
-    },
     
     "smoothie":
     {
