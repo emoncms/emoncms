@@ -15,20 +15,26 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function get_application_path()
-{
-    // Default to http protocol
-    $proto = "http";
-
+function is_https() {
     // Detect if we are running HTTPS or proxied HTTPS
     if (server('HTTPS') == 'on') {
         // Web server is running native HTTPS
-        $proto = "https";
+        return true;
     } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
-        $proto = "https";
+        return true;
     } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
+        return true;
+    }
+    return false;
+}
+
+function get_application_path()
+{
+    if (is_https()) {
         $proto = "https";
+    } else {
+        $proto = "http";
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {

@@ -154,15 +154,14 @@ class User
         if (substr($cookie_params['path'], -1) !== '/')
             $cookie_params['path'] .= '/';
         //not pass cookie to javascript 
-        $cookie_params['httponly'] = 1; 
+        $cookie_params['httponly'] = true;
+        $cookie_params['samesite'] = 'Strict';
         
-        session_set_cookie_params(
-            $cookie_params['lifetime'],
-            $cookie_params['path'],
-            $cookie_params['domain'],
-            $cookie_params['secure'],
-            $cookie_params['httponly'] 
-        );
+        if (is_https()) {
+            $cookie_params['secure'] = true;
+        }
+        
+        session_set_cookie_params($cookie_params);
         session_start();
 
         if ($this->enable_rememberme)
