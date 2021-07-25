@@ -1055,15 +1055,16 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
         // often large kwh readings.
-        $time_elapsed = ($time_now - $last_time);   
+        $time_elapsed = ($time_now - $last_time);
+        
         if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             // kWh calculation
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
@@ -1087,11 +1088,10 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        if (!isset($last['time'])) $last['time'] = $time_now;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);    
