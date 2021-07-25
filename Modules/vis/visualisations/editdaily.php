@@ -6,6 +6,7 @@
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
 
     $type = 2;

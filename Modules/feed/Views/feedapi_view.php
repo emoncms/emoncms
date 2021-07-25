@@ -1,5 +1,4 @@
 <?php
-
   /*
 
   All Emoncms code is released under the GNU Affero General Public License.
@@ -11,9 +10,9 @@
   http://openenergymonitor.org
 
   */
-
+  defined('EMONCMS_EXEC') or die('Restricted access');
   global $user, $path, $session;
-
+  
   $apikey_read = $user->get_apikey_read($session['userid']);
   $apikey_write = $user->get_apikey_write($session['userid']);
 

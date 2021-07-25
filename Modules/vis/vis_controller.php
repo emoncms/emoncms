@@ -87,11 +87,15 @@
                             
                             if ($feedid) {
                               $f = $feed->get($feedid);
-                              $array[$key] = $feedid;
-                              $array[$key.'name'] = $f['name'];
+                              if (isset($f['name'])) {
+                                  $array[$key] = $feedid;
+                                  $array[$key.'name'] = $f['name'];
 
-                              if ($f['userid']!=$session['userid']) $array['valid'] = false;
-                              if ($f['public']) $array['valid'] = true;
+                                  if ($f['userid']!=$session['userid']) $array['valid'] = false;
+                                  if ($f['public']) $array['valid'] = true;
+                              } else {
+                                  $array['valid'] = false;
+                              }
                             } else {
                               $array['valid'] = false;
                             }

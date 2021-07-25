@@ -9,9 +9,8 @@
     http://openenergymonitor.org
     */
 
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
-    
-    
     
 ?>
 

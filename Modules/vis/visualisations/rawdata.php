@@ -8,9 +8,8 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
     */
-
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
-    if (!isset($feedidname)) $feedidname = "";
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
