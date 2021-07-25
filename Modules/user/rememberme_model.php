@@ -42,16 +42,16 @@ class Rememberme {
     {
         $this->mysqli = $mysqli;
         $this->log = new EmonLogger(__FILE__);
-        
-        if (is_https()) {
-            $this->secure = true;
-        }
     }
 
     // ---------------------------------------------------------------------------------------------------------
     public function setCookie($content,$expire) 
-    {
+    {          
         $this->log->info("setCookie: $content $expire");
+
+        if (is_https()) {
+            $this->secure = true;
+        }
         
         // setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
         // May be limited to PHP7.3
