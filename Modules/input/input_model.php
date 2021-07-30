@@ -198,7 +198,6 @@ class Input
         $stmt->close();
         
         foreach ($descriptions_by_id as $id=>$description) {
-            print $id." ".$description."\n";
             $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$description,$id);
             $stmt->execute();
@@ -206,9 +205,6 @@ class Input
             
             if ($this->redis) $this->redis->hset("input:$id",'description',$description);
         }
-        
-        
-        
         return array('success'=>true, 'message'=>'input descriptions updated');
     }    
 
