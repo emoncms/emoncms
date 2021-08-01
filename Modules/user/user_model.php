@@ -528,7 +528,7 @@ class User
             if ($settings["interface"]["enable_password_reset"]==true)
             {
                 // Generate new random password
-                $newpass = hash('sha256',generate_secure_key(16));
+                $newpass = hash('sha256',generate_secure_key(32));
 
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
