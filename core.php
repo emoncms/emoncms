@@ -29,12 +29,16 @@ function is_https() {
     return false;
 }
 
-function get_application_path()
+function get_application_path($manual_domain=false)
 {
     if (is_https()) {
         $proto = "https";
     } else {
         $proto = "http";
+    }
+    
+    if ($manual_domain) {
+        return "$proto://".$manual_domain."/";
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {

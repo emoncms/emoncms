@@ -3,6 +3,8 @@
 // Processes old settings format into new settings object
 // ------------------------------------------------------------------------------
 $settings = array(
+// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+"domain" => isset($domain)?$domain:false,
 // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
 "emoncms_dir" => isset($emoncms_dir)?$emoncms_dir:"/home/pi",
 // Suggested installation path for emonpi and EmonScripts repository:
