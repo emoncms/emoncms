@@ -279,6 +279,50 @@ class PHPFina implements engine_methods
         return $value;
     }
 
+    public function post_multiple($id,$datapoints,$padding_mode=null)
+    {
+        if (!is_array($datapoints)) return false;
+        $last_time = 0;
+        foreach ($datapoints as $dp) {
+            // must always have two columns: time, value
+            if (count($dp)!=2) return false;
+            // time must be numeric
+            if (!is_numeric($dp[0])) return false;
+            // value must be numeric
+            if (!is_numeric($dp[1])) return false;
+            // timestamps must be in ascending order
+            if (($dp[0]-$last_time)<0) return false;
+            $last_time = $dp[0];
+        }
+
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($id)) return false;
+        
+        // Calculate interval that this datapoint belongs too
+        $timestamp = floor($datapoints[0][0] / $meta->interval) * $meta->interval;
+        
+        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
+        if ($meta->npoints == 0 && $meta->start_time==0) {
+            $meta->start_time = $timestamp;
+            $this->create_meta($id,$meta);
+        }
+        
+        if ($timestamp < $meta->start_time) {
+            $this->log->warn("post() datapoint is older than feed start time id=$id");
+            return false; // in the past
+        }
+
+        foreach ($datapoints as $dp) {
+            $timestamp = $dp[0];
+            $value = $dp[1];
+            // Calculate position in base data file of datapoint
+            $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
+        
+        }
+        
+    }
+
+
     /**
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
