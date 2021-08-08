@@ -102,7 +102,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js?v=2"></script>
 
 <!-- ICONS --------------------------------------------- -->
 
