@@ -19,6 +19,7 @@
         'realtime' => array('label'=>dgettext('vis_messages','RealTime'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('kw',dgettext('vis_messages','kW'),4,false),
             )
         ),
@@ -28,6 +29,7 @@
             array('feedid',dgettext('vis_messages','feed'),1),
             array('fill',dgettext('vis_messages','fill'),7,0),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'2'),
             array('scale',dgettext('vis_messages','scale'),6,'1'))
@@ -36,6 +38,7 @@
         'bargraph'=> array('label'=>dgettext('vis_messages','BarGraph'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),0),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('interval',dgettext('vis_messages','interval'),7,'86400'),
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'1'),

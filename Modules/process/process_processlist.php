@@ -177,7 +177,7 @@ class Process_ProcessList
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>10,
@@ -223,7 +223,7 @@ class Process_ProcessList
               "datafields"=>0,
               "unit"=>"",
               "group"=>_("Deleted"),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>14,
@@ -260,7 +260,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>17,
@@ -272,7 +272,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>18,
@@ -284,7 +284,7 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>19,
@@ -296,7 +296,7 @@ class Process_ProcessList
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>20,
@@ -993,10 +993,10 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
@@ -1025,11 +1025,10 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        if (!isset($last['time'])) $last['time'] = $time_now;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);    
@@ -1062,6 +1061,8 @@ class Process_ProcessList
         if (!$redis) return $value; // return if redis is not available
         
         $currentkwhd = $this->feed->get_timevalue($feedid);
+        if ($currentkwhd===null) return $value; // feed does not exist
+        
         $last_time = $currentkwhd['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1098,6 +1099,7 @@ class Process_ProcessList
     {
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist 
         $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1149,6 +1151,7 @@ class Process_ProcessList
     public function whinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist 
         $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1167,6 +1170,7 @@ class Process_ProcessList
     public function accumulator($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist   
         $value = $last['value'] + $value;
         $padding_mode = "join";
         $this->feed->post($feedid, $time, $time, $value, $padding_mode);
@@ -1176,6 +1180,7 @@ class Process_ProcessList
     public function accumulator_daily($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist  
         $value = $last['value'] + $value;
         $feedtime = $this->getstartday($time_now);
         $this->feed->post($feedid, $time_now, $feedtime, $value);
@@ -1196,6 +1201,8 @@ class Process_ProcessList
         {
             $pulse_diff = 0;
             $last = $this->feed->get_timevalue($feedid);
+            if ($last===null) return 0; // feed does not exist
+            
             if ($last['time']) {
                 // Need to handle resets of the pulse value (and negative 2**15?)
                 if ($value >= $last['value']) {
@@ -1237,6 +1244,8 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+         
         $last_val = $last['value'];
         $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
@@ -1255,6 +1264,8 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+                
         $last_val = $last['value'];
         $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
@@ -1273,6 +1284,8 @@ class Process_ProcessList
     public function add_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+        
         $value = $last['value'] + $value;
         return $value;
     }
@@ -1280,6 +1293,8 @@ class Process_ProcessList
     public function sub_feed($feedid, $time, $value)
     {
         $last  = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+             
         $myvar = $last['value'] *1;
         return $value - $myvar;
     }
@@ -1287,6 +1302,8 @@ class Process_ProcessList
     public function multiply_by_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+          
         $value = $last['value'] * $value;
         return $value;
     }
@@ -1294,6 +1311,8 @@ class Process_ProcessList
    public function divide_by_feed($feedid, $time, $value)
     {
         $last  = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+            
         $myvar = $last['value'] *1;
         
         if ($myvar!=0) {
@@ -1314,7 +1333,9 @@ class Process_ProcessList
         if ($redis->exists("process:whaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:whaccumulator:$feedid",array('time','value'));
     
-            $last_feed  = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->feed->get_timevalue($feedid);
+            if ($last_feed===null) return $value; // feed does not exist
+               
             $totalwh = $last_feed['value'];
             
             $time_diff = $time - $last_feed['time'];
@@ -1345,7 +1366,9 @@ class Process_ProcessList
         if ($redis->exists("process:kwhaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:kwhaccumulator:$feedid",array('time','value'));
     
-            $last_feed  = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->feed->get_timevalue($feedid);
+            if ($last_feed===null) return $value; // feed does not exist
+             
             $totalkwh = $last_feed['value'];
             
             $time_diff = $time - $last_feed['time'];

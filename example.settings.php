@@ -13,6 +13,8 @@
 // -----------------------------------------------------
 
 $settings = array(
+// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+"domain" => false,
 
 // MYSQL Database settings
 "sql"=>array(

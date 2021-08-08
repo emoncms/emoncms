@@ -115,7 +115,10 @@ function start_update_log(log_end) {
 }
 
 function update_log() {
-    $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result) {
+    $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result) {
+        if (result=="Admin re-authentication required") {
+            window.location = "/";
+        }
         $("#update-log").html(result)
         scrollable = $("#update-log").parent('pre')[0];
         if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;

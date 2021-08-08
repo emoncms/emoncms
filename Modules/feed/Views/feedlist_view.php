@@ -1,4 +1,5 @@
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings;
     $v=1;
 ?>

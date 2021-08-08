@@ -1,6 +1,6 @@
 <?php global $path, $session, $user; ?>
 <?php
-    load_language_files("Modules/process/locale", "schedule_messages");
+    load_language_files(dirname(__DIR__).'/locale', "schedule_messages");
 ?>
 <style>
   a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}

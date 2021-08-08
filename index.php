@@ -22,7 +22,7 @@ require "locale.php";
 
 $emoncms_version = version();
 
-$path = get_application_path();
+$path = get_application_path($settings["domain"]);
 $sidebarFixed = true;
 
 require "Lib/EmonLogger.php";

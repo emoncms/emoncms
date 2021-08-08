@@ -154,15 +154,14 @@ class User
         if (substr($cookie_params['path'], -1) !== '/')
             $cookie_params['path'] .= '/';
         //not pass cookie to javascript 
-        $cookie_params['httponly'] = 1; 
+        $cookie_params['httponly'] = true;
+        $cookie_params['samesite'] = 'Strict';
         
-        session_set_cookie_params(
-            $cookie_params['lifetime'],
-            $cookie_params['path'],
-            $cookie_params['domain'],
-            $cookie_params['secure'],
-            $cookie_params['httponly'] 
-        );
+        if (is_https()) {
+            $cookie_params['secure'] = true;
+        }
+        
+        session_set_cookie_params($cookie_params);
         session_start();
 
         if ($this->enable_rememberme)
@@ -247,11 +246,11 @@ class User
         // If we got here the username, password and email should all be valid
 
         $hash = hash('sha256', $password);
-        $salt = md5(uniqid(mt_rand(), true));
+        $salt = generate_secure_key(16);
         $password = hash('sha256', $salt . $hash);
 
-        $apikey_write = md5(uniqid(mt_rand(), true));
-        $apikey_read = md5(uniqid(mt_rand(), true));
+        $apikey_write = generate_secure_key(16);
+        $apikey_read = generate_secure_key(16);
 
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin) VALUES (?,?,?,?,?,?,?,0)");
         $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone);
@@ -297,7 +296,7 @@ class User
         if ($email_verified) return array('success'=>false, 'message'=>_("Email already verified"));
         
         // Create new verification key
-        $verification_key = md5(uniqid(mt_rand(), true));
+        $verification_key = generate_secure_key(16);
         // Save new verification key
         $stmt = $this->mysqli->prepare("UPDATE users SET verification_key=? WHERE id=?");
         $stmt->bind_param("si",$verification_key,$id);
@@ -493,7 +492,7 @@ class User
         {
             // 2) Save new password
             $hash = hash('sha256', $new);
-            $salt = md5(uniqid(rand(), true));
+            $salt = generate_secure_key(16);
             $password = hash('sha256', $salt . $hash);
 
             $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
@@ -529,12 +528,11 @@ class User
             if ($settings["interface"]["enable_password_reset"]==true)
             {
                 // Generate new random password
-                $newpass = hash('sha256',md5(uniqid(rand(), true)));
-                $newpass = substr($newpass, 0, 10);
+                $newpass = hash('sha256',generate_secure_key(32));
 
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
-                $salt = md5(uniqid(rand(), true));
+                $salt = generate_secure_key(16);
                 $password = hash('sha256', $salt . $hash);
                 
                 // Sent email with $newpass to $email
@@ -812,7 +810,7 @@ class User
     public function new_apikey_read($userid)
     {
         $userid = (int) $userid;
-        $apikey = md5(uniqid(mt_rand(), true));
+        $apikey = generate_secure_key(16);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_read = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);
@@ -826,7 +824,7 @@ class User
     public function new_apikey_write($userid)
     {
         $userid = (int) $userid;
-        $apikey = md5(uniqid(mt_rand(), true));
+        $apikey = generate_secure_key(16);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_write = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);

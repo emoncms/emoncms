@@ -28,7 +28,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
         
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>       
         <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
         <script>
         var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";

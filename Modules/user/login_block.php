@@ -214,7 +214,7 @@ function login(){
     } else {
         if (result.success)
         {
-            var href = result.hasOwnProperty('startingpage') ? result.startingpage: path; 
+            var href = result.hasOwnProperty('startingpage') ? path+result.startingpage: path; 
             window.location.href = href;
             return true;
         }

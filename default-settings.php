@@ -4,6 +4,8 @@
 # ------------------------------------------------------------
     
 $_settings = array(
+// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+"domain" => false,
 // Suggested installation path for symlinked emoncms modules /opt/emoncms
 "emoncms_dir" => "/opt/emoncms",
 // Suggested installation path for emonpi and EmonScripts repository: /opt/openenergymonitor

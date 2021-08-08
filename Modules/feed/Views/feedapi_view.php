@@ -1,5 +1,4 @@
 <?php
-
   /*
 
   All Emoncms code is released under the GNU Affero General Public License.
@@ -11,10 +10,16 @@
   http://openenergymonitor.org
 
   */
-
+  defined('EMONCMS_EXEC') or die('Restricted access');
   global $user, $path, $session;
+  
+  $apikey_read = $user->get_apikey_read($session['userid']);
+  $apikey_write = $user->get_apikey_write($session['userid']);
 
 ?>
+<style>
+.table td:nth-of-type(1) { width:40%;}
+</style>
 
 <h2><?php echo _("Feed API");?></h2>
 
@@ -22,12 +27,12 @@
 <p><?php echo _('If you want to call any of the following actions when you\'re not logged in, you have the option to authenticate with the API key:'); ?></p>
 <ul><li><?php echo _('Append to your request URL: &apikey=APIKEY'); ?></li>
 <li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
-<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY" e.g. curl http://127.0.0.1/emoncms/feed/value.json?id=1 -H "Authorization: Bearer APIKEY"');?></li></ul>
+<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY" e.g. curl ').$path.'feed/value.json?id=1 -H "Authorization: Bearer '.$apikey_read.'"';?></li></ul>
 <p><b><?php echo _('Read only:'); ?></b><br>
-<input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
+<input type="text" style="width:255px" readonly="readonly" value="<?php echo $apikey_read; ?>" />
 </p>
 <p><b><?php echo _('Read & Write:'); ?></b><br>
-<input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_write($session['userid']); ?>" />
+<input type="text" style="width:255px" readonly="readonly" value="<?php echo $apikey_write; ?>" />
 </p>
 
 <h3><?php echo _("Html");?></h3>
@@ -71,9 +76,16 @@
     <tr><td><?php echo _("Last value for multiple feeds");?></td><td>
 		<a href="<?php echo $path; ?>feed/fetch.json?ids=1,2,3"><?php echo $path; ?>feed/fetch.json?ids=1,2,3</a>
 	</td></tr>
-    <tr><td><?php echo _("Returns feed data");?></td><td>
-		<a href="<?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=5"><?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=5</a>
-	</td></tr>
+    <tr><td><?php echo _("Returns feed data between start time and end time at the interval specified. If no data is present null values are returned.");?></td><td>
+    <a href="<?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&interval=10"><?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&interval=10</a>
+  </td></tr>
+    <tr><td><?php echo _("Returns feed data between start time and end time at the interval specified. Each datapoint is the average (mean) for the period starting at the datapoint timestamp.");?></td><td>
+    <a href="<?php echo $path; ?>feed/average.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&interval=3600"><?php echo $path; ?>feed/average.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&interval=3600</a>
+  </td></tr>
+
+    <tr><td><?php echo _("Returns feed datapoints at the start of each day aligned to user timezone set in the user profile. This is used by the bar graph and apps module to generate kWh per day from cumulative kWh data.");?></td><td>
+    <a href="<?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&mode=daily"><?php echo $path; ?>feed/data.json?id=0&start=UNIXTIME_MILLISECONDS&end=UNIXTIME_MILLISECONDS&<b>mode=daily</b></a>
+  </td></tr>
     <tr><td><?php echo _("Export CSV data (timeformat=1: provides date time string format)");?></td><td>
 		<a href="<?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1"><?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1=</a>
 	</td></tr>

@@ -8,9 +8,8 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
     */
-
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
-    if (!isset($feedidname)) $feedidname = "";
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -65,6 +64,11 @@ var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
+var backgroundColour = urlParams.colourbg;
+if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+$("body").css("background-color","#"+backgroundColour);
+
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;

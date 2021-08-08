@@ -15,20 +15,30 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function get_application_path()
-{
-    // Default to http protocol
-    $proto = "http";
-
+function is_https() {
     // Detect if we are running HTTPS or proxied HTTPS
     if (server('HTTPS') == 'on') {
         // Web server is running native HTTPS
-        $proto = "https";
+        return true;
     } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
-        $proto = "https";
+        return true;
     } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
+        return true;
+    }
+    return false;
+}
+
+function get_application_path($manual_domain=false)
+{
+    if (is_https()) {
         $proto = "https";
+    } else {
+        $proto = "http";
+    }
+    
+    if ($manual_domain) {
+        return "$proto://".$manual_domain."/";
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
@@ -73,6 +83,8 @@ function controller($controller_name)
 
 function view($filepath, array $args = array())
 {
+    global $path;
+    $args['path'] = $path;
     $content = '';
     if (file_exists($filepath)) {
         extract($args);
@@ -214,9 +226,8 @@ function put($index)
 
 function version()
 {
-    $version_file = file_get_contents('./version.txt');
-    $version = filter_var($version_file, FILTER_SANITIZE_STRING);
-    return $version;
+    $version_file = json_decode(file_get_contents('./version.json'));
+    return $version_file->version;
 }
 
 
@@ -258,7 +269,11 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                // load_language_files("Modules/".$dir[$i]."/locale");
+                if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
+                    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
+                } else { 
+                    load_language_files("Modules/".$dir[$i]."/locale");
+                }
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
@@ -328,4 +343,15 @@ function get_client_ip_env()
         $ipaddress = '';
     }
     return $ipaddress;
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Generate secure key
+// ---------------------------------------------------------------------------------------------------------
+function generate_secure_key($length) {
+    if (function_exists('random_bytes')) {
+        return bin2hex(random_bytes($length));
+    } else {
+        return bin2hex(openssl_random_pseudo_bytes($length));
+    }
 }

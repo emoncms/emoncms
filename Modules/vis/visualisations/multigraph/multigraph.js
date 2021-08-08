@@ -16,6 +16,7 @@ var ajaxAsyncXdr = [];
 var eventVisFeedData;
 var eventRefresh;
 var showlegend = true;
+var backgroundColour = "ffffff";
 var datetimepicker1;
 var datetimepicker2;
 var graphtype;
@@ -33,6 +34,11 @@ function convertToPlotlist(multigraphFeedlist) {
   view.ymax = (typeof multigraphFeedlist[0]["ymax"] !== "undefined" ? multigraphFeedlist[0]["ymax"] : null);
   view.y2min = (typeof multigraphFeedlist[0]["y2min"] !== "undefined" ? multigraphFeedlist[0]["y2min"] : null);
   view.y2max = (typeof multigraphFeedlist[0]["y2max"] !== "undefined" ? multigraphFeedlist[0]["y2max"] : null);
+
+  backgroundColour = (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined" ? multigraphFeedlist[0]["backgroundColour"] : "ffffff");
+  $("body").css("background-color","#"+backgroundColour);
+  
+  datatype=1;
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];

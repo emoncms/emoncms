@@ -7,6 +7,7 @@
 -->
 
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
     //global $path;
     //$embed = (int)(get("embed"));
     //$mid = intval(get("mid"));
