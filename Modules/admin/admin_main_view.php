@@ -491,9 +491,6 @@ $(window).resize(function() {
   $("#windowsize").html( $(window).width() + " x " + $(window).height() );
 });
 
-var logrunning = false;
-var updatelogrunning = false;
-
 
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
@@ -506,6 +503,8 @@ function getBufferSize() {
     }
   });
 }
+
+
 
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush", async: true, dataType: "text", success: function(result)
@@ -568,4 +567,5 @@ $(".service-action").click(function() {
 });
 
 </script>
+
 
