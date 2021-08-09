@@ -8,6 +8,7 @@ class PHPTimeSeries implements engine_methods
     public $log;
     private $redis = false;
     private $buffer_enabled = false;
+    private $buffer_period = 300;  // 5 minutes
     
     /**
      * Constructor.
@@ -16,10 +17,17 @@ class PHPTimeSeries implements engine_methods
     */
     public function __construct($settings,$redis)
     {
-        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
-        $this->log = new EmonLogger(__FILE__);
         $this->redis = $redis;
         if ($this->redis) $this->buffer_enabled = true;
+        
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        if (isset($settings['buffer'])) $this->buffer_period = (int) $settings['buffer'];
+        if ($this->buffer_period<=0) {
+            $this->buffer_period = 0;
+            $this->buffer_enabled = false;
+        }
+        
+        $this->log = new EmonLogger(__FILE__);
     }
     
     /**
@@ -233,7 +241,7 @@ class PHPTimeSeries implements engine_methods
         $this->buffer_add($id,$time,$value);
         
         // Auto save after set period
-        if (($buffer_end_time-$buffer_start_time)>=300) {
+        if (($buffer_end_time-$buffer_start_time)>=$this->buffer_period) {
              $this->buffer_save($id);
         }
         

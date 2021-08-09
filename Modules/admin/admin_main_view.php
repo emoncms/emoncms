@@ -491,21 +491,6 @@ $(window).resize(function() {
   $("#windowsize").html( $(window).width() + " x " + $(window).height() );
 });
 
-
-<?php if ($feed_settings['redisbuffer']['enabled']) { ?>
-  getBufferSize();
-<?php } ?>
-function getBufferSize() {
-  $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
-    {
-      var data = JSON.parse(result);
-      $("#bufferused").html( data + " feed points pending write");
-    }
-  });
-}
-
-
-
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush", async: true, dataType: "text", success: function(result)
     {

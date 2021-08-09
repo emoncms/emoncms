@@ -15,6 +15,7 @@ class PHPFina implements engine_methods
 
     private $redis = false;
     private $buffer_enabled = false;
+    private $buffer_period = 300;  // 5 minutes
 
     /**
      * Constructor.
@@ -27,6 +28,13 @@ class PHPFina implements engine_methods
         if ($this->redis) $this->buffer_enabled = true;
         
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        if (isset($settings['maxpadding'])) $this->maxpadding = $settings['maxpadding'];
+        if (isset($settings['buffer'])) $this->buffer_period = (int) $settings['buffer'];
+        if ($this->buffer_period<=0) {
+            $this->buffer_period = 0;
+            $this->buffer_enabled = false;
+        }
+        
         $this->log = new EmonLogger(__FILE__);
     }
     
@@ -273,7 +281,7 @@ class PHPFina implements engine_methods
         fclose($fh);
         
         // Persist buffer
-        if (($meta->buffer_length*$meta->interval)>=300) {
+        if (($meta->buffer_length*$meta->interval)>=$this->buffer_period) {
             $this->buffer_save($id);
         }
         return $value;
@@ -320,6 +328,7 @@ class PHPFina implements engine_methods
         
         }
         
+        // To be completed
     }
 
 
