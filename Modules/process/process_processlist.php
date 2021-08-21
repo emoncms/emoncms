@@ -760,6 +760,20 @@ class Process_ProcessList
               "description"=>_("<p>Return the reciprical of the specified feed. Returns NULL for zero values.</p>")
            ),
            array(
+              "id_num"=>60,
+              "name"=>_("Wh Accumulator No Limit"),
+              "short"=>"whaccnl",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"wh_accumulator_no_limit",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"Wh",
+              "group"=>_("Main"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "requireredis"=>true,
+	      "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, this no-limit version does not check filters for spikes in energy use that are larger than a max power threshold set in the processor, and does not assume these are errors, so it does not implement the max power threshold set to 60 kW on the regular Wh Accumulator. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+           ),
+           array(
               "name"=>_("EXIT"),
               "short"=>"EXIT",
               "argtype"=>ProcessArg::NONE,
@@ -1413,6 +1427,35 @@ class Process_ProcessList
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
+
+        return $totalwh;
+    }
+
+    public function wh_accumulator_no_limit($feedid, $time, $value)
+    {
+        $totalwh = $value;
+
+        global $redis;
+        if (!$redis) return $value; // return if redis is not available
+
+        if ($redis->exists("process:whaccumulatornl:$feedid")) {
+            $last_input = $redis->hmget("process:whaccumulatornl:$feedid",array('time','value'));
+
+            $last_feed = $this->feed->get_timevalue($feedid);
+            if ($last_feed===null) return $value; // feed does not exist
+
+            $totalwh = $last_feed['value'];
+
+            $time_diff = $time - $last_feed['time'];
+            $val_diff = $value - $last_input['value'];
+
+            if ($time_diff>0 && $val_diff>0) $totalwh += $val_diff;
+            
+
+            $padding_mode = "join";
+            $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
+        }
+        $redis->hMset("process:whaccumulatornl:$feedid", array('time' => $time, 'value' => $value));
 
         return $totalwh;
     }
