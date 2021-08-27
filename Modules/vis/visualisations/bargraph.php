@@ -18,7 +18,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=1"></script>
 
 <div id="vis-title"></div>
 <style>
@@ -312,8 +312,6 @@
                    data=out;
                 }
             }
-
-            stats.calc(data);
             plot();
         }
         

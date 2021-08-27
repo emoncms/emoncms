@@ -159,14 +159,14 @@ var feed = {
         }
     },
     
-    getdataDMY_time_of_use: function(id,start,end,mode,timeofusesplit)
+    getdataDMY_time_of_use: function(id,start,end,interval,split)
     {
         let data = {
-            id: feedid,
+            id: id,
             start: start,
             end: end,
-            mode: mode,
-            split:timeofusesplit
+            interval: interval,
+            split:split
         };
         if (feed.apikey) data.apikey = feed.apikey;
         

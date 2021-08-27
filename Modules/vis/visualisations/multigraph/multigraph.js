@@ -1,6 +1,6 @@
 //get_feed_data_async is defined in /Modules/vis/visualisations/common/api.js
 /*global get_feed_data_async */
-//view, tooltip and parse_timepicker_time are defined in Modules/vis/visualisations/common/vis.helper.js
+//view, tooltip and parse_timepicker_time are defined in Lib/vis.helper.js
 /*global tooltip */
 /*global parse_timepicker_time */
 /*global view */
