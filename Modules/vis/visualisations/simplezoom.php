@@ -13,7 +13,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
@@ -71,8 +71,8 @@
   var plotdata = [];
 
   var feedlist = [];
-  feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, mode:"daily", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[0] = {id: power, interval:"auto", selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
+  feedlist[1] = {id: kwhd, delta: delta, interval:"daily", selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
   
@@ -104,12 +104,10 @@
       if (feedlist[i].selected) {
         
         if (!feedlist[i].plot.data) {
-          //feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
-          
-          if (feedlist[i].interval!=undefined && feedlist[i].interval>0)
-          {
-            interval = feedlist[i].interval;
-            intervalms = interval * 1000;
+         
+          if (feedlist[i].interval=="daily") {
+            interval = "daily";
+            intervalms = 86400 * 1000;
             
             var d = new Date()
             var n = d.getTimezoneOffset();
@@ -122,13 +120,9 @@
           } else {
             datastart = start;
             dataend = end;
-            interval = Math.round(((end-start)/500)*0.001);
+            interval = Math.round(((end-start)/1200)*0.001);
           }
-          if (feedlist[i].mode==undefined) {
-              feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
-          } else {
-              feedlist[i].plot.data = get_feed_data_DMY(feedlist[i].id,datastart,dataend,feedlist[i].mode);
-          }
+          feedlist[i].plot.data = feed.get_data(feedlist[i].id,datastart,dataend,interval,1,1);
           
           if (feedlist[i].delta==1 && i==1) {
               var tmp = [];

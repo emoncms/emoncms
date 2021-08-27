@@ -108,11 +108,9 @@ var feed = {
       return false;
   },
 
-  'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
+  'get_data':function(feedid,start,end,interval,skipmissing=0,limitinterval=0){
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
-  //if (skipmissing == undefined) skipmissing = 1;
-  //if (limitinterval == undefined) limitinterval = 1;
     $.ajax({                                      
       url: path+'feed/data.json',                         
       data: "id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval+apikeystr,
@@ -121,6 +119,21 @@ var feed = {
       success: function(data_in) { feedIn = data_in; } 
     });
     return feedIn;
+  },
+  
+  'get_data_async':function(callback,feedid,start,end,interval,skipmissing=0,limitinterval=0){
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
+    return $.ajax({                                      
+      url: path+'feed/data.json',                         
+      data: "id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval+apikeystr,
+      dataType: 'json',
+      async: true,                      
+      success: function(result) {
+        if ( typeof callback === "function" ) {
+          callback(result);
+        }
+      } 
+    });
   },
 
   // Virtual feed process

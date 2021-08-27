@@ -17,7 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/graphs.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
@@ -100,10 +100,12 @@
   end = Math.floor(end / 86400000) * 86400000;
   start -= offset * 3600000;
   end -= offset * 3600000;
-  get_feed_data_DMY_async(vis_feed_kwh_data_callback,null,kwhd,start,end,"daily"); // get 5 years of daily kw_data
+  
+  feed.apikey = apikey;
+  feed.get_data_async(vis_feed_kwh_data_callback,kwhd,start,end,"daily",1,1); // get 5 years of daily kw_data
 
   //load feed kwh_data
-  function vis_feed_kwh_data_callback(context,data){
+  function vis_feed_kwh_data_callback(data){
   
     if (window.delta==1) {
         var tmp = [];
@@ -117,7 +119,7 @@
   
     kwh_data = data;
     var total = 0, ndays=0;
-    for (z in kwh_data) {
+    for (var z in kwh_data) {
     if (kwh_data[z][1] == null) { kwh_data[z][1] = 0; } // fix when  get_feed_data_DMY_async return null
         total += parseFloat(kwh_data[z][1]); ndays++;
     }
@@ -159,11 +161,11 @@
       ajaxAsyncXdr.abort(); // abort pending requests
       ajaxAsyncXdr=undefined;
     }
-    ajaxAsyncXdr=get_feed_data_async(vis_feed_data_callback,null,feedid,start,end,interval,1,1);
+    ajaxAsyncXdr=feed.get_data_async(vis_feed_data_callback,feedid,start,end,interval,1,1);
   }
   
   //load feed data
-  function vis_feed_data_callback(context,data){
+  function vis_feed_data_callback(data){
     power_data=data;
     var stats = power_stats(power_data);
     instgraph(power_data);
