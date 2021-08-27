@@ -91,7 +91,7 @@ class VirtualFeed implements engine_methods
     // Note !!! This early reworked version only implements the basic get_data method
     // it needs to be extended to handle averaged data requests and daily, monthly modes 
     // with the source data generation handled by the respective source feed engines themselves
-    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $feedid = (int) $feedid;
         $processList = $this->feed->get_processlist($feedid);
@@ -127,10 +127,10 @@ class VirtualFeed implements engine_methods
             'sourcetype' => ProcessOriginType::VIRTUALFEED
         );
 
-        for ($time=$start; $time<$end; $time+=$interval) {
+        for ($time=$start; $time<=$end; $time+=$interval) {
             $dataValue = $process->input($time, $dataValue, $processList, $opt_timearray); // execute processlist 
                 
-            if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
+            if ($dataValue!==null || $skipmissing===0) { // Remove this to show white space gaps in graph
                 if ($dataValue !== null) $dataValue = (float) $dataValue;
                 $data[] = array($time*1000, $dataValue);
             }
