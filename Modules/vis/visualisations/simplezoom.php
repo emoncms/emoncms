@@ -14,7 +14,7 @@ global $path, $embed;
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=3"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
@@ -120,7 +120,7 @@ function vis_feed_data() {
                     dataend = end;
                     interval = Math.round(((end-start)/1200)*0.001);
                 }
-                feedlist[i].plot.data = feed.get_data(feedlist[i].id,datastart,dataend,interval,1,1);
+                feedlist[i].plot.data = feed.getdata(feedlist[i].id,datastart,dataend,interval,0,1,1);
                 
                 if (feedlist[i].delta==1 && i==1) {
                     var tmp = [];
