@@ -11,7 +11,8 @@ It uses the [/Modules/vis/Views/vis_main_view.php](/Modules/vis/Views/vis_main_v
 When vis objects are integrated in dashboards or external website or viewed through standalone visualisations, 
 the followed route looks like <b>/vis/visualisation_key</b>, where visualisation_key can be multigraph, bargraph 
 (cf [/Modules/vis/vis_object.php](/Modules/vis/vis_object.php) to find all existing vis objects)
-the route must include either : 
+
+The route must include either : 
   - the mid parameter when dealing with a multigraph
   - the feedid parameter when dealing with a feed
 
@@ -46,7 +47,7 @@ The graph is initially populated by 10 curves of iso relative humidity, represen
 
 We then materialize the zones where it’s not good to be:
 
-- the too dry part (green) is the one below the curve of iso humidity 40%.
+- the too dry part (green) is the one below the curve of 40% iso humidity curve.
 - the parts that are too humid (red/orange) are between the saturation curve (100%) and the 80% iso humidity curve, in which the risks of development of moisture and fungi are high. The graph is ready to receive the measured values. The calculation of absolute humidity for a pressure of 101325 pa (the atmospheric pressure at sea level) is relatively [simple](https://github.com/emoncms/emoncms/blob/master/Modules/vis/visualisations/psychrograph.php#L146).
 
 From a practical point of view, you just have to build multigraphs in emoncms and use them in the pshychrographic visualization to appreciate the comfort level of your home.
