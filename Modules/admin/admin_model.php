@@ -13,6 +13,107 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Admin {
+
+    public static function get_services_list() {
+        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+    }
+    
+    public static function listSerialPorts() {
+        $ports = array();
+        for ($i=0; $i<5; $i++) {
+            if (file_exists("/dev/ttyAMA$i")) {
+                $ports[] = "ttyAMA$i";
+            }  
+            if (file_exists("/dev/ttyUSB$i")) {
+                $ports[] = "ttyUSB$i";
+            }
+        }
+        if (count($ports)==0) {
+            $ports[] = "none";
+        }
+        return $ports;
+    }
+
+    public static function firmware_available() {
+        global $settings;
+        if (file_exists($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json")) {
+            return json_decode(file_get_contents($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json"));
+        }
+        return array();
+    }
+
+    /**
+     * get running status of service
+     *
+     * @param string $name
+     * @return bool|null true == running | false == stopped | null == not installed
+     */
+    public static function full_system_information() {
+        global $redis, $settings, $emoncms_version;
+        // create array of installed services
+        $services = array();
+        $system = Admin::system_information();
+        
+        foreach($system['services'] as $key=>$value) {
+            if (!is_null($system['services'][$key])) {    // If the service was found on this system
+                
+                // Populate service status fields
+            	$services[$key] = array(
+                    'state' => ucfirst($value['ActiveState']),
+                    'text' => ucfirst($value['SubState']),
+                    'running' => $value['SubState']==='running'
+                );
+            	
+            	// Set 'cssClass' based on service's configuration and current status
+            	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+            		$services[$key]['cssClass'] = 'masked';
+            		$services[$key]['text'] = 'Masked';
+            	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+            		$services[$key]['cssClass'] = 'success';
+            	} else {                                       // Assume service is in danger
+            		$services[$key]['cssClass'] = 'danger';
+            	}
+            }
+        }
+        // add custom messages for feedwriter service
+        if(isset($services['feedwriter'])) {
+            $message = '<font color="red">Service is not running</font>';
+            if ($services['feedwriter']['running']) {
+                $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
+            }
+            $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+        }
+        $redis_info = array();
+        if($settings['redis']['enabled']) {
+            $redis_info = $redis->info();
+            $redis_info['dbSize'] = $redis->dbSize();
+            $phpRedisPattern = 'Redis Version =>';
+            $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
+            $pipRedisPattern = "Version: ";
+            $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+        }
+
+        return array(
+            'system'=>$system,
+            'services'=>$services,
+            'redis_enabled'=>$settings['redis']['enabled'],
+            'mqtt_enabled'=>$settings['mqtt']['enabled'],
+            'emoncms_version'=>$emoncms_version,
+            'redis_info'=>$redis_info,
+            'feed_settings'=>$settings['feed'],
+            'component_summary'=>$system['component_summary'],
+            'php_modules'=>Admin::php_modules($system['php_modules']),
+            'mqtt_version'=>Admin::mqtt_version(),
+            'rpi_info'=> Admin::get_rpi_info(),
+            'ram_info'=> Admin::get_ram($system['mem_info']),
+            'disk_info'=> Admin::get_mountpoints($system['partitions']),
+            'v' => 3
+        );
+    }
+
+
+
+
     /**
      * get running status of service
      *
@@ -29,15 +130,28 @@ class Admin {
         }
         if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
             $return = null;
-        } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
+        } else if (
+        		isset($status["ActiveState"]) &&
+        		isset($status["SubState"]) &&
+        		isset($status["LoadState"])
+        		) {
             return array(
                 'ActiveState' => $status["ActiveState"],
-                'SubState' => $status["SubState"]
+                'SubState' => $status["SubState"],
+                'LoadState' => $status["LoadState"]
             );
         } else {
             $return = null;
         }
         return $return;
+    }
+    
+    public static function setService($name,$action) {
+        global $redis;
+        if (!$redis) return "could not $action service, redis required";
+        $script = "/var/www/emoncms/scripts/service-action.sh $name $action";
+        $redis->rpush("service-runner","$script");
+        return "service-runner trigger sent for $script";
     }
 
     /**
@@ -53,16 +167,9 @@ class Admin {
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
         $services = array();
-        $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
-        $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
-        $services['emoncms_mqtt'] = Admin::getServiceStatus('emoncms_mqtt.service');
-        $services['feedwriter'] = Admin::getServiceStatus('feedwriter.service');
-        $services['service-runner'] = Admin::getServiceStatus('service-runner.service');
-        $services['emonPiLCD'] = Admin::getServiceStatus('emonPiLCD.service');
-        $services['redis-server'] = Admin::getServiceStatus('redis-server.service');
-        $services['mosquitto'] = Admin::getServiceStatus('mosquitto.service');
-        $services['demandshaper'] = Admin::getServiceStatus('demandshaper.service');
-
+        foreach (Admin::get_services_list() as $service) {
+            $services[$service] = Admin::getServiceStatus("$service.service");
+        }
         //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
@@ -75,24 +182,15 @@ class Admin {
               }
           }
         }
-        $emoncms_modules = "";
-        $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-        $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
-        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-            if ($emoncms_modules != "")  $emoncms_modules .= " | ";
-            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
-              $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-              $jsonAppName = $json->{'name'};
-              $jsonVersion = $json->{'version'};
-              if ($jsonAppName) {
-                $emoncmsModuleFolder = $jsonAppName;
-              }
-              if ($jsonVersion) {
-                $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
-              }
-            }
-            $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+        
+        // Component summary
+        $component_summary = array();
+        $components = Admin::component_list(false);
+        foreach ($components as $component) {
+            $component_summary[] = $component["name"]." v".$component["version"];
         }
+        $component_summary = implode(" | ",$component_summary);
+        
         return array('date' => date('Y-m-d H:i:s T'),
                      'system' => $system,
                      'kernel' => $kernel,
@@ -124,12 +222,84 @@ class Admin {
                      'php_modules' => get_loaded_extensions(),
                      'mem_info' => $meminfo,
                      'partitions' => Admin::disk_list(),
-                     'emoncms_modules' => $emoncms_modules,
+                     'component_summary' => $component_summary,
                      'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
                      'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
                      'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                      );
       }
+
+      public static function component_list($git_info=true) 
+      {
+          global $settings;
+          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+          
+          $components = array();
+          
+          // Emoncms core
+          if (file_exists($emoncms_path."/version.json")) {                           // JSON Version informatmion exists
+              $json = json_decode(file_get_contents($emoncms_path."/version.json"));  // Get JSON version information
+              if (isset($json->version) && $json->version!="") {
+                  $name = "emoncms";
+                  $components[$name] = array(
+                      "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                      "version"=>$json->version,
+                      "path"=>$emoncms_path,
+                      "location"=>isset($json->location)?$json->location:$emoncms_path,
+                      "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                      "requires"=>isset($json->requires)?$json->requires:array()
+                  );
+              }
+          }
+          
+          foreach (array("$emoncms_path/Modules",$settings['emoncms_dir']."/modules",$settings['openenergymonitor_dir']) as $path) {
+              
+              $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
+              
+              foreach($directories as $module_fullpath) {                                           // loop through the folders
+
+                  if (!is_link($module_fullpath)) {
+
+                      $fullpath_parts = explode("/",$module_fullpath);
+                      $name = $fullpath_parts[count($fullpath_parts)-1];
+                      
+                      if (file_exists($module_fullpath."/module.json")) {                           // JSON Version informatmion exists
+                          $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
+                          
+                          if (isset($json->version) && $json->version!="") {
+                              $components[$name] = array(
+                                  "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                                  "version"=>$json->version,
+                                  "path"=>$module_fullpath,
+                                  "location"=>isset($json->location)?$json->location:$path,
+                                  "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                                  "requires"=>isset($json->requires)?$json->requires:array()
+                              );
+                          }
+                      }
+                  }
+              }
+          
+          }
+          
+          if ($git_info) {
+              foreach ($components as $name=>$component) {
+                  $path = $components[$name]["path"];
+                  $components[$name]["describe"] = @exec("git -C $path describe");
+                  $components[$name]["branch"] = str_replace("* ","",@exec("git -C $path rev-parse --abbrev-ref HEAD"));
+                  $components[$name]["local_changes"] = @exec("git -C $path diff-index -G. HEAD --");
+                  $components[$name]["url"] = @exec("git -C $path ls-remote --get-url origin");
+                  
+                  if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
+                      $components[$name]["branches_available"][] = $components[$name]["branch"];
+                  }
+              }             
+          }   
+          
+          
+          return $components;
+      }
+      
 
       /**
        * return array of mounted partitions

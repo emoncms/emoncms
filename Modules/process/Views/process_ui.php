@@ -1,9 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings;
-    load_language_files("Modules/process/locale", "process_messages");
-    
-    $v=6;
+    load_language_files(dirname(__DIR__).'/locale', "process_messages");
     
     // settings.ini parse_ini_file does not convert [0,6,8,10] into an array
     // while settings.php engines_hidden will be an array
@@ -120,7 +118,6 @@
                                         <option value="0">Any type</option>
                                         <option value="1">Realtime</option>
                                         <option value="2">Daily</option>
-                                        <option value="3">Histogram</option>
                                     </select>
                                 </div>
                             </div>
@@ -141,7 +138,6 @@
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
                                         <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
-                                        <option value="6">PHPFIWA Fixed Interval With Averaging</option>
                                         <option value="5">PHPFINA Fixed Interval No Averaging</option>
                                         <option value="2">PHPTIMESERIES Variable Interval No Averaging</option>
                                         <option value="0">MYSQL TimeSeries</option>

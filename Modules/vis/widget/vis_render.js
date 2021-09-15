@@ -16,11 +16,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","initzoom","kw"],
-      "optionstype":["feedid","colour_picker","dropbox","boolean"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Zoom"),'kW'],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Default visible window interval"),_Tr_Vis("Display power as kW")],
-      "optionsdata": [ , , [["1", "1 "+_Tr_Vis("minute")],["5", "5 "+_Tr_Vis("minutes")],["15", "15 "+_Tr_Vis("minutes")],["30", "30 "+_Tr_Vis("minutes")],["60", "1 "+ _Tr_Vis("hour")]], ],
+      "options":["feedid","colour","colourbg","initzoom","kw"],
+      "optionstype":["feedid","colour_picker","colour_picker","dropbox","boolean"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Background"),_Tr_Vis("Zoom"),'kW'],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Background colour in hex. Blank is use default."),_Tr_Vis("Default visible window interval"),_Tr_Vis("Display power as kW")],
+      "optionsdata": [ , ,"ffffff", [["1", "1 "+_Tr_Vis("minute")],["5", "5 "+_Tr_Vis("minutes")],["15", "15 "+_Tr_Vis("minutes")],["30", "30 "+_Tr_Vis("minutes")],["60", "1 "+ _Tr_Vis("hour")]], ],
       "html":""
     },
 
@@ -28,11 +28,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",  
-      "options":["feedid","colour","units","dp","scale","fill","initzoom"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("units"),_Tr_Vis("dp"),_Tr_Vis("scale"),_Tr_Vis("Fill"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("units"),_Tr_Vis("Decimal points"),_Tr_Vis("Scale by"),_Tr_Vis("Fill value"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , , , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
+      "options":["feedid","colour","colourbg","units","dp","scale","fill","initzoom"],
+      "optionstype":["feedid","colour_picker","colour_picker","value","value","value","value","dropbox"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Background"),_Tr_Vis("units"),_Tr_Vis("dp"),_Tr_Vis("scale"),_Tr_Vis("Fill"),_Tr_Vis("Zoom")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Background colour in hex. Blank is use default."),_Tr_Vis("units"),_Tr_Vis("Decimal points"),_Tr_Vis("Scale by"),_Tr_Vis("Fill value"),_Tr_Vis("Default visible window interval")],
+      "optionsdata": [ , ,"ffffff", , , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
       "html":""
     },
     
@@ -40,11 +40,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","interval","units","dp","scale","delta","mode","initzoom"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","boolean","boolean","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Interval"),_Tr_Vis("units"),_Tr_Vis("dp"),_Tr_Vis("scale"),_Tr_Vis("delta"),_Tr_Vis("mode"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr_Vis("Units"),_Tr_Vis("Decimal points"),_Tr_Vis("Scale by"),_Tr_Vis("Show difference between each bar"),_Tr_Vis("Mode set to 'daily' can be used instead of interval for timezone based daily data"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , , , , , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
+      "options":["feedid","colour","colourbg","interval","units","dp","scale","delta","mode","initzoom"],
+      "optionstype":["feedid","colour_picker","colour_picker","value","value","value","value","boolean","boolean","dropbox"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Background"),_Tr_Vis("Interval"),_Tr_Vis("units"),_Tr_Vis("dp"),_Tr_Vis("scale"),_Tr_Vis("delta"),_Tr_Vis("mode"),_Tr_Vis("Zoom")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Background colour in hex. Blank is use default."),_Tr_Vis("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr_Vis("Units"),_Tr_Vis("Decimal points"),_Tr_Vis("Scale by"),_Tr_Vis("Show difference between each bar"),_Tr_Vis("Mode set to 'daily' can be used instead of interval for timezone based daily data"),_Tr_Vis("Default visible window interval")],
+      "optionsdata": [ , ,"ffffff", , , , , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
       "html":""
     },
 
@@ -114,50 +114,16 @@ function vis_widgetlist(){
       "optionsdata":[multigraphsDropBoxOptions], // Gets multigraphs from vis_widget.php multigraphsDropBoxOptions variable
       "html":""
     },
-
-    "timestoredaily":
+	
+	"psychrograph":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","units","initzoom"],
-      "optionstype":["feedid","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Units"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Units to show"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-        
-    "histgraph":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr_Vis("Feed")],
-      "optionshint":[_Tr_Vis("Feed source")],
-      "html":""
-    },
-
-    "threshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB","initzoom"],
-      "optionstype":["feedid","value","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-
-    "orderthreshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","power","thresholdA","thresholdB"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Power"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Power"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used")],
+      "options":["mid","hrtohabs","givoni"],
+      "optionstype":["dropbox","boolean","boolean"],
+      "optionsname":[_Tr_Vis("Multigraph"),_Tr_Vis("calulate habs"),_Tr_Vis("view givoni graph")],
+      "optionshint":[_Tr_Vis("Managed on Visualization module"),_Tr_Vis(""),_Tr_Vis("")],
+      "optionsdata":[multigraphsDropBoxOptions],
       "html":""
     },
     

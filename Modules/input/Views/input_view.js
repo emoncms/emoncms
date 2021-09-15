@@ -43,7 +43,7 @@ var devices = {};
 var inputs = {};
 var nodes = {};
 var local_cache_key = 'input_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+var nodes_display = {};
 // clear cookie value if not in correct format
 if (Array.isArray(nodes_display)) nodes_display = {};
 var selected_inputs = {};
@@ -74,24 +74,18 @@ var app = new Vue({
     data: {
         devices: {},
         col: {
-            dev: { B: 40,  // select
-                   A: 200, // device node id
-                   G: 200, // device description
-                   C: 50,  // config
-                   G: 200, // 
-                   H: 200, // 
-                   F: 0,  // 
-                   E: 100, // 
-                   D: 100, //      
-            },
             B: 40,  // select
             A: 200, // name
             G: 200, // description
             H: 200, // processList
-            F: 0,  // schedule
+            F: 50,  // schedule
             E: 100, // time
             D: 100, // value     
             C: 50,  // config       
+        },
+        col_h: {
+            E: 'auto',
+            H: 'auto'
         },
         selected: [],
         collapsed: [],
@@ -137,7 +131,7 @@ var app = new Vue({
         collapsed: function(newVal) {
             // cache state in cookie
             if(!this.firstLoad) {
-                docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
+                // docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
             } else {
                 this.firstLoad = false;
             }
@@ -273,14 +267,14 @@ var app = new Vue({
         window.addEventListener('scroll', this.handleScroll);
         // load list collapsed state from previous visit
         this.firstLoad = true;
-        if(docCookies.hasItem(this.local_cache_key)) {
+        /*if(docCookies.hasItem(this.local_cache_key)) {
             var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
             if(Array.isArray(cached_state)) {
                 this.collapsed = cached_state
             } else {
                 this.collapsed = []
             }
-        }
+        }*/
     },
     destroyed () {
         window.removeEventListener('scroll', this.handleScroll);
@@ -954,16 +948,17 @@ function noProcessNotification(devices){
 // ---------------------------------------------------------------------------------------------
 function draw_devices() {
 
-    max_dev_nodeid_length = 0
-    max_dev_description_length = 0
     max_name_length = 0
     max_description_length = 0
     max_time_length = 0
     max_value_length = 0
     
+    // This part works out the column widths based on string length of largest entry in column
     for (var nodeid in devices) {
-        if (devices[nodeid].nodeid.length > max_dev_nodeid_length) max_dev_nodeid_length = devices[nodeid].nodeid.length;
-        if (devices[nodeid].description.length > max_dev_description_length) max_dev_description_length = devices[nodeid].description.length;
+    
+        if (devices[nodeid].nodeid.length > max_name_length) max_name_length = devices[nodeid].nodeid.length;
+        if (devices[nodeid].description.length > max_description_length) max_description_length = devices[nodeid].description.length;
+        
         for (var z in devices[nodeid].inputs) {
             var input = devices[nodeid].inputs[z];
             
@@ -983,18 +978,22 @@ function draw_devices() {
             if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
         }
     }
-    
-    app.col.A = ((max_name_length * 8) + 10);
-    app.col.G = ((max_description_length * 8) + 10); // additional padding to accomodate description length
-    app.col.D = ((max_value_length * 8) + 10);
-    app.col.E = ((max_time_length * 8) + 10); // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
-    app.col.H = 200
 
-    app.col.dev.A = ((max_dev_nodeid_length * 8) + 10);
-    app.col.dev.G = ((max_dev_description_length * 8) + 10);
-    app.col.dev.D = app.col.D;
-    app.col.dev.E = app.col.E;
-    app.col.dev.H = app.col.H;
+    // Conversion of string length to px width
+    app.col = {
+        B: 40,                                   // select
+        A: ((max_name_length * 8) + 30),         // name          +30
+        G: ((max_description_length * 8) + 70),  // description   +70
+        H: 200,                                  // processList
+        F: 50,                                   // schedule
+        E: ((max_time_length * 8) + 40),         // time          +40 (needs to accomodate weeks/days/hours/minutes/s)
+        D: ((max_value_length * 8) + 17),        // value         +17
+        C: 50                                    // config        
+    };
+    
+    // Column height used when hiding columns
+    app.col_h.H = 'auto'
+    app.col_h.E = 'auto'
     
     resize_view();
 
@@ -1006,44 +1005,26 @@ function draw_devices() {
 function resize_view() {
     // Hide columns
     var col_max = JSON.parse(JSON.stringify(app.col));
-    var rowWidth = $("#app").width() - 10;
+    var rowWidth = $("#app").width() - 0;       // Originally 0 offset removed here
+    hidden = {}
     keys = Object.keys(app.col).sort();
     
     var columnsWidth = 0
     for (k in keys) {
-        var key = keys[k]
-        if  (columnsWidth + col_max[key] > rowWidth){
-            var dif = rowWidth - columnsWidth;
-            columnsWidth += dif;
-            if (dif => 0) {
-                app.col[key] = dif;
-            }
+        let key = keys[k]
+        columnsWidth += col_max[key];
+        hidden[key] = columnsWidth > rowWidth;
+    }
+    
+    for (var key in hidden) {
+        if (hidden[key]) {
+            app.col[key] = 0;
+            app.col_h[key] = 0;
         } else {
             app.col[key] = col_max[key]
-            columnsWidth += col_max[key];
+            app.col_h[key] = 'auto';
         }
     }
-        
-    
-    var col_max = JSON.parse(JSON.stringify(app.col.dev));
-    keys = Object.keys(app.col.dev).sort();
-    
-    var columnsWidth = 0
-    for (k in keys) {
-        var key = keys[k]
-        if  (columnsWidth + col_max[key] > rowWidth){
-            var dif = rowWidth - columnsWidth;
-            columnsWidth += dif;
-            if (dif => 0) {
-                app.col.dev[key] = dif;
-            }
-        } else {
-            app.col.dev[key] = col_max[key]
-            columnsWidth += col_max[key];
-        }
-    }
-    
-
 
     // show tooltip with device key on click 
     $('#table [data-toggle="tooltip"]').tooltip({
@@ -1087,7 +1068,7 @@ $(function(){
         if (DEVICE_MODULE) {
             device_dialog.loadConfig(device_templates, device);
         } else {
-            alert("Please install the device module to enable this feature");
+            alert(_("Please install the device module to enable this feature"));
         }
     });
 }) // end of jquery document ready
@@ -1144,7 +1125,7 @@ function device_configure(device){
     if (DEVICE_MODULE) {
         device_dialog.loadConfig(device_templates, device);
     } else {
-        alert("Please install the device module to enable this feature");
+        alert(_("Please install the device module to enable this feature"));
     }
 };
 
@@ -1348,10 +1329,8 @@ $("#save-processlist").click(function (){
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
 // debouncing causes odd rendering during resize - run this at all resize points...
-var resize_timeout = 0;
-$(window).on("resize",function() {
-    clearTimeout(resize_timeout)
-    resize_timeout = setTimeout(resize_view,40);
+$(window).on("window.resized",function() {
+    draw_devices();
 });
 
 
@@ -1446,9 +1425,10 @@ $(function(){
         // cache state in cookie
         if(!firstLoad) {
             nodes_display[event.target.dataset.node] = event.type === 'show';
-            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+            //docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
             firstLoad = false;
         }
         console.log(event.target.dataset.node,nodes_display)
     })
 })
+

@@ -85,6 +85,10 @@ function input_controller()
         } else if ($route->action == "cleanprocesslistfeeds") {
             $route->format = 'text';
             return $input->clean_processlist_feeds($process,$session['userid']);
+        } else if ($route->action == "set-node-input-descriptions") {
+            if (isset($_GET['node']) && isset($_GET['names'])) {
+                 return $input->set_node_input_descriptions($session['userid'],$_GET['node'],$_GET['names']);
+            }
         }
         else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
@@ -123,11 +127,6 @@ function input_controller()
                 'device_module' => $device_module,
                 'feedviewpath' => $settings['interface']['feedviewpath']
             ));
-        }    
-        else if ($device && $route->action == 'schedule') {
-            $route->format = "html";
-            textdomain("messages");
-            return view("Modules/input/Views/schedule.php", array());
         }
     }
     

@@ -9,9 +9,8 @@
     http://openenergymonitor.org
     */
 
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
-    
-    
     
 ?>
 
@@ -69,6 +68,10 @@
 
     var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
+    var backgroundColour = urlParams.colourbg;
+    if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+    $("body").css("background-color","#"+backgroundColour);
 
     var units = urlParams.units;
     if (units==undefined || units=='') units = "";

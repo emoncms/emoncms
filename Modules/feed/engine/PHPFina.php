@@ -319,18 +319,22 @@ class PHPFina implements engine_methods
         }
         $this->log->warn("scale_range() : going to write $nbwrites values from address $pos_start to $pos_end");
         
-        //fetch the values to process
-        fseek($fh,$pos_start);
-        $values=unpack("f$nbwrites",fread($fh,4*$nbwrites));
-        //print_r($values);
-        
         //create a buffer with the processed values
         $buffer="";
-        for($i=1;$i<=$nbwrites;$i++) {
-            if($scale==NAN) $val=NAN;
-            else if($scale=="abs(x)") $val=abs($values[$i]);
-            else $val=$values[$i]*$scale;
-            $buffer.=pack("f",$val);
+        if ($scale==0 || $scale==NAN) {
+             $this->log->warn("scale is $scale");
+             for($i=1;$i<=$nbwrites;$i++) $buffer.=pack("f",$scale);
+             fseek($fh,$pos_start);
+        } else {
+             //fetch the values to process
+             fseek($fh,$pos_start);
+             $values=unpack("f$nbwrites",fread($fh,4*$nbwrites));
+             //print_r($values);
+             for($i=1;$i<=$nbwrites;$i++) {
+                 if ($scale=="abs(x)") {$val=abs($values[$i]);}
+                 else {$val=$values[$i]*$scale;}
+                 $buffer.=pack("f",$val);
+             }
         }
         
         //write the processed buffer to the dat file

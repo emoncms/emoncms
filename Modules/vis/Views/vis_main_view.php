@@ -186,6 +186,20 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
         options_html += "<select class='options' id='"+box_options[z][0]+"'><option value='0'" + (box_options[z][3] == 0 ? " selected" : "") + "><?php echo dgettext('vis_messages','Off');?></option><option value='1'" + (box_options[z][3] == 1 ? " selected" : "") + "><?php echo dgettext('vis_messages','On');?></option></select>";
       } else if (type == 9)  { // colour
         options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
+      } else if (type == 8)  {
+        //added by Alexandre CUER - for psychrographic diagrams
+        multigraphs_name = [];
+        multigraphs = multigraph.getlist();
+        var options = "";
+        for (indice in multigraphs) {
+            multigraphs_name[multigraphs[indice]['id']] = multigraphs[indice]['name'];
+            options +="<option value='"+multigraphs[indice]['id']+"'>"+multigraphs[indice]['id']+": "+multigraphs[indice]['name']+"</option>";
+        }
+        var out = "<option>create a multigraph with a Temp. feed and a RH feed</div>";
+        if (options){
+            out = "<option>Select multigraph:</option>"+options;
+        }
+        options_html += "<select class='options' id='mid'>"+out+"</select>";
       } else {
         options_html += "<input type='text' class='options' id='"+box_options[z][0]+"' value='"+box_options[z][3]+"'>";
       }
@@ -230,7 +244,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     if (width < 320) width = 320;
     var height = width * 0.5625;
     var vistype = $("#visselect").val();
-    if (vistype == "compare") height = height * 3;
+    if (vistype == "compare" || vistype == "psychrograph") height = height * 3;
     $("#vis_bound").width(width);
     $("#vis_bound").height(height);
     $("#visiframe").width(width);

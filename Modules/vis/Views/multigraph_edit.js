@@ -13,6 +13,7 @@ var movingtime = false;
 var showtag = true;
 var autorefresh = 0;
 var showlegend = true;
+var backgroundColour = "";
 var ymin = "auto";
 var ymax = "auto";
 var y2min = "auto";
@@ -90,6 +91,12 @@ function drawMultigraphFeedlistEditor(){
         showlegend = multigraphFeedlist[0]["showlegend"];
       } else {
         showlegend = true;
+      }
+
+      if (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined") {
+        backgroundColour = multigraphFeedlist[0]["backgroundColour"];
+      } else {
+        backgroundColour = "ffffff";
       }
 
       if (typeof multigraphFeedlist[0]["ymin"] !== "undefined" && $.isNumeric(multigraphFeedlist[0]["ymin"])) {
@@ -255,6 +262,12 @@ function drawMultigraphFeedlistEditor(){
     out += "<td></td>";
     out += "<td></td>";
     out += "<td></td></tr>";
+    // Background colour
+    out += "<tr><td>"+_Tr_Vis("Background colour")+"</td>";
+    out += "<td><input id='backgroundColour' type='color' style='width:110px; margin-bottom:0px' value='#"+backgroundColour+"' /></td>";
+    out += "<td></td>";
+    out += "<td></td>";
+    out += "<td></td></tr>";
   }
 
   out += "</table>";
@@ -406,6 +419,17 @@ function loadEvents(){
   });
   // This only fires when the user either deselects the lineColour text-box, or hits enter
   $(baseElement).on("change","#lineColour",function(event){
+    visFeedData();
+    modified();
+  });
+
+  // Event for every change event in the backgroundColour input for each line in the plot.
+  $(baseElement).on("input","#backgroundColour",function(event){
+    multigraphFeedlist[0]["backgroundColour"] = $(this)[0].value.replace("#","");
+    modified();
+  });
+  // This only fires when the user either deselects the backgroundColour text-box, or hits enter
+  $(baseElement).on("change","#backgroundColour",function(event){
     visFeedData();
     modified();
   });

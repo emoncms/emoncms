@@ -1,0 +1,280 @@
+/* -------------------------------------- */
+
+.menu-top {
+  height:46px;
+  width:100%;
+  z-index:1001;
+  position:fixed;
+  top:0px;
+  background-color:var(--bg-menu-top);
+}
+
+.menu-l1 ul {
+  list-style:none;
+  margin:0px;
+  padding:0px;
+}
+
+.menu-l1 li {
+  display: inline-block;
+}
+
+.menu-l1 li a {
+  text-decoration: none;
+}
+
+.menu-l1 li div {
+  text-decoration: none;
+  color: #fff;
+
+  height: 24px;
+  padding: 11px 13px 11px 13px;
+  cursor:pointer;
+  font-size:1.5rem;
+}
+
+.menu-l1 li:hover {
+  background-color:var(--bg-menu-top-hover);
+}
+
+.menu-l1 .active {
+  background-color:var(--bg-menu-top-active);
+}
+
+.menu-l1 { float:left; }
+.menu-text-l1 {
+  display:inline-block;
+  font-size:1rem;
+  margin-left:3px;
+  vertical-align: middle;
+}
+
+.menu-tr { float:right; }
+
+.menu-tr ul {
+  list-style:none;
+  margin:0;
+}
+
+.menu-tr li div {
+  text-decoration: none;
+  color: #fff;
+  height: 24px;
+  padding: 11px 13px 11px 13px;
+  cursor:pointer;
+  font-size:1.5rem;
+  background-color:var(--bg-menu-tr);
+}
+
+.menu-tr li div:hover {
+  background-color:var(--bg-menu-tr-hover);
+}
+
+.dropdown-menu svg.icon {
+  fill:#000;
+}
+
+.htop {
+height:46px;
+}
+
+/* -------------------------------------- */
+
+.menu-l2 {
+  width:240px;
+  height: 100%;
+  background-color:var(--bg-l2);
+  display:inline-block;
+  position:fixed;
+  top:0px;
+  z-index:1000;
+  transition: all 0.3s ease-out;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* can also be: thin */
+  -ms-overflow-style: none;
+}
+
+.menu-l2-inner {
+  padding-top:46px;
+  min-height: calc(100vh - 96px);
+}
+
+.menu-title-l2 {
+    text-indent: 1rem;
+    padding: 1em 0 0.75em 0;
+    margin: 0;
+    text-transform: capitalize;
+    color: var(--l2-title);
+    border-bottom: 1px solid var(--l2-border);
+    height:18px;
+}
+
+.menu-l2 ul {
+  list-style:none;
+  margin:0px;
+  padding:0px;
+}
+
+.menu-l2 li {
+  border-bottom: 1px solid var(--l2-border);
+  overflow:hidden;  
+}
+
+.menu-l2 li a {
+text-decoration:none;
+}
+
+.menu-l2 li div {
+  text-decoration: none;
+  color: var(--l2-text);
+  display: block;
+  padding: 0.94rem;
+  cursor:pointer;
+  overflow:hidden;
+
+}
+
+.menu-l2 li div:hover {
+  background-color:var(--bg-l2-hover);
+}
+
+.menu-l2 .active {
+  background-color:var(--bg-l2-active);
+}
+
+.menu-text-l2 {
+  /*display:none;*/
+}
+
+#menu-l2-controls {
+  text-decoration: none;
+  color: var(--l2-text);
+  display: block;
+  cursor:pointer;
+  overflow:hidden;
+}
+
+.ctrl-exp {
+  padding: 15px 110px 15px 110px;
+  transition: all 0.3s ease-out;
+}
+
+.ctrl-min {
+  padding: 15px 17px 15px 17px;
+  transition: all 0.3s ease-out;
+}
+
+#menu-l2-controls:hover {
+  background-color:var(--bg-l2-hover);
+}
+
+/* -------------------------------------- */
+
+.menu-l3 {
+  position:fixed;
+  top:0px;
+  left:50px;
+  width:240px;
+  height:100%;
+  background-color:var(--bg-l3);
+  display:none;
+  z-index:1000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* can also be: thin */
+  -ms-overflow-style: none;
+}
+
+.menu-l3 ul {
+  list-style:none;
+  margin:0px;
+  padding:0px;
+}
+
+.menu-l3 li {
+  border-bottom: 1px solid var(--l3-border);
+  line-height: 20px;
+}
+
+.menu-l3 li a {
+  text-decoration: none;
+  color: var(--l3-text);
+  display: block;
+  padding: 0.94em;
+}
+
+.menu-l3 li a:hover {
+  color: var(--l3-text-hover);
+}
+
+.menu-text-l3 {}
+
+.menu-l3 .active {
+  color: var(--l3-text-active);
+}
+
+.l3-title { 
+  color: var(--l3-title);
+  line-height:30px;
+}
+
+/* -------------------------------------- */
+
+@media (max-width: 1150px) {
+    .menu-l2 {
+        width:50px;
+    }
+}
+
+@media (max-width: 576px) {
+    .menu-l2 li div {
+      padding: 14px 17px 14px 17px;
+    }
+}
+
+/* -------------------------------------------------------------------
+Gravatar icon in toolbar
+--------------------------------------------------------------------*/
+
+a.grav-container img.grav {
+  max-height: 1.2em;
+}
+a.grav-container img.grav {
+  border: 2px solid #ccc;
+}
+a.grav-container:hover img.grav {
+  border-color: #dedede;
+}
+.no-gravitar a.grav-container {
+  border-radius: 50%;
+  background: #c5c5c5;
+  width: 1.36em;
+  height: 1.36em;
+  line-height: 1.37em;
+  border: 2px solid #ccc;
+  overflow: hidden;
+  margin: 0.2em;
+  font-size:1.5rem;
+}
+
+.no-gravitar a.grav-container:hover {
+  background: none;
+}
+
+.no-gravitar a.grav-container .icon.user {
+  font-size: 1.66em;
+  margin: 0 -.1em;
+}
+
+.gravitar a.grav-container {
+  border-radius: 50%;
+  overflow: hidden;
+  padding: 6px;
+  font-size:1.5rem;
+}
+
+.gravitar a.grav-container:hover {
+	background: var(--bg-menu-top-hover);
+}
+

@@ -16,7 +16,6 @@ You can make a direct directory copy of the /var/lib/mysql/emoncms folder if the
 
 Make a backup copy of the feed data folders on your system, the default locations on linux are:
 
-    /var/lib/phpfiwa
     /var/lib/phpfina
     /var/lib/phptimeseries
 

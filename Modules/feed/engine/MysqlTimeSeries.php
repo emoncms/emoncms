@@ -784,10 +784,7 @@ class MysqlTimeSeries implements engine_methods
         return $name;
     }
 
-
-// #### \/ Bellow are engine private methods
-
-    private function get_table($feedid, $field=null)
+    public function get_table($feedid, $field=null)
     {
         if ($this->generic) {
             $table = array(
@@ -824,6 +821,8 @@ class MysqlTimeSeries implements engine_methods
         }
         return $table;
     }
+
+// #### \/ Bellow are engine private methods
 
     private function get_data_type($feedid)
     {

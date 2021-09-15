@@ -1,5 +1,7 @@
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings;
+    $v=1;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
@@ -9,7 +11,7 @@
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
-<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script>
 
 /**
@@ -63,25 +65,22 @@ function translate(property) {
 </script>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 
 <style>
 body{padding:0!important}
-.container-fluid { padding: 0px 10px 0px 10px; }
 
-
-#footer {
-    margin-left: 0px;
-    margin-right: 0px;
+#table {
+    margin-top:3rem
 }
-.navbar-fixed-top {
+#footer {
     margin-left: 0px;
     margin-right: 0px;
 }
@@ -105,10 +104,6 @@ body{padding:0!important}
 }
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
-@media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
-}
-
 
 .node .accordion-toggle{
     border-bottom: 1px solid white;
@@ -160,7 +155,7 @@ body{padding:0!important}
     <h3><?php echo _('Feeds'); ?></h3>
 </div>
 
-<div id="controls-buttons" class="controls hide" data-spy="affix" data-offset-top="100">
+<div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
@@ -392,16 +387,12 @@ var feeds = {};
 var nodes = {};
 var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
-var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
-var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
-
-
-// Process list UI js
-processlist_ui.init(1); // virtual feed load before try to display
+var nodes_display = {};
+var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
 // auto refresh
 update_feed_list();
-updaterStart(update_feed_list, 5000);
+setInterval(update_feed_list,5000);
 
 var firstLoad = true;
 function update_feed_list() {
@@ -415,14 +406,13 @@ function update_feed_list() {
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
+            //$("#feed-header").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
-	    $("#controls-buttons").hide();
-	    
         } else {
+            //$("#feed-header").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
-	    $("#controls-buttons").show();
         }
         feeds = {};
         for (var z in data) feeds[data[z].id] = data[z];
@@ -441,7 +431,7 @@ function update_feed_list() {
             }
         }
         // cache state in cookie
-        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+        // if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
         var out = "";
         
@@ -472,10 +462,10 @@ function update_feed_list() {
             out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
-            out += '      <h5 class="name" data-col="A">'+node+'</h5>';
+            out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
-            out += '      <div class="engine" data-col="H"></div>';
-            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="engine" data-col="G"></div>';
+            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size[node])+'</div>';
             out += '      <div class="processlist" data-col="F"></div>';
             out += '      <div class="node-feed-right pull-right">';
             out += '        <div class="value" data-col="C"></div>';
@@ -521,8 +511,8 @@ function update_feed_list() {
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="H">'+feed_engines[feed.engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
@@ -549,7 +539,6 @@ function update_feed_list() {
         } // end of for loop
     }); // end of ajax callback
 }// end of update_feed_list() function
-
 
 // stop checkbox form opening graph view
 $("#table").on("click",".tbody .select",function(e) {
@@ -1000,7 +989,6 @@ function isSelectionValidForTrim(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
@@ -1117,7 +1105,7 @@ function enableTrim(start_time){
                     }
                     $("#feedDelete-loader").stop().fadeOut();
                     update_feed_list();
-                    //updaterStart(update_feed_list, 5000);
+                    updaterStart(update_feed_list, 5000);
                 }
             }
         });
@@ -1147,8 +1135,6 @@ $(".feed-delete").click(function(){
     $('#feedDeleteModal #deleteVirtualFeedText').hide();
     $('#feedDeleteModal').modal('show'); //show the delete modal
 
-    //updaterStart(update_feed_list, 0); // Disable when entering modal, need to find a triger to reenable on close...
-
     // get the list of input processlists that write to feeds
     let feed_processes = getFeedProcess();
     let selected_feeds_inputs = {};
@@ -1174,7 +1160,6 @@ function isSelectionValidForClear(){
         const GRAPHITE = 3;      // Not included in core
         const PHPTIMESTORE = 4;  // Depreciated
         const PHPFINA = 5;
-        const PHPFIWA = 6;
         const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
         const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
@@ -1224,7 +1209,7 @@ function enableClear(){
                 }
                 $("#feedDelete-loader").stop().fadeOut();
                 update_feed_list();
-                //updaterStart(update_feed_list, 5000);
+                updaterStart(update_feed_list, 5000);
             }
         });
 }
@@ -1249,7 +1234,7 @@ $("#feedDelete-confirm").click(function(){
         
         setTimeout(function() {
             update_feed_list();
-            //updaterStart(update_feed_list, 5000);
+            updaterStart(update_feed_list, 5000);
             $('#feedDeleteModal').modal('hide');
             feed_selection();
         }, 5000);
@@ -1321,6 +1306,8 @@ $("#newfeed-save").click(function (){
     }
 });
 
+// Process list UI js
+processlist_ui.init(1); // is virtual feed
 
 $(".feed-process").click(function() {
     // There should only ever be one feed that is selected here:
@@ -1461,3 +1448,4 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 </script>
+

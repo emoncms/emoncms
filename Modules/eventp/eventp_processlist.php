@@ -151,7 +151,7 @@ class Eventp_ProcessList
                 $this->parentProcessModel->proc_skip_next = true;
             } else {
                 $redis->set($redispath, $timenow);
-                $redis->setTimeout($redispath, $ttl); // removed in $ttl seconds.
+                $redis->expire($redispath, $ttl); // removed in $ttl seconds.
             }
         }
         return $value;
@@ -167,7 +167,7 @@ class Eventp_ProcessList
             if (!$redis->exists($redispath)) {
                 $this->parentProcessModel->proc_skip_next = true;
                 $redis->set($redispath, $timenow);
-                $redis->setTimeout($redispath, $ttl); // removed in $ttl seconds.
+                $redis->expire($redispath, $ttl); // removed in $ttl seconds.
             }
         }
         return $value;

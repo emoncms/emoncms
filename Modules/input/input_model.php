@@ -171,6 +171,43 @@ class Input
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
     }
+    
+    public function set_node_input_descriptions($userid,$nodeid,$names)
+    {
+        $names = explode(",",$names);
+        foreach ($names as $name) {
+            if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in input description');
+        }
+        
+        $userid = (int) $userid;
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        
+        $stmt = $this->mysqli->prepare("SELECT id,name FROM input WHERE userid=? AND nodeid=? ORDER BY id ASC");
+        $stmt->bind_param("is",$userid,$nodeid);
+        $stmt->execute();
+        $stmt->bind_result($id,$name);
+        
+        $descriptions_by_id = array();
+        $index = 0;
+        while ($result = $stmt->fetch()) {
+            if (isset($names[$index])) {
+                $descriptions_by_id[$id] = $names[$index];
+            }
+            $index++;
+        }
+        $stmt->close();
+        
+        foreach ($descriptions_by_id as $id=>$description) {
+            $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
+            $stmt->bind_param("si",$description,$id);
+            $stmt->execute();
+            $stmt->close();
+            
+            if ($this->redis) $this->redis->hset("input:$id",'description',$description);
+        }
+        return array('success'=>true, 'message'=>'input descriptions updated');
+    }    
+
 
     // -----------------------------------------------------------------------------------------
     // get_inputs, returns user inputs by node name and input name
