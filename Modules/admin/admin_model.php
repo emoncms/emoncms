@@ -245,7 +245,6 @@ class Admin {
                       "name"=>ucfirst(isset($json->name)?$json->name:$name),
                       "version"=>$json->version,
                       "path"=>$emoncms_path,
-                      "location"=>isset($json->location)?$json->location:$emoncms_path,
                       "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                       "requires"=>isset($json->requires)?$json->requires:array()
                   );
@@ -271,7 +270,6 @@ class Admin {
                                   "name"=>ucfirst(isset($json->name)?$json->name:$name),
                                   "version"=>$json->version,
                                   "path"=>$module_fullpath,
-                                  "location"=>isset($json->location)?$json->location:$path,
                                   "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                                   "requires"=>isset($json->requires)?$json->requires:array()
                               );

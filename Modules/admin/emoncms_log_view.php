@@ -19,40 +19,48 @@
             } ?></p>
         </div>
         <div>
-            <?php if(is_writable($emoncms_logfile)) { ?>
-                <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
-                    <?php echo _('Auto refresh'); ?>
-                </button>
-                <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
-                <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+        <?php if(is_writable($emoncms_logfile)) { ?>
+            <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
+                <?php echo _('Auto refresh'); ?>
+            </button>
+            <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
+            <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+
+            <?php if (isset($path_to_config) && is_writable($path_to_config)) { ?>
+                <div class="btn-group">
+                    <button class="btn btn-inverse mb-1 dropdown-toggle" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
+                        <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <?php foreach ($log_levels as $key=>$value) {
+                            $active = $key === $log_level ? ' active':'';
+                            printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
+                        }?>
+                    </ul>
+                </div>
+            <?php } else { ?>
+                <div class="btn-group">
+                    <button class="btn btn-inverse mb-1">
+                        <?php echo sprintf('Log Level: %s', $log_level_label) ?>
+                    </button>
+                </div>
             <?php } ?>
-        </div>
+
+        <?php } ?>
+        </div>  
     </section>
     
     <section>
         <pre id="logreply-bound" class="log" style="height:520px"><div id="logreply"></div></pre>
-        <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
-        <div id="log-level" class="dropup btn-group">
-            <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
-            <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
-            <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-                <?php foreach ($log_levels as $key=>$value) {
-                    $active = $key === $log_level ? ' active':'';
-                    printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
-                }?>
-
-            </ul>
-        </div>
-        <?php } else { ?>
-            <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase">
-                <?php echo sprintf('Log Level: %s', $log_level_label) ?>
-            </span>
-        <?php } ?>
     </section>
     
-    <?php } ?>
+    <?php 
+        } else {
+            echo _('Logging is disabled in settings.');
+        }
+    ?>
+    
     
 </div>
 <div id="snackbar" class=""></div>
@@ -108,7 +116,7 @@ $("#getlog").click(function() {
     if ($this.is('.active')) {
         clearInterval(emoncms_log_interval);
     } else {
-        emoncms_log_interval = refresherStart(getLog, 500); 
+        emoncms_log_interval = refresherStart(getLog, 1000); 
     }
 });
 function copyTextToClipboard(text, message) {

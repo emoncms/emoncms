@@ -27,9 +27,6 @@ $sidebarFixed = true;
 
 require "Lib/EmonLogger.php";
 $log = new EmonLogger(__FILE__);
-if (isset($_GET['q'])) {
-    $log->info($_GET['q']);
-}
 
 // 2) Database
 if ($settings['redis']['enabled']) {
