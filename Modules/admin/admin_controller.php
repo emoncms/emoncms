@@ -333,7 +333,7 @@ function admin_controller()
         }
         
         $script = "/opt/openenergymonitor/EmonScripts/update/update_component.sh";
-        if (!$redis) return "need redis to run";
+        if (!$redis) return "Redis not enabled";
         $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
         return "cmd sent";
     }
@@ -353,7 +353,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return "invalid branch";
         
         $script = "/opt/openenergymonitor/EmonScripts/update/update_all_components.sh";
-        if (!$redis) return "need redis to run";
+        if (!$redis) return "Redis not enabled";
         $redis->rpush("service-runner","$script $branch>$update_logfile");
         return "cmd sent";
     }
