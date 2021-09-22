@@ -30,7 +30,7 @@
     </section>
     
     <section>
-        <pre id="logreply-bound" class="log" style="height:520px"><div id="logreply"></div></pre>
+        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
         <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
             <?php echo sprintf('Log Level: %s', $log_level_label) ?>
         </span>
