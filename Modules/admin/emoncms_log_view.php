@@ -31,25 +31,9 @@
     
     <section>
         <pre id="logreply-bound" class="log" style="height:520px"><div id="logreply"></div></pre>
-        <?php if(isset($path_to_config) && is_writable($path_to_config)) { ?>
-        <div id="log-level" class="dropup btn-group">
-            <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
-            <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
-            <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-right">
-                <?php foreach ($log_levels as $key=>$value) {
-                    $active = $key === $log_level ? ' active':'';
-                    printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
-                }?>
-
-            </ul>
-        </div>
-        <?php } else { ?>
-            <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase">
-                <?php echo sprintf('Log Level: %s', $log_level_label) ?>
-            </span>
-        <?php } ?>
+        <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
+            <?php echo sprintf('Log Level: %s', $log_level_label) ?>
+        </span>
     </section>
     
     <?php } ?>
