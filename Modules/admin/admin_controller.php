@@ -303,8 +303,9 @@ function admin_controller()
     
     if ($route->action == 'components-available' && $session['write']) {
         $route->format = "json";
-        if (file_exists("/opt/openenergymonitor/EmonScripts/components_available.json")) {
-            return json_decode(file_get_contents("/opt/openenergymonitor/EmonScripts/components_available.json"));
+        $localfile = "/opt/openenergymonitor/EmonScripts/components_available.json";
+        if (file_exists($localfile)) {
+            return json_decode(file_get_contents($localfile));
         }
         else if ($response = file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
             return json_decode($response);

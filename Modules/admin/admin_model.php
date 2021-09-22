@@ -58,21 +58,21 @@ class Admin {
             if (!is_null($system['services'][$key])) {    // If the service was found on this system
                 
                 // Populate service status fields
-            	$services[$key] = array(
+                $services[$key] = array(
                     'state' => ucfirst($value['ActiveState']),
                     'text' => ucfirst($value['SubState']),
                     'running' => $value['SubState']==='running'
                 );
-            	
-            	// Set 'cssClass' based on service's configuration and current status
-            	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
-            		$services[$key]['cssClass'] = 'masked';
-            		$services[$key]['text'] = 'Masked';
-            	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
-            		$services[$key]['cssClass'] = 'success';
-            	} else {                                       // Assume service is in danger
-            		$services[$key]['cssClass'] = 'danger';
-            	}
+                
+                // Set 'cssClass' based on service's configuration and current status
+                if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+                    $services[$key]['cssClass'] = 'masked';
+                    $services[$key]['text'] = 'Masked';
+                } elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+                    $services[$key]['cssClass'] = 'success';
+                } else {                                       // Assume service is in danger
+                    $services[$key]['cssClass'] = 'danger';
+                }
             }
         }
         // add custom messages for feedwriter service
@@ -131,10 +131,10 @@ class Admin {
         if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
             $return = null;
         } else if (
-        		isset($status["ActiveState"]) &&
-        		isset($status["SubState"]) &&
-        		isset($status["LoadState"])
-        		) {
+                isset($status["ActiveState"]) &&
+                isset($status["SubState"]) &&
+                isset($status["LoadState"])
+                ) {
             return array(
                 'ActiveState' => $status["ActiveState"],
                 'SubState' => $status["SubState"],
@@ -244,7 +244,8 @@ class Admin {
                   $components[$name] = array(
                       "name"=>ucfirst(isset($json->name)?$json->name:$name),
                       "version"=>$json->version,
-                      "path"=>$emoncms_path,
+                      "path"=>$emoncms_path,                                                    // Where it's currently installed
+                      "target_location"=>isset($json->location)?$json->location:$emoncms_path,  // Where to install new modules
                       "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                       "requires"=>isset($json->requires)?$json->requires:array()
                   );
@@ -269,7 +270,8 @@ class Admin {
                               $components[$name] = array(
                                   "name"=>ucfirst(isset($json->name)?$json->name:$name),
                                   "version"=>$json->version,
-                                  "path"=>$module_fullpath,
+                                  "path"=>$module_fullpath,                                         // Where it's currently installed
+                                  "target_location"=>isset($json->location)?$json->location:$path,  // Where to install new modules
                                   "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                                   "requires"=>isset($json->requires)?$json->requires:array()
                               );

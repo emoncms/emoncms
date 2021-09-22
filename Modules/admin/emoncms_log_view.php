@@ -25,34 +25,36 @@
             </button>
             <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
             <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
-
-            <?php if (isset($path_to_config) && is_writable($path_to_config)) { ?>
-                <div class="btn-group">
-                    <button class="btn btn-inverse mb-1 dropdown-toggle" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
-                        <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
-                        <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <?php foreach ($log_levels as $key=>$value) {
-                            $active = $key === $log_level ? ' active':'';
-                            printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
-                        }?>
-                    </ul>
-                </div>
-            <?php } else { ?>
-                <div class="btn-group">
-                    <button class="btn btn-inverse mb-1">
-                        <?php echo sprintf('Log Level: %s', $log_level_label) ?>
-                    </button>
-                </div>
-            <?php } ?>
-
         <?php } ?>
         </div>  
     </section>
     
     <section>
         <pre id="logreply-bound" class="log" style="height:520px"><div id="logreply"></div></pre>
+            <?php if (isset($path_to_config) && is_writable($path_to_config)) { ?>
+                <div class="text-right"> 
+                    <div class="btn-group">
+                        <button class="btn btn-inverse mb-1 dropdown-toggle" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
+                            <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <?php foreach ($log_levels as $key=>$value) {
+                                $active = $key === $log_level ? ' active':'';
+                                printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
+                            }?>
+                        </ul>
+                    </div>
+                </div>
+            <?php } else { ?>
+                <div class="text-right"> 
+                    <div class="btn-group">
+                        <button class="btn btn-inverse mb-1">
+                            <?php echo sprintf('Log Level: %s', $log_level_label) ?>
+                        </button>
+                    </div>
+                </div>
+            <?php } ?>
     </section>
     
     <?php 
