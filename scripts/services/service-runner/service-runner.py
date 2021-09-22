@@ -11,6 +11,7 @@ import subprocess
 import time
 import shlex
 import redis
+import os
 
 KEYS = ["service-runner", "emoncms:service-runner"]
 
