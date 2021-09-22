@@ -14,11 +14,19 @@ import redis
 
 KEYS = ["service-runner", "emoncms:service-runner"]
 
+def getEnv(key, fallback):
+    value = os.environ.get(key)
+    if value is not None:
+        return value
+    return fallback
+
+REDIS_HOST = getEnv('REDIS_HOST','localhost')
+REDIS_PORT = getEnv('REDIS_PORT', 6379)
 
 def connect_redis():
     while True:
         try:
-            server = redis.Redis()
+            server = redis.Redis(host=REDIS_HOST,port=REDIS_PORT)
             if server.ping():
                 print("Connected to redis server", flush=True)
                 return server
