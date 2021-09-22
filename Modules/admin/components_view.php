@@ -28,10 +28,16 @@
       <th></th>
     </tr>
     <tr v-for="item, key in components">
-      <td>{{ item.name }}<br><span style="font-size:12px"><b><?php echo _('Location:'); ?></b> {{ item.location }}</span><br><span style="font-size:12px"><b><?php echo _('URL:'); ?></b> <a :href="item.url">{{ item.url }}</a></span></td>
+      <td>{{ item.name }}<br>
+        <span style="font-size:12px"><b><?php echo _('URL:'); ?></b> <a :href="item.url">{{ item.url }}</a></span><br>
+        <span style="font-size:12px"><b><?php echo _('Installed path:'); ?></b> {{ item.path }}</span>
+      </td>
       <td>{{ item.version }}</td>
       <td>{{ item.describe }}</td>
-      <td><span v-if="item.local_changes!=''" :title="item.local_changes" class="label label-important"><?php echo _('Yes'); ?></span><span class="label label-success" v-else><?php echo _('No'); ?></span></td>
+      <td>
+        <span v-if="item.local_changes!=''" :title="item.local_changes" class="label label-important"><?php echo _('Yes'); ?></span>
+        <span class="label label-success" v-else><?php echo _('No'); ?></span>
+      </td>
       <td v-if="item.local_changes==''">
         <select v-model="item.branch" @change="switch_branch(key)">
           <option v-for="branch in item.branches_available">{{ branch }}</option>
@@ -45,10 +51,8 @@
 
 </div>
 
-<a href="<?php echo $path; ?>admin/view" class="btn btn-info"><?php echo _('Return to Administration Page'); ?></a>
 
 <script>
-
 var components = <?php echo json_encode($components); ?>;
 
 var app = new Vue({

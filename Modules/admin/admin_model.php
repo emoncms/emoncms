@@ -649,3 +649,4 @@ class Admin {
         return $output;
     }
 }
+
