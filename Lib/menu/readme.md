@@ -1,3 +1,9 @@
+Over time, Emoncms is in the process to use its own dedicated css/javascript framework. The navigation menu is one major block of this custom approach.
+
+Below are the essential instructions to deal with the navigation menu inside emoncms.
+
+To focus on the menu component as a framework, a small piece of code is available [here](http://github.com/alexandrecuer/frontend), with a [live static demo](http://alexandrecuer.github.io/frontend) .  
+
 # Emoncms Menu System
 
 The Emoncms menu system is primarily drawn on the client side using javascript, from a menu object collated from individual module *modulename_menu.php* files.

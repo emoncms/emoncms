@@ -59,6 +59,10 @@ listItem;
 
 <div class="admin-container" style="margin-top:10px">
 
+<?php if (PHP_VERSION_ID<70300) { ?>
+<div class="alert alert-error" style="text-align:left"><b>Important:</b> PHP version <?php echo phpversion(); ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
+<?php } ?>
+
     <?php 
     // SERVER INFO
     // -------------------

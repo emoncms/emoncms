@@ -146,6 +146,7 @@ class User
         // session_set_cookie_params(20);
         
         $cookie_params = session_get_cookie_params();
+
         //name of cookie 
         session_name('EMONCMS_SESSID'); 
         //get subdir installation 
@@ -161,7 +162,18 @@ class User
             $cookie_params['secure'] = true;
         }
         
-        session_set_cookie_params($cookie_params);
+        if (PHP_VERSION_ID>=70300) {
+            session_set_cookie_params($cookie_params);
+        } else {
+            session_set_cookie_params(
+                $cookie_params['lifetime'],
+                $cookie_params['path'],
+                $cookie_params['domain'],
+                $cookie_params['secure'],
+                $cookie_params['httponly']
+            );
+        }
+        
         session_start();
 
         if ($this->enable_rememberme)

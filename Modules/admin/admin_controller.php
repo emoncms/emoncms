@@ -210,7 +210,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------       
     if ($route->action == 'update-start') {
         $route->format = "text";
-        if (!$redis) return "redis not running";
+        if (!$redis) return "Redis not enabled";
         if (!isset($_POST['type'])) return "missing parameter: type";
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
         if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
@@ -237,7 +237,7 @@ function admin_controller()
     
     if ($route->action == 'update-firmware') {
         $route->format = "text";
-        if (!$redis) return "redis not running";
+        if (!$redis) return "Redis not enabled";
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
         if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
 
@@ -305,7 +305,11 @@ function admin_controller()
         $route->format = "json";
         if (file_exists("/opt/openenergymonitor/EmonScripts/components_available.json")) {
             return json_decode(file_get_contents("/opt/openenergymonitor/EmonScripts/components_available.json"));
-        } else {
+        }
+        else if ($response = file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
+            return json_decode($response);
+        }
+        else {
             return false;
         }
     }
@@ -329,6 +333,7 @@ function admin_controller()
         }
         
         $script = "/opt/openenergymonitor/EmonScripts/update/update_component.sh";
+        if (!$redis) return "Redis not enabled";
         $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
         return "cmd sent";
     }
@@ -348,6 +353,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return "invalid branch";
         
         $script = "/opt/openenergymonitor/EmonScripts/update/update_all_components.sh";
+        if (!$redis) return "Redis not enabled";
         $redis->rpush("service-runner","$script $branch>$update_logfile");
         return "cmd sent";
     }
