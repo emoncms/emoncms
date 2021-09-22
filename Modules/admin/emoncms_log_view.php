@@ -30,7 +30,7 @@
     </section>
     
     <section>
-        <pre id="logreply-bound" class="log" style="height:520px"><div id="logreply"></div></pre>
+        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
             <?php if (isset($path_to_config) && is_writable($path_to_config)) { ?>
                 <div class="text-right"> 
                     <div class="btn-group">
