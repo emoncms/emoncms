@@ -135,11 +135,12 @@ listItem;
             ?>
             
         </dl>
-
+        <?php if ($redis_enabled) { ?>
         <div class="input-prepend" style="float:right; padding-top:5px">
             <span class="add-on"><?php echo _('Write Load Period'); ?></span>
             <button id="resetwriteload" class="btn btn-info"><?php echo _('Reset'); ?></button>
         </div>
+        <?php } ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
         <br>
         

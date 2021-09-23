@@ -422,6 +422,12 @@ class Admin {
 
                   }
                 }
+              } else {
+                $writeloadkb = 0;
+                if ($writeloadkb = Admin::exec("iostat -d -k $filesystem | awk 'NR == 5 { print val } {val=$4}'")) {
+                    $writeload = round($writeloadkb * 1024); // bytes
+                    $writeloadtime = 1; // 1 second
+                }
               }
               $partitions[$partition]['WriteLoad']['value'] = $writeload;
               $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
@@ -617,14 +623,16 @@ class Admin {
 
                     $writeloadstr = "n/a";
                     if ($writeLoadTime) {
-                        $days = floor($writeLoadTime / 86400);
-                        $hours = floor(($writeLoadTime - ($days*86400))/3600);
-                        $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
-
-                        $writeloadstr = $this->formatSize($writeLoad)."/s (";
-                        if ($days) $writeloadstr .= $days." days ";
-                        if ($hours) $writeloadstr .= $hours." hours ";
-                        $writeloadstr .= $mins." mins)";
+                        $writeloadstr = $this->formatSize($writeLoad)."/s";
+                        if ($writeLoadTime > 1) {
+                            $days = floor($writeLoadTime / 86400);
+                            $hours = floor(($writeLoadTime - ($days*86400))/3600);
+                            $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
+                            $writeloadstr .= " (";
+                            if ($days) $writeloadstr .= $days." days ";
+                            if ($hours) $writeloadstr .= $hours." hours ";
+                            $writeloadstr .= $mins." mins)";
+                        }
                     }
 
                     $mounts[] = array(
