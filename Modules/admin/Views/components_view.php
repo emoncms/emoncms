@@ -5,20 +5,19 @@
 
 <p><?php echo _('Selectively update system components or switch between branches'); ?></p>
 
-<pre id="update-log-bound" class="log" style="display:none"><div id="update-log"></div></pre>
+<pre id="update-log-bound" class="log" style="display:none; margin-bottom:10px"><div id="update-log"></div></pre>
 
 <div id="app">
+    <div class="input-prepend input-append">
+        <span class="add-on"><?php echo _('Update or switch all components to'); ?></span>
+        <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
+        <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
+        <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
+        <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
+        <button v-if="all_custom" class="btn" @click="all('custom')">Switch</button>
+    </div>
 
-<div class="input-prepend input-append">
-    <span class="add-on"><?php echo _('Update or switch all components to'); ?></span>
-    <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
-    <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
-    <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
-    <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
-    <button v-if="all_custom" class="btn" @click="all('custom')">Switch</button>
-</div>
-
-  <table class="table table-bordered">
+    <table class="table table-bordered">
     <tr>
       <th><?php echo _('Component name'); ?></th>
       <th><?php echo _('Version'); ?></th>
@@ -46,9 +45,7 @@
       <td v-else>{{ item.branch }}</td>
       <td><button class="btn" v-if="item.local_changes==''" @click="update(key)"><?php echo _('Update'); ?></button></td>
     </tr>
-
-  </table>
-
+    </table>
 </div>
 
 
@@ -82,23 +79,40 @@ var app = new Vue({
 function component_update(name,branch) {
     $.ajax({                                      
         url: path+'admin/component-update',                         
+        async: true, 
         data: "module="+name+"&branch="+branch,
-        dataType: 'text',
+        dataType: 'json',
         success: function(result) {
-            start_update_log(result);
-            log_end = "- component updated"
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  {
+                clearInterval(updates_log_interval);
+                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+                log_end = "- component updated"
+
+            } else {
+                refresh_updateLog(result.message);
+                refresherStart(getUpdateLog, 1000)
+            }
         } 
     });   
 }
 
 function update_all_components(branch) {
     $.ajax({                                      
-        url: path+'admin/components-update-all',                         
+        url: path+'admin/components-update-all',
+        async: true,        
         data: "branch="+branch,
-        dataType: 'text',
+        dataType: 'json',
         success: function(result) { 
-            start_update_log(result);
-            log_end = "- all components updated"
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  {
+                clearInterval(updates_log_interval);
+                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+                log_end = "- all components updated"
+            } else {
+                refresh_updateLog(result.message);
+                refresherStart(getUpdateLog, 1000)
+            }
         } 
     });   
 }
@@ -107,32 +121,54 @@ function update_all_components(branch) {
 // Log window
 // -------------------------------------
 
-var interval = false
+var updates_log_interval = false;
 var log_end = "";
 
-function start_update_log(result) {
-    clearInterval(interval);
-    $("#update-log").html(result);
-    interval = setInterval(update_log,1000);
+// stop updates if interval == 0
+function refresherStart(func, interval){
+    clearInterval(updates_log_interval);
+    updates_log_interval = setInterval(func, interval);
+}
+
+// display content in container and scroll to the bottom
+function output_logfile(result, $container){
+    $container.html(result);
+    scrollable = $container.parent('pre')[0];
+    if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
+}
+
+// push value to updates logfile viewer
+function refresh_updateLog(result){
+    output_logfile(result, $("#update-log"));
     $("#update-log-bound").slideDown();
 }
 
-function update_log() {
-    $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result) {
-        if (result=="Admin re-authentication required") {
-            window.location = "/";
+function getUpdateLog() {
+  $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
+    {
+        var isjson = true;
+        try {
+            data = JSON.parse(result);
+            if (data.reauth == true) { window.location = "/"; }
+            if (data.success == false)  { 
+                clearInterval(updates_log_interval); 
+                refresh_updateLog("<text style='color:red;'>"+ data.message+"</text>");
+            }
+        } catch (e) {
+            isjson = false;
         }
-        $("#update-log").html(result)
-        scrollable = $("#update-log").parent('pre')[0];
-        if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
-        
-        if (result.indexOf(log_end)!=-1) {
-            clearInterval(interval);
-            setTimeout(function() {
-                $("#update-log-bound").slideUp();            
-            },3000);
+        if (isjson == false )     {
+            if (result != "") {
+                if (result.indexOf(log_end)!=-1) {
+                    clearInterval(updates_log_interval);
+                    setTimeout(function() {
+                        $("#update-log-bound").slideUp();            
+                    },3000);
+                }
+            }
         }
-    }});
+    }
+  });
 }
 
 </script>

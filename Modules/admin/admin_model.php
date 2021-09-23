@@ -48,6 +48,9 @@ class Admin {
                 if (file_exists("/dev/ttyUSB$i")) {
                     $ports[] = "ttyUSB$i";
                 }
+                if (file_exists("/dev/ttyS$i")) {
+                    $ports[] = "ttyS$i";
+                }
             } catch (Exception $e) {
                 // no need to do anything here, function will exit with no ports
             }
@@ -60,10 +63,14 @@ class Admin {
 
     public function firmware_available() {
         global $settings;
-        if (file_exists($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json")) {
-            return json_decode(file_get_contents($settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json"));
+        $localfile = $settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json";
+        if (file_exists($localfile)) {
+            return json_decode(file_get_contents($localfile));
         }
-        return array();
+        else if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/firmware_available.json")) {
+            return json_decode($response);
+        }
+        return array('success'=>false, 'message'=>"Can't get firmware available file");
     }
 
     /**
@@ -79,24 +86,24 @@ class Admin {
         $system = $this->system_information();
         
         foreach($system['services'] as $key=>$value) {
-            if (!is_null($system['services'][$key])) {    // If the service was found on this system
+            if (!empty($system['services'][$key])) {    // If the service was found on this system
                 
                 // Populate service status fields
-            	$services[$key] = array(
+                $services[$key] = array(
                     'state' => ucfirst($value['ActiveState']),
                     'text' => ucfirst($value['SubState']),
                     'running' => $value['SubState']==='running'
                 );
-            	
-            	// Set 'cssClass' based on service's configuration and current status
-            	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
-            		$services[$key]['cssClass'] = 'masked';
-            		$services[$key]['text'] = 'Masked';
-            	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
-            		$services[$key]['cssClass'] = 'success';
-            	} else {                                       // Assume service is in danger
-            		$services[$key]['cssClass'] = 'danger';
-            	}
+                
+                // Set 'cssClass' based on service's configuration and current status
+                if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+                    $services[$key]['cssClass'] = 'masked';
+                    $services[$key]['text'] = 'Masked';
+                } elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+                    $services[$key]['cssClass'] = 'success';
+                } else {                                       // Assume service is in danger
+                    $services[$key]['cssClass'] = 'danger';
+                }
             }
         }
         // add custom messages for feedwriter service
@@ -142,11 +149,11 @@ class Admin {
      * get running status of service
      *
      * @param string $name
-     * @return bool|null true == running | false == stopped | null == not installed
+     * @return array | true == running | false == stopped | empty == not installed
      */
     public function getServiceStatus($name) {
         if (!$exec = $this->exec_array('systemctl show '.$name.' | grep State')) {
-            return null;
+            return array();
         }
         $status = array();
 
@@ -155,29 +162,29 @@ class Admin {
             $status[$parts[0]] = $parts[1];
         }
         if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
-            $return = null;
+            $return = array();
         } else if (
-        		isset($status["ActiveState"]) &&
-        		isset($status["SubState"]) &&
-        		isset($status["LoadState"])
-        		) {
+                isset($status["ActiveState"]) &&
+                isset($status["SubState"]) &&
+                isset($status["LoadState"])
+                ) {
             return array(
                 'ActiveState' => $status["ActiveState"],
                 'SubState' => $status["SubState"],
                 'LoadState' => $status["LoadState"]
             );
         } else {
-            $return = null;
+            $return = array();
         }
         return $return;
     }
     
     public function setService($name,$action) {
         global $redis;
-        if (!$redis) return "could not $action service, redis required";
+        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled. Could not $action $name.");
         $script = "/var/www/emoncms/scripts/service-action.sh $name $action";
         $redis->rpush("service-runner","$script");
-        return "service-runner trigger sent for $script";
+        return array('success'=>true, 'message'=>"Service-runner trigger sent for $script");
     }
 
     /**
@@ -254,6 +261,20 @@ class Admin {
                      );
       }
 
+      public function components_available() {
+          global $settings;
+          $localfile = $settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
+          if (file_exists($localfile)) {
+              return json_decode(file_get_contents($localfile));
+          }
+          else if ($response = file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
+              return json_decode($response);
+          }
+          else {
+              return array('success'=>false, 'message'=>"Can't get components available file");
+          }
+      }
+
       public function component_list($git_info=true) 
       {
           global $settings;
@@ -269,8 +290,8 @@ class Admin {
                   $components[$name] = array(
                       "name"=>ucfirst(isset($json->name)?$json->name:$name),
                       "version"=>$json->version,
-                      "path"=>$emoncms_path,
-                      "location"=>isset($json->location)?$json->location:$emoncms_path,
+                      "path"=>$emoncms_path,                                                    // Where it's currently installed
+                      "target_location"=>isset($json->location)?$json->location:$emoncms_path,  // Where to install new modules
                       "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                       "requires"=>isset($json->requires)?$json->requires:array()
                   );
@@ -295,8 +316,8 @@ class Admin {
                               $components[$name] = array(
                                   "name"=>ucfirst(isset($json->name)?$json->name:$name),
                                   "version"=>$json->version,
-                                  "path"=>$module_fullpath,
-                                  "location"=>isset($json->location)?$json->location:$path,
+                                  "path"=>$module_fullpath,                                         // Where it's currently installed
+                                  "target_location"=>isset($json->location)?$json->location:$path,  // Where to install new modules
                                   "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                                   "requires"=>isset($json->requires)?$json->requires:array()
                               );
@@ -324,7 +345,7 @@ class Admin {
           
           return $components;
       }
-      
+
 
       /**
        * return array of mounted partitions

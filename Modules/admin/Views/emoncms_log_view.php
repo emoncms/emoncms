@@ -29,6 +29,20 @@
         </div>
     </section>
     
+	<!--
+    <section>
+        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
+		<div class="text-right"> 
+			<div class="btn-group">
+				<button class="btn btn-inverse mb-1">
+					<?php echo sprintf('Log Level: %s', $log_level_label) ?>
+				</button>
+			</div>
+		</div>
+    </section>
+	bellow is original code that overlaps footer, comment here is my proposal using correct bootstrap syntax
+	-->
+	
     <section>
         <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
         <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
@@ -36,7 +50,12 @@
         </span>
     </section>
     
-    <?php } ?>
+    <?php 
+        } else {
+            echo _('Logging is disabled in settings.');
+        }
+    ?>
+    
     
 </div>
 <div id="snackbar" class=""></div>
@@ -66,12 +85,21 @@ function refresherStart(func, interval){
 
 // push value to emoncms logfile viewer
 function refresh_log(result){
-
-    if (result=="Admin re-authentication required") {
-        window.location = "/";
+    var isjson = true;
+    try {
+        data = JSON.parse(result);
+        if (data.reauth == true) { window.location = "/"; }
+        if (data.success != undefined)  { 
+            clearInterval(emoncms_log_interval);
+            output_logfile("<text style='color:red;'>"+ data.message+"</text>", $("#logreply"));
+        }
+    } catch (e) {
+        isjson = false;
+    }
+    if (isjson == false )     {
+        output_logfile(result, $("#logreply"));
     }
 
-    output_logfile(result, $("#logreply"));
 }
 // display content in container and scroll to the bottom
 function output_logfile(result, $container){
@@ -92,7 +120,7 @@ $("#getlog").click(function() {
     if ($this.is('.active')) {
         clearInterval(emoncms_log_interval);
     } else {
-        emoncms_log_interval = refresherStart(getLog, 500); 
+        emoncms_log_interval = refresherStart(getLog, 1000); 
     }
 });
 function copyTextToClipboard(text, message) {
@@ -130,4 +158,3 @@ function snackbar(text) {
     }, 3000);
 }
 </script>
-

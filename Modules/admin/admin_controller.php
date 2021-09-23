@@ -18,11 +18,7 @@ function admin_controller()
 
     
     if (!$session['write']) {
-        if (in_array($route->action,array('update-log','getlog','serialmonitor'))) {
-            $route->format = 'text';
-            return "Admin re-authentication required";
-        }
-        return array('content'=>'','message'=>'Admin re-authentication required'); 
+        return array('success'=>false, 'content'=>'', 'reauth'=>true, 'message'=>"Admin re-authentication required");
     }
 
     require_once "Modules/admin/admin_model.php";
@@ -142,11 +138,11 @@ function admin_controller()
         $route->format = 'json';
         // Validate service name
         if (!isset($_GET['name'])) {
-            return "missing name parameter";
+            return array('success'=>false, 'message'=>"Missing name parameter");
         }
         $name = $_GET['name'];    
         if (!in_array($name,$admin->get_services_list())) {
-            return "invalid service";
+            return array('success'=>false, 'message'=>"Invalid service");
         }
         
         if ($route->subaction == 'status') return $admin->getServiceStatus("$name.service");
@@ -155,28 +151,28 @@ function admin_controller()
         if ($route->subaction == 'restart') return $admin->setService("$name.service",'restart');
         if ($route->subaction == 'disable') return $admin->setService("$name.service",'disable');
         if ($route->subaction == 'enable') return $admin->setService("$name.service",'enable');
-        return false;
+        return array('success'=>false, 'message'=>"Unknown subaction");
     }
     
     if ($route->action == 'shutdown') {
         $route->format = 'text';
         shell_exec('sudo shutdown -h now 2>&1');
-        return "system halt in progress";
+        return "System halt in progress";
     }
 
     if ($route->action == 'reboot') {
         $route->format = 'text';
         shell_exec('sudo shutdown -r now 2>&1');
-        return "system reboot in progress";
+        return "System reboot in progress";
     }
 
     if ($route->action == 'redisflush') {
         $route->format = 'json';
         if ($redis) {
             $redis->flushDB();
-            return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
+            return array('success'=>true, 'used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
         } else {
-            return false;
+            return array('success'=>false, 'message'=>"Redis not enabled");
         }
     }
 
@@ -187,8 +183,10 @@ function admin_controller()
             $redis->del("diskstats:mmcblk0p2");
             $redis->del("diskstats:mmcblk0p3");
             $redis->del("diskstats:time");
+            return array('success'=>true);
+        } else {
+            return array('success'=>false, 'message'=>"Redis not enabled");
         }
-        return true;
     }
 
     if ($route->action == 'fs') {
@@ -200,54 +198,55 @@ function admin_controller()
                 passthru('rpi-rw');
             }
         }
-        return false;
+        return array('success'=>false, 'message'=>"Missing argument");
     }
 
     // ----------------------------------------------------------------------------------------
     // System update
     // ----------------------------------------------------------------------------------------       
     if ($route->action == 'update-start') {
-        $route->format = "text";
-        if (!$redis) return "Redis not enabled";
-        if (!isset($_POST['type'])) return "missing parameter: type";
-        if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
-        if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
+        $route->format = "json";
+        if (!isset($_POST['type'])) return array('success'=>false,'message'=>"missing parameter: type");
+        if (!isset($_POST['serial_port'])) return array('success'=>false, 'message'=>"missing parameter: serial_port");
+        if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
         
         $type = $_POST['type'];
-        if (!in_array($type,array("all","emoncms"))) return "Invalid update type";
+        if (!in_array($type,array("all","emoncms"))) return array('success'=>false, 'message'=>"Invalid update type");
         
         $serial_port = $_POST['serial_port'];   
-        if (!in_array($serial_port,$admin->listSerialPorts())) return "Invalid serial port";
+        if (!in_array($serial_port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
 
         $firmware_key = $_POST['firmware_key'];        
         $firmware_available = $admin->firmware_available();
-        if (!isset($firmware_available->$firmware_key) && $firmware_key!="none") return "invalid firmware";
+        if (!isset($firmware_available->$firmware_key) && $firmware_key!="none") return array('success'=>false, 'message'=>"invalid firmware");
 
         if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
             $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }        
+        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$update_script $type $firmware_key $serial_port>$update_logfile");
-        return "service-runner trigger sent";
+        return array('success'=>true, 'message'=>"service-runner update-start trigger sent");
     }
     
     if ($route->action == 'update-firmware') {
-        $route->format = "text";
-        if (!$redis) return "Redis not enabled";
-        if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
-        if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
+        $route->format = "json";
+
+        if (!isset($_POST['serial_port'])) return array('success'=>false, 'message'=>"missing parameter: serial_port");
+        if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
 
         $serial_port = $_POST['serial_port'];    
-        if (!in_array($serial_port,$admin->listSerialPorts())) return "Invalid serial port";
+        if (!in_array($serial_port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
         
         $firmware_key = $_POST['firmware_key'];        
         $firmware_available = $admin->firmware_available();
-        if (!isset($firmware_available->$firmware_key)) return "invalid firmware";
+        if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
         
-        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh"; 
+        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
+        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$update_script $serial_port $firmware_key>$update_logfile");
-        return "service-runner trigger sent";
+        return array('success'=>true, 'message'=>"service-runner update-firmware trigger sent");
     }
     
     if ($route->action == 'update-log') {
@@ -263,7 +262,8 @@ function admin_controller()
             return trim(ob_get_clean());
         }
         else {
-            return "$update_logfile does not exist";
+            $route->format = "json";
+            return array('success'=>false, 'message'=>"$update_logfile does not exist");
         }
     }
     
@@ -298,43 +298,35 @@ function admin_controller()
     
     if ($route->action == 'components-available' && $session['write']) {
         $route->format = "json";
-        if (file_exists("/opt/openenergymonitor/EmonScripts/components_available.json")) {
-            return json_decode(file_get_contents("/opt/openenergymonitor/EmonScripts/components_available.json"));
-        }
-        else if ($response = file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
-            return json_decode($response);
-        }
-        else {
-            return false;
-        }
+        return $admin->components_available();
     }
    
     if ($route->action == 'component-update' && $session['write']) {
-        $route->format = "text";
+        $route->format = "json";
              
         $components = $admin->component_list(false);
         
-        if (!isset($_GET['module'])) return "missing module parameter"; else $module = $_GET['module'];
-        if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
-        
-        if (!isset($components[$module])) return "invalid module";
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
+        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
         $module_path = $components[$module]["path"];     
         
         // if branch is not in available branches, check that it is not the current branch
         if (!in_array($branch,$components[$module]["branches_available"])) {
             $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
-            if ($branch!=$current_branch) return "invalid branch";
+            if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");;
         }
-        
-        $script = "/opt/openenergymonitor/EmonScripts/update/update_component.sh";
-        if (!$redis) return "Redis not enabled";
+
+        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
+		if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
+        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
-        return "cmd sent";
+        return array('success'=>true, 'message'=>"service-runner component-update trigger sent");
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
-        $route->format = "text";
-        if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
+        $route->format = "json";
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
         
         // Validate branch
         $available_branches = array();
@@ -343,12 +335,13 @@ function admin_controller()
                 if (!in_array($b,$available_branches)) $available_branches[] = $b;
             }
         }
-        if (!in_array($branch,$available_branches)) return "invalid branch";
+        if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
         
-        $script = "/opt/openenergymonitor/EmonScripts/update/update_all_components.sh";
-        if (!$redis) return "Redis not enabled";
+        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
+        if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
+		if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$script $branch>$update_logfile");
-        return "cmd sent";
+        return array('success'=>true, 'message'=>"service-runner components-update-all trigger sent");
     }
     
     // ----------------------------------------------------------------------------------------
@@ -363,27 +356,32 @@ function admin_controller()
             return $pid;
         }
         if ($route->subaction == 'start') {
-            $route->format = "text";
+            $route->format = "json";
             
-            if (!isset($_POST['serialport'])) return "missing parameter: serialport";
-            if (!isset($_POST['baudrate'])) return "missing parameter: baudrate";
-            
+            if (!isset($_POST['serialport'])) return array('success'=>false, 'message'=>"missing parameter: serialport");
+            if (!isset($_POST['baudrate'])) return array('success'=>false, 'message'=>"missing parameter: baudrate");
             $serialport = $_POST['serialport'];
             $baudrate = (int) $_POST['baudrate'];
             
-            if (!in_array($serialport,$admin->listSerialPorts())) return "invalid serial port";
-            if (!in_array($baudrate,array(9600,38400,115200))) return "invalid baud rate";
+            if (!in_array($serialport,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"invalid serial port");
+            if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
             
+            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
             $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
             $redis->rpush("service-runner","$script $baudrate /dev/$serialport");
-            return "service-runner serialmonitor start"; 
+            return array('success'=>true, 'message'=>"service-runner serialmonitor start"); 
         }
         if ($route->subaction == 'stop') {
-            $route->format = "text";  
+            $route->format = "json";
+            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
             $redis->rpush("serialmonitor","exit");
-            return "serialmonitor stop command sent";
+            return array('success'=>true,  'message'=>"serialmonitor stop command sent"); 
         }
         if ($route->subaction == 'log') {
+            if (!$redis) {
+                $route->format = "json";
+                return array('success'=>false, 'message'=>"Redis not enabled");
+            }
             $route->format = "text";
             $out = "";
             while($redis->llen('serialmonitor-log')) {
@@ -392,14 +390,18 @@ function admin_controller()
             return $out;
         }
         if ($route->subaction == 'cmd') {
-            $route->format = "text";
+            $route->format = "json";
+            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
             $cmd = "";
             if (isset($_GET['cmd'])) $cmd = $_GET['cmd'];
             if (isset($_POST['cmd'])) $cmd = $_POST['cmd'];
             if ($cmd!="") {
                 $redis->rpush("serialmonitor",$cmd);
-                return "serialmonitor cmd sent: $cmd";
+                return array('success'=>true, 'message'=>"serialmonitor cmd sent: $cmd");
+            } else {
+                return array('success'=>false, 'message'=>"no command");
             }
+                
         }
     }
     
@@ -425,10 +427,16 @@ function admin_controller()
     }
     
     if ($route->action == 'getlog') {
+        if (!$settings['log']['enabled']) {
+            $route->format = "json";
+            return array('success'=>false, 'message'=>"Log is disabled");
+        }
+        else if (!file_exists($emoncms_logfile)) { 
+            $route->format = "json";
+            return array('success'=>false, 'message'=>"$emoncms_logfile does not exist");
+        }
+
         $route->format = "text";
-        if (!$settings['log']['enabled']) return "Log is disabled";
-        if (!file_exists($emoncms_logfile)) return "$emoncms_logfile does not exist";
-        
         ob_start();
         // PHP replacement for tail starts here
         function read_file($file, $lines) 

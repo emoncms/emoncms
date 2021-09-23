@@ -42,5 +42,5 @@
 <div class="alert alert-success">
     <b><?php echo _('Database is up to date '); ?></b> - <?php echo _('Nothing to do'); ?>
 </div>
-<a href="<?php echo $path; ?>admin/info" class="btn btn-info"><?php echo _('Return to Administration Page'); ?></a>
+<a href="<?php echo $path; ?>admin/update" class="btn btn-info"><?php echo _('Return to Update Page'); ?></a>
 <?php } ?>
