@@ -1,17 +1,12 @@
 <?php global $path; ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 <style>
-.content-container {
-  max-width:1150px;
-}
-
 #emonhub-running-notice, #emonhub-stopped-notice {
   padding: 8px 8px 8px 14px;
   line-height:31px;
 }
-
 </style>
-
+<div class="admin-container" style="margin-top:10px">
 <h3>Serial Monitor</h3>
 
 <div id="emonhub-running-notice" class="alert hide">
@@ -46,11 +41,14 @@
   <button id="send" class="btn">Send</button>
 </div>
 
-<pre class="log" style="height:600px"><div id="log"></div></pre>
+<pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 320px)"><div id="log"></div></pre>
+
+</div>
 
 <script>
 
-setInterval(update_log,250);
+var updates_log_interval;
+updates_log_interval = setInterval(update_log,1000);
 
 function update_log() {
     $.ajax({ 
@@ -58,10 +56,18 @@ function update_log() {
         async: true, 
         dataType: "text", 
         success: function(result) {
-            if (result=="Admin re-authentication required") {
-                window.location = "/";
-            }        
-            if (result) {
+            var isjson = true;
+            try {
+                data = JSON.parse(result);
+                if (data.reauth == true) { window.location = "/"; }
+                if (data.success == false)  { 
+                    clearInterval(updates_log_interval); 
+                    $("#log").append("<text style='color:red;'>"+ data.message+"</text>\n");
+                }
+            } catch (e) {
+                isjson = false;
+            }
+            if (isjson == false )     {
                 console.log(result)
                 $("#log").append(htmlEntities(result));
             }
@@ -80,10 +86,11 @@ function is_running() {
                 $(".start-options").hide();
                 $(".send-cmd").show();
             } else {
+                clearInterval(updates_is_running);
                 $(".start-options").show();
                 $("#stop").hide();
                 $(".send-cmd").hide();
-                $("#log").html("Serialmonitor is not running, click start to start!");
+                $("#log").append("Serialmonitor service is not running, click start to start!\n");
             }
         }
     });
@@ -95,7 +102,7 @@ function is_emonhub_running() {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result==null) return false;
+            if (result.reauth == true) { window.location = "/"; }
             if (result.ActiveState=="active") {
                 $("#emonhub-running-notice").show();
                 $("#emonhub-stopped-notice").hide();
@@ -108,53 +115,71 @@ function is_emonhub_running() {
 }
 
 function setService(name,action) {
+    $("#log").html("");
     $.ajax({ 
         url: path+"admin/service/"+action+"?name="+name,
         async: true, 
         dataType: "json", 
         success: function(result) {
-        
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  { 
+                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                $("#log").append(htmlEntities(result.message) + "\n");
+            }
         }
     });
 }
 
 is_emonhub_running();
-setInterval(is_emonhub_running,2000);
+var updates_is_emonhub_running;
+updates_is_emonhub_running = setInterval(is_emonhub_running,2000);
 
 is_running();
-setInterval(is_running,2000);
+var updates_is_running;
+updates_is_running = setInterval(is_running,2000);
 
 $("#start").click(function() {
+    $("#log").html("");
     var serialport = $("#serialport").val();
     var baudrate = $("#baudrate").val();
-    
+
     $.ajax({ 
         type: "POST",
         url: path+"admin/serialmonitor/start", 
         data: "baudrate="+baudrate+"&serialport="+serialport,
         async: true, 
-        dataType: "text", 
+        dataType: "json", 
         success: function(result) {
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  { 
+                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                $("#log").append(htmlEntities(result.message) + "\n");
+            }
             setTimeout(function(){
                 is_running();
             },500);
-            // alert(result);
-            $("#log").html("");
         } 
     });
 });
 
 $("#stop").click(function() {
+    $("#log").html("");
     $.ajax({ 
         url: path+"admin/serialmonitor/stop", 
         async: true, 
-        dataType: "text", 
+        dataType: "json", 
         success: function(result) {
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  { 
+                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                $("#log").append(htmlEntities(result.message) + "\n");
+            }
             setTimeout(function(){
                 is_running();
             },500);
-            // alert(result);
-            
         } 
     });
 });
@@ -170,14 +195,20 @@ $("#cmd").on('keyup', function (e) {
 });
 
 function send_cmd(cmd) {
+    $("#log").html("");
     $.ajax({ 
         type: 'POST',
         url: path+"admin/serialmonitor/cmd",
         data: "cmd="+encodeURIComponent(cmd), 
         async: true, 
-        dataType: "text", 
+        dataType: "json", 
         success: function(result) {
-            // alert(result);
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  { 
+                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                $("#log").append(htmlEntities(result.message) + "\n");
+            }
         } 
     });
 }

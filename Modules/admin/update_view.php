@@ -1,14 +1,13 @@
 <?php $v=1; ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
-<h3><?php echo _('Update'); ?></h3>
+<div class="admin-container" style="margin-top:10px">
+    <h3><?php echo _('Update'); ?></h3>
 
 <?php if (PHP_VERSION_ID<70300) { ?>
 <div class="alert alert-error"><b>Important:</b> PHP version <?php echo phpversion(); ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
 <?php } ?>
 
-<div class="admin-container">
-    
     <?php 
     // UPDATES 
     // -------------------
@@ -152,19 +151,14 @@ $("#copyupdatelogfile").on('click', function(event) {
     }
 } );
 
-var updatelogrunning = false;
 var updates_log_interval;
-
 
 // stop updates if interval == 0
 function refresherStart(func, interval){
-    if (interval > 0) return setInterval(func, interval);
+    clearInterval(updates_log_interval);
+    updates_log_interval = setInterval(func, interval);
 }
 
-// push value to emoncms logfile viewer
-function refresh_log(result){
-    output_logfile(result, $("#logreply"));
-}
 // display content in container and scroll to the bottom
 function output_logfile(result, $container){
     $container.html(result);
@@ -175,7 +169,7 @@ function output_logfile(result, $container){
 // push value to updates logfile viewer
 function refresh_updateLog(result){
     output_logfile(result, $("#update-log"));
-    if (result!="<?php echo $update_log_filename; ?> does not exist") $("#update-logfile-view").show();
+    $("#update-logfile-view").slideDown();
 }
 
 // auto refresh the updates logfile
@@ -184,11 +178,12 @@ $("#getupdatelog").click(function() {
     if ($this.is('.active')) {
         clearInterval(updates_log_interval);
     } else {
-        updates_log_interval = refresherStart(getUpdateLog, 500); 
+        refresherStart(getUpdateLog, 1000); 
     }
 });
 // update all button clicked
 $(".update").click(function() {
+    refresh_updateLog("");
     var type = $(this).attr("type");
     var serial_port = $("#select_serial_port").val();
     var firmware_key = $("#selected_firmware").val();
@@ -198,11 +193,16 @@ $(".update").click(function() {
         url: path+"admin/update-start", 
         data: "type="+type+"&serial_port="+serial_port+"&firmware_key="+firmware_key, 
         async: true, 
+        dataType: "json", 
         success: function(result) {
-            // update with latest value
-            refresh_updateLog(result);
-            // autoupdate every 1s
-            updates_log_interval = refresherStart(getUpdateLog, 1000)
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  {
+                clearInterval(updates_log_interval);
+                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                refresh_updateLog(result.message);
+                refresherStart(getUpdateLog, 1000)
+            }
         }
     });
 });
@@ -216,6 +216,7 @@ $("#selected_radio_format").change(function(){
 });
 
 function draw_firmware_select_list() {
+    refresh_updateLog("");
     var hardware = $("#selected_hardware").val(); 
     var radio_format = $("#selected_radio_format").val();
     
@@ -236,6 +237,7 @@ function draw_firmware_select_list() {
 
 
 $("#update-firmware").click(function() {
+    refresh_updateLog("");
     var serial_port = $("#select_serial_port").val();
     var firmware_key = $("#selected_firmware").val();
     
@@ -244,11 +246,16 @@ $("#update-firmware").click(function() {
         url: path+"admin/update-firmware", 
         data: "serial_port="+serial_port+"&firmware_key="+firmware_key,
         async: true, 
+        dataType: "json", 
         success: function(result) {
-            // update with latest value
-            refresh_updateLog(result);
-            // autoupdate every 1s
-            updates_log_interval = refresherStart(getUpdateLog, 1000)
+            if (result.reauth == true) { window.location = "/"; }
+            if (result.success == false)  {
+                clearInterval(updates_log_interval);
+                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                refresh_updateLog(result.message);
+                refresherStart(getUpdateLog, 1000)
+            }
         }
     });
 });
@@ -263,14 +270,28 @@ getUpdateLog();
 function getUpdateLog() {
   $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
     {
-      if (result=="Admin re-authentication required") {
-          window.location = "/";
-      }
-    
-      refresh_updateLog(result);
-      if (result.indexOf("System update done")!=-1) {
-          clearInterval(updates_log_interval);
-      }
+        var isjson = true;
+        try {
+            data = JSON.parse(result);
+            if (data.reauth == true) { window.location = "/"; }
+            if (data.success == false)  { 
+                clearInterval(updates_log_interval); 
+                refresh_updateLog("<text style='color:red;'>"+ data.message+"</text>");
+            }
+        } catch (e) {
+            isjson = false;
+        }
+        if (isjson == false )     {
+            if (result != "") {
+                refresh_updateLog(result);
+                if (result.indexOf("System update done")!=-1) {
+                    clearInterval(updates_log_interval);
+                    setTimeout(function() {
+                        $("#update-logfile-view").slideUp();
+                    },3000);
+                }
+            }
+        }
     }
   });
 }
