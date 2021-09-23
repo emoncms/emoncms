@@ -21,11 +21,15 @@ class Admin {
     public static function listSerialPorts() {
         $ports = array();
         for ($i=0; $i<5; $i++) {
-            if (file_exists("/dev/ttyAMA$i")) {
-                $ports[] = "ttyAMA$i";
-            }  
-            if (file_exists("/dev/ttyUSB$i")) {
-                $ports[] = "ttyUSB$i";
+            try {
+                if (file_exists("/dev/ttyAMA$i")) {
+                    $ports[] = "ttyAMA$i";
+                }
+                if (file_exists("/dev/ttyUSB$i")) {
+                    $ports[] = "ttyUSB$i";
+                }
+            } catch (Exception $e) {
+                // no need to do anything here, function will exit with no ports
             }
         }
         if (count($ports)==0) {
@@ -58,21 +62,21 @@ class Admin {
             if (!is_null($system['services'][$key])) {    // If the service was found on this system
                 
                 // Populate service status fields
-                $services[$key] = array(
+            	$services[$key] = array(
                     'state' => ucfirst($value['ActiveState']),
                     'text' => ucfirst($value['SubState']),
                     'running' => $value['SubState']==='running'
                 );
-                
-                // Set 'cssClass' based on service's configuration and current status
-                if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
-                    $services[$key]['cssClass'] = 'masked';
-                    $services[$key]['text'] = 'Masked';
-                } elseif ($value['SubState']==='running') {    // If not masked, check if service is running
-                    $services[$key]['cssClass'] = 'success';
-                } else {                                       // Assume service is in danger
-                    $services[$key]['cssClass'] = 'danger';
-                }
+            	
+            	// Set 'cssClass' based on service's configuration and current status
+            	if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
+            		$services[$key]['cssClass'] = 'masked';
+            		$services[$key]['text'] = 'Masked';
+            	} elseif ($value['SubState']==='running') {    // If not masked, check if service is running
+            		$services[$key]['cssClass'] = 'success';
+            	} else {                                       // Assume service is in danger
+            		$services[$key]['cssClass'] = 'danger';
+            	}
             }
         }
         // add custom messages for feedwriter service
@@ -121,7 +125,9 @@ class Admin {
      * @return bool|null true == running | false == stopped | null == not installed
      */
     public static function getServiceStatus($name) {
-        @exec('systemctl show '.$name.' | grep State', $exec);
+        if (!$exec = Admin::exec_array('systemctl show '.$name.' | grep State')) {
+            return null;
+        }
         $status = array();
 
         foreach ($exec as $line) {
@@ -131,10 +137,10 @@ class Admin {
         if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
             $return = null;
         } else if (
-                isset($status["ActiveState"]) &&
-                isset($status["SubState"]) &&
-                isset($status["LoadState"])
-                ) {
+        		isset($status["ActiveState"]) &&
+        		isset($status["SubState"]) &&
+        		isset($status["LoadState"])
+        		) {
             return array(
                 'ActiveState' => $status["ActiveState"],
                 'SubState' => $status["SubState"],
@@ -170,7 +176,6 @@ class Admin {
         foreach (Admin::get_services_list() as $service) {
             $services[$service] = Admin::getServiceStatus("$service.service");
         }
-        //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
           $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -196,7 +201,7 @@ class Admin {
                      'kernel' => $kernel,
                      'host' => $host,
                      'ip' => server('SERVER_ADDR'),
-                     'uptime' => @exec('uptime'),
+                     'uptime' => Admin::exec('uptime'),
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
@@ -223,9 +228,9 @@ class Admin {
                      'mem_info' => $meminfo,
                      'partitions' => Admin::disk_list(),
                      'component_summary' => $component_summary,
-                     'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-                     'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
-                     'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
+                     'git_branch' => Admin::exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
+                     'git_URL' => Admin::exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
+                     'git_describe' => Admin::exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                      );
       }
 
@@ -244,8 +249,8 @@ class Admin {
                   $components[$name] = array(
                       "name"=>ucfirst(isset($json->name)?$json->name:$name),
                       "version"=>$json->version,
-                      "path"=>$emoncms_path,                                                    // Where it's currently installed
-                      "target_location"=>isset($json->location)?$json->location:$emoncms_path,  // Where to install new modules
+                      "path"=>$emoncms_path,
+                      "location"=>isset($json->location)?$json->location:$emoncms_path,
                       "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                       "requires"=>isset($json->requires)?$json->requires:array()
                   );
@@ -270,8 +275,8 @@ class Admin {
                               $components[$name] = array(
                                   "name"=>ucfirst(isset($json->name)?$json->name:$name),
                                   "version"=>$json->version,
-                                  "path"=>$module_fullpath,                                         // Where it's currently installed
-                                  "target_location"=>isset($json->location)?$json->location:$path,  // Where to install new modules
+                                  "path"=>$module_fullpath,
+                                  "location"=>isset($json->location)?$json->location:$path,
                                   "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
                                   "requires"=>isset($json->requires)?$json->requires:array()
                               );
@@ -285,10 +290,10 @@ class Admin {
           if ($git_info) {
               foreach ($components as $name=>$component) {
                   $path = $components[$name]["path"];
-                  $components[$name]["describe"] = @exec("git -C $path describe");
-                  $components[$name]["branch"] = str_replace("* ","",@exec("git -C $path rev-parse --abbrev-ref HEAD"));
-                  $components[$name]["local_changes"] = @exec("git -C $path diff-index -G. HEAD --");
-                  $components[$name]["url"] = @exec("git -C $path ls-remote --get-url origin");
+                  $components[$name]["describe"] = Admin::exec("git -C $path describe");
+                  $components[$name]["branch"] = str_replace("* ","",Admin::exec("git -C $path rev-parse --abbrev-ref HEAD"));
+                  $components[$name]["local_changes"] = Admin::exec("git -C $path diff-index -G. HEAD --");
+                  $components[$name]["url"] = Admin::exec("git -C $path ls-remote --get-url origin");
                   
                   if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
                       $components[$name]["branches_available"][] = $components[$name]["branch"];
@@ -313,7 +318,9 @@ class Admin {
           // I would have used disk_free_space() and disk_total_space() here but
           // there appears to be no way to get a list of partitions in PHP?
           $output = array();
-          @exec('df --block-size=1 -x squashfs', $output);
+          if (!$output = Admin::exec_array('df --block-size=1 -x squashfs')) {
+              return $partitions;
+          }
           foreach($output as $line)
           {
             $columns = array();
@@ -358,7 +365,7 @@ class Admin {
                 else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
 
                 if ($partition_name) {
-                  if ($sectors_written = @exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
+                  if ($sectors_written = Admin::exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
                     $last_sectors_written = 0;
                     if ($redis->exists("diskstats:$partition_name")) {
                       $last_sectors_written = $redis->get("diskstats:$partition_name");
@@ -404,7 +411,7 @@ class Admin {
      * @return bool
      */
     public static function is_Pi() {
-        return !empty(@exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:"'));
+        return !empty(Admin::exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:"'));
     }
 
     /**
@@ -460,8 +467,8 @@ class Admin {
                 }
                 $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
             }
-            $rpi_info['cputemp'] = number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
-            $rpi_info['gputemp'] = @exec('/opt/vc/bin/vcgencmd measure_temp');
+            $rpi_info['cputemp'] = number_format((int)Admin::exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
+            $rpi_info['gputemp'] = Admin::exec('/opt/vc/bin/vcgencmd measure_temp');
             if(strpos($rpi_info['gputemp'], 'temp=' ) !== false ){
                 $rpi_info['gputemp'] = str_replace("temp=","", $rpi_info['gputemp']);
                 $rpi_info['gputemp'] = str_replace("'C","°C", $rpi_info['gputemp']);
@@ -625,5 +632,21 @@ class Admin {
         for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
         return( round( $bytes, 2 ) . " " . $types[$i] );
     }
-
+    
+    private static function exec($cmd) {
+        $output = false;
+        if (function_exists("exec")) {
+            $output = @exec($cmd);
+        }
+        return $output;
+    }
+    
+    private static function exec_array($cmd) {
+        $output = false;
+        if (function_exists("exec")) {
+            @exec($cmd,$output);
+        }
+        return $output;
+    }
 }
+

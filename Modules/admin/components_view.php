@@ -84,8 +84,9 @@ function component_update(name,branch) {
         url: path+'admin/component-update',                         
         data: "module="+name+"&branch="+branch,
         dataType: 'text',
-        success: function(result) {
-            start_update_log(result);
+        success: function(result) { 
+            console.log(result)
+            start_update_log()
             log_end = "- component updated"
         } 
     });   
@@ -97,7 +98,8 @@ function update_all_components(branch) {
         data: "branch="+branch,
         dataType: 'text',
         success: function(result) { 
-            start_update_log(result);
+            console.log(result)
+            start_update_log();
             log_end = "- all components updated"
         } 
     });   
@@ -110,10 +112,9 @@ function update_all_components(branch) {
 var interval = false
 var log_end = "";
 
-function start_update_log(result) {
-    clearInterval(interval);
-    $("#update-log").html(result);
-    interval = setInterval(update_log,1000);
+function start_update_log(log_end) {
+    clearInterval(interval)
+    interval = setInterval(update_log,500)
     $("#update-log-bound").slideDown();
 }
 
