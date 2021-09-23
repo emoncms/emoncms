@@ -85,9 +85,7 @@ function component_update(name,branch) {
         data: "module="+name+"&branch="+branch,
         dataType: 'text',
         success: function(result) {
-            clearInterval(interval);
-            $("#update-log").html(result);
-            start_update_log();
+            start_update_log(result);
             log_end = "- component updated"
         } 
     });   
@@ -99,9 +97,7 @@ function update_all_components(branch) {
         data: "branch="+branch,
         dataType: 'text',
         success: function(result) { 
-            clearInterval(interval);
-            $("#update-log").html(result);
-            start_update_log();
+            start_update_log(result);
             log_end = "- all components updated"
         } 
     });   
@@ -114,8 +110,9 @@ function update_all_components(branch) {
 var interval = false
 var log_end = "";
 
-function start_update_log(log_end) {
+function start_update_log(result) {
     clearInterval(interval);
+    $("#update-log").html(result);
     interval = setInterval(update_log,1000);
     $("#update-log-bound").slideDown();
 }
