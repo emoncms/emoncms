@@ -318,7 +318,7 @@ function admin_controller()
         }
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-		if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
+        if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
         if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
         return array('success'=>true, 'message'=>"service-runner component-update trigger sent");
@@ -339,7 +339,7 @@ function admin_controller()
         
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
         if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
-		if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
+        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
         $redis->rpush("service-runner","$script $branch>$update_logfile");
         return array('success'=>true, 'message'=>"service-runner components-update-all trigger sent");
     }

@@ -29,20 +29,20 @@
         </div>
     </section>
     
-	<!--
+    <!--
     <section>
         <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
-		<div class="text-right"> 
-			<div class="btn-group">
-				<button class="btn btn-inverse mb-1">
-					<?php echo sprintf('Log Level: %s', $log_level_label) ?>
-				</button>
-			</div>
-		</div>
+        <div class="text-right"> 
+            <div class="btn-group">
+                <button class="btn btn-inverse mb-1">
+                    <?php echo sprintf('Log Level: %s', $log_level_label) ?>
+                </button>
+            </div>
+        </div>
     </section>
-	bellow is original code that overlaps footer, comment here is my proposal using correct bootstrap syntax
-	-->
-	
+    bellow is original code that overlaps footer, comment here is my proposal using correct bootstrap syntax
+    -->
+    
     <section>
         <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
         <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
