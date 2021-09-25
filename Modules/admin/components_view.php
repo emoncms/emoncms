@@ -1,5 +1,4 @@
-<?php global $path; ?>
-<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css">
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div class="admin-container" style="margin-top:10px">

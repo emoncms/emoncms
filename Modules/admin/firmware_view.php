@@ -1,5 +1,4 @@
-<?php global $path; ?>
-<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css">
 <style>
 #emonhub-running-notice, #emonhub-stopped-notice {
   padding: 8px 8px 8px 14px;
