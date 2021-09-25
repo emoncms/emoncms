@@ -40,7 +40,7 @@
   <button id="send" class="btn">Send</button>
 </div>
 
-<pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 320px)"><div id="log"></div></pre>
+<pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 320px); display:none;"><div id="log"></div></pre>
 
 </div>
 
@@ -48,6 +48,7 @@
 
 var updates_log_interval;
 updates_log_interval = setInterval(update_log,1000);
+$("#logreply-bound").slideDown();
 
 function update_log() {
     $.ajax({ 

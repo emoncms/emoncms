@@ -168,19 +168,26 @@ class Admin {
     }
     
     public function setService($name, $action) {
-        $script = __DIR__ . "../scripts/service-action.sh";
-        $this->runService($script,"$name $action");
+        $script = __DIR__ . "/../../scripts/service-action.sh";
+        return $this->runService($script, "$name $action");
     }
 
     public function runService($script, $attributes) {
         if (!file_exists($script)) {
-            $this->log->error("runService() Script not found '$script'. attributes=$attributes");
-            return array('success'=>false, 'message'=>"runService() File not found '$script'. attributes=$attributes");
+            $this->log->error("runService() Script not found '$script' attributes=$attributes");
+            return array('success'=>false, 'message'=>"File not found '$script' attributes=$attributes");
         }
-        if (!$this->redis) return array('success'=>false, 'message'=>"Redis not enabled. Could not run '$script $attributes'");
-        $this->redis->rpush("service-runner","$script $attributes");
-        $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
-        return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
+        if ($this->redis) { 
+            $this->redis->rpush("service-runner","$script $attributes");
+            $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
+            return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
+        } else {
+            
+            $this->log->warn("runService() Redis not enabled. Trying PHP execution '$script $attributes'");
+            $result = $this->exec("$script $attributes");
+            $this->log->info("runService() PHP exec returned '$result'");
+            return array('success'=>true, 'message'=>"$result"); 
+        }
     }
 
     /**

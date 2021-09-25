@@ -1,5 +1,5 @@
 .content-container {
-    max-width:1150px;
+/*    max-width:1150px; commented to suport large screens */
 }
 .border-top{
     border-color: #dee2e6
