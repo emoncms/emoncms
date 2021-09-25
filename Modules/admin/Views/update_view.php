@@ -1,6 +1,4 @@
-<?php $v=1; ?>
-<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
-
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 <div class="admin-container" style="margin-top:10px">
     <h3><?php echo _('Update'); ?></h3>
 
