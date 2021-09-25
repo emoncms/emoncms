@@ -55,12 +55,11 @@
   <tbody id="users"></tbody>
 </table>
 
-
 <div class="pagination">
   <ul>
   </ul>
 </div>
-<a href="<?php echo $path; ?>admin/update" class="btn btn-info"><?php echo _('Return to Update Page'); ?></a>
+
 <script>
 
 var users = {};

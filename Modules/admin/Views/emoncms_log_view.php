@@ -30,7 +30,7 @@
     
     <!--
     <section>
-        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
+        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px);"><div id="logreply"></div></pre>
         <div class="text-right"> 
             <div class="btn-group">
                 <button class="btn btn-inverse mb-1">
@@ -43,7 +43,7 @@
     -->
     
     <section>
-        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px)"><div id="logreply"></div></pre>
+        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 220px); display:none;"><div id="logreply"></div></pre>
         <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
             <?php echo sprintf('Log Level: %s', $log_level_label) ?>
         </span>
@@ -59,6 +59,8 @@
 </div>
 <div id="snackbar" class=""></div>
 <script>
+
+$("#logreply-bound").slideDown();
 
 var logFileDetails;
 $("#copylogfile").on('click', function(event) {

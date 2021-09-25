@@ -355,7 +355,7 @@ function admin_controller()
             if (!in_array($serialport,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"invalid serial port");
             if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
             
-            $script = __DIR__ . "../scripts/serialmonitor/start.sh";
+            $script = __DIR__ . "/../../scripts/serialmonitor/start.sh";
             return $admin->runService($script, "$baudrate /dev/$serialport");
         }
         if ($route->subaction == 'stop') {
