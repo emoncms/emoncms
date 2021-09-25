@@ -60,7 +60,7 @@
   <ul>
   </ul>
 </div>
-<a href="<?php echo $path; ?>admin/view" class="btn btn-info"><?php echo _('Return to Administration Page'); ?></a>
+<a href="<?php echo $path; ?>admin/update" class="btn btn-info"><?php echo _('Return to Update Page'); ?></a>
 <script>
 
 var users = {};
