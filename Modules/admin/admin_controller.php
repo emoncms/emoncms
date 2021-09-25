@@ -15,7 +15,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 function admin_controller()
 {
     global $settings, $mysqli, $session, $route, $redis, $path, $log;
-
     
     if (!$session['write']) {
         return array('success'=>false, 'content'=>'', 'reauth'=>true, 'message'=>"Admin re-authentication required");
@@ -26,7 +25,7 @@ function admin_controller()
     
     $emoncms_logfile = $settings['log']['location']."/emoncms.log";
     $update_logfile = $settings['log']['location']."/update.log";
-    $old_update_logfile = $settings['log']['location']."/emonpiupdate.log";    
+    $old_update_logfile = $settings['log']['location']."/emonpiupdate.log"; 
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -225,9 +224,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }        
-        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-        $redis->rpush("service-runner","$update_script $type $firmware_key $serial_port>$update_logfile");
-        return array('success'=>true, 'message'=>"service-runner update-start trigger sent");
+        return $admin->runService($update_script, "$type $firmware_key $serial_port > $update_logfile");
     }
     
     if ($route->action == 'update-firmware') {
@@ -244,9 +241,7 @@ function admin_controller()
         if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-        $redis->rpush("service-runner","$update_script $serial_port $firmware_key>$update_logfile");
-        return array('success'=>true, 'message'=>"service-runner update-firmware trigger sent");
+        return $admin->runService($update_script, "$serial_port $firmware_key > $update_logfile");
     }
     
     if ($route->action == 'update-log') {
@@ -318,10 +313,7 @@ function admin_controller()
         }
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
-        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-        $redis->rpush("service-runner","$script $module_path $branch>$update_logfile");
-        return array('success'=>true, 'message'=>"service-runner component-update trigger sent");
+        return $admin->runService($script, "$module_path $branch > $update_logfile");
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
@@ -338,10 +330,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
         
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        if (!file_exists($script)) return array('success'=>false, 'message'=>"Script not available $script");
-        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-        $redis->rpush("service-runner","$script $branch>$update_logfile");
-        return array('success'=>true, 'message'=>"service-runner components-update-all trigger sent");
+        return $admin->runService($script, "$branch > $update_logfile");
     }
     
     // ----------------------------------------------------------------------------------------
@@ -366,10 +355,8 @@ function admin_controller()
             if (!in_array($serialport,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"invalid serial port");
             if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
             
-            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-            $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
-            $redis->rpush("service-runner","$script $baudrate /dev/$serialport");
-            return array('success'=>true, 'message'=>"service-runner serialmonitor start"); 
+            $script = __DIR__ . "../scripts/serialmonitor/start.sh";
+            return $admin->runService($script, "$baudrate /dev/$serialport");
         }
         if ($route->subaction == 'stop') {
             $route->format = "json";

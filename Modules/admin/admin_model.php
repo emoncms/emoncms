@@ -17,10 +17,6 @@ class Admin {
     private $redis;
     private $settings;
     private $log;
-    
-    private $emoncms_logfile;
-    private $update_logfile;
-    private $old_update_logfile;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -28,10 +24,6 @@ class Admin {
         $this->redis = $redis;
         $this->settings = $settings;
         $this->log = new EmonLogger(__FILE__);
-
-        $this->emoncms_logfile = $settings['log']['location']."/emoncms.log";
-        $this->update_logfile = $settings['log']['location']."/update.log";
-        $this->old_update_logfile = $settings['log']['location']."/emonpiupdate.log";
     }
 
     public function get_services_list() {
@@ -62,8 +54,7 @@ class Admin {
     }
 
     public function firmware_available() {
-        global $settings;
-        $localfile = $settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json";
+        $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json";
         if (file_exists($localfile)) {
             return json_decode(file_get_contents($localfile));
         }
@@ -80,7 +71,7 @@ class Admin {
      * @return bool|null true == running | false == stopped | null == not installed
      */
     public function full_system_information() {
-        global $redis, $settings, $emoncms_version;
+        global $emoncms_version;
         // create array of installed services
         $services = array();
         $system = $this->system_information();
@@ -110,14 +101,14 @@ class Admin {
         if(isset($services['feedwriter'])) {
             $message = '<font color="red">Service is not running</font>';
             if ($services['feedwriter']['running']) {
-                $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
+                $message = ' - sleep ' . $this->settings['feed']['redisbuffer']['sleep'] . 's';
             }
             $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
         }
         $redis_info = array();
-        if($settings['redis']['enabled']) {
-            $redis_info = $redis->info();
-            $redis_info['dbSize'] = $redis->dbSize();
+        if($this->settings['redis']['enabled']) {
+            $redis_info = $this->redis->info();
+            $redis_info['dbSize'] = $this->redis->dbSize();
             $phpRedisPattern = 'Redis Version =>';
             $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
             $pipRedisPattern = "Version: ";
@@ -127,11 +118,11 @@ class Admin {
         return array(
             'system'=>$system,
             'services'=>$services,
-            'redis_enabled'=>$settings['redis']['enabled'],
-            'mqtt_enabled'=>$settings['mqtt']['enabled'],
+            'redis_enabled'=>$this->settings['redis']['enabled'],
+            'mqtt_enabled'=>$this->settings['mqtt']['enabled'],
             'emoncms_version'=>$emoncms_version,
             'redis_info'=>$redis_info,
-            'feed_settings'=>$settings['feed'],
+            'feed_settings'=>$this->settings['feed'],
             'component_summary'=>$system['component_summary'],
             'php_modules'=>$this->php_modules($system['php_modules']),
             'mqtt_version'=>$this->mqtt_version(),
@@ -141,9 +132,6 @@ class Admin {
             'v' => 3
         );
     }
-
-
-
 
     /**
      * get running status of service
@@ -179,12 +167,20 @@ class Admin {
         return $return;
     }
     
-    public function setService($name,$action) {
-        global $redis;
-        if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled. Could not $action $name.");
-        $script = "/var/www/emoncms/scripts/service-action.sh $name $action";
-        $redis->rpush("service-runner","$script");
-        return array('success'=>true, 'message'=>"Service-runner trigger sent for $script");
+    public function setService($name, $action) {
+        $script = __DIR__ . "../scripts/service-action.sh";
+        $this->runService($script,"$name $action");
+    }
+
+    public function runService($script, $attributes) {
+        if (!file_exists($script)) {
+            $this->log->error("runService() Script not found '$script'. attributes=$attributes");
+            return array('success'=>false, 'message'=>"runService() File not found '$script'. attributes=$attributes");
+        }
+        if (!$this->redis) return array('success'=>false, 'message'=>"Redis not enabled. Could not run '$script $attributes'");
+        $this->redis->rpush("service-runner","$script $attributes");
+        $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
+        return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
     }
 
     /**
@@ -193,8 +189,7 @@ class Admin {
      * @return array
      */
     public function system_information() {
-        global $settings, $mysqli;
-        $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
+        $result = $this->mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
 
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
@@ -232,20 +227,20 @@ class Admin {
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                     'db_server' => $settings['sql']['server'],
-                     'db_ip' => gethostbyname($settings['sql']['server']),
-                     'db_version' => $mysqli->server_info,
-                     'db_stat' => $mysqli->stat(),
+                     'db_server' => $this->settings['sql']['server'],
+                     'db_ip' => gethostbyname($this->settings['sql']['server']),
+                     'db_version' => $this->mysqli->server_info,
+                     'db_stat' => $this->mysqli->stat(),
                      'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
 
-                     'redis_server' => $settings['redis']['host'].":".$settings['redis']['port'],
-                     'redis_ip' => gethostbyname($settings['redis']['host']),
+                     'redis_server' => $this->settings['redis']['host'].":".$this->settings['redis']['port'],
+                     'redis_ip' => gethostbyname($this->settings['redis']['host']),
 
                      'services' => $services,
 
-                     'mqtt_server' => $settings['mqtt']['host'],
-                     'mqtt_ip' => gethostbyname($settings['mqtt']['host']),
-                     'mqtt_port' => $settings['mqtt']['port'],
+                     'mqtt_server' => $this->settings['mqtt']['host'],
+                     'mqtt_ip' => gethostbyname($this->settings['mqtt']['host']),
+                     'mqtt_port' => $this->settings['mqtt']['port'],
 
                      'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
                      'http_proto' => $_SERVER['SERVER_PROTOCOL'],
@@ -259,182 +254,178 @@ class Admin {
                      'git_URL' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
                      'git_describe' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                      );
-      }
+    }
 
-      public function components_available() {
-          global $settings;
-          $localfile = $settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
-          if (file_exists($localfile)) {
-              return json_decode(file_get_contents($localfile));
-          }
-          else if ($response = file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
-              return json_decode($response);
-          }
-          else {
-              return array('success'=>false, 'message'=>"Can't get components available file");
-          }
-      }
+    public function components_available() {
+        $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
+        if (file_exists($localfile)) {
+            return json_decode(file_get_contents($localfile));
+        }
+        else if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
+            return json_decode($response);
+        }
+        else {
+            return array('success'=>false, 'message'=>"Can't get components available file");
+        }
+    }
 
-      public function component_list($git_info=true) 
-      {
-          global $settings;
-          $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+    public function component_list($git_info=true) 
+    {
+        $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+      
+        $components = array();
+      
+        // Emoncms core
+        if (file_exists($emoncms_path."/version.json")) {                           // JSON Version informatmion exists
+            $json = json_decode(file_get_contents($emoncms_path."/version.json"));  // Get JSON version information
+            if (isset($json->version) && $json->version!="") {
+                $name = "emoncms";
+                $components[$name] = array(
+                    "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                    "version"=>$json->version,
+                    "path"=>$emoncms_path,                                                    // Where it's currently installed
+                    "target_location"=>isset($json->location)?$json->location:$emoncms_path,  // Where to install new modules
+                    "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                    "requires"=>isset($json->requires)?$json->requires:array()
+                );
+            }
+        }
+      
+        foreach (array("$emoncms_path/Modules",$this->settings['emoncms_dir']."/modules",$this->settings['openenergymonitor_dir']) as $path) {
           
-          $components = array();
+            $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
           
-          // Emoncms core
-          if (file_exists($emoncms_path."/version.json")) {                           // JSON Version informatmion exists
-              $json = json_decode(file_get_contents($emoncms_path."/version.json"));  // Get JSON version information
-              if (isset($json->version) && $json->version!="") {
-                  $name = "emoncms";
-                  $components[$name] = array(
-                      "name"=>ucfirst(isset($json->name)?$json->name:$name),
-                      "version"=>$json->version,
-                      "path"=>$emoncms_path,                                                    // Where it's currently installed
-                      "target_location"=>isset($json->location)?$json->location:$emoncms_path,  // Where to install new modules
-                      "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
-                      "requires"=>isset($json->requires)?$json->requires:array()
-                  );
-              }
-          }
-          
-          foreach (array("$emoncms_path/Modules",$settings['emoncms_dir']."/modules",$settings['openenergymonitor_dir']) as $path) {
-              
-              $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
-              
-              foreach($directories as $module_fullpath) {                                           // loop through the folders
+            foreach($directories as $module_fullpath) {                                           // loop through the folders
 
-                  if (!is_link($module_fullpath)) {
+                if (!is_link($module_fullpath)) {
 
-                      $fullpath_parts = explode("/",$module_fullpath);
-                      $name = $fullpath_parts[count($fullpath_parts)-1];
-                      
-                      if (file_exists($module_fullpath."/module.json")) {                           // JSON Version informatmion exists
-                          $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
-                          
-                          if (isset($json->version) && $json->version!="") {
-                              $components[$name] = array(
-                                  "name"=>ucfirst(isset($json->name)?$json->name:$name),
-                                  "version"=>$json->version,
-                                  "path"=>$module_fullpath,                                         // Where it's currently installed
-                                  "target_location"=>isset($json->location)?$json->location:$path,  // Where to install new modules
-                                  "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
-                                  "requires"=>isset($json->requires)?$json->requires:array()
-                              );
-                          }
-                      }
-                  }
-              }
-          
-          }
-          
-          if ($git_info) {
-              foreach ($components as $name=>$component) {
-                  $path = $components[$name]["path"];
-                  $components[$name]["describe"] = $this->exec("git -C $path describe");
-                  $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
-                  $components[$name]["local_changes"] = $this->exec("git -C $path diff-index -G. HEAD --");
-                  $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
+                    $fullpath_parts = explode("/",$module_fullpath);
+                    $name = $fullpath_parts[count($fullpath_parts)-1];
                   
-                  if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
-                      $components[$name]["branches_available"][] = $components[$name]["branch"];
-                  }
-              }             
-          }   
-          
-          
-          return $components;
-      }
+                    if (file_exists($module_fullpath."/module.json")) {                           // JSON Version informatmion exists
+                        $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
+                      
+                        if (isset($json->version) && $json->version!="") {
+                            $components[$name] = array(
+                                "name"=>ucfirst(isset($json->name)?$json->name:$name),
+                                "version"=>$json->version,
+                                "path"=>$module_fullpath,                                         // Where it's currently installed
+                                "target_location"=>isset($json->location)?$json->location:$path,  // Where to install new modules
+                                "branches_available"=>isset($json->branches_available)?$json->branches_available:array(),
+                                "requires"=>isset($json->requires)?$json->requires:array()
+                            );
+                        }
+                    }
+                }
+            }
+        }
 
+        if ($git_info) {
+            foreach ($components as $name=>$component) {
+                $path = $components[$name]["path"];
+                $components[$name]["describe"] = $this->exec("git -C $path describe");
+                $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
+                $components[$name]["local_changes"] = $this->exec("git -C $path diff-index -G. HEAD --");
+                $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
+              
+                if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
+                    $components[$name]["branches_available"][] = $components[$name]["branch"];
+                }
+            }             
+        }   
+      
+      
+        return $components;
+    }
 
-      /**
-       * return array of mounted partitions
-       *
-       * @return array
-       */
-      public function disk_list()
-      {
-          $partitions = array();
-          // Fetch partition information from df command
-          // I would have used disk_free_space() and disk_total_space() here but
-          // there appears to be no way to get a list of partitions in PHP?
-          $output = array();
-          if (!$output = $this->exec_array('df --block-size=1 -x squashfs')) {
-              return $partitions;
-          }
-          foreach($output as $line)
-          {
+    /**
+     * return array of mounted partitions
+     *
+     * @return array
+     */
+    public function disk_list()
+    {
+        $partitions = array();
+        // Fetch partition information from df command
+        // I would have used disk_free_space() and disk_total_space() here but
+        // there appears to be no way to get a list of partitions in PHP?
+        $output = array();
+        if (!$output = $this->exec_array('df --block-size=1 -x squashfs')) {
+            return $partitions;
+        }
+        foreach($output as $line)
+        {
             $columns = array();
             foreach(explode(' ', $line) as $column)
             {
-              $column = trim($column);
-              if($column != '') $columns[] = $column;
+                $column = trim($column);
+                if($column != '') $columns[] = $column;
             }
 
             // Only process 6 column rows
             // (This has the bonus of ignoring the first row which is 7)
             if(count($columns) == 6)
             {
-              $filesystem = $columns[0];
-              $partition = $columns[5];
-              $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
-              $partitions[$partition]['Partition']['text'] = $partition;
-              $partitions[$partition]['FileSystem']['text'] = $filesystem;
-              if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
-              {
-                $partitions[$partition]['Size']['value'] = $columns[1];
-                $partitions[$partition]['Free']['value'] = $columns[3];
-                $partitions[$partition]['Used']['value'] = $columns[2];
-              }
-              else
-              {
-                // Fallback if we don't get numerical values
-                $partitions[$partition]['Size']['text'] = $columns[1];
-                $partitions[$partition]['Used']['text'] = $columns[2];
-                $partitions[$partition]['Free']['text'] = $columns[3];
-              }
+                $filesystem = $columns[0];
+                $partition = $columns[5];
+                $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
+                $partitions[$partition]['Partition']['text'] = $partition;
+                $partitions[$partition]['FileSystem']['text'] = $filesystem;
+                if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
+                {
+                    $partitions[$partition]['Size']['value'] = $columns[1];
+                    $partitions[$partition]['Free']['value'] = $columns[3];
+                    $partitions[$partition]['Used']['value'] = $columns[2];
+                }
+                else
+                {
+                    // Fallback if we don't get numerical values
+                    $partitions[$partition]['Size']['text'] = $columns[1];
+                    $partitions[$partition]['Used']['text'] = $columns[2];
+                    $partitions[$partition]['Free']['text'] = $columns[3];
+                }
 
-              $writeload = 0;
-              $writeloadtime = "";
-              global $redis;
-              if ($redis) {
-                // translate partition mount point to mmcblk0pX based name
-                $partition_name = false;
-                if ($partition=="/boot") $partition_name = "mmcblk0p1";
-                else if ($partition=="/") $partition_name = "mmcblk0p2";
-                else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
-                else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
+                $writeload = 0;
+                $writeloadtime = "";
+                global $redis;
+                if ($redis) {
+                    // translate partition mount point to mmcblk0pX based name
+                    $partition_name = false;
+                    // TODO: The $partition_name should not be hard coded here, $filesystem variable already contains the discovered device name
+                    if ($partition=="/boot") $partition_name = "mmcblk0p1";
+                    else if ($partition=="/") $partition_name = "mmcblk0p2";
+                    else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
+                    else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
 
-                if ($partition_name) {
-                  if ($sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
-                    $last_sectors_written = 0;
-                    if ($redis->exists("diskstats:$partition_name")) {
-                      $last_sectors_written = $redis->get("diskstats:$partition_name");
-                      $last_time = $redis->get("diskstats:time");
-                      $elapsed = time() - $last_time;
-                      $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
-                      $writeloadtime = $elapsed;
-                    } else {
-                      $redis->set("diskstats:$partition_name",$sectors_written);
-                      $redis->set("diskstats:time",time());
-                      $writeload = 0;
+                    if ($partition_name) {
+                        if ($sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
+                            $last_sectors_written = 0;
+                            if ($this->redis->exists("diskstats:$partition_name")) {
+                                $last_sectors_written = $this->redis->get("diskstats:$partition_name");
+                                $last_time = $this->redis->get("diskstats:time");
+                                $elapsed = time() - $last_time;
+                                $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                                $writeloadtime = $elapsed;
+                            } else {
+                                $this->redis->set("diskstats:$partition_name",$sectors_written);
+                                $this->redis->set("diskstats:time",time());
+                                $writeload = 0;
+                            }
+                        }
                     }
-
-                  }
+                } else {
+                    $writeloadkb = 0;
+                    if ($writeloadkb = $this->exec("iostat -d -k $filesystem | awk 'NR == 5 { print val } {val=$4}'")) {
+                        $writeload = round($writeloadkb * 1024); // bytes
+                        $writeloadtime = 1; // 1 second
+                    }
                 }
-              } else {
-                $writeloadkb = 0;
-                if ($writeloadkb = Admin::exec("iostat -d -k $filesystem | awk 'NR == 5 { print val } {val=$4}'")) {
-                    $writeload = round($writeloadkb * 1024); // bytes
-                    $writeloadtime = 1; // 1 second
-                }
-              }
-              $partitions[$partition]['WriteLoad']['value'] = $writeload;
-              $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
+                $partitions[$partition]['WriteLoad']['value'] = $writeload;
+                $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
             }
-          }
-          return $partitions;
-      }
+        }
+        return $partitions;
+    }
 
     /**
      * return an array of all installed php modules
@@ -533,24 +524,20 @@ class Admin {
         $rpi_info['currentfs'] = $this->get_fs_state();
         return $rpi_info;
     }
+
     /**
      * return the current mosquitto server version
      *
      * @return string
      */
     public function mqtt_version() {
-        global $log;
         $v = '?';
         if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
             $v = "n/a";
         } else {
-            set_error_handler(function($errno, $errstr, $errfile, $errline) use ($log) {
-                $log->warn(sprintf("%s:%s - %s", basename($errfile), $errline, $errstr));
-            });
-            if (file_exists('/usr/sbin/mosquitto')) {
+            if (@file_exists('/usr/sbin/mosquitto')) {
                 $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
             }
-            restore_error_handler();
         }
         return $v;
     }
@@ -652,6 +639,7 @@ class Admin {
         }
         return $mounts;
     }
+
     /**
      * return read only state of the file system
      *
@@ -668,7 +656,6 @@ class Admin {
         if (!$this->is_Pi()) $currentfs = '?';
         return $currentfs;
     }
-
 
     /**
      * return bytes as suitable unit
