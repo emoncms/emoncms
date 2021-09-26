@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
-<div class="admin-container" style="margin-top:10px">
+<div class="admin-container">
     <h3><?php echo _('Update'); ?></h3>
 
 <?php if (PHP_VERSION_ID<70300) { ?>

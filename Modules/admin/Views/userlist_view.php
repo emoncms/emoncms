@@ -2,21 +2,21 @@
   defined('EMONCMS_EXEC') or die('Restricted access');
   global $path;
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-
-<h2><?php echo _("Users"); ?></h2>
-
-<p><?php echo _("Number of users:"); ?> <span id="numberofusers"></span></p>
-
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 <style>
-
 .afeed {
     color:#00aa00;
     font-weight:bold;
 }
-
 </style>
+
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+
+<div class="admin-container">
+<h2><?php echo _("Users"); ?></h2>
+
+<p><?php echo _("Number of users:"); ?> <span id="numberofusers"></span></p>
 
 <div class="pagination">
   <ul>
@@ -58,6 +58,7 @@
 <div class="pagination">
   <ul>
   </ul>
+</div>
 </div>
 
 <script>

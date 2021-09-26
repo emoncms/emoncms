@@ -19,6 +19,10 @@
         }
     }
 ?>
+
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css">
+<div class="admin-container">
+
 <h2><?php echo _("Update database"); ?></h2>
 <?php
     if ($out && !$applychanges) {
@@ -44,3 +48,5 @@
 </div>
 <a href="<?php echo $path; ?>admin/update" class="btn btn-info"><?php echo _('Return to Update Page'); ?></a>
 <?php } ?>
+
+</div>

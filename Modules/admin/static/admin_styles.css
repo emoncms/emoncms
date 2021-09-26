@@ -1,8 +1,11 @@
+.admin-container {
+      margin-top:10px;
+}
 .content-container {
     max-width:1150px;
 }
 .border-top{
-    border-color: #dee2e6
+    border-color: #dee2e6;
 }
 select{
     width: auto;
