@@ -177,6 +177,7 @@ function admin_controller()
     if ($route->action == 'resetwriteload') {
         $route->format = 'json';
         if ($redis) {
+            // TODO: should delete all diskstats not just hardcoded ones
             $redis->del("diskstats:mmcblk0p1");
             $redis->del("diskstats:mmcblk0p2");
             $redis->del("diskstats:mmcblk0p3");
