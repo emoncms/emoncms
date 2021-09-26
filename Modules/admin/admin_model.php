@@ -27,7 +27,7 @@ class Admin {
     }
 
     public function get_services_list() {
-        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+        return array('ssh', 'emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
     }
     
     public function listSerialPorts() {
@@ -78,9 +78,9 @@ class Admin {
         
         foreach($system['services'] as $key=>$value) {
             if (!empty($system['services'][$key])) {    // If the service was found on this system
-                
                 // Populate service status fields
                 $services[$key] = array(
+                    'loadstate' => ucfirst($value['LoadState']),
                     'state' => ucfirst($value['ActiveState']),
                     'text' => ucfirst($value['SubState']),
                     'running' => $value['SubState']==='running'
@@ -90,20 +90,24 @@ class Admin {
                 if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
                     $services[$key]['cssClass'] = 'masked';
                     $services[$key]['text'] = 'Masked';
+                } elseif ($value['LoadState']==='not-found') { // not installed
+                    $services[$key]['cssClass'] = 'masked';
+                    $services[$key]['text'] = 'Not found or not installed';
                 } elseif ($value['SubState']==='running') {    // If not masked, check if service is running
                     $services[$key]['cssClass'] = 'success';
                 } else {                                       // Assume service is in danger
                     $services[$key]['cssClass'] = 'danger';
+                    $services[$key]['text'] = $value['LoadState'] . " " . $value['ActiveState']  . " " . $value['SubState'];
                 }
             }
         }
         // add custom messages for feedwriter service
         if(isset($services['feedwriter'])) {
-            $message = '<font color="red">Service is not running</font>';
+            $message = "";
             if ($services['feedwriter']['running']) {
                 $message = ' - sleep ' . $this->settings['feed']['redisbuffer']['sleep'] . 's';
             }
-            $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+            $services['feedwriter']['text'] .= $message . ' <span id="bufferused"></span>';
         }
         $redis_info = array();
         if($this->settings['redis']['enabled']) {
@@ -117,6 +121,7 @@ class Admin {
 
         return array(
             'system'=>$system,
+            'cpu_info'=>$system['cpu_info'],
             'services'=>$services,
             'redis_enabled'=>$this->settings['redis']['enabled'],
             'mqtt_enabled'=>$this->settings['mqtt']['enabled'],
@@ -128,8 +133,7 @@ class Admin {
             'mqtt_version'=>$this->mqtt_version(),
             'rpi_info'=> $this->get_rpi_info(),
             'ram_info'=> $this->get_ram($system['mem_info']),
-            'disk_info'=> $this->get_mountpoints($system['partitions']),
-            'v' => 3
+            'disk_info'=> $this->get_mountpoints($system['partitions'])
         );
     }
 
@@ -149,10 +153,7 @@ class Admin {
             $parts = explode('=',$line);
             $status[$parts[0]] = $parts[1];
         }
-        if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
-            $return = array();
-        } else if (
-                isset($status["ActiveState"]) &&
+        if (    isset($status["ActiveState"]) &&
                 isset($status["SubState"]) &&
                 isset($status["LoadState"])
                 ) {
@@ -217,6 +218,18 @@ class Admin {
           }
         }
         
+        $cpuinfo = false;
+        if (@is_readable('/usr/bin/lscpu')) {
+          $data = $this->exec_array("lscpu");
+          $cpuinfo = array();
+          foreach ($data as $line) {
+              if (strpos($line, ':') !== false) {
+                  list($key, $val) = explode(":", $line);
+                  $cpuinfo[trim($key)] = trim($val);
+              }
+          }
+        }
+
         // Component summary
         $component_summary = array();
         $components = $this->component_list(false);
@@ -229,6 +242,8 @@ class Admin {
                      'system' => $system,
                      'kernel' => $kernel,
                      'host' => $host,
+                     'cpu_info' => $cpuinfo,
+                     'machine' => $this->get_machine(),
                      'ip' => server('SERVER_ADDR'),
                      'uptime' => $this->exec('uptime'),
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
@@ -261,6 +276,36 @@ class Admin {
                      'git_URL' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
                      'git_describe' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                      );
+    }
+
+    private function get_machine(){
+        $machine_string = "";
+        $product = "";
+        $board = "";
+        $bios = "";
+
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_vendor');
+        if (trim($res != "")) $machine_string = trim($res);
+        
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/product_name');
+        if (trim($res != "")) $product = trim($res); 
+        
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_name');
+        if (trim($res != "")) $board = trim($res); 
+        
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_version');
+        if (trim($res != "")) $bios = trim($res); 
+        
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_date');
+        if (trim($res != "")) $bios = trim($bios." ".trim($res));  
+        
+        if ($product != "") $machine_string .= " ".$product; 
+        if ($board != "") $machine_string .= "/".$board; 
+        if ($bios != "") $machine_string .= ", BIOS ".$bios;
+        if ($machine_string != "") {
+            $machine_string = trim(preg_replace("/^\/,?/", "", preg_replace("/ ?(To be filled by O\.E\.M\.|System manufacturer|System Product Name|Not Specified|Default string) ?/i", "", $machine_string)));
+        }
+        return $machine_string;
     }
 
     public function components_available() {
@@ -543,7 +588,7 @@ class Admin {
             $v = "n/a";
         } else {
             if (@file_exists('/usr/sbin/mosquitto')) {
-                $v = exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
             }
         }
         return $v;
@@ -656,6 +701,7 @@ class Admin {
         $currentfs = "read-only";
         exec('mount', $resexec);
         $matches = null;
+        // hardcoded partition to raspberrypi only
         preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
         if (!empty($matches)) {
             $currentfs = "read-write";
