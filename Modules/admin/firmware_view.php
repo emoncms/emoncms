@@ -5,7 +5,7 @@
   line-height:31px;
 }
 </style>
-<div class="admin-container" style="margin-top:10px">
+<div class="admin-container">
 <h3>Serial Monitor</h3>
 
 <div id="emonhub-running-notice" class="alert hide">
