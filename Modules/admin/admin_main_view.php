@@ -94,16 +94,6 @@ listItem;
             <?php echo row(_('Components'), $component_summary); ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
-        <dl class="row">
-            <?php if ($system['machine']) echo row(_('Machine'),  $system['machine']); ?>
-            <?php if ($cpu_info) echo row(_('CPU'),  $cpu_info['Socket(s)'] . 'x ' .$cpu_info['Model name'] . ' ' . $cpu_info['CPU max MHz'] . "MHz"); ?>
-            <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
-            <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
-            <?php echo row(_('Date'), $system['date']); ?>
-            <?php echo row(_('Uptime'), $system['uptime']); ?>
-        </dl>
-
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
         <dl class="row">
             <?php foreach ($services as $key=>$value) { ?>
@@ -125,6 +115,16 @@ listItem;
                   <?php } ?>
                 </dd>
             <?php } ?>
+        </dl>
+
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
+        <dl class="row">
+            <?php if ($system['machine']) echo row(_('Machine'),  $system['machine']); ?>
+            <?php if ($cpu_info) echo row(_('CPU'),  $cpu_info['Socket(s)'] . 'x ' .$cpu_info['Model name'] . ' ' . $cpu_info['CPU max MHz'] . "MHz"); ?>
+            <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
+            <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
+            <?php echo row(_('Date'), $system['date']); ?>
+            <?php echo row(_('Uptime'), $system['uptime']); ?>
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
@@ -151,9 +151,8 @@ listItem;
             <button id="resetwriteload" class="btn btn-info"><?php echo _('Reset'); ?></button>
         </div>
         <?php } ?>
+
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
-        <br>
-        
         <dl class="row">
             <?php 
             foreach($disk_info as $mount_info) {
@@ -168,7 +167,6 @@ listItem;
             }
             ?>
         </dl>
-
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
         <dl class="row">
@@ -203,7 +201,6 @@ listItem;
             echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
             ?>
             <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
-            
         </dl>
         <?php endif; ?>
 
