@@ -150,9 +150,8 @@ listItem;
             <button id="resetwriteload" class="btn btn-info"><?php echo _('Reset'); ?></button>
         </div>
         <?php } ?>
+
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
-        <br>
-        
         <dl class="row">
             <?php 
             foreach($disk_info as $mount_info) {
@@ -167,7 +166,6 @@ listItem;
             }
             ?>
         </dl>
-
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
         <dl class="row">
@@ -202,7 +200,6 @@ listItem;
             echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
             ?>
             <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
-            
         </dl>
         <?php endif; ?>
 
