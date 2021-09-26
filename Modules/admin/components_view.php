@@ -1,7 +1,7 @@
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css">
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
-<div class="admin-container" style="margin-top:10px">
+<div class="admin-container">
 <h3><?php echo _('Components'); ?></h3>
 
 <p><?php echo _('Selectively update system components or switch between branches'); ?></p>
