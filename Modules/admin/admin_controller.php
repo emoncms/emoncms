@@ -107,12 +107,7 @@ function admin_controller()
     if ($route->action == 'emoncmslog') {
         $route->format = 'html';
         
-        $log_levels = array(
-            1 =>'INFO',
-            2 =>'WARN', // default
-            3 =>'ERROR'
-        );  
-        
+        $log_levels = $log->levels();
         return view("Modules/admin/emoncms_log_view.php", array(
             'log_enabled'=>$settings['log']['enabled'],
             'emoncms_logfile'=>$emoncms_logfile,
