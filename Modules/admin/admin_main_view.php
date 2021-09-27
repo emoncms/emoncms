@@ -120,7 +120,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
         <dl class="row">
             <?php if ($system['machine']) echo row(_('Machine'),  $system['machine']); ?>
-            <?php if ($cpu_info) echo row(_('CPU'),  $cpu_info['Socket(s)'] . 'x ' .$cpu_info['Model name'] . ' ' . $cpu_info['CPU max MHz'] . "MHz"); ?>
+            <?php if ($system['cpu_info']) echo row(_('CPU'), $system['cpu_info']); ?>
             <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
             <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
             <?php echo row(_('Date'), $system['date']); ?>
