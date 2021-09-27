@@ -78,6 +78,7 @@ var app = new Vue({
 });
 
 function component_update(name,branch) {
+    refresh_updateLog("");
     $.ajax({                                      
         url: path+'admin/component-update',                         
         async: true, 
@@ -87,7 +88,7 @@ function component_update(name,branch) {
             if (result.reauth == true) { window.location = "/"; }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
-                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+                refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 log_end = "- component updated"
 
             } else {
@@ -99,6 +100,7 @@ function component_update(name,branch) {
 }
 
 function update_all_components(branch) {
+    refresh_updateLog("");
     $.ajax({                                      
         url: path+'admin/components-update-all',
         async: true,        
@@ -108,7 +110,7 @@ function update_all_components(branch) {
             if (result.reauth == true) { window.location = "/"; }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
-                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+                refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 log_end = "- all components updated"
             } else {
                 refresh_updateLog(result.message);
@@ -132,15 +134,19 @@ function refresherStart(func, interval){
 }
 
 // display content in container and scroll to the bottom
-function output_logfile(result, $container){
-    $container.html(result);
+function output_logfile(result, $container, append){
+    if (append) { 
+        $container.append(result);
+    } else {
+        $container.html(result);
+    }
     scrollable = $container.parent('pre')[0];
     if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
 }
 
 // push value to updates logfile viewer
-function refresh_updateLog(result){
-    output_logfile(result, $("#update-log"));
+function refresh_updateLog(result, append = false){
+    output_logfile(result, $("#update-log"), append);
     $("#update-log-bound").slideDown();
 }
 
@@ -153,7 +159,7 @@ function getUpdateLog() {
             if (data.reauth == true) { window.location = "/"; }
             if (data.success == false)  { 
                 clearInterval(updates_log_interval); 
-                refresh_updateLog("<text style='color:red;'>"+ data.message+"</text>");
+                refresh_updateLog("\n<text style='color:red;'>"+ data.message+"</text>\n", true);
             }
         } catch (e) {
             isjson = false;

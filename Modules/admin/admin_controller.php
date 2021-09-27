@@ -23,10 +23,6 @@ function admin_controller()
     require_once "Modules/admin/admin_model.php";
     $admin = new Admin($mysqli, $redis, $settings);
     
-    $emoncms_logfile = $settings['log']['location']."/emoncms.log";
-    $update_logfile = $settings['log']['location']."/update.log";
-    $old_update_logfile = $settings['log']['location']."/emonpiupdate.log";
-    
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -85,7 +81,7 @@ function admin_controller()
     if ($route->action == 'update') {
         $route->format = 'html';
         return view("Modules/admin/update_view.php", array(
-            'update_log_filename'=> $update_logfile,
+            'update_log_filename'=> $admin->update_logfile(),
             'serial_ports'=>$admin->listSerialPorts(),
             'firmware_available'=>$admin->firmware_available()
         ));
@@ -110,7 +106,7 @@ function admin_controller()
         $log_levels = $log->levels();
         return view("Modules/admin/emoncms_log_view.php", array(
             'log_enabled'=>$settings['log']['enabled'],
-            'emoncms_logfile'=>$emoncms_logfile,
+            'emoncms_logfile'=>$admin->emoncms_logfile(),
             'log_levels' => $log_levels,
             'log_level'=>$settings['log']['level'],
             'log_level_label' => $log_levels[$settings['log']['level']]     
@@ -219,7 +215,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }        
-        return $admin->runService($update_script, "$type $firmware_key $serial_port > $update_logfile");
+        return $admin->runService($update_script, "$type $firmware_key $serial_port > " . $admin->update_logfile());
     }
     
     if ($route->action == 'update-firmware') {
@@ -237,54 +233,54 @@ function admin_controller()
         if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        return $admin->runService($update_script, "$serial_port $firmware_key > $update_logfile");
+        return $admin->runService($update_script, "$serial_port $firmware_key > ". $admin->update_logfile());
     }
     
     if ($route->action == 'update-log') {
         $route->format = "text";
-        if (file_exists($update_logfile)) {
+        if (file_exists($admin->update_logfile())) {
             ob_start();
-            passthru("cat " . $update_logfile);
+            passthru("cat " . $admin->update_logfile());
             return trim(ob_get_clean());
         }
-        else if (file_exists($old_update_logfile)) {
+        else if (file_exists($admin->old_update_logfile())) {
             ob_start();
-            passthru("cat " . $old_update_logfile);
+            passthru("cat " . $admin->old_update_logfile());
             return trim(ob_get_clean());
         }
         else {
             $route->format = "json";
-            return array('success'=>false, 'message'=>"$update_logfile does not exist");
+            return array('success'=>false, 'message'=>$admin->update_logfile() . " does not exist");
         }
     }
     
     if ($route->action == 'update-log-download') {
         header("Content-Type: application/octet-stream");
         header("Content-Transfer-Encoding: Binary");
-        header("Content-disposition: attachment; filename=\"" . basename($update_logfile) . "\"");
+        header("Content-disposition: attachment; filename=\"" . basename($admin->update_logfile()) . "\"");
         header("Pragma: no-cache");
         header("Expires: 0");
         flush();
-        if (file_exists($update_logfile)) {
+        if (file_exists($admin->update_logfile())) {
             ob_start();
-            readfile($update_logfile);
+            readfile($admin->update_logfile());
             echo(trim(ob_get_clean()));
-        } else if (file_exists($old_update_logfile)) {
+        } else if (file_exists($admin->old_update_logfile())) {
             ob_start();
-            readfile($old_update_logfile);
+            readfile($admin->old_update_logfile());
             echo(trim(ob_get_clean()));
         } else {
-            echo($update_logfile . " does not exist!");
+            echo($admin->update_logfile() . " does not exist!");
         }
         exit;
     }
-    
+
     // ----------------------------------------------------------------------------------------
     // Component manager
     // ----------------------------------------------------------------------------------------
     if ($route->action == 'components-installed' && $session['write']) {
         $route->format = "json";
-        return $admin->component_list(true);
+        return $admin->component_list();
     }
     
     if ($route->action == 'components-available' && $session['write']) {
@@ -294,39 +290,17 @@ function admin_controller()
    
     if ($route->action == 'component-update' && $session['write']) {
         $route->format = "json";
-        $components = $admin->component_list(false);
-        
         if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
         if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
-        $module_path = $components[$module]["path"];     
-        
-        // if branch is not in available branches, check that it is not the current branch
-        if (!in_array($branch,$components[$module]["branches_available"])) {
-            $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
-            if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");;
-        }
-
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, "$module_path $branch > $update_logfile");
+        return $admin->component_update($module, $branch);
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
         $route->format = "json";
         if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        
-        // Validate branch
-        $available_branches = array();
-        foreach ($admin->component_list(false) as $c) {
-            foreach ($c["branches_available"] as $b) {
-                if (!in_array($b,$available_branches)) $available_branches[] = $b;
-            }
-        }
-        if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
-        
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, "$branch > $update_logfile");
+        return $admin->component_update_all($branch);
     }
+
     
     // ----------------------------------------------------------------------------------------
     // Firmware
@@ -393,14 +367,14 @@ function admin_controller()
         if ($settings['log']['enabled']) {
             header("Content-Type: application/octet-stream");
             header("Content-Transfer-Encoding: Binary");
-            header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
+            header("Content-disposition: attachment; filename=\"" . basename($admin->emoncms_logfile()) . "\"");
             header("Pragma: no-cache");
             header("Expires: 0");
             flush();
-            if (file_exists($emoncms_logfile)) {
-                readfile($emoncms_logfile);
+            if (file_exists($admin->emoncms_logfile())) {
+                readfile($admin->emoncms_logfile());
             } else {
-                echo($emoncms_logfile . " does not exist!");
+                echo($admin->emoncms_logfile() . " does not exist!");
             }
             exit;
         }
@@ -412,9 +386,9 @@ function admin_controller()
             $route->format = "json";
             return array('success'=>false, 'message'=>"Log is disabled");
         }
-        else if (!file_exists($emoncms_logfile)) { 
+        else if (!file_exists($admin->emoncms_logfile())) { 
             $route->format = "json";
-            return array('success'=>false, 'message'=>"$emoncms_logfile does not exist");
+            return array('success'=>false, 'message'=>$admin->emoncms_logfile() . " does not exist");
         }
 
         $route->format = "text";
@@ -449,8 +423,8 @@ function admin_controller()
             return array_reverse($text);
         }
 
-        $fsize = round(filesize($emoncms_logfile)/1024/1024,2);
-        $lines = read_file($emoncms_logfile, 25);
+        $fsize = round(filesize($admin->emoncms_logfile())/1024/1024,2);
+        $lines = read_file($admin->emoncms_logfile(), 25);
         
         foreach ($lines as $line) {
           echo $line;

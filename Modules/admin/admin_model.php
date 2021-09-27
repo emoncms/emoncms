@@ -17,6 +17,10 @@ class Admin {
     private $redis;
     private $settings;
     private $log;
+    
+    private $emoncms_logfile;
+    private $update_logfile;
+    private $old_update_logfile;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -24,6 +28,22 @@ class Admin {
         $this->redis = $redis;
         $this->settings = $settings;
         $this->log = new EmonLogger(__FILE__);
+
+        $this->emoncms_logfile = $settings['log']['location']."/emoncms.log";
+        $this->update_logfile = $settings['log']['location']."/update.log";
+        $this->old_update_logfile = $settings['log']['location']."/emonpiupdate.log";
+    }
+
+    public function emoncms_logfile() {
+        return $this->emoncms_logfile;
+    }
+
+    public function update_logfile() {
+        return $this->update_logfile;
+    }
+
+    public function old_update_logfile() {
+        return $this->old_update_logfile;
     }
     
     public function get_services_list() {
@@ -183,7 +203,6 @@ class Admin {
             $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
             return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
         } else {
-            
             $this->log->warn("runService() Redis not enabled. Trying PHP execution '$script $attributes'");
             $result = $this->exec("$script $attributes");
             $this->log->info("runService() PHP exec returned '$result'");
@@ -308,6 +327,11 @@ class Admin {
         return $machine_string;
     }
 
+    /**
+     * emoncms components
+     *
+     * @return array
+     */
     public function components_available() {
       $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
       if (file_exists($localfile)) {
@@ -324,7 +348,6 @@ class Admin {
     public function component_list($git_info=true) 
     {
       $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
-      
       $components = array();
       
       // Emoncms core
@@ -342,13 +365,10 @@ class Admin {
               );
           }
       }
-      
-      foreach (array("$emoncms_path/Modules",$this->settings['emoncms_dir']."/modules",$this->settings['openenergymonitor_dir']) as $path) {
-          
-          $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
-          
-          foreach($directories as $module_fullpath) {                                           // loop through the folders
 
+      foreach (array("$emoncms_path/Modules",$this->settings['emoncms_dir']."/modules",$this->settings['openenergymonitor_dir']) as $path) {
+          $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
+          foreach($directories as $module_fullpath) {                                           // loop through the folders
               if (!is_link($module_fullpath)) {
 
                   $fullpath_parts = explode("/",$module_fullpath);
@@ -370,9 +390,8 @@ class Admin {
                   }
               }
           }
-      
       }
-      
+
       if ($git_info) {
           foreach ($components as $name=>$component) {
               $path = $components[$name]["path"];
@@ -387,8 +406,67 @@ class Admin {
           }             
       }   
       
-      
       return $components;
+    }
+
+    public function component_update($module, $branch) 
+    {
+        $components = $this->component_list();
+        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
+        $component = $components[$module];
+        $path = $component["path"];  // installed location
+        
+        // if branch is not in available branches, check that it is not the current branch
+        if (!in_array($branch,$component["branches_available"])) {
+            $current_branch = $this->exec("git -C $path rev-parse --abbrev-ref HEAD");
+            if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");;
+        }
+
+        if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'");
+
+        if ($component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
+
+        $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
+        if ($this->redis && file_exists($script)) {
+            // use update script from service runner
+            return $this->runService($script, "$path $branch > " . $this->update_logfile());
+        } 
+        else {
+            // alternative use php to execute git
+            $this->log->warn("component_update() Using PHP execution '".$component['name']." $branch'");
+            
+            $message = "Using PHP execution:";
+            $result = $this->exec("git -C $path fetch --all --prune");
+            $message .= "\n- git fetch: $result";
+            
+            $result = $this->exec("git -C $path checkout $branch");
+            $message .= "\n- git checkout: $result";
+            
+            $result = $this->exec("git -C $path pull");
+            $message .= "\n- git pull: $result";
+            
+            $file = $path . "/install.sh";
+            if (file_exists($file)) $message .= "\n- module install/update script detected. Please run '$file' manualy if needed.";
+            
+            $message .= "\n- component updated";
+            
+            $this->log->info("component_update() PHP exec returned '$message'");
+            return array('success'=>true, 'message'=>"$message");
+        }
+    }
+    
+    public function component_update_all($branch) {
+        // Validate branch
+        $available_branches = array();
+        foreach ($this->component_list(false) as $c) {
+            foreach ($c["branches_available"] as $b) {
+                if (!in_array($b,$available_branches)) $available_branches[] = $b;
+            }
+        }
+        if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
+        
+        $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
+        return $this->runService($script, "$branch > " . $this->update_logfile());
     }
 
     /**
