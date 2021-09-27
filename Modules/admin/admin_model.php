@@ -131,7 +131,6 @@ class Admin {
 
         return array(
             'system'=>$system,
-            'cpu_info'=>$system['cpu_info'],
             'services'=>$services,
             'redis_enabled'=>$this->settings['redis']['enabled'],
             'mqtt_enabled'=>$this->settings['mqtt']['enabled'],
@@ -231,11 +230,17 @@ class Admin {
         $cpuinfo = false;
         if (@is_readable('/usr/bin/lscpu')) {
           $data = $this->exec_array("lscpu");
-          $cpuinfo = array();
           foreach ($data as $line) {
               if (strpos($line, ':') !== false) {
                   list($key, $val) = explode(":", $line);
-                  $cpuinfo[trim($key)] = trim($val);
+                  $key = trim($key);
+                  $val = trim($val);
+                  if ($key == "Socket(s)") $cpuinfo .= $val . ' Sockets(s) | ';
+                  if ($key == "Core(s) per socket") $cpuinfo .= $val . ' Core(s) | ';
+                  if ($key == "Thread(s) per core") $cpuinfo .= $val . ' Threads(s) | ';
+                  if ($key == "Model name") $cpuinfo .= $val . ' | ';
+                  if ($key == "CPU MHz") $cpuinfo .= $val . 'MHz | ';
+                  if ($key == "BogoMIPS") $cpuinfo .= $val . 'MIPS | ';
               }
           }
         }
