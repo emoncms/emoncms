@@ -439,6 +439,7 @@ class Admin {
         else {
             // alternative use php to execute git
             $this->log->warn("component_update() Using PHP execution '".$component['name']." $branch'");
+            if (!is_writable($path . "/.git")) return array('success'=>false, 'message'=>"Module git folder not writable '$path/.git'");
             
             $message = "Using PHP execution:";
             $result = $this->exec("git -C $path fetch --all --prune");
