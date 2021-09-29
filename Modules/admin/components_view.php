@@ -42,7 +42,10 @@
         </select>
       </td>
       <td v-else>{{ item.branch }}</td>
-      <td><button class="btn" v-if="item.local_changes==''" @click="update(key)"><?php echo _('Update'); ?></button></td>
+      <td>
+        <button class="btn" v-if="item.local_changes==''" @click="update(key, 'false')"><?php echo _('Update'); ?></button>
+        <button class="btn  btn-danger" v-if="!item.local_changes==''" @click="update(key, 'true')"><?php echo _('Reset'); ?></button>
+      </td>
     </tr>
     </table>
 </div>
@@ -65,9 +68,9 @@ var app = new Vue({
             console.log("switch_branch: "+name+" "+components[name].branch)
             component_update(name,components[name].branch)  
         },
-        update: function(name) {
-            console.log("update: "+name+" "+components[name].branch)
-            component_update(name,components[name].branch)
+        update: function(name, reset) {
+            console.log("update: "+name+" "+components[name].branch + " " + reset)
+            component_update(name,components[name].branch, reset)
         },
         all: function(branch) {
             if (branch=='custom') branch = this.custom_branch
@@ -77,12 +80,12 @@ var app = new Vue({
     }
 });
 
-function component_update(name,branch) {
+function component_update(name,branch,reset) {
     refresh_updateLog("");
     $.ajax({                                      
         url: path+'admin/component-update',                         
         async: true, 
-        data: "module="+name+"&branch="+branch,
+        data: "module="+name+"&branch="+branch+"&reset="+reset,
         dataType: 'json',
         success: function(result) {
             if (result.reauth == true) { window.location = "/"; }

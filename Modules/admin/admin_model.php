@@ -414,7 +414,7 @@ class Admin {
       return $components;
     }
 
-    public function component_update($module, $branch) 
+    public function component_update($module, $branch, $reset = false) 
     {
         $components = $this->component_list();
         if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
@@ -429,22 +429,27 @@ class Admin {
 
         if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'");
 
-        if ($component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
+        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
 
         $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
         if ($this->redis && file_exists($script)) {
             // use update script from service runner
-            return $this->runService($script, "$path $branch > " . $this->update_logfile());
+            return $this->runService($script, "$path $branch $reset > " . $this->update_logfile());
         } 
         else {
             // alternative use php to execute git
             $this->log->warn("component_update() Using PHP execution '".$component['name']." $branch'");
             if (!is_writable($path . "/.git")) return array('success'=>false, 'message'=>"Module git folder not writable '$path/.git'");
-            
+
             $message = "Using PHP execution:";
             $result = $this->exec("git -C $path fetch --all --prune");
             $message .= "\n- git fetch: $result";
             
+            if ($reset) {
+                $result = $this->exec("git -C $path reset --hard $branch");
+                $message .= "\n- git reset: $result";
+            }
+
             $result = $this->exec("git -C $path checkout $branch");
             $message .= "\n- git checkout: $result";
             
@@ -453,9 +458,9 @@ class Admin {
             
             $file = $path . "/install.sh";
             if (file_exists($file)) $message .= "\n- module install/update script detected. Please run '$file' manualy if needed.";
-            
+
             $message .= "\n- component updated";
-            
+
             $this->log->info("component_update() PHP exec returned '$message'");
             return array('success'=>true, 'message'=>"$message");
         }

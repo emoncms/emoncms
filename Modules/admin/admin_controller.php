@@ -283,7 +283,8 @@ function admin_controller()
         $route->format = "json";
         if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
         if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        return $admin->component_update($module, $branch);
+        $reset = (isset($_GET['reset']) && ($_GET['reset'] == "true") ? true : false);
+        return $admin->component_update($module, $branch, $reset);
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
