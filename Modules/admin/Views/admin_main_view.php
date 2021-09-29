@@ -508,8 +508,7 @@ $(window).resize(function() {
 function getBufferSize() {
   $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
     {
-      var data = JSON.parse(result);
-      $("#bufferused").html( data + " feed points pending write");
+      $("#bufferused").html( result + " feed points pending write");
     }
   });
 }
@@ -519,8 +518,7 @@ function getBufferSize() {
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush", async: true, dataType: "json", success: function(result)
     {
-      var data = JSON.parse(result);
-      $("#redisused").html(data.dbsize+" keys ("+data.used+")");
+      $("#redisused").html(result.dbsize+" keys ("+result.used+")");
     }
   });
 });
