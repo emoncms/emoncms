@@ -30,7 +30,7 @@ $log = new EmonLogger(__FILE__);
 
 // 2) Database
 if ($settings['redis']['enabled']) {
-    # Check Redir PHP modules is loaded
+    # Check Redis PHP modules is loaded
     if (!extension_loaded('redis')) {
         echo "Your PHP installation appears to be missing the <b>Redis</b> extension which is required by Emoncms current settings. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
         die;

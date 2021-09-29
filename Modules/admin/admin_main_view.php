@@ -145,23 +145,22 @@ listItem;
             ?>
             
         </dl>
-        <?php if ($redis_enabled) { ?>
-        <div class="input-prepend" style="float:right; padding-top:5px">
-            <span class="add-on"><?php echo _('Write Load Period'); ?></span>
-            <button id="resetwriteload" class="btn btn-info"><?php echo _('Reset'); ?></button>
-        </div>
-        <?php } ?>
-
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
         <dl class="row">
             <?php 
+            if ($redis_enabled) { 
+                $reset_write_load_btn = sprintf('<button id="resetdiskstats" class="btn btn-info btn-small pull-right">%s</button>',_('Reset Disk Stats'));
+                echo row('', sprintf('<span id="add-on"></span>%s',$reset_write_load_btn),'d-flex','d-flex align-items-center justify-content-between');
+            }
             foreach($disk_info as $mount_info) {
                 echo row($mount_info['mountpoint'], 
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
                         'Free'=>$mount_info['free'],
-                        'Write Load'=>$mount_info['writeload']
+                        'Read Load'=>$mount_info['readload'],
+                        'Write Load'=>$mount_info['writeload'],
+                        'Load Time'=>$mount_info['statsloadtime']
                     ))
                 );
             }
@@ -527,8 +526,8 @@ $("#redisflush").click(function() {
   });
 });
 
-$("#resetwriteload").click(function() {
-  $.ajax({ url: path+"admin/resetwriteload", async: true, dataType: "text", success: function(result)
+$("#resetdiskstats").click(function() {
+  $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "text", success: function(result)
     {
       location.reload(); 
     }
