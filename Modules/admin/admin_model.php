@@ -452,46 +452,81 @@ class Admin {
                     $partitions[$partition]['Free']['text'] = $columns[3];
                 }
 
+                $partition_name = false;
+                $sectors_read = 0;
+                $sectors_written = 0;
+                
+                $readload = 0;
                 $writeload = 0;
-                $writeloadtime = "";
-                global $redis;
-                if ($redis) {
+                $loadtime = "";
+                
+                ob_start();
+                @passthru("iostat -o JSON -k $filesystem");
+                $output = trim(ob_get_clean());
+                $stats = json_decode($output, true);
+                if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
+                    $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
+                    $partition_name = $disk["disk_device"];
+                    $readload = round($disk["kB_read/s"] * 1024); // convert to bytes (used if no redis is available)
+                    $writeload = round($disk["kB_wrtn/s"] * 1024); // convert to bytes (used if no redis is available)
+                    $sectors_read = round($disk["kB_read"] * 1024) / 512; // convert to bytes then to sectors
+                    $sectors_written = round($disk["kB_wrtn"] * 1024) / 512; // convert to bytes then to sectors
+                    $loadtime = 1; // 1 second
+                } else {
+                    // ALTERNATIVE: When iostats not available, use hard coded partitions, only works on raspberrypi.
                     // translate partition mount point to mmcblk0pX based name
-                    $partition_name = false;
-                    // TODO: The $partition_name should not be hard coded here, $filesystem variable already contains the discovered device name
                     if ($partition=="/boot") $partition_name = "mmcblk0p1";
                     else if ($partition=="/") $partition_name = "mmcblk0p2";
                     else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
                     else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
-
                     if ($partition_name) {
-                        if ($sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
-                            $last_sectors_written = 0;
-                            if ($this->redis->exists("diskstats:$partition_name")) {
-                                $last_sectors_written = $this->redis->get("diskstats:$partition_name");
-                                $last_time = $this->redis->get("diskstats:time");
-                                $elapsed = time() - $last_time;
-                                $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
-                                $writeloadtime = $elapsed;
-                            } else {
-                                $this->redis->set("diskstats:$partition_name",$sectors_written);
-                                $this->redis->set("diskstats:time",time());
-                                $writeload = 0;
-                            }
-                        }
-                    }
-                } else {
-                    $writeloadkb = 0;
-                    if ($writeloadkb = $this->exec("iostat -d -k $filesystem | awk 'NR == 5 { print val } {val=$4}'")) {
-                        $writeload = round($writeloadkb * 1024); // bytes
-                        $writeloadtime = 1; // 1 second
+                        $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
+                        $sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats");
+                        if ($sectors_read==null || $sectors_written==null) $partition_name = false;
                     }
                 }
+                if ($this->redis && $partition_name) {
+                    // with redis we can calculate average since disk_stats_reset() from BO, else it works with iostats avg kB_wrtn/s since boot
+                    $last_sectors_written = 0;
+                    if ($this->redis->exists("diskstats:starttime") && $this->redis->exists("diskstats:$partition_name:read") && $this->redis->exists("diskstats:$partition_name:write")) {
+                        $last_sectors_read = $this->redis->get("diskstats:$partition_name:read");
+                        $last_sectors_written = $this->redis->get("diskstats:$partition_name:write");
+                        $last_time = $this->redis->get("diskstats:starttime");
+                        $elapsed = time() - $last_time;
+                        if ($elapsed > 0) {
+                            $readload = ($sectors_read-$last_sectors_read)*512/$elapsed;
+                            $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                        }
+                        $loadtime = $elapsed;
+                    } else {
+                        $this->redis->set("diskstats:$partition_name:read",$sectors_read);
+                        $this->redis->set("diskstats:$partition_name:write",$sectors_written);
+                        $this->redis->set("diskstats:starttime",time());
+                        $readload = 0;
+                        $writeload = 0;
+                    }
+                }
+                $partitions[$partition]['ReadLoad']['value'] = $readload;
                 $partitions[$partition]['WriteLoad']['value'] = $writeload;
-                $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
+                $partitions[$partition]['LoadTime']['value'] = $loadtime;
             }
         }
         return $partitions;
+    }
+
+
+    public function disk_stats_reset() {
+        if ($this->redis) {
+            $prefix = $this->redis->getOption(Redis::OPT_PREFIX);
+            $this->redis->del(array_map(
+                function ($key) use ($prefix) {
+                    return preg_replace( "/^${prefix}/", '', $key );
+                }, $this->redis->keys('diskstats*'))
+            );
+            return array('success'=>true);
+        } else {
+            return array('success'=>false, 'message'=>"Redis not enabled");
+        }
     }
 
     /**
@@ -664,8 +699,9 @@ class Admin {
                     $diskFree = $fs['Free']['value'];
                     $diskTotal = $fs['Size']['value'];
                     $diskUsed = $fs['Used']['value'];
+                    $readLoad = $fs['ReadLoad']['value'];
                     $writeLoad = $fs['WriteLoad']['value'];
-                    $writeLoadTime = $fs['WriteLoadTime']['value'];
+                    $loadTime = $fs['LoadTime']['value'];
                     $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                     $diskPercent = sprintf('%.2f',$diskPercentRaw);
                     $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
@@ -675,25 +711,30 @@ class Admin {
                         $mountpoint = $fs['Partition']['text'];
                     }
 
+                    $readloadstr = "n/a";
                     $writeloadstr = "n/a";
-                    if ($writeLoadTime) {
+                    $loadstr = "n/a";
+                    if ($loadTime) {
+                        $readloadstr = $this->formatSize($readLoad)."/s";
                         $writeloadstr = $this->formatSize($writeLoad)."/s";
-                        if ($writeLoadTime > 1) {
-                            $days = floor($writeLoadTime / 86400);
-                            $hours = floor(($writeLoadTime - ($days*86400))/3600);
-                            $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
-                            $writeloadstr .= " (";
-                            if ($days) $writeloadstr .= $days." days ";
-                            if ($hours) $writeloadstr .= $hours." hours ";
-                            $writeloadstr .= $mins." mins)";
-                        }
                     }
+                        if ($loadTime > 1) {
+                            $days = floor($loadTime / 86400);
+                            $hours = floor(($loadTime - ($days*86400))/3600);
+                            $mins = floor(($loadTime - ($days*86400) - ($hours*3600))/60);
+                            $loadstr = "";
+                            if ($days) $loadstr .= $days." days ";
+                            if ($hours) $loadstr .= $hours." hours ";
+                            $loadstr .= $mins." mins";
+                        }
 
                     $mounts[] = array(
                         'free'=>$this->formatSize($diskFree),
                         'total'=>$this->formatSize($diskTotal),
                         'used'=>$this->formatSize($diskUsed),
+                        'readload'=>$readloadstr,
                         'writeload'=>$writeloadstr,
+                        'statsloadtime'=>$loadstr,
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,
