@@ -523,12 +523,11 @@ class Admin {
           }
 
           $partition_name = false;
-          $sectors_read = 0;
-          $sectors_written = 0;
-          
+          $bytes_read = 0;
+          $bytes_written = 0;
           $readload = 0;
           $writeload = 0;
-          $loadtime = "";
+          $loadtime = 0;
           
           ob_start();
           @passthru("iostat -o JSON -k $filesystem");
@@ -539,9 +538,9 @@ class Admin {
             $partition_name = $disk["disk_device"];
             $readload = round($disk["kB_read/s"] * 1024); // convert to bytes (used if no redis is available)
             $writeload = round($disk["kB_wrtn/s"] * 1024); // convert to bytes (used if no redis is available)
-            $sectors_read = round($disk["kB_read"] * 1024) / 512; // convert to bytes then to sectors
-            $sectors_written = round($disk["kB_wrtn"] * 1024) / 512; // convert to bytes then to sectors
-            $loadtime = 1; // 1 second
+            $bytes_read = round($disk["kB_read"] * 1024); // convert to bytes 
+            $bytes_written = round($disk["kB_wrtn"] * 1024); // convert to bytes
+            $loadtime = -1; // -1 = since reboot
           } else {
             // ALTERNATIVE: When iostats not available, use hard coded partitions, only works on raspberrypi.
             // translate partition mount point to mmcblk0pX based name
@@ -550,30 +549,31 @@ class Admin {
             else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
             else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
             if ($partition_name) {
-              $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
-              $sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats");
+              $bytes_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats") * 512;     // convert sectores to bytes
+              $bytes_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats") * 512; // convert sectores to bytes
             }
           }
           if ($this->redis && $partition_name) {
-              // with redis we can calculate average since disk_stats_reset() from BO, else it works with iostats avg kB_wrtn/s since boot
-                $last_sectors_written = 0;
-                if ($this->redis->exists("diskstats:starttime") && $this->redis->exists("diskstats:$partition_name:read") && $this->redis->exists("diskstats:$partition_name:write")) {
-                  $last_sectors_read = $this->redis->get("diskstats:$partition_name:read");
-                  $last_sectors_written = $this->redis->get("diskstats:$partition_name:write");
-                  $last_time = $this->redis->get("diskstats:starttime");
-                  $elapsed = time() - $last_time;
-                  if ($elapsed > 0) {
-                    $readload = ($sectors_read-$last_sectors_read)*512/$elapsed;
-                    $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
-                  }
-                  $loadtime = $elapsed;
-                } else {
-                  $this->redis->set("diskstats:$partition_name:read",$sectors_read);
-                  $this->redis->set("diskstats:$partition_name:write",$sectors_written);
-                  $this->redis->set("diskstats:starttime",time());
-                  $readload = 0;
-                  $writeload = 0;
-                }
+            // with redis we can calculate average since disk_stats_reset() from BO, else it works with iostats avg kB_wrtn/s since boot
+            $last_bytes_written = 0;
+            if ($this->redis->exists("diskstats:starttime") && $this->redis->exists("diskstats:$partition_name:read") && $this->redis->exists("diskstats:$partition_name:write")) {
+              $last_bytes_read = $this->redis->get("diskstats:$partition_name:read");
+              $last_bytes_written = $this->redis->get("diskstats:$partition_name:write");
+              $last_time = $this->redis->get("diskstats:starttime");
+              $elapsed = time() - $last_time;
+              if ($elapsed > 0) {
+                $readload = ($bytes_read-$last_bytes_read)/$elapsed;
+                $writeload = ($bytes_written-$last_bytes_written)/$elapsed;
+              }
+              $loadtime = $elapsed;
+            } else {
+              $this->redis->set("diskstats:$partition_name:read",$bytes_read);
+              $this->redis->set("diskstats:$partition_name:write",$bytes_written);
+              $this->redis->set("diskstats:starttime",time());
+              $readload = 0;
+              $writeload = 0;
+              $loadtime = 0;
+            }
           }
           $partitions[$partition]['ReadLoad']['value'] = $readload;
           $partitions[$partition]['WriteLoad']['value'] = $writeload;
@@ -787,15 +787,17 @@ class Admin {
                         $readloadstr = $this->formatSize($readLoad)."/s";
                         $writeloadstr = $this->formatSize($writeLoad)."/s";
                     }
-                        if ($loadTime > 1) {
-                            $days = floor($loadTime / 86400);
-                            $hours = floor(($loadTime - ($days*86400))/3600);
-                            $mins = floor(($loadTime - ($days*86400) - ($hours*3600))/60);
-                            $loadstr = "";
-                            if ($days) $loadstr .= $days." days ";
-                            if ($hours) $loadstr .= $hours." hours ";
-                            $loadstr .= $mins." mins";
-                        }
+                    if ($loadTime == -1){
+                        $loadstr = "since boot";
+                    } else if ($loadTime > 0) {
+                        $days = floor($loadTime / 86400);
+                        $hours = floor(($loadTime - ($days*86400))/3600);
+                        $mins = floor(($loadTime - ($days*86400) - ($hours*3600))/60);
+                        $loadstr = "";
+                        if ($days) $loadstr .= $days." days ";
+                        if ($hours) $loadstr .= $hours." hours ";
+                        $loadstr .= $mins." mins";
+                    }
 
                     $mounts[] = array(
                         'free'=>$this->formatSize($diskFree),

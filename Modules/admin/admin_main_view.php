@@ -518,7 +518,7 @@ function getBufferSize() {
 
 
 $("#redisflush").click(function() {
-  $.ajax({ url: path+"admin/redisflush", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/redisflush", async: true, dataType: "json", success: function(result)
     {
       var data = JSON.parse(result);
       $("#redisused").html(data.dbsize+" keys ("+data.used+")");
@@ -527,9 +527,9 @@ $("#redisflush").click(function() {
 });
 
 $("#resetdiskstats").click(function() {
-  $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "json", success: function(result)
     {
-      location.reload(); 
+      location.reload();
     }
   });
 });
@@ -570,7 +570,7 @@ $(".service-action").click(function() {
     var action = $(this).attr("service_action");
     console.log(action+" "+name)
     
-    $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "text", success: function(result) {
+    $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "json", success: function(result) {
         setTimeout(function() {
             location.reload();
         },1000);
