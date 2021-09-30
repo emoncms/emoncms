@@ -363,11 +363,12 @@ class Admin {
              // CHAVEIRO: 
              // A traditional emoncms module does not specify install_path as it will default to install in emoncms/Modules folder, this is nice and dont need aditional work (prefered)
              // A module that will install outside emoncms folder usualy specifies a hard coded absolute install_path.
-             // That module may fail to install on differnt servers, this may need to be reviewed later to better suport that use case
+             // That module may fail to install on differnt servers, this may need to be reviewed later and per module to better suport that use case
+             // Adding a $components[$name]["isModule"] might be usefull to distiguish traditional modules
                 $components[$name]["install_path"] = $emoncms_path ."/Modules";
             }
             if (!isset($components[$name]["branches_available"])) {
-                $components[$name]["branches_available"] = array ("stable", "master");
+                $components[$name]["branches_available"] = array ("master", "stable");
             }
         }
       }  
@@ -455,8 +456,9 @@ class Admin {
 
         if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'/.git");
 
-        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
+        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->passthru("git -C $path status"));
 
+        // TODO: add install_component.sh support for reset parameter or remove service-runner and scripts dependency as php usage works flawless
         $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
         if ($this->redis && file_exists($script)) {
             // use update script from service runner
@@ -467,25 +469,29 @@ class Admin {
             $this->log->warn("component_update() Using PHP execution '".$component['name']." $branch'");
             if (!is_writable($path . "/.git")) return array('success'=>false, 'message'=>"Module git folder not writable '$path/.git'");
 
-            $message = "Using PHP execution:";
-            $result = $this->exec("git -C $path fetch --all --prune");
-            $message .= "\n- git fetch: $result";
+            $message = "Using PHP execution\n";
+            $message .= "Component update '".$component['name']." $branch':\n";
+            $result = $this->passthru("git -C $path fetch --all --prune");
+            $message .= "- git fetch: \n$result\n";
             
             if ($reset) {
-                $result = $this->exec("git -C $path reset --hard $branch");
-                $message .= "\n- git reset: $result";
+                $result = $this->passthru("git -C $path reset --hard $branch");
+                $message .= "- git reset: \n$result\n";
             }
 
-            $result = $this->exec("git -C $path checkout $branch");
-            $message .= "\n- git checkout: $result";
+            $result = $this->passthru("git -C $path checkout $branch");
+            $message .= "- git checkout: \n$result\n";
             
-            $result = $this->exec("git -C $path pull");
-            $message .= "\n- git pull: $result";
+            $result = $this->passthru("git -C $path pull");
+            $message .= "- git pull: \n$result\n";
             
             $file = $path . "/install.sh";
-            if (file_exists($file)) $message .= "\n- module install/update script detected. Please run '$file' manualy if needed.";
+            if (file_exists($file)) $message .= "- module install/update script detected. Please run '$file' manualy if needed.\n";
+            
+            $file = $path . "/$module*.php";
+            if (!glob("$file")) $message .= "- '$module' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
 
-            $message .= "\n- component updated";
+            $message .= "- component updated";
 
             $this->log->info("component_update() PHP exec returned '$message'");
             return array('success'=>true, 'message'=>"$message");
@@ -493,6 +499,7 @@ class Admin {
     }
     
     // supports only update_component.sh via service runner
+    // TODO: add php support by calling component_update() recursively 
     public function component_update_all($branch) {
         // Validate branch
         $available_branches = array();
@@ -519,7 +526,6 @@ class Admin {
         $component = $components_available[$module];
         $path = $component["install_path"];  // target Modules folder
         $path_module = $path. "/$module";    // module folder after installed
-        // if branch is not in available branches, check that it is not the current branch
         if (!in_array($branch,$component["branches_available"])) {
             return array('success'=>false, 'message'=>"Invalid branch");;
         }
@@ -527,30 +533,33 @@ class Admin {
         if (is_dir($path_module)) return array('success'=>false, 'message'=>"Module folder already exists '$path_module'. Already installed?");
         
         
-/* TODO add service-runner install_component.sh script later
+        // TODO: optionaly add a service-runner install_component.sh script or remove service-runner and scripts dependency as php usage works flawless
         $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/install_component.sh"; 
         if ($this->redis && file_exists($script)) {
             // use update script from service runner
             return $this->runService($script, "$path $branch $url > " . $this->update_logfile());
         }
         else {
-*/
             // alternative use php to execute git
             $this->log->warn("component_install() Using PHP execution '".$component['name']." $branch ".$component["url"]."'");
             if (!is_writable($path)) return array('success'=>false, 'message'=>"Module  folder not writable '$path'");
 
-            $message = "Using PHP execution:";
-            $result = $this->exec("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
-            $message .= "\n- git clone: $result";
+            $message = "Using PHP execution\n";
+            $message .= "Component install '".$component['name']." $branch ".$component["url"]."':\n";
+            $result = $this->passthru("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
+            $message .= "- git clone: \n$result\n";
             
             $file = $path_module . "/install.sh";
-            if (file_exists($file)) $message .= "\n- module install/update script detected. Please run '$file' manualy if needed.";
+            if (file_exists($file)) $message .= "- module install/update script detected. Please run '$file' manualy if needed.\n";
 
-            $message .= "\n- component installed";
+            $file = $path_module . "/$module*.php";
+            if (!glob("$file")) $message .= "- '$module' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
+
+            $message .= "- component installed";
 
             $this->log->info("component_install() PHP exec returned '$message'");
             return array('success'=>true, 'message'=>"$message");
-// END TODO        }
+        }
     }
 
 
@@ -565,39 +574,38 @@ class Admin {
         if (!is_dir($path)) return array('success'=>false, 'message'=>"Not a folder '$path'");
         if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'/.git");
 
-        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
+        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->passthru("git -C $path status"));
 
-/* TODO add service-runner uninstall_component.sh script later
+        // TODO: optionaly add a service-runner uninstall_component.sh script or remove service-runner and scripts dependency as php usage works flawless
         $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/uninstall_component.sh"; 
         if ($this->redis && file_exists($script)) {
             // use update script from service runner
             return $this->runService($script, "$path $reset > " . $this->update_logfile());
         }
         else {
-*/
             // alternative use php to execute git
             $this->log->warn("component_uninstall() Using PHP execution '".$component['name']."'");
             if (!is_writable($path )) return array('success'=>false, 'message'=>"Module folder not writable '$path'");
 
-            $message = "Using PHP execution:";
+            $message = "Using PHP execution\n";
+            $message .= "Component uninstall '".$component['name']."':\n";
             $result = $this->exec("rm -rf $path");
-            $message .= "\n- rm: $result";
+            $message .= "- rm: $result\n";
        
             if (is_dir($path)) {
                 return array('success'=>false, 'message'=>"Module folder still exists '$path'");
             } else {
-                $message .= "\n- check: ok";
+                $message .= "- check: ok\n";
             }
 
-            $message .= "\n- component uninstalled";
+            $message .= "- component uninstalled";
 
             $this->log->info("component_uninstall() PHP exec returned '$message'");
             return array('success'=>true, 'message'=>"$message");
-// END TODO        }
+        }
     }
-    
-    
-    
+
+
     /**
     * return array of mounted partitions
     *
@@ -652,9 +660,8 @@ class Admin {
           $writeload = 0;
           $loadtime = 0;
           
-          ob_start();
-          @passthru("iostat -o JSON -k $filesystem");
-          $output = trim(ob_get_clean());
+          
+          $output = $this->passthru("iostat -o JSON -k $filesystem");
           $stats = json_decode($output, true);
           if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
             $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
@@ -986,6 +993,14 @@ class Admin {
             @exec($cmd,$output);
         }
         return $output;
+    }
+    
+    private function passthru($cmd) {
+        ob_start();
+        if (function_exists("passthru")) {
+            @passthru($cmd ." 2>&1");
+        }
+        return ob_get_clean();
     }
 }
 

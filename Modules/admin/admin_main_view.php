@@ -509,6 +509,7 @@ $(window).resize(function() {
 function getBufferSize() {
   $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
     {
+      if (result.reauth == true) { window.location.reload(true); }
       $("#bufferused").html( result + " feed points pending write");
     }
   });
@@ -519,6 +520,7 @@ function getBufferSize() {
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush", async: true, dataType: "json", success: function(result)
     {
+      if (result.reauth == true) { window.location.reload(true); }
       $("#redisused").html(result.dbsize+" keys ("+result.used+")");
     }
   });
@@ -527,7 +529,7 @@ $("#redisflush").click(function() {
 $("#resetdiskstats").click(function() {
   $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "json", success: function(result)
     {
-      location.reload();
+      windows.location.reload();
     }
   });
 });
@@ -569,6 +571,7 @@ $(".service-action").click(function() {
     console.log(action+" "+name)
     
     $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "json", success: function(result) {
+        if (result.reauth == true) { window.location.reload(true); }
         setTimeout(function() {
             location.reload();
         },1000);

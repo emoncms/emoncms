@@ -59,7 +59,7 @@ function update_log() {
             var isjson = true;
             try {
                 data = JSON.parse(result);
-                if (data.reauth == true) { window.location = "/"; }
+                if (data.reauth == true) { window.location.reload(true); }
                 if (data.success == false)  { 
                     clearInterval(updates_log_interval); 
                     $("#log").append("<text style='color:red;'>"+ data.message+"</text>\n");
@@ -102,7 +102,7 @@ function is_emonhub_running() {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.ActiveState=="active") {
                 $("#emonhub-running-notice").show();
                 $("#emonhub-stopped-notice").hide();
@@ -121,7 +121,7 @@ function setService(name,action) {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  { 
                 $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
             } else {
@@ -151,7 +151,7 @@ $("#start").click(function() {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  { 
                 $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
             } else {
@@ -171,7 +171,7 @@ $("#stop").click(function() {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  { 
                 $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
             } else {
@@ -203,7 +203,7 @@ function send_cmd(cmd) {
         async: true, 
         dataType: "json", 
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  { 
                 $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
             } else {

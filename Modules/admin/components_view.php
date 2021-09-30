@@ -4,7 +4,8 @@
 <div class="admin-container">
 <h3><?php echo _('Components'); ?></h3>
 
-<p><?php echo _('Selectively install or update system components or switch between branches'); ?></p>
+<p><?php echo _('Install, remove, update or switch components between branches.'); ?></p>
+<p><?php echo _('Note that some older components may not be yet fully compatible to this new way of managing modules and require additional rework to work properly.'); ?></p>
 
 <pre id="update-log-bound" class="log" style="min-height:320px; height:calc(30vh); display:none;"><div id="update-log"></div></pre>
 <br>
@@ -47,9 +48,9 @@
       </td>
       <td v-else>{{ item.branch }}</td>
       <td>
+        <button class="btn btn-danger" v-if="item.local_changes" @click="update(key, 'true')"><?php echo _('Reset'); ?></button>
         <button class="btn" v-if="!item.local_changes" @click="update(key, 'false')"><?php echo _('Update'); ?></button>
-        <button class="btn  btn-danger" v-if="item.local_changes" @click="update(key, 'true')"><?php echo _('Reset'); ?></button>
-        <button class="btn  btn-danger" v-if="item.name!='Emoncms Core'" @click="uninstall(key, 'false')"><?php echo _('Uninstall'); ?></button>
+        <button class="btn" v-if="!item.local_changes && item.name!='Emoncms Core'" @click="uninstall(key, 'false')"><?php echo _('Uninstall'); ?></button>
       </td>
     </tr>
     </table>
@@ -82,6 +83,7 @@
     </table>
 </div>
 
+<a href="<?php echo $path; ?>admin/components" class="btn btn-info"><?php echo _('Refresh components'); ?></a>
 </div>
 <script>
 var components_installed = <?php echo json_encode($components_installed); ?>;
@@ -139,12 +141,13 @@ function component_update(name,branch,reset) {
         data: "module="+name+"&branch="+branch+"&reset="+reset,
         dataType: 'json',
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 alert(result.message);
             } else {
+                hide_tables();
                 log_end = "- component updated"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
@@ -161,12 +164,13 @@ function update_all_components(branch) {
         data: "branch="+branch,
         dataType: 'json',
         success: function(result) { 
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 alert(result.message);
             } else {
+                hide_tables();
                 log_end = "- all components updated"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
@@ -182,15 +186,16 @@ function component_install(name,branch) {
     $.ajax({                                      
         url: path+'admin/component-install',                         
         async: true, 
-        data: "module="+name+"&branch="+(branch == undefined ? "stable" : branch),
+        data: "module="+name+"&branch="+(branch == undefined ? "" : branch),
         dataType: 'json',
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 alert(result.message);
             } else {
+                hide_tables();
                 log_end = "- component installed"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
@@ -208,18 +213,24 @@ function component_uninstall(name,reset) {
         data: "module="+name+"&reset="+reset,
         dataType: 'json',
         success: function(result) {
-            if (result.reauth == true) { window.location = "/"; }
+            if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("\n<text style='color:red;'>" + result.message + "</text>\n", true);
                 alert(result.message);
             } else {
+                hide_tables();
                 log_end = "- component uninstalled"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
             }
         } 
     });   
+}
+
+function hide_tables() {
+    $("#table_installed").slideUp();
+    $("#table_available").slideUp();
 }
 
 // -------------------------------------
@@ -258,10 +269,11 @@ function getUpdateLog() {
         var isjson = true;
         try {
             data = JSON.parse(result);
-            if (data.reauth == true) { window.location = "/"; }
+            if (data.reauth == true) { window.location.reload(true); }
             if (data.success == false)  { 
                 clearInterval(updates_log_interval); 
-                refresh_updateLog("\n<text style='color:red;'>"+ data.message+"</text>\n", true);
+                console.log("getUpdateLog: "+data.message);
+                //refresh_updateLog("\n<text style='color:red;'>"+ data.message+"</text>\n", true);
             }
         } catch (e) {
             isjson = false;
