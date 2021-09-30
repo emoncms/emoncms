@@ -89,15 +89,15 @@ height:46px;
   top:0px;
   z-index:1000;
   transition: all 0.3s ease-out;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none; /* can also be: thin */
-  -ms-overflow-style: none;
 }
 
 .menu-l2-inner {
   padding-top:46px;
-  min-height: calc(100vh - 96px);
+  height: calc(100% - 96px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* can also be: thin */
+  -ms-overflow-style: none;
 }
 
 .menu-title-l2 {
@@ -148,6 +148,8 @@ text-decoration:none;
 }
 
 #menu-l2-controls {
+  background-color:var(--bg-l2);
+  position:absolute;
   text-decoration: none;
   color: var(--l2-text);
   display: block;
