@@ -438,8 +438,10 @@ class Admin {
               $components[$name]["describe"] = $this->exec("git -C $path describe");
               $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
               $components[$name]["local_changes"] = ($this->exec("git -C $path diff-index -G. HEAD --") ? true : false);
-              $components[$name]["update_available"] = ($this->exec("git -C $path rev-list HEAD...origin/".$components[$name]["branch"]." --ignore-submodules --count") > 0 ? true : false);
               $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
+              
+              $this->exec("git -C $path fetch"); // need to fetch before cheching updates available
+              $components[$name]["update_available"] = ($this->exec("git -C $path rev-list HEAD...origin/".$components[$name]["branch"]." --ignore-submodules --count") > 0 ? true : false);
               
               if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
                   $components[$name]["branches_available"][] = $components[$name]["branch"];
