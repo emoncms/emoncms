@@ -12,6 +12,7 @@
 
 <div id="table_installed">
 <?php if ($redis_enabled) { ?>
+<!-- No PHP support for now
     <div class="input-prepend input-append">
         <span class="add-on"><?php echo _('Update or switch all components to'); ?></span>
         <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
@@ -20,6 +21,7 @@
         <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
         <button v-if="all_custom" class="btn" @click="all('custom')">Switch</button>
     </div>
+-->	
 <?php } ?>
     <table class="table table-bordered">
     <tr>
