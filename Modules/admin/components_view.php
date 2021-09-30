@@ -43,7 +43,7 @@
         <span class="label label-default" v-else><?php echo _('No'); ?></span>
       </td>
       <td>
-        <span v-if="item.update_available" :title="item.update_available" class="label label-important"><?php echo _('Yes'); ?></span>
+        <span v-if="item.update_available" :title="item.update_available" class="label label-success"><?php echo _('Yes'); ?></span>
         <span class="label label-default" v-else><?php echo _('No'); ?></span>
       </td>
       <td v-if="!item.local_changes">
