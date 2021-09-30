@@ -27,6 +27,7 @@
       <th><?php echo _('Version'); ?></th>
       <th><?php echo _('Describe'); ?></th>
       <th><?php echo _('Local changes'); ?></th>
+      <th><?php echo _('Update available'); ?></th>
       <th><?php echo _('Branch'); ?></th>
       <th></th>
     </tr>
@@ -41,6 +42,10 @@
         <span v-if="item.local_changes" :title="item.local_changes" class="label label-important"><?php echo _('Yes'); ?></span>
         <span class="label label-success" v-else><?php echo _('No'); ?></span>
       </td>
+      <td>
+        <span v-if="item.update_available" :title="item.update_available" class="label label-important"><?php echo _('Yes'); ?></span>
+        <span class="label label-success" v-else><?php echo _('No'); ?></span>
+      </td>
       <td v-if="!item.local_changes">
         <select v-model="item.branch" @change="switch_branch(key)">
           <option v-for="branch in item.branches_available">{{ branch }}</option>
@@ -49,7 +54,7 @@
       <td v-else>{{ item.branch }}</td>
       <td>
         <button class="btn btn-danger" v-if="item.local_changes" @click="update(key, 'true')"><?php echo _('Reset'); ?></button>
-        <button class="btn" v-if="!item.local_changes" @click="update(key, 'false')"><?php echo _('Update'); ?></button>
+        <button class="btn" v-if="!item.local_changes && item.update_available" @click="update(key, 'false')"><?php echo _('Update'); ?></button>
         <button class="btn" v-if="!item.local_changes && item.name!='Emoncms Core'" @click="uninstall(key, 'false')"><?php echo _('Uninstall'); ?></button>
       </td>
     </tr>

@@ -429,6 +429,7 @@ class Admin {
               $components[$name]["describe"] = $this->exec("git -C $path describe");
               $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
               $components[$name]["local_changes"] = ($this->exec("git -C $path diff-index -G. HEAD --") ? true : false);
+			  $components[$name]["update_available"] = ($this->exec("git -C $path rev-list HEAD...origin/".$components[$name]["branch"]." --ignore-submodules --count") > 0 ? true : false);
               $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
               
               if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
@@ -470,7 +471,7 @@ class Admin {
             if (!is_writable($path . "/.git")) return array('success'=>false, 'message'=>"Module git folder not writable '$path/.git'");
 
             $message = "Using PHP execution\n";
-            $message .= "Component update '".$component['name']." $branch':\n";
+            $message .= "Component update '".$component['name']."' $branch:\n";
             $result = $this->passthru("git -C $path fetch --all --prune");
             $message .= "- git fetch: \n$result\n";
             
@@ -489,7 +490,7 @@ class Admin {
             if (file_exists($file)) $message .= "- module install/update script detected. Please run '$file' manualy if needed.\n";
             
             $file = $path . "/$module*.php";
-            if (!glob("$file")) $message .= "- '$module' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
+            if (!glob("$file")) $message .= "- '" . $component['name'] . "' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
 
             $message .= "- component updated";
 
@@ -541,7 +542,7 @@ class Admin {
         }
         else {
             // alternative use php to execute git
-            $this->log->warn("component_install() Using PHP execution '".$component['name']." $branch ".$component["url"]."'");
+            $this->log->warn("component_install() Using PHP execution '".$component['name']."' $branch ".$component["url"]."");
             if (!is_writable($path)) return array('success'=>false, 'message'=>"Module  folder not writable '$path'");
 
             $message = "Using PHP execution\n";
@@ -553,7 +554,7 @@ class Admin {
             if (file_exists($file)) $message .= "- module install/update script detected. Please run '$file' manualy if needed.\n";
 
             $file = $path_module . "/$module*.php";
-            if (!glob("$file")) $message .= "- '$module' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
+            if (!glob("$file")) $message .= "- '".$component['name']."' does not seem a traditional EmonCMS Module. Raise a bugfix at ".$component["url"]."\n";
 
             $message .= "- component installed";
 
