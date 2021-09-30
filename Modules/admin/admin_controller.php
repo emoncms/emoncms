@@ -96,7 +96,7 @@ function admin_controller()
     // Firmware view
     if ($route->action == 'serial') {
         $route->format = 'html';
-        return view("Modules/admin/firmware_view.php", array('serial_ports'=>$admin->listSerialPorts()));
+        return view("Modules/admin/serialmonitor_view.php", array('serial_ports'=>$admin->listSerialPorts()));
     }
     
     // Emoncms log view

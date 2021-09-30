@@ -40,11 +40,11 @@
       <td>{{ item.describe }}</td>
       <td>
         <span v-if="item.local_changes" :title="item.local_changes" class="label label-important"><?php echo _('Yes'); ?></span>
-        <span class="label label-success" v-else><?php echo _('No'); ?></span>
+        <span class="label label-default" v-else><?php echo _('No'); ?></span>
       </td>
       <td>
         <span v-if="item.update_available" :title="item.update_available" class="label label-important"><?php echo _('Yes'); ?></span>
-        <span class="label label-success" v-else><?php echo _('No'); ?></span>
+        <span class="label label-default" v-else><?php echo _('No'); ?></span>
       </td>
       <td v-if="!item.local_changes">
         <select v-model="item.branch" @change="switch_branch(key)">
