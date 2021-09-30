@@ -529,7 +529,7 @@ $("#redisflush").click(function() {
 $("#resetdiskstats").click(function() {
   $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "json", success: function(result)
     {
-      windows.location.reload();
+      window.location.reload();
     }
   });
 });
