@@ -90,7 +90,7 @@ function admin_controller()
     // System components view
     if ($route->action == 'components') {
         $route->format = 'html';
-        return view("Modules/admin/components_view.php", array("components"=>$admin->component_list()));
+        return view("Modules/admin/components_view.php", array("components_installed"=>$admin->component_list(), "components_available"=>$admin->components_available(),'redis_enabled'=>$settings['redis']['enabled']));
     } 
     
     // Firmware view
@@ -293,6 +293,19 @@ function admin_controller()
         return $admin->component_update_all($branch);
     }
 
+    if ($route->action == 'component-install' && $session['write']) {
+        $route->format = "json";
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
+        return $admin->component_install($module, $branch);
+    }
+
+    if ($route->action == 'component-uninstall' && $session['write']) {
+        $route->format = "json";
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
+        $reset = (isset($_GET['reset']) && ($_GET['reset'] == "true") ? true : false);
+        return $admin->component_uninstall($module, $reset);
+    }
     
     // ----------------------------------------------------------------------------------------
     // Firmware

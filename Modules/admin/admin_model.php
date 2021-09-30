@@ -337,19 +337,44 @@ class Admin {
      *
      * @return array
      */
+    // return the list of available modules minus the installed ones
     public function components_available() {
       $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
+      $components = array();
       if (file_exists($localfile)) {
-          return json_decode(file_get_contents($localfile));
+          $components = json_decode(file_get_contents($localfile), true);
       }
       else if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
-          return json_decode($response);
+          $components = json_decode($response, true);
       }
       else {
           return array('success'=>false, 'message'=>"Can't get components available file");
       }
+      
+      $components_installed = $this->component_list();
+      
+      $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+      
+      foreach ($components as $name=>$component) {
+        if (isset($components_installed[$name])) {
+            unset($components[$name]); // remove installed modules
+        } else {
+            if (!isset($components[$name]["install_path"])) {
+             // CHAVEIRO: 
+             // A traditional emoncms module does not specify install_path as it will default to install in emoncms/Modules folder, this is nice and dont need aditional work (prefered)
+             // A module that will install outside emoncms folder usualy specifies a hard coded absolute install_path.
+             // That module may fail to install on differnt servers, this may need to be reviewed later to better suport that use case
+                $components[$name]["install_path"] = $emoncms_path ."/Modules";
+            }
+            if (!isset($components[$name]["branches_available"])) {
+                $components[$name]["branches_available"] = array ("stable", "master");
+            }
+        }
+      }  
+      return $components;
     }
 
+    // return the list of installed modules
     public function component_list($git_info=true) 
     {
       $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
@@ -402,7 +427,7 @@ class Admin {
               $path = $components[$name]["path"];
               $components[$name]["describe"] = $this->exec("git -C $path describe");
               $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
-              $components[$name]["local_changes"] = $this->exec("git -C $path diff-index -G. HEAD --");
+              $components[$name]["local_changes"] = ($this->exec("git -C $path diff-index -G. HEAD --") ? true : false);
               $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
               
               if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
@@ -414,10 +439,11 @@ class Admin {
       return $components;
     }
 
+    // supports php execution (full support) and update_component.sh via service runner (dont support reset)
     public function component_update($module, $branch, $reset = false) 
     {
         $components = $this->component_list();
-        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
+        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");
         $component = $components[$module];
         $path = $component["path"];  // installed location
         
@@ -427,7 +453,7 @@ class Admin {
             if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");;
         }
 
-        if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'");
+        if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'/.git");
 
         if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
 
@@ -466,6 +492,7 @@ class Admin {
         }
     }
     
+    // supports only update_component.sh via service runner
     public function component_update_all($branch) {
         // Validate branch
         $available_branches = array();
@@ -480,6 +507,98 @@ class Admin {
         return $this->runService($script, "$branch > " . $this->update_logfile());
     }
 
+
+    // supports php execution
+    public function component_install($module, $branch) {
+        $components_installed = $this->component_list();
+        if (isset($components_installed[$module])) return array('success'=>false, 'message'=>"Module already installed");
+        
+        $components_available = $this->components_available();
+        if (!isset($components_available[$module])) return array('success'=>false, 'message'=>"Invalid module");
+                
+        $component = $components_available[$module];
+        $path = $component["install_path"];  // target Modules folder
+        $path_module = $path. "/$module";    // module folder after installed
+        // if branch is not in available branches, check that it is not the current branch
+        if (!in_array($branch,$component["branches_available"])) {
+            return array('success'=>false, 'message'=>"Invalid branch");;
+        }
+
+        if (is_dir($path_module)) return array('success'=>false, 'message'=>"Module folder already exists '$path_module'. Already installed?");
+        
+        
+/* TODO add service-runner install_component.sh script later
+        $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/install_component.sh"; 
+        if ($this->redis && file_exists($script)) {
+            // use update script from service runner
+            return $this->runService($script, "$path $branch $url > " . $this->update_logfile());
+        }
+        else {
+*/
+            // alternative use php to execute git
+            $this->log->warn("component_install() Using PHP execution '".$component['name']." $branch ".$component["url"]."'");
+            if (!is_writable($path)) return array('success'=>false, 'message'=>"Module  folder not writable '$path'");
+
+            $message = "Using PHP execution:";
+            var_dump("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
+            $result = $this->exec("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
+            $message .= "\n- git clone: $result";
+            
+            $file = $path_module . "/install.sh";
+            if (file_exists($file)) $message .= "\n- module install/update script detected. Please run '$file' manualy if needed.";
+
+            $message .= "\n- component installed";
+
+            $this->log->info("component_install() PHP exec returned '$message'");
+            return array('success'=>true, 'message'=>"$message");
+// END TODO        }
+    }
+
+
+    // supports php execution 
+    public function component_uninstall($module, $reset = false) 
+    {
+        $components = $this->component_list();
+        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");
+        $component = $components[$module];
+        $path = $component["path"];  // installed location
+        
+        if (!is_dir($path)) return array('success'=>false, 'message'=>"Not a folder '$path'");
+        if (!is_dir($path . "/.git")) return array('success'=>false, 'message'=>"Not a git folder '$path'/.git");
+
+        if (!$reset && $component["local_changes"]) return array('success'=>false, 'message'=>"Local changes detected '$path' \n- git status: " . $this->exec("git -C $path status"));
+
+/* TODO add service-runner uninstall_component.sh script later
+        $script = $this->settings['openenergymonitor_dir']."/EmonScripts/update/uninstall_component.sh"; 
+        if ($this->redis && file_exists($script)) {
+            // use update script from service runner
+            return $this->runService($script, "$path $reset > " . $this->update_logfile());
+        }
+        else {
+*/
+            // alternative use php to execute git
+            $this->log->warn("component_uninstall() Using PHP execution '".$component['name']."'");
+            if (!is_writable($path )) return array('success'=>false, 'message'=>"Module folder not writable '$path'");
+
+            $message = "Using PHP execution:";
+            $result = $this->exec("rm -rf $path");
+            $message .= "\n- rm: $result";
+       
+            if (is_dir($path)) {
+                return array('success'=>false, 'message'=>"Module folder still exists '$path'");
+            } else {
+                $message .= "\n- check: ok";
+            }
+
+            $message .= "\n- component uninstalled";
+
+            $this->log->info("component_uninstall() PHP exec returned '$message'");
+            return array('success'=>true, 'message'=>"$message");
+// END TODO        }
+    }
+    
+    
+    
     /**
     * return array of mounted partitions
     *
