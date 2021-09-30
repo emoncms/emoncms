@@ -361,10 +361,19 @@ class Admin {
         } else {
             if (!isset($components[$name]["install_path"])) {
              // CHAVEIRO: 
-             // A traditional emoncms module does not specify install_path as it will default to install in emoncms/Modules folder, this is nice and dont need aditional work (prefered)
-             // A module that will install outside emoncms folder usualy specifies a hard coded absolute install_path.
-             // That module may fail to install on differnt servers, this may need to be reviewed later and per module to better suport that use case
-             // Adding a $components[$name]["isModule"] might be usefull to distiguish traditional modules
+             //  -  A traditional emoncms module does not specify install_path 
+             //    as it will default to install in emoncms/Modules folder, this
+             //    is nice and dont need aditional work (prefered).
+
+             //  -  A module that will install outside emoncms folder usualy
+             //    specifies a hard coded absolute install_path..
+
+             //  -  That module may fail to install on differnt servers, this may
+             //    need to be reviewed later and per module to better suport that 
+             //    use case.
+
+             //  -  Adding a $components[$name]["isModule"] might be usefull to 
+             //    distiguish traditional modules.
                 $components[$name]["install_path"] = $emoncms_path ."/Modules";
             }
             if (!isset($components[$name]["branches_available"])) {
@@ -429,7 +438,7 @@ class Admin {
               $components[$name]["describe"] = $this->exec("git -C $path describe");
               $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
               $components[$name]["local_changes"] = ($this->exec("git -C $path diff-index -G. HEAD --") ? true : false);
-			  $components[$name]["update_available"] = ($this->exec("git -C $path rev-list HEAD...origin/".$components[$name]["branch"]." --ignore-submodules --count") > 0 ? true : false);
+              $components[$name]["update_available"] = ($this->exec("git -C $path rev-list HEAD...origin/".$components[$name]["branch"]." --ignore-submodules --count") > 0 ? true : false);
               $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
               
               if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
