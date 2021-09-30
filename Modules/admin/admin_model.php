@@ -540,7 +540,6 @@ class Admin {
             if (!is_writable($path)) return array('success'=>false, 'message'=>"Module  folder not writable '$path'");
 
             $message = "Using PHP execution:";
-            var_dump("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
             $result = $this->exec("git -C $path clone --single-branch --branch " . $branch . " " . $component["url"]);
             $message .= "\n- git clone: $result";
             
