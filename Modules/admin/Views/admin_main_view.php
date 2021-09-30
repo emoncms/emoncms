@@ -526,7 +526,7 @@ $("#redisflush").click(function() {
 $("#resetdiskstats").click(function() {
   $.ajax({ url: path+"admin/resetdiskstats", async: true, dataType: "json", success: function(result)
     {
-      location.reload();
+      window.location.reload();
     }
   });
 });
