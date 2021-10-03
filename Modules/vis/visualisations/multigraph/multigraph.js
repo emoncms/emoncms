@@ -37,8 +37,6 @@ function convertToPlotlist(multigraphFeedlist) {
 
   backgroundColour = (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined" ? multigraphFeedlist[0]["backgroundColour"] : "ffffff");
   $("body").css("background-color","#"+backgroundColour);
-  
-  datatype=1;
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];

@@ -364,6 +364,7 @@ body{padding:0!important}
         <label><?php echo _('Feed Name: '); ?></label>
         <input type="text" value="New Feed" id="newfeed-name">
         <label><?php echo _('Feed Tag: '); ?></label>
+<<<<<<< HEAD
         <input type="text" value="" id="newfeed-tag">
         <label><?php echo _('Feed Engine: '); ?></label>
         <select id="newfeed-engine" style="width:350px">
@@ -390,6 +391,9 @@ body{padding:0!important}
             <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
             <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
         </select>
+=======
+        <input type="text" value="Virtual" id="newfeed-tag">
+>>>>>>> origin/remove_feed_datatype_field
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -1359,16 +1363,26 @@ for (var e in engines_hidden) {
 }
 
 $("#newfeed-save").click(function (){
+<<<<<<< HEAD
     var name = $('#newfeed-name').val();
     var tag = $('#newfeed-tag').val();
     var engine = $('#newfeed-engine').val();
     
+=======
+    var newfeedname = $('#newfeed-name').val();
+    var newfeedtag = $('#newfeed-tag').val();
+    var engine = 7;   // Virtual Engine
+>>>>>>> origin/remove_feed_datatype_field
     var options = {};
     if (engine==5) {
         options.interval = $('#newfeed-interval').val();
     }
     
+<<<<<<< HEAD
     var result = feed.create(tag,name,engine,options);
+=======
+    var result = feed.create(newfeedtag,newfeedname,engine,options);
+>>>>>>> origin/remove_feed_datatype_field
     feedid = result.feedid;
 
     if (!result.success || feedid<1) {
