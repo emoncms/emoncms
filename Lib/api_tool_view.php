@@ -13,31 +13,15 @@
   */
 
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; 
-
-// global $user, $path, $session;
-// $apikey_read = $user->get_apikey_read($session['userid']);
-// $apikey_write = $user->get_apikey_write($session['userid']);
+global $user, $path, $session;
+$apikey_read = $user->get_apikey_read($session['userid']);
+$apikey_write = $user->get_apikey_write($session['userid']);
   
 ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <style>[v-cloak] { display: none; }</style>
 
 <h3><?php echo $title; ?></h3>
-
-<!--
-<h3><?php echo _('Apikey authentication'); ?></h3>
-<p><?php echo _('If you want to call any of the following actions when you\'re not logged in, you have the option to authenticate with the API key:'); ?></p>
-<ul><li><?php echo _('Append to your request URL: &apikey=APIKEY'); ?></li>
-<li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
-<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY" e.g. curl ').$path.'feed/value.json?id=1 -H "Authorization: Bearer '.$apikey_read.'"';?></li></ul>
-<p><b><?php echo _('Read only:'); ?></b><br>
-<input type="text" style="width:255px" readonly="readonly" value="<?php echo $apikey_read; ?>" />
-</p>
-<p><b><?php echo _('Read & Write:'); ?></b><br>
-<input type="text" style="width:255px" readonly="readonly" value="<?php echo $apikey_write; ?>" />
-</p>
--->
 
 <div id="app" v-cloak>
 
@@ -79,20 +63,23 @@ global $path;
     </tr>
     <tr>
       <td><b><?php echo _("Authentication"); ?></b></td>
-      <td></td>
+      <td>
+        <button v-if="!auth_visible" class="btn btn-small" @click="show_auth">Show</button>
+        <button v-else class="btn btn-small" @click="hide_auth">Hide</button>
+      </td>
     </tr>
     <tr>
       <td><b><?php echo _("Example URL"); ?></b></td>
       <td>
         <a :href="api[selected_api].url">{{ api[selected_api].url }}</a>
-        <button class="btn btn-small" style="float:right">Try</button>
-        <button class="btn btn-small" style="float:right">Copy</button>
+        <button class="btn btn-small" style="float:right" @click="try_api">Try</button>
+        <!--<button class="btn btn-small" style="float:right" @click="copy_api">Copy</button>-->
       </td>
     </tr>
     <tr>
       <td><b><?php echo _("Response"); ?></b></td>
       <td>
-        <pre v-if="api[selected_api].response">{{ api[selected_api].response }}</pre>
+        <pre v-if="api[selected_api].response!=''">{{ api[selected_api].response }}</pre>
         <div v-else-if="api[selected_api].mode=='write'"><?php echo _("This API end point will write data, click Try to test"); ?></div>
       </td>
     </tr>
@@ -100,6 +87,9 @@ global $path;
 </div>
 
 <script>
+
+var apikey_read = "<?php echo $apikey_read; ?>";
+var apikey_write = "<?php echo $apikey_write; ?>";
 
 // ---------------------------------------------------------------------
 // Fetch feeds to create dropdown feed selector
@@ -147,7 +137,8 @@ var app = new Vue({
         api:api,
         nodes: nodes,
         selected_api: <?php echo $selected_api; ?>,
-        selected_feed: selected_feed
+        selected_feed: selected_feed,
+        auth_visible: false
     },
     methods: {
        update: function() {
@@ -155,6 +146,20 @@ var app = new Vue({
            if (api[app.selected_api].mode == "read") {
                get_response();
            }
+       },
+       show_auth: function() {
+           app.auth_visible = true;
+           build_url();
+       },
+       hide_auth: function() {
+           app.auth_visible = false;
+           build_url();
+       },
+       try_api: function() {
+           get_response();
+       },
+       copy_api: function() {
+       
        }
     }
 });
@@ -184,6 +189,15 @@ function build_url() {
         }
         parameter_array.push(p+"="+value);
     }
+    
+    if (app.auth_visible) {
+        if (api[app.selected_api].mode=="read") {
+            parameter_array.push("apikey="+apikey_read);
+        } else {
+            parameter_array.push("apikey="+apikey_write); 
+        }
+    }
+    
     // Add parameters to URL
     if (parameter_array.length) {
         api[app.selected_api].url += "?"+parameter_array.join("&");

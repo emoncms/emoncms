@@ -129,6 +129,10 @@ function feed_api_obj() {
       "parameters" => array(
         "tag" => array( "default" => "Test" ),
         "name" => array( "default" => "Power" ),
+<<<<<<< HEAD
+=======
+        "datatype" => array( "default" => 1 ),
+>>>>>>> origin/master
         "engine" => array( "default" => 5 ),
         "options" => array( "default" => json_encode(array("interval"=>10)))
       ),
@@ -156,7 +160,7 @@ function feed_api_obj() {
       "path" => "feed/updatesize.json",
       "parameters" => array(
       ),
-      "mode"=>"write"
+      "mode"=>"read"
     ),
     // Virtual feed process actions
     array(
