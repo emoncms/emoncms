@@ -603,8 +603,6 @@ function update_feed_list() {
         autowidth($container) // set each column group to the same width
         draw_import_feed_select();
         } // end of for loop
-        
-
     }); // end of ajax callback
 }// end of update_feed_list() function
 

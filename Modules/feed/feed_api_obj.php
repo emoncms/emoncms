@@ -129,7 +129,6 @@ function feed_api_obj() {
       "parameters" => array(
         "tag" => array( "default" => "Test" ),
         "name" => array( "default" => "Power" ),
-        "datatype" => array( "default" => 1 ),
         "engine" => array( "default" => 5 ),
         "options" => array( "default" => json_encode(array("interval"=>10)))
       ),
