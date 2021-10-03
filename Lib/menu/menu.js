@@ -16,14 +16,15 @@ var menu = {
     active_l3: false,
     
     mode: 'auto',
-    
     is_disabled: false,
+
+    auto_hide: true,    
+    auto_hide_timer: null,
     
     // ------------------------------------------------------------------
     // Init Menu
     // ------------------------------------------------------------------    
     init: function(obj,session) {
-                
         var q_parts = q.split("#");
         q_parts = q_parts[0].split("/");
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
@@ -67,7 +68,7 @@ var menu = {
     // L1 menu is the top bar menu
     // ------------------------------------------------------------------    
     draw_l1: function () {
-
+        console.log("draw_l1");
         // Build level 1 menu (top bar)
         var out = "";
         for (var l1 in menu.obj) {
@@ -90,13 +91,18 @@ var menu = {
         }
         $(".menu-l1 ul").html(out);
         
-        if (menu.active_l1 && menu.obj[menu.active_l1]['l2']!=undefined) menu.draw_l2(); else menu.hide_l2();
+        if (menu.active_l1 && menu.obj[menu.active_l1]['l2']!=undefined) { 
+            menu.draw_l2();
+        } else { 
+            menu.hide_l2();
+        }
     },
 
     // ------------------------------------------------------------------
     // Level 2 (Sidebar)
     // ------------------------------------------------------------------
     draw_l2: function () {
+        console.log("draw_l2");
         // Sort level 2 by order property
         // build a set of keys first, sort these and then itterate through sorted keys
         var keys = Object.keys(menu.obj[menu.active_l1]['l2']);
@@ -149,6 +155,14 @@ var menu = {
         
         $(".menu-l2 ul").html(out); 
         
+        if (menu.l2_min) {
+            $(".menu-text-l2").hide();
+            $(".menu-title-l2 span").hide();
+        } else {
+            $(".menu-text-l2").show();
+            $(".menu-title-l2 span").show();
+        }
+
         // If menu_l2 open and l2 menu item active and l3 exists: draw l3
         if (menu.active_l2 && menu.obj[menu.active_l1]['l2'][menu.active_l2]!=undefined && menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']!=undefined) {
             menu.draw_l3();
@@ -164,117 +178,170 @@ var menu = {
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
             // Prepare active status
-            
             let active = ""; 
             if (q.indexOf(item['href'])===0) {
                 active = "active";
                 menu.active_l3 = l3;
             }
-            // Menu item
             out += '<li><a href="'+path+item['href']+'" class="'+active+'">'+item['name']+'</a></li>';
         }
         $(".menu-l3 ul").html(out);
-        menu.show_l3();
+
+        if (menu.active_l2 && menu.l2_min && menu.l2_visible) { 
+            menu.show_l3();
+        }
     },
     
-    // l2 and l3 hidden (no sidebar)
-    
-    // l2 exp
-    
-    // l2 min + l3 exp
-    
-    // l2 min + l3 hidden
+
     hide_l1: function () {
+        console.log("hide_l1");
         $(".menu-l1").hide();
+        $(".content-container").css("margin","0 auto 0 auto");
     },
     
     hide_l2: function () {
-        menu.l2_visible = false;
-        menu.l3_visible = false;
-        $(".menu-l2").hide();
-        $(".menu-l3").hide();
+        console.log("hide_l2");
+        clearTimeout(menu.auto_hide_timer);
+        var delay = 0;
+        if (menu.l3_visible) { delay = 600; menu.hide_l3(); }
+
+        if (menu.l2_visible) {
+            $("#menu-l2-controls").hide();
+            $(".menu-text-l2").hide();
+            $(".menu-title-l2 span").hide();
+
+            setTimeout(function(){ 
+                $(".menu-l2").css("width","0px");
+                },delay);
+        }
+
         $(".content-container").css("margin","46px auto 0 auto");
+        menu.l2_visible = false;
     },
 
-    // If we minimise l2 we also hide l3
-    min_l2: function () {
-        menu.l2_min = true;
-        menu.l2_visible = true;
+    hide_l3: function () {
+        console.log("hide_l3");
+        clearTimeout(menu.auto_hide_timer);
+        $(".menu-l3").css("width","0px");
+        if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
+        else $(".content-container").css("margin","46px auto 0 auto");
         menu.l3_visible = false;
-        $(".menu-l2").show();
-        $(".menu-l2").css("width","50px");
-        $(".menu-l3").hide();
-        $(".menu-text-l2").hide();
-        $(".menu-title-l2 span").hide();
-        
+    },
+
+
+    min_l2: function () {
+        console.log("min_l2");
+        clearTimeout(menu.auto_hide_timer);
+        if (!(menu.l2_visible && menu.l2_min)) {
+            $("#menu-l2-controls").hide();
+            $(".menu-text-l2").hide();
+            $(".menu-title-l2 span").hide();
+            $(".menu-l2").css("width","50px");
+
+            setTimeout(function(){ 
+                $(".menu-text-l2").hide();
+                $(".menu-title-l2 span").hide();
+                var ctrl = $("#menu-l2-controls");
+                ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
+                ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
+                $("#menu-l2-controls").show();
+                }, 300);
+        }
+
         var window_width = $(window).width();
         var max_width = $(".content-container").css("max-width").replace("px","");
-        
         if (max_width=='none' || window_width<max_width) {
             $(".content-container").css("margin","46px 0 0 50px");
         } else {
-            $(".content-container").css("margin","46px auto 0 auto");
+            $(".content-container").css("margin","46px auto 0 50px");
         }
-        
-        var ctrl = $("#menu-l2-controls");
-        ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
-        ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
+
+        menu.l2_min = true;
+        menu.l2_visible = true;
     },
 
     // If we expand l2 we also hide l3
     exp_l2: function () {
-        if (menu.l2_min) setTimeout(function(){ $(".menu-text-l2").show(); $(".menu-title-l2 span").show(); },200);
+        console.log("exp_l2");
+        var delay = 0;
+        if (menu.l3_visible) { delay = 300; menu.hide_l3(); }
+        
+        if (!(menu.l2_visible && menu.l2_min == false)) {
+            $("#menu-l2-controls").hide();
+            $(".menu-text-l2").hide();
+            $(".menu-title-l2 span").hide();
+
+            setTimeout(function(){ 
+                $(".menu-l2").css("width","240px"); 
+                },delay);
+
+            setTimeout(function(){ 
+                $(".menu-text-l2").show();
+                $(".menu-title-l2 span").show();
+                var ctrl = $("#menu-l2-controls");
+                ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
+                ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
+                $("#menu-l2-controls").show();
+                },delay + 300);
+        }
+        var left = 240;
+        if (menu.width<1150) { 
+            left = 50;
+            clearTimeout(menu.auto_hide_timer);
+            menu.auto_hide_timer = setTimeout(function(){ if (!menu.l3_visible) { menu.min_l2(); } } ,3000); // auto hide 
+        }
+        $(".content-container").css("margin","46px 0 0 "+left+"px");
+        
         menu.l2_min = false;
         menu.l2_visible = true;
-        menu.hide_l3();
-        $(".menu-l2").show();
-        $(".menu-l2").css("width","240px");
-        var left = 240;
-        if (menu.width<1150) left = 50;
-        $(".content-container").css("margin","46px 0 0 "+left+"px");
-
-        var ctrl = $("#menu-l2-controls");
-        ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
-        ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
     },
 
     // If we show l3, l2_min = false moves back to expanded l2
     show_l3: function () {
+        console.log("show_l3");
         menu.min_l2();
-        menu.l2_visible = true;
-        menu.l3_visible = true;
-        menu.l2_min = true;
-        $(".menu-l2").css("width","50px");
-        $(".menu-l3").show();
-        $(".menu-text-l2").hide();
-        var left = 290;
-        if (menu.width<1150) left = 50;
+
+        setTimeout(function(){ $(".menu-l3").css("width","280px"); },300);
+        
+        var left = 280 + 50;
+        if (menu.width<1150) { 
+            left = 50;
+            clearTimeout(menu.auto_hide_timer);
+            menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,3000); // auto hide 
+        }
         $(".content-container").css("margin","46px 0 0 "+left+"px");
+
+        menu.l3_visible = true;
     },
 
-    // If we hide l3 - l2 expands
-    hide_l3: function () {
-        menu.l3_visible = false;
-        $(".menu-l3").hide();
-    },
 
     resize: function() {
+        console.log("resize");
         menu.width = $(window).width();
         menu.height = $(window).height();
         
         if (!menu.is_disabled) {
-            
             if (menu.mode=='auto') {
                 if (menu.width>=576 && menu.width<992) {
-                    menu.min_l2();
+                    //menu.auto_hide = false;
+                    if (menu.active_l3) {
+                        menu.show_l3();
+                    }
+                    else if (menu.active_l2) {
+                        menu.min_l2();
+                    }
                 } else if (menu.width<576) {
                     menu.hide_l2();
-                    menu.hide_l3();
                 } else {
-                    if (!menu.l3_visible) menu.exp_l2();
+                    //menu.auto_hide = false;
+                    if (menu.active_l3) {
+                        menu.show_l3();
+                    }
+                    else if (menu.active_l2) {
+                        menu.exp_l2();
+                    }
                 }
             }
-            
             if (menu.width>=992 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
                 menu.mode = 'auto'
             }
@@ -300,6 +367,7 @@ var menu = {
     events: function() {
 
         $(".menu-l1 li div").click(function(event){
+            console.log("menu-l1 li div");
             menu.last_active_l1 = menu.active_l1;
             menu.active_l1 = $(this).attr("l1");
             let item = menu.obj[menu.active_l1];
@@ -307,16 +375,24 @@ var menu = {
             $(".menu-l1 li div").removeClass("active");
             $(".menu-l1 li div[l1="+menu.active_l1+"]").addClass("active");
             // If no sub menu then menu item is a direct link
+            menu.mode = 'manual'
             if (item['l2']==undefined) {
                 window.location = path+item['href']
             } else {
                 if (menu.active_l1!=menu.last_active_l1) {
-                    menu.draw_l2();
-                    menu.exp_l2();
+                    menu.min_l2();
+                    setTimeout(function(){ menu.draw_l2(); },300);;
+                    if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                        menu.show_l3();
+                    }
+                    else { 
+                        menu.hide_l3();
+                        setTimeout(function(){ menu.exp_l2(); },300);;
+                        
+                    }
                 } else {
-
                     if (!menu.l2_visible) {
-                        if (menu.active_l3) {
+                        if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
                             menu.min_l2();
                             menu.show_l3();
                         } else {
@@ -331,11 +407,12 @@ var menu = {
                         menu.hide_l3();
                     }
                 }
+                $(window).trigger('resize');
             }
-            menu.mode = 'manual'
         });
 
         $(".menu-l2").on("click","li div",function(event){
+            console.log("menu-l2.li div");
             menu.active_l2 = $(this).attr("l2");
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2];
             // Remove active class from all menu items
@@ -344,27 +421,32 @@ var menu = {
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
             if (item['l3']!=undefined) {
-                if (!menu.l3_visible) {
+                menu.mode = 'manual'
+                if (menu.active_l2 && !menu.l3_visible) {
                     // Expand sub menu
-                    menu.draw_l3();
+                    menu.show_l3();
                 } else {
-                    menu.min_l2();
+                    menu.hide_l3();
                 }
+                $(window).trigger('resize');
             }
         });
 
         $(".menu-l2").on("click","li",function(event){
+            console.log("menu-l2.click");
             event.stopPropagation();
         });
         
         $("#menu-l2-controls").click(function(event){
+            console.log("menu-l2-controls");
             event.stopPropagation();
+            menu.mode = 'manual'
             if (menu.l2_visible && menu.l2_min) {
                 menu.exp_l2();
             } else {
                 menu.min_l2();
             }
-            menu.mode = 'manual'
+            $(window).trigger('resize');
         });
         
         $(window).resize(function(){
