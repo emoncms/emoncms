@@ -18,6 +18,7 @@ class EmonLogger
     private $caller = "";
     private $logenabled = false;
     private $log_level = 2;
+    public $stout = false;
 
     public function __construct($clientFileName)
     {
@@ -73,6 +74,10 @@ class EmonLogger
     {
         if (!$this->logenabled) {
             return;
+        }
+        
+        if ($this->stout) {
+            print $type." ".$message."\n";
         }
 
         $now = microtime(true);
