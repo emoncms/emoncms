@@ -117,7 +117,7 @@
   
     kwh_data = data;
     var total = 0, ndays=0;
-    for (z in kwh_data) {
+    for (var z in kwh_data) {
     if (kwh_data[z][1] == null) { kwh_data[z][1] = 0; } // fix when  get_feed_data_DMY_async return null
         total += parseFloat(kwh_data[z][1]); ndays++;
     }

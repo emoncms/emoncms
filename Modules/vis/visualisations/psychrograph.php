@@ -39,7 +39,7 @@ document.write(flot7);
 document.write(flot8);
 document.write(flot9);
 var common0='<script language="javascript" type="text/javascript" src="'+path+'Modules/vis/visualisations/common/api.js"><\/script>';
-var common1='<script language="javascript" type="text/javascript" src="'+path+'Modules/vis/visualisations/common/vis.helper.js"><\/script>';
+var common1='<script language="javascript" type="text/javascript" src="'+path+'Lib/vis.helper.js"><\/script>';
 var common2='<script language="javascript" type="text/javascript" src="'+path+'Modules/vis/visualisations/common/inst.js"><\/script>';
 var common3='<script language="javascript" type="text/javascript" src="'+path+'Modules/vis/visualisations/common/proc.js"><\/script>';
 var psychro='<script language="javascript" type="text/javascript" src="'+path+'Modules/vis/visualisations/psychrograph.js"><\/script>';

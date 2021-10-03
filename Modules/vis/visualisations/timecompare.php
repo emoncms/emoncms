@@ -22,7 +22,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js"></script>
 
 <?php if (!$embed) { ?>

@@ -23,7 +23,7 @@ srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
 srcScripts.push(path+"Modules/vis/visualisations/common/api.js");
-srcScripts.push(path+"Modules/vis/visualisations/common/vis.helper.js");
+srcScripts.push(path+"Lib/vis.helper.js");
 srcScripts.push(path+"Modules/vis/visualisations/multigraph/multigraph.js");
 srcScripts.push(path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
 srcScripts.push(path+"Lib/bootstrap/js/bootstrap.js");
@@ -48,7 +48,7 @@ srcLinks.forEach(function(srcLink){
     //for user logged in emoncms, the url is like /vis/multigraph?mid=1&embed=0
     //for visitors, the url can be /vis/multigraph?mid=1&embed=1&apikey=apikey_read
     
-    //we use the urlParams var provided by the helper : Modules/vis/visualisations/common/vis_helper.js
+    //we use the urlParams var provided by the helper : Lib/vis_helper.js
     //working on firefox,chrome,edge
     //ALTERNATIVE : use of the generic js function URLSearchParams
     //does not work with IE/Edge !
