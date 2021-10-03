@@ -5,6 +5,7 @@ var menu = {
 
     // Menu visibility and states
     // These do not currently control the state from startup but are set during startup
+    l1_visible: true,
     l2_visible: false,
     l3_visible: false,
     l2_min: false,
@@ -197,6 +198,7 @@ var menu = {
         console.log("hide_l1");
         $(".menu-l1").hide();
         $(".content-container").css("margin","0 auto 0 auto");
+        menu.l1_visible = false;
     },
     
     hide_l2: function () {

@@ -207,6 +207,7 @@ text-decoration:none;
 }
 
 .menu-l3 li a:hover {
+  background-color:var(--bg-l2-hover);
   color: var(--l3-text-hover);
 }
 
