@@ -3,12 +3,11 @@ var feed = {
 
   apikey: "",
   
-  'create':function(tag, name, datatype, engine, options, unit){
+  'create':function(tag, name, engine, options, unit){
     var result = {};
     var data = {
       tag: tag,
       name: name,
-      datatype: datatype,
       engine: engine,
       options: JSON.stringify(options),
       unit: unit || ''

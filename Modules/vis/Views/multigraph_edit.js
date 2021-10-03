@@ -157,7 +157,7 @@ function drawMultigraphFeedlistEditor(){
     }
 
     if (typeof multigraphFeedlist[z]["graphtype"] === "undefined") {
-      graphtype=multigraphFeedlist[z]["datatype"]==="1" ? "lines" : "bars";
+      graphtype="lines";
     } else {
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
@@ -293,14 +293,6 @@ function getFeedTag(id){
   }
 }
 
-function getFeedDatatype(id){
-  var z;
-
-  for (z in feedlist){
-    if (feedlist[z]["id"] === id) { return feedlist[z]["datatype"]; }
-  }
-}
-
 function updateMultigraphFeedlistNames(){
   var m;
 
@@ -349,7 +341,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({"id":feedid,"tag":getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
+    multigraphFeedlist.push({"id":feedid,"tag":getFeedTag(feedid),"name":getFeedName(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
