@@ -72,8 +72,8 @@ $apikey_write = $user->get_apikey_write($session['userid']);
       <td><b><?php echo _("Example URL"); ?></b></td>
       <td>
         <a :href="api[selected_api].url">{{ api[selected_api].url }}</a>
-        <button class="btn btn-small" style="float:right">Try</button>
-        <button class="btn btn-small" style="float:right">Copy</button>
+        <button class="btn btn-small" style="float:right" @click="try_api">Try</button>
+        <!--<button class="btn btn-small" style="float:right" @click="copy_api">Copy</button>-->
       </td>
     </tr>
     <tr>
@@ -154,6 +154,12 @@ var app = new Vue({
        hide_auth: function() {
            app.auth_visible = false;
            build_url();
+       },
+       try_api: function() {
+           get_response();
+       },
+       copy_api: function() {
+       
        }
     }
 });
