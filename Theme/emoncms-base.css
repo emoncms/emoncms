@@ -103,11 +103,11 @@ http://openenergymonitor.org
 html,body{height: initial!important}
 
 #wrap{
-  min-height: calc(100vh - 5.4rem)!important;
+  min-height: calc(100vh - 2.5rem)!important;
   margin-top: 0;
 }
 /* animate both elements at same speed to get shift effect */
-#wrap,#footer {
+#footer {
     transition: margin .3s ease-out;
 }
 

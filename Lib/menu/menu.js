@@ -205,7 +205,10 @@ var menu = {
         menu.menu_top_visible = true;
     },
 
-    
+    hide_l1: function () {
+        $(".menu-l1").hide();
+    },
+
     hide_l2: function () {
         console.log("hide_l2");
         clearTimeout(menu.auto_hide_timer);
