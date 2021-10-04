@@ -53,16 +53,19 @@ class Rememberme {
             $this->secure = true;
         }
         
-        // setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
         // May be limited to PHP7.3
-        setcookie($this->cookieName,$content, [
-            'expires' => $expire,
-            'path' => $this->path,
-            'domain' => $this->domain,
-            'secure' => $this->secure,
-            'httponly' => $this->httpOnly,
-            'samesite' => 'Strict'
-        ]);
+        if (PHP_VERSION_ID>=70300) {
+            setcookie($this->cookieName,$content, [
+                'expires' => $expire,
+                'path' => $this->path,
+                'domain' => $this->domain,
+                'secure' => $this->secure,
+                'httponly' => $this->httpOnly,
+                'samesite' => 'Strict'
+            ]);
+        } else {
+            setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
+        }
         
         // Double check cookie saved correctly
         if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!=$content) {
