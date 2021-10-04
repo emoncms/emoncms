@@ -4,10 +4,16 @@
   height:46px;
   width:100%;
   z-index:1001;
-  position:fixed;
+  position:sticky;
   top:0px;
   background-color:var(--bg-menu-top);
   box-shadow: 0 2px 4px -1px rgb(0 0 0 / 25%);
+  transition: all 0.3s ease-out;
+}
+
+.menu-top-hide {
+  top:-46px;
+  transition: all 0.3s ease-out;
 }
 
 .menu-l1 ul {
@@ -32,9 +38,10 @@
   padding: 11px 13px 11px 13px;
   cursor:pointer;
   font-size:1.5rem;
+  transition: all 0.1s ease-out;
 }
 
-.menu-l1 li:hover {
+.menu-l1 li div:hover {
   background-color:var(--bg-menu-top-hover);
 }
 
@@ -132,7 +139,7 @@ text-decoration:none;
   padding: 0.94rem;
   cursor:pointer;
   overflow:hidden;
-
+  transition: all 0.1s ease-out;
 }
 
 .menu-l2 li div:hover {
@@ -159,12 +166,12 @@ text-decoration:none;
 
 .ctrl-exp {
   padding: 15px 110px 15px 110px;
-  transition: all 0.3s ease-out;
+  transition: all 0.1s ease-out;
 }
 
 .ctrl-min {
   padding: 15px 17px 15px 17px;
-  transition: all 0.3s ease-out;
+  transition: all 0.1s ease-out;
 }
 
 #menu-l2-controls:hover {
@@ -204,6 +211,7 @@ text-decoration:none;
   color: var(--l3-text);
   display: block;
   padding: 0.94em;
+  transition: all 0.1s ease-out;
 }
 
 .menu-l3 li a:hover {
@@ -269,9 +277,10 @@ a.grav-container:hover img.grav {
   overflow: hidden;
   padding: 6px;
   font-size:1.5rem;
+  transition: all 0.1s ease-out;
 }
 
 .gravitar a.grav-container:hover {
-	background: var(--bg-menu-top-hover);
+  background: var(--bg-menu-top-hover);
 }
 
