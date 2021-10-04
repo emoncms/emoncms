@@ -43,7 +43,7 @@ function admin_controller()
         ));
 
         $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
-        return view("Modules/admin/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
+        return view("Modules/admin/Views/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
     }
     
     // --------------------------------------------------------------------------------------------
@@ -74,13 +74,13 @@ function admin_controller()
     // System information view
     if ($route->action == 'info') {
         $route->format = 'html';
-        return view("Modules/admin/admin_main_view.php", $admin->full_system_information());
+        return view("Modules/admin/Views/admin_main_view.php", $admin->full_system_information());
     }
     
     // System update view
     if ($route->action == 'update') {
         $route->format = 'html';
-        return view("Modules/admin/update_view.php", array(
+        return view("Modules/admin/Views/update_view.php", array(
             'update_log_filename'=> $admin->update_logfile(),
             'serial_ports'=>$admin->listSerialPorts(),
             'firmware_available'=>$admin->firmware_available()
@@ -90,13 +90,13 @@ function admin_controller()
     // System components view
     if ($route->action == 'components') {
         $route->format = 'html';
-        return view("Modules/admin/components_view.php", array("components_installed"=>$admin->component_list(), "components_available"=>$admin->components_available(),'redis_enabled'=>$settings['redis']['enabled']));
+        return view("Modules/admin/Views/components_view.php", array("components_installed"=>$admin->component_list(), "components_available"=>$admin->components_available(),'redis_enabled'=>$settings['redis']['enabled']));
     } 
     
     // Firmware view
     if ($route->action == 'serial') {
         $route->format = 'html';
-        return view("Modules/admin/serialmonitor_view.php", array('serial_ports'=>$admin->listSerialPorts()));
+        return view("Modules/admin/Views/serialmonitor_view.php", array('serial_ports'=>$admin->listSerialPorts()));
     }
     
     // Emoncms log view
@@ -104,7 +104,7 @@ function admin_controller()
         $route->format = 'html';
         
         $log_levels = $log->levels();
-        return view("Modules/admin/emoncms_log_view.php", array(
+        return view("Modules/admin/Views/emoncms_log_view.php", array(
             'log_enabled'=>$settings['log']['enabled'],
             'emoncms_logfile'=>$admin->emoncms_logfile(),
             'log_levels' => $log_levels,
@@ -116,7 +116,7 @@ function admin_controller()
     // User list view
     if ($route->action == 'users') {
         $route->format = 'html';
-        return view("Modules/admin/userlist_view.php", array());
+        return view("Modules/admin/Views/userlist_view.php", array());
     }
     
     // ----------------------------------------------------------------------------------------
