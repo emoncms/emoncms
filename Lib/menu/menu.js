@@ -394,6 +394,7 @@ var menu = {
                     menu.min_l2();
                     setTimeout(function(){ menu.draw_l2(); },300);;
                     if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                        menu.auto_hide = false;
                         menu.show_l3();
                     }
                     else { 
@@ -404,6 +405,7 @@ var menu = {
                 } else {
                     if (!menu.l2_visible) {
                         if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                            menu.auto_hide = false;
                             menu.min_l2();
                             menu.show_l3();
                         } else {
@@ -422,10 +424,11 @@ var menu = {
             }
         });
 
-        $(".menu-l2").on("click","li div",function(event){
+        $(".menu-l2 li div").click(function(event){
             console.log("menu-l2.li div");
+            var is_active = ($(this).attr("class") == "active" ? true : false);
             menu.active_l2 = $(this).attr("l2");
-            let item = menu.obj[menu.active_l1]['l2'][menu.active_l2];
+            var item = menu.obj[menu.active_l1]['l2'][menu.active_l2];
             // Remove active class from all menu items
             $(".menu-l2 li div").removeClass("active");
             // Set active class to current menu
@@ -433,25 +436,26 @@ var menu = {
             // If no sub menu then menu item is a direct link
             if (item['l3']!=undefined) {
                 menu.mode = 'manual'
-                if (menu.active_l2 && !menu.l3_visible) {
+                menu.auto_hide = false;
+                if (is_active && menu.active_l2 && !menu.l3_visible) {
                     // Expand sub menu
                     menu.show_l3();
                 } else {
                     menu.hide_l3();
                 }
                 $(window).trigger('resize');
+            } else {
+                if (menu.active_l2 && menu.l3_visible) {
+                    menu.hide_l3(); // must be a direct link
+                }
             }
         });
 
-        $(".menu-l2").on("click","li",function(event){
-            console.log("menu-l2.click");
-            event.stopPropagation();
-        });
-        
         $("#menu-l2-controls").click(function(event){
             console.log("menu-l2-controls");
             event.stopPropagation();
             menu.mode = 'manual'
+            menu.auto_hide = false;
             if (menu.l2_visible && menu.l2_min) {
                 menu.exp_l2();
             } else {
