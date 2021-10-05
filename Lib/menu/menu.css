@@ -96,7 +96,6 @@
   position:fixed;
   top:46px;
   z-index:1000;
-  transition: all 0.3s ease-out;
 }
 
 .menu-l2-inner {
@@ -192,7 +191,6 @@ text-decoration:none;
   overflow-x: hidden;
   scrollbar-width: none; /* can also be: thin */
   -ms-overflow-style: none;
-  transition: all 0.3s ease-out;
 }
 
 .menu-l3 ul {

@@ -221,7 +221,7 @@ var menu = {
             $(".menu-title-l2 span").hide();
 
             setTimeout(function(){ 
-                $(".menu-l2").css("width","0px");
+                $(".menu-l2").animate({ width: 0 }, 300);
                 },delay);
         }
 
@@ -232,7 +232,7 @@ var menu = {
     hide_l3: function () {
         console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
-        $(".menu-l3").css("width","0px");
+        if (menu.l3_visible) $(".menu-l3").animate({ width: 0 }, 300);
         if (menu.l2_visible) $(".content-container").css("margin","0 auto 0 50px");
         else $(".content-container").css("margin","0 auto 0 auto");
         menu.l3_visible = false;
@@ -245,7 +245,7 @@ var menu = {
             $("#menu-l2-controls").hide();
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
-            $(".menu-l2").css("width","50px");
+            $(".menu-l2").animate({ width: "50px" }, 300);
 
             setTimeout(function(){ 
                 $(".menu-text-l2").hide();
@@ -281,7 +281,7 @@ var menu = {
             $(".menu-title-l2 span").hide();
 
             setTimeout(function(){ 
-                $(".menu-l2").css("width","240px"); 
+                $(".menu-l2").animate({ width: "240px" }, 300);
                 },delay);
 
             setTimeout(function(){ 
@@ -308,19 +308,23 @@ var menu = {
     // If we show l3, min l2
     show_l3: function () {
         console.log("show_l3");
-        menu.min_l2();
+        if (!menu.l2_min || !menu.l2_visible) menu.min_l2();
 
-        setTimeout(function(){ $(".menu-l3").css("width","280px"); },300);
-        
-        var left = 280 + 50;
-        if (menu.width<1150) { 
-            left = 50;
-            clearTimeout(menu.auto_hide_timer);
-            menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,5000); // auto hide 
-        }
-        $(".content-container").css("margin","0 0 0 "+left+"px");
-
-        menu.l3_visible = true;
+        if (!menu.l3_visible) {
+            setTimeout(function(){ 
+                $(".menu-l3").animate({ width: "280px" }, 300);
+            },300);
+               
+            var left = 280 + 50;
+            if (menu.width<1150) { 
+                left = 50;
+                clearTimeout(menu.auto_hide_timer);
+                menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,5000); // auto hide 
+            }
+            $(".content-container").css("margin","0 0 0 "+left+"px");
+     
+            menu.l3_visible = true;
+        } 
     },
 
     resize: function() {
