@@ -165,12 +165,12 @@ text-decoration:none;
 
 .ctrl-exp {
   padding: 15px 110px 15px 110px;
-  transition: all 0.1s ease-out;
+  /*transition: all 0.1s ease-out;*/
 }
 
 .ctrl-min {
   padding: 15px 17px 15px 17px;
-  transition: all 0.1s ease-out;
+  /*transition: all 0.1s ease-out;*/
 }
 
 #menu-l2-controls:hover {
