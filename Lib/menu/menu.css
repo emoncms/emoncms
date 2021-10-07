@@ -4,7 +4,7 @@
   height:46px;
   width:100%;
   z-index:1001;
-  position:sticky;
+  position:fixed;
   top:0px;
   background-color:var(--bg-menu-top);
   box-shadow: 0 2px 4px -1px rgb(0 0 0 / 25%);
