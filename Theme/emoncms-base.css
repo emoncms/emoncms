@@ -129,6 +129,7 @@ html,body{height: initial!important}
   margin-left: 15rem;
   margin-bottom: 0;
   margin-right: 0;*/
+  margin: 46px auto 0 auto;
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }

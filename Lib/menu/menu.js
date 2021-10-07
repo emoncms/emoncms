@@ -470,7 +470,7 @@ var menu = {
         
         $(window).scroll(function() {
           var scrollTop = $(window).scrollTop();
-          var main = 46;
+          var main = 0;
           if ((scrollTop > main) && menu.menu_top_visible && !menu.l2_visible && !menu.l3_visible) { 
               menu.hide_menu_top();
           } else if (scrollTop <= main && !menu.menu_top_visible) {

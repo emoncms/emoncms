@@ -96,6 +96,7 @@
   position:fixed;
   top:46px;
   z-index:1000;
+  box-shadow: 0 2px 4px 1px rgb(0 0 0 / 25%);
 }
 
 .menu-l2-inner {
@@ -155,7 +156,8 @@ text-decoration:none;
 
 #menu-l2-controls {
   background-color:var(--bg-l2);
-  position:absolute;
+  position:fixed;
+  bottom: 0;
   text-decoration: none;
   color: var(--l2-text);
   display: block;
@@ -164,7 +166,7 @@ text-decoration:none;
 }
 
 .ctrl-exp {
-  padding: 15px 110px 15px 110px;
+  padding: 15px 112px 15px 112px;
   /*transition: all 0.1s ease-out;*/
 }
 
@@ -191,6 +193,7 @@ text-decoration:none;
   overflow-x: hidden;
   scrollbar-width: none; /* can also be: thin */
   -ms-overflow-style: none;
+  box-shadow: 0 2px 4px 1px rgb(0 0 0 / 25%);
 }
 
 .menu-l3 ul {
