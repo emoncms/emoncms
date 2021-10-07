@@ -232,7 +232,7 @@ var menu = {
     hide_l3: function () {
         console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
-        if (menu.l3_visible) $(".menu-l3").animate({ width: 0 }, 300);
+        if (menu.l3_visible) $(".menu-l3").animate({ width: 0 }, 300, function() { $(".menu-l3").css("left","0px"); } );
         if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
         else $(".content-container").css("margin","46px auto 0 auto");
         menu.l3_visible = false;
@@ -312,6 +312,7 @@ var menu = {
 
         if (!menu.l3_visible) {
             setTimeout(function(){ 
+                $(".menu-l3").css("left","50px"); 
                 $(".menu-l3").animate({ width: "280px" }, 300);
             },300);
                
