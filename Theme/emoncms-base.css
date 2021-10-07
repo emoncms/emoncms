@@ -106,7 +106,7 @@ html,body{height: initial!important}
   min-height: calc(100vh - 2.5rem)!important;
   margin-top: 0;
 }
-/* animate both elements at same speed to get shift effect */
+
 #footer {
     transition: margin .3s ease-out;
 }
