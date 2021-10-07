@@ -225,7 +225,7 @@ var menu = {
                 },delay);
         }
 
-        $(".content-container").css("margin","0 auto 0 auto");
+        $(".content-container").css("margin","46px auto 0 auto");
         menu.l2_visible = false;
     },
 
@@ -233,8 +233,8 @@ var menu = {
         console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
         if (menu.l3_visible) $(".menu-l3").animate({ width: 0 }, 300);
-        if (menu.l2_visible) $(".content-container").css("margin","0 auto 0 50px");
-        else $(".content-container").css("margin","0 auto 0 auto");
+        if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
+        else $(".content-container").css("margin","46px auto 0 auto");
         menu.l3_visible = false;
     },
 
@@ -260,9 +260,9 @@ var menu = {
         var window_width = $(window).width();
         var max_width = $(".content-container").css("max-width").replace("px","");
         if (max_width=='none' || window_width<max_width) {
-            $(".content-container").css("margin","0 0 0 50px");
+            $(".content-container").css("margin","46px 0 0 50px");
         } else {
-            $(".content-container").css("margin","0 auto 0 50px");
+            $(".content-container").css("margin","46px auto 0 50px");
         }
 
         menu.l2_min = true;
@@ -299,7 +299,7 @@ var menu = {
             clearTimeout(menu.auto_hide_timer);
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && !menu.l3_visible) { menu.auto_hide = false; menu.min_l2(); } } ,5000); // auto hide 
         }
-        $(".content-container").css("margin","0 0 0 "+left+"px");
+        $(".content-container").css("margin","46px 0 0 "+left+"px");
         
         menu.l2_min = false;
         menu.l2_visible = true;
@@ -321,7 +321,7 @@ var menu = {
                 clearTimeout(menu.auto_hide_timer);
                 menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,5000); // auto hide 
             }
-            $(".content-container").css("margin","0 0 0 "+left+"px");
+            $(".content-container").css("margin","46px 0 0 "+left+"px");
      
             menu.l3_visible = true;
         } 
@@ -332,7 +332,7 @@ var menu = {
         menu.width = $(window).width();
         menu.height = $(window).height();
         
-        if (!menu.is_disabled) {
+        if (!menu.is_disabled && menu.menu_top_visible) {
             if (menu.mode=='auto') {
                 menu.auto_hide = true;
                 if (menu.width>=576 && menu.width<992) {
