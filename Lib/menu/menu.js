@@ -444,12 +444,12 @@ var menu = {
                 } else {
                     menu.hide_l3();
                 }
+                $(window).trigger('resize');
             } else {
                 if (menu.active_l2 && menu.l3_visible) {
-                    menu.hide_l3(); // must be a direct link
+                    menu.hide_l3(); // must be a direct link, dont triger resize here
                 }
             }
-            $(window).trigger('resize');
         });
 
         $("#menu-l2-controls").click(function(event){
