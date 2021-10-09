@@ -100,11 +100,14 @@ function view($filepath, array $args = array())
  * @param string $index name of $_GET item
  *
  **/
-function get($index)
+function get($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_GET[$index])) {
         $val = rawurldecode($_GET[$index]);
+    } else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
     
     $val = stripslashes($val);
@@ -116,9 +119,9 @@ function get($index)
  * @param string $index name of $_POST item
  *
  **/
-function post($index)
+function post($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_POST[$index])) {
         // PHP automatically converts POST names with brackets `field[]` to type array
         if (!is_array($_POST[$index])) {
@@ -130,7 +133,11 @@ function post($index)
                 $val = $SANTIZED_POST[$index];
             }
         }
+    } else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
+    
     if (is_array($val)) {
         $val = array_map("stripslashes", $val);
     } else {
@@ -144,14 +151,18 @@ function post($index)
  * @param string $index name of $_POST or $_GET item
  *
  **/
-function prop($index)
+function prop($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_GET[$index])) {
         $val = $_GET[$index];
     }
-    if (isset($_POST[$index])) {
+    else if (isset($_POST[$index])) {
         $val = $_POST[$index];
+    }
+    else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
     
     if (is_array($val)) {

@@ -37,7 +37,10 @@ function feed_controller()
         if (($route->action == "view" || $route->action == "list") && $session['write']) {
             return view("Modules/feed/Views/feedlist_view.php");
         }
-        else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
+        else if ($route->action == "api" && $session['write']) {
+            require "Modules/feed/feed_api_obj.php";
+            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>9));
+        }
         else if (!$session['read']) return ''; // empty strings force user back to login
         else return EMPTY_ROUTE; // this string displays error
     }
