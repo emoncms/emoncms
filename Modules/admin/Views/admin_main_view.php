@@ -214,6 +214,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
         <dl class="row">
         <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+        <?php echo row(_('Run user'), _('User') . ": " . $system['run_user'] . " " . _('Group') . ": " .  $system['run_group'] . " " . _('Script Owner') . ": " . $system['script_owner'] ); ?>
         <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
         </dl>
 

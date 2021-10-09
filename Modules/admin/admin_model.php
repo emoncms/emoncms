@@ -273,6 +273,9 @@ class Admin {
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
+                     'run_user' => $this->exec('whoami'),
+                     'run_group' => $this->exec('id -Gn'),
+                     'script_owner' => (function_exists('get_current_user') ? get_current_user() : 'n/a'),
                      'db_server' => $this->settings['sql']['server'],
                      'db_ip' => gethostbyname($this->settings['sql']['server']),
                      'db_version' => $this->mysqli->server_info,
@@ -606,6 +609,8 @@ class Admin {
        
             if (is_dir($path)) {
                 return array('success'=>false, 'message'=>"Module folder still exists '$path'");
+            } else if (is_link($path)) {
+                return array('success'=>false, 'message'=>"Module folder is a symbolic link and still exists '$path'");
             } else {
                 $message .= "- check: ok\n";
             }
