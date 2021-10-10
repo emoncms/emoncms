@@ -20,6 +20,12 @@ class EmonLogger
     private $log_level = 2;
     public $stout = false;
 
+    private $log_levels = array(
+            1 =>'INFO',
+            2 =>'WARN', // default
+            3 =>'ERROR'
+        );
+
     public function __construct($clientFileName)
     {
         global $settings;
@@ -68,6 +74,11 @@ class EmonLogger
         if ($this->log_level <= 3) {
             $this->write("ERROR", $message);
         }
+    }
+
+    public function levels()
+    {
+        return $this->log_levels;
     }
 
     private function write($type, $message)
