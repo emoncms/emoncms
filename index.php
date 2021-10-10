@@ -30,6 +30,11 @@ $log = new EmonLogger(__FILE__);
 
 // 2) Database
 if ($settings['redis']['enabled']) {
+    # Check Redis PHP modules is loaded
+    if (!extension_loaded('redis')) {
+        echo "Your PHP installation appears to be missing the <b>Redis</b> extension which is required by Emoncms current settings. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
+        die;
+    }
     $redis = new Redis();
     $connected = $redis->connect($settings['redis']['host'], $settings['redis']['port']);
     if (!$connected) {
@@ -56,13 +61,13 @@ $mqtt = false;
 
 # Check MySQL PHP modules are loaded
 if (!extension_loaded('mysql') && !extension_loaded('mysqli')) {
-    echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
+    echo "Your PHP installation appears to be missing the <b>MySQL extension(s)</b> which are required by Emoncms. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
     die;
 }
 
 # Check Gettext PHP  module is loaded
 if (!extension_loaded('gettext')) {
-    echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)";
+    echo "Your PHP installation appears to be missing the <b>gettext</b> extension which is required by Emoncms. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
     die;
 }
     
