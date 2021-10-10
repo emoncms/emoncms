@@ -24,6 +24,9 @@ function admin_controller()
         }
         return array('content'=>'','message'=>'Admin re-authentication required'); 
     }
+
+    require_once "Modules/admin/admin_model.php";
+    $admin = new Admin($mysqli, $redis, $settings);
     
     $emoncms_logfile = $settings['log']['location']."/emoncms.log";
     $update_logfile = $settings['log']['location']."/update.log";
@@ -79,34 +82,30 @@ function admin_controller()
     // System information view
     if ($route->action == 'info') {
         $route->format = 'html';
-        require "Modules/admin/admin_model.php";
-        return view("Modules/admin/Views/admin_main_view.php",Admin::full_system_information());
+        return view("Modules/admin/Views/admin_main_view.php",$admin->full_system_information());
     }
     
     // System update view
     if ($route->action == 'update') {
         $route->format = 'html';
-        require "Modules/admin/admin_model.php";
         return view("Modules/admin/Views/update_view.php", array(
             'update_log_filename'=> $update_logfile,
-            'serial_ports'=>Admin::listSerialPorts(),
-            'firmware_available'=>Admin::firmware_available()
+            'serial_ports'=>$admin->listSerialPorts(),
+            'firmware_available'=>$admin->firmware_available()
         ));
     }
             
     // System components view
     if ($route->action == 'components') {
         $route->format = 'html';
-        require "Modules/admin/admin_model.php";
-        return view("Modules/admin/Views/components_view.php", array("components"=>Admin::component_list()));
+        return view("Modules/admin/Views/components_view.php", array("components"=>$admin->component_list()));
     } 
     
     // Firmware view
     if ($route->action == 'serial') {
         $route->format = 'html';
-        require "Modules/admin/admin_model.php";
         return view("Modules/admin/Views/serialmonitor_view.php", array(
-            'serial_ports'=>Admin::listSerialPorts()
+            'serial_ports'=>$admin->listSerialPorts()
         ));
     }
     
@@ -145,18 +144,17 @@ function admin_controller()
         if (!isset($_GET['name'])) {
             return "missing name parameter";
         }
-        $name = $_GET['name'];
-        require "Modules/admin/admin_model.php";     
-        if (!in_array($name,Admin::get_services_list())) {
+        $name = $_GET['name'];    
+        if (!in_array($name,$admin->get_services_list())) {
             return "invalid service";
         }
         
-        if ($route->subaction == 'status') return Admin::getServiceStatus("$name.service");
-        if ($route->subaction == 'start') return Admin::setService("$name.service",'start');
-        if ($route->subaction == 'stop') return Admin::setService("$name.service",'stop');
-        if ($route->subaction == 'restart') return Admin::setService("$name.service",'restart');
-        if ($route->subaction == 'disable') return Admin::setService("$name.service",'disable');
-        if ($route->subaction == 'enable') return Admin::setService("$name.service",'enable');
+        if ($route->subaction == 'status') return $admin->getServiceStatus("$name.service");
+        if ($route->subaction == 'start') return $admin->setService("$name.service",'start');
+        if ($route->subaction == 'stop') return $admin->setService("$name.service",'stop');
+        if ($route->subaction == 'restart') return $admin->setService("$name.service",'restart');
+        if ($route->subaction == 'disable') return $admin->setService("$name.service",'disable');
+        if ($route->subaction == 'enable') return $admin->setService("$name.service",'enable');
         return false;
     }
     
@@ -218,12 +216,11 @@ function admin_controller()
         $type = $_POST['type'];
         if (!in_array($type,array("all","emoncms"))) return "Invalid update type";
         
-        $serial_port = $_POST['serial_port'];
-        require "Modules/admin/admin_model.php";     
-        if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
+        $serial_port = $_POST['serial_port'];   
+        if (!in_array($serial_port,$admin->listSerialPorts())) return "Invalid serial port";
 
         $firmware_key = $_POST['firmware_key'];        
-        $firmware_available = Admin::firmware_available();
+        $firmware_available = $admin->firmware_available();
         if (!isset($firmware_available->$firmware_key) && $firmware_key!="none") return "invalid firmware";
 
         if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
@@ -241,12 +238,11 @@ function admin_controller()
         if (!isset($_POST['serial_port'])) return "missing parameter: serial_port";
         if (!isset($_POST['firmware_key'])) return "missing parameter: firmware_key";
 
-        $serial_port = $_POST['serial_port'];
-        require "Modules/admin/admin_model.php";     
-        if (!in_array($serial_port,Admin::listSerialPorts())) return "Invalid serial port";
+        $serial_port = $_POST['serial_port'];    
+        if (!in_array($serial_port,$admin->listSerialPorts())) return "Invalid serial port";
         
         $firmware_key = $_POST['firmware_key'];        
-        $firmware_available = Admin::firmware_available();
+        $firmware_available = $admin->firmware_available();
         if (!isset($firmware_available->$firmware_key)) return "invalid firmware";
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh"; 
@@ -297,8 +293,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     if ($route->action == 'components-installed' && $session['write']) {
         $route->format = "json";
-        require "Modules/admin/admin_model.php";
-        return Admin::component_list(true);
+        return $admin->component_list(true);
     }
     
     if ($route->action == 'components-available' && $session['write']) {
@@ -316,9 +311,8 @@ function admin_controller()
    
     if ($route->action == 'component-update' && $session['write']) {
         $route->format = "text";
-
-        require "Modules/admin/admin_model.php";                
-        $components = Admin::component_list(false);
+             
+        $components = $admin->component_list(false);
         
         if (!isset($_GET['module'])) return "missing module parameter"; else $module = $_GET['module'];
         if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
@@ -343,9 +337,8 @@ function admin_controller()
         if (!isset($_GET['branch'])) return "missing branch parameter"; else $branch = $_GET['branch'];
         
         // Validate branch
-        require "Modules/admin/admin_model.php";
         $available_branches = array();
-        foreach (Admin::component_list(false) as $c) {
+        foreach ($admin->component_list(false) as $c) {
             foreach ($c["branches_available"] as $b) {
                 if (!in_array($b,$available_branches)) $available_branches[] = $b;
             }
@@ -378,8 +371,7 @@ function admin_controller()
             $serialport = $_POST['serialport'];
             $baudrate = (int) $_POST['baudrate'];
             
-            require "Modules/admin/admin_model.php";
-            if (!in_array($serialport,Admin::listSerialPorts())) return "invalid serial port";
+            if (!in_array($serialport,$admin->listSerialPorts())) return "invalid serial port";
             if (!in_array($baudrate,array(9600,38400,115200))) return "invalid baud rate";
             
             $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
