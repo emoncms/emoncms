@@ -27,6 +27,7 @@ var menu = {
     // ------------------------------------------------------------------    
     init: function(obj,session) {
         var q_parts = q.split("#");
+        q_parts = q.split("?");
         q_parts = q_parts[0].split("/");
         var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
         
@@ -392,6 +393,7 @@ var menu = {
                 window.location = path+item['href']
             } else {
                 if (menu.active_l1!=menu.last_active_l1) {
+                    // new l1 menu clicked
                     menu.min_l2();
                     menu.auto_hide = true;
                     setTimeout(function(){ menu.draw_l2(); },300);;
@@ -404,6 +406,7 @@ var menu = {
                         
                     }
                 } else {
+                    // same l1 menu clicked
                     menu.auto_hide = false;
                     if (!menu.l2_visible) {
                         if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
