@@ -301,20 +301,18 @@ var menu = {
         console.log("show_l3");
         if (!menu.l2_min || !menu.l2_visible) menu.min_l2();
 
-        if (!menu.l3_visible) {
-            $(".menu-l3").css("left","50px"); 
-            $(".menu-l3").css("width","280px");
+        $(".menu-l3").css("left","50px"); 
+        $(".menu-l3").css("width","280px");
 
-            var left = 280 + 50;
-            if (menu.width<1150) { 
-                left = 50;
-                clearTimeout(menu.auto_hide_timer);
-                menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
-            }
-            $(".content-container").css("margin","46px 0 0 "+left+"px");
-     
-            menu.l3_visible = true;
-        } 
+        var left = 280 + 50;
+        if (menu.width<1150) { 
+            left = 50;
+            clearTimeout(menu.auto_hide_timer);
+            menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
+        }
+        $(".content-container").css("margin","46px 0 0 "+left+"px");
+
+        menu.l3_visible = true;
     },
 
     resize: function() {
