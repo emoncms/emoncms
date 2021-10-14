@@ -213,17 +213,15 @@ var menu = {
     hide_l2: function () {
         console.log("hide_l2");
         clearTimeout(menu.auto_hide_timer);
-        var delay = 0;
-        if (menu.l3_visible) { delay = 600; menu.hide_l3(); }
+        if (menu.l3_visible) { 
+            menu.hide_l3(); 
+        }
 
         if (menu.l2_visible) {
             $("#menu-l2-controls").hide();
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
-
-            setTimeout(function(){ 
-                $(".menu-l2").animate({ width: 0 }, 300);
-                },delay);
+            $(".menu-l2").css("width","0px");
         }
 
         $(".content-container").css("margin","46px auto 0 auto");
@@ -233,7 +231,10 @@ var menu = {
     hide_l3: function () {
         console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
-        if (menu.l3_visible) $(".menu-l3").animate({ width: 0 }, 300, function() { $(".menu-l3").css("left","0px"); } );
+        if (menu.l3_visible) { 
+            $(".menu-l3").css("width","0px");
+            $(".menu-l3").css("left","0px");
+        }
         if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
         else $(".content-container").css("margin","46px auto 0 auto");
         menu.l3_visible = false;
@@ -243,19 +244,14 @@ var menu = {
         console.log("min_l2");
         clearTimeout(menu.auto_hide_timer);
         if (!(menu.l2_visible && menu.l2_min)) {
-            $("#menu-l2-controls").hide();
+            $(".menu-l2").css("width","50px");
+
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
-            $(".menu-l2").animate({ width: "50px" }, 300);
-
-            setTimeout(function(){ 
-                $(".menu-text-l2").hide();
-                $(".menu-title-l2 span").hide();
-                var ctrl = $("#menu-l2-controls");
-                ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
-                ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
-                $("#menu-l2-controls").show();
-                }, 300);
+            var ctrl = $("#menu-l2-controls");
+            ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
+            ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
+            ctrl.show();
         }
 
         var window_width = $(window).width();
@@ -273,32 +269,26 @@ var menu = {
     // If we expand l2 we also hide l3
     exp_l2: function () {
         console.log("exp_l2");
-        var delay = 0;
-        if (menu.l3_visible) { delay = 300; menu.hide_l3(); }
+        if (menu.l3_visible) { 
+            menu.hide_l3();
+        }
         
         if (!(menu.l2_visible && menu.l2_min == false)) {
-            $("#menu-l2-controls").hide();
-            $(".menu-text-l2").hide();
-            $(".menu-title-l2 span").hide();
+            $(".menu-l2").css("width","240px");
 
-            setTimeout(function(){ 
-                $(".menu-l2").animate({ width: "240px" }, 300);
-                },delay);
+            $(".menu-text-l2").show();
+            $(".menu-title-l2 span").show();
+            var ctrl = $("#menu-l2-controls");
+            ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
+            ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
+            ctrl.show();
 
-            setTimeout(function(){ 
-                $(".menu-text-l2").show();
-                $(".menu-title-l2 span").show();
-                var ctrl = $("#menu-l2-controls");
-                ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
-                ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
-                $("#menu-l2-controls").show();
-                },delay + 300);
         }
         var left = 240;
         if (menu.width<1150) { 
             left = 50;
             clearTimeout(menu.auto_hide_timer);
-            menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && !menu.l3_visible) { menu.auto_hide = false; menu.min_l2(); } } ,5000); // auto hide 
+            menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && !menu.l3_visible) { menu.auto_hide = false; menu.min_l2(); } } ,4000); // auto hide 
         }
         $(".content-container").css("margin","46px 0 0 "+left+"px");
         
@@ -312,16 +302,14 @@ var menu = {
         if (!menu.l2_min || !menu.l2_visible) menu.min_l2();
 
         if (!menu.l3_visible) {
-            setTimeout(function(){ 
-                $(".menu-l3").css("left","50px"); 
-                $(".menu-l3").animate({ width: "280px" }, 300);
-            },300);
-               
+            $(".menu-l3").css("left","50px"); 
+            $(".menu-l3").css("width","280px");
+
             var left = 280 + 50;
             if (menu.width<1150) { 
                 left = 50;
                 clearTimeout(menu.auto_hide_timer);
-                menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,5000); // auto hide 
+                menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
             }
             $(".content-container").css("margin","46px 0 0 "+left+"px");
      
@@ -337,7 +325,7 @@ var menu = {
         if (!menu.is_disabled && menu.menu_top_visible) {
             if (menu.mode=='auto') {
                 menu.auto_hide = true;
-                if (menu.width>=576 && menu.width<992) {
+                if (menu.width>=576 && menu.width<1150) {
                     if (menu.active_l3) {
                         menu.show_l3();
                     }
@@ -355,7 +343,7 @@ var menu = {
                     }
                 }
             }
-            if (menu.width>=992 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
+            if (menu.width>=1150 && menu.l2_visible && (!menu.l2_min || menu.l3_visible)) {
                 menu.mode = 'auto'
             }
             
@@ -396,13 +384,13 @@ var menu = {
                     // new l1 menu clicked
                     menu.min_l2();
                     menu.auto_hide = true;
-                    setTimeout(function(){ menu.draw_l2(); },300);;
+                    menu.draw_l2();
                     if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
                         menu.show_l3();
                     }
                     else { 
                         menu.hide_l3();
-                        setTimeout(function(){ menu.exp_l2(); },300);;
+                        menu.exp_l2();
                         
                     }
                 } else {
