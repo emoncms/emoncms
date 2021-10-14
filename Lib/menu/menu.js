@@ -232,8 +232,8 @@ var menu = {
         console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
         if (menu.l3_visible) { 
-            $(".menu-l3").css("width","0px");
             $(".menu-l3").css("left","0px");
+            $(".menu-l3").css("width","0px");
         }
         if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
         else $(".content-container").css("margin","46px auto 0 auto");
@@ -269,9 +269,8 @@ var menu = {
     // If we expand l2 we also hide l3
     exp_l2: function () {
         console.log("exp_l2");
-        if (menu.l3_visible) { 
-            menu.hide_l3();
-        }
+        clearTimeout(menu.auto_hide_timer);
+        if (menu.l3_visible) menu.hide_l3();
         
         if (!(menu.l2_visible && menu.l2_min == false)) {
             $(".menu-l2").css("width","240px");
@@ -282,12 +281,11 @@ var menu = {
             ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
             ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
             ctrl.show();
-
         }
+
         var left = 240;
         if (menu.width<1150) { 
             left = 50;
-            clearTimeout(menu.auto_hide_timer);
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && !menu.l3_visible) { menu.auto_hide = false; menu.min_l2(); } } ,4000); // auto hide 
         }
         $(".content-container").css("margin","46px 0 0 "+left+"px");
@@ -299,15 +297,17 @@ var menu = {
     // If we show l3, min l2
     show_l3: function () {
         console.log("show_l3");
+        clearTimeout(menu.auto_hide_timer);
         if (!menu.l2_min || !menu.l2_visible) menu.min_l2();
 
-        $(".menu-l3").css("left","50px"); 
-        $(".menu-l3").css("width","280px");
+        if (!menu.l3_visible) { 
+            $(".menu-l3").css("left","50px"); 
+            $(".menu-l3").css("width","280px");
+        }
 
         var left = 280 + 50;
         if (menu.width<1150) { 
             left = 50;
-            clearTimeout(menu.auto_hide_timer);
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
         }
         $(".content-container").css("margin","46px 0 0 "+left+"px");

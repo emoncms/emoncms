@@ -193,6 +193,7 @@ text-decoration:none;
   z-index:999;
   overflow-y: auto;
   overflow-x: hidden;
+  white-space: nowrap;
   scrollbar-width: none; /* can also be: thin */
   -ms-overflow-style: none;
   box-shadow: 0 2px 4px 1px rgb(0 0 0 / 25%);
