@@ -43,7 +43,7 @@
     $fp = fopen("/var/lock/emoncms_mqtt.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
     
-    chdir(dirname(__FILE__)."/../../../");
+    chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
     require "process_settings.php";
     
