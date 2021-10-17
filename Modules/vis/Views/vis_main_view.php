@@ -30,7 +30,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph/multigraph.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_edit.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_edit.js?v=2"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
