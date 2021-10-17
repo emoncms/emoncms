@@ -90,18 +90,17 @@
 
 .menu-l2 {
   width:0px;
-  height: 100%;
   background-color:var(--bg-l2);
   display:inline-block;
   position:fixed;
   top:46px;
+  bottom:0px;
   z-index:1000;
   transition: all 0.3s ease-out;
   box-shadow: 0 2px 4px 1px rgb(0 0 0 / 25%);
 }
 
 .menu-l2-inner {
-  height: calc(100% - 96px);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none; /* can also be: thin */
@@ -109,13 +108,13 @@
 }
 
 .menu-title-l2 {
-    text-indent: 1rem;
-    padding: 1em 0 0.75em 0;
-    margin: 0;
-    text-transform: capitalize;
-    color: var(--l2-title);
-    border-bottom: 1px solid var(--l2-border);
-    height:18px;
+  text-indent: 1rem;
+  padding: 1em 0 0.75em 0;
+  margin: 0;
+  text-transform: capitalize;
+  color: var(--l2-title);
+  border-bottom: 1px solid var(--l2-border);
+  height:18px;
 }
 
 .menu-l2 ul {
@@ -130,7 +129,7 @@
 }
 
 .menu-l2 li a {
-text-decoration:none;
+  text-decoration:none;
 }
 
 .menu-l2 li div {
@@ -158,23 +157,28 @@ text-decoration:none;
 
 #menu-l2-controls {
   background-color:var(--bg-l2);
-  position:fixed;
+  position: inherit;
   bottom: 0;
   text-decoration: none;
   color: var(--l2-text);
   display: block;
   cursor:pointer;
   overflow:hidden;
+  transition: all 0.3s ease-out;
 }
 
 .ctrl-exp {
   padding: 15px 112px 15px 112px;
-  transition: all 0.3s ease-out;
+
 }
 
 .ctrl-min {
   padding: 15px 17px 15px 17px;
-  transition: all 0.3s ease-out;
+}
+
+.ctrl-hide {
+  padding: 15px 0 15px 0;
+  width: 0;
 }
 
 #menu-l2-controls:hover {

@@ -218,10 +218,11 @@ var menu = {
         }
 
         if (menu.l2_visible) {
-            $("#menu-l2-controls").hide();
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
             $(".menu-l2").css("width","0px");
+            var ctrl = $("#menu-l2-controls");
+            ctrl.removeClass("ctrl-exp").removeClass("ctrl-min").addClass("ctrl-hide");
         }
 
         $(".content-container").css("margin","46px auto 0 auto");
@@ -250,8 +251,7 @@ var menu = {
             $(".menu-title-l2 span").hide();
             var ctrl = $("#menu-l2-controls");
             ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
-            ctrl.attr("title","Expand sidebar").removeClass("ctrl-exp").addClass("ctrl-min");
-            ctrl.show();
+            ctrl.attr("title","Expand sidebar").removeClass("ctrl-hide").removeClass("ctrl-exp").addClass("ctrl-min");
         }
 
         var window_width = $(window).width();
@@ -279,8 +279,7 @@ var menu = {
             $(".menu-title-l2 span").show();
             var ctrl = $("#menu-l2-controls");
             ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
-            ctrl.attr("title","Minimise sidebar").removeClass("ctrl-min").addClass("ctrl-exp");
-            ctrl.show();
+            ctrl.attr("title","Minimise sidebar").removeClass("ctrl-hide").removeClass("ctrl-min").addClass("ctrl-exp");
         }
 
         var left = 240;
