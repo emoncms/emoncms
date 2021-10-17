@@ -35,7 +35,7 @@ if ($session["admin"]) {
             ),
             "log"=>array(
                 "name"=>_("Emoncms Log"),
-                "href"=>"admin/emoncmslog", 
+                "href"=>"admin/log", 
                 "order"=>1, 
                 "icon"=>"input"
             ),

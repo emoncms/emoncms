@@ -677,7 +677,7 @@ var edit_input = new Vue({
                                     messages[inputid] = {success: true, message: response.message}
                                 }
                             })
-                            .error(function(xhr, type, error) {
+                            .fail(function(xhr, type, error) {
                                 errors[inputid] = {message: error}
                             })
                             .always(function() {

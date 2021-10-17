@@ -180,12 +180,14 @@ $_settings = array(
 "smtp"=>array(
     // Email address to email proccessed input values
     'default_emailto' => '',
-    
+    'from_email' => '',
+    'from_name' => '',
+    // sendmail, when enabled we use local email server instead smtp relay
+    'sendmail' => false,
+    // lines below are ignored when sendmail is enabled
     'host'=>"",
     // 25, 465, 587
     'port'=>"",
-    'from_email' => '',
-    'from_name' => '',
     // comment lines below that dont apply
     // ssl, tls
     'encryption'=>"",
