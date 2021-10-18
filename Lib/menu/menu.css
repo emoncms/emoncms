@@ -94,13 +94,14 @@
   display:inline-block;
   position:fixed;
   top:46px;
-  bottom:0px;
+  height: 100%;
   z-index:1000;
   transition: all 0.3s ease-out;
   box-shadow: 0 2px 4px 1px rgb(0 0 0 / 25%);
 }
 
 .menu-l2-inner {
+  height: calc(100vh - 96px);
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none; /* can also be: thin */
@@ -169,7 +170,6 @@
 
 .ctrl-exp {
   padding: 15px 112px 15px 112px;
-
 }
 
 .ctrl-min {
