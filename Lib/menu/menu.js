@@ -229,18 +229,6 @@ var menu = {
         menu.l2_visible = false;
     },
 
-    hide_l3: function () {
-        console.log("hide_l3");
-        clearTimeout(menu.auto_hide_timer);
-        if (menu.l3_visible) { 
-            $(".menu-l3").css("left","0px");
-            $(".menu-l3").css("width","0px");
-        }
-        if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
-        else $(".content-container").css("margin","46px auto 0 auto");
-        menu.l3_visible = false;
-    },
-
     min_l2: function () {
         console.log("min_l2");
         clearTimeout(menu.auto_hide_timer);
@@ -312,6 +300,18 @@ var menu = {
         $(".content-container").css("margin","46px 0 0 "+left+"px");
 
         menu.l3_visible = true;
+    },
+
+    hide_l3: function () {
+        console.log("hide_l3");
+        clearTimeout(menu.auto_hide_timer);
+        if (menu.l3_visible) { 
+            $(".menu-l3").css("left","0px");
+            $(".menu-l3").css("width","0px");
+        }
+        if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
+        else $(".content-container").css("margin","46px auto 0 auto");
+        menu.l3_visible = false;
     },
 
     resize: function() {
