@@ -19,6 +19,8 @@ var menu = {
     mode: 'auto',
     is_disabled: false,
 
+    debug: true,
+
     auto_hide: true,    
     auto_hide_timer: null,
     
@@ -26,6 +28,8 @@ var menu = {
     // Init Menu
     // ------------------------------------------------------------------    
     init: function(obj,session) {
+        menu.init_time = new Date().getTime()
+    
         var q_parts = q.split("#");
         q_parts = q.split("?");
         q_parts = q_parts[0].split("/");
@@ -61,6 +65,7 @@ var menu = {
             }
         }
 
+        menu.log("init: draw_l1, events, resize");
         menu.draw_l1();
         menu.events();
         menu.resize();
@@ -70,7 +75,7 @@ var menu = {
     // L1 menu is the top bar menu
     // ------------------------------------------------------------------    
     draw_l1: function () {
-        console.log("draw_l1");
+        menu.log("draw_l1");
         // Build level 1 menu (top bar)
         var out = "";
         for (var l1 in menu.obj) {
@@ -94,8 +99,10 @@ var menu = {
         $(".menu-l1 ul").html(out);
         
         if (menu.active_l1 && menu.obj[menu.active_l1]['l2']!=undefined) { 
+            menu.log("draw_l1: draw_l2");
             menu.draw_l2();
         } else { 
+            menu.log("draw_l1: hide_l2");
             menu.hide_l2();
         }
     },
@@ -104,7 +111,7 @@ var menu = {
     // Level 2 (Sidebar)
     // ------------------------------------------------------------------
     draw_l2: function () {
-        console.log("draw_l2");
+        menu.log("draw_l2");
         // Sort level 2 by order property
         // build a set of keys first, sort these and then itterate through sorted keys
         var keys = Object.keys(menu.obj[menu.active_l1]['l2']);
@@ -167,6 +174,7 @@ var menu = {
 
         // If menu_l2 open and l2 menu item active and l3 exists: draw l3
         if (menu.active_l2 && menu.obj[menu.active_l1]['l2'][menu.active_l2]!=undefined && menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']!=undefined) {
+            menu.log("draw_l2: draw_l3");
             menu.draw_l3();
         }
     },
@@ -175,7 +183,7 @@ var menu = {
     // Level 3 (Sidebar submenu)
     // ------------------------------------------------------------------
     draw_l3: function () {
-        console.log("draw_l3");
+        menu.log("draw_l3");
         var out = '<div class="htop"></div><h3 class="l3-title mx-3">'+menu.obj[menu.active_l1]['l2'][menu.active_l2]['name']+'</h3>';
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
@@ -189,19 +197,18 @@ var menu = {
         }
         $(".menu-l3 ul").html(out);
 
-        if (menu.active_l2 && menu.l2_min && menu.l2_visible) { 
+        if (menu.active_l2 && menu.l2_min && menu.l2_visible) {
+            menu.log("draw_l3: show_l3");
             menu.show_l3();
         }
     },
     
     hide_menu_top: function () {
-        console.log("hide_menu_top");
         $(".menu-top").addClass("menu-top-hide");
         menu.menu_top_visible = false;
     },
     
     show_menu_top: function () {
-        console.log("show_menu_top");
         $(".menu-top").removeClass("menu-top-hide");
         menu.menu_top_visible = true;
     },
@@ -211,10 +218,10 @@ var menu = {
     },
 
     hide_l2: function () {
-        console.log("hide_l2");
         clearTimeout(menu.auto_hide_timer);
-        if (menu.l3_visible) { 
-            menu.hide_l3(); 
+        if (menu.l3_visible) {
+            menu.log("hide_l2: hide_l3");
+            menu.hide_l3();
         }
 
         if (menu.l2_visible) {
@@ -230,7 +237,6 @@ var menu = {
     },
 
     min_l2: function () {
-        console.log("min_l2");
         clearTimeout(menu.auto_hide_timer);
         if (!(menu.l2_visible && menu.l2_min)) {
             $(".menu-l2").css("width","50px");
@@ -256,10 +262,12 @@ var menu = {
 
     // If we expand l2 we also hide l3
     exp_l2: function () {
-        console.log("exp_l2");
         clearTimeout(menu.auto_hide_timer);
-        if (menu.l3_visible) menu.hide_l3();
-        
+        if (menu.l3_visible) {
+            menu.log("exp_l2: hide_l3");  
+            menu.hide_l3();
+        }
+    
         if (!(menu.l2_visible && menu.l2_min == false)) {
             $(".menu-l2").css("width","240px");
 
@@ -271,7 +279,7 @@ var menu = {
         }
 
         var left = 240;
-        if (menu.width<1150) { 
+        if (menu.width<1150) {
             left = 50;
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && !menu.l3_visible) { menu.auto_hide = false; menu.min_l2(); } } ,4000); // auto hide 
         }
@@ -283,9 +291,11 @@ var menu = {
 
     // If we show l3, min l2
     show_l3: function () {
-        console.log("show_l3");
         clearTimeout(menu.auto_hide_timer);
-        if (!menu.l2_min || !menu.l2_visible) menu.min_l2();
+        if (!menu.l2_min || !menu.l2_visible) {
+            menu.log("show_l3: min_l2")
+            menu.min_l2();
+        }
 
         if (!menu.l3_visible) { 
             $(".menu-l3").css("left","50px"); 
@@ -293,7 +303,7 @@ var menu = {
         }
 
         var left = 280 + 50;
-        if (menu.width<1150) { 
+        if (menu.width<1150) {
             left = 50;
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
         }
@@ -303,7 +313,6 @@ var menu = {
     },
 
     hide_l3: function () {
-        console.log("hide_l3");
         clearTimeout(menu.auto_hide_timer);
         if (menu.l3_visible) { 
             $(".menu-l3").css("left","0px");
@@ -315,7 +324,6 @@ var menu = {
     },
 
     resize: function() {
-        console.log("resize");
         menu.width = $(window).width();
         menu.height = $(window).height();
         
@@ -324,18 +332,21 @@ var menu = {
                 menu.auto_hide = true;
                 if (menu.width>=576 && menu.width<1150) {
                     if (menu.active_l3) {
+                        menu.log("resize: show_l3");
                         menu.show_l3();
-                    }
-                    else if (menu.active_l2) {
+                    } else if (menu.active_l2) {
+                        menu.log("resize: min_l2");
                         menu.min_l2();
                     }
                 } else if (menu.width<576) {
+                    menu.log("resize: hide_l2");
                     menu.hide_l2();
                 } else {
                     if (menu.active_l3) {
                         menu.show_l3();
                     }
                     else if (menu.active_l2) {
+                        menu.log("resize: exp_l2");
                         menu.exp_l2();
                     }
                 }
@@ -365,7 +376,6 @@ var menu = {
     events: function() {
 
         $(".menu-l1 li div").click(function(event){
-            console.log("menu-l1 li div");
             menu.last_active_l1 = menu.active_l1;
             menu.active_l1 = $(this).attr("l1");
             let item = menu.obj[menu.active_l1];
@@ -395,16 +405,21 @@ var menu = {
                     menu.auto_hide = false;
                     if (!menu.l2_visible) {
                         if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                            menu.log("l1 click: min_l2 & show_l3");
                             menu.min_l2();
                             menu.show_l3();
                         } else {
+                            menu.log("l1 click: exp_l2");
                             menu.exp_l2();
                         }
                     } else if (menu.l2_visible && !menu.l2_min) {
+                        menu.log("l1 click: min_l2");
                         menu.min_l2();
-                    } else if (menu.l2_visible && !menu.l3_visible && menu.l2_min) { 
+                    } else if (menu.l2_visible && !menu.l3_visible && menu.l2_min) {
+                        menu.log("l1 click: hide_l2");
                         menu.hide_l2();
                     } else if (menu.l2_visible && menu.l2_min && menu.l3_visible) {
+                        menu.log("l1 click: min_l2 & hide_l3");
                         menu.min_l2();
                         menu.hide_l3();
                     }
@@ -414,7 +429,6 @@ var menu = {
         });
 
         $(".menu-l2").on("click","li div",function(event){
-            console.log("menu-l2.li div");
             let is_active = ($(this).attr("class") == "active" ? true : false);
             menu.active_l2 = $(this).attr("l2");
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2];
@@ -428,8 +442,10 @@ var menu = {
                 menu.auto_hide = false;
                 if (is_active && menu.active_l2 && !menu.l3_visible) {
                     // Expand sub menu
+                    menu.log("l2 click: show_l3");
                     menu.show_l3();
                 } else {
+                    menu.log("l2 click: hide_l3");
                     menu.hide_l3();
                 }
                 $(window).trigger('resize');
@@ -441,13 +457,14 @@ var menu = {
         });
 
         $("#menu-l2-controls").click(function(event){
-            console.log("menu-l2-controls");
             event.stopPropagation();
             menu.mode = 'manual'
             menu.auto_hide = true;
             if (menu.l2_visible && menu.l2_min) {
+                menu.log("menu-l2-controls: exp_l2");
                 menu.exp_l2();
             } else {
+                menu.log("menu-l2-controls: min_l2");
                 menu.min_l2();
             }
             $(window).trigger('resize');
@@ -461,8 +478,10 @@ var menu = {
           var scrollTop = $(window).scrollTop();
           var main = 0;
           if ((scrollTop > main) && menu.menu_top_visible && !menu.l2_visible && !menu.l3_visible) { 
+              menu.log("scroll: hide_menu_top");
               menu.hide_menu_top();
           } else if (scrollTop <= main && !menu.menu_top_visible) {
+              menu.log("scroll: show_menu_top");
               menu.show_menu_top();
           }
         });
@@ -483,5 +502,10 @@ var menu = {
         if (q_parts[2]!=undefined) route.subaction = q_parts[0];
                 
         return route
+    },
+    
+    log: function(text) {
+        var time = (new Date().getTime() - menu.init_time)*0.001;
+        if (menu.debug) console.log(time.toFixed(3)+" "+text);
     }
 };
