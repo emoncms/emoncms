@@ -301,11 +301,12 @@ var menu = {
         }
 
         if (!menu.l3_visible) { 
-            $(".menu-l3").css("left","50px"); 
-            $(".menu-l3").css("width","280px");
+            $(".menu-l3").css("left","50px");
+            $(".menu-l3").css("width","240px");
+            $(".menu-l3").show();
         }
 
-        var left = 280 + 50;
+        var left = 290;
         if (menu.width<1150) {
             left = 50;
             menu.auto_hide_timer = setTimeout(function(){ if (menu.auto_hide && menu.l3_visible) { menu.auto_hide = false; menu.hide_l3();} } ,4000); // auto hide 
