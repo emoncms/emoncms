@@ -78,7 +78,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <?php } ?>
             </ul></div>
         </div>
-        <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls"></div></div><div class="menu-l3"><ul></ul></div>
+        <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls" class="ctrl-hide"></div></div><div class="menu-l3"><ul></ul></div>
         <?php
         $contentContainerClasses[] = 'content-container';
         

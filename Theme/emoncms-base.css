@@ -16,7 +16,7 @@ http://openenergymonitor.org
 
 .theme-standard, .theme-blue {
   --bg-menu-top: #44b3e2;
-  --bg-menu-top-hover: #209ed3;
+  --bg-menu-top-hover: #007eb3;
   --bg-menu-top-active: #209ed3;
   --bg-body-login: #1d8dbc;
   --bg-menu-tr: #1d8dbc;
@@ -25,7 +25,7 @@ http://openenergymonitor.org
 
 .theme-black {
   --bg-menu-top: #555;
-  --bg-menu-top-hover: #444;
+  --bg-menu-top-hover: #666;
   --bg-menu-top-active: #444;
   --bg-body-login: #333;
   --bg-menu-tr: #333;
@@ -34,7 +34,7 @@ http://openenergymonitor.org
 
 .theme-sun {
   --bg-menu-top: #ffbe14;
-  --bg-menu-top-hover: #f7a90c;
+  --bg-menu-top-hover: #F9D10B;
   --bg-menu-top-active: #f7a90c;
   --bg-body-login: #f7a90c;
   --bg-menu-tr: #f7a90c;
@@ -43,7 +43,7 @@ http://openenergymonitor.org
 
 .theme-yellow2 {
   --bg-menu-top: #dfc72d;
-  --bg-menu-top-hover: #C8B328;
+  --bg-menu-top-hover: #AFA041;
   --bg-menu-top-active: #C8B328;
   --bg-body-login: #C8B328;
   --bg-menu-tr: #C8B328;
@@ -52,7 +52,7 @@ http://openenergymonitor.org
 
 .theme-copper {
   --bg-menu-top: #e97b00;
-  --bg-menu-top-hover: #d16e00;
+  --bg-menu-top-hover: #FF8600;
   --bg-menu-top-active: #d16e00;
   --bg-body-login: #d16e00;
   --bg-menu-tr: #d16e00;
@@ -61,7 +61,7 @@ http://openenergymonitor.org
 
 .theme-green {
   --bg-menu-top: #4eaa05;
-  --bg-menu-top-hover: #469904;
+  --bg-menu-top-hover: #55B806;
   --bg-menu-top-active: #469904;
   --bg-body-login: #469904;
   --bg-menu-tr: #469904;
@@ -74,10 +74,10 @@ http://openenergymonitor.org
   --l2-title: #ccc;
   --l2-text: #fff;
   --bg-l2-active:#222;
-  --bg-l2-hover:#222;
+  --bg-l2-hover:#444;
   --bg-l3:#222;
   --l3-border:#333;
-  --l3-text:#ccc;
+  --l3-text:#999;
   --l3-title: #ccc;
   --l3-text-active:#fff;
   --l3-text-hover:#fff;
@@ -89,7 +89,7 @@ http://openenergymonitor.org
   --l2-title: #000;
   --l2-text: #000;
   --bg-l2-active:#ddd;
-  --bg-l2-hover:#ddd;
+  --bg-l2-hover:#fff;
   --bg-l3:#f3f3f3;
   --l3-border:#fff;
   --l3-text:#333;
@@ -106,8 +106,8 @@ html,body{height: initial!important}
   min-height: calc(100vh - 5.4rem)!important;
   margin-top: 0;
 }
-/* animate both elements at same speed to get shift effect */
-#wrap,#footer {
+
+#footer {
     transition: margin .3s ease-out;
 }
 
@@ -129,6 +129,7 @@ html,body{height: initial!important}
   margin-left: 15rem;
   margin-bottom: 0;
   margin-right: 0;*/
+  margin: 46px auto 0 auto;
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
