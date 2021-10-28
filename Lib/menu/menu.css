@@ -89,7 +89,7 @@
 /* -------------------------------------- */
 
 .menu-l2 {
-  width:0px;
+  width:240px;
   height: 100%;
   background-color:var(--bg-l2);
   display:inline-block;
@@ -240,6 +240,12 @@
 }
 
 /* -------------------------------------- */
+
+@media (max-width: 1150px) {
+    .menu-l2 {
+        width:50px;
+    }
+}
 
 @media (max-width: 576px) {
     .menu-l2 li div {

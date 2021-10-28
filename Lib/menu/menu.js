@@ -176,6 +176,9 @@ var menu = {
         if (menu.active_l2 && menu.obj[menu.active_l1]['l2'][menu.active_l2]!=undefined && menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']!=undefined) {
             menu.log("draw_l2: draw_l3");
             menu.draw_l3();
+        } else {
+            menu.log("draw_l2: exp_l2");
+            menu.exp_l2();
         }
     },
 
