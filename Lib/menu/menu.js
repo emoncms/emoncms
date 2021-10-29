@@ -367,8 +367,11 @@ var menu = {
         }
     },
     
+    // Currently only used by user login_block 
     disable: function() {
         menu.is_disabled = true;
+        // Hide l2 immedietely without animation
+        $(".menu-l2").hide();
         menu.hide_l1();
         menu.hide_l2();
         menu.hide_l3();
