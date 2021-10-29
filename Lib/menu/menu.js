@@ -467,13 +467,15 @@ var menu = {
                     menu.log("l2 click: show_l3");
                     menu.show_l3();
                 } else {
-                    menu.log("l2 click: hide_l3");
-                    menu.hide_l3();
+                    // Commented for now seems to generate unwanted animation prior to page reload
+                    // menu.log("l2 click: hide_l3");
+                    // menu.hide_l3();
                 }
                 $(window).trigger('resize');
             } else {
                 if (menu.active_l2 && menu.l3_visible) {
-                    menu.hide_l3(); // must be a direct link, dont triger resize here
+                    // Commented for now seems to generate unwanted animation prior to page reload
+                    // menu.hide_l3(); // must be a direct link, dont triger resize here
                 }
             }
         });
