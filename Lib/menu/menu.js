@@ -334,24 +334,40 @@ var menu = {
         if (!menu.is_disabled && menu.menu_top_visible) {
             if (menu.mode=='auto') {
                 menu.auto_hide = true;
+                // Medium screen width: keep l2 minimised and show l3 if active
                 if (menu.width>=576 && menu.width<1150) {
                     if (menu.active_l3) {
-                        menu.log("resize: show_l3");
-                        menu.show_l3();
+                        if (!menu.l3_visible) {
+                            menu.log("resize: show_l3");
+                            menu.show_l3();
+                        }
                     } else if (menu.active_l2) {
-                        menu.log("resize: min_l2");
-                        menu.min_l2();
+                        if (!menu.l2_min || !menu.l2_visible) {
+                            menu.log("resize: min_l2");
+                            menu.min_l2();
+                        }
                     }
+                // Small screen width: hide l2 (auto hides l3 aswell)
                 } else if (menu.width<576) {
-                    menu.log("resize: hide_l2");
-                    menu.hide_l2();
-                } else {
-                    if (menu.active_l3) {
-                        menu.show_l3();
+                    if (menu.l2_visible) {
+                        menu.log("resize: hide_l2");
+                        menu.hide_l2();
                     }
+                // Large screen width: expand either l2 or show l3
+                } else {
+                    // If l3 is active make sure it is visible
+                    if (menu.active_l3) {
+                        if (!menu.l3_visible) {
+                            menu.log("resize: show_l3");
+                            menu.show_l3();
+                        }
+                    }
+                    // else if l2 is active make sure it is expanded
                     else if (menu.active_l2) {
-                        menu.log("resize: exp_l2");
-                        menu.exp_l2();
+                        if (menu.l2_min || !menu.l2_visible) {                   
+                            menu.log("resize: exp_l2");
+                            menu.exp_l2();
+                        }
                     }
                 }
             }
@@ -373,8 +389,7 @@ var menu = {
         // Hide l2 immedietely without animation
         $(".menu-l2").hide();
         menu.hide_l1();
-        menu.hide_l2();
-        menu.hide_l3();
+        menu.hide_l2(); // (auto hides l3)
     },
 
     // -----------------------------------------------------------------------
