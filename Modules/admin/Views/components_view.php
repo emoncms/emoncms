@@ -160,7 +160,9 @@ function getUpdateLog() {
         if (isjson == false )     {
             if (result != "") {
                 if (result.indexOf(log_end)!=-1) {
-                    clearInterval(updates_log_interval);
+                    refresh_updateLog(result);
+                } else {
+                    clearInterval(updates_log_interval);   
                     setTimeout(function() {
                         $("#update-log-bound").slideUp();            
                     },3000);
