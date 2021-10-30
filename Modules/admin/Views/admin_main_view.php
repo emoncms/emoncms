@@ -78,6 +78,28 @@ listItem;
     </div>
 
     <div id="serverinfo-container">
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
+        <dl class="row">
+            <?php foreach ($services as $key=>$value) { ?>
+                <dt class="col-sm-2 col-4 text-truncate"><span class="badge-<?php echo $value['cssClass']; ?> badge"></span> <?php echo $key; ?></dt>
+                <dd class="col-sm-10 col-8 border-box px-1">
+                  <?php if ($value['loadstate']=="Loaded") { ?>
+                      <strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
+                      <div class="btn-group" role="group" style="float:right">
+                      <?php if ($value['state']!="Active") { ?><button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button><?php } ?>
+                      <?php if ($value['state']=="Active") { ?>
+                        <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
+                        <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
+                      <?php } ?>
+                      <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                      <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
+                      </div>
+                  <?php } else { ?>
+                      <?php echo $value['text']; ?>
+                  <?php } ?>
+                </dd>
+            <?php } ?>
+        </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
         <dl class="row">
@@ -102,29 +124,6 @@ listItem;
             <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
             <?php echo row(_('Date'), $system['date']); ?>
             <?php echo row(_('Uptime'), $system['uptime']); ?>
-        </dl>
-
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
-        <dl class="row">
-            <?php foreach ($services as $key=>$value) { ?>
-                <dt class="col-sm-2 col-4 text-truncate"><span class="badge-<?php echo $value['cssClass']; ?> badge"></span> <?php echo $key; ?></dt>
-                <dd class="col-sm-10 col-8 border-box px-1">
-                  <?php if ($value['loadstate']=="Loaded") { ?>
-                      <strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
-                      <div class="btn-group" role="group" style="float:right">
-                      <?php if ($value['state']!="Active") { ?><button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button><?php } ?>
-                      <?php if ($value['state']=="Active") { ?>
-                        <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
-                        <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
-                      <?php } ?>
-                      <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
-                      <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
-                      </div>
-                  <?php } else { ?>
-                      <?php echo $value['text']; ?>
-                  <?php } ?>
-                </dd>
-            <?php } ?>
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
