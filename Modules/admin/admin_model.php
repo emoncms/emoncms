@@ -27,7 +27,7 @@ class Admin {
     }
 
     public function get_services_list() {
-        return array('ssh', 'emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
     }
     
     public function listSerialPorts() {
@@ -101,6 +101,16 @@ class Admin {
                 }
             }
         }
+        
+        // sorts conveniently showing active first
+        asort($services);
+        
+        // Hide mqtt_input if not found
+        if (isset($services['mqtt_input']) && $services['mqtt_input']['loadstate']=='Not-found') {
+            unset($services['mqtt_input']);
+        }
+        
+        
         // add custom messages for feedwriter service
         if(isset($services['feedwriter'])) {
             $message = "";
