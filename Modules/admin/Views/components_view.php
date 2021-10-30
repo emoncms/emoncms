@@ -52,6 +52,8 @@
 <script>
 var components = <?php echo json_encode($components); ?>;
 
+var log_end = "";
+
 var app = new Vue({
     el: '#app',
     data: {
@@ -87,9 +89,8 @@ function component_update(name,branch) {
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
-                log_end = "- component updated"
-
             } else {
+                log_end = "- component updated"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
             }
@@ -108,8 +109,8 @@ function update_all_components(branch) {
             if (result.success == false)  {
                 clearInterval(updates_log_interval);
                 refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
-                log_end = "- all components updated"
             } else {
+                log_end = "- all components updated"
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
             }
@@ -122,7 +123,6 @@ function update_all_components(branch) {
 // -------------------------------------
 
 var updates_log_interval = false;
-var log_end = "";
 
 // stop updates if interval == 0
 function refresherStart(func, interval){
@@ -159,9 +159,9 @@ function getUpdateLog() {
         }
         if (isjson == false )     {
             if (result != "") {
+                refresh_updateLog(result); 
+                
                 if (result.indexOf(log_end)!=-1) {
-                    refresh_updateLog(result);
-                } else {
                     clearInterval(updates_log_interval);   
                     setTimeout(function() {
                         $("#update-log-bound").slideUp();            
