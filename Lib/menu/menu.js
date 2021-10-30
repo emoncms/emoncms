@@ -19,7 +19,7 @@ var menu = {
     mode: 'auto',
     is_disabled: false,
 
-    debug: true,
+    debug: false,
 
     auto_hide: true,    
     auto_hide_timer: null,
