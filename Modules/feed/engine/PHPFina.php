@@ -153,11 +153,12 @@ class PHPFina implements engine_methods
     */
     public function post($id,$timestamp,$value,$padding_mode=null)
     {
-        $this->log->info("post() id=$id timestamp=$timestamp value=$value padding=$padding_mode");
+        $this->log->info("post() id=$id timestamp=$timestamp value=$value padding_mode=$padding_mode");
         
         $id = (int) $id;
         $timestamp = (int) $timestamp;
         $value = (float) $value;
+        if (is_nan($value)) $value = NAN;
         
         $now = time();
         $start = $now-(3600*24*365*5); // 5 years in past
@@ -169,11 +170,7 @@ class PHPFina implements engine_methods
         }
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("post() failed to fetch meta id=$id");
-            return false;
-        }
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($id)) return false;
         
         // Calculate interval that this datapoint belongs too
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
