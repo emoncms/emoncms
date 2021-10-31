@@ -363,29 +363,22 @@ class PHPFina implements engine_methods
     */
     public function lastvalue($id)
     {
-        $id = (int)$id;
-        $this->log->info("lastvalue() $id");
+        $id = (int) $id;
         
-        // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return false;
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta->npoints) return false;
+        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
 
-        if ($meta->npoints>0) {
-            $fh = fopen($this->dir.$id.".dat", 'rb');
-            $size = filesize($this->dir.$id.".dat");
-            fseek($fh,$size-4);
-            $d = fread($fh,4);
-            fclose($fh);
+        fseek($fh,($meta->npoints-1)*4);
+        $d = fread($fh,4);
+        fclose($fh);
 
-            $value = null;
-            $val = unpack("f",$d);
-            $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            if (!is_nan($val[1])) {
-                $value = (float) $val[1];
-            } 
-            return array('time'=>(int)$time, 'value'=>$value);
+        $value = null;
+        $val = unpack("f",$d);
+        if (!is_nan($val[1])) {
+            $value = (float) $val[1];
         }
-        return false;
+        return array('time'=>$meta->end_time, 'value'=>$value);
     }
 
 
