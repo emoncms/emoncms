@@ -14,6 +14,74 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class SharedHelper
 {
+    private $export_fh;
+    private $csv_field_separator;
+    private $csv_decimal_places;
+    private $csv_decimal_place_separator;
+    private $timezone;
+    private $timeformat;
+    private $date;
+    
+    public function __construct($feed_settings=false)
+    {
+        if ($feed_settings) {
+            $this->csv_field_separator = $feed_settings["csv_field_separator"];
+            $this->csv_dp = $feed_settings["csv_decimal_places"];
+            $this->csv_dp_separator = $feed_settings["csv_decimal_place_separator"];
+        }
+    }
+    
+    public function set_time_format($timezone,$timeformat) {
+        $this->timezone = $timezone;
+        $this->timeformat = $timeformat;
+
+        $this->date = new DateTime();
+        $this->date->setTimezone(new DateTimeZone($timezone));
+    }
+    
+    public function format_time($timestamp) {
+        if ($this->timeformat=="excel") {
+            $this->date->setTimestamp($timestamp);
+            return $this->date->format("d/m/Y H:i:s");
+        } else if ($this->timeformat=="iso8601") {
+            $this->date->setTimestamp($timestamp);
+            return $this->date->format("c");
+        } else {
+            return $timestamp;
+        }
+    }
+        
+    public function csv_header($feedid) {
+        // check for cli here allows removes header errors when testing with command line
+        if (php_sapi_name() != 'cli') {
+            // There is no need for the browser to cache the output
+            header("Cache-Control: no-cache, no-store, must-revalidate");
+            // Tell the browser to handle output as a csv file to be downloaded
+            header('Content-Description: File Transfer');
+            header("Content-type: application/octet-stream");
+            $filename = $feedid.".csv";
+            header("Content-Disposition: attachment; filename={$filename}");
+            header("Expires: 0");
+            header("Pragma: no-cache");
+        }
+        // Write to output stream
+        $this->export_fh = @fopen( 'php://output', 'w' );
+    }
+    
+    public function csv_write($time,$value) {
+        $time = $this->format_time($time);
+        if ($value!=null) {
+            $value = number_format($value,$this->csv_dp,$this->csv_dp_separator,'');
+        } else {
+            $value = 'null';
+        }
+        fwrite($this->export_fh,$time.$this->csv_field_separator.$value."\n");
+    }
+    
+    public function csv_close() {
+        fclose($this->export_fh);
+    }
+
     public function getTimeZoneFormated($time_in,$timezone) {
         if ($timezone) {
             $time = DateTime::createFromFormat("U", (int)$time_in);

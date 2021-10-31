@@ -604,6 +604,10 @@ class PHPFina implements engine_methods
         return $this->get_data_combined($id,$start,$end,$mode,1,$timezone,"unix",false,0,0);
     }
     
+    public function csv_export($id,$start,$end,$interval,$timezone) {
+        $this->get_data_combined($id,$start*1000,$end*1000,$interval,0,$timezone,"unix",true,0,0);
+    }
+    
     // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
     {
@@ -732,91 +736,6 @@ class PHPFina implements engine_methods
         fclose($fh);
         exit;
 
-    }
-
-    public function csv_export($id,$start,$end,$outinterval,$usertimezone)
-    {
-        global $settings;
-
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-
-        $id = (int) $id;
-        $start = (int) $start;
-        $end = (int) $end;
-        $outinterval = (int) $outinterval;
-
-        // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($id)) return false;
-        
-        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        
-        // $dpratio = $outinterval / $meta->interval;
-        if ($dp<1) return false;
-
-        // The number of datapoints in the query range:
-        $dp_in_range = ($end - $start) / $meta->interval;
-
-        // Divided by the number we need gives the number of datapoints to skip
-        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
-        // datapoints every 100 datapoints.
-        $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
-
-        // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        } else {
-            $start = ceil($meta->start_time / $outinterval) * $outinterval;
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        }
-
-        $data = array();
-        $time = 0; $i = 0;
-        
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        $filename = $id.".csv";
-        header("Content-Disposition: attachment; filename={$filename}");
-
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
-
-
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$id.".dat", 'rb');
-        while($time<=$end)
-        {
-            // $position steps forward by skipsize every loop
-            $pos = ($startpos + ($i * $skipsize));
-
-            // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints-1) break;
-
-            // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
-
-            // calculate the datapoint time
-            $time = $meta->start_time + $pos * $meta->interval;
-            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-            // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($val[1],$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
-
-            $i++;
-        }
-        fclose($exportfh);
-        exit;
     }
 
 // #### /\ Above are required methods
