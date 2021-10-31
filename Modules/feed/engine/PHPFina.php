@@ -406,6 +406,185 @@ class PHPFina implements engine_methods
         return $value;
     }
 
+
+    /**
+     * @param integer $id The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
+     * @param integer $csv pipe output as csv
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
+     */
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    {
+        $id = (int) $id;
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
+        
+        // todo: consider supporting a variety of time formats here
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        
+        global $settings;
+        if ($timezone===0) $timezone = "UTC";
+        
+        if ($csv) {
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+        }
+
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+
+        // Load feed meta data
+        // If meta data file does not exist exit
+        // todo: combine npoints and end_time into get_meta
+        if (!$meta = $this->get_meta($id)) return false;
+        
+        $fullres = false;
+        if ($interval=="original") $interval = $meta->interval;
+        
+        // The first section here deals with the timezone aligned interval codes
+        // the start time is modified to align to the nearest day, week, month or year
+        // later the while loop is advanced by the value in the $modify string
+        // all using php DateTime aligned to user/feed timezone
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            $fixed_interval = false;
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($start);
+            $date->modify("midnight");
+            $modify = "+1 day";
+            if ($interval=="weekly") {
+                $date->modify("this monday");
+                $modify = "+1 week";
+            } else if ($interval=="monthly") {
+                $date->modify("first day of this month");
+                $modify = "+1 month";
+            } else if ($interval=="annual") {
+                $date->modify("first day of this year");
+                $modify = "+1 year";
+            }
+            $time = $date->getTimestamp();
+        } else {
+            // If interval codes are not specified then we advanced by a fixed numeric interval 
+            $fixed_interval = true;
+            $interval = (int) $interval;
+            if ($interval<1) $interval = 1;
+            if ($limitinterval) {
+                if ($interval<$meta->interval) $interval = $meta->interval;       // limit interval by feed interval
+                $interval = round($interval/$meta->interval)*$meta->interval;     // round interval to be integer multiple of feed interval
+            }
+            $time = $start;
+            
+            // turn off averaging if export interval is the same as the feed interval
+            if ($interval==$meta->interval) {
+                $average = false;
+                $fullres = true;
+            }
+            if ($interval<$meta->interval) {
+                $average = false;
+            }
+        }
+        
+        if ($csv) {
+            $helperclass->csv_header($id);
+        } else {
+            $data = array();
+        }
+               
+        $fh = fopen($this->dir.$feedid.".dat", 'rb');
+ 
+        // seek only once for full resolution export
+        $first_seek = false;
+        
+        while($time<=$end)
+        {   
+            $div_start = $time;
+            
+            // Advance position
+            if ($fixed_interval) {
+                $div_end = $time + $interval;
+            } else {
+                $date->modify($modify);
+                $div_end = $date->getTimestamp();
+            }
+            
+            // seek to starting position
+            $pos_start = floor(($div_start-$meta->start_time) / $meta->interval);
+
+            $value = null;
+            
+            if ($average) {
+                // Calculate average in period
+                $sum = 0;
+                $n = 0;
+                
+                // calculate end position
+                $pos_end = floor(($div_end-$meta->start_time) / $meta->interval);
+                
+                // limit start and end by available data
+                // results in dp_to_read being 0 outside of range
+                if ($pos_start<0) $pos_start = 0;
+                if ($pos_end<0) $pos_end = 0;
+                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;                
+                if ($pos_end>$meta->npoints) $pos_end = $meta->npoints;
+                $dp_to_read = $pos_end-$pos_start;
+                
+                if ($dp_to_read) {
+                    fseek($fh,$pos_start*4);
+                    // read division in one block, much faster!
+                    $s = fread($fh,4*$dp_to_read);
+                    $tmp = unpack("f*",$s);
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                        if (!is_nan($tmp[$x+1])) {
+                            $sum += $tmp[$x+1];
+                            $n++;
+                        }
+                    }
+                }
+                
+                if ($n>0) $value = 1.0*$sum/$n;
+                
+            } else {
+                if ($time>=$meta->start_time && $time<$meta->end_time) {
+                    // Output value at start at div start
+                    if (!$first_seek || !$fullres) {
+                        $first_seek = true;
+                        fseek($fh,$pos_start*4);
+                    }
+                    $tmp = unpack("f",fread($fh,4));
+                    $value = $tmp[1];
+                    if (is_nan($value)) $value = null;
+                }
+            }
+            
+            if ($value!==null || $skipmissing===0) {
+                if ($csv) { 
+                    $helperclass->csv_write($div_start,$value);
+                } else {
+                    $data[] = array($div_start*1000,$value);
+                }
+            }
+            
+            $time = $div_end;
+        }
+        fclose($fh);
+
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
+    }
+
     /**
      * Return the data for the given timerange - cf shared_helper.php
      *
