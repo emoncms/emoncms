@@ -430,7 +430,6 @@ class PHPFina implements engine_methods
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$id");
-        $meta->npoints = $this->get_npoints($id);
         
         if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval;
 
@@ -482,7 +481,6 @@ class PHPFina implements engine_methods
                
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$id");
-        $meta->npoints = $this->get_npoints($id);
         
         $data = array();
         
@@ -617,12 +615,7 @@ class PHPFina implements engine_methods
         $feedname = $id.".dat";
         
         // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("PHPFina:post failed to fetch meta id=$id");
-            return false;
-        }
-
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($id)) return false;
         
         // There is no need for the browser to cache the output
         header("Cache-Control: no-cache, no-store, must-revalidate");
@@ -681,8 +674,6 @@ class PHPFina implements engine_methods
 
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return false;
-
-        $meta->npoints = $this->get_npoints($id);
         
         if ($outinterval<$meta->interval) $outinterval = $meta->interval;
         $dp = ceil(($end - $start) / $outinterval);
@@ -777,12 +768,7 @@ class PHPFina implements engine_methods
         }
 
         // Check meta data file exists
-        if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("post_bulk_prepare() failed to fetch meta feedid=$id");
-            return false;
-        }
-
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($id)) return false;
 
         // Calculate interval that this datapoint belongs too
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
@@ -1342,11 +1328,7 @@ class PHPFina implements engine_methods
         }
         
         // Load feed meta to fetch start time and interval
-        if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("upload() failed to fetch meta id=$id");
-            return false;
-        }
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($id)) return false;
         
         if ($meta->start_time==0 && $meta->npoints != 0) {
             $this->log->warn("upload() start time is zero but data in feed =$id");
@@ -1400,8 +1382,7 @@ class PHPFina implements engine_methods
      */
     public function clear($id) {
         $id = (int)$id;
-        $meta = $this->get_meta($id);
-        if (!$meta) return false;
+        if (!$meta = $this->get_meta($id)) return false;
         $meta->start_time = 0;
         $datafilePath = $this->dir.$id.".dat";
         $f = @fopen($datafilePath, "r+");
@@ -1429,7 +1410,7 @@ class PHPFina implements engine_methods
      * @return boolean
      */
     public function trim($id,$start_time) {
-        $meta = $this->get_meta($id); // get .dat meta info
+        if (!$meta = $this->get_meta($id)) return false;
         $bytesize = $meta->npoints * 4.0; // total .dat file size
         if($bytesize <= 0) return array('success'=>false,'message'=>'Empty data file, nothing to trim.'); // empty data file - nothing to trim
         if($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range'); //new start_time out of range
