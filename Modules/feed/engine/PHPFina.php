@@ -583,11 +583,7 @@ class PHPFina implements engine_methods
             return $data;
         }
     }
-
-    /**
-     * Return the data for the given timerange - cf shared_helper.php
-     *
-    */
+    
     public function get_data($id,$start,$end,$interval,$skipmissing,$limitinterval) {
         return $this->get_data_combined($id,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
     }
