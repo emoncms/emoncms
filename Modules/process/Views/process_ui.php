@@ -111,17 +111,7 @@
                         </span>
                         
                         <span id="type-feed"> 
-                            <div class="input-prepend">
-                                <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Data'); ?></span>
-                                <div class="btn-group">
-                                    <select id="feed-data-type" class="input-medium" style="width: 105px;" readonly>
-                                        <option value="0">Any type</option>
-                                        <option value="1">Realtime</option>
-                                        <option value="2">Daily</option>
-                                    </select>
-                                </div>
-                            </div>
-                            
+                                                        
                             <div class="input-prepend">
                                 <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Feed'); ?></span>
                                 <div class="btn-group">

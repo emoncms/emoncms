@@ -369,21 +369,6 @@ var processlist_ui =
       else {
           $("#feed-table").hide();
       }
-      
-      var processid = $("#process-select").val();
-      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY
-      // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
-      if (datatype==2) {
-        $("#feed-interval option").hide();          // Hide all
-        $("#feed-interval option").prop('disabled', true);  // for IE hide (grayed out)
-        $("#feed-interval option[value=86400]").show();   // show this 3600*24
-        $("#feed-interval option[value=86400]").prop('disabled', false);  //for IE show
-        $("#feed-interval").val(86400); 
-      } else {
-        $("#feed-interval option").show(); // Show all
-        $("#feed-interval option").prop('disabled', false);  //for IE show
-        $("#feed-interval").val(10);   // default to 10s
-      }
     });
 
     $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
@@ -413,7 +398,6 @@ var processlist_ui =
             var feedname = $('#new-feed-name').val();
             var feedtag = $('#new-feed-tag').val();
             var engine = $('#feed-engine').val();
-            var datatype = process.datatype;
             
             var options = {};
             if (engine==6 || engine==5 || engine==4 || engine==1) {
@@ -431,7 +415,7 @@ var processlist_ui =
             var unit = '';
             if (process.unit!=undefined) unit = process.unit;
             
-            var result = feed.create(feedtag,feedname,datatype,engine,options,unit);
+            var result = feed.create(feedtag,feedname,engine,options,unit);
             feedid = result.feedid;
 
             if (!result.success || feedid<1) {
@@ -439,7 +423,7 @@ var processlist_ui =
               return false;
             }
 
-            processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag,'datatype':datatype};
+            processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
             processlist_ui.showfeedoptions(processid);  // Refresh Feedlist
           }
           arg = feedid;
@@ -649,19 +633,16 @@ var processlist_ui =
     var prc = this.processlist[processid].function;     // process function
     var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
     var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
-    var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY
     
     var feedgroups = [];
     for (z in this.feedlist) {
-        if (datatype == 0 || this.feedlist[z].datatype == datatype) {
-            if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
-                continue; // Dont list virtual feed
-            }
-            var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
-            if (group!="Deleted") {
-                if (!feedgroups[group]) feedgroups[group] = []
-                feedgroups[group].push(this.feedlist[z]);
-            }
+        if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
+            continue; // Dont list virtual feed
+        }
+        var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
+        if (group!="Deleted") {
+            if (!feedgroups[group]) feedgroups[group] = []
+            feedgroups[group].push(this.feedlist[z]);
         }
     }
     var out = "<option value=-1>CREATE NEW:</option>";
@@ -684,9 +665,6 @@ var processlist_ui =
     }
     $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
     $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
-    $feedTypeSelect.val(datatype); // select datatype
-    $feedTypeSelect.find("option[value="+datatype+"]").show();   // Show only the feed engine options that are available
-    $feedTypeSelect.find("option[value="+datatype+"]").prop('disabled', false);  //for IE show
 
     $feedEngineSelect.find("option").hide();  // Start by hiding all feed engine options
     $feedEngineSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
@@ -705,21 +683,19 @@ var processlist_ui =
       $feedSelect.find("option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
       $feedSelect.find("option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
       for (f in this.feedlist) {
-        if (datatype == 0 || (this.feedlist[f].datatype == datatype)) {  // Only feeds of the supported datatype
-          var exists = false;
-          $feedSelect.find('option').each(function(){
-            if (this.value == $feedSelect.val()) {
-              exists = true;
-              return false;
-            }
-          });
-          if (!exists) {
-            if($feedSelect.val()!=this.feedlist[f].id){
-              $feedSelect.val(this.feedlist[f].id); // select first feed
-            }
+        var exists = false;
+        $feedSelect.find('option').each(function(){
+          if (this.value == $feedSelect.val()) {
+            exists = true;
+            return false;
           }
-          break;
+        });
+        if (!exists) {
+          if($feedSelect.val()!=this.feedlist[f].id){
+            $feedSelect.val(this.feedlist[f].id); // select first feed
+          }
         }
+        break;
       }
     }
 
@@ -816,15 +792,16 @@ var processlist_ui =
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
-        //hide sendEmail and Publish to MQTT from virtual feeds
-        if (processlist_ui.contexttype == 1 && (
-          processlist_ui.processlist[z]['feedwrite'] == true ||
-          processlist_ui.processlist[z]['function'] == "sendEmail" || 
-          processlist_ui.processlist[z]['function'] == "publish_to_mqtt"))
-        {
-            continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
-        }
         var group = processlist_ui.processlist[z]['group'];
+        
+        // hide the following from virtual feeds
+        if (processlist_ui.contexttype == 1) {
+          if (processlist_ui.processlist[z]['feedwrite'] == true) continue;
+          if (processlist_ui.processlist[z]['function'] == "sendEmail") continue;
+          if (processlist_ui.processlist[z]['function'] == "publish_to_mqtt") continue;
+          if (group=="Feed" || group=="Input") continue;
+        }
+
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
           continue;  // in input context and group name is virtual? dont show on input processlist selector
         }

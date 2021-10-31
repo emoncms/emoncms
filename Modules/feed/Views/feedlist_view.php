@@ -365,11 +365,6 @@ body{padding:0!important}
         <input type="text" value="New Virtual Feed" id="newfeed-name">
         <label><?php echo _('Feed Tag: '); ?></label>
         <input type="text" value="Virtual" id="newfeed-tag">
-        <label><?php echo _('Feed DataType: '); ?></label>
-        <select id="newfeed-datatype">
-            <option value=1>Realtime</option>
-            <option value=2>Daily</option>
-        </select>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -449,11 +444,7 @@ function update_feed_list() {
                 node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
-        // todo: remove the requirement of a fixed list. Load from api?
-        var datatypes = {
-            1: _('Realtime'),
-            2: _('Daily')
-        }
+
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {
@@ -478,13 +469,11 @@ function update_feed_list() {
             for (var feed in nodes[node]) {
                 var feed = nodes[node][feed];
                 var feedid = feed.id;
-                var datatype = datatypes[feed.datatype] || '';
 
                 var title_lines = [feed.name,
                                   '-----------------------',
                                   _('Tag') + ': ' + feed.tag,
-                                  _('Feed ID') + ': ' + feedid,
-                                  _('Datatype') + ': ' + datatype]
+                                  _('Feed ID') + ': ' + feedid]
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
@@ -1291,10 +1280,9 @@ $("#newfeed-save").click(function (){
     var newfeedname = $('#newfeed-name').val();
     var newfeedtag = $('#newfeed-tag').val();
     var engine = 7;   // Virtual Engine
-    var datatype = $('#newfeed-datatype').val();
     var options = {};
     
-    var result = feed.create(newfeedtag,newfeedname,datatype,engine,options);
+    var result = feed.create(newfeedtag,newfeedname,engine,options);
     feedid = result.feedid;
 
     if (!result.success || feedid<1) {

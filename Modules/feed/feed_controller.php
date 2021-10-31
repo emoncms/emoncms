@@ -72,7 +72,7 @@ function feed_controller()
                 return false;
             }
         } elseif ($route->action == "create" && $session['write']) {
-            return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
+            return $feed->create($session['userid'],get('tag'),get('name'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             return $feed->update_user_feeds_size($session['userid']);
         } elseif ($route->action == "buffersize" && $session['write']) {
@@ -190,7 +190,6 @@ function feed_controller()
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
                     else if ($route->action == "setstartdate") return $feed->set_start_date($feedid,get('startdate'));
-
                     else if ($route->action == "csvexport") return $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));

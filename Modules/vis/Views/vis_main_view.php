@@ -219,12 +219,10 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   function selectFeed(id, feedlist, type) {
     var feedgroups = [];
     for (z in feedlist) {
-      if (feedlist[z].datatype == type || (type == 0 && (feedlist[z].datatype == 1 || feedlist[z].datatype == 2))) {
-        var group = (feedlist[z].tag === null ? "NoGroup" : feedlist[z].tag);
-        if (group!="Deleted") {
-          if (!feedgroups[group]) feedgroups[group] = []
-          feedgroups[group].push(feedlist[z]);
-        }
+      var group = (feedlist[z].tag === null ? "NoGroup" : feedlist[z].tag);
+      if (group!="Deleted") {
+        if (!feedgroups[group]) feedgroups[group] = []
+        feedgroups[group].push(feedlist[z]);
       }
     }
     var out = "<select id='"+id+"' class='options' otype='feed'>";

@@ -71,10 +71,8 @@ class VirtualFeed implements engine_methods
             return array('time'=>(int)$now, 'value'=>null);
         }
         
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        $result = $this->mysqli->query("SELECT userid,datatype FROM feeds WHERE `id` = '$feedid'");
+        $result = $this->mysqli->query("SELECT userid FROM feeds WHERE `id` = '$feedid'");
         $row = $result->fetch_array();
-        $datatype = $row['datatype'];
         $userid = $row['userid'];
          
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
@@ -82,16 +80,9 @@ class VirtualFeed implements engine_methods
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
 
-        if ($datatype==2) { //daily
-            $start=$process->process__getstartday($now); // start of day
-            $endslot = $start + 86400; // one day range
-            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid' => $feedid);
-            $dataValue = $process->input($start, null, $processList, $opt_timearray); // execute processlist 
-        } else {
-            $opt_timearray = array('sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid' => $feedid);
-            $dataValue = $process->input($now, null, $processList, $opt_timearray); // execute processlist 
-        }
-        //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
+        $opt_timearray = array('sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid' => $feedid);
+        $dataValue = $process->input($now, null, $processList, $opt_timearray); // execute processlist 
+        
         if ($dataValue !== null) $dataValue = (float) $dataValue ;
         return array('time'=>(int)$now, 'value'=>$dataValue);  // datavalue can be float or null, dont cast!
     }
@@ -116,20 +107,9 @@ class VirtualFeed implements engine_methods
         $end = $start + ($dp * $interval);
         if ($dp<1) return false;
 
-
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        $result = $this->mysqli->query("SELECT userid,datatype FROM feeds WHERE `id` = '$feedid'");
-        $row = $result->fetch_array();
-        $datatype = $row['datatype'];
-        $userid = $row['userid'];
-        
-        if ($datatype==2) $dp = 0; // daily
-
-        $this->log->info("get_data() feedid=$feedid start=$start end=$end int=$interval sk=$skipmissing li=$limitinterval");
-
         $data = array();
         $dataValue = null;
-        
+                
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         global $session,$user;
         require_once "Modules/process/process_model.php";

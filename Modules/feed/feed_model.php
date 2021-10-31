@@ -93,12 +93,11 @@ class Feed
     Configurations operations
     create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
-    public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
+    public function create($userid,$tag,$name,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
         if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
         if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
-        $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
         
@@ -118,8 +117,8 @@ class Feed
         }
         else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
         
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
-        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
@@ -132,7 +131,6 @@ class Feed
                     'id'=>$feedid,
                     'userid'=>$userid,
                     'name'=>$name,
-                    'datatype'=>$datatype,
                     'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
@@ -392,7 +390,7 @@ class Feed
     {
         $userid = (int) $userid;
         $feeds = array();
-        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
@@ -464,7 +462,7 @@ class Feed
             $row = $this->redis->hGetAll("feed:$id");
         } else {
             // Get from mysql db
-            $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
+            $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
             $row = (array) $result->fetch_object();
         }
         $lastvalue = $this->get_timevalue($id);
@@ -1153,7 +1151,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,
@@ -1176,7 +1173,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,

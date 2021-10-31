@@ -19,7 +19,6 @@ var showlegend = true;
 var backgroundColour = "ffffff";
 var datetimepicker1;
 var datetimepicker2;
-var datatype;
 var graphtype;
 var intervaltype;
 
@@ -39,8 +38,6 @@ function convertToPlotlist(multigraphFeedlist) {
 
   backgroundColour = (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined" ? multigraphFeedlist[0]["backgroundColour"] : "ffffff");
   $("body").css("background-color","#"+backgroundColour);
-  
-  datatype=1;
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
@@ -49,13 +46,9 @@ function convertToPlotlist(multigraphFeedlist) {
     barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"];
 
     if ( typeof currentFeed["graphtype"] === "undefined" ) {
-      currentFeed["datatype"] === "1" ? graphtype="lines" : graphtype="bars";
+      graphtype="lines"; // graphtype="bars"
     } else {
       graphtype=currentFeed["graphtype"];
-    }
-
-    if (currentFeed["datatype"] === "2") {
-      datatype=2;
     }
 
     if (graphtype.substring(0, 5) === "lines") {
@@ -333,11 +326,9 @@ function multigraphInit(element) {
             y=Number((item.datapoint[1]-item.datapoint[2]).toFixed(2));
           }
 
-          if (datatype === 1) {
-            options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
-          } else {
-            options = { month:"short", day:"2-digit"};
-          }
+
+          options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
+          // options = { month:"short", day:"2-digit"}; daily data?
 
           var formattedTime=new Date(parseInt(x,10));
 
