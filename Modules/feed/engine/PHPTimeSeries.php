@@ -5,7 +5,7 @@ include_once dirname(__FILE__) . '/shared_helper.php';
 class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
-    private $log;
+    public $log;
     
     private $writebuffer = array();
 

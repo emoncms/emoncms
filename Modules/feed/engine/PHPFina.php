@@ -8,7 +8,7 @@ include_once dirname(__FILE__) . '/shared_helper.php';
 class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
-    private $log;
+    public $log;
     private $writebuffer = array();
     private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
