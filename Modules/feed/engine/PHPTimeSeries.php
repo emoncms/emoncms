@@ -641,4 +641,25 @@ class PHPTimeSeries implements engine_methods
         
         return $fh;
     }
+    
+    /**
+     * Used for testing
+     *
+     */
+    public function print_all($id) {  
+
+        $sum = 0;
+        $n = 0;
+                
+        if ($fh = $this->open($id,"rb")) {        
+            for ($n=0; $n<$this->get_npoints($id); $n++) {
+                $dp = @unpack("x/Itime/fvalue",fread($fh,9));
+                print $n." ".$dp['time']." ".$dp['value']."\n";
+                $sum += $dp['value'];
+            }
+            fclose($fh);
+        }
+        
+        if ($n>0) print "average: ".($sum/$n)."\n";
+    }
 }
