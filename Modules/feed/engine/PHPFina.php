@@ -1045,14 +1045,16 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($id)) return array('success'=>false,'message'=>'Could not open meta file');
         if (!$meta->npoints) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
         if ($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range');
-        
+        if ($start_time == $meta->start_time) return array('success'=>false,'message'=>'Feed already starts at trim time');   
+          
         $start_pos = ceil(($start_time - $meta->start_time) / $meta->interval);
+        if ($start_pos>=$meta->npoints) return array('success'=>false,'message'=>'New start time out of range');
         
         if (!$fh = $this->open($id,'rb')) {
             return array('success'=>false,'message'=>'Error opening data file');
         }
         fseek($fh,$start_pos*4);
-        if (!$binary_data = @fread($fh,$meta->npoints-$start_pos)) {
+        if (!$binary_data = @fread($fh,($meta->npoints-$start_pos)*4)) {
             $this->log->error("Error reading $datFileName");
             return array('success'=>false,'message'=>'Error reading data file');
         }
