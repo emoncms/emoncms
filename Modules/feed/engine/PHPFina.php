@@ -107,6 +107,7 @@ class PHPFina implements engine_methods
         // Open and read meta data file
         // The start_time and interval are saved as two consecutive unsigned integers
         $meta = new stdClass();
+        $meta->id = $id;
         $metafile = fopen($this->dir.$feedname, 'rb');
         fseek($metafile,8);
         $tmp = unpack("I",fread($metafile,4)); 
@@ -115,12 +116,18 @@ class PHPFina implements engine_methods
         $meta->start_time = $tmp[1];
         fclose($metafile);
         
-        $meta->npoints = $this->get_npoints($id);
+        $meta->npoints = 0;
+        if (file_exists($this->dir.$id.".dat")) {
+            clearstatcache($this->dir.$id.".dat");
+            $meta->npoints += floor(filesize($this->dir.$id.".dat")/4.0);
+        }
 
         if ($meta->start_time>0 && $meta->npoints==0) {
             $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
             return false;
         }
+        
+        $meta->end_time = $meta->start_time + ($meta->interval * ($meta->npoints-1));
         
         return $meta;
     }
