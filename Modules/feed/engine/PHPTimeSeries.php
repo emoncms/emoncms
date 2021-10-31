@@ -57,7 +57,7 @@ class PHPTimeSeries implements engine_methods
         if ($dp==-1) return array('success'=>false,'message'=>'Invalid start time');
         
         fseek($fh,$dp[0]*9);
-        if (!$binary_data = @fread($fh,$npoints-$dp[0])) {
+        if (!$binary_data = @fread($fh,($npoints-$dp[0])*9)) {
             $this->log->error("Error reading $datFileName");
             return array('success'=>false,'message'=>'Error reading data file');
         }
