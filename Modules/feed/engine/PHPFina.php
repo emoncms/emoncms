@@ -388,12 +388,12 @@ class PHPFina implements engine_methods
     */
     public function get_value($id,$time)
     {        
+        $id = (int) $id;
         $time = (int) $time;
         
-        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$id");
-        $meta->npoints = $this->get_npoints($id);
-        
-        $fh = fopen($this->dir.$id.".dat", 'rb');
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta->npoints) return false;
+        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
         
         $value = null;
         $pos = round(($time - $meta->start_time) / $meta->interval);
@@ -402,7 +402,7 @@ class PHPFina implements engine_methods
             $val = unpack("f",fread($fh,4));
             if (!is_nan($val[1])) $value = (float) $val[1];
         }
-        
+        fclose($fh);
         return $value;
     }
 
