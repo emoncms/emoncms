@@ -1090,22 +1090,16 @@ class PHPFina implements engine_methods
      * @return boolean true == success
      */
     public function clear($id) {
-        $id = (int)$id;
-        if (!$meta = $this->get_meta($id)) return false;
-        $meta->start_time = 0;
-        $datafilePath = $this->dir.$id.".dat";
-        $f = @fopen($datafilePath, "r+");
-        if (!$f) {
-            $this->log->error("unable to open $datafilePath for reading");
-            return array('success'=>false,'message'=>'Error opening data file');
-        } else {
-            ftruncate($f, 0);
-            fclose($f);
-        }
+        $id = (int) $id;
         if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
-            
-        $this->create_meta($id, $meta); // create meta first to avoid $this->create() from creating new one
-        $this->create($id,array('interval'=>$meta->interval));
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$fh = @fopen($this->dir.$id.".dat", "r+")) return false;
+        ftruncate($fh, 0);
+        fclose($fh);
+
+        // Reset meta start_time to zero
+        $meta->start_time = 0;
+        $this->create_meta($id, $meta);
 
         $this->log->info("Feed $id datapoints deleted");
         return array('success'=>true,'message'=>"Feed cleared successfully");
