@@ -367,7 +367,7 @@ class PHPFina implements engine_methods
         
         if (!$meta = $this->get_meta($id)) return false;
         if (!$meta->npoints) return false;
-        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
 
         fseek($fh,($meta->npoints-1)*4);
         $d = fread($fh,4);
@@ -393,7 +393,7 @@ class PHPFina implements engine_methods
         
         if (!$meta = $this->get_meta($id)) return false;
         if (!$meta->npoints) return false;
-        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
         
         $value = null;
         $pos = round(($time - $meta->start_time) / $meta->interval);
@@ -497,8 +497,8 @@ class PHPFina implements engine_methods
         } else {
             $data = array();
         }
-               
-        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        if (!$fh = $this->open($id,"rb")) return false;
  
         // seek only once for full resolution export
         $first_seek = false;
@@ -626,7 +626,7 @@ class PHPFina implements engine_methods
 
         $data = array();
         
-        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
@@ -1018,7 +1018,7 @@ class PHPFina implements engine_methods
         $id = (int) $id;
         if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
         if (!$meta = $this->get_meta($id)) return false;
-        if (!$fh = @fopen($this->dir.$id.".dat", "r+")) return false;
+        if (!$fh = $this->open($id,'r+')) return false;
         ftruncate($fh, 0);
         fclose($fh);
 
@@ -1048,7 +1048,7 @@ class PHPFina implements engine_methods
         
         $start_pos = ceil(($start_time - $meta->start_time) / $meta->interval);
         
-        if (!$fh = @fopen($this->dir.$id.'.dat','rb')) {
+        if (!$fh = $this->open($id,'rb')) {
             return array('success'=>false,'message'=>'Error opening data file');
         }
         fseek($fh,$start_pos*4);
@@ -1058,7 +1058,7 @@ class PHPFina implements engine_methods
         }
         fclose($fh);
 
-        if (!$fh = @fopen($this->dir.$id.'.dat','wb')) {
+        if (!$fh = $this->open($id,'wb')) {
             return array('success'=>false,'message'=>'Error opening data file');
         }
         $writtenBytes = fwrite($fh,$binary_data);
@@ -1069,5 +1069,42 @@ class PHPFina implements engine_methods
         $this->create_meta($id, $meta); // set the new start time in the feed meta file
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
+    
+    /**
+     * Abstracted open
+     *
+     */
+    public function open($id,$mode) {        
+        if (!$fh = @fopen($this->dir.$id.".dat", $mode)) {
+            $this->log->error("PHPFina could not open $id.dat");      
+            return false;
+        }
+        return $fh;
+    }
 
+    /**
+     * Used for testing
+     *
+     */
+    public function print_all($id) {
+        if (!$meta = $this->get_meta($id)) return false;
+        if (!$fh = $this->open($id,"rb")) return false;
+
+        $sum = 0;
+        $sn = 0;
+        
+        $time = $meta->start_time + ($meta->interval * $n);
+        $tmp = unpack("f",fread($fh,4));
+        $value = $tmp[1];
+        if (is_nan($value)) $value = null;
+        print $n." ".$time." ".$value."\n";
+        if ($value!=null) {
+            $sum += $value;
+            $sn ++;
+        }
+        $this->close($fh);
+
+        if ($sn>0) print "average: ".($sum/$sn)."\n";
+    }
+     
 }
