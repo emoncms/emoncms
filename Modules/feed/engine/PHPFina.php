@@ -1093,16 +1093,19 @@ class PHPFina implements engine_methods
         $sum = 0;
         $sn = 0;
         
-        $time = $meta->start_time + ($meta->interval * $n);
-        $tmp = unpack("f",fread($fh,4));
-        $value = $tmp[1];
-        if (is_nan($value)) $value = null;
-        print $n." ".$time." ".$value."\n";
-        if ($value!=null) {
-            $sum += $value;
-            $sn ++;
+        for ($n=0; $n<$meta->npoints; $n++) {
+            $time = $meta->start_time + ($meta->interval * $n);
+            $tmp = unpack("f",fread($fh,4));
+            $value = $tmp[1];
+            if (is_nan($value)) $value = null;
+            print $n." ".$time." ".$value."\n";
+            if ($value!=null) {
+                $sum += $value;
+                $sn ++;
+            }
         }
-        $this->close($fh);
+
+        fclose($fh);
 
         if ($sn>0) print "average: ".($sum/$sn)."\n";
     }
