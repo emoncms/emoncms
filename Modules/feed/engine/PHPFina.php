@@ -81,9 +81,12 @@ class PHPFina implements engine_methods
     public function delete($id)
     {
         $id = (int)$id;
-        if (!$meta = $this->get_meta($id)) return false;
-        unlink($this->dir.$id.".meta");
-        unlink($this->dir.$id.".dat");
+        if (file_exists($this->dir.$id.".meta")) {
+            unlink($this->dir.$id.".meta");
+        }
+        if (file_exists($this->dir.$id.".dat")) {
+            unlink($this->dir.$id.".dat");
+        }
     }
     
     /**
