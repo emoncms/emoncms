@@ -117,6 +117,8 @@ class PHPTimeSeries implements engine_methods
                 $meta->interval = ($meta->end_time - $meta->start_time) / ($npoints-1);
             }
         }
+        
+        $meta->npoints = $npoints;
         fclose($fh);
         return $meta;
     }
