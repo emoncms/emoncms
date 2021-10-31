@@ -211,7 +211,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }        
-        return $admin->runService($update_script, "$type $firmware_key $serial_port > $update_logfile");
+        return $admin->runService($update_script, "$type $firmware_key $serial_port>$update_logfile");
     }
     
     if ($route->action == 'update-firmware') {
@@ -300,7 +300,7 @@ function admin_controller()
         }
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, "$module_path $branch > $update_logfile");
+        return $admin->runService($script, "$module_path $branch>$update_logfile");
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
@@ -317,7 +317,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
         
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, "$branch > $update_logfile");
+        return $admin->runService($script, "$branch>$update_logfile");
     }
     
     // ----------------------------------------------------------------------------------------
