@@ -117,8 +117,12 @@ class Feed
         }
         else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
         
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
-        $stmt->bind_param("issiiis",$userid,$tag,$name,$public,$engine,$unit);
+        // Datatype is no longer used but is required here for backwards 
+        // compatibility with tables already containing the field
+        $datatype = 1;
+        
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,public,datatype,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$public,$datatype,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
