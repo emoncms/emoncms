@@ -765,8 +765,8 @@ class PHPFina implements engine_methods
         // Check meta data file exists
         if (!$meta = $this->get_meta($id)) return false;
         
-        if (isset($this->writebuffer[$feedid])) {
-            $meta->npoints += floor(strlen($this->writebuffer[$feedid])/4.0);
+        if (isset($this->writebuffer[$id])) {
+            $meta->npoints += floor(strlen($this->writebuffer[$id])/4.0);
         }
 
         // Calculate interval that this datapoint belongs too
