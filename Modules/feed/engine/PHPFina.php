@@ -532,6 +532,7 @@ class PHPFina implements engine_methods
         return $data;
     }
     
+    // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
@@ -543,22 +544,27 @@ class PHPFina implements engine_methods
         if (count($split)>48) return false;
 
         // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$id");
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($id)) return false;
 
         $data = array();
-
-	/* Open file */
-        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        if (!$fh = fopen($this->dir.$id.".dat", 'rb')) return false;
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
-        $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
 
+        $date->modify("midnight");
+        $modify = "+1 day";
+        if ($mode=="weekly") {
+            $date->modify("this monday");
+            $modify = "+1 week";
+        } else if ($mode=="monthly") {
+            $date->modify("first day of this month");
+            $modify = "+1 month";
+        }
+        
         $n = 0;
         while($n<10000) // max iterations allows for approx 7 months with 1 day granularity
         {
@@ -596,9 +602,7 @@ class PHPFina implements engine_methods
             if ($time>=$start && $time<$end) {
                 $data[] = array($time*1000,$split_values);
             }
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
+            $date->modify($modify);
             $n++;
         }
         fclose($fh);
