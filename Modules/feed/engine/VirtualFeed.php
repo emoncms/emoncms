@@ -112,9 +112,8 @@ class VirtualFeed implements engine_methods
         $dataValue = null;
                 
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
-        global $session,$user;
         require_once "Modules/process/process_model.php";
-        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
+        $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
 
         if ($dp > 0) 
         {
