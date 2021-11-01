@@ -27,7 +27,8 @@ function feed_controller()
     $input = new Input($mysqli,$redis,$feed);
     
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+    $user_timezone = $user->get_timezone($session['userid']);
+    $process = new Process($mysqli,$input,$feed,$user_timezone);
 
     if ($route->format == 'html')
     {
@@ -131,20 +132,20 @@ function feed_controller()
                                 if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
                                 
                                 if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),0,"UTC","unix",false,$skipmissing,$limitinterval);
                                 } else if (isset($_GET['mode'])) {
                                     if (isset($_GET['split'])) {
                                         $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
                                     } else {
-                                        $results[$key]['data'] = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                                        $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('mode'),0,$user_timezone,"unix",false,0,0);
                                     }
                                 }
                             // feed/average --------------------------------------------   
                             } else if ($route->action == 'average') {
                                 if (isset($_GET['mode'])) {
-                                    $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
+                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('mode'),1,$user_timezone,"unix",false,0,0);
                                 } else if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),1,"UTC","unix",false,0,0);                          
                                 } 
                             }
                         }

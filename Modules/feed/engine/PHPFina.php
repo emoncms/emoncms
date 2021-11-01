@@ -583,23 +583,7 @@ class PHPFina implements engine_methods
             return $data;
         }
     }
-    
-    public function get_data($id,$start,$end,$interval,$skipmissing,$limitinterval) {
-        return $this->get_data_combined($id,$start,$end,$interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
-    }
-    
-    public function get_data_DMY($id,$start,$end,$mode,$timezone) {
-        return $this->get_data_combined($id,$start,$end,$mode,0,$timezone,"unix",false,0,0);
-    }
-    
-    public function get_average($id,$start,$end,$interval) {
-        return $this->get_data_combined($id,$start,$end,$interval,1,"UTC","unix",false,0,0);  
-    }
-    
-    public function get_average_DMY($id,$start,$end,$mode,$timezone) {
-        return $this->get_data_combined($id,$start,$end,$mode,1,$timezone,"unix",false,0,0);
-    }
-    
+        
     public function csv_export($id,$start,$end,$interval,$timezone) {
         if ($timezone==false) {
             $timeformat = "unix";

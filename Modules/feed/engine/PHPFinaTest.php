@@ -63,7 +63,8 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
     public function testGet_data() {
         $skipmissing = 0;
         $limitinterval = 1;
-		$data = $this->engine->get_data($this->feedid,$this->start,$this->end,$this->interval,$skipmissing,$limitinterval);
+		    $data = $this->engine->get_data_combined($this->feedid,$this->start,$this->end,$this->interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
+		
         $this->assertTrue(!empty($data) && empty($data['success']), 'no blank result or success == false');
     }
 
@@ -83,23 +84,8 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
         $this->assertTrue(strpos($response->content(), 'csv') !== false);
 	}
 
-    public function testGet_average_DMY() {
-		$this->engine->get_average_DMY($this->feedid,$this->start,$this->end,$mode,$timezone);
-		$this->assertTrue(false);
-	}
-
-    public function testGet_average() {
-		$this->engine->get_average($this->feedid,$this->start,$this->end,$this->outinterval);
-		$this->assertTrue(false);
-	}
-
     public function testGet_data_DMY_time_of_day() {
 		$this->engine->get_data_DMY_time_of_day($this->feedid,$this->start,$this->end,$mode,$timezone,$split);
-		$this->assertTrue(false);
-	}
-
-    public function testGet_data_DMY() {
-		$this->engine->get_data_DMY($this->feedid,$this->start,$this->end,$mode,$timezone);
 		$this->assertTrue(false);
 	}
 

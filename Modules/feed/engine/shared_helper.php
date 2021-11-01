@@ -159,36 +159,19 @@ interface engine_methods{
     /**
      * Return the data for the given timerange
      *
-     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $id The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
-    */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval);
-    
-    /**
-     * return data in csv format
-     *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $outinterval The number of seconds for each data point to return 
-     * @param mixed One of the supported timezone names or an offset value (+0200). 
-     * @return void
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601
+     * @param integer $csv pipe output as csv
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
      */
-
-    /**
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $outinterval output data point interval
-     * @param string $usertimezone a name for a php timezone eg. "Europe/London"
-     * @see http://php.net/manual/en/timezones.php
-     * @return void
-     */
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone);    
+    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
     
     /**
      * delete all past data for a feed. keeping all the feed settings the same

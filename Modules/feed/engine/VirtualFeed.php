@@ -93,15 +93,16 @@ class VirtualFeed implements engine_methods
     // 4-  First processor of virtual feed processlist should be the source_feed_data_time() this will get data from a slot.
     // 5 - Agreggates all slots time and processed data.
     // 6 - Returns data to the graph.
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
-        $start = round($start/1000);
-        $end = round($end/1000);
-        $interval = intval($interval); // time gap in seconds
-                
+        if ($processList == '' || $processList == null) return false;
+        
+        $start = $start * 0.001;
+        $end = $end * 0.001;
+
+        $interval = (int) $interval; // time gap in seconds
         if ($interval<1) $interval = 1;
         $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
         $end = $start + ($dp * $interval);
@@ -184,8 +185,8 @@ class VirtualFeed implements engine_methods
 
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
-
-        $data = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
+        
+        $data = $this->get_data_combined($feedid,$start*1000,$end*1000,$outinterval,0,"UTC","unix",false,0,0);
         $max = sizeof($data);
         for ($i=0; $i<$max; $i++){
             $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);

@@ -1504,7 +1504,7 @@ class Process_ProcessList
             }
             $start*=1000; // convert to milliseconds for engine
             $end*=1000;
-            $data = $this->feed->get_data($feedid,$start,$end,$interval,1,1); // get data from feed engine with skipmissing and limit interval options
+            $data = $this->feed->get_data($feedid,$start,$end,$interval,"UTC","unix",false,1,1);
         } else {
             
             $data = $this->feed->get_timevalue($feedid); // get last data from feed engine 
