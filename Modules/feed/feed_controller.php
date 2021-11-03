@@ -27,7 +27,9 @@ function feed_controller()
     $input = new Input($mysqli,$redis,$feed);
     
     require_once "Modules/process/process_model.php";
-    $user_timezone = $user->get_timezone($session['userid']);
+    if (!$user_timezone = $user->get_timezone($session['userid'])) {
+        $user_timezone = 'UTC';
+    }
     $process = new Process($mysqli,$input,$feed,$user_timezone);
 
     if ($route->format == 'html')
@@ -107,11 +109,26 @@ function feed_controller()
             $singular = false;
             $feedids = array();
             $results = array();
-            if (isset($_GET['id'])) {
-                $feedids = explode(",", get('id'));
-                $singular = true;
-            }
+            
+            // Handle params
+            if (isset($_GET['id'])) $feedids = explode(",", get('id'));
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
+            if (count($feedids)==1) $singular = true;
+
+            $start = (int) get('start',true);
+            $end = (int) get('end',true);
+            $default_interval = round((($end-$start)*0.001)/800);
+            $interval = get('interval',false,$default_interval);
+            $average = get('average',false,0);
+            $timezone = get('timezone',false,$user_timezone);
+            $timeformat = get('timeformat',false,'unix');
+            $csv = get('csv',false,0);
+            $skipmissing = get('skipmissing',false,0);
+            $limitinterval = get('limitinterval',false,0);
+            
+            // Backwards compatibility
+            if ($route->action=="average") $average = 1;
+            if (isset($_GET['mode'])) $interval = $_GET['mode'];
             
             if (!empty($feedids)) {
                 $missing = array();
@@ -122,19 +139,6 @@ function feed_controller()
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
                             $results[$key] = array('feedid'=>$feedid);
-                            
-                            // get(index,exist_if_missing,default)
-                            $start = get('start',true);
-                            $end = get('end',true);
-                            $interval = get('interval',true);
-                            $average = get('average',false,0);
-                            if ($route->action=="average") $average = 1;
-                            $timezone = get('timezone',false,$user_timezone);
-                            $timeformat = get('timeformat',false,'unix');
-                            $csv = get('csv',false,0);
-                            $skipmissing = get('skipmissing',false,0);
-                            $limitinterval = get('limitinterval',false,0);
-                            
                             if (!isset($_GET['split'])) {
                                 $results[$key]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
                             } else {
