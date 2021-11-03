@@ -86,77 +86,87 @@ class VirtualFeed implements engine_methods
         if ($dataValue !== null) $dataValue = (float) $dataValue ;
         return array('time'=>(int)$now, 'value'=>$dataValue);  // datavalue can be float or null, dont cast!
     }
-
-    // 1 - Calculates date slots for given start, end and interval. Representing about a pixel on the x axis of the graph for each time slot.
-    // 2 - If feed is realtime slots are calculated based on interval, if daily, slots date is at its datetime midnight of user timezone.
-    // 3 - Executes virtual feed processlist for each slot individually.
-    // 4-  First processor of virtual feed processlist should be the source_feed_data_time() this will get data from a slot.
-    // 5 - Agreggates all slots time and processed data.
-    // 6 - Returns data to the graph.
+    
+    // Executes virtual feed processlist for each timestamp in range
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
-    {
+    {   
         $feedid = (int) $feedid;
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
+        
+        // todo: consider supporting a variety of time formats here
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        
         $processList = $this->feed->get_processlist($feedid);
         if ($processList == '' || $processList == null) return false;
-        
-        $start = $start * 0.001;
-        $end = $end * 0.001;
-
-        $interval = (int) $interval; // time gap in seconds
-        if ($interval<1) $interval = 1;
-        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
-        $end = $start + ($dp * $interval);
-        if ($dp<1) return false;
-
-        $data = array();
-        $dataValue = null;
-                
+                        
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
 
-        if ($dp > 0) 
-        {
-            $range = $end - $start; // windows duration in seconds
-            $td = $range / $dp;    // time duration for each datapoint
-            $t = $start; $tb = 0;  // time between t and tb
-            for ($i=0; $i<$dp; $i++)
-            {
-                $tb = $start + intval(($i+1)*$td); //next end time
-                $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
-                $dataValue = $process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
-                    
-                if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                    $time = $t * 1000;
-                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
-                    $data[] = array($time, $dataValue);
-                }
-                $t = $tb; // next start time
+        $opt_timearray = array(
+            'sourceid'=>$feedid, 
+            'start' => $start, 
+            'end' => $end, 
+            'interval' => $interval, 
+            'average' => $average, 
+            'timezone' => $timezone,
+            'sourcetype' => ProcessOriginType::VIRTUALFEED,
+            'index' => 0
+        );
+        
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            $fixed_interval = false;
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($start);
+            $date->modify("midnight");
+            $modify = "+1 day";
+            if ($interval=="weekly") {
+                $date->modify("this monday");
+                $modify = "+1 week";
+            } else if ($interval=="monthly") {
+                $date->modify("first day of this month");
+                $modify = "+1 month";
+            } else if ($interval=="annual") {
+                $date->modify("first day of this year");
+                $modify = "+1 year";
             }
+            $time = $date->getTimestamp();
+        } else {
+            // If interval codes are not specified then we advanced by a fixed numeric interval 
+            $fixed_interval = true;
+            $interval = (int) $interval;
+            if ($interval<1) $interval = 1;
+            $time = $start;
         }
-        else {
-            //daily virtual feed
-             $startslot=$process->process__getstartday($start); // start of day for user timezone
-             $endslot=$process->process__getstartday($end); // end of day for user timezone
+
+        $data = array();
+        $dataValue = null;
+        
+        while($time<=$end)
+        {
+            $dataValue = $process->input($time, $dataValue, $processList, $opt_timearray); // execute processlist 
+                
+            if ($dataValue!==null || $skipmissing===0) { // Remove this to show white space gaps in graph
+                if ($dataValue !== null) $dataValue = (float) $dataValue;
+                $data[] = array($time*1000, $dataValue);
+            }
             
-             if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
-             while ($startslot<$endslot)
-             {
-                $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
-                $dataValue = $process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
-                    
-                if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                    $time = $startslot * 1000;
-                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
-                    $data[] = array($time, $dataValue);
-                }
-                $startslot +=86400; // inc a day
-             }
+            // Advance position
+            if ($fixed_interval) {
+                $time += $interval;
+            } else {
+                $date->modify($modify);
+                $time = $date->getTimestamp();
+            }
+            $opt_timearray['index']++;
         }
 
         return $data;
     }
-
 
     public function export($feedid,$start)
     {
