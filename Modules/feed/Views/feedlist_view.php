@@ -174,7 +174,7 @@ body{padding:0!important}
 
 <div id="feed-footer" class="hide">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
-    <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+    <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New feed'); ?></button>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 
@@ -357,13 +357,38 @@ body{padding:0!important}
 <div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="newFeedNameModalLabel"><?php echo _('New Virtual Feed'); ?></h3>
+        <h3 id="newFeedNameModalLabel"><?php echo _('New Feed'); ?></h3>
     </div>
     <div class="modal-body">
         <label><?php echo _('Feed Name: '); ?></label>
-        <input type="text" value="New Virtual Feed" id="newfeed-name">
+        <input type="text" value="New Feed" id="newfeed-name">
         <label><?php echo _('Feed Tag: '); ?></label>
-        <input type="text" value="Virtual" id="newfeed-tag">
+        <input type="text" value="" id="newfeed-tag">
+        <label><?php echo _('Feed Engine: '); ?></label>
+        <select id="newfeed-engine" style="width:350px">
+            <option value="7" selected>VIRTUAL Feed</option>
+            <option value="5">PHP Fixed Interval Time Series</option>
+            <option value="2">PHP Variable Interval Time Series</option>
+            <option value="0">MYSQL TimeSeries</option>
+            <option value="8">MYSQL Memory (RAM data lost on power off)</option>
+            <option value="10">CASSANDRA Time Series</option>
+        </select>
+        <select id="newfeed-interval" class="input-mini hide">
+            <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="10" selected>10<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="60">60<?php echo dgettext('process_messages','s'); ?></option>
+            <option value="120">2<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="300">5<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="600">10<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="900">15<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="1200">20<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="1800">30<?php echo dgettext('process_messages','m'); ?></option>
+            <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
+            <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
+        </select>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -383,6 +408,10 @@ var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+var engines_hidden = JSON.parse(<?php echo json_encode($settings["feed"]['engines_hidden']); ?>);
+
+var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
+var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
 
 // auto refresh
 update_feed_list();
@@ -1273,15 +1302,24 @@ function feed_selection()
 watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
 
 // ---------------------------------------------------------------------------------------------
-// Virtual Feed feature
+// Create new feed dialog
 // ---------------------------------------------------------------------------------------------
+
+for (var e in engines_hidden) {
+    $('#newfeed-engine option[value='+engines_hidden[e]+']').hide();
+}
+
 $("#newfeed-save").click(function (){
-    var newfeedname = $('#newfeed-name').val();
-    var newfeedtag = $('#newfeed-tag').val();
-    var engine = 7;   // Virtual Engine
-    var options = {};
+    var name = $('#newfeed-name').val();
+    var tag = $('#newfeed-tag').val();
+    var engine = $('#newfeed-engine').val();
     
-    var result = feed.create(newfeedtag,newfeedname,engine,options);
+    var options = {};
+    if (engine==5) {
+        options.interval = $('#newfeed-interval').val();
+    }
+    
+    var result = feed.create(tag,name,engine,options);
     feedid = result.feedid;
 
     if (!result.success || feedid<1) {
@@ -1290,6 +1328,15 @@ $("#newfeed-save").click(function (){
     } else {
         update_feed_list(); 
         $('#newFeedNameModal').modal('hide');
+    }
+});
+
+$('#newfeed-engine').change(function(){
+    var engine = $(this).val();
+    if (engine==5) {
+        $('#newfeed-interval').show();
+    } else {
+        $('#newfeed-interval').hide();
     }
 });
 
