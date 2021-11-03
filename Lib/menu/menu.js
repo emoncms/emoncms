@@ -68,7 +68,9 @@ var menu = {
         menu.log("init: draw_l1, events, resize");
         menu.draw_l1();
         menu.events();
+        menu.disable_transition(".menu-l2");
         menu.resize();
+        menu.enable_transition(".menu-l2");
     },
 
     // ------------------------------------------------------------------    
@@ -103,7 +105,9 @@ var menu = {
             menu.draw_l2();
         } else { 
             menu.log("draw_l1: hide_l2");
+            menu.disable_transition(".menu-l2");
             menu.hide_l2();
+            menu.enable_transition(".menu-l2");
         }
     },
 
@@ -226,7 +230,7 @@ var menu = {
             menu.log("hide_l2: hide_l3");
             menu.hide_l3();
         }
-
+        
         if (menu.l2_visible) {
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
@@ -271,7 +275,7 @@ var menu = {
             menu.hide_l3();
         }
     
-        if (!(menu.l2_visible && menu.l2_min == false)) {
+        if (!menu.l2_visible || menu.l2_min) {
             $(".menu-l2").css("width","240px");
 
             $(".menu-text-l2").show();
@@ -303,7 +307,7 @@ var menu = {
         if (!menu.l3_visible) { 
             $(".menu-l3").css("left","50px");
             $(".menu-l3").css("width","240px");
-            $(".menu-l3").show();
+            //$(".menu-l3").show();
         }
 
         var left = 290;
@@ -325,6 +329,16 @@ var menu = {
         if (menu.l2_visible) $(".content-container").css("margin","46px auto 0 50px");
         else $(".content-container").css("margin","46px auto 0 auto");
         menu.l3_visible = false;
+    },
+
+    disable_transition: function (element) {
+        $(element).css("transition","none");
+    },
+    
+    enable_transition: function (element) {
+        setTimeout(function(){
+            $(element).css("transition","all 0.3s ease-out");
+        },0);  
     },
 
     resize: function() {

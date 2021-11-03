@@ -89,7 +89,7 @@
 /* -------------------------------------- */
 
 .menu-l2 {
-  width:240px;
+  width:0px;
   height: 100%;
   background-color:var(--bg-l2);
   display:inline-block;
@@ -190,11 +190,11 @@
 .menu-l3 {
   position:fixed;
   top:46px;
-  left:50px;
-  width:240px;
+  left:0px;
+  width:0px;
   height: calc(100% - 46px);
   background-color:var(--bg-l3);
-  display:none;
+  /*display:none;*/
   z-index:999;
   overflow-y: auto;
   overflow-x: hidden;
@@ -241,12 +241,6 @@
 }
 
 /* -------------------------------------- */
-
-@media (max-width: 1150px) {
-    .menu-l2 {
-        width:50px;
-    }
-}
 
 @media (max-width: 576px) {
     .menu-l2 li div {
