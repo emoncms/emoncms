@@ -583,16 +583,6 @@ class PHPFina implements engine_methods
             return $data;
         }
     }
-        
-    public function csv_export($id,$start,$end,$interval,$timezone) {
-        if ($timezone==false) {
-            $timeformat = "unix";
-            $timezone = "UTC";
-        } else {
-            $timeformat = "excel";    
-        }
-        $this->get_data_combined($id,$start*1000,$end*1000,$interval,0,$timezone,$timeformat,true,0,0);
-    }
     
     // Splits daily, weekly, monthly output into time of use segments defined by $split
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 

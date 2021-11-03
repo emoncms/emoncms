@@ -454,7 +454,6 @@ class Feed
     get_timevalue   : feed last updated time and value
     get_value       : feed last updated value
     get_data        : feed data by time range
-    csv_export      : feed data by time range in csv format
     */
     public function get($id)
     {
