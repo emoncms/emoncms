@@ -25,6 +25,8 @@ class Process_ProcessList
     private $log;
     private $mqtt = false;
     
+    private $data_cache = array();
+    
     // Module required constructor, receives parent as reference
     public function __construct(&$parent)
     {
@@ -1466,77 +1468,23 @@ class Process_ProcessList
     }
 
 
-    // Used as Virtual feed source of data (read from other feeds). Gets feed data for the specified time range in $options variable, 
-    // Set data_sampling to false in settings.php to allow precise average feed data calculation. It will be 10x slower!
+    // Fetch datapoint from source feed data at specified timestamp
+    // Loads full feed to data cache if it's the first time to load
     public function source_feed_data_time($feedid, $time, $value, $options)
     {
-        global $settings;
-        $starttime = microtime(true);
-        $value = null;
-        if (isset($options['start']) && isset($options['end'])) {
-            $start = $options['start']; // if option array has start and end time, use it
-            $end = $options['end'];
-            if (isset($options['interval'])) {
-                $interval=$options['interval'];
-            } else {
-                $interval = ($end - $start);
-            }
-            if ($settings["feed"]["virtualfeed"]["data_sampling"]) {
-                // To speed up reading, but will miss some average data
-                $meta=$this->feed->get_meta($feedid);
-                if (isset($meta->interval) && (int)$meta->interval > 1) {
-                    $interval = (int)$meta->interval; // set engine interval 
-                    $end = $start; 
-                    $start = $end - ($interval * 2); // search past x interval secs
-                } else if ($interval > 5000) { //83m interval is high a table scan will happen in engine
-                    $end = $start; 
-                    $start = $end - 60; // force search past 1m 
-                    $interval = 1;
-                } else if ($interval > 300) { // 5m
-                    $end = $start; 
-                    $start = $end - 20; //  search past 20s
-                    $interval = 1;
-                } else if ($interval < 5) { // 5s
-                    $end = $start; 
-                    $start = $end - 10; //  search past 10s
-                    $interval = 1;
-                }
-            }
-            $start*=1000; // convert to milliseconds for engine
-            $end*=1000;
-            $data = $this->feed->get_data($feedid,$start,$end,$interval,0,"UTC","unix",false,1,1);
-        } else {
-            
-            $data = $this->feed->get_timevalue($feedid); // get last data from feed engine 
-            $data = array(array($data['time'], $data['value'])); // convert last data
-            $end = $time; 
-            $start = $end;
-            $interval = ($end - $start);
+        // Find out why these are not always set?
+        if (!isset($options['start']) || !isset($options['end'])) return false;
+        
+        // Load feed to data cache if it has not yet been loaded
+        if (!isset($this->data_cache[$feedid])) {
+            $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],$options['average'],$options['timezone'],'unix',false,0,0);
         }
 
-        //$this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=$start end=$end len=".(($end - $start))." int=$interval - BEFORE GETDATA");
-
-        if ($data) {
-            $cnt=count($data);
-            if ($cnt>0) {
-                $p = 0;
-                $sum = 0;
-                while($p<$cnt) {
-                    if (isset($data[$p][1]) && is_numeric($data[$p][1])) {
-                        $sum += $data[$p][1];
-                    }
-                    $p++;
-                }
-                $value = ($sum / $cnt); // return average value
-            }
-            // logging 
-            $endtime = microtime(true);
-            $timediff = $endtime - $starttime;
-            $this->log->info("source_feed_data_time() ". ($settings["feed"]["virtualfeed"]["data_sampling"] ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
-        } else {
-            $this->log->info("source_feed_data_time() NODATA feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval value=$value ");
+        // Return value
+        if (isset($this->data_cache[$feedid][$options['index']])) {
+            return $this->data_cache[$feedid][$options['index']][1];
         }
-        return $value;
+        return null;
     }
 
     public function add_source_feed($feedid, $time, $value, $options)
