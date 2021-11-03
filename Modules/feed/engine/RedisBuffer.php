@@ -125,7 +125,7 @@ class RedisBuffer implements engine_methods
      * @param integer $skipmissing not implemented
      * @param integer $limitinterval not implemented
     */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $feedid = intval($feedid);
         $start = round($start/1000);
@@ -135,14 +135,12 @@ class RedisBuffer implements engine_methods
         $len = $this->redis->zCount("feed:$feedid:buffer",$start,$end);
         // process if there is data on buffer for the range
         if ($len > 0) {
-            $this->log->info("get_data() feed=$feedid len=$len start=$start end=$end");
+            $this->log->info("get_data_combined() feed=$feedid len=$len start=$start end=$end");
             $range = 50000; // step range number of points to extract on each iteration 50k-100k is ok
             for ($i=0; $i<=$len; $i = $i + $range)
             {
-                //$this->log->info("get_data() Reading block $i");
                 $buf_item = $this->redis->zRangeByScore("feed:$feedid:buffer", $start, $end, array('withscores' => true, 'limit' => array($i, $range)));
                 foreach($buf_item as $rawvalue => $time) {
-                    //$this->log->info("get_data() time=$time rawvalue=$rawvalue");
                     $f = explode("|",$rawvalue);
                     $value = $f[1];
                     $time=$time*1000;

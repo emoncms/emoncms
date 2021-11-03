@@ -569,20 +569,23 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        
+        // Maximum request size
+        // $period = ($end-$start)*0.001;
+        // $req_dp = round($period / $interval);
+        // if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
+
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
-        if ($engine == Engine::VIRTUALFEED) {
-            $this->log->info("get_data() $feedid,$start,$end,$outinterval,$skipmissing,$limitinterval");
-        }
 
-        // Call to engine get_data
-        $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+        // Call to engine get_data_combined
+        $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
 
-        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
+        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"]) && !$average && is_numeric($interval)) {
             // Add redisbuffer cache if available
             if ($data && $skipmissing) {
                 $bufferstart=end($data)[0];
@@ -590,19 +593,19 @@ class Feed
                 $bufferstart = $start;
             }
             
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
             
             if (!empty($bufferdata)) {
-                $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
+                $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
-                    $outintervalms = $outinterval * 1000;
+                    $intervalms = $interval * 1000;
 
                     // Convert buffered data to associative array - by timestamp
                     $bufferdata_assoc = array();
                     for ($z=0; $z<count($bufferdata); $z++) {
-                        $time = floor($bufferdata[$z][0]*0.001/$outinterval)*$outinterval;
+                        $time = floor($bufferdata[$z][0]*0.001/$interval)*$interval;
                         $bufferdata_assoc[$time] = $bufferdata[$z][1];
                     }
                     
@@ -623,23 +626,6 @@ class Feed
         return $data;
     }
     
-    public function get_data_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-        
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
-        
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
-        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
-        return $data;
-    }
-    
     public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
     {
         $feedid = (int) $feedid;
@@ -649,7 +635,7 @@ class Feed
         
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
-        // Call to engine get_data
+        // Call to engine get_data_DMY_time_of_day
         $userid = $this->get_field($feedid,"userid");
         $timezone = $this->get_user_timezone($userid);
             
@@ -657,32 +643,6 @@ class Feed
         return $data;
     }
     
-    public function get_average($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
-        
-        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
-    }
-    
-    public function get_average_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
-
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-        
-        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
-    }
-
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
     {
         $feedid = (int) $feedid;
@@ -716,7 +676,7 @@ class Feed
             $feedid = (int) $feedids[$i];
             $feedname = $this->get_field($feedid,'name');
             if (isset($feedname['success']) && !$feedname['success']) return $feedname;
-            $feeddata = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
+            $feeddata = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,"UTC","unix",false,0,0);
             if (isset($feeddata['success']) && !$feeddata['success']) return $feeddata;
 
             if (isset($exportdata['Timestamp'])) {
