@@ -100,6 +100,14 @@ class VirtualFeed implements engine_methods
         
         $processList = $this->feed->get_processlist($feedid);
         if ($processList == '' || $processList == null) return false;
+
+        if ($csv) {
+            global $settings;
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+            $helperclass->csv_header($feedid);
+        }
                         
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         require_once "Modules/process/process_model.php";
@@ -152,7 +160,12 @@ class VirtualFeed implements engine_methods
                 
             if ($dataValue!==null || $skipmissing===0) { // Remove this to show white space gaps in graph
                 if ($dataValue !== null) $dataValue = (float) $dataValue;
-                $data[] = array($time*1000, $dataValue);
+                                
+                if ($csv) { 
+                    $helperclass->csv_write($time,$dataValue);
+                } else {
+                    $data[] = array($time*1000, $dataValue);
+                }
             }
             
             // Advance position
@@ -165,7 +178,12 @@ class VirtualFeed implements engine_methods
             $opt_timearray['index']++;
         }
 
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
 
     public function export($feedid,$start)
@@ -173,39 +191,6 @@ class VirtualFeed implements engine_methods
         return false; // TBD
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-        global $settings;
-        
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-        
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        $filename = $feedid.".csv";
-        header("Content-Disposition: attachment; filename={$filename}");
-
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
-        
-        $data = $this->get_data_combined($feedid,$start*1000,$end*1000,$outinterval,0,"UTC","unix",false,0,0);
-        $max = sizeof($data);
-        for ($i=0; $i<$max; $i++){
-            $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
-            $value = $data[$i][1];
-            if ($value != null) $value = number_format($value,$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'');
-            fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].$value."\n");
-        }
-        fclose($exportfh);
-        exit;
-    }
     public function clear($feedid) {
         // clear all feed data but keep meta.
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
