@@ -116,8 +116,8 @@ function feed_controller()
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
 
 
-            $start = (int) get('start',true);
-            $end = (int) get('end',true);
+            $start = get('start',true);
+            $end = get('end',true);
             $default_interval = round((($end-$start)*0.001)/800);
             $interval = get('interval',false,$default_interval);
             $average = get('average',false,0);
