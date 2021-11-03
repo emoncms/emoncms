@@ -78,6 +78,19 @@ class SharedHelper
         fwrite($this->export_fh,$time.$this->csv_field_separator.$value."\n");
     }
     
+    public function csv_write_multi($values) {
+        $values[0] = $this->format_time($values[0]);
+        
+        for ($z=1; $z<count($values); $z++) {
+            if ($values[$z]==null) {
+                $values[$z] = 'null';
+            } else {
+                $values[$z] = number_format($values[$z],$this->csv_dp,$this->csv_dp_separator,'');
+            }
+        }
+        fwrite($this->export_fh,implode($this->csv_field_separator,$values)."\n");
+    }
+    
     public function csv_close() {
         fclose($this->export_fh);
     }

@@ -256,7 +256,7 @@ body{padding:0!important}
             <td>
                 <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
-                    <option value=1><?php echo _('Auto');?></option>
+                    <option value=original><?php echo _('Original feed interval');?></option>
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
                     <option value=30><?php echo _('30s');?></option>
@@ -268,25 +268,24 @@ body{padding:0!important}
                     <option value=3600><?php echo _('1 hour');?></option>
                     <option value=21600><?php echo _('6 hour');?></option>
                     <option value=43200><?php echo _('12 hour');?></option>
-                    <option value=86400><?php echo _('Daily');?></option>
-                    <option value=604800><?php echo _('Weekly');?></option>
-                    <option value=2678400><?php echo _('Monthly');?></option>
-                    <option value=31536000><?php echo _('Annual');?></option>
+                    <option value=daily><?php echo _('Daily');?></option>
+                    <option value=weekly><?php echo _('Weekly');?></option>
+                    <option value=monthly><?php echo _('Monthly');?></option>
+                    <option value=annual><?php echo _('Annual');?></option>
                 </select>
+                
+                <p class="hide"><input id="export-average" type="checkbox" style="margin-top:-4px"> Return Averages</p>
             </td>
             <td>
                 <p><b><?php echo _('Date time format');?></b></p>
-                <div class="checkbox">
-                  <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
-                </div>
-                <label><?php echo _('Offset secs (for daily)');?>&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled></label>
+                <select id="export-timeformat">
+                    <option value="unix">Unix timestamp</option>
+                    <option value="excel">Excel (d/m/Y H:i:s), Timezone set in user account</option>
+                    <option value="iso8601">ISO 8601 (e.g: 2020-01-01T10:00:00+01:00)</option>
+                </select>
             </td>
         </tr>
         </table>
-            <div class="alert alert-info">
-                <p><?php echo _('Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.');?></p>
-                <p><?php echo _('Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.');?></p>
-            </div>
     </div>
     <div class="modal-footer">
         <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span>MB</div>
@@ -983,7 +982,7 @@ function isSelectionValidForTrim(){
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
         const CASSANDRA = 10;    // Cassandra
     */
-    let allowed_engines = [0,5,8] // array of allowed storage engines
+    let allowed_engines = [0,2,5,8] // array of allowed storage engines
     for (var feedid in selected_feeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
@@ -1154,7 +1153,7 @@ function isSelectionValidForClear(){
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
         const CASSANDRA = 10;    // Cassandra
     */
-    let allowed_engines = [0,5,8]; // array of allowed storage engines 
+    let allowed_engines = [0,2,5,8]; // array of allowed storage engines 
     for (var feedid in selected_feeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
@@ -1317,19 +1316,28 @@ $("#save-processlist").click(function (){
 // Export feature
 // ---------------------------------------------------------------------------------------------
 $(".feed-download").click(function(){
+    $("#export-average").parent().hide();
+    $("#export-average").data("enabled",0);
+    
     var ids = [];
     for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+        if (selected_feeds[feedid]==true) {
+            ids.push(parseInt(feedid));
+        }
+    }
+    
+    var selected_interval = $('#export-interval').val();
+    // Enable averaging checkbox for single feed selection, phpfina & phptimeseries
+    var engine = feeds[ids[0]].engine;
+    if (ids.length==1 && (engine==2 || engine==5)) {
+        $("#export-average").data("enabled",1);
+        if (selected_interval!="original") {
+            $("#export-average").parent().show();
+        }
     }
 
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
-
-    if ($("#export-timezone-offset").val()=="") {   
-        var timezoneoffset = user.timezoneoffset();
-        if (timezoneoffset==null) timezoneoffset = 0;
-        $("#export-timezone-offset").val(parseInt(timezoneoffset));
-    }
     
     $('#feedExportModal').modal('show');
 });
@@ -1360,8 +1368,17 @@ $('#datetimepicker2').on("changeDate", function (e) {
     $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
 });
 
+$('#export-interval').on('change', function(e) {
+    if ($("#export-average").data("enabled")) {
+        if ($(this).val()=="original") {
+            $("#export-average").parent().hide();
+        } else {
+            $("#export-average").parent().show();
+        }
+    }
+});
+
 $('#export-interval, #export-timeformat').on('change', function(e) {
-    $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
@@ -1379,9 +1396,7 @@ $("#export").click(function()
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
-    var export_timezone_offset = parseInt($("#export-timezone-offset").val());
-    var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
-    if (export_timeformat) { export_timezone_offset = 0; }
+    var export_timeformat = $("#export-timeformat").val();
 
     if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
     if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
@@ -1391,11 +1406,27 @@ $("#export").click(function()
     var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     var downloadsize = calculate_download_size(ids.length);
     
-    if (ids.length>1) {
-        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
-    } else {
-        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+    var enable_average = $("#export-average")[0].checked*1;
+    var average_str = "&average="+enable_average;
+    
+    var params = {
+        ids: ids.join(","),
+        start: export_start*1000,
+        end: export_end*1000,
+        interval: export_interval,
+        average: enable_average,
+        timeformat: export_timeformat,
+        csv: 1,
+        skipmissing: 0,
+        limitinterval: 0
     }
+    
+    var param_parts = [];
+    for (var z in params) {
+        param_parts.push(z+"="+params[z]);
+    }
+    
+    var url = path+"feed/data.json?"+param_parts.join("&");
 
     if (downloadsize>(downloadlimit*1048576)) {
         var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
