@@ -109,11 +109,12 @@ function feed_controller()
             $singular = false;
             $feedids = array();
             $results = array();
-            
-            // Handle params
-            if (isset($_GET['id'])) $feedids = explode(",", get('id'));
+            if (isset($_GET['id'])) {
+                $feedids = explode(",", get('id'));
+                $singular = true;
+            }
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
-            if (count($feedids)==1) $singular = true;
+
 
             $start = (int) get('start',true);
             $end = (int) get('end',true);
