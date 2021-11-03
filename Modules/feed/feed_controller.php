@@ -121,32 +121,24 @@ function feed_controller()
                         // if public or belongs to user
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
-                        
                             $results[$key] = array('feedid'=>$feedid);
                             
-                            // feed/data ----------------------------------------------
-                            if ($route->action=="data") {
-                                $skipmissing = 1;
-                                $limitinterval = 1;
-                                if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
-                                if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
-                                
-                                if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),0,"UTC","unix",false,$skipmissing,$limitinterval);
-                                } else if (isset($_GET['mode'])) {
-                                    if (isset($_GET['split'])) {
-                                        $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
-                                    } else {
-                                        $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('mode'),0,$user_timezone,"unix",false,0,0);
-                                    }
-                                }
-                            // feed/average --------------------------------------------   
-                            } else if ($route->action == 'average') {
-                                if (isset($_GET['mode'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('mode'),1,$user_timezone,"unix",false,0,0);
-                                } else if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),1,"UTC","unix",false,0,0);                          
-                                } 
+                            // get(index,exist_if_missing,default)
+                            $start = get('start',true);
+                            $end = get('end',true);
+                            $interval = get('interval',true);
+                            $average = get('average',false,0);
+                            if ($route->action=="average") $average = 1;
+                            $timezone = get('timezone',false,$user_timezone);
+                            $timeformat = get('timeformat',false,'unix');
+                            $csv = get('csv',false,0);
+                            $skipmissing = get('skipmissing',false,0);
+                            $limitinterval = get('limitinterval',false,0);
+                            
+                            if (!isset($_GET['split'])) {
+                                $results[$key]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+                            } else {
+                                $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,get('split'));
                             }
                         }
                     } else {

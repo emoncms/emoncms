@@ -87,19 +87,9 @@ function feed_api_obj() {
         "start" => array( "default" => 0 ),
         "end" => array( "default" => 0 ),
         "interval" => array( "default" => 60 ),
+        "average" => array( "type" => "bool", "default" => 0,  ),
         "skipmissing" => array( "type" => "bool", "default" => 0 ),
         "limitinterval" => array( "type" => "bool", "default" => 0 )
-      ),
-      "mode"=>"read"
-    ),
-    array(
-      "description" => _("Fetch averaged data from a feed"),
-      "path" => "feed/average.json",
-      "parameters" => array(
-        "id" => array( "type" => "feed" ),
-        "start" => array( "default" => 0 ),
-        "end" => array( "default" => 0 ),
-        "interval" => array( "default" => 60 )
       ),
       "mode"=>"read"
     ),
