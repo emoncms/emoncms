@@ -172,7 +172,7 @@ body{padding:0!important}
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
 
-<div id="feed-footer" class="hide">
+<div id="feed-footer">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New feed'); ?></button>
     <button id="importdata" class="btn btn-small" data-toggle="modal" data-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo _('Import data'); ?></button>
@@ -419,11 +419,9 @@ function update_feed_list() {
         $('#feed-loader').hide();
         if (data.length == 0){
             //$("#feed-header").hide();
-            $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
             //$("#feed-header").show();
-            $("#feed-footer").show();
             $("#feed-none").hide();
         }
         feeds = {};
