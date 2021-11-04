@@ -367,27 +367,14 @@ body{padding:0!important}
         <label><?php echo _('Feed Engine: '); ?></label>
         <select id="newfeed-engine" style="width:350px">
             <option value="7" selected>VIRTUAL Feed</option>
-            <option value="5">PHP Fixed Interval Time Series</option>
-            <option value="2">PHP Variable Interval Time Series</option>
-            <option value="0">MYSQL TimeSeries</option>
-            <option value="8">MYSQL Memory (RAM data lost on power off)</option>
-            <option value="10">CASSANDRA Time Series</option>
-        </select>
+            <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
+            <option value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+            <?php } ?>
+        </select>      
         <select id="newfeed-interval" class="input-mini hide">
-            <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="10" selected>10<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="60">60<?php echo dgettext('process_messages','s'); ?></option>
-            <option value="120">2<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="300">5<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="600">10<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="900">15<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="1200">20<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="1800">30<?php echo dgettext('process_messages','m'); ?></option>
-            <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
-            <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
+            <?php foreach (Engine::available_intervals() as $i) { ?>
+            <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages',$i["description"]); ?></option>
+            <?php } ?>
         </select>
     </div>
     <div class="modal-footer">
