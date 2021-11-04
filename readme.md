@@ -10,19 +10,19 @@ Emoncms is an open-source web application for processing, logging and visualisin
 ## Requirements
 
 - PHP (tested with 7.0.30) 
-- MYSQL or MariaDB (tested with 15.1) 
+- MySQL or MariaDB (tested with 15.1) 
 - Apache (tested with 2.4.25)
 - Redis* (tested with 3.2.6)
 
-_*Redis is recommended because it reduces the number of disk writes and therefore prolongs disk life (noticeably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers don't support redis hence why emoncms has a fall back mode that allows core operation without redis._
+_*Redis is recommended because it reduces the number of disk writes and therefore prolongs disk life (noticeably on SD cards e.g. Raspberry Pi). Some input-processors also require Redis and fail silently if Redis is not installed. Some environments such as shared hosting or as far as we have tried Windows servers don't support Redis hence why Emoncms has a fall back mode that allows core operation without Redis._
 
 ## Using Emoncms
 
 ### Important: Standard Emoncms and Emoncms.org
 
-There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
+There are differences between the standard version of Emoncms and the version of Emoncms running on emoncms.org. This repository contains the code for the standard version of Emoncms. This is the version installed on the OpenEnergyMonitor SD Card that comes with the emonPi and emonBase and is recommended for all self-install versions of Emoncms.
 
-The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots, the code for emoncms.org differs significantly from the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
+The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots, the code for emoncms.org differs significantly from the standard version of Emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard Emoncms for this reason.
 
 **1. From the Guide**
 
@@ -41,13 +41,13 @@ The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/e
 - **Input: Key:** A sub-identifier for items within each Node.
 - **Input process list (or input processing):** A list of processes* performed sequentially on each input value as it is received on that input.
 - **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed*.
-- **Feed:** A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and were written as part of the emoncms project.
+- **Feed:** A place where data is recorded, a time-series of datapoints. The standard time-series databases used by Emoncms are PHPFina and PHPTimeSeries and were written as part of the Emoncms project.
 
-* For a description of what each input process does in emoncms, see the helper note within the emoncms input processing configuration interface.
+* For a description of what each input process does in Emoncms, see the helper note within the Emoncms input processing configuration interface.
 
 **3. Emoncms.org API Reference**
 
-The following API references apply to emoncms.org. They differ slightly to the API available on EmonPI/EmonBase installs, the API refrence for which can be found from the inputs and feed pages when logged in locally.
+The following API references apply to emoncms.org. They differ slightly to the API available on emonPI/emonBase installs, the API refrence for which can be found from the inputs and feed pages when logged in locally.
 
 - [Input API reference](https://emoncms.org/site/api#input)
 - [Feed API reference](https://emoncms.org/site/api#feed)
@@ -64,7 +64,7 @@ Experimental (not currently up to date):
 
 * [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
 
-Other (less supported, not tested on latest versions of emoncms)
+Other (less supported, not tested on latest versions of Emoncms)
 
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md) Emoncms is developed and tested on Linux only and so additional research, steps may be required that are not covered in this guide.
@@ -103,12 +103,12 @@ There are many other available modules such as the event module and openbem (ope
 
 * [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See release change log](https://github.com/emoncms/emoncms/releases).
 
-* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supporting only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonPi/emonBase Emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of Emoncms is designed for running on SD cards. This is a cut down version of Emoncms supporting only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
 
 ## Upgrade
 
-* [Upgrading emoncms](docs/Upgrading.md)
+* [Upgrading Emoncms](docs/Upgrading.md)
 
 ## Data Backup
 
@@ -121,7 +121,7 @@ There are many other available modules such as the event module and openbem (ope
 
 ### Documentation development
 
-For developers: The following lists the locations of the files that define emoncms's inbuilt documentation for the input and feed API's and input process descriptions:
+For developers: The following lists the locations of the files that define Emoncms's inbuilt documentation for the input and feed API's and input process descriptions:
 
 * The input API helper page [emoncms/Modules/input/Views/input_api.php](https://github.com/emoncms/emoncms/blob/master/Modules/input/Views/input_api.php)
 * The feed API helper page [emoncms/Modules/feed/Views/feedapi_view.php](https://github.com/emoncms/emoncms/blob/master/Modules/feed/Views/feedapi_view.php)
@@ -129,7 +129,7 @@ For developers: The following lists the locations of the files that define emonc
 
 ## Tools
 
-* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backups and archived data.
+* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full Emoncms installation. Useful for checking backups and archived data.
 
 #### Design
 
