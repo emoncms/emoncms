@@ -437,16 +437,6 @@ class PHPTimeSeries implements engine_methods
             return $data;
         }
     }
-    
-    public function csv_export($id,$start,$end,$interval,$timezone) {
-        if ($timezone==false) {
-            $timeformat = "unix";
-            $timezone = "UTC";
-        } else {
-            $timeformat = "excel";    
-        }
-        $this->get_data_combined($id,$start*1000,$end*1000,$interval,0,$timezone,$timeformat,true,0,0);
-    }
 
     public function export($id,$start)
     {

@@ -536,18 +536,22 @@ class MysqlTimeSeries implements engine_methods
      */
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        if (in_array($interval,array("daily","weekly","monthly","annual"))) {
-            if (!$average) {
-                return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
+        if (!$csv) {
+            if (in_array($interval,array("daily","weekly","monthly","annual"))) {
+                if (!$average) {
+                    return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
+                } else {
+                    return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+                }
             } else {
-                return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+                if (!$average) {
+                    return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
+                } else {
+                    return $this->get_average($feedid, $start, $end, $interval);
+                }
             }
         } else {
-            if (!$average) {
-                return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
-            } else {
-                return $this->get_average($feedid, $start, $end, $interval);
-            }
+            return $this->csv_export($feedid, $start*0.001, $end*0.001, $interval, $timezone);
         }
     }
 

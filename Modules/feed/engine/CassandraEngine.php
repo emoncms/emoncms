@@ -210,17 +210,6 @@ class CassandraEngine implements engine_methods
         // TODO implement
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-    		$feedid = (int) $feedid;
-    		$start = (int) $start;
-    		$end = (int) $end;
-    		$outinterval = (int) $outinterval;
-    		
-        $this->log->info("csv_export($feedid,$start,$end,$outinterval)");  // add: $usertimezone
-        // TODO implement
-    }
-
     public function trim($feedid,$start_time){
         return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
     }

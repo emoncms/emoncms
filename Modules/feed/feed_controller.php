@@ -94,15 +94,10 @@ function feed_controller()
                 } else { $result[$i] = false; } // false means feed not found
             }
             return $result;
-        } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
-            // Export multiple feeds on the same csv
-            // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
-            return $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
-        
         // ----------------------------------------------------------------------------
         // Multi feed actions
         // ----------------------------------------------------------------------------
-        } else if (in_array($route->action,array("data","average"))) {
+        } else if (in_array($route->action,array("data","average","csvexport"))) {
             // get data for a list of existing feeds
             $result = array('success'=>false, 'message'=>'bad parameters');
             // return $_REQUEST;
@@ -114,7 +109,6 @@ function feed_controller()
                 $singular = true;
             }
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
-
 
             $start = get('start',true);
             $end = get('end',true);
@@ -129,7 +123,14 @@ function feed_controller()
             
             // Backwards compatibility
             if ($route->action=="average") $average = 1;
+            if ($route->action=="csvexport") $csv = 1;
             if (isset($_GET['mode'])) $interval = $_GET['mode'];
+            
+            $multi_csv = false;
+            if ($csv && count($feedids)>1) {
+                $csv = false;
+                $multi_csv = true;
+            }
             
             if (!empty($feedids)) {
                 $missing = array();
@@ -161,8 +162,12 @@ function feed_controller()
                     if ($singular && count($results)==1) {
                         return $results[0]['data'];
                     } else {
-                        return $results;
-                    } 
+                        if ($multi_csv) {
+                            return $feed->csv_export_multi($feedids,$results,$timezone,$timeformat);
+                        } else {
+                            return $results;
+                        }
+                    }
                     // @todo: return array for each feed's data 
                     // and a single array for each interval timestamp
                 }
@@ -188,7 +193,6 @@ function feed_controller()
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
                     else if ($route->action == "setstartdate") return $feed->set_start_date($feedid,get('startdate'));
-                    else if ($route->action == "csvexport") return $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
                         elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));

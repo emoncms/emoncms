@@ -157,11 +157,6 @@ class RedisBuffer implements engine_methods
         return false; // Not supported
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-        return false; // Not supported
-    }
-
 // #### /\ Above are required methods
 
 

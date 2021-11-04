@@ -148,11 +148,6 @@ class TemplateEngine implements engine_methods
 
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-
-    }
-
 // #### /\ Above are required methods
 
 

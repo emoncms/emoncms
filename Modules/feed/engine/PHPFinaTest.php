@@ -67,23 +67,7 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
 		
         $this->assertTrue(!empty($data) && empty($data['success']), 'no blank result or success == false');
     }
-
-    public function testCsv_export() {
-        // $this->engine->csv_export($this->feedid,$this->start,$this->end,$this->outinterval,$this->usertimezone);
-        $urlToControllerThatGeneratesCsvDownload = $this->baseUrl.'/feed/csvexport';
-        $params = array(
-            'id'=>$this->feedid,
-            'start'=>$this->start,
-            'end'=>$this->end,
-            'interval'=>$this->outinterval,
-            'average'=>$this->average,
-            'timeformat'=>$this->usertimezone
-        );
-        $urlToControllerThatGeneratesCsvDownload.=('?'.http_build_query($params));
-        $response = $this->call('GET', $urlToControllerThatGeneratesCsvDownload);
-        $this->assertTrue(strpos($response->content(), 'csv') !== false);
-	}
-
+    
     public function testGet_data_DMY_time_of_day() {
 		$this->engine->get_data_DMY_time_of_day($this->feedid,$this->start,$this->end,$mode,$timezone,$split);
 		$this->assertTrue(false);

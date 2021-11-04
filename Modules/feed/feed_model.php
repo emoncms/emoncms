@@ -454,7 +454,6 @@ class Feed
     get_timevalue   : feed last updated time and value
     get_value       : feed last updated value
     get_data        : feed data by time range
-    csv_export      : feed data by time range in csv format
     */
     public function get($id)
     {
@@ -580,12 +579,14 @@ class Feed
         // if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
 
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        if (!in_array($timeformat,array("unix","excel","iso8601"))) return array('success'=>false, 'message'=>'Invalid time format');
+          
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_data_combined
         $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
 
-        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"]) && !$average && is_numeric($interval)) {
+        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"]) && !$average && is_numeric($interval) && $csv==false) {
             // Add redisbuffer cache if available
             if ($data && $skipmissing) {
                 $bufferstart=end($data)[0];
@@ -643,131 +644,28 @@ class Feed
         return $data;
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
+    public function csv_export_multi($feedids,$data,$timezone,$timeformat)
     {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-
-        // Download limit
-        $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->settings['csv_downloadlimit_mb']*1048576)) {
-            $this->log->warn("csv_export() CSV download limit exeeded downloadsize=$downloadsize feedid=$feedid");
-            return array('success'=>false, 'message'=>"CSV download limit exeeded downloadsize=$downloadsize");
-        }
-
-        if ($datetimeformat == 1) {
-            global $user,$session;
-            $usertimezone = $user->get_timezone($session['userid']);
-        } else {
-            $usertimezone = false;
-        }
-        // Call to engine csv_export method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval,$usertimezone);
-    }
-
-    // Prepare export multi data
-    public function csv_export_multi_prepare($feedids,$start,$end,$outinterval)
-    {
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        $exportdata = array();
-        for ($i=0; $i<count($feedids); $i++) {
-            $feedid = (int) $feedids[$i];
-            $feedname = $this->get_field($feedid,'name');
-            if (isset($feedname['success']) && !$feedname['success']) return $feedname;
-            $feeddata = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,"UTC","unix",false,0,0);
-            if (isset($feeddata['success']) && !$feeddata['success']) return $feeddata;
-
-            if (isset($exportdata['Timestamp'])) {
-               $exportdata['Timestamp'] = $exportdata['Timestamp'] + array($feedid => $feedname);
-            } else {
-               $exportdata['Timestamp'] = array($feedid => $feedname);
-            }
-            for ($d=0;$d<count($feeddata); $d++) {
-                if (isset($feeddata[$d]['0'])) {
-                    $time = (int)($feeddata[$d]['0']/1000);
-                    $value = $feeddata[$d]['1'];
-                    if (isset($exportdata[$time])) {
-                       $exportdata[$time] = $exportdata[$time] + array($feedid => $value);
-                    } else {
-                        $exportdata[$time] = array($feedid => $value);
-                    }
-                }
-            }
-            $feeddata = null; // free memory
-        }
-        ksort($exportdata); // Sort timestamps
-        return $exportdata;
-    }
-    
-    // Generate export multi file
-    public function csv_export_multi($feedids,$start,$end,$outinterval,$datetimeformat,$name)
-    {
-        // Ensure all feedids given are integers
-        $feedids = (array) (explode(",",$feedids));
-        for ($i=0; $i<count($feedids); $i++) {
-            $feedid = (int) $feedids[$i];
-            $feedids[$i] = $feedid;
-        }
-        // Basic name input sanitisation
-        $name = preg_replace('/[^\w\s\-]/','',$name);
-        
-        $exportdata = $this->csv_export_multi_prepare($feedids,$start,$end,$outinterval);
-        if (isset($exportdata['success']) && !$exportdata['success']) return $exportdata;
-
-        if ($datetimeformat == 1) {
-            global $user,$session;
-            $usertimezone = $user->get_timezone($session['userid']);
-        } else {
-            $usertimezone = false;
-        }
         require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-
-        $start = DateTime::createFromFormat("U", $start);
-        if ($usertimezone) $start->setTimezone(new DateTimeZone($usertimezone));
-        $startText= $start->format("YmdHis");
-        $end = DateTime::createFromFormat("U", $end);
-        if ($usertimezone) $end->setTimezone(new DateTimeZone($usertimezone));
-        $endText= $end->format("YmdHis");
-        if ($name != "") {
-            $filename = $startText."_".$endText."_".$name.".csv";
-        } else {
-            $filename = $startText."_".$endText."_".implode("_",$feedids).".csv";
-        }
-
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename={$filename}");
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $fh = @fopen( 'php://output', 'w' );
-
-        $firstline=true;
-        foreach ($exportdata as $time => $data) {
-            $dataline = array();
-            foreach ($exportdata['Timestamp'] as $feedid => $name) {
-                if ($firstline) {
-                    $dataline[$feedid] = $data[$feedid];
-                } else if (isset($data[$feedid])) {
-                    $dataline[$feedid] = number_format((float)$data[$feedid],$this->settings['csv_decimal_places'],$this->settings['csv_decimal_place_separator'],'');
-                } else {
-                    $dataline[$feedid] = "";
+        $helperclass = new SharedHelper($this->settings);
+        $helperclass->set_time_format($timezone,$timeformat);
+        $helperclass->csv_header(implode("-",$feedids));
+        $keys = [];
+        foreach ($data as $key=>$f) $keys[] = $key;
+        if ($num_of_feeds = count($keys)) {
+            $k = $keys[0];
+            for ($i=0; $i<count($data[$k]['data']); $i++) {
+                // Time is index 0
+                $values = array($data[$k]['data'][$i][0]*0.001);
+                foreach ($keys as $key) {
+                    // Values index 1 upwards
+                    $values[] = $data[$key]['data'][$i][1];
                 }
+                $helperclass->csv_write_multi($values);
             }
-            if (!$firstline) {
-                $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
-            }
-            fputcsv($fh, array($time)+$dataline,$this->settings['csv_field_separator']);
-            $firstline = false;
         }
-        fclose($fh);
+        
+        $helperclass->csv_close();
         exit;
     }
 
