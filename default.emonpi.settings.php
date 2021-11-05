@@ -43,12 +43,6 @@
             Engine::CASSANDRA        // 10 Apache Cassandra disabled by default for emonpi, enable if you wish to use
         ),
 
-        // Redis Low-write mode
-        'redisbuffer'=>array(
-            'enabled' => true      // If enabled is true, requires redis enabled and feedwriter service running
-            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk - user selectable option
-        ),
-
         'csvdownloadlimit_mb' => 25,     // Max csv download size in MB
 
         // Engines working folder. Default is /var/lib/phpfina,phptimeseries
