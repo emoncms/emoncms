@@ -53,8 +53,8 @@ $settings = array(
         'enabled' => false,
         'sleep' => 60
     ),
-    'phpfina'       => array('datadir'  => '/var/opt/emoncms/phpfina/'),
-    'phptimeseries' => array('datadir'  => '/var/opt/emoncms/phptimeseries/')
+    'phpfina'       => array('datadir'  => '/var/opt/emoncms/phpfina/', 'buffer' => 300),
+    'phptimeseries' => array('datadir'  => '/var/opt/emoncms/phptimeseries/', 'buffer' => 300)
 ),
 
 // Enable the graph module if you have it installed

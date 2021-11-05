@@ -72,20 +72,12 @@ $_settings = array(
     //,Engine::PHPFINA      // 5
     ,Engine::CASSANDRA    // 10 Apache Cassandra
     ),
-
-    // Redis Low-write mode
-    'redisbuffer'   => array(
-        // If enabled is true, requires redis enabled and feedwriter service running
-        'enabled' => false,
-        // Number of seconds to wait before write buffer to disk - user selectable option
-        'sleep' => 60
-    ),
     
     // Engines working folder. Default is /var/lib/phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
-    'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
-    'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
+    'phpfina'       => array('datadir'  => '/var/lib/phpfina/', 'buffer' => 300),
+    'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/', 'buffer' => 300),
     'cassandra'     => array('keyspace' => 'emoncms'),
     // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     'virtualfeed'   => array('data_sampling' => false),
