@@ -6,17 +6,27 @@ class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     public $log;
+    private $redis = false;
+    private $buffer_enabled = false;
+    private $buffer_period = 300;  // 5 minutes
     
-    private $writebuffer = array();
-
     /**
      * Constructor.
      *
      * @api
     */
-    public function __construct($settings)
+    public function __construct($settings,$redis)
     {
+        $this->redis = $redis;
+        if ($this->redis) $this->buffer_enabled = true;
+        
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        if (isset($settings['buffer'])) $this->buffer_period = (int) $settings['buffer'];
+        if ($this->buffer_period<=0) {
+            $this->buffer_period = 0;
+            $this->buffer_enabled = false;
+        }
+        
         $this->log = new EmonLogger(__FILE__);
     }
     
@@ -42,11 +52,15 @@ class PHPTimeSeries implements engine_methods
     public function delete($id)
     {
         $id = (int) $id;
+        if ($this->buffer_enabled) $this->buffer_clear($id);
+        
         unlink($this->dir."feed_$id.MYD");
     }
     
     public function trim($id,$start_time) {
         $id = (int) $id; 
+        // Save local buffer before trim
+        if ($this->buffer_enabled) $this->buffer_save($id);
         if (!$npoints = $this->get_npoints($id)) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
         
         if (!$fh = $this->open($id,'rb')) {
@@ -76,6 +90,7 @@ class PHPTimeSeries implements engine_methods
     public function clear($id){
     
         $id = (int) $id;
+        if ($this->buffer_enabled) $this->buffer_clear($id);
         
         if (!$fh = $this->open($id,"r+")) return false;
         ftruncate($fh, 0);
@@ -117,8 +132,6 @@ class PHPTimeSeries implements engine_methods
                 $meta->interval = ($meta->end_time - $meta->start_time) / ($npoints-1);
             }
         }
-        
-        $meta->npoints = $npoints;
         fclose($fh);
         return $meta;
     }
@@ -153,7 +166,16 @@ class PHPTimeSeries implements engine_methods
         $id = (int) $id;
         $time = (int) $time;
         $value = (float) $value;
-                
+        
+        if ($this->buffer_enabled) {
+            return $this->post_buffer($id,$time,$value);
+        } else {
+            return $this->post_direct($id,$time,$value);  
+        }
+    }
+
+    private function post_direct($id,$time,$value)
+    {
         if (!$fh = $this->open($id,'c+')) return false;
         
         // Check if datapoint is in the past 
@@ -186,17 +208,43 @@ class PHPTimeSeries implements engine_methods
         fclose($fh);
         return $value;
     }
+    
+    private function post_buffer($id,$time,$value)
+    { 
 
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $id The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($id,$time,$value)
-    {
-      return $this->post($id,$time,$value);
+        $npoints = $this->get_npoints($id);
+        $buffer_start_time = $this->buffer_get_start_time($id);
+        $buffer_end_time = false;
+        // Update datapoint if in the buffer 
+        if ($buffer_start_time && $time>=$buffer_start_time) {
+            $buffer_end_time = $this->buffer_get_end_time($id);
+            if ($time<=$buffer_end_time) {
+                // Replace with updated value
+                $this->buffer_update($id,$time,$value);
+                return $value;
+            }
+        } else if ($npoints) {
+            // Update datapoint if in the persisted file
+            if (!$fh = $this->open($id,'c+')) return false;
+            $dp = $this->binarysearch($fh,$time,$npoints,true);
+            if ($dp!=-1) {
+                if ($dp[2]!=$value) {
+                    // update existing datapoint
+                    fseek($fh, $dp[0]*9);
+                    fwrite($fh,pack("CIf",249,$time,$value));
+                }
+                fclose($fh);
+                return $value;
+            }
+        }
+        $this->buffer_add($id,$time,$value);
+        
+        // Auto save after set period
+        if (($buffer_end_time-$buffer_start_time)>=$this->buffer_period) {
+             $this->buffer_save($id);
+        }
+        
+        return $value;
     }
 
     /**
@@ -207,6 +255,10 @@ class PHPTimeSeries implements engine_methods
     public function lastvalue($id)
     {
         $id = (int) $id;
+        
+        if ($this->buffer_enabled) {
+            if ($dp = $this->buffer_last_value($id)) return $dp;
+        }
 
         if (!$npoints = $this->get_npoints($id)) return false;
         if (!$fh = $this->open($id,'rb')) return false;
@@ -227,6 +279,17 @@ class PHPTimeSeries implements engine_methods
     {
         $id = (int) $id;
         $time = (int) $time;
+
+        if ($this->buffer_enabled) {
+            $buffer_start_time = $this->buffer_get_start_time($id);
+            if ($buffer_start_time!==false && $time>=$buffer_start_time) {
+                if ($value = $this->buffer_get_value($id,$time,"+inf")) {
+                    return $value;
+                } else {
+                    return null;
+                }
+            }
+        }
 
         // Fetch value from file
         if (!$fh = $this->open($id,'rb')) return false;   
@@ -327,6 +390,8 @@ class PHPTimeSeries implements engine_methods
             }
         }
         
+        $buffer_start_time = $this->buffer_get_start_time($id);
+        
         if ($interval!="original") {
             while($time<=$end)
             {               
@@ -343,58 +408,82 @@ class PHPTimeSeries implements engine_methods
                 $value = null;
                 
                 if (!$average) {
-                    // returns nearest datapoint that is >= search time
-                    $result = $this->binarysearch($fh,$time,$npoints);
-                    if ($result!=-1) {
-                        // check that datapoint is within interval
-                        if ($result[1]<$div_end) {
-                            $value = $result[2];
+                    if ($buffer_start_time!==false && $time>=$buffer_start_time) {
+                        // Find closest value to $time within this interval
+                        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,($div_end-1), array('limit' => array(0,1)));
+                        if (count($dp)>0) {
+                            $f = explode("|",$dp[0]);    
+                            $value = (float) $f[1];
+                        }
+                    } else {
+                        // returns nearest datapoint that is >= search time
+                        $result = $this->binarysearch($fh,$time,$npoints);
+                        if ($result!=-1) {
+                            // check that datapoint is within interval
+                            if ($result[1]<$div_end) {
+                                $value = $result[2];
+                            }
                         }
                     }
                 } else {
                     $sum = 0;
                     $n = 0;
 
-                    $next_start_dp = $this->binarysearch($fh,$div_end,$npoints);
+                    if ($buffer_start_time===false || $div_start<$buffer_start_time) {
                     
-                
-                    // if end_dp is -1 it means we have a search time that
-                    // is greater than the last datapoint in the series
-                    // if this is the case we read up to the last datapoint
-                    if ($next_start_dp==-1) {
-                        $next_start_dp = array($npoints);
-                    } else if ($next_start_dp[1]>$div_end) {
-                        // withing valid data range end_dp should always be
-                        // greater or equall to end. If it is greater then 
-                        // we need to limit the range to the previous datapoint
-                        $next_start_dp[0] -= 1;
-                        // if end_dp is now less than 0 it means the end search
-                        // time is before the start of our timeseries
-                        if ($next_start_dp[0]<0) {
-                            // return null;
-                            $next_start_dp[0] = 0;
-                        }       
-                    }      
+                        $next_start_dp = $this->binarysearch($fh,$div_end,$npoints);
+                        
                     
-                    $len = $next_start_dp[0]-$start_dp[0];
-                    if ($len) {
-                        fseek($fh,$start_dp[0]*9);
-                        $s = fread($fh,$len*9);
-                        $s2 = "";
-                        for ($x=0; $x<$len; $x++) {
-                            $s2 .= substr($s,($x*9)+5,4);
-                        }
-                        $tmp = unpack("f*",$s2);
-                        for ($x=0; $x<count($tmp); $x++) {
-                            if (!is_nan($tmp[$x+1])) {
-                                // print $tmp[$x+1]."\n";
-                                $sum += $tmp[$x+1];
-                                $n++;
+                        // if end_dp is -1 it means we have a search time that
+                        // is greater than the last datapoint in the series
+                        // if this is the case we read up to the last datapoint
+                        if ($next_start_dp==-1) {
+                            $next_start_dp = array($npoints);
+                        } else if ($next_start_dp[1]>$div_end) {
+                            // withing valid data range end_dp should always be
+                            // greater or equall to end. If it is greater then 
+                            // we need to limit the range to the previous datapoint
+                            $next_start_dp[0] -= 1;
+                            // if end_dp is now less than 0 it means the end search
+                            // time is before the start of our timeseries
+                            if ($next_start_dp[0]<0) {
+                                // return null;
+                                $next_start_dp[0] = 0;
+                            }       
+                        }      
+                        
+                        $len = $next_start_dp[0]-$start_dp[0];
+                        if ($len) {
+                            fseek($fh,$start_dp[0]*9);
+                            $s = fread($fh,$len*9);
+                            $s2 = "";
+                            for ($x=0; $x<$len; $x++) {
+                                $s2 .= substr($s,($x*9)+5,4);
+                            }
+                            $tmp = unpack("f*",$s2);
+                            for ($x=0; $x<count($tmp); $x++) {
+                                if (!is_nan($tmp[$x+1])) {
+                                    // print $tmp[$x+1]."\n";
+                                    $sum += $tmp[$x+1];
+                                    $n++;
+                                }
                             }
                         }
+                        
+                        $start_dp[0] = $next_start_dp[0];    
                     }
                     
-                    $start_dp[0] = $next_start_dp[0];
+                    if ($buffer_start_time!==false && $div_end>=$buffer_start_time) {
+
+                        $dps = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$time,$div_end-1);
+                        foreach ($dps as $i=>$v) {
+                            // print $v." B\n";
+                            $f = explode("|",$v);    
+                            $value = (float) $f[1];
+                            $sum += $value;
+                            $n ++;
+                        }
+                    } 
                     
                     if ($n>0) $value = $sum / $n;
                 
@@ -484,73 +573,6 @@ class PHPTimeSeries implements engine_methods
         exit;
     }
 
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($id,$timestamp,$value,$arg=null)
-    {
-        $id = (int) $id;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-
-        $filename = "feed_$id.MYD";
-        $npoints = $this->get_npoints($id);
-
-        if (!isset($this->writebuffer[$id])) {
-            $this->writebuffer[$id] = "";
-        }
-
-        // If there is data then read last value
-        if ($npoints>=1) {
-            static $lastvalue_static_cache = array(); // Array to hold the cache
-            if (!isset($lastvalue_static_cache[$id])) { // Not set, cache it from file data
-                $lastvalue_static_cache[$id] = $this->lastvalue($id);
-            }           
-            if ($timestamp<=$lastvalue_static_cache[$id]['time']) {
-                // if data is in past, its not supported, could call update here to fix on file before continuing
-                // but really this should not happen for past data has process_feed_buffer uses update for that.
-                $this->log->warn("post_bulk_prepare() data in past, nothing saved.  feedid=$id timestamp=$timestamp last=".$lastvalue_static_cache[$id]['time']." value=$value");
-                return $value;
-            }
-        }
-
-        $this->writebuffer[$id] .= pack("CIf",249,$timestamp,$value);
-        $lastvalue_static_cache[$id] = array('time'=>$timestamp,'value'=>$value); // Set static cache last value
-        return $value;
-    }
-
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
-    public function post_bulk_save()
-    {
-        $byteswritten = 0;
-        foreach ($this->writebuffer as $id=>$data)
-        {
-            $filename = $this->dir."feed_$id.MYD";
-            // Auto-correction if something happens to the datafile, it gets partitally written to
-            // this will correct the file size to always be an integer number of 4 bytes.
-            clearstatcache($filename);
-            if (@filesize($filename)%9 != 0) {
-                $npoints = floor(filesize($filename)/9.0);
-                $fh = fopen($filename,"c");
-                fseek($fh,$npoints*9.0);
-                fwrite($fh,$data);
-                fclose($fh);
-                print "PHPTIMESERIES: FIXED DATAFILE WITH INCORRECT LENGHT\n";
-                $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                fwrite($fh,$data);
-                fclose($fh);
-            }
-            
-            $byteswritten += strlen($data);
-        }
-        $this->writebuffer = array(); // Clear writebuffer
-
-        return $byteswritten;
-    }
-
     // returns nearest datapoint that is >= search time
     private function binarysearch($fh,$time,$npoints,$exact=false)
     {
@@ -636,6 +658,94 @@ class PHPTimeSeries implements engine_methods
             fclose($fh);
         }
         
+        if ($this->buffer_enabled) {
+            $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
+            foreach ($data as $value=>$time) {
+                $f = explode("|",$value);    
+                $value = (float) $f[1];
+                print $n." ".$time." ".$value." B\n";
+                $sum += $value;
+                $n++;
+            }
+        }
+        
         if ($n>0) print "average: ".($sum/$n)."\n";
+    }
+    
+    /**
+     * Buffer methods
+     *
+     */
+    
+    private function buffer_add($id,$time,$value) {
+        $this->redis->zAdd("phptimeseries:buffer:$id",(int)$time,dechex((int)$time)."|".$value);
+    }
+    
+    private function buffer_clear($id) {
+        $this->redis->del("phptimeseries:buffer:$id");
+    }
+    
+    private function buffer_get_start_time($id) {
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",0,0,true);
+        if (count($dp)) {
+            return $dp[key($dp)];
+        }
+        return false;
+    }
+
+    private function buffer_get_end_time($id) {
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",-1,-1,true);
+        if (count($dp)) {
+            return $dp[key($dp)];
+        }
+        return false;
+    }
+    
+    private function buffer_last_value($id) {
+        $dp = $this->redis->zRange("phptimeseries:buffer:$id",-1,-1, array('withscores' => true));
+        if (!count($dp)) return false;
+        
+        $key = key($dp);
+        $time = $dp[$key];
+        $f = explode("|",$key);    
+        $value = (float) $f[1];
+        return array('time'=>$time, 'value'=>$value);
+    }
+    
+    private function buffer_get_value($id,$start,$end) {
+        // Fetch value from buffer
+        $dp = $this->redis->zRangeByScore("phptimeseries:buffer:$id",$start,$end, array('limit' => array(0,1)));
+        if (count($dp)>0) {
+            $f = explode("|",$dp[0]);    
+            return (float) $f[1];
+        }
+        return false;
+    }
+    
+    private function buffer_update($id,$time,$value) {
+        if ($this->redis->zRemRangeByScore("phptimeseries:buffer:$id",$time,$time)) {
+            $this->redis->zAdd("phptimeseries:buffer:$id",(int)$time,dechex((int)$time)."|".$value);
+        }
+    }
+    
+    public function buffer_save($id) {
+    
+        $data = $this->redis->zRange("phptimeseries:buffer:$id",0,-1,true);
+        if (count($data)) {
+            $npoints = $this->get_npoints($id);
+
+            $buffer = "";
+            foreach ($data as $value=>$time) {
+                $f = explode("|",$value);    
+                $value = (float) $f[1];
+                $buffer .= pack("CIf",249,$time,$value);    
+            }
+            
+            if (!$fh = $this->open($id,'c+')) return false;
+            fseek($fh, $npoints*9);
+            fwrite($fh,$buffer);
+            fclose($fh);  
+        }
+        $this->redis->zremrangebyrank("phptimeseries:buffer:$id",0,-1);
     }
 }
