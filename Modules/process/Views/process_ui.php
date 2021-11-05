@@ -127,29 +127,15 @@
                                 <span class="add-on feed-engine-label"><?php echo dgettext('process_messages','Engine'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
-                                        <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
-                                        <option value="5">PHPFINA Fixed Interval No Averaging</option>
-                                        <option value="2">PHPTIMESERIES Variable Interval No Averaging</option>
-                                        <option value="0">MYSQL TimeSeries</option>
-                                        <option value="8">MYSQL Memory (RAM data lost on power off)</option>
-                                        <option value="10">CASSANDRA TimeSeries</option>
+                                        <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
+                                        <option value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+                                        <?php } ?>
                                     </select>
                                     <select id="feed-interval" class="input-mini">
-                                        <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>
-                                        <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="10">10<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="60">60<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value="120">2<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="300">5<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="600">10<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="900">15<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="1200">20<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="1800">30<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
-                                        <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
+                                        <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>                    
+                                        <?php foreach (Engine::available_intervals() as $i) { ?>
+                                        <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages',$i["description"]); ?></option>
+                                        <?php } ?>
                                     </select>
                                     <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
                                     <input id="feed-table" type="text" pattern="[a-zA-Z0-9_]+" style="width:6em" title="<?php echo dgettext('process_messages','Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages','Table'); ?>" />
