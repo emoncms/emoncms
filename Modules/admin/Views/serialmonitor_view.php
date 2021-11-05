@@ -195,7 +195,7 @@ $("#cmd").on('keyup', function (e) {
 });
 
 function send_cmd(cmd) {
-    $("#log").html("");
+    // $("#log").html("");
     $.ajax({ 
         type: 'POST',
         url: path+"admin/serialmonitor/cmd",
@@ -205,9 +205,9 @@ function send_cmd(cmd) {
         success: function(result) {
             if (result.reauth == true) { window.location = "/"; }
             if (result.success == false)  { 
-                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+                // $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
             } else {
-                $("#log").append(htmlEntities(result.message) + "\n");
+                // $("#log").append(htmlEntities(result.message) + "\n");
             }
         } 
     });
