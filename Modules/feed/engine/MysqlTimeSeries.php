@@ -730,48 +730,6 @@ class MysqlTimeSeries implements engine_methods
 
 // #### /\ Above are required methods
 
-
-// #### \/ Below are buffer write methods
-
-    // Insert data in post buffer
-    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
-    {
-        $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
-        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $arg");
-    }
-
-    // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point
-    public function post_bulk_save()
-    {
-        $stepcnt = 1048576/30; // Data points to save in each insert command limit is max_allowed_packet = 1Mb default ~20-30bytes are used for each data point
-        foreach ($this->writebuffer as $feedid=>$data) {
-            $table = $this->get_table_name($feedid);
-            $cnt = count($data);
-            if ($cnt > 0) {
-                $p = 0; // point
-                while ($p < $cnt) {
-                    $sql_values="";
-                    $s=0; // data point step
-                    while ($s < $stepcnt) {
-                        if (isset($data[$p][0]) && isset($data[$p][1])) {
-                            $sql_values .= "(".$data[$p][0].",".$data[$p][1]."),";
-                        }
-                        $s++;
-                        $p++;
-                        if ($p >= $cnt) break;
-                    }
-                    if ($sql_values!="") {
-                        $this->log->info("post_bulk_save() " . "INSERT INTO $table (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
-                        $this->mysqli->query("INSERT INTO $table (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
-                    }
-                }
-            }
-        }
-        $this->writebuffer = array(); // clear buffer
-    }
-
-
-
 // #### \/ Below engine specific public methods
 
     public function delete_data_point($feedid,$time)
