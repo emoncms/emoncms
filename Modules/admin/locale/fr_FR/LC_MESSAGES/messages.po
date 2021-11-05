@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-14 07:27+0200\n"
-"PO-Revision-Date: 2021-07-14 07:30+0200\n"
+"POT-Creation-Date: 2021-11-01 21:48+0100\n"
+"PO-Revision-Date: 2021-11-01 21:51+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -17,80 +17,461 @@ msgstr ""
 "X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../admin_controller.php:20
-msgid "406: Route not found"
-msgstr "406 : route not found"
-
-#: ../../../admin_controller.php:24
-msgid "Admin re-authentication required"
-msgstr "Réauthentification admin requise"
-
-#: ../../../admin_controller.php:618
-msgid "Not Admin"
-msgstr "Pas Admin"
-
-#: ../../../admin_controller.php:619 ../../../admin_controller.php:624
-msgid "Admin Authentication Required"
-msgstr "Authentification admin requise"
-
-#: ../../../admin_controller.php:625
-msgid "Session timed out or user not Admin"
-msgstr "Session expirée ou utilisateur non admin"
-
-#: ../../../admin_controller.php:627
-msgid "Re-authenticate to see this page"
-msgstr "Réauthentification pour voir cette page"
-
-#: ../../../admin_main_view.php:12
+#: ../../../Views/admin_main_view.php:11
 msgid "Shutdown"
 msgstr "Éteindre"
 
-#: ../../../admin_main_view.php:18
+#: ../../../Views/admin_main_view.php:17
 msgid "Reboot"
 msgstr "Redémarrer"
 
-#: ../../../admin_main_view.php:75
-msgid "Administration"
-msgstr "Administration"
+#: ../../../Views/admin_main_view.php:72
+msgid "System Information"
+msgstr "Informations système"
 
-#: ../../../admin_main_view.php:86
-msgid "Updates"
-msgstr "Mises à jour"
+#: ../../../Views/admin_main_view.php:75
+msgid "**Recommended** when pasting into forum"
+msgstr "**Recommandé** lorsque collé dans un forum"
 
-#: ../../../admin_main_view.php:87 ../../../admin_main_view.php:90
-#: ../../../admin_main_view.php:105
-msgid "OS, Packages, EmonHub, Emoncms & Firmware (If new version)"
-msgstr "OS, Paquets, EmonHub, Emoncms & Firmware (Si nouvelle version)"
+#: ../../../Views/admin_main_view.php:75
+msgid "Server info copied to clipboard as Markdown [text/markdown]"
+msgstr ""
+"Infos serveur copiées dans le presse-papiers en Markdown [text/markdown]"
 
-#: ../../../admin_main_view.php:90 ../../../admin_main_view.php:105
-msgid "Update All"
-msgstr "Tout mettre à jour"
+#: ../../../Views/admin_main_view.php:75
+msgid "Copy as Markdown"
+msgstr "Copier en Markdown"
 
-#: ../../../admin_main_view.php:91
+#: ../../../Views/admin_main_view.php:76
+msgid "Formatted as plain text"
+msgstr "Formaté en texte brut"
+
+#: ../../../Views/admin_main_view.php:76
+msgid "Server info copied to clipboard as Text [text/plain]"
+msgstr "Infos serveur copiées dans le presse-papiers en Texte [text/plain]"
+
+#: ../../../Views/admin_main_view.php:76
+msgid "Copy as Text"
+msgstr "Copier en Texte"
+
+#: ../../../Views/admin_main_view.php:81
+msgid "Services"
+msgstr "Services"
+
+#: ../../../Views/admin_main_view.php:104
+msgid "Emoncms"
+msgstr "Emoncms"
+
+#: ../../../Views/admin_main_view.php:106
+#: ../../../Views/admin_main_view.php:176
+#: ../../../Views/admin_main_view.php:193
+#: ../../../Views/admin_main_view.php:208
+#: ../../../Views/admin_main_view.php:215 ../../../Views/components_view.php:23
+msgid "Version"
+msgstr "Version"
+
+#: ../../../Views/admin_main_view.php:109
+msgid "URL"
+msgstr "URL"
+
+#: ../../../Views/admin_main_view.php:110 ../../../Views/components_view.php:26
+msgid "Branch"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:111 ../../../Views/components_view.php:24
+msgid "Describe"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:115
+msgid "Git"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:116 ../../../Views/components_view.php:4
+#: ../../../admin_menu.php:25
+msgid "Components"
+msgstr "Composants"
+
+#: ../../../Views/admin_main_view.php:119
+#: ../../../Views/admin_main_view.php:171
+msgid "Server"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:121
+msgid "Machine"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:122
+msgid "CPU"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:123
+msgid "OS"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:124
+#: ../../../Views/admin_main_view.php:177
+#: ../../../Views/admin_main_view.php:194
+#: ../../../Views/admin_main_view.php:209
+msgid "Host"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:125
+#: ../../../Views/admin_main_view.php:178
+msgid "Date"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:126
+#: ../../../Views/admin_main_view.php:201
+msgid "Uptime"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:129
+msgid "Memory"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:132
+msgid "RAM"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:132
+#: ../../../Views/admin_main_view.php:138
+#: ../../../Views/admin_main_view.php:156
+#, php-format
+msgid "Used: %s%%"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:138
+msgid "Swap"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:147
+msgid "Disk"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:151
+msgid "Reset Disk Stats"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:169
+#: ../../../Views/admin_main_view.php:236
+msgid "HTTP"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:174
+msgid "MySQL"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:179
+msgid "Stats"
+msgstr "Stats"
+
+#: ../../../Views/admin_main_view.php:183
+msgid "Redis"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:186
+msgid "Redis Server"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:188
+msgid "Python Redis"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:191
+msgid "PHP Redis"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:196
+msgid "Flush"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:199
+#: ../../../Views/admin_main_view.php:243
+msgid "Size"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:201
+#, php-format
+msgid "%s days"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:206
+msgid "MQTT Server"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:208
+#, php-format
+msgid "Mosquitto %s"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:213
+msgid "PHP"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:216
+msgid "Modules"
+msgstr "Modules"
+
+#: ../../../Views/admin_main_view.php:220
+msgid "Pi"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:222
+msgid "Model"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:223
+msgid "SoC"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:224
+msgid "Serial num."
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:225
+msgid "CPU Temperature"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:226
+msgid "GPU Temperature"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:227
+msgid "emonpiRelease"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:228
+msgid "File-system"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:234
+#: ../../../Views/admin_main_view.php:269
+msgid "Client Information"
+msgstr "Informations Client"
+
+#: ../../../Views/admin_main_view.php:238
+msgid "Browser"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:239
+msgid "Language"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:241
+msgid "Window"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:245
+msgid "Screen"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:247
+msgid "Resolution"
+msgstr ""
+
+#: ../../../Views/admin_main_view.php:264
+msgid "Copied to clipboard"
+msgstr "Copié dans presse-papier"
+
+#: ../../../Views/admin_main_view.php:265
+msgid "successful"
+msgstr "réussi"
+
+#: ../../../Views/admin_main_view.php:266
+msgid "unsuccessful"
+msgstr "raté"
+
+#: ../../../Views/admin_main_view.php:267
+#: ../../../Views/admin_main_view.php:300
+#: ../../../Views/emoncms_log_view.php:149 ../../../Views/update_view.php:318
+msgid "Copy to clipboard: Ctrl+C, Enter"
+msgstr "Copier dans le presse-papier : Ctrl+C, Entrée"
+
+#: ../../../Views/admin_main_view.php:268
+msgid "Server Information"
+msgstr "Informations Serveur"
+
+#: ../../../Views/admin_main_view.php:270
+#, php-format
+msgid "Log level: %s"
+msgstr "Niveau log: %s"
+
+#: ../../../Views/components_view.php:6
+msgid "Selectively update system components or switch between branches"
+msgstr ""
+"Mettre à jour sélectivement les composants du système ou basculer entre les "
+"branches"
+
+#: ../../../Views/components_view.php:12
+msgid "Update or switch all components to"
+msgstr "Mettre à jour ou basculer tous les composants vers"
+
+#: ../../../Views/components_view.php:22
+msgid "Component name"
+msgstr "Nom du composant"
+
+#: ../../../Views/components_view.php:25
+msgid "Local changes"
+msgstr "Modifications locales"
+
+#: ../../../Views/components_view.php:31
+msgid "URL:"
+msgstr "URL :"
+
+#: ../../../Views/components_view.php:32
+msgid "Installed path:"
+msgstr "Chemin d'installation :"
+
+#: ../../../Views/components_view.php:37
+msgid "Yes"
+msgstr "Oui"
+
+#: ../../../Views/components_view.php:38
+msgid "No"
+msgstr "Non"
+
+#: ../../../Views/components_view.php:46 ../../../Views/update_view.php:3
+#: ../../../admin_menu.php:19
+msgid "Update"
+msgstr "Mettre à jour"
+
+#: ../../../Views/emoncms_log_view.php:10 ../../../admin_menu.php:37
+msgid "Emoncms Log"
+msgstr "Journal Emoncms"
+
+#: ../../../Views/emoncms_log_view.php:13 ../../../Views/update_view.php:115
+msgid "View last entries on the logfile:"
+msgstr "Vue des dernières entrées dans le fichier journal :"
+
+#: ../../../Views/emoncms_log_view.php:23 ../../../Views/update_view.php:125
+msgid "Auto refresh"
+msgstr "Rafraîchissement automatique"
+
+#: ../../../Views/emoncms_log_view.php:25 ../../../Views/update_view.php:127
+msgid "Download Log"
+msgstr "Télécharger le journal"
+
+#: ../../../Views/emoncms_log_view.php:26 ../../../Views/update_view.php:128
+msgid "Copy Log to clipboard"
+msgstr "Copier journal dans presse-papier"
+
+#: ../../../Views/emoncms_log_view.php:54
+msgid "Logging is disabled in settings."
+msgstr "La journalisation est désactivée dans les paramètres."
+
+#: ../../../Views/mysql_update_view.php:26
+msgid "Update database"
+msgstr "Mise à jour de la base de données"
+
+#: ../../../Views/mysql_update_view.php:31
+msgid "Apply changes"
+msgstr "Appliquer les modifications"
+
+#: ../../../Views/mysql_update_view.php:36
+msgid "Back"
+msgstr "Retour"
+
+#: ../../../Views/mysql_update_view.php:42
+msgid "Check for further updates"
+msgstr "Vérifier les mises à jour"
+
+#: ../../../Views/mysql_update_view.php:47
+msgid "Database is up to date "
+msgstr "La base de données est à jour "
+
+#: ../../../Views/mysql_update_view.php:47
+msgid "Nothing to do"
+msgstr "Aucune mise à jour nécessaire"
+
+#: ../../../Views/mysql_update_view.php:49
+msgid "Return to Update Page"
+msgstr "Retour à la page de mise à jour"
+
+#: ../../../Views/serialmonitor_view.php:9 ../../../admin_menu.php:31
+msgid "Serial Monitor"
+msgstr ""
+
+#: ../../../Views/serialmonitor_view.php:12
+#: ../../../Views/serialmonitor_view.php:17
+msgid "Note:"
+msgstr "Remarque : "
+
+#: ../../../Views/serialmonitor_view.php:12
+msgid "EmonHub is currently running and may conflict with serial monitor"
+msgstr ""
+"EmonHub est en cours d'exécution et peut entrer en conflit avec serial "
+"monitor"
+
+#: ../../../Views/serialmonitor_view.php:13
+msgid "Stop EmonHub"
+msgstr "Arrêter EmonHub"
+
+#: ../../../Views/serialmonitor_view.php:17
+msgid "EmonHub is currently stopped and will not interfere with serial monitor"
+msgstr ""
+"EmonHub est actuellement arrêté et n'interférera pas avec serial monitor"
+
+#: ../../../Views/serialmonitor_view.php:18
+msgid "Start EmonHub"
+msgstr "Démarrer EmonHub"
+
+#: ../../../Views/serialmonitor_view.php:22
+msgid "Start"
+msgstr "Démarrer"
+
+#: ../../../Views/serialmonitor_view.php:35
+msgid "Stop"
+msgstr "Arrêter"
+
+#: ../../../Views/serialmonitor_view.php:38
+msgid "Send command"
+msgstr "Envoyer commande"
+
+#: ../../../Views/serialmonitor_view.php:40
+msgid "Send"
+msgstr "Envoyer"
+
+#: ../../../Views/update_view.php:15 ../../../Views/update_view.php:20
 msgid "Full Update"
 msgstr "Mise à jour complète"
 
-#: ../../../admin_main_view.php:100 ../../../admin_main_view.php:117
-msgid "Emoncms, Emoncms Modules and Services"
-msgstr "Emoncms, Modules Emoncms et Services"
+#: ../../../Views/update_view.php:16 ../../../Views/update_view.php:19
+msgid "OS, Packages, EmonHub, Emoncms & Firmware (If new version)"
+msgstr "OS, Paquets, EmonHub, Emoncms & Firmware (Si nouvelle version)"
 
-#: ../../../admin_main_view.php:100 ../../../admin_main_view.php:116
+#: ../../../Views/update_view.php:19
+msgid "Update All"
+msgstr "Tout mettre à jour"
+
+#: ../../../Views/update_view.php:31
 msgid "Update Emoncms Only"
 msgstr "Mettre à jour Emoncms seulement"
 
-#: ../../../admin_main_view.php:101 ../../../admin_main_view.php:129
-msgid "Update EmonHub Only"
-msgstr "Mettre à jour EmonHub seulement"
+#: ../../../Views/update_view.php:32
+msgid "Emoncms, Emoncms Modules and Services"
+msgstr "Emoncms, Modules Emoncms et Services"
 
-#: ../../../admin_main_view.php:102 ../../../admin_main_view.php:142
-msgid "Select your hardware type and firmware version"
-msgstr "Sélectionner votre type de matériel et la version du firmware"
+#: ../../../Views/update_view.php:35
+msgid "Update Emoncms"
+msgstr "Mettre à jour Emoncms"
 
-#: ../../../admin_main_view.php:102 ../../../admin_main_view.php:141
+#: ../../../Views/update_view.php:44
 msgid "Update Firmware Only"
 msgstr "Mettre à jour Firmware Seulement"
 
-#: ../../../admin_main_view.php:103 ../../../admin_main_view.php:170
+#: ../../../Views/update_view.php:45
+msgid "Select your hardware type and firmware version"
+msgstr "Sélectionner votre type de matériel et la version du firmware"
+
+#: ../../../Views/update_view.php:90
+msgid "Update Firmware"
+msgstr "Mettre à jour Firmware"
+
+#: ../../../Views/update_view.php:99
+msgid "Update Database Only"
+msgstr "Mettre à jour la BDD seulement"
+
+#: ../../../Views/update_view.php:100
 msgid ""
 "Run this after a manual emoncms update, after installing a new module or to "
 "check emoncms database status."
@@ -98,313 +479,85 @@ msgstr ""
 "Lancez cette commande après une mise à jour de Emoncms, après l'installation "
 "d'un nouveau module ou pour vérifier le statut de la base de données."
 
-#: ../../../admin_main_view.php:103 ../../../admin_main_view.php:169
-msgid "Update Database Only"
-msgstr "Mettre à jour la BDD seulement"
-
-#: ../../../admin_main_view.php:120
-msgid "Update Emoncms"
-msgstr "Mettre à jour Emoncms"
-
-#: ../../../admin_main_view.php:132
-msgid "Update EmonHub"
-msgstr "Mettre à jour EmonHub"
-
-#: ../../../admin_main_view.php:159
-msgid "Update Firmware"
-msgstr "Mettre à jour Firmware"
-
-#: ../../../admin_main_view.php:172
+#: ../../../Views/update_view.php:102
 msgid "Update Database"
 msgstr "Mettre à jour de la base de données"
 
-#: ../../../admin_main_view.php:181
-msgid "Component manager"
-msgstr "Gestionnaire de composants"
-
-#: ../../../admin_main_view.php:182 ../../../components_view.php:6
-msgid "Selectively update system components or switch between branches"
-msgstr ""
-"Mettre à jour sélectivement les composants du système ou basculer entre les "
-"branches"
-
-#: ../../../admin_main_view.php:184 ../../../admin_main_view.php:312
-#: ../../../admin_menu.php:19 ../../../components_view.php:4
-msgid "Components"
-msgstr "Composants"
-
-#: ../../../admin_main_view.php:196
+#: ../../../Views/update_view.php:112
 msgid "Update Log"
 msgstr "Journal mises à jour"
 
-#: ../../../admin_main_view.php:199 ../../../admin_main_view.php:230
-msgid "View last entries on the logfile:"
-msgstr "Vue des dernières entrées dans le fichier journal :"
-
-#: ../../../admin_main_view.php:209 ../../../admin_main_view.php:240
-msgid "Auto refresh"
-msgstr "Rafraîchissement automatique"
-
-#: ../../../admin_main_view.php:211 ../../../admin_main_view.php:242
-msgid "Download Log"
-msgstr "Télécharger le journal"
-
-#: ../../../admin_main_view.php:212 ../../../admin_main_view.php:243
-msgid "Copy Log to clipboard"
-msgstr "Copier journal dans presse-papier"
-
-#: ../../../admin_main_view.php:227
-msgid "Emoncms Log"
-msgstr "Journal Emoncms"
-
-#: ../../../admin_main_view.php:252
-msgid "Change the logging level"
-msgstr "Modifier le niveau de journalisation"
-
-#: ../../../admin_main_view.php:279 ../../../admin_main_view.php:465
-msgid "Server Information"
-msgstr "Informations Serveur"
-
-#: ../../../admin_main_view.php:282
-msgid "**Recommended** when pasting into forum"
-msgstr "**Recommandé** lorsque collé dans un forum"
-
-#: ../../../admin_main_view.php:282
-msgid "Server info copied to clipboard as Markdown [text/markdown]"
-msgstr ""
-"Infos serveur copiées dans le presse-papiers en Markdown [text/markdown]"
-
-#: ../../../admin_main_view.php:282
-msgid "Copy as Markdown"
-msgstr "Copier en Markdown"
-
-#: ../../../admin_main_view.php:283
-msgid "Formatted as plain text"
-msgstr "Formaté en texte brut"
-
-#: ../../../admin_main_view.php:283
-msgid "Server info copied to clipboard as Text [text/plain]"
-msgstr "Infos serveur copiées dans le presse-papiers en Texte [text/plain]"
-
-#: ../../../admin_main_view.php:283
-msgid "Copy as Text"
-msgstr "Copier en Texte"
-
-#: ../../../admin_main_view.php:288
-msgid "Services"
-msgstr "Services"
-
-#: ../../../admin_main_view.php:300
-msgid "Emoncms"
-msgstr "Emoncms"
-
-#: ../../../admin_main_view.php:302 ../../../admin_main_view.php:372
-#: ../../../admin_main_view.php:389 ../../../admin_main_view.php:405
-#: ../../../admin_main_view.php:412 ../../../components_view.php:24
-msgid "Version"
-msgstr "Version"
-
-#: ../../../admin_main_view.php:305
-msgid "URL"
-msgstr "URL"
-
-#: ../../../admin_main_view.php:306 ../../../components_view.php:27
-msgid "Branch"
-msgstr ""
-
-#: ../../../admin_main_view.php:307 ../../../components_view.php:25
-msgid "Describe"
-msgstr ""
-
-#: ../../../admin_main_view.php:311
-msgid "Git"
-msgstr ""
-
-#: ../../../admin_main_view.php:315 ../../../admin_main_view.php:367
-msgid "Server"
-msgstr ""
-
-#: ../../../admin_main_view.php:317
-msgid "OS"
-msgstr ""
-
-#: ../../../admin_main_view.php:318 ../../../admin_main_view.php:373
-#: ../../../admin_main_view.php:390 ../../../admin_main_view.php:406
-msgid "Host"
-msgstr ""
-
-#: ../../../admin_main_view.php:319 ../../../admin_main_view.php:374
-msgid "Date"
-msgstr ""
-
-#: ../../../admin_main_view.php:320 ../../../admin_main_view.php:397
-msgid "Uptime"
-msgstr ""
-
-#: ../../../admin_main_view.php:323
-msgid "Memory"
-msgstr ""
-
-#: ../../../admin_main_view.php:326
-msgid "RAM"
-msgstr ""
-
-#: ../../../admin_main_view.php:326 ../../../admin_main_view.php:332
-#: ../../../admin_main_view.php:353
-#, php-format
-msgid "Used: %s%%"
-msgstr ""
-
-#: ../../../admin_main_view.php:332
-msgid "Swap"
-msgstr ""
-
-#: ../../../admin_main_view.php:343
-msgid "Write Load Period"
-msgstr "Écrire période de charge"
-
-#: ../../../admin_main_view.php:344
-msgid "Reset"
-msgstr "Réinitialiser"
-
-#: ../../../admin_main_view.php:346
-msgid "Disk"
-msgstr ""
-
-#: ../../../admin_main_view.php:365 ../../../admin_main_view.php:433
-msgid "HTTP"
-msgstr ""
-
-#: ../../../admin_main_view.php:370
-msgid "MySQL"
-msgstr ""
-
-#: ../../../admin_main_view.php:375
-msgid "Stats"
-msgstr "Stats"
-
-#: ../../../admin_main_view.php:379
-msgid "Redis"
-msgstr ""
-
-#: ../../../admin_main_view.php:382
-msgid "Redis Server"
-msgstr ""
-
-#: ../../../admin_main_view.php:384
-msgid "Python Redis"
-msgstr ""
-
-#: ../../../admin_main_view.php:387
-msgid "PHP Redis"
-msgstr ""
-
-#: ../../../admin_main_view.php:392
-msgid "Flush"
-msgstr ""
-
-#: ../../../admin_main_view.php:395 ../../../admin_main_view.php:440
-msgid "Size"
-msgstr ""
-
-#: ../../../admin_main_view.php:397
-#, php-format
-msgid "%s days"
-msgstr ""
-
-#: ../../../admin_main_view.php:403
-msgid "MQTT Server"
-msgstr ""
-
-#: ../../../admin_main_view.php:405
-#, php-format
-msgid "Mosquitto %s"
-msgstr ""
-
-#: ../../../admin_main_view.php:410
-msgid "PHP"
-msgstr ""
-
-#: ../../../admin_main_view.php:413
-msgid "Modules"
-msgstr "Modules"
-
-#: ../../../admin_main_view.php:417
-msgid "Pi"
-msgstr ""
-
-#: ../../../admin_main_view.php:419
-msgid "Model"
-msgstr ""
-
-#: ../../../admin_main_view.php:420
-msgid "SoC"
-msgstr ""
-
-#: ../../../admin_main_view.php:421
-msgid "Serial num."
-msgstr ""
-
-#: ../../../admin_main_view.php:422
-msgid "CPU Temperature"
-msgstr ""
-
-#: ../../../admin_main_view.php:423
-msgid "GPU Temperature"
-msgstr ""
-
-#: ../../../admin_main_view.php:424
-msgid "emonpiRelease"
-msgstr ""
-
-#: ../../../admin_main_view.php:425
-msgid "File-system"
-msgstr ""
-
-#: ../../../admin_main_view.php:431 ../../../admin_main_view.php:466
-msgid "Client Information"
-msgstr "Informations Client"
-
-#: ../../../admin_main_view.php:435
-msgid "Browser"
-msgstr ""
-
-#: ../../../admin_main_view.php:436
-msgid "Language"
-msgstr ""
-
-#: ../../../admin_main_view.php:438
-msgid "Window"
-msgstr ""
-
-#: ../../../admin_main_view.php:442
-msgid "Screen"
-msgstr ""
-
-#: ../../../admin_main_view.php:444
-msgid "Resolution"
-msgstr ""
-
-#: ../../../admin_main_view.php:461
-msgid "Copied to clipboard"
-msgstr "Copié dans presse-papier"
-
-#: ../../../admin_main_view.php:462
-msgid "successful"
-msgstr "réussi"
-
-#: ../../../admin_main_view.php:463
-msgid "unsuccessful"
-msgstr "raté"
-
-#: ../../../admin_main_view.php:464 ../../../admin_main_view.php:497
-msgid "Copy to clipboard: Ctrl+C, Enter"
-msgstr "Copier dans le presse-papier : Ctrl+C, Entrée"
-
-#: ../../../admin_main_view.php:467
-#, php-format
-msgid "Log level: %s"
-msgstr "Niveau log: %s"
+#: ../../../Views/userlist_view.php:17 ../../../admin_menu.php:43
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: ../../../Views/userlist_view.php:19
+msgid "Number of users:"
+msgstr "Nombre d'utilisateurs :"
+
+#: ../../../Views/userlist_view.php:27
+msgid "Order by"
+msgstr "Trier par"
+
+#: ../../../Views/userlist_view.php:29 ../../../Views/userlist_view.php:50
+msgid "Id"
+msgstr "Id"
+
+#: ../../../Views/userlist_view.php:30 ../../../Views/userlist_view.php:51
+msgid "Username"
+msgstr "Nom utilisateur"
+
+#: ../../../Views/userlist_view.php:31 ../../../Views/userlist_view.php:52
+msgid "Email"
+msgstr "Courriel"
+
+#: ../../../Views/userlist_view.php:32
+msgid "Email Verified"
+msgstr "Courriel vérifié"
+
+#: ../../../Views/userlist_view.php:36
+msgid "Ascending"
+msgstr "Croissant"
+
+#: ../../../Views/userlist_view.php:37
+msgid "Descending"
+msgstr "Décroissant"
+
+#: ../../../Views/userlist_view.php:42
+msgid "User search"
+msgstr "Recherche utilisateur"
+
+#: ../../../Views/userlist_view.php:44
+msgid "Search"
+msgstr "Rechercher"
+
+#: ../../../Views/userlist_view.php:49
+msgid "Edit"
+msgstr "Modifier"
+
+#: ../../../Views/userlist_view.php:53
+msgid "Feeds"
+msgstr "Flux"
+
+#: ../../../Views/userlist_view.php:147
+msgid "view"
+msgstr "voir"
+
+#: ../../../admin_controller.php:58
+msgid "Not Admin"
+msgstr "Pas Admin"
+
+#: ../../../admin_controller.php:59 ../../../admin_controller.php:64
+msgid "Admin Authentication Required"
+msgstr "Authentification admin requise"
+
+#: ../../../admin_controller.php:65
+msgid "Session timed out or user not Admin"
+msgstr "Session expirée ou utilisateur non admin"
+
+#: ../../../admin_controller.php:67
+msgid "Re-authenticate to see this page"
+msgstr "Réauthentification pour voir cette page"
 
 #: ../../../admin_menu.php:5
 msgid "Admin"
@@ -414,11 +567,7 @@ msgstr "Administration"
 msgid "System Info"
 msgstr "Infos système"
 
-#: ../../../admin_menu.php:25 ../../../userlist_view.php:8
-msgid "Users"
-msgstr "Utilisateurs"
-
-#: ../../../admin_model.php:365
+#: ../../../admin_model.php:620
 msgid ""
 " (to show GPU temp execute this command from the console \"sudo usermod -G "
 "video www-data\" )"
@@ -426,118 +575,35 @@ msgstr ""
 " (pour afficher la température GPU exécuter cette commande depuis la console "
 "\"sudo usermod -G video www-data\" )"
 
-#: ../../../components_view.php:13
-msgid "Update or switch all components to"
-msgstr "Mettre à jour ou basculer tous les composants vers"
+#~ msgid "406: Route not found"
+#~ msgstr "406 : route not found"
 
-#: ../../../components_view.php:23
-msgid "Component name"
-msgstr ""
+#~ msgid "Admin re-authentication required"
+#~ msgstr "Réauthentification admin requise"
 
-#: ../../../components_view.php:26
-msgid "Local changes"
-msgstr ""
+#~ msgid "Administration"
+#~ msgstr "Administration"
 
-#: ../../../components_view.php:31
-msgid "Location:"
-msgstr "Emplacement :"
+#~ msgid "Updates"
+#~ msgstr "Mises à jour"
 
-#: ../../../components_view.php:31
-msgid "URL:"
-msgstr ""
+#~ msgid "Update EmonHub Only"
+#~ msgstr "Mettre à jour EmonHub seulement"
 
-#: ../../../components_view.php:34
-msgid "Yes"
-msgstr "Oui"
+#~ msgid "Component manager"
+#~ msgstr "Gestionnaire de composants"
 
-#: ../../../components_view.php:34
-msgid "No"
-msgstr "Non"
+#~ msgid "Change the logging level"
+#~ msgstr "Modifier le niveau de journalisation"
 
-#: ../../../components_view.php:41
-msgid "Update"
-msgstr "Mettre à jour"
+#~ msgid "Write Load Period"
+#~ msgstr "Écrire période de charge"
 
-#: ../../../components_view.php:48 ../../../update_view.php:45
-#: ../../../userlist_view.php:63
-msgid "Return to Administration Page"
-msgstr "Retour Page Administration"
+#~ msgid "Reset"
+#~ msgstr "Réinitialiser"
 
-#: ../../../update_view.php:22
-msgid "Update database"
-msgstr "Mise à jour de la base de données"
-
-#: ../../../update_view.php:27
-msgid "Apply changes"
-msgstr "Appliquer les modifications"
-
-#: ../../../update_view.php:32
-msgid "Back"
-msgstr "Retour"
-
-#: ../../../update_view.php:38
-msgid "Check for further updates"
-msgstr "Vérifier les mises à jour"
-
-#: ../../../update_view.php:43
-msgid "Database is up to date "
-msgstr "La base de données est à jour "
-
-#: ../../../update_view.php:43
-msgid "Nothing to do"
-msgstr "Aucune mise à jour nécessaire"
-
-#: ../../../userlist_view.php:10
-msgid "Number of users:"
-msgstr "Nombre d'utilisateurs :"
-
-#: ../../../userlist_view.php:27
-msgid "Order by"
-msgstr "Trier par"
-
-#: ../../../userlist_view.php:29 ../../../userlist_view.php:50
-msgid "Id"
-msgstr "Id"
-
-#: ../../../userlist_view.php:30 ../../../userlist_view.php:51
-msgid "Username"
-msgstr "Nom utilisateur"
-
-#: ../../../userlist_view.php:31 ../../../userlist_view.php:52
-msgid "Email"
-msgstr "Courriel"
-
-#: ../../../userlist_view.php:32
-msgid "Email Verified"
-msgstr "Courriel vérifié"
-
-#: ../../../userlist_view.php:36
-msgid "Ascending"
-msgstr "Croissant"
-
-#: ../../../userlist_view.php:37
-msgid "Descending"
-msgstr "Décroissant"
-
-#: ../../../userlist_view.php:42
-msgid "User search"
-msgstr "Recherche utilisateur"
-
-#: ../../../userlist_view.php:44
-msgid "Search"
-msgstr "Rechercher"
-
-#: ../../../userlist_view.php:49
-msgid "Edit"
-msgstr "Modifier"
-
-#: ../../../userlist_view.php:53
-msgid "Feeds"
-msgstr "Flux"
-
-#: ../../../userlist_view.php:147
-msgid "view"
-msgstr "voir"
+#~ msgid "Location:"
+#~ msgstr "Emplacement :"
 
 #~ msgid "See a list of registered users"
 #~ msgstr "Voir une liste des utilisateurs inscrits"
@@ -604,12 +670,6 @@ msgstr "voir"
 
 #~ msgid "Restart"
 #~ msgstr "Redémarrer"
-
-#~ msgid "Stop"
-#~ msgstr "Arrêter"
-
-#~ msgid "Start"
-#~ msgstr "Démarrer"
 
 #~ msgid "Read-Write"
 #~ msgstr "Lecture-Écriture"
