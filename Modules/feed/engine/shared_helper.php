@@ -151,15 +151,6 @@ interface engine_methods{
      * @param array $arg optional padding mode argument
     */
     public function post($feedid,$feedtime,$value,$arg);
-    
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($feedid,$feedtime,$value);
 
     /**
      * Get value at specified time
