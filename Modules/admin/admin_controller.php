@@ -228,7 +228,7 @@ function admin_controller()
         if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        return $admin->runService($update_script, "$serial_port $firmware_key > $update_logfile");
+        return $admin->runService($update_script, "$serial_port $firmware_key>$update_logfile");
     }
     
     if ($route->action == 'update-log') {
