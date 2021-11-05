@@ -186,7 +186,7 @@ function visFeedDataDelayed() {
         if (intervaltype=="standard") {
           ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
         } else {
-          ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_DMY_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,intervaltype);
+          ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,intervaltype,skipmissing,1);
         }
       }
     }
