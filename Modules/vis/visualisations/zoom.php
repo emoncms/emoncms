@@ -17,7 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/graphs.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=2"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
@@ -100,10 +100,12 @@
   end = Math.floor(end / 86400000) * 86400000;
   start -= offset * 3600000;
   end -= offset * 3600000;
-  get_feed_data_DMY_async(vis_feed_kwh_data_callback,null,kwhd,start,end,"daily"); // get 5 years of daily kw_data
+  
+  feed.apikey = apikey;
+  feed.getdata(kwhd,start,end,"daily",0,1,1,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
 
   //load feed kwh_data
-  function vis_feed_kwh_data_callback(context,data){
+  function vis_feed_kwh_data_callback(data){
   
     if (window.delta==1) {
         var tmp = [];
@@ -159,11 +161,11 @@
       ajaxAsyncXdr.abort(); // abort pending requests
       ajaxAsyncXdr=undefined;
     }
-    ajaxAsyncXdr=get_feed_data_async(vis_feed_data_callback,null,feedid,start,end,interval,1,1);
+    ajaxAsyncXdr=feed.getdata(feedid,start,end,interval,0,1,1,vis_feed_data_callback);
   }
   
   //load feed data
-  function vis_feed_data_callback(context,data){
+  function vis_feed_data_callback(data){
     power_data=data;
     var stats = power_stats(power_data);
     instgraph(power_data);

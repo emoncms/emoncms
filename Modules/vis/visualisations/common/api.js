@@ -46,7 +46,7 @@ function get_feed_data_async(callback,context,feedID,start,end,interval,skipmiss
 // Get feed data
 function get_feed_data_DMY(feedID,start,end,mode){
   var feedIn = [];
-  var query = "id="+feedID+"&start="+parseInt(start)+"&end="+parseInt(end)+"&mode="+mode;
+  var query = "id="+feedID+"&start="+parseInt(start)+"&end="+parseInt(end)+"&interval="+mode;
   if (apikey!="") query+= "&apikey="+apikey;
   $.ajax({                  
     url: path+'feed/data.json',             
@@ -60,7 +60,7 @@ function get_feed_data_DMY(feedID,start,end,mode){
 
 // Get feed data async with callback
 function get_feed_data_DMY_async(callback,context,feedID,start,end,mode){
-  var query = "id="+feedID+"&start="+start+"&end="+end+"&mode="+mode;
+  var query = "id="+feedID+"&start="+start+"&end="+end+"&interval="+mode;
   if (apikey!="") query+= "&apikey="+apikey;
   return $.ajax({                  
     url: path+'feed/data.json',             
