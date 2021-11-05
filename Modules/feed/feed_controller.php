@@ -224,8 +224,8 @@ function feed_controller()
                             return $feed->set_feed_fields($feedid, get('fields'));
                         }
 
-                    // Insert datapoint
-                    } else if ($route->action == "insert") {
+                    // insert available here for backwards compatibility
+                    } else if ($route->action == "insert" || $route->action == "post") {
                         
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
