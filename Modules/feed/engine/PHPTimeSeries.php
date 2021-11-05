@@ -676,6 +676,9 @@ class PHPTimeSeries implements engine_methods
      * Buffer methods
      *
      */
+    public function buffer_get_length($id) {
+        return $this->redis->zcount("phptimeseries:buffer:$id","-inf","+inf");
+    }
     
     private function buffer_add($id,$time,$value) {
         $this->redis->zAdd("phptimeseries:buffer:$id",(int)$time,dechex((int)$time)."|".$value);

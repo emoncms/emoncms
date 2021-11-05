@@ -307,20 +307,22 @@ class Feed
         }
         return $total;
     }
-
-    // Get REDISBUFFER date value elements pending save to a feed
+    
+    // Get size of feed engine buffers if applicable
     public function get_buffer_size()
     {
         $total = 0;
-        if ($this->redis) {
-            $feedids = $this->redis->sMembers("feed:bufferactive");
-            foreach ($feedids as $feedid) {
-                $total += $this->EngineClass(Engine::REDISBUFFER)->get_feed_size($feedid);
+        $result = $this->mysqli->query("SELECT id,engine FROM feeds");
+        while ($row = $result->fetch_array()) {
+            $size = 0;
+            if ($row['engine']==Engine::PHPFINA || $row['engine']==Engine::PHPTIMESERIES) {
+                $size = $this->EngineClass($row['engine'])->buffer_get_length($row['id']);
             }
+            $total += $size;
         }
         return $total;
     }
-
+    
     // Expose metadata from engines
     public function get_meta($feedid) {
         $feedid = (int) $feedid;
