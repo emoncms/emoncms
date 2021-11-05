@@ -6,20 +6,20 @@
 }
 </style>
 <div class="admin-container">
-<h3>Serial Monitor</h3>
+<h3><?php echo _('Serial Monitor'); ?></h3>
 
 <div id="emonhub-running-notice" class="alert hide">
-  <b>Note:</b> EmonHub is currently running and may conflict with serial monitor 
-  <button id="stopEmonHub" class="btn" style="float:right">Stop EmonHub</button>
+  <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently running and may conflict with serial monitor'); ?>
+  <button id="stopEmonHub" class="btn" style="float:right"><?php echo _('Stop EmonHub'); ?></button>
 </div>
 
 <div id="emonhub-stopped-notice" class="alert alert-success hide">
-  <b>Note:</b> EmonHub is currently stopped and will not interfere with serial monitor
-  <button id="startEmonHub" class="btn" style="float:right">Start EmonHub</button>
+  <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
+  <button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
 </div>
 
 <div class="input-prepend input-append start-options hide">
-  <button id="start" class="btn">Start</button>
+  <button id="start" class="btn"><?php echo _('Start'); ?></button>
   <select id="serialport">
     <?php foreach ($serial_ports as $port) { ?>
     <option><?php echo $port; ?></option>
@@ -32,12 +32,12 @@
   </select>
 </div>
 
-<button id="stop" class="btn hide" style="margin-bottom:10px">Stop</button>
+<button id="stop" class="btn hide" style="margin-bottom:10px"><?php echo _('Stop'); ?></button>
 
 <div class="input-prepend input-append send-cmd">
-  <span class="add-on">Send command</span>
+  <span class="add-on"><?php echo _('Send command'); ?></span>
   <input id="cmd" type="text" style="width:300px" />
-  <button id="send" class="btn">Send</button>
+  <button id="send" class="btn"><?php echo _('Send'); ?></button>
 </div>
 
 <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 320px); display:none;"><div id="log"></div></pre>
