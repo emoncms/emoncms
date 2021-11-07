@@ -1,10 +1,4 @@
 <?php
-    load_language_files("Modules/schedule/locale", "schedule_messages");
-    $menu['sidebar']['emoncms'][] = array(
-        'text' => dgettext("schedule_messages","Schedule"),
-        'path' => 'schedule/view',
-        'icon' => 'schedule',
-        'active' => 'schedule',
-        'order' => 'b3'
-    );
-
+global $session;
+load_language_files(dirname(__DIR__).'/locale', "schedule_messages");
+if ($session["write"]) $menu["setup"]["l2"]['schedule'] = array("name"=>_("Schedule"),"href"=>"schedule/view", "order"=>8, "icon"=>"schedule");

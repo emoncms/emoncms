@@ -25,6 +25,8 @@ class Process_ProcessList
     private $log;
     private $mqtt = false;
     
+    private $data_cache = array();
+    
     // Module required constructor, receives parent as reference
     public function __construct(&$parent)
     {
@@ -74,10 +76,9 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"log_to_feed",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Main"),
-              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>PHPFina</b> is the recommended feed engine it is a basic fixed interval timeseries engine.</li><li><b>PHPTimeseries</b> is for data posted at a non regular interval such as on state change.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
            ),
@@ -88,7 +89,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"scale",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Calibration"),
               "description"=>_("<p>Multiplies current value by given constant. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
@@ -100,7 +100,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"offset",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Calibration"),
               "description"=>_("<p>Offset current value by given value. This can again be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
@@ -112,7 +111,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"power_to_kwh",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"kWh",
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -126,7 +124,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"power_to_kwhd",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -140,7 +137,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"times_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Multiplies the current value with the last value from other input as selected from the input list.</p>")
@@ -152,7 +148,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"input_ontime",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Input"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -166,7 +161,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"whinc_to_kwhd",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -180,11 +174,10 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"kwh_to_kwhd_old",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>10,
@@ -193,7 +186,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"update_feed_data",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Input"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -207,7 +199,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"add_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Adds the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -219,7 +210,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"divide_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Divides the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -231,10 +221,9 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"phaseshift",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Deleted"),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>14,
@@ -243,7 +232,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"accumulator",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Misc"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -256,10 +244,9 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"ratechange",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "description"=>_("<p>Output feed is the difference between the current value and the last</p>")
            ),
@@ -270,11 +257,10 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"histogram",
               "datafields"=>2,
-              "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
-              "group"=>_("Power & Energy"),
+              "group"=>_("Deleted"),
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
-              "description"=>_("Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input</b>: power in Watts.</p>")
+              "description"=>""
            ),
            array(
               "id_num"=>17,
@@ -283,11 +269,10 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"average",
               "datafields"=>2,
-              "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>18,
@@ -296,11 +281,10 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"heat_flux",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>19,
@@ -309,11 +293,10 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"power_acc_to_kwhd",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
               "engines"=>array(Engine::PHPTIMESERIES),
-              "description"=>_("")
+              "description"=>""
            ),
            array(
               "id_num"=>20,
@@ -322,7 +305,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"pulse_diff",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Pulse"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
@@ -335,7 +317,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"kwh_to_power",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"W",
               "group"=>_("Power & Energy"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
@@ -349,7 +330,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"subtract_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Subtracts from the current value the last value from other input as selected from the input list.</p>")
@@ -361,7 +341,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"kwh_to_kwhd",
               "datafields"=>2,
-              "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
               "engines"=>array(Engine::PHPTIMESERIES),
@@ -376,7 +355,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"allowpositive",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Limits"),
               "description"=>_("<p>Negative values are zeroed for further processing by the next processor in the processing list.</p>")
@@ -388,7 +366,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"allownegative",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Limits"),
               "description"=>_("<p>Positive values are zeroed for further processing by the next processor in the processing list.</p>")
@@ -400,7 +377,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"signed2unsigned",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"unsign",
               "group"=>_("Misc"),
               "description"=>_("<p>Convert a number that was interpreted as a 16 bit signed number to an unsigned number.</p>")
@@ -412,7 +388,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"max_value",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Misc"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -426,7 +401,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"min_value",
               "datafields"=>1,
-              "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Misc"),
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
@@ -440,7 +414,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"add_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Adds the current value with the last value from a feed as selected from the feed list.</p>")
@@ -452,7 +425,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"sub_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Subtracts from the current value the last value from a feed as selected from the feed list.</p>")
@@ -464,7 +436,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"multiply_by_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Multiplies the current value with the last value from a feed as selected from the feed list.</p>")
@@ -476,7 +447,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"divide_by_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Divides the current value by the last value from a feed as selected from the feed list.</p>")
@@ -488,7 +458,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"reset2zero",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Misc"),
               "description"=>_("<p>The value \"0\" is passed back for further processing by the next processor in the processing list.</p>")
@@ -500,12 +469,11 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"wh_accumulator",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"Wh",
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>35,
@@ -514,7 +482,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::TEXT,
               "function"=>"publish_to_mqtt",
               "datafields"=>1,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Misc"),
               "nochange"=>true,
@@ -527,7 +494,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"reset2null",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Misc"),
               "description"=>_("<p>Value is set to NULL.</p><p>Useful for conditional process to work on.</p>")
@@ -539,7 +505,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"reset2original",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Misc"),
               "description"=>_("<p>The value is set to the original value at the start of the process list.</p>")
@@ -551,7 +516,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"if_zero_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional"),
               "nochange"=>true,
@@ -564,7 +528,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"if_not_zero_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional"),
               "nochange"=>true,
@@ -577,7 +540,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"if_null_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional"),
               "nochange"=>true,
@@ -590,7 +552,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"if_not_null_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional"),
               "nochange"=>true,
@@ -603,7 +564,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_gt_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -616,7 +576,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_gt_equal_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -629,7 +588,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_lt_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -642,7 +600,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_lt_equal_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -655,7 +612,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_equal_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -668,7 +624,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"if_not_equal_skip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - User value"),
               "nochange"=>true,
@@ -681,7 +636,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"goto_process",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Misc"),
               "nochange"=>true,
@@ -694,7 +648,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"source_feed_data_time",
               "datafields"=>1,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.</p>")
@@ -706,7 +659,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"add_source_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p>Add the specified feed.</p>")
@@ -718,7 +670,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"sub_source_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p>Subtract the specified feed.</p>")
@@ -730,7 +681,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"multiply_by_source_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p>Multiply by specified feed.</p>")
@@ -742,7 +692,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"divide_by_source_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p>Divide by specified feed. Returns NULL for zero values.</p>")
@@ -754,7 +703,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"reciprocal_by_source_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Virtual"),
               "description"=>_("<p>Return the reciprical of the specified feed. Returns NULL for zero values.</p>")
@@ -765,7 +713,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::NONE,
               "function"=>"error_found",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Hidden"),
               "description"=>_("<p>This was automaticaly added when a loop error was discovered on the processList or execution took too many steps to process.  Review the usage of GOTOs or decrease the number of items and delete this entry to resume execution.</p>"),
@@ -779,7 +726,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"max_value_allowed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Limits"),
               "description"=>_("<p>If value is greater than <i>max value allowed</i> then the value passed to following process will be the <i>max value allowed</i></p>"),
@@ -792,7 +738,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"min_value_allowed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Limits"),
               "description"=>_("<p>If value is lower than <i>min value allowed</i> then the value passed to following process will be the <i>min value allowed</i></p>"),
@@ -805,7 +750,6 @@ class Process_ProcessList
                 "argtype"=>ProcessArg::VALUE,
                 "function"=>"abs_value",
                 "datafields"=>0,
-                "datatype"=>DataType::UNDEFINED,
                 "unit"=>"",
                 "group"=>_("Calibration"),
                 "description"=>_("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
@@ -816,12 +760,11 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"kwh_accumulator",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"kWh",
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "name"=>_("Log to feed (Join)"),
@@ -829,10 +772,9 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"log_to_feed_join",
               "datafields"=>1,
-              "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Main"),
-              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
@@ -842,7 +784,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"max_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -853,7 +794,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::INPUTID,
               "function"=>"min_input",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Input"),
               "description"=>_("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -864,7 +804,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"max_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -875,7 +814,6 @@ class Process_ProcessList
               "argtype"=>ProcessArg::FEEDID,
               "function"=>"min_feed",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
@@ -1055,10 +993,10 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
@@ -1087,11 +1025,10 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        if (!isset($last['value'])) $last['value'] = 0;
-        if (!isset($last['time'])) $last['time'] = $time_now;
-        $last_kwh = $last['value']*1;
-        $last_time = $last['time']*1;
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
 
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);    
@@ -1124,6 +1061,8 @@ class Process_ProcessList
         if (!$redis) return $value; // return if redis is not available
         
         $currentkwhd = $this->feed->get_timevalue($feedid);
+        if ($currentkwhd===null) return $value; // feed does not exist
+        
         $last_time = $currentkwhd['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1160,6 +1099,7 @@ class Process_ProcessList
     {
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist 
         $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1211,6 +1151,7 @@ class Process_ProcessList
     public function whinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist 
         $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1229,6 +1170,7 @@ class Process_ProcessList
     public function accumulator($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist   
         $value = $last['value'] + $value;
         $padding_mode = "join";
         $this->feed->insert_data($feedid, $time, $time, $value, $padding_mode);
@@ -1238,70 +1180,16 @@ class Process_ProcessList
     public function accumulator_daily($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist  
         $value = $last['value'] + $value;
         $feedtime = $this->getstartday($time_now);
         $this->feed->update_data($feedid, $time_now, $feedtime, $value);
         return $value;
     }*/
 
-    //---------------------------------------------------------------------------------
-    // This method converts power to energy vs power (Histogram)
-    //---------------------------------------------------------------------------------
+    // No longer supported
     public function histogram($feedid, $time_now, $value)
     {
-        $feedname = "feed_" . trim($feedid) . "";
-        $new_kwh = 0;
-        // Allocate power values into pots of varying sizes
-        if ($value < 500) {
-            $pot = 50;
-
-        } elseif ($value < 2000) {
-            $pot = 100;
-
-        } else {
-            $pot = 500;
-        }
-
-        $new_value = round($value / $pot, 0, PHP_ROUND_HALF_UP) * $pot;
-
-        $time = $this->getstartday($time_now);
-
-        // Get the last time
-        $lastvalue = $this->feed->get_timevalue($feedid);
-        $last_time = $lastvalue['time'];
-
-        // kWh calculation
-        $time_elapsed = ($time_now - $last_time);   
-        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
-            $kwh_inc = ($time_elapsed * $value) / 3600000;
-        } else {
-            $kwh_inc = 0;
-        }
-
-        // Get last value
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
-
-        if (!$result) return $value;
-
-        $last_row = $result->fetch_array();
-
-        if (!$last_row)
-        {
-            $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
-
-            $this->feed->set_timevalue($feedid, $new_value, $time_now);
-            $new_kwh = $kwh_inc;
-        }
-        else
-        {
-            $last_kwh = $last_row['data'];
-            $new_kwh = $last_kwh + $kwh_inc;
-        }
-
-        // update kwhd feed
-        $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
-
-        $this->feed->set_timevalue($feedid, $new_value, $time_now);
         return $value;
     }
 
@@ -1313,6 +1201,8 @@ class Process_ProcessList
         {
             $pulse_diff = 0;
             $last = $this->feed->get_timevalue($feedid);
+            if ($last===null) return 0; // feed does not exist
+            
             if ($last['time']) {
                 // Need to handle resets of the pulse value (and negative 2**15?)
                 if ($value >= $last['value']) {
@@ -1354,6 +1244,8 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+         
         $last_val = $last['value'];
         $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
@@ -1372,6 +1264,8 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+                
         $last_val = $last['value'];
         $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
@@ -1390,6 +1284,8 @@ class Process_ProcessList
     public function add_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+        
         $value = $last['value'] + $value;
         return $value;
     }
@@ -1397,6 +1293,8 @@ class Process_ProcessList
     public function sub_feed($feedid, $time, $value)
     {
         $last  = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+             
         $myvar = $last['value'] *1;
         return $value - $myvar;
     }
@@ -1404,6 +1302,8 @@ class Process_ProcessList
     public function multiply_by_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+          
         $value = $last['value'] * $value;
         return $value;
     }
@@ -1411,6 +1311,8 @@ class Process_ProcessList
    public function divide_by_feed($feedid, $time, $value)
     {
         $last  = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+            
         $myvar = $last['value'] *1;
         
         if ($myvar!=0) {
@@ -1422,7 +1324,7 @@ class Process_ProcessList
     
     public function wh_accumulator($feedid, $time, $value)
     {
-        $max_power = 25000;
+        $max_power = 60000; // in Watt
         $totalwh = $value;
         
         global $redis;
@@ -1431,7 +1333,9 @@ class Process_ProcessList
         if ($redis->exists("process:whaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:whaccumulator:$feedid",array('time','value'));
     
-            $last_feed  = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->feed->get_timevalue($feedid);
+            if ($last_feed===null) return $value; // feed does not exist
+               
             $totalwh = $last_feed['value'];
             
             $time_diff = $time - $last_feed['time'];
@@ -1453,7 +1357,7 @@ class Process_ProcessList
     
     public function kwh_accumulator($feedid, $time, $value)
     {
-        $max_power = 25000;
+        $max_power = 60000; // in Watt
         $totalkwh = $value;
         
         global $redis;
@@ -1462,7 +1366,9 @@ class Process_ProcessList
         if ($redis->exists("process:kwhaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:kwhaccumulator:$feedid",array('time','value'));
     
-            $last_feed  = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->feed->get_timevalue($feedid);
+            if ($last_feed===null) return $value; // feed does not exist
+             
             $totalkwh = $last_feed['value'];
             
             $time_diff = $time - $last_feed['time'];
@@ -1562,84 +1468,30 @@ class Process_ProcessList
     }
 
 
-    // Used as Virtual feed source of data (read from other feeds). Gets feed data for the specified time range in $options variable, 
-    // Set data_sampling to false in settings.php to allow precise average feed data calculation. It will be 10x slower!
+    // Fetch datapoint from source feed data at specified timestamp
+    // Loads full feed to data cache if it's the first time to load
     public function source_feed_data_time($feedid, $time, $value, $options)
     {
-        global $settings;
-        $starttime = microtime(true);
-        $value = null;
-        if (isset($options['start']) && isset($options['end'])) {
-            $start = $options['start']; // if option array has start and end time, use it
-            $end = $options['end'];
-            if (isset($options['interval'])) {
-                $interval=$options['interval'];
-            } else {
-                $interval = ($end - $start);
-            }
-            if ($settings["feed"]["virtualfeed"]["data_sampling"]) {
-                // To speed up reading, but will miss some average data
-                $meta=$this->feed->get_meta($feedid);
-                if (isset($meta->interval) && (int)$meta->interval > 1) {
-                    $interval = (int)$meta->interval; // set engine interval 
-                    $end = $start; 
-                    $start = $end - ($interval * 2); // search past x interval secs
-                } else if ($interval > 5000) { //83m interval is high a table scan will happen in engine
-                    $end = $start; 
-                    $start = $end - 60; // force search past 1m 
-                    $interval = 1;
-                } else if ($interval > 300) { // 5m
-                    $end = $start; 
-                    $start = $end - 20; //  search past 20s
-                    $interval = 1;
-                } else if ($interval < 5) { // 5s
-                    $end = $start; 
-                    $start = $end - 10; //  search past 10s
-                    $interval = 1;
-                }
-            }
-            $start*=1000; // convert to milliseconds for engine
-            $end*=1000;
-            $data = $this->feed->get_data($feedid,$start,$end,$interval,1,1); // get data from feed engine with skipmissing and limit interval options
-        } else {
-            
-            $data = $this->feed->get_timevalue($feedid); // get last data from feed engine 
-            $data = array(array($data['time'], $data['value'])); // convert last data
-            $end = $time; 
-            $start = $end;
-            $interval = ($end - $start);
+        // Find out why these are not always set?
+        if (!isset($options['start']) || !isset($options['end'])) return false;
+        
+        // Load feed to data cache if it has not yet been loaded
+        if (!isset($this->data_cache[$feedid])) {
+            $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],$options['average'],$options['timezone'],'unix',false,0,0);
         }
 
-        //$this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=$start end=$end len=".(($end - $start))." int=$interval - BEFORE GETDATA");
-
-        if ($data) {
-            $cnt=count($data);
-            if ($cnt>0) {
-                $p = 0;
-                $sum = 0;
-                while($p<$cnt) {
-                    if (isset($data[$p][1]) && is_numeric($data[$p][1])) {
-                        $sum += $data[$p][1];
-                    }
-                    $p++;
-                }
-                $value = ($sum / $cnt); // return average value
-            }
-            // logging 
-            $endtime = microtime(true);
-            $timediff = $endtime - $starttime;
-            $this->log->info("source_feed_data_time() ". ($settings["feed"]["virtualfeed"]["data_sampling"] ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
-        } else {
-            $this->log->info("source_feed_data_time() NODATA feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval value=$value ");
+        // Return value
+        if (isset($this->data_cache[$feedid][$options['index']])) {
+            return $this->data_cache[$feedid][$options['index']][1];
         }
-        return $value;
+        return null;
     }
 
     public function add_source_feed($feedid, $time, $value, $options)
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last + $value;
         return $value;
     }
@@ -1648,7 +1500,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
         return $value - $myvar;
     }
@@ -1657,7 +1509,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $value = $last * $value;
         return $value;
     }
@@ -1666,7 +1518,7 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
         
-        if ($value==null || $last==null) return null;
+        if ($value===null || $last===null) return null;
         $myvar = $last*1;
 
         if ($myvar!=0) {

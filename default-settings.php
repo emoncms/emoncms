@@ -4,6 +4,8 @@
 # ------------------------------------------------------------
     
 $_settings = array(
+// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+"domain" => false,
 // Suggested installation path for symlinked emoncms modules /opt/emoncms
 "emoncms_dir" => "/opt/emoncms",
 // Suggested installation path for emonpi and EmonScripts repository: /opt/openenergymonitor
@@ -48,7 +50,9 @@ $_settings = array(
     'user'      => '',
     'password'  => '',
     'basetopic' => 'emon',
-    'client_id' => 'emoncms'
+    'client_id' => 'emoncms',
+    'userid'    => 1,
+    'multiuser' => false
 ),
 
 // Input
@@ -61,13 +65,11 @@ $_settings = array(
 "feed"=>array(
     // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
     // Place a ',' as the first character on all uncommented engines lines but first.
-    // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
     'engines_hidden'=>array(
      Engine::MYSQL         // 0  Mysql traditional
     ,Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
     //,Engine::PHPTIMESERIES // 2
     //,Engine::PHPFINA      // 5
-    ,Engine::PHPFIWA      // 6
     ,Engine::CASSANDRA    // 10 Apache Cassandra
     ),
 
@@ -79,10 +81,9 @@ $_settings = array(
         'sleep' => 60
     ),
     
-    // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
+    // Engines working folder. Default is /var/lib/phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
-    'phpfiwa'       => array('datadir'  => '/var/lib/phpfiwa/'),
     'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
     'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
     'cassandra'     => array('keyspace' => 'emoncms'),
@@ -179,12 +180,14 @@ $_settings = array(
 "smtp"=>array(
     // Email address to email proccessed input values
     'default_emailto' => '',
-    
+    'from_email' => '',
+    'from_name' => '',
+    // sendmail, when enabled we use local email server instead smtp relay
+    'sendmail' => false,
+    // lines below are ignored when sendmail is enabled
     'host'=>"",
     // 25, 465, 587
     'port'=>"",
-    'from_email' => '',
-    'from_name' => '',
     // comment lines below that dont apply
     // ssl, tls
     'encryption'=>"",

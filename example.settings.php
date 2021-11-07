@@ -13,6 +13,8 @@
 // -----------------------------------------------------
 
 $settings = array(
+// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+"domain" => false,
 
 // MYSQL Database settings
 "sql"=>array(
@@ -42,10 +44,10 @@ $settings = array(
 "feed"=>array(
     // Supported engines. List engines by id to disable feed creation.
     // Existing feeds with a hidden engine still work
-    // If using emoncms in low-write mode, ensure that PHPFIWA is disabled
-    // MYSQL:0, MYSQLMEMORY:8, PHPTIMESERIES:2, PHPFINA:5, PHPFIWA:6, CASSANDRA:10
+
+    // MYSQL:0, MYSQLMEMORY:8, PHPTIMESERIES:2, PHPFINA:5, CASSANDRA:10
     // 5:phpfina and 2:phptimeseries are the recommended emoncms feed engines
-    'engines_hidden'=>array(0,6,8,10),
+    'engines_hidden'=>array(0,8,10),
     // Buffer data to be written to
     'redisbuffer'   => array(
         'enabled' => false,

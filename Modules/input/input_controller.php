@@ -126,11 +126,6 @@ function input_controller()
                 'device_module' => $device_module,
                 'feedviewpath' => $settings['interface']['feedviewpath']
             ));
-        }    
-        else if ($device && $route->action == 'schedule') {
-            $route->format = "html";
-            textdomain("messages");
-            return view("Modules/input/Views/schedule.php", array());
         }
     }
     

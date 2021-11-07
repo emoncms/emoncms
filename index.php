@@ -22,17 +22,19 @@ require "locale.php";
 
 $emoncms_version = ($settings['feed']['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
-$path = get_application_path();
+$path = get_application_path($settings["domain"]);
 $sidebarFixed = true;
 
 require "Lib/EmonLogger.php";
 $log = new EmonLogger(__FILE__);
-if (isset($_GET['q'])) {
-    $log->info($_GET['q']);
-}
 
 // 2) Database
 if ($settings['redis']['enabled']) {
+    # Check Redis PHP modules is loaded
+    if (!extension_loaded('redis')) {
+        echo "Your PHP installation appears to be missing the <b>Redis</b> extension which is required by Emoncms current settings. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
+        die;
+    }
     $redis = new Redis();
     $connected = $redis->connect($settings['redis']['host'], $settings['redis']['port']);
     if (!$connected) {
@@ -59,13 +61,13 @@ $mqtt = false;
 
 # Check MySQL PHP modules are loaded
 if (!extension_loaded('mysql') && !extension_loaded('mysqli')) {
-    echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
+    echo "Your PHP installation appears to be missing the <b>MySQL extension(s)</b> which are required by Emoncms. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
     die;
 }
 
 # Check Gettext PHP  module is loaded
 if (!extension_loaded('gettext')) {
-    echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)";
+    echo "Your PHP installation appears to be missing the <b>gettext</b> extension which is required by Emoncms. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
     die;
 }
     
@@ -341,56 +343,34 @@ if ($route->format == 'json') {
             }
         }
     }
-} elseif ($route->format == 'html') {
-    // Select the theme
-    $themeDir = "Theme/" . $settings["interface"]["theme"] . "/";
+} else if ($route->format == 'html') {
     if ($embed == 1) {
-        print view($themeDir . "embed.php", $output);
+        print view("Theme/embed.php", $output);
     } else {
-        $menu = load_menu();
-        
-        // EMONCMS MENU
-        if ($session['write']) {
-            $menu['tabs'][] = array(
-                'icon'=>'menu',
-                'title'=> _("Emoncms"),
-                'text'=> _("Setup"),
-                'path' => 'feed/list',
-                'order' => 0,
-                'data'=> array(
-                    'sidebar' => '#sidebar_emoncms'
-                )
-            );
-        }
+        // Menu
+        $menu = array();
+        // Create initial entry for setup menu
+        $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
+        if (!$session["write"]) $menu["setup"]["name"] = "Emoncms";
 
-        include_once("Lib/misc/nav_functions.php");
-        sortMenu($menu);
-        // debugMenu('sidebar');
-        $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
-        $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
+        // Itterates through installed modules to load module menus
+        load_menu();
+        // Pass menu through to output view - passed on the js based builder
+        $output['menu'] = $menu;
+        
+        $output['svg_icons'] = view("Theme/svg_icons.svg", array());
         
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
-
-        $output['sidebar'] = view(
-            $themeDir . "sidebar_view.php",
-            array(
-            'menu' => $menu,
-            'path' => $path,
-            'session' => $session,
-            'route' => $route
-            )
-        );
-        $output['page_classes'][] = 'has-sidebar';
+        
         if (!$session['read']) {
             $output['page_classes'][] = 'collapsed manual';
         } else {
-            if (!in_array("manual", $output['page_classes'])) {
-                $output['page_classes'][] = 'auto';
-            }
+            if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
         }
-        print view($themeDir . "theme.php", $output);
+        print view("Theme/theme.php", $output);
     }
+
 } elseif ($route->format == 'text') {
     header('Content-Type: text/plain');
     print $output['content'];

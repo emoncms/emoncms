@@ -37,7 +37,6 @@ class Eventp_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateGtEqualSkip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
@@ -50,7 +49,6 @@ class Eventp_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateLtSkip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
@@ -63,7 +61,6 @@ class Eventp_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifMuteSkip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
@@ -76,7 +73,6 @@ class Eventp_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifNotMuteSkip",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
@@ -89,7 +85,6 @@ class Eventp_ProcessList
               "argtype"=>ProcessArg::TEXT,
               "function"=>"sendEmail",
               "datafields"=>0,
-              "datatype"=>DataType::UNDEFINED,
               "unit"=>"",
               "group"=>_("Event"),
               "nochange"=>true,
@@ -151,7 +146,7 @@ class Eventp_ProcessList
                 $this->parentProcessModel->proc_skip_next = true;
             } else {
                 $redis->set($redispath, $timenow);
-                $redis->setTimeout($redispath, $ttl); // removed in $ttl seconds.
+                $redis->expire($redispath, $ttl); // removed in $ttl seconds.
             }
         }
         return $value;
@@ -167,7 +162,7 @@ class Eventp_ProcessList
             if (!$redis->exists($redispath)) {
                 $this->parentProcessModel->proc_skip_next = true;
                 $redis->set($redispath, $timenow);
-                $redis->setTimeout($redispath, $ttl); // removed in $ttl seconds.
+                $redis->expire($redispath, $ttl); // removed in $ttl seconds.
             }
         }
         return $value;

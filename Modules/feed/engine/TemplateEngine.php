@@ -1,5 +1,8 @@
 <?php
 
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
 class TemplateEngine implements engine_methods
 {
     private $log;
@@ -25,8 +28,7 @@ class TemplateEngine implements engine_methods
     */
     public function create($feedid,$options)
     {
-        $this->log->info("create() dummy feed feedid=$feedid");
-        return true; // if successful 
+        return true;
     }
 
     /**
@@ -131,21 +133,9 @@ class TemplateEngine implements engine_methods
      * please note that unix timestamps should be expressed in ms cause coming from the js
      * 
     */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        $data = array();
-
-        // example of datapoint format
-        $time = time() * 1000; // time in milliseconds
-        $value = 123.4; 
-        $data[] = array($time,$value);
-
-        return $data;
-    }
-
-    public function get_data_DMY($id,$start,$end,$mode,$timezone)
-    {
-    
+        return array();
     }
     
     public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
@@ -154,11 +144,6 @@ class TemplateEngine implements engine_methods
     }
 
     public function export($feedid,$start)
-    {
-
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
 
     }
@@ -181,16 +166,6 @@ class TemplateEngine implements engine_methods
         foreach ($this->writebuffer as $feedid=>$data) {
         // $this->someSaveMechanism->array($data[$p][0],$data[$p][1]);
         }
-    }
-
-    public function get_average($id,$start,$end,$interval)
-    {
-    
-    }
-    
-    public function get_average_DMY($id,$start,$end,$mode,$timezone)
-    {
-    
     }
     
     public function upload_fixed_interval($id,$start,$interval,$npoints)

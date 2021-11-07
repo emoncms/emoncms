@@ -59,7 +59,7 @@ Create a folder on your system for emoncms data to be saved in to, ie:
 
     C:\Users\Username\emoncmsdata
 
-Inside this folder create 3 other folders: phpfiwa, phpfina and phptimeseries, these are the main feed engines used by emoncms.
+Inside this folder create 3 other folders: phpfina and phptimeseries, these are the main feed engines used by emoncms.
 
 #### 8) Set emoncms settings.ini
 

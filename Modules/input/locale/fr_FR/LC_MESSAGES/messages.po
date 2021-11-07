@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-28 10:58+0200\n"
-"PO-Revision-Date: 2020-08-28 10:58+0200\n"
+"POT-Creation-Date: 2021-07-14 07:41+0200\n"
+"PO-Revision-Date: 2021-07-14 07:41+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.4.1\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/input_api.php:8
@@ -441,7 +441,7 @@ msgid "Are you sure you want to delete?"
 msgstr "Êtes-vous sûr de vouloir supprimer cette source ?"
 
 #: ../../../Views/input_dialog.php:72 ../../../Views/input_dialog.php:103
-#: ../../../Views/input_view.php:212 ../../../input_menu.php:4
+#: ../../../Views/input_view.php:209 ../../../input_menu.php:3
 msgid "Inputs"
 msgstr "Sources"
 
@@ -485,50 +485,50 @@ msgstr "nom"
 msgid "description"
 msgstr "description"
 
-#: ../../../Views/input_view.js:182 ../../../Views/input_view.js:186
+#: ../../../Views/input_view.js:186 ../../../Views/input_view.js:190
 msgid "Please install the device module to enable this feature"
 msgstr "Installer SVP le module device pour activer cette fonctionnalité"
 
-#: ../../../Views/input_view.js:189
+#: ../../../Views/input_view.js:193
 msgid "No device key created"
 msgstr "Aucune clé device créée"
 
-#: ../../../Views/input_view.js:304 ../../../Views/input_view.php:36
+#: ../../../Views/input_view.js:308 ../../../Views/input_view.php:36
 msgid "Collapse"
 msgstr "Replier"
 
-#: ../../../Views/input_view.js:306 ../../../Views/input_view.php:37
+#: ../../../Views/input_view.js:310 ../../../Views/input_view.php:37
 msgid "Expand"
 msgstr "Étendre"
 
-#: ../../../Views/input_view.js:377 ../../../Views/input_view.js:490
-#: ../../../Views/input_view.php:223
+#: ../../../Views/input_view.js:381 ../../../Views/input_view.js:494
+#: ../../../Views/input_view.php:220
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../../Views/input_view.js:404
+#: ../../../Views/input_view.js:408
 msgid "Deleted"
 msgstr "Supprimé"
 
-#: ../../../Views/input_view.js:420
+#: ../../../Views/input_view.js:424
 msgid "Error"
 msgstr "Erreur"
 
-#: ../../../Views/input_view.js:548 ../../../Views/input_view.js:600
-#: ../../../Views/input_view.js:1288
+#: ../../../Views/input_view.js:552 ../../../Views/input_view.js:604
+#: ../../../Views/input_view.js:1314
 msgid "Saved"
 msgstr "Enregistré"
 
-#: ../../../Views/input_view.js:692 ../../../Views/input_view.js:696
-#: ../../../Views/input_view.js:700
+#: ../../../Views/input_view.js:696 ../../../Views/input_view.js:700
+#: ../../../Views/input_view.js:704
 msgid "Nothing changed"
 msgstr "Aucune modification"
 
-#: ../../../Views/input_view.js:937 ../../../Views/input_view.php:31
+#: ../../../Views/input_view.js:941 ../../../Views/input_view.php:31
 msgid "Configure your device here"
 msgstr "Configurer votre appareil ici"
 
-#: ../../../Views/input_view.js:1199 ../../../Views/input_view.js:1230
+#: ../../../Views/input_view.js:1225 ../../../Views/input_view.js:1256
 #: ../../../Views/input_view.php:35
 msgid "Saving"
 msgstr "Enregistrement"
@@ -553,40 +553,40 @@ msgstr "Mise à jour"
 msgid "Show node key"
 msgstr "Afficher la clé du noeud"
 
-#: ../../../Views/input_view.php:33 ../../../Views/input_view.php:253
+#: ../../../Views/input_view.php:33 ../../../Views/input_view.php:250
 msgid "Configure device using device template"
 msgstr "Configurer l'appareil en utilisant le modèle d'appareil"
 
-#: ../../../Views/input_view.php:34 ../../../Views/input_view.php:276
+#: ../../../Views/input_view.php:34 ../../../Views/input_view.php:273
 msgid "Configure Input processing"
 msgstr "Configurer le traitement de la source"
 
-#: ../../../Views/input_view.php:38 ../../../Views/input_view.php:237
+#: ../../../Views/input_view.php:38 ../../../Views/input_view.php:234
 #, php-format
 msgid "Select all %s inputs"
 msgstr "Sélectionner l'ensemble des %s sources"
 
-#: ../../../Views/input_view.php:39 ../../../Views/input_view.php:219
+#: ../../../Views/input_view.php:39 ../../../Views/input_view.php:216
 msgid "Select all"
 msgstr "Tout sélectionner"
 
-#: ../../../Views/input_view.php:213
+#: ../../../Views/input_view.php:210
 msgid "Input API Help"
 msgstr "Aide de l'API Source"
 
-#: ../../../Views/input_view.php:224
+#: ../../../Views/input_view.php:221
 msgid "Edit"
 msgstr "Modifier"
 
-#: ../../../Views/input_view.php:250
+#: ../../../Views/input_view.php:247
 msgid "Show device key"
 msgstr "Afficher la clé de l'appareil"
 
-#: ../../../Views/input_view.php:284 ../../../Views/input_view.php:299
+#: ../../../Views/input_view.php:281 ../../../Views/input_view.php:296
 msgid "No inputs created"
 msgstr "Aucune source de données n'est disponible"
 
-#: ../../../Views/input_view.php:285 ../../../Views/input_view.php:300
+#: ../../../Views/input_view.php:282 ../../../Views/input_view.php:297
 msgid ""
 "Inputs are the main entry point for your monitoring device. Configure your "
 "device to post values here, you may want to follow the <a href=\"api\">Input "
@@ -597,11 +597,11 @@ msgstr ""
 "consulter l'<a href=\"api\">Aide de l'API Source</a> afin de générer votre "
 "requête."
 
-#: ../../../Views/input_view.php:287 ../../../Views/input_view.php:304
+#: ../../../Views/input_view.php:284 ../../../Views/input_view.php:301
 msgid "New device"
 msgstr "Nouvel appareil"
 
-#: ../../../Views/input_view.php:291
+#: ../../../Views/input_view.php:288
 msgid "Loading"
 msgstr "Chargement"
 

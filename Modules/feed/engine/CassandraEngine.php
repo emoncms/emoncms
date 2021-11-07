@@ -166,7 +166,7 @@ class CassandraEngine implements engine_methods
      * @param integer $limitinterval not implemented
      *
      */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         global $settings; // max_datapoints;
 
@@ -207,17 +207,6 @@ class CassandraEngine implements engine_methods
         $feedid = (int) $feedid;
         $start = (int) $start;
         $this->log->info("export($feedid,$start)");
-        // TODO implement
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-    		$feedid = (int) $feedid;
-    		$start = (int) $start;
-    		$end = (int) $end;
-    		$outinterval = (int) $outinterval;
-    		
-        $this->log->info("csv_export($feedid,$start,$end,$outinterval)");  // add: $usertimezone
         // TODO implement
     }
 

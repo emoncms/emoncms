@@ -109,11 +109,9 @@ Exit mysql by:
     
 ### Create data repositories for emoncms feed engines
 
-    sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
     sudo mkdir /var/lib/phptimeseries
 
-    sudo chown www-data:root /var/lib/phpfiwa
     sudo chown www-data:root /var/lib/phpfina
     sudo chown www-data:root /var/lib/phptimeseries
 

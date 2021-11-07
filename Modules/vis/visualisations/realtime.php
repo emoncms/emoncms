@@ -6,14 +6,14 @@
    Emoncms - open source energy visualisation
    Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
  ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
     
     <?php if (!$embed) { ?>
     <h2><?php echo _("Realtime data:"); ?> <?php echo $feedidname; ?></h2>
@@ -41,9 +41,14 @@
 
     var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
     if (plotColour.indexOf("#") == -1) {
         plotColour = "#" + plotColour;
     }
+
+    var backgroundColour = urlParams.colourbg;
+    if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+    $("body").css("background-color","#"+backgroundColour);
 
     var initzoom = urlParams.initzoom;
     if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '15'; // Initial zoom default to 15 mins

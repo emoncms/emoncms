@@ -8,16 +8,15 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
     */
-
+    defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $embed;
-    if (!isset($feedidname)) $feedidname = "";
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js"></script>
 
 <div id="vis-title"></div>
 
@@ -65,6 +64,11 @@ var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
+var backgroundColour = urlParams.colourbg;
+if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+$("body").css("background-color","#"+backgroundColour);
+
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;
@@ -98,6 +102,7 @@ if (embed) placeholder.height($(window).height()-top_offset);
 var timeWindow = (3600000*24.0*initzoom);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
+view.limit_x = false;
 
 var data = [];
 
@@ -165,12 +170,11 @@ $(function() {
             data = out;
         } 
        
-        stats.calc(data);
-        
-        $("#stats-mean").html(stats.mean.toFixed(dp)+units);
-        $("#stats-min").html(stats.min.toFixed(dp)+units);
-        $("#stats-max").html(stats.max.toFixed(dp)+units);
-        $("#stats-stdev").html(stats.stdev.toFixed(dp)+units);
+        var s = stats(data);
+        $("#stats-mean").html(s.mean.toFixed(dp)+units);
+        $("#stats-min").html(s.minval.toFixed(dp)+units);
+        $("#stats-max").html(s.maxval.toFixed(dp)+units);
+        $("#stats-stdev").html(s.stdev.toFixed(dp)+units);
         $("#stats-npoints").html(data.length);
         plot();
     }

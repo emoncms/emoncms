@@ -16,26 +16,61 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 // If one module has a language it will be detected
 function directoryLocaleScan($dir)
 {
+    $directoryList = array();
+
     if (isset($dir) && is_readable($dir)) {
-        $dlist = array();
+
         $dir = realpath($dir);
 
-        $dlist = glob($dir."/{Modules,Theme}/*/locale/*", GLOB_ONLYDIR | GLOB_BRACE);
+        $directoryList = glob($dir."/Modules/*/locale/*", GLOB_ONLYDIR);
+        $directoryList = array_merge($directoryList, glob($dir."/Theme/*/locale/*", GLOB_ONLYDIR));
 
-        $dlist = array_map(
+        $directoryList = array_map(
             function ($item) {
                 return basename($item);
             },
-            $dlist
+            $directoryList
         );
-
-        return array_unique($dlist);
     }
+
+    return array_unique($directoryList);
 }
 
 function get_available_languages()
 {
     return directoryLocaleScan(dirname(__FILE__));
+}
+
+function get_available_languages_with_names()
+{
+    $available_languages = get_available_languages();
+    
+    static $language_names = null;
+    if ($language_names === null) {
+        $json_data = file_get_contents(__DIR__.'/Lib/language_country.json');
+        $language_names = json_decode($json_data, true);
+    }
+    
+    $available_languages_with_names = array();
+    
+    foreach ($available_languages as $code){
+        
+        $available_languages_with_names[$code] = $language_names[$code];
+    }
+    return $available_languages_with_names;
+}
+
+function languagecode_to_name($langs) {
+    static $lang_names = null;
+    if ($lang_names === null) {
+        $json_data = file_get_contents(__DIR__.'/Lib/language_country.json');
+        $lang_names = json_decode($json_data, true);
+    }
+    foreach ($langs as $key=>$val){
+      $lang[$key]=$lang_names[$val];
+    }
+   asort($lang);
+   return $lang;
 }
 
 

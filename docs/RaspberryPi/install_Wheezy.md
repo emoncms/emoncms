@@ -80,11 +80,11 @@ Exit mysql:
 
 ### Create data repositories for emoncms feed engines:
 
-    sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
+    sudo mkdir /var/lib/{phpfina,phptimeseries}
 
 and set their permissions
 
-    sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
+    sudo chown www-data:root /var/lib/{phpfina,phptimeseries}
 
 ### Configure emoncms database settings
 

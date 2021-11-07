@@ -46,7 +46,7 @@ function get_feed_data_async(callback,context,feedID,start,end,interval,skipmiss
 // Get feed data
 function get_feed_data_DMY(feedID,start,end,mode){
   var feedIn = [];
-  var query = "id="+feedID+"&start="+parseInt(start)+"&end="+parseInt(end)+"&mode="+mode;
+  var query = "id="+feedID+"&start="+parseInt(start)+"&end="+parseInt(end)+"&interval="+mode;
   if (apikey!="") query+= "&apikey="+apikey;
   $.ajax({                  
     url: path+'feed/data.json',             
@@ -60,7 +60,7 @@ function get_feed_data_DMY(feedID,start,end,mode){
 
 // Get feed data async with callback
 function get_feed_data_DMY_async(callback,context,feedID,start,end,mode){
-  var query = "id="+feedID+"&start="+start+"&end="+end+"&mode="+mode;
+  var query = "id="+feedID+"&start="+start+"&end="+end+"&interval="+mode;
   if (apikey!="") query+= "&apikey="+apikey;
   return $.ajax({                  
     url: path+'feed/data.json',             
@@ -73,32 +73,6 @@ function get_feed_data_DMY_async(callback,context,feedID,start,end,mode){
       }
     }
   });
-}
-
-// Get histogram data
-function get_histogram_data(feedID,start,end){
-  var feedIn = [];
-  $.ajax({                  
-    url: path+'feed/histogram.json',             
-    data: "id="+feedID+"&start="+start+"&end="+end+"&apikey="+apikey,  
-    dataType: 'json',               
-    async: false,
-    success: function(dt) { feedIn = dt; }
-  });
-  return feedIn;
-}
-
-// Get kwh per day at power range
-function get_kwhatpower(feedid,rmin,rmax){
-  var feedIn = [];
-  $.ajax({                    
-    url: path+'feed/kwhatpower.json',             
-    data: "id="+feedid+"&min="+rmin+"&max="+rmax+"&apikey="+apikey,
-    dataType: 'json',
-    async: false,            
-    success: function(dt) { feedIn = dt; } 
-  });
-  return feedIn;
 }
 
 // Get feed data
