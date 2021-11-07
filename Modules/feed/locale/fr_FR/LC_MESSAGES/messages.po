@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-01 18:22+0100\n"
-"PO-Revision-Date: 2021-11-01 18:25+0100\n"
+"POT-Creation-Date: 2021-11-07 11:38+0100\n"
+"PO-Revision-Date: 2021-11-07 11:40+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -37,7 +37,7 @@ msgstr "Temps de départ Flux"
 msgid "Realtime"
 msgstr "Temps réel"
 
-#: ../../../Views/feedlist_view.php:45 ../../../Views/feedlist_view.php:271
+#: ../../../Views/feedlist_view.php:45 ../../../Views/feedlist_view.php:272
 msgid "Daily"
 msgstr "Quotidien"
 
@@ -125,149 +125,130 @@ msgid "Refresh feed size"
 msgstr "Rafraîchir la taille du flux"
 
 #: ../../../Views/feedlist_view.php:177
-msgid "New virtual feed"
-msgstr "Nouveau flux virtuel"
+msgid "New feed"
+msgstr "Nouveau flux"
 
-#: ../../../Views/feedlist_view.php:188
+#: ../../../Views/feedlist_view.php:178
+msgid "Import data"
+msgstr "Importer données"
+
+#: ../../../Views/feedlist_view.php:189
 msgid "Edit feed"
 msgstr "Modifier le flux"
 
-#: ../../../Views/feedlist_view.php:191
+#: ../../../Views/feedlist_view.php:192
 msgid "Feed node:"
 msgstr "Nœud de flux : "
 
-#: ../../../Views/feedlist_view.php:197
+#: ../../../Views/feedlist_view.php:198
 msgid "Feed name:"
 msgstr "Nom de flux :"
 
-#: ../../../Views/feedlist_view.php:200
+#: ../../../Views/feedlist_view.php:201
 msgid "Make feed public:"
 msgstr "Rendre ce flux public"
 
-#: ../../../Views/feedlist_view.php:203
+#: ../../../Views/feedlist_view.php:204
 msgid "Feed Unit"
 msgstr "Unité de flux"
 
-#: ../../../Views/feedlist_view.php:216
+#: ../../../Views/feedlist_view.php:217
 msgid "Other"
 msgstr "Autre"
 
-#: ../../../Views/feedlist_view.php:223 ../../../Views/feedlist_view.php:293
+#: ../../../Views/feedlist_view.php:224 ../../../Views/feedlist_view.php:293
 #: ../../../Views/feedlist_view.php:351
 msgid "Close"
 msgstr "Fermer"
 
-#: ../../../Views/feedlist_view.php:224 ../../../Views/feedlist_view.php:371
+#: ../../../Views/feedlist_view.php:225 ../../../Views/feedlist_view.php:383
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../../../Views/feedlist_view.php:234
+#: ../../../Views/feedlist_view.php:235
 msgid "CSV export"
 msgstr "Export CSV"
 
-#: ../../../Views/feedlist_view.php:237
+#: ../../../Views/feedlist_view.php:238
 msgid "Select the time range and interval that you wish to export: "
 msgstr ""
 "Sélectionner la plage et l'intervalle de temps que vous souhaitez exporter : "
 
-#: ../../../Views/feedlist_view.php:241
+#: ../../../Views/feedlist_view.php:242
 msgid "Start date & time"
 msgstr "Date & heure de début"
 
-#: ../../../Views/feedlist_view.php:248
+#: ../../../Views/feedlist_view.php:249
 msgid "End date & time "
 msgstr "Date & heure de fin "
 
-#: ../../../Views/feedlist_view.php:257
+#: ../../../Views/feedlist_view.php:258
 msgid "Interval"
 msgstr "Intervalle"
 
-#: ../../../Views/feedlist_view.php:259
-msgid "Auto"
-msgstr "Auto"
-
 #: ../../../Views/feedlist_view.php:260
+msgid "Original feed interval"
+msgstr "Intervalle du flux original"
+
+#: ../../../Views/feedlist_view.php:261
 msgid "5s"
 msgstr "5s"
 
-#: ../../../Views/feedlist_view.php:261
+#: ../../../Views/feedlist_view.php:262
 msgid "10s"
 msgstr "10s"
 
-#: ../../../Views/feedlist_view.php:262
+#: ../../../Views/feedlist_view.php:263
 msgid "30s"
 msgstr "30s"
 
-#: ../../../Views/feedlist_view.php:263
+#: ../../../Views/feedlist_view.php:264
 msgid "1 min"
 msgstr "1 min"
 
-#: ../../../Views/feedlist_view.php:264
+#: ../../../Views/feedlist_view.php:265
 msgid "5 mins"
 msgstr "5 mins"
 
-#: ../../../Views/feedlist_view.php:265
+#: ../../../Views/feedlist_view.php:266
 msgid "10 mins"
 msgstr "10 mins"
 
-#: ../../../Views/feedlist_view.php:266
+#: ../../../Views/feedlist_view.php:267
 msgid "15 mins"
 msgstr "15 mins"
 
-#: ../../../Views/feedlist_view.php:267
+#: ../../../Views/feedlist_view.php:268
 msgid "30 mins"
 msgstr "30 mins"
 
-#: ../../../Views/feedlist_view.php:268
+#: ../../../Views/feedlist_view.php:269
 msgid "1 hour"
 msgstr "1 heure"
 
-#: ../../../Views/feedlist_view.php:269
+#: ../../../Views/feedlist_view.php:270
 msgid "6 hour"
 msgstr "6 heures"
 
-#: ../../../Views/feedlist_view.php:270
+#: ../../../Views/feedlist_view.php:271
 msgid "12 hour"
 msgstr "12 heures"
 
-#: ../../../Views/feedlist_view.php:272
+#: ../../../Views/feedlist_view.php:273
 msgid "Weekly"
 msgstr "Hebdomadaire"
 
-#: ../../../Views/feedlist_view.php:273
+#: ../../../Views/feedlist_view.php:274
 msgid "Monthly"
 msgstr "Mensuel"
 
-#: ../../../Views/feedlist_view.php:274
+#: ../../../Views/feedlist_view.php:275
 msgid "Annual"
 msgstr "Annuel"
 
-#: ../../../Views/feedlist_view.php:278
+#: ../../../Views/feedlist_view.php:281
 msgid "Date time format"
 msgstr "Format de l'heure de la date"
-
-#: ../../../Views/feedlist_view.php:282
-msgid "Offset secs (for daily)"
-msgstr "Secondes décalage (pour quotidien)"
-
-#: ../../../Views/feedlist_view.php:287
-msgid ""
-"Selecting an interval shorter than the feed interval (or Auto) will use the "
-"feed interval instead. Averages are only returned for feed engines with "
-"built in averaging."
-msgstr ""
-"La sélection d'un intervalle plus petit que l'intervalle du flux (ou Auto) "
-"utilisera l'intervalle du flux à la place. Les moyennes sont retournées "
-"seulement pour les moteurs de flux avec intégration interne des moyennes."
-
-#: ../../../Views/feedlist_view.php:288
-msgid ""
-"Date time in excel format is in user timezone. Offset can be set if "
-"exporting in Unix epoch time format."
-msgstr ""
-"L'heure de la date au format excel est dans le fuseau horaire de "
-"l'utilisateur. Le décalage peut être réglé si vous exportez au format "
-"d'heure epoch Unix."
 
 #: ../../../Views/feedlist_view.php:292
 msgid "Estimated download size: "
@@ -365,8 +346,8 @@ msgid "Delete feed permanently"
 msgstr "Supprimer le flux de manière permanente?"
 
 #: ../../../Views/feedlist_view.php:361
-msgid "New Virtual Feed"
-msgstr "Nouveau Flux Virtuel"
+msgid "New Feed"
+msgstr "Nouveau flux"
 
 #: ../../../Views/feedlist_view.php:364
 msgid "Feed Name: "
@@ -376,33 +357,37 @@ msgstr "Nom de flux : "
 msgid "Feed Tag: "
 msgstr "Étiquette flux : "
 
-#: ../../../Views/feedlist_view.php:370
+#: ../../../Views/feedlist_view.php:368
+msgid "Feed Engine: "
+msgstr "Moteur de flux : "
+
+#: ../../../Views/feedlist_view.php:382 ../../../Views/importer.php:43
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/feedlist_view.php:617
+#: ../../../Views/feedlist_view.php:632
 msgid "Unable to rename multiple feeds"
 msgstr "Impossible de renommer plusieurs champs"
 
-#: ../../../Views/feedlist_view.php:833
+#: ../../../Views/feedlist_view.php:848
 msgid "1 Input process associated with this feed"
 msgstr "1 traitement Source associé à ce flux"
 
-#: ../../../Views/feedlist_view.php:837
+#: ../../../Views/feedlist_view.php:852
 #, php-format
 msgid "%s Input processes associated with these feeds"
 msgstr "%s traitements Source associé à ces flux"
 
-#: ../../../Views/feedlist_view.php:838
+#: ../../../Views/feedlist_view.php:853
 #, php-format
 msgid "%s Feeds selected"
 msgstr "%s Flux sélectionnés"
 
-#: ../../../Views/feedlist_view.php:908
+#: ../../../Views/feedlist_view.php:923
 msgid "Out of range"
 msgstr "Hors plage"
 
-#: ../../../Views/feedlist_view.php:1080
+#: ../../../Views/feedlist_view.php:1095
 msgid ""
 "This is a new feature. Consider backing up your data before you continue. OK "
 "to continue?"
@@ -410,63 +395,71 @@ msgstr ""
 "Ceci est une nouvelle fonctionnalité. Veuillez effectuer une sauvegarde de "
 "vos données avant de continuer. Ok pour continuer?"
 
-#: ../../../Views/feedlist_view.php:1109
+#: ../../../Views/feedlist_view.php:1124
 msgid "\"Trim\" not available for this storage engine"
 msgstr "\"Trim\" non disponible pour ce moteur de stockage"
 
-#: ../../../Views/feedlist_view.php:1186
+#: ../../../Views/feedlist_view.php:1201
 msgid "Are you sure you want to delete all the feeds data?"
 msgstr "Êtes-vous sûr de vouloir supprimer toutes les données de ces flux ?"
 
-#: ../../../Views/feedlist_view.php:1209
+#: ../../../Views/feedlist_view.php:1224
 msgid "\"Clear\" not available for this storage engine"
 msgstr "\"Clear\" non disponible pour ce moteur de stockage"
 
-#: ../../../Views/feedlist_view.php:1215
+#: ../../../Views/feedlist_view.php:1230
 msgid "Are you sure you want to delete?"
 msgstr "Êtes-vous sûr de vouloir supprimer?"
 
-#: ../../../Views/feedlist_view.php:1219
+#: ../../../Views/feedlist_view.php:1234
 msgid "Feeds Deleted"
 msgstr "Flux supprimés"
 
-#: ../../../Views/feedlist_view.php:1234
+#: ../../../Views/feedlist_view.php:1249
 msgid "Total size of used space for feeds:"
 msgstr "Taille totale de l'espace utilisé pour les flux :"
 
-#: ../../../Views/feedlist_view.php:1386
+#: ../../../Views/feedlist_view.php:1435
 msgid "Please enter a valid start date."
 msgstr "Entrez SVP une date de début valide."
 
-#: ../../../Views/feedlist_view.php:1387
+#: ../../../Views/feedlist_view.php:1436
 msgid "Please enter a valid end date."
 msgstr "Entrez SVP une date de fin valide."
 
-#: ../../../Views/feedlist_view.php:1388
+#: ../../../Views/feedlist_view.php:1437
 msgid "Start date must be further back in time than end date."
 msgstr "La date de début doit être antérieure à la date de fin."
 
-#: ../../../Views/feedlist_view.php:1389
+#: ../../../Views/feedlist_view.php:1438
 msgid "Please select interval to download."
 msgstr "Sélectionnez SVP un intervalle de téléchargement."
 
-#: ../../../Views/feedlist_view.php:1401
+#: ../../../Views/feedlist_view.php:1466
 msgid "Estimated download file size is large."
 msgstr "La taille estimée du fichier de téléchargement est importante."
 
-#: ../../../Views/feedlist_view.php:1401
+#: ../../../Views/feedlist_view.php:1466
 msgid "Server could take a long time or abort depending on stored data size."
 msgstr ""
 "Le serveur peut prendre du temps ou abandonner suivant la taille des données "
 "enregistrées."
 
-#: ../../../Views/feedlist_view.php:1401
+#: ../../../Views/feedlist_view.php:1466
 msgid "Limit is"
 msgstr "La limite est"
 
-#: ../../../Views/feedlist_view.php:1401
+#: ../../../Views/feedlist_view.php:1466
 msgid "Try exporting anyway?"
 msgstr "Essayer l'exportation dans tous les cas?"
+
+#: ../../../Views/importer.php:7
+msgid "Import Data"
+msgstr "Importer données"
+
+#: ../../../Views/importer.php:44
+msgid "Import"
+msgstr "Importer"
 
 #: ../../../feed_api_obj.php:11
 msgid "List feeds for authenticated user"
@@ -508,77 +501,100 @@ msgstr "Dernière valeur pour plusieurs flux"
 msgid "Fetch data from a feed"
 msgstr "Récupérer des données à partir d'un flux"
 
-#: ../../../feed_api_obj.php:96
-msgid "Fetch averaged data from a feed"
-msgstr "Récupérer des données moyennes à partir d'un flux"
-
-#: ../../../feed_api_obj.php:108
+#: ../../../feed_api_obj.php:98
 msgid "Insert new data point"
 msgstr "Insérer un nouveau point de données"
 
-#: ../../../feed_api_obj.php:118
+#: ../../../feed_api_obj.php:108
 msgid "Insert multiple data points"
 msgstr "Insérer plusieurs points de données"
 
-#: ../../../feed_api_obj.php:127
+#: ../../../feed_api_obj.php:117
 msgid "Delete data point"
 msgstr "Supprimer un point de données"
 
-#: ../../../feed_api_obj.php:137
+#: ../../../feed_api_obj.php:127
 msgid "Create new feed"
 msgstr "Créer un nouveau flux"
 
-#: ../../../feed_api_obj.php:148
+#: ../../../feed_api_obj.php:138
 msgid "Delete existent feed"
 msgstr "Supprimer un flux existant"
 
-#: ../../../feed_api_obj.php:156
+#: ../../../feed_api_obj.php:146
 msgid "Update feed field"
 msgstr "Mettre à jour un champ de flux"
 
-#: ../../../feed_api_obj.php:165
+#: ../../../feed_api_obj.php:155
 msgid "Return total engines size"
 msgstr "Retourner la taille totale des moteurs"
 
-#: ../../../feed_api_obj.php:172
+#: ../../../feed_api_obj.php:162
 msgid "Return buffer points pending write"
 msgstr "Retourner les points de tampon en attente d'écriture"
 
-#: ../../../feed_api_obj.php:180
+#: ../../../feed_api_obj.php:170
 msgid "Get feed process list"
 msgstr "Obtenir la liste des traitements de flux"
 
-#: ../../../feed_api_obj.php:188
+#: ../../../feed_api_obj.php:178
 msgid "Set feed process list"
 msgstr "Définir la liste des traitements de flux"
 
-#: ../../../feed_api_obj.php:197
+#: ../../../feed_api_obj.php:187
 msgid "Reset feed process list"
 msgstr "Réinitialiser la liste des traitements de flux"
 
-#: ../../../feed_controller.php:42
+#: ../../../feed_controller.php:45
 msgid "Feed API"
 msgstr "API Flux"
 
-#: ../../../feed_model.php:1069
+#: ../../../feed_model.php:929
 msgid "Invalid proccess for Virtual Feed, try another."
 msgstr "Traitement non valide pour ce Flux Virtuel, essayez en un autre."
 
-#: ../../../feed_model.php:1079
+#: ../../../feed_model.php:939
 msgid "Invalid feed"
 msgstr "Flux non valide"
 
-#: ../../../feed_model.php:1081
+#: ../../../feed_model.php:941
 msgid "Cannot use virtual feed as source"
 msgstr "Ne peut pas utiliser le Flux Virtuel comme source"
 
-#: ../../../feed_model.php:1088
+#: ../../../feed_model.php:948
 msgid "Invalid input"
 msgstr "Source non valide"
 
-#: ../../../feed_model.php:1129
+#: ../../../feed_model.php:989
 msgid "Error setting processlist"
 msgstr "Erreur définition liste de traitement"
+
+#~ msgid "Auto"
+#~ msgstr "Auto"
+
+#~ msgid "Offset secs (for daily)"
+#~ msgstr "Secondes décalage (pour quotidien)"
+
+#~ msgid ""
+#~ "Selecting an interval shorter than the feed interval (or Auto) will use "
+#~ "the feed interval instead. Averages are only returned for feed engines "
+#~ "with built in averaging."
+#~ msgstr ""
+#~ "La sélection d'un intervalle plus petit que l'intervalle du flux (ou "
+#~ "Auto) utilisera l'intervalle du flux à la place. Les moyennes sont "
+#~ "retournées seulement pour les moteurs de flux avec intégration interne "
+#~ "des moyennes."
+
+#~ msgid ""
+#~ "Date time in excel format is in user timezone. Offset can be set if "
+#~ "exporting in Unix epoch time format."
+#~ msgstr ""
+#~ "L'heure de la date au format excel est dans le fuseau horaire de "
+#~ "l'utilisateur. Le décalage peut être réglé si vous exportez au format "
+#~ "d'heure epoch Unix."
+
+#~ msgid "Fetch averaged data from a feed"
+#~ msgstr "Récupérer des données moyennes à partir d'un flux"
 
 #~ msgid "Apikey authentication"
 #~ msgstr "Authentification clé API"
