@@ -17,7 +17,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=1"></script>
 
 <div id="vis-title"></div>
@@ -62,6 +62,8 @@
     var apikey = "<?php echo $apikey; ?>";
     var embed = <?php echo $embed; ?>;
     var valid = "<?php echo $valid; ?>";
+    
+    feed.apikey = apikey;
 
     var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
@@ -84,9 +86,6 @@
 
     var delta = urlParams.delta;
     if (delta==undefined || delta=='') delta = 0;
-
-    var mode = urlParams.mode;
-    if (mode==undefined || mode=='') mode = false;
     
     var initzoom = urlParams.initzoom;
     if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '7'; // Initial zoom default to 7 days (1 week)
@@ -104,6 +103,7 @@
     var top_offset = 0;
     var placeholder_bound = $('#placeholder_bound');
     var placeholder = $('#placeholder');
+    var previousPoint = false;
 
     var width = placeholder_bound.width();
     var height = placeholder_bound.height();
@@ -114,16 +114,27 @@
     placeholder.height(height-top_offset);
 
     if (embed) placeholder.height($(window).height()-top_offset);
-        
+
     var intervalcode=interval;
-    if (intervalcode==0 || intervalcode=='y' || intervalcode=='m' || intervalcode=='d') interval = 3600*24;
+    if (intervalcode==0 || intervalcode=='y' || intervalcode=='m' || intervalcode=='d') {
+        interval = 3600*24;
+    }
 
     var intervalms = interval * 1000;
 
-    var timeWindow = (3600000*24.0*initzoom);
+    if (intervalcode=='y') {
+       timeWindow = 3600000*24*365*5;
+    } else if (intervalcode=='m') {
+       timeWindow = 3600000*24*365;
+    } else if (intervalcode=='d') {
+       timeWindow = 3600000*24*10;
+    } else {
+       timeWindow = 3600000*24*initzoom;
+    }
+    
     view.start = +new Date - timeWindow;
     view.end = +new Date;
-
+    
     var data = [];
 
     $(function() {
@@ -141,20 +152,22 @@
         $('.graph-interval').click(function () {
             intervalcode=$(this).attr("interval");
 
-            if (intervalcode==0 || intervalcode=='y' || intervalcode=='m' || intervalcode=='d') 
+            if (intervalcode==0 || intervalcode=='y' || intervalcode=='m' || intervalcode=='d') {
                 interval = 3600*24;
+            }
 
             intervalms = interval * 1000;
 
-            if (intervalcode=='y')
+            if (intervalcode=='y') {
                timeWindow = 3600000*24*365*5;
-            else if (intervalcode=='m')
+            } else if (intervalcode=='m') {
                timeWindow = 3600000*24*365;
-            else if (intervalcode=='d')
+            } else if (intervalcode=='d') {
                timeWindow = 3600000*24*10;
-            else
+            } else {
                timeWindow = 3600000*24*31;
-
+            }
+            
             view.start = +new Date - timeWindow;
             view.end = +new Date;
 
@@ -212,21 +225,31 @@
         }
 
        });
-
+        
         placeholder.bind("plothover", function (event, pos, item)
         {
             if (item) {
-                var datestr;
-                if (intervalcode=='y')
-                   datestr = new Date(item.datapoint[0]).format("yyyy");
-                else if (intervalcode=='m')
-                   datestr = new Date(item.datapoint[0]).format("mmm, yyyy");
-                else if (intervalcode=='d')
-                   datestr = new Date(item.datapoint[0]).format("ddd, mmm dS, yyyy");
-                else
-                    datestr = (new Date(item.datapoint[0]))./*toLocaleDateString()+","+(new Date(item.datapoint[0])).toLocaleTimeString();*/format("ddd, mmm dS, yyyy, HH:MM:ss");
+                if (previousPoint != item.datapoint){
+                    previousPoint = item.datapoint;
+                    
+                    var datestr;
+                    if (intervalcode=='y')
+                        datestr = new Date(item.datapoint[0]).format("yyyy");
+                    else if (intervalcode=='m')
+                        datestr = new Date(item.datapoint[0]).format("mmm, yyyy");
+                    else if (intervalcode=='d')
+                        datestr = new Date(item.datapoint[0]).format("ddd, mmm dS, yyyy");
+                    else
+                        datestr = (new Date(item.datapoint[0])).format("ddd, mmm dS, yyyy");
 
-                $("#stats").html(item.datapoint[1].toFixed(dp)+units+" | "+datestr);
+                    $("#tooltip").remove();
+                    var itemTime = item.datapoint[0];
+                    var itemVal = item.datapoint[1];
+                    tooltip(item.pageX, item.pageY, datestr+"<br>"+feedname+": "+itemVal.toFixed(dp)+" "+units,  "#fff", "#000");
+                }
+            } else {
+                $("#tooltip").remove();
+                previousPoint = null;
             }
         });
 
@@ -240,12 +263,11 @@
             var dataend = Math.ceil(view.end / intervalms) * intervalms;
             datastart -= offset * 3600000;
             dataend -= offset * 3600000;
-     
-            //TODO: need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
-            if (mode==0) {
-                data = get_feed_data(feedid,datastart,dataend,interval,0,1);
+            
+            if (interval==86400) {
+                data = feed.getdata(feedid,datastart,dataend,"daily",0,0,0,false);
             } else {
-                data = get_feed_data_DMY(feedid,datastart,dataend,mode);
+                data = feed.getdata(feedid,datastart,dataend,interval,0,0,0,false);
             }
             
             var out = [];

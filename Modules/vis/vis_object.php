@@ -43,8 +43,7 @@
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'1'),
             array('scale',dgettext('vis_messages','scale'),6,'1'),
-            array('delta',dgettext('vis_messages','delta'),4,'0'),
-            array('mode',dgettext('vis_messages','mode'),7,'0')
+            array('delta',dgettext('vis_messages','delta'),4,'0')
             )
         ),
         
