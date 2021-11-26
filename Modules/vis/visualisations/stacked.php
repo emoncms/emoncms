@@ -14,9 +14,9 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=2"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js?v=2"></script>
 <?php if (!$embed) { ?>
 <h2><?php echo _("Stacked"); ?></h2>
 <?php } ?>
@@ -60,26 +60,8 @@
   start -= offset * 3600000;
   end -= offset * 3600000;
   
-  var dataA = get_feed_data_DMY(kwhdA,start,end,"daily");
-  var dataB = get_feed_data_DMY(kwhdB,start,end,"daily");
-
-  // Find start of data series
-  var start_index = 0;
-  for (var n=0; n<dataA.length; n++) {
-      if (dataA[n][1]!=null) { start_index = n; break; }
-      if (dataB[n][1]!=null) { start_index = n; break; }
-  }
-  
-  if (delta==1) {
-      var tmpA = [];
-      var tmpB = [];
-      for (var n=start_index+1; n<dataA.length; n++) {
-          tmpA.push([dataA[n-1][0], dataA[n][1]-dataA[n-1][1]]);
-          tmpB.push([dataB[n-1][0], dataB[n][1]-dataB[n-1][1]]);
-      }
-      dataA = tmpA;
-      dataB = tmpB;
-  }
+  var dataA = feed.getdata(kwhdA,start,end,"daily",0,delta,0,0);
+  var dataB = feed.getdata(kwhdB,start,end,"daily",0,delta,0,0);
 
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
@@ -90,12 +72,10 @@
   var view = 0;
 
   var daysA = [];
-  var monthsA = [];
   var daysB = [];
-  var monthsB = [];
 
-  monthsA = get_months(dataA);
-  monthsB = get_months(dataB);
+  var monthsA = get_months(dataA);
+  var monthsB = get_months(dataB);
 
   $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
   
@@ -132,16 +112,9 @@
       var d = new Date();
       d.setTime(item.datapoint[0]);
       var mdate = new Date(item.datapoint[0]);
-
-      var type = "", value = 0;
-      if (item.seriesIndex == 0 && view==0) {value = monthsA.data[item.dataIndex][1];};
-      if (item.seriesIndex == 1 && view==0) {value = monthsB.data[item.dataIndex][1];};
-
-      if (item.seriesIndex == 0 && view==1) {value = 1*daysA[item.dataIndex][1];};
-      if (item.seriesIndex == 1 && view==1) {value = 1*daysB[item.dataIndex][1];};
-
-      if (view==0) $("#out").html(type+' '+value.toFixed(1)+" kWh/d | "+mdate.format("mmm yyyy"));
-      if (view==1) $("#out").html(type+' '+value.toFixed(1)+" kWh/d | "+mdate.format("dS mmm yyyy"));
+      var value = item.datapoint[item.seriesIndex+1];
+      if (view==0) $("#out").html(value.toFixed(1)+" kWh/month | "+mdate.format("mmm yyyy"));
+      if (view==1) $("#out").html(value.toFixed(1)+" kWh/d | "+mdate.format("dS mmm yyyy"));
     }
   });
 
