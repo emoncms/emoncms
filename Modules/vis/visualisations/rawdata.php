@@ -60,6 +60,8 @@ var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
 var previousPoint = false;
 
+feed.apikey = apikey;
+
 var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;

@@ -59,10 +59,8 @@ srcLinks.forEach(function(srcLink){
     var embed = urlParams.embed;
     var apikey = "" ;
     if (urlParams.apikey) {apikey= urlParams.apikey;}
-    //var apikey="";
-    //if (url_Params.has("apikey")){
-    //  apikey = url_Params.get("apikey");
-    //}
+    feed.apikey = apikey;
+    
     var multigraphFeedlist = {};
     
     if (mid===0) $("body").css('background-color','#eee');

@@ -14,10 +14,8 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
@@ -71,9 +69,7 @@
   function vis_feed_data() {
     start = Math.floor(start / 86400000) * 86400000;
     end = Math.ceil(end / 86400000) * 86400000;
-    var graph_data = get_feed_data(feedid,start,end,3600*24,1,0);
-    //var stats = power_stats(graph_data);
-    //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
+    var graph_data = feed.getdata(feedid,start,end,"daily",0,0,0,0);
 
     var plotdata = {data: graph_data, lines: { show: true, fill: true }};
     if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};

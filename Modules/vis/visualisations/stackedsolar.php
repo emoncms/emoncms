@@ -31,6 +31,7 @@ var solar_id = <?php echo $solar; ?>;
 var use_id = <?php echo $consumption; ?>;
 var delta = <?php echo $delta; ?>;
 var apikey = "<?php echo $apikey?>";
+feed.apikey = apikey;
 
 var timeWindow = (3600000*24.0*365*5); //Initial time window
 var start = +new Date - timeWindow;    //Get start time

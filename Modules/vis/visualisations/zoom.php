@@ -62,6 +62,7 @@
   var kwhd = <?php echo $kwhd; ?>;
   var power = <?php echo $power; ?>;
   var apikey = "<?php echo $apikey; ?>";
+  feed.apikey = apikey;
   var embed = <?php echo $embed; ?>;
   var delta = <?php echo $delta; ?>;
   
@@ -101,7 +102,6 @@
   start -= offset * 3600000;
   end -= offset * 3600000;
   
-  feed.apikey = apikey;
   feed.getdata(kwhd,start,end,"daily",0,delta,0,0,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
 
   //load feed kwh_data

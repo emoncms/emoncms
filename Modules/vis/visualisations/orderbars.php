@@ -34,6 +34,8 @@
   var apikey = "<?php echo $apikey; ?>";
   var delta = <?php echo $delta; ?>;
   
+  feed.apikey = apikey;
+  
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
   var end = +new Date; 

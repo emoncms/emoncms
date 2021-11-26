@@ -55,6 +55,7 @@ $('#graph').height($('#graph_bound').height());
 if (embed) $('#graph').height($(window).height());
 
 var apikey = "<?php echo $apikey; ?>";
+feed.apikey = apikey;
 
 var power = "<?php echo $power; ?>";
 var kwhd = "<?php echo $kwhd; ?>";
