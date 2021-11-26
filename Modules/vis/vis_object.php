@@ -112,10 +112,6 @@
             array('depth',dgettext('vis_messages','depth'),7,3),
             array('npoints',dgettext('vis_messages','data points'),7,800)
         )),
-        
-        'graph'=> array('label'=>dgettext('vis_messages','Graph (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1)
-        )),
 		
         // --------------------------------------------------------------------------------
         // psychrographic diagrams to appreciate summer confort
