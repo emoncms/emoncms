@@ -169,9 +169,14 @@ function visFeedDataDelayed() {
     if (plotlist[parseInt(i,10)].selected) {
       if (!plotlist[parseInt(i,10)].plot.data) {
         var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) skipmissing = 1;
-        var delta = 0;  if (multigraphFeedlist[parseInt(i,10)]["delta"]!=undefined && multigraphFeedlist[parseInt(i,10)]["delta"]) {
+        var delta = 0;  
+        if (multigraphFeedlist[parseInt(i,10)]["delta"]!=undefined && multigraphFeedlist[parseInt(i,10)]["delta"]) {
             delta = 1;
             skipmissing = 0;
+        }
+        var average = 0;  
+        if (multigraphFeedlist[parseInt(i,10)]["average"]!=undefined && multigraphFeedlist[parseInt(i,10)]["average"]) {
+            average = 1;
         }
         
         if (multigraphFeedlist[parseInt(i,10)]["intervaltype"]!=undefined && multigraphFeedlist[parseInt(i,10)]["intervaltype"]!="standard") {
@@ -186,7 +191,7 @@ function visFeedDataDelayed() {
         }
         
         var context = {index:i, plotlist:plotlist[parseInt(i,10)]};
-        ajaxAsyncXdr[parseInt(i,10)] = feed.getdata(plotlist[parseInt(i,10)].id,view.start,view.end,interval,0,delta,skipmissing,1,visFeedDataCallback,context);
+        ajaxAsyncXdr[parseInt(i,10)] = feed.getdata(plotlist[parseInt(i,10)].id,view.start,view.end,interval,average,delta,skipmissing,1,visFeedDataCallback,context);
       }
     }
   }
