@@ -114,12 +114,21 @@ function feed_controller()
             $end = get('end',true);
             $default_interval = round((($end-$start)*0.001)/800);
             $interval = get('interval',false,$default_interval);
-            $average = get('average',false,0);
             $timezone = get('timezone',false,$user_timezone);
             $timeformat = get('timeformat',false,'unix');
             $csv = get('csv',false,0);
             $skipmissing = get('skipmissing',false,0);
             $limitinterval = get('limitinterval',false,0);
+            
+            $averages = array();
+            if (isset($_GET['average'])) {
+                $averages = explode(",",get('average'));
+            }
+            
+            $deltas = array();
+            if (isset($_GET['delta'])) {
+                $deltas = explode(",",get('delta'));
+            }  
             
             // Backwards compatibility
             if ($route->action=="average") $average = 1;
@@ -134,17 +143,21 @@ function feed_controller()
             
             if (!empty($feedids)) {
                 $missing = array();
-                foreach($feedids as $key => $feedid) {
+                foreach($feedids as $index => $feedid) {
                     if ($feed->exist($feedid)) { // if the feed exists
                         $f = $feed->get($feedid);
                         // if public or belongs to user
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
-                            $results[$key] = array('feedid'=>$feedid);
+                            $results[$index] = array('feedid'=>$feedid);
                             if (!isset($_GET['split'])) {
-                                $results[$key]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+                            
+                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index]; else $average = 0;
+                                if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
+                                
+                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
                             } else {
-                                $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,get('split'));
+                                $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,get('split'));
                             }
                         }
                     } else {
