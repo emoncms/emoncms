@@ -17,7 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/graphs.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=2"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=3"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
@@ -102,7 +102,7 @@
   end -= offset * 3600000;
   
   feed.apikey = apikey;
-  feed.getdata(kwhd,start,end,"daily",0,1,1,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
+  feed.getdata(kwhd,start,end,"daily",0,0,1,1,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
 
   //load feed kwh_data
   function vis_feed_kwh_data_callback(data){
@@ -161,7 +161,7 @@
       ajaxAsyncXdr.abort(); // abort pending requests
       ajaxAsyncXdr=undefined;
     }
-    ajaxAsyncXdr=feed.getdata(feedid,start,end,interval,0,1,1,vis_feed_data_callback);
+    ajaxAsyncXdr=feed.getdata(feedid,start,end,interval,0,0,1,1,vis_feed_data_callback);
   }
   
   //load feed data

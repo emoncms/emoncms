@@ -118,13 +118,14 @@ var feed = {
         return response;
     },
 
-    getdata: function(feedid,start,end,interval,average=0,skipmissing=0,limitinterval=0,callback=false){
+    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false){
         let data = {
             id: feedid,
             start: start,
             end: end,
             interval: interval,
             average:average,
+            delta:delta,
             skipmissing: skipmissing,
             limitinterval: limitinterval
         };
