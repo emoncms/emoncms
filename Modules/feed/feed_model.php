@@ -576,7 +576,7 @@ class Feed
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         
         if ($delta && !$csv && $timeformat=="unix") {
-            $end = $this->delta_mode_next_interval($end,$interval);
+            $end = $this->delta_mode_next_interval($end,$interval,$timezone);
         }
         
         // Maximum request size
@@ -640,7 +640,7 @@ class Feed
     Converts a data request to a cumulative kWh feed into kWh per day, week, month, year
     Includes the current day, week, month, year
     */ 
-    private function delta_mode_next_interval($end,$interval) {
+    private function delta_mode_next_interval($end,$interval,$timezone) {
         if (in_array($interval,array("weekly","daily","monthly","annual"))) {
             // align to day, month, year
             $date = new DateTime();
