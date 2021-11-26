@@ -12,10 +12,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
- 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=1"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Bar graph (ordered by height):"); ?> <?php echo $feedidname; ?></h2>
@@ -63,16 +60,8 @@
 
   function vis_feed_data()
   {
-    graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
+    graph_data = feed.getdata(feedid,start,end,"daily",0,window.delta,1,0);
     
-    if (window.delta==1) {
-        var tmp = [];
-        for (var n=1; n<graph_data.length; n++) {
-            tmp.push([graph_data[n-1][0], graph_data[n][1]-graph_data[n-1][1]]);
-        }
-        graph_data = tmp;
-    }
-
     for(x = 0; x < graph_data.length; x++) {
       for(y = 0; y < (graph_data.length-1); y++) {
         if(graph_data[y][1]*1 < graph_data[y+1][1]*1) {
