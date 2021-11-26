@@ -570,10 +570,14 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        
+        if ($delta && !$csv && $timeformat=="unix") {
+            $end = $this->delta_mode_next_interval($end,$interval);
+        }
         
         // Maximum request size
         // $period = ($end-$start)*0.001;
@@ -625,7 +629,63 @@ class Feed
                 }
             }
         }
-
+        
+        if ($delta && !$csv && $timeformat=="unix") {
+            $data = $this->delta_mode_convert($feedid,$data);
+        }
+        return $data;
+    }
+    
+    /*
+    Converts a data request to a cumulative kWh feed into kWh per day, week, month, year
+    Includes the current day, week, month, year
+    */ 
+    private function delta_mode_next_interval($end,$interval) {
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($end*0.001);
+            $date->modify("tomorrow midnight");
+            if ($interval=="weekly") {
+                $date->modify("next monday");
+            } else if ($interval=="monthly") {
+                $date->modify("first day of next month");
+            } else if ($interval=="annual") {
+                $date->modify("first day of january next year");
+            }
+            $end = $date->getTimestamp();
+        } else {
+            // standard interval
+            $end = floor(($end*0.001)/$interval)*$interval;
+            $end += $interval;
+        }
+        $end *= 1000;
+        return $end;
+    }
+    
+    private function delta_mode_convert($feedid,$data) {
+        // Get last value
+        $dp = $this->get_timevalue($feedid);
+        $time = $dp["time"]*1000;
+        
+        // Calculate delta mode
+        $last_val = null;
+        for($i=0; $i<count($data)-1; $i++) {
+            // Apply current value to end of day, week, month, year, interval
+            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                $data[$i+1][1] = $dp['value'];
+            }
+            // Delta calculation
+            if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                $data[$i][1] = null;
+            } else {
+                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                $last_val = $data[$i+1][1];
+            }
+        }
+        array_pop($data);
+        
         return $data;
     }
     
