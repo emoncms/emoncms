@@ -7,7 +7,7 @@
 -->
 
 <?php
-    global $path;
+    global $path, $vis_version;
     $embed = intval(get("embed"));
     $feedid = intval(get("feedid"));
     $fill = intval(get("fill"));
@@ -22,7 +22,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js"></script>
 
 <?php if (!$embed) { ?>

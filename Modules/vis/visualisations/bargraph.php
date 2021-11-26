@@ -10,15 +10,15 @@
     */
 
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $embed;
+    global $path, $embed, $vis_version;
     
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=1"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=1"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <div id="vis-title"></div>
 <style>

@@ -12,7 +12,9 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $settings;
+    global $mysqli, $redis, $session, $route, $user, $settings, $vis_version;
+
+    $vis_version = 10;
 
     $result = false;
 
