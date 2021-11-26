@@ -115,21 +115,16 @@ function vis_feed_data() {
                     var dataend = Math.ceil(end / intervalms) * intervalms;
                     datastart -= offset * 3600000;
                     dataend -= offset * 3600000;
+                    
+                    skipmissing = 0
                 } else {
                     datastart = start;
                     dataend = end;
                     interval = Math.round(((end-start)/1200)*0.001);
+                    
+                    skipmissing = 1
                 }
-                feedlist[i].plot.data = feed.getdata(feedlist[i].id,datastart,dataend,interval,0,0,1,1);
-                
-                if (feedlist[i].delta==1 && i==1) {
-                    var tmp = [];
-                    for (var n=1; n<feedlist[i].plot.data.length; n++) {
-                        var delta = feedlist[i].plot.data[n][1] - feedlist[i].plot.data[n-1][1];
-                        tmp.push([feedlist[i].plot.data[n-1][0],delta]);
-                    }
-                    feedlist[i].plot.data = tmp;
-                }
+                feedlist[i].plot.data = feed.getdata(feedlist[i].id,datastart,dataend,interval,0,feedlist[i].delta,skipmissing,0);
             }
             
             if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);

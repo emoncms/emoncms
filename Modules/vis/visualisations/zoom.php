@@ -102,26 +102,16 @@
   end -= offset * 3600000;
   
   feed.apikey = apikey;
-  feed.getdata(kwhd,start,end,"daily",0,0,1,1,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
+  feed.getdata(kwhd,start,end,"daily",0,delta,0,0,vis_feed_kwh_data_callback); // get 5 years of daily kw_data
 
   //load feed kwh_data
   function vis_feed_kwh_data_callback(data){
   
-    if (window.delta==1) {
-        var tmp = [];
-        for (var n=1; n<data.length; n++) {
-            if (data[n][1] != null && data[n-1][1] != null) {
-                tmp.push([data[n-1][0], data[n][1]-data[n-1][1]]);
-            }
-        }
-        data = tmp;
-    }
-  
     kwh_data = data;
     var total = 0, ndays=0;
     for (var z in kwh_data) {
-    if (kwh_data[z][1] == null) { kwh_data[z][1] = 0; } // fix when  get_feed_data_DMY_async return null
-        total += parseFloat(kwh_data[z][1]); ndays++;
+        total += kwh_data[z][1]; 
+        ndays++;
     }
 
     bot_kwhd_text = "<?php echo _("Total:"); ?> "+(total).toFixed(0)+" <?php echo _("kWh"); ?> : "+add_currency((total*price), 0)+" | <?php echo _("Average:"); ?> "+(total/ndays).toFixed(1)+" <?php echo _("kWh"); ?> : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" <?php echo _("a week"); ?>, "+add_currency((total/ndays)*price*365, 0)+" <?php echo _("a year"); ?> | <?php echo _("Unit price:"); ?> "+add_currency(price, 2);
