@@ -67,8 +67,6 @@ function get_months(data)
     s++;
 
    }
-   
-   console.log(sum)
 
   var tmp = [];
   tmp[0] = Date.UTC(year,month,1);
