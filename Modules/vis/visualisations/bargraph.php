@@ -265,22 +265,14 @@
             dataend -= offset * 3600000;
             
             if (interval==86400) {
-                data = feed.getdata(feedid,datastart,dataend,"daily",0,0,0,0,false);
+                data = feed.getdata(feedid,datastart,dataend,"daily",0,delta,0,0,false);
             } else {
-                data = feed.getdata(feedid,datastart,dataend,interval,0,0,0,0,false);
+                data = feed.getdata(feedid,datastart,dataend,interval,0,delta,0,0,false);
             }
             
             var out = [];
             
-            if (delta==1) {
-                for (var z=1; z<data.length; z++) {
-                    if (data[z][1]!=null && data[z-1][1]!=null) {
-                        var val = (data[z][1] - data[z-1][1]) * scale;
-                        out.push([data[z-1][0],val]);
-                    }
-                }
-                data = out;
-            } else if (scale!=1) {
+            if (scale!=1) {
                 for (var z=0; z<data.length; z++) {
                     var val = data[z][1] * scale;
                     out.push([data[z][0],val]);
