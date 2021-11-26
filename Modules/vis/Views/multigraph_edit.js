@@ -511,6 +511,10 @@ function loadEvents(){
    $(baseElement).on("click","#delta",function(event){
     var z = $(this).attr("listid");
     multigraphFeedlist[z]["delta"] = $(this)[0].checked;
+    if (multigraphFeedlist[z]["delta"]) {
+        multigraphFeedlist[z]["skipmissing"] = 0;
+        $("#skipmissing[listid="+z+"]")[0].checked = 0;
+    }
     visFeedData();
     modified();
   });

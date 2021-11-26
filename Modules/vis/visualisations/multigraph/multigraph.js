@@ -168,11 +168,14 @@ function visFeedDataDelayed() {
   for(var i in plotlist) {
     if (plotlist[parseInt(i,10)].selected) {
       if (!plotlist[parseInt(i,10)].plot.data) {
-        var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) {skipmissing = 1;}
+        var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) skipmissing = 1;
+        var delta = 0;  if (multigraphFeedlist[parseInt(i,10)]["delta"]!=undefined && multigraphFeedlist[parseInt(i,10)]["delta"]) {
+            delta = 1;
+            skipmissing = 0;
+        }
         
-        var intervaltype = "standard"; 
-        if (multigraphFeedlist[parseInt(i,10)]["intervaltype"]!=undefined) {
-            intervaltype = multigraphFeedlist[parseInt(i,10)]["intervaltype"];
+        if (multigraphFeedlist[parseInt(i,10)]["intervaltype"]!=undefined && multigraphFeedlist[parseInt(i,10)]["intervaltype"]!="standard") {
+            interval = multigraphFeedlist[parseInt(i,10)]["intervaltype"];
         }
         
         if (typeof plotdata[parseInt(i,10)] === "undefined") {plotdata[parseInt(i,10)] = [];}
@@ -181,13 +184,9 @@ function visFeedDataDelayed() {
           ajaxAsyncXdr[parseInt(i,10)].abort(); // Abort pending loads
           ajaxAsyncXdr[parseInt(i,10)]="undefined";
         }
-        var context = {index:i, plotlist:plotlist[parseInt(i,10)]};
         
-        if (intervaltype=="standard") {
-          ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
-        } else {
-          ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,intervaltype,skipmissing,1);
-        }
+        var context = {index:i, plotlist:plotlist[parseInt(i,10)]};
+        ajaxAsyncXdr[parseInt(i,10)] = feed.getdata(plotlist[parseInt(i,10)].id,view.start,view.end,interval,0,delta,skipmissing,1,visFeedDataCallback,context);
       }
     }
   }
@@ -196,11 +195,6 @@ function visFeedDataDelayed() {
 //load feed data to multigraph plot
 function visFeedDataCallback(context,data) {
   var i = context["index"];
-  
-  // Apply delta property if true
-  if (multigraphFeedlist[parseInt(i,10)]["delta"]!=undefined && multigraphFeedlist[parseInt(i,10)]["delta"]) {
-      data = process_delta(data);
-  }
 
   context["plotlist"].plot.data = data;
   if (context["plotlist"].plot.data) {
@@ -208,17 +202,6 @@ function visFeedDataCallback(context,data) {
   }
 
   plot();
-}
-
-function process_delta(data) {
-    var out = []
-    for (var z=1; z<data.length; z++) {
-        if (data[z][1]!=null && data[z-1][1]!=null) {
-            var val = data[z][1] - data[z-1][1];
-            out.push([data[z-1][0],val]);
-        }
-    }
-    return out;
 }
 
 function plot() {

@@ -118,7 +118,7 @@ var feed = {
         return response;
     },
 
-    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false){
+    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false){
         let data = {
             id: feedid,
             start: start,
@@ -147,7 +147,11 @@ var feed = {
                     console.log("ERROR","feed.getdata invalid response: "+result);
                 }
                 if (async) {
-                    callback(result);
+                    if (!context) {
+                        callback(result);
+                    } else {
+                        callback(context,result);
+                    }
                 } else {
                     feed_data = result;
                 }

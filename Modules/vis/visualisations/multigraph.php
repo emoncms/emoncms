@@ -22,7 +22,7 @@ var srcScripts = [];
 srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
-srcScripts.push(path+"Modules/vis/visualisations/common/api.js");
+srcScripts.push(path+"Modules/feed/feed.js");
 srcScripts.push(path+"Lib/vis.helper.js");
 srcScripts.push(path+"Modules/vis/visualisations/multigraph/multigraph.js");
 srcScripts.push(path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
