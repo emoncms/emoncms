@@ -825,6 +825,7 @@ class Process_ProcessList
     // / Below are functions of this module processlist
     public function scale($arg, $time, $value)
     {
+        if ($value===null) return $value;
         return $value * $arg;
     }
 
@@ -839,6 +840,7 @@ class Process_ProcessList
 
     public function offset($arg, $time, $value)
     {
+        if ($value===null) return $value;
         return $value + $arg;
     }
 
