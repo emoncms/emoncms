@@ -15,7 +15,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
@@ -60,16 +60,15 @@
   var type = "<?php echo $type; ?>";
   var apikey = "<?php echo $write_apikey; ?>";
 
-  var timeWindow = (3600000*24.0*7);        //Initial time window
-  var start = ((new Date()).getTime())-timeWindow;  //Get start time
-  var end = (new Date()).getTime();         //Get end time
+  var timeWindow = (3600000*24.0*7);                 // Initial time window
+  view.start = ((new Date()).getTime())-timeWindow;  // Get start time
+  view.end = (new Date()).getTime();                 // Get end time
 
   vis_feed_data();
 
   function vis_feed_data() {
-    start = Math.floor(start / 86400000) * 86400000;
-    end = Math.ceil(end / 86400000) * 86400000;
-    var graph_data = feed.getdata(feedid,start,end,"daily",0,0,0,0);
+    
+    var graph_data = feed.getdata(feedid,view.start,view.end,"daily",0,0,0,0);
 
     var plotdata = {data: graph_data, lines: { show: true, fill: true }};
     if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};
@@ -77,7 +76,7 @@
     var plot = $.plot($("#graph"), [plotdata], {
       canvas: true,
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
       touch: { pan: "x", scale: "x" }
     });
@@ -88,22 +87,25 @@
     if (item != null) {
       $("#time").val(item.datapoint[0]/1000);
       $("#newvalue").val(item.datapoint[1]);
-      //$("#stats").html("Value: "+item.datapoint[1]);
     }
   });
 
   //--------------------------------------------------------------------------------------
   // Graph zooming
   //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+  $("#graph").bind("plotselected", function (event, ranges) { 
+      view.start = ranges.xaxis.from; 
+      view.end = ranges.xaxis.to; 
+      vis_feed_data(); 
+  });
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-  $('#right').click(function () {inst_panright(); vis_feed_data();});
-  $('#left').click(function () {inst_panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
+  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
+  $('#right').click(function () {view.panright(); vis_feed_data();});
+  $('#left').click(function () {view.panleft(); vis_feed_data();});  
+  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
 
   $('#okb').click(function () {
@@ -157,7 +159,8 @@
   {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    start = ranges.xaxis.from; end = ranges.xaxis.to;
+    view.start = ranges.xaxis.from; 
+    view.end = ranges.xaxis.to;
     vis_feed_data();
   });
 </script>

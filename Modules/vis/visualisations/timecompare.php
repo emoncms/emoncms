@@ -21,9 +21,9 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js?v=2"></script>
 
 <?php if (!$embed) { ?>
 <h2><div id="timecompare_title"></div></h2>
@@ -35,6 +35,7 @@
 
     var embed = <?php echo $embed; ?>;
     var apikey = "<?php echo $apikey; ?>";
+    feed.apikey = apikey;
     var feedid = "<?php echo $feedid; ?>";
     var fill = "<?php echo $fill; ?>";
     var depth = "<?php echo $depth; ?>";
