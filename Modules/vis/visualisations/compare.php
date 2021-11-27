@@ -6,7 +6,7 @@
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
-    global $path, $embed;
+    global $path, $embed, $vis_version;
 
     if (isset($_GET['feedA'])) $feedA = (int) $_GET['feedA']; else $feedA = 0;
     if (isset($_GET['feedB'])) $feedB = (int) $_GET['feedB']; else $feedB = 0;
@@ -14,10 +14,8 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Feed calibration and comparison tool"); ?></h2>
@@ -73,6 +71,7 @@
 <script id="source" language="javascript" type="text/javascript">
 
   var apikey = "<?php echo $apikey; ?>";
+  feed.apikey = apikey;
   var valid = "<?php echo $valid; ?>";
 
   var embed = <?php echo $embed; ?>;
@@ -81,8 +80,8 @@
   //if (embed) $('#graph').height($(window).height());
 
   var timeWindow = (3600000*24.0*7);        //Initial time window
-  var start = ((new Date()).getTime())-timeWindow;    //Get start time
-  var end = (new Date()).getTime();       //Get end time
+  view.start = ((new Date()).getTime())-timeWindow;    //Get start time
+  view.end = (new Date()).getTime();                   //Get end time
 
   var feedAid = <?php echo $feedA; ?>;
   var feedBid = <?php echo $feedB; ?>;
@@ -114,6 +113,7 @@
 
   function vis_feed_data()
   {
+    view.calc_interval(800);
 
     feedB_cal = [];
     diff = [];
@@ -124,14 +124,14 @@
     if (feedAid>0 && feedBid>0) {
       feedA = [];
       feedB = [];
-      feedA = get_feed_data(feedAid,start,end,800,1,1);
-      feedB = get_feed_data(feedBid,start,end,800,1,1);
+      feedA = feed.getdata(feedAid,view.start,view.end,view.interval,0,0,1,1);
+      feedB = feed.getdata(feedBid,view.start,view.end,view.interval,0,0,1,1);
     }
 
     var sumX=0,sumY=0,sumXY=0,sumX2=0,n=0;
     for (z in  feedB)
     {
-      if (feedB[z][0] >= start && feedB[z][0] <= end) { // skip data points not in graph range
+      if (feedB[z][0] >= view.start && feedB[z][0] <= view.end) { // skip data points not in graph range
         // Create calibrated B
         feedB_cal[z] = [];
         feedB_cal[z][0] = feedB[z][0];
@@ -156,7 +156,7 @@
 
     var slope = ((n * sumXY - (sumX*sumY)) / (n * sumX2 - (sumX*sumX)));
     var intercept = (sumY - slope*sumX) / n;
-    console.log(slope);
+    console.log("Slope:"+slope+" Intercept:"+intercept);
 
     line_data[0] = [];
     line_data[0][0] = -100000;
@@ -206,7 +206,7 @@
     {data: feedB_cal, lines: { show: true }}], {
       canvas: true,
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
       touch: { pan: "x", scale: "x" }
     });
@@ -214,7 +214,7 @@
     var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {
       canvas: true,
       grid: { show: true, hoverable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       touch: { pan: "", scale: "x" , delayTouchEnded: 0}
     });
 
@@ -238,15 +238,19 @@
   //--------------------------------------------------------------------------------------
   // Graph zooming
   //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+  $("#graph").bind("plotselected", function (event, ranges) { 
+      view.start = ranges.xaxis.from; 
+      view.end = ranges.xaxis.to; 
+      vis_feed_data(); 
+  });
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-  $('#right').click(function () {inst_panright(); vis_feed_data();});
-  $('#left').click(function () {inst_panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
+  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
+  $('#right').click(function () {view.panright(); vis_feed_data();});
+  $('#left').click(function () {view.panleft(); vis_feed_data();});  
+  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
 
   $("#load").click(function () {
@@ -281,8 +285,8 @@
   {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    start = ranges.xaxis.from; 
-    end = ranges.xaxis.to;
+    view.start = ranges.xaxis.from; 
+    view.end = ranges.xaxis.to;
     vis_feed_data();
   });
 </script>
