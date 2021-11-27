@@ -13,7 +13,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
     
     <?php if (!$embed) { ?>
     <h2><?php echo _("Realtime data:"); ?> <?php echo $feedidname; ?></h2>
@@ -64,7 +64,7 @@
     var start = now-timeWindow;        // start time
     var end = now;                     // end time
     var interval = parseInt(((end*0.001+10) - (start*0.001-10)) / 800);
-    data = get_feed_data(feedid,(start-10000),(end+10000),interval,1,1);
+    data = feed.getdata(feedid,(start-10000),(end+10000),interval,0,0,1,1);
 
     timerget = setInterval(getdp,7500);
     gpu_fast();
@@ -150,6 +150,6 @@
       console.log("realtime timewindow " +timeWindow/1000 + "s get rate "+rate/1000 + "s");
 
       interval = parseInt(((end*0.001+10) - (start*0.001-10)) / 800);
-      data = get_feed_data(feedid,(start-10000),(end+10000),interval,1,1);
+      data = feed.getdata(feedid,(start-10000),(end+10000),interval,0,0,1,1);
     });
     </script>
