@@ -16,7 +16,6 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
@@ -83,6 +82,9 @@
 
     var scale = urlParams.scale;
     if (scale==undefined || scale=='') scale = 1;
+
+    var average = urlParams.average;
+    if (average==undefined || average=='') average = 0;
 
     var delta = urlParams.delta;
     if (delta==undefined || delta=='') delta = 0;
@@ -265,9 +267,9 @@
             dataend -= offset * 3600000;
             
             if (interval==86400) {
-                data = feed.getdata(feedid,datastart,dataend,"daily",0,delta,0,0,false);
+                data = feed.getdata(feedid,datastart,dataend,"daily",average,delta,0,0,false);
             } else {
-                data = feed.getdata(feedid,datastart,dataend,interval,0,delta,0,0,false);
+                data = feed.getdata(feedid,datastart,dataend,interval,average,delta,0,0,false);
             }
             
             var out = [];
