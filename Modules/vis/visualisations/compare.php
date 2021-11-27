@@ -69,50 +69,48 @@
 <div id="line" style="width:100%; height:400px; "></div>
 
 <script id="source" language="javascript" type="text/javascript">
+var apikey = "<?php echo $apikey; ?>";
+feed.apikey = apikey;
+var valid = "<?php echo $valid; ?>";
 
-  var apikey = "<?php echo $apikey; ?>";
-  feed.apikey = apikey;
-  var valid = "<?php echo $valid; ?>";
+var embed = <?php echo $embed; ?>;
+$('#graph').width($('#graph_bound').width());
+$('#graph').height($('#graph_bound').height());
+//if (embed) $('#graph').height($(window).height());
 
-  var embed = <?php echo $embed; ?>;
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
-  //if (embed) $('#graph').height($(window).height());
+var timeWindow = (3600000 * 24.0 * 7); //Initial time window
+view.start = ((new Date()).getTime()) - timeWindow; //Get start time
+view.end = (new Date()).getTime(); //Get end time
 
-  var timeWindow = (3600000*24.0*7);        //Initial time window
-  view.start = ((new Date()).getTime())-timeWindow;    //Get start time
-  view.end = (new Date()).getTime();                   //Get end time
+var feedAid = <?php echo $feedA; ?>;
+var feedBid = <?php echo $feedB; ?>;
 
-  var feedAid = <?php echo $feedA; ?>;
-  var feedBid = <?php echo $feedB; ?>;
+$("#feedA").val(feedAid);
+$("#feedB").val(feedBid);
 
-  $("#feedA").val(feedAid);
-  $("#feedB").val(feedBid);
+var calibration = 1;
 
-  var calibration = 1;
+var feedA = [];
+var feedB = [];
+var feedB_cal = [];
+var diff = [];
 
-  var feedA = [];
-  var feedB = [];
-  var feedB_cal = [];
-  var diff = [];
+var feedAB = [];
+var line_data = [];
 
-  var feedAB = [];
-  var line_data = [];
+var lineAmin, lineBmin, lineAmax, lineBmax;
 
-  var lineAmin,lineBmin,lineAmax,lineBmax;
-  
-  vis_feed_data();
+vis_feed_data();
 
-  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
-  function vis_resize() {
+$(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse', vis_resize);
+
+function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     //if (embed) $('#graph').height($(window).height());
     plot();
-  }
+}
 
-  function vis_feed_data()
-  {
+function vis_feed_data() {
     view.calc_interval(800);
 
     feedB_cal = [];
@@ -121,42 +119,44 @@
     feedAB = [];
     line_data = [];
 
-    if (feedAid>0 && feedBid>0) {
-      feedA = [];
-      feedB = [];
-      feedA = feed.getdata(feedAid,view.start,view.end,view.interval,0,0,1,1);
-      feedB = feed.getdata(feedBid,view.start,view.end,view.interval,0,0,1,1);
+    if (feedAid > 0 && feedBid > 0) {
+        feedA = [];
+        feedB = [];
+        feedA = feed.getdata(feedAid, view.start, view.end, view.interval, 0, 0, 1, 1);
+        feedB = feed.getdata(feedBid, view.start, view.end, view.interval, 0, 0, 1, 1);
     }
 
-    var sumX=0,sumY=0,sumXY=0,sumX2=0,n=0;
-    for (z in  feedB)
-    {
-      if (feedB[z][0] >= view.start && feedB[z][0] <= view.end) { // skip data points not in graph range
-        // Create calibrated B
-        feedB_cal[z] = [];
-        feedB_cal[z][0] = feedB[z][0];
-        feedB_cal[z][1] = calibration * feedB[z][1];
+    var sumX = 0,
+        sumY = 0,
+        sumXY = 0,
+        sumX2 = 0,
+        n = 0;
+    for (z in feedB) {
+        if (feedB[z][0] >= view.start && feedB[z][0] <= view.end) { // skip data points not in graph range
+            // Create calibrated B
+            feedB_cal[z] = [];
+            feedB_cal[z][0] = feedB[z][0];
+            feedB_cal[z][1] = calibration * feedB[z][1];
 
-        if (feedA[z]!=undefined)
-        {
-          // Calculate line of best fit variables
-          var XY = 1.0*feedA[z][1] * feedB[z][1];
-          var X2 = 1.0*feedA[z][1] * feedA[z][1];
+            if (feedA[z] != undefined) {
+                // Calculate line of best fit variables
+                var XY = 1.0 * feedA[z][1] * feedB[z][1];
+                var X2 = 1.0 * feedA[z][1] * feedA[z][1];
 
-          sumX += 1.0*feedA[z][1];
-          sumY += 1.0*feedB[z][1];
+                sumX += 1.0 * feedA[z][1];
+                sumY += 1.0 * feedB[z][1];
 
-          sumXY += XY;
-          sumX2 += X2;
+                sumXY += XY;
+                sumX2 += X2;
 
-          n++;
+                n++;
+            }
         }
-      }
     }
 
-    var slope = ((n * sumXY - (sumX*sumY)) / (n * sumX2 - (sumX*sumX)));
-    var intercept = (sumY - slope*sumX) / n;
-    console.log("Slope:"+slope+" Intercept:"+intercept);
+    var slope = ((n * sumXY - (sumX * sumY)) / (n * sumX2 - (sumX * sumX)));
+    var intercept = (sumY - slope * sumX) / n;
+    console.log("Slope:" + slope + " Intercept:" + intercept);
 
     line_data[0] = [];
     line_data[0][0] = -100000;
@@ -166,127 +166,206 @@
     line_data[1][0] = 100000;
     line_data[1][1] = slope * line_data[1][0] + intercept;
 
-    for (z in feedA)
-    {
-      if (feedB_cal[z]!=undefined) {
-        diff[z] = [];
-        diff[z][0] = 1.0*feedA[z][0];
-        diff[z][1] = 1.0*feedB_cal[z][1] - 1.0*feedA[z][1];
+    for (z in feedA) {
+        if (feedB_cal[z] != undefined) {
+            diff[z] = [];
+            diff[z][0] = 1.0 * feedA[z][0];
+            diff[z][1] = 1.0 * feedB_cal[z][1] - 1.0 * feedA[z][1];
 
-        feedAB[z] = [];
-        feedAB[z][0] = feedA[z][1];
-        feedAB[z][1] = feedB_cal[z][1];
-      }
+            feedAB[z] = [];
+            feedAB[z][0] = feedA[z][1];
+            feedAB[z][1] = feedB_cal[z][1];
+        }
     }
 
-    lineAmin = feedAB.reduce(function(min, obj) { 
-            return obj[0] < min ? obj[0] : min; 
-          }, Infinity);
-    
-    lineBmin = feedAB.reduce(function(min, obj) { 
-            return obj[1] < min ? obj[1] : min; 
-          }, Infinity);
-          
-    lineAmax = feedAB.reduce(function(max, obj) { 
-            return obj[0] > max ? obj[0] : max; 
-          }, -Infinity);
-    
-    lineBmax = feedAB.reduce(function(max, obj) { 
-            return obj[1] > max ? obj[1] : max; 
-          }, -Infinity);
-    
+    lineAmin = feedAB.reduce(function(min, obj) {
+        return obj[0] < min ? obj[0] : min;
+    }, Infinity);
+
+    lineBmin = feedAB.reduce(function(min, obj) {
+        return obj[1] < min ? obj[1] : min;
+    }, Infinity);
+
+    lineAmax = feedAB.reduce(function(max, obj) {
+        return obj[0] > max ? obj[0] : max;
+    }, -Infinity);
+
+    lineBmax = feedAB.reduce(function(max, obj) {
+        return obj[1] > max ? obj[1] : max;
+    }, -Infinity);
+
     plot();
-  }
+}
 
-  function plot()
-  {
+function plot() {
 
-    var plot = $.plot($("#graph"), [
-    {data: feedA, lines: { show: true }},
-    {data: feedB_cal, lines: { show: true }}], {
-      canvas: true,
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
-      selection: { mode: "x" },
-      touch: { pan: "x", scale: "x" }
+    var plot = $.plot($("#graph"), [{
+            data: feedA,
+            lines: {
+                show: true
+            }
+        },
+        {
+            data: feedB_cal,
+            lines: {
+                show: true
+            }
+        }
+    ], {
+        canvas: true,
+        grid: {
+            show: true,
+            hoverable: true,
+            clickable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        selection: {
+            mode: "x"
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
     });
 
-    var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {
-      canvas: true,
-      grid: { show: true, hoverable: true },
-      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
-      touch: { pan: "", scale: "x" , delayTouchEnded: 0}
+    var plot = $.plot($("#diff"), [{
+        color: 2,
+        data: diff,
+        lines: {
+            show: true
+        }
+    }], {
+        canvas: true,
+        grid: {
+            show: true,
+            hoverable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        touch: {
+            pan: "",
+            scale: "x",
+            delayTouchEnded: 0
+        }
     });
 
     // define line relation graph ranges
-    lineAoffset=(lineAmax-lineAmin)/10;
-    if (lineAoffset == 0) lineAoffset = lineAmin/10;
-    lineBoffset=(lineBmax-lineBmin)/10;
-    if (lineBoffset == 0) lineBoffset = lineBmin/10;
-    
-    var plot = $.plot($("#line"), [
-      {color:2,data: feedAB, points: { show: true }},
-      {color: "#000",data: line_data,lines: { show: true, fill: false }}],{
+    lineAoffset = (lineAmax - lineAmin) / 10;
+    if (lineAoffset == 0) lineAoffset = lineAmin / 10;
+    lineBoffset = (lineBmax - lineBmin) / 10;
+    if (lineBoffset == 0) lineBoffset = lineBmin / 10;
+
+    var plot = $.plot($("#line"), [{
+            color: 2,
+            data: feedAB,
+            points: {
+                show: true
+            }
+        },
+        {
+            color: "#000",
+            data: line_data,
+            lines: {
+                show: true,
+                fill: false
+            }
+        }
+    ], {
         canvas: true,
-        grid: { show: true, hoverable: true },
-        xaxis: { min: lineAmin-lineAoffset, max: lineAmax+lineAoffset},
-        yaxis: { min: lineBmin-lineBoffset, max: lineBmax+lineBoffset},
-        touch: { pan: "xy", scale: "xy", delayTouchEnded: 0}
-      });
-  }
+        grid: {
+            show: true,
+            hoverable: true
+        },
+        xaxis: {
+            min: lineAmin - lineAoffset,
+            max: lineAmax + lineAoffset
+        },
+        yaxis: {
+            min: lineBmin - lineBoffset,
+            max: lineBmax + lineBoffset
+        },
+        touch: {
+            pan: "xy",
+            scale: "xy",
+            delayTouchEnded: 0
+        }
+    });
+}
 
-  //--------------------------------------------------------------------------------------
-  // Graph zooming
-  //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { 
-      view.start = ranges.xaxis.from; 
-      view.end = ranges.xaxis.to; 
-      vis_feed_data(); 
-  });
-  //----------------------------------------------------------------------------------------------
-  // Operate buttons
-  //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
-  $('#right').click(function () {view.panright(); vis_feed_data();});
-  $('#left').click(function () {view.panleft(); vis_feed_data();});  
-  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+// Graph zooming
+//--------------------------------------------------------------------------------------
+$("#graph").bind("plotselected", function(event, ranges) {
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
+    vis_feed_data();
+});
+//----------------------------------------------------------------------------------------------
+// Operate buttons
+//----------------------------------------------------------------------------------------------
+$("#zoomout").click(function() {
+    view.zoomout();
+    vis_feed_data();
+});
+$("#zoomin").click(function() {
+    view.zoomin();
+    vis_feed_data();
+});
+$('#right').click(function() {
+    view.panright();
+    vis_feed_data();
+});
+$('#left').click(function() {
+    view.panleft();
+    vis_feed_data();
+});
+$('.graph-time').click(function() {
+    view.timewindow($(this).attr("time"));
+    vis_feed_data();
+});
+//-----------------------------------------------------------------------------------------------
 
-  $("#load").click(function () {
+$("#load").click(function() {
     feedAid = $("#feedA").val();
     feedBid = $("#feedB").val();
     vis_feed_data();
-  });
+});
 
-  $("#update").click(function () {
+$("#update").click(function() {
     calibration = 1.0 * $("#calibration").val();
     vis_feed_data();
-  });
-  
-  // Graph buttons and navigation efects for mouse and touch
-  $("#graph").mouseenter(function(){
+});
+
+// Graph buttons and navigation efects for mouse and touch
+$("#graph").mouseenter(function() {
     $("#graph-navbar").show();
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-  });
-  $("#graph_bound").mouseleave(function(){
+});
+$("#graph_bound").mouseleave(function() {
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  $("#graph").bind("touchstarted", function (event, pos)
-  {
+});
+$("#graph").bind("touchstarted", function(event, pos) {
     $("#graph-navbar").hide();
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  
-  $("#graph").bind("touchended", function (event, ranges)
-  {
+});
+
+$("#graph").bind("touchended", function(event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    view.start = ranges.xaxis.from; 
+    view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
-  });
+});
 </script>

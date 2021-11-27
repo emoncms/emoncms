@@ -52,116 +52,157 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+$('#graph').width($('#graph_bound').width());
+$('#graph').height($('#graph_bound').height());
 
-  var feedid = <?php echo $feedid; ?>;
-  var feedname = "<?php echo $feedidname; ?>";
-  var type = "<?php echo $type; ?>";
-  var apikey = "<?php echo $write_apikey; ?>";
+var feedid = <?php echo $feedid; ?>;
+var feedname = "<?php echo $feedidname; ?>";
+var type = "<?php echo $type; ?>";
+var apikey = "<?php echo $write_apikey; ?>";
 
-  var timeWindow = (3600000*24.0*7);                 // Initial time window
-  view.start = ((new Date()).getTime())-timeWindow;  // Get start time
-  view.end = (new Date()).getTime();                 // Get end time
+var timeWindow = (3600000 * 24.0 * 7); // Initial time window
+view.start = ((new Date()).getTime()) - timeWindow; // Get start time
+view.end = (new Date()).getTime(); // Get end time
 
-  vis_feed_data();
+vis_feed_data();
 
-  function vis_feed_data() {
-    
-    var graph_data = feed.getdata(feedid,view.start,view.end,"daily",0,0,0,0);
+function vis_feed_data() {
 
-    var plotdata = {data: graph_data, lines: { show: true, fill: true }};
-    if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};
+    var graph_data = feed.getdata(feedid, view.start, view.end, "daily", 0, 0, 0, 0);
+
+    var plotdata = {
+        data: graph_data,
+        lines: {
+            show: true,
+            fill: true
+        }
+    };
+    if (type == 2) plotdata = {
+        data: graph_data,
+        bars: {
+            show: true,
+            align: "center",
+            barWidth: 3600 * 18 * 1000,
+            fill: true
+        }
+    };
 
     var plot = $.plot($("#graph"), [plotdata], {
-      canvas: true,
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
-      selection: { mode: "x" },
-      touch: { pan: "x", scale: "x" }
+        canvas: true,
+        grid: {
+            show: true,
+            hoverable: true,
+            clickable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        selection: {
+            mode: "x"
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
     });
 
-  }
+}
 
-  $("#graph").bind("plotclick", function (event, pos, item) {
+$("#graph").bind("plotclick", function(event, pos, item) {
     if (item != null) {
-      $("#time").val(item.datapoint[0]/1000);
-      $("#newvalue").val(item.datapoint[1]);
+        $("#time").val(item.datapoint[0] / 1000);
+        $("#newvalue").val(item.datapoint[1]);
     }
-  });
+});
 
-  //--------------------------------------------------------------------------------------
-  // Graph zooming
-  //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { 
-      view.start = ranges.xaxis.from; 
-      view.end = ranges.xaxis.to; 
-      vis_feed_data(); 
-  });
-  //----------------------------------------------------------------------------------------------
-  // Operate buttons
-  //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
-  $('#right').click(function () {view.panright(); vis_feed_data();});
-  $('#left').click(function () {view.panleft(); vis_feed_data();});  
-  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+// Graph zooming
+//--------------------------------------------------------------------------------------
+$("#graph").bind("plotselected", function(event, ranges) {
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
+    vis_feed_data();
+});
+//----------------------------------------------------------------------------------------------
+// Operate buttons
+//----------------------------------------------------------------------------------------------
+$("#zoomout").click(function() {
+    view.zoomout();
+    vis_feed_data();
+});
+$("#zoomin").click(function() {
+    view.zoomin();
+    vis_feed_data();
+});
+$('#right').click(function() {
+    view.panright();
+    vis_feed_data();
+});
+$('#left').click(function() {
+    view.panleft();
+    vis_feed_data();
+});
+$('.graph-time').click(function() {
+    view.timewindow($(this).attr("time"));
+    vis_feed_data();
+});
+//-----------------------------------------------------------------------------------------------
 
-  $('#okb').click(function () {
+$('#okb').click(function() {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
 
     var updatetime = 0;
     $.ajax({
-      url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&updatetime="+updatetime,
-      dataType: 'json',
-      async: false,
-      success: function() {}
+        url: path + 'feed/update.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&value=" + newvalue + "&updatetime=" + updatetime,
+        dataType: 'json',
+        async: false,
+        success: function() {}
     });
     vis_feed_data();
-  });
+});
 
-  $('#delb').click(function () {
+$('#delb').click(function() {
     var time = $("#time").val();
 
     $.ajax({
-      url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&delete=1",
-      dataType: 'json',
-      async: false,
-      success: function() {}
+        url: path + 'feed/update.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&delete=1",
+        dataType: 'json',
+        async: false,
+        success: function() {}
     });
     vis_feed_data();
-  });
-  
-  
-  
-  // Graph buttons and navigation efects for mouse and touch
-  $("#graph").mouseenter(function(){
+});
+
+
+
+// Graph buttons and navigation efects for mouse and touch
+$("#graph").mouseenter(function() {
     $("#graph-navbar").show();
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-  });
-  $("#graph_bound").mouseleave(function(){
+});
+$("#graph_bound").mouseleave(function() {
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  $("#graph").bind("touchstarted", function (event, pos)
-  {
+});
+$("#graph").bind("touchstarted", function(event, pos) {
     $("#graph-navbar").hide();
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  
-  $("#graph").bind("touchended", function (event, ranges)
-  {
+});
+
+$("#graph").bind("touchended", function(event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    view.start = ranges.xaxis.from; 
+    view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
-  });
+});
 </script>
 

@@ -33,20 +33,20 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-    var embed = <?php echo $embed; ?>;
-    var apikey = "<?php echo $apikey; ?>";
-    feed.apikey = apikey;
-    var feedid = "<?php echo $feedid; ?>";
-    var fill = "<?php echo $fill; ?>";
-    var depth = "<?php echo $depth; ?>";
-    var npoints = "<?php echo $npoints; ?>";
-    
-    var initzoom = urlParams.initzoom;
-    if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '168'; // Initial zoom 7*24=168 hours  (1 week)
+var embed = <?php echo $embed; ?>;
+var apikey = "<?php echo $apikey; ?>";
+feed.apikey = apikey;
+var feedid = "<?php echo $feedid; ?>";
+var fill = "<?php echo $fill; ?>";
+var depth = "<?php echo $depth; ?>";
+var npoints = "<?php echo $npoints; ?>";
 
-    $("#timecompare_title").replaceWith('<?php echo _("Time Compare: " . $feedidname); ?>');
-    timecompare_init("#timecompare");
-    vis_feed_data();
+var initzoom = urlParams.initzoom;
+if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '168'; // Initial zoom 7*24=168 hours  (1 week)
+
+$("#timecompare_title").replaceWith('<?php echo _("Time Compare: " . $feedidname); ?>');
+timecompare_init("#timecompare");
+vis_feed_data();
 
 </script>
 
