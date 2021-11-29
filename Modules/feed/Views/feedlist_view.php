@@ -1443,6 +1443,8 @@ $("#export").click(function()
     var enable_average = $("#export-average")[0].checked*1;
     var average_str = "&average="+enable_average;
     
+    
+    
     var params = {
         ids: ids.join(","),
         start: export_start*1000,
@@ -1461,6 +1463,8 @@ $("#export").click(function()
     }
     
     var url = path+"feed/data.json?"+param_parts.join("&");
+    
+    console.log(url); return;
 
     if (downloadsize>(downloadlimit*1048576)) {
         var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
