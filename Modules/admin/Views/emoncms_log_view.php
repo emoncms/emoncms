@@ -89,7 +89,7 @@ function refresh_log(result){
     var isjson = true;
     try {
         data = JSON.parse(result);
-        if (data.reauth == true) { window.location = "/"; }
+        if (data.reauth == true) { window.location.reload(true); }
         if (data.success != undefined)  { 
             clearInterval(emoncms_log_interval);
             output_logfile("<text style='color:red;'>"+ data.message+"</text>", $("#logreply"));
