@@ -148,9 +148,8 @@ class TemplateEngine implements engine_methods
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
         
-        // todo: consider supporting a variety of time formats here
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
 
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         
@@ -226,7 +225,7 @@ class TemplateEngine implements engine_methods
             if ($csv) { 
                 $helperclass->csv_write($div_start,$value);
             } else {
-                $data[] = array($div_start*1000,$value);
+                $data[] = array($div_start,$value);
             }
 
             // Advance position 
