@@ -159,7 +159,7 @@ interface engine_methods{
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function update($feedid,$feedtime,$value);
+    // public function update($feedid,$feedtime,$value);
 
     /**
      * Get value at specified time
