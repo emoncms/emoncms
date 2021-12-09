@@ -7,7 +7,7 @@ class PHPTimeSeries implements engine_methods
     private $dir = "/var/lib/phptimeseries/";
     public $log;
     
-    private $writebuffer = array();
+    private $post_buffer = array();
 
     /**
      * Constructor.
@@ -153,6 +153,20 @@ class PHPTimeSeries implements engine_methods
         $data = array(array($timestamp,$value));
         $this->post_multiple($id,$data,$arg);
         return $value;
+    }
+    
+    public function post_bulk_prepare($id,$time,$value,$arg=null)
+    {
+        $id = (int) $id;
+        $this->post_buffer[$id][] = array($time,$value);
+    }
+
+    public function post_bulk_save()
+    {
+        foreach ($this->post_buffer as $id=>$data) {
+            $this->post_multiple($id,$data);
+        }
+        $this->post_buffer = array();
     }
     
     public function post_multiple($id,$data,$arg=null)

@@ -9,9 +9,10 @@ class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
     public $log;
-    private $writebuffer = array();
     private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
+    private $post_buffer = array();
+    private $post_buffer_padding_mode = array();
 
     /**
      * Constructor.
@@ -158,6 +159,21 @@ class PHPFina implements engine_methods
         return $value;
     }
     
+    public function post_bulk_prepare($id,$time,$value,$padding_mode=null)
+    {
+        $id = (int) $id;
+        $this->post_buffer[$id][] = array($time,$value);
+        $this->post_buffer_padding_mode[$id] = $padding_mode;
+    }
+
+    public function post_bulk_save()
+    {
+        foreach ($this->post_buffer as $id=>$data) {
+            $this->post_multiple($id,$data,$this->post_buffer_padding_mode[$id]);
+        }
+        $this->post_buffer = array();
+    }
+    
     public function post_multiple($id,$data,$padding_mode=null)
     {
         $id = (int) $id;
@@ -258,7 +274,7 @@ class PHPFina implements engine_methods
         fclose($fh);  
         return true;
     }
-    
+        
     /**
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
@@ -747,10 +763,6 @@ class PHPFina implements engine_methods
             clearstatcache($this->dir.$id.".dat");
             $bytesize += filesize($this->dir.$id.".dat");
         }
-        
-        if (isset($this->writebuffer[$id]))
-            $bytesize += strlen($this->writebuffer[$id]);
-            
         return floor($bytesize / 4.0);
     }   
         
@@ -837,7 +849,7 @@ class PHPFina implements engine_methods
      */
     public function clear($id) {
         $id = (int) $id;
-        if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
+        if (isset($this->post_buffer[$id])) $this->post_buffer[$id] = array();
         if (!$meta = $this->get_meta($id)) return false;
         if (!$fh = $this->open($id,'r+')) return false;
         ftruncate($fh, 0);
@@ -861,7 +873,7 @@ class PHPFina implements engine_methods
     public function trim($id,$start_time) {
         $id = (int) $id; 
         // Clear local buffer before trim
-        if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
+        if (isset($this->post_buffer[$id])) $this->post_buffer[$id] = array();
  
         if (!$meta = $this->get_meta($id)) return array('success'=>false,'message'=>'Could not open meta file');
         if (!$meta->npoints) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
