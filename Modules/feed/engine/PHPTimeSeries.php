@@ -148,42 +148,10 @@ class PHPTimeSeries implements engine_methods
      * @param float $value The value of the data point
      * @param array $arg optional padding mode argument
     */
-    public function post($id,$time,$value,$arg=null)
+    public function post($id,$timestamp,$value,$arg=null)
     {
-        $id = (int) $id;
-        $time = (int) $time;
-        $value = (float) $value;
-                
-        if (!$fh = $this->open($id,'c+')) return false;
-        
-        // Check if datapoint is in the past 
-        if ($npoints = $this->get_npoints($id)) {
-            fseek($fh,($npoints-1)*9);
-            $dp = @unpack("x/Itime/fvalue",fread($fh,9));
-
-            if ($time==$dp['time']) {
-                // if last dp we know position
-                fseek($fh,($npoints-1)*9);
-                fwrite($fh,pack("CIf",249,$time,$value));
-                fclose($fh);
-                return $value;
-                                
-            } else if ($time<$dp['time']) {
-                // if older: search for datapoint at specified time
-                $dp = $this->binarysearch($fh,$time,$npoints,true);
-                if ($dp!=-1) {
-                    // update existing datapoint
-                    fseek($fh, $dp[0]*9);
-                    fwrite($fh,pack("CIf",249,$time,$value));                
-                }
-                fclose($fh);
-                return $value;
-            }
-        }
-        // Otherwise append a new value
-        fseek($fh, $npoints*9);
-        fwrite($fh,pack("CIf",249,$time,$value));
-        fclose($fh);
+        $data = array(array($timestamp,$value));
+        $this->post_multiple($id,$data,$arg);
         return $value;
     }
     
@@ -252,7 +220,7 @@ class PHPTimeSeries implements engine_methods
             fwrite($fh,$buffer);
         }
         fclose($fh);
-        return $value;
+        return true;
     }
 
     /**

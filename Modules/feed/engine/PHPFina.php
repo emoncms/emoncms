@@ -154,7 +154,8 @@ class PHPFina implements engine_methods
     public function post($id,$timestamp,$value,$padding_mode=null)
     {
         $data = array(array($timestamp,$value));
-        return $this->post_multiple($id,$data,$padding_mode);
+        $this->post_multiple($id,$data,$padding_mode);
+        return $value;
     }
     
     public function post_multiple($id,$data,$padding_mode=null)
@@ -255,7 +256,7 @@ class PHPFina implements engine_methods
             fwrite($fh,$buffer);
         }
         fclose($fh);  
-        return $value;
+        return true;
     }
     
     /**
