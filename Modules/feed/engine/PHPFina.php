@@ -161,6 +161,8 @@ class PHPFina implements engine_methods
     {
         $id = (int) $id;
         
+        if ($padding_mode=="join") $join = true; else $join = false;
+        
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
         
@@ -170,19 +172,21 @@ class PHPFina implements engine_methods
         $valid = array();
         $index = 0;
         foreach ($data as $dp) {
+            // Calculate interval that this datapoint belongs too 
             $timestamp = (int) $dp[0];
+            $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
+            // Value is float or NAN
             $value = (float) $dp[1];
             if (is_nan($value)) $value = NAN;
-            
-            if ($timestamp >= $meta->start_time) {
-                if ($timestamp>$last_timestamp) {
-                    $last_timestamp = $timestamp;
-                    $valid[] = array($timestamp,$value);
-                    $index++;
-                } else if ($timestamp==$last_timestamp) {
-                    if ($index>0) {
-                        $valid[$index-1][1] = $value;
-                    }
+            // Append new
+            if ($timestamp>$last_timestamp) {
+                $last_timestamp = $timestamp;
+                $valid[] = array($timestamp,$value);
+                $index++;
+            // Update last
+            } else if ($timestamp==$last_timestamp) {
+                if ($index>0) {
+                    $valid[$index-1][1] = $value;
                 }
             }
         }
@@ -190,13 +194,11 @@ class PHPFina implements engine_methods
         
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $timestamp = floor($valid[0][0] / $meta->interval) * $meta->interval;
-            $meta->start_time = $timestamp;
+            $meta->start_time = $valid[0][0];
             $this->create_meta($id,$meta);
         }
 
-        $fh = fopen($this->dir.$id.".dat", 'c+');
-        if (!$fh) {
+        if (!$fh = fopen($this->dir.$id.".dat", 'c+')) {
             $this->log->warn("post() could not open data file id=$id");
             return false;
         }
@@ -204,27 +206,18 @@ class PHPFina implements engine_methods
         $last_pos = $meta->npoints - 1;
         $last_val = false;
 
-        $buffer = array();        
+        $buffer = "";
         foreach ($valid as $dp) {
             $timestamp = $dp[0];
             $value = $dp[1];
-            
-            // Calculate interval that this datapoint belongs too
-            $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-            
             // Calculate position in base data file of datapoint
             $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
+            if ($pos<0) { continue; } // skip if timestamp is less than start time
             
             // Update on disk
             if ($pos<$meta->npoints) {
                 fseek($fh,4*$pos);
                 fwrite($fh,pack("f",$value));
-            // Update in buffer
-            } else if ($pos<=$last_pos) {
-                $bpos = $last_pos-$meta->npoints;
-                $buffer[$bpos] = pack("f",$value);
-                $last_val = $value;
-            // Append new data points
             } else {
                 // Calculate padding requirement
                 $padding = ($pos - $last_pos)-1;                
@@ -235,7 +228,7 @@ class PHPFina implements engine_methods
                     }
                     $padding_value = NAN;
                     
-                    if ($last_pos>=0 && $padding_mode!=null) {
+                    if ($join && $last_pos>=0) {
                         if ($last_val===false) {
                             fseek($fh,$last_pos*4);
                             $val = unpack("f",fread($fh,4));
@@ -246,19 +239,21 @@ class PHPFina implements engine_methods
                     }
                     
                     for ($i=0; $i<$padding; $i++) {
-                        if ($padding_mode=="join") $padding_value += $div;
-                        $buffer[] = pack("f",$padding_value);
+                        if ($join) $padding_value += $div;
+                        $buffer .= pack("f",$padding_value);
                     }
                 }
                 
                 // Write new datapoint
-                $buffer[] = pack("f",$value);
+                $buffer .= pack("f",$value);
                 $last_pos += $padding + 1;
                 $last_val = $value;
             }
         }
-        fseek($fh,4*$meta->npoints);
-        fwrite($fh,implode('',$buffer));
+        if ($buffer!="") {
+            fseek($fh,4*$meta->npoints);
+            fwrite($fh,$buffer);
+        }
         fclose($fh);  
         return $value;
     }
