@@ -168,6 +168,7 @@ class PHPFina implements engine_methods
         // a small overhead when posting single updates but minor
         $last_timestamp = 0;
         $valid = array();
+        $index = 0;
         foreach ($data as $dp) {
             $timestamp = (int) $dp[0];
             $value = (float) $dp[1];
@@ -177,6 +178,11 @@ class PHPFina implements engine_methods
                 if ($timestamp>$last_timestamp) {
                     $last_timestamp = $timestamp;
                     $valid[] = array($timestamp,$value);
+                    $index++;
+                } else if ($timestamp==$last_timestamp) {
+                    if ($index>0) {
+                        $valid[$index-1][1] = $value;
+                    }
                 }
             }
         }

@@ -186,17 +186,73 @@ class PHPTimeSeries implements engine_methods
         fclose($fh);
         return $value;
     }
-
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $id The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($id,$time,$value)
+    
+    public function post_multiple($id,$data,$arg=null)
     {
-      return $this->post($id,$time,$value);
+        $id = (int) $id;
+        
+        // Check that data is ordered timestamp ascending
+        // a small overhead when posting single updates but minor
+        $last_timestamp = 0;
+        $valid = array();
+        $index = 0;
+        foreach ($data as $dp) {
+            $timestamp = (int) $dp[0];
+            $value = (float) $dp[1];
+            if (is_nan($value)) $value = NAN;
+            
+            if ($timestamp>$last_timestamp) {
+                $last_timestamp = $timestamp;
+                $valid[] = array($timestamp,$value);
+                $index++;
+            } else if ($timestamp==$last_timestamp) {
+                if ($index>0) {
+                    $valid[$index-1][1] = $value;
+                }
+            }
+        }
+        if (!count($valid)) return false;
+                       
+        if (!$fh = $this->open($id,'c+')) return false;
+        
+        // Check if datapoint is in the past 
+        if ($npoints = $this->get_npoints($id)) {
+            fseek($fh,($npoints-1)*9);
+            $last_dp = @unpack("x/Itime/fvalue",fread($fh,9));
+        } else {
+            $last_dp = false;
+        }
+        
+        $buffer = "";
+        foreach ($valid as $dp) {
+            $time = $dp[0];
+            $value = $dp[1];
+
+            if ($last_dp!==false && $time==$last_dp['time']) {
+                // if last dp we know position
+                // this give a small performance boost vs doing a binary
+                // search every time we want to update the last value
+                fseek($fh,($npoints-1)*9);
+                fwrite($fh,pack("CIf",249,$time,$value));                                
+            } else if ($last_dp!==false && $time<$last_dp['time']) {
+                // if older: search for datapoint at specified time
+                $found_dp = $this->binarysearch($fh,$time,$npoints,true);
+                if ($found_dp!=-1) {
+                    // update existing datapoint
+                    fseek($fh, $found_dp[0]*9);
+                    fwrite($fh,pack("CIf",249,$time,$value));                
+                }
+            } else {
+                $buffer .= pack("CIf",249,$time,$value);
+            }
+        }
+        // Otherwise append a new value
+        if ($buffer!="") {
+            fseek($fh, $npoints*9);
+            fwrite($fh,$buffer);
+        }
+        fclose($fh);
+        return $value;
     }
 
     /**
@@ -482,73 +538,6 @@ class PHPTimeSeries implements engine_methods
         fclose($primary);
         fclose($fh);
         exit;
-    }
-
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($id,$timestamp,$value,$arg=null)
-    {
-        $id = (int) $id;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-
-        $filename = "feed_$id.MYD";
-        $npoints = $this->get_npoints($id);
-
-        if (!isset($this->writebuffer[$id])) {
-            $this->writebuffer[$id] = "";
-        }
-
-        // If there is data then read last value
-        if ($npoints>=1) {
-            static $lastvalue_static_cache = array(); // Array to hold the cache
-            if (!isset($lastvalue_static_cache[$id])) { // Not set, cache it from file data
-                $lastvalue_static_cache[$id] = $this->lastvalue($id);
-            }           
-            if ($timestamp<=$lastvalue_static_cache[$id]['time']) {
-                // if data is in past, its not supported, could call update here to fix on file before continuing
-                // but really this should not happen for past data has process_feed_buffer uses update for that.
-                $this->log->warn("post_bulk_prepare() data in past, nothing saved.  feedid=$id timestamp=$timestamp last=".$lastvalue_static_cache[$id]['time']." value=$value");
-                return $value;
-            }
-        }
-
-        $this->writebuffer[$id] .= pack("CIf",249,$timestamp,$value);
-        $lastvalue_static_cache[$id] = array('time'=>$timestamp,'value'=>$value); // Set static cache last value
-        return $value;
-    }
-
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
-    public function post_bulk_save()
-    {
-        $byteswritten = 0;
-        foreach ($this->writebuffer as $id=>$data)
-        {
-            $filename = $this->dir."feed_$id.MYD";
-            // Auto-correction if something happens to the datafile, it gets partitally written to
-            // this will correct the file size to always be an integer number of 4 bytes.
-            clearstatcache($filename);
-            if (@filesize($filename)%9 != 0) {
-                $npoints = floor(filesize($filename)/9.0);
-                $fh = fopen($filename,"c");
-                fseek($fh,$npoints*9.0);
-                fwrite($fh,$data);
-                fclose($fh);
-                print "PHPTIMESERIES: FIXED DATAFILE WITH INCORRECT LENGHT\n";
-                $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                fwrite($fh,$data);
-                fclose($fh);
-            }
-            
-            $byteswritten += strlen($data);
-        }
-        $this->writebuffer = array(); // Clear writebuffer
-
-        return $byteswritten;
     }
 
     // returns nearest datapoint that is >= search time
