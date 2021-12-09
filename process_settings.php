@@ -35,6 +35,9 @@ if (file_exists(dirname(__FILE__)."/settings.php")) {
 #    $CUSTOM_INI = parse_ini_file("settings.ini", true);
     $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
     // $settings = ini_check_envvars($settings);
+    if (is_string($settings['feed']['engines_hidden'])) {
+        $settings['feed']['engines_hidden'] = json_decode($settings['feed']['engines_hidden']);
+    }
 } else {
     $settings_error = true;
     $settings_error_title = "missing settings file";

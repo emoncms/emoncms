@@ -53,16 +53,16 @@ global $path; $v=2;
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Write API Key'); ?></td>    
+      <td class="muted"><?php echo _('Write API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo _("Write API Key copied to clipboard"); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('write')">Generate New</button></td>
+      <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo _('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Read API Key'); ?></td>    
+      <td class="muted"><?php echo _('Read API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo _("Read API Key copied to clipboard"); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('read')">Generate New</button></td>
+      <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo _('Generate New'); ?></button></td>
     </tr>
     <tr>
       <td class="muted"><?php echo _('Password'); ?></td>    
@@ -240,7 +240,7 @@ global $path; $v=2;
 <div id="modalNewApikey" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="modalNewApikeyLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="modalNewApikeyLabel">Generate a new <span id="apikey_type"></span> API key</h3>
+        <h3 id="modalNewApikeyLabel"><?php echo _('Generate a new API key'); ?> - <span id="apikey_type"></span></h3>
     </div>
     <div class="modal-body">
         <p><?php echo _('Are you sure you want to generate a new apikey?'); ?></p>

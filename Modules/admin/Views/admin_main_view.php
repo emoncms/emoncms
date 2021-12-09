@@ -213,6 +213,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
         <dl class="row">
         <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+        <?php echo row(_('Run user'), _('User') . ": " . $system['run_user'] . " " . _('Group') . ": " .  $system['run_group'] . " " . _('Script Owner') . ": " . $system['script_owner'] ); ?>
         <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
         </dl>
 
@@ -508,6 +509,7 @@ $(window).resize(function() {
 function getBufferSize() {
   $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
     {
+      if (result.reauth == true) { window.location.reload(true); }
       $("#bufferused").html( result + " feed points pending write");
     }
   });
@@ -518,6 +520,7 @@ function getBufferSize() {
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush", async: true, dataType: "json", success: function(result)
     {
+      if (result.reauth == true) { window.location.reload(true); }
       $("#redisused").html(result.dbsize+" keys ("+result.used+")");
     }
   });
@@ -568,6 +571,7 @@ $(".service-action").click(function() {
     console.log(action+" "+name)
     
     $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "json", success: function(result) {
+        if (result.reauth == true) { window.location.reload(true); }
         setTimeout(function() {
             location.reload();
         },1000);

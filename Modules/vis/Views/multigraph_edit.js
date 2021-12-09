@@ -189,6 +189,17 @@ function drawMultigraphFeedlistEditor(){
 
 
     if (detail==="advanced") {
+
+      out += "<tr>";
+      checked = ""; if (multigraphFeedlist[z]["average"]) { checked = "checked"; }
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Average")+"</td>";
+      out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='average'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+      checked = ""; if (multigraphFeedlist[z]["delta"]) { checked = "checked"; }
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Delta")+"</td>";
+      out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='delta'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+      out += "</tr>";
+      out += "<tr>";
+      
       checked = "checked"; if (!multigraphFeedlist[z]["skipmissing"]) { checked = ""; }
       out += "<tr>";
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Skip missing")+"</td>";
@@ -197,13 +208,7 @@ function drawMultigraphFeedlistEditor(){
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Stack")+"</td>";
       out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
       out += "</tr>";
-      out += "<tr>";
-      checked = ""; if (multigraphFeedlist[z]["delta"]) { checked = "checked"; }
-      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Delta")+"</td>";
-      out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='delta'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-      out += "</tr>";
-      out += "<tr>";
-
+      
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Interval Type")+"</td>";
       out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'>";
       out += "<select id='intervaltype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
@@ -511,6 +516,17 @@ function loadEvents(){
    $(baseElement).on("click","#delta",function(event){
     var z = $(this).attr("listid");
     multigraphFeedlist[z]["delta"] = $(this)[0].checked;
+    if (multigraphFeedlist[z]["delta"]) {
+        multigraphFeedlist[z]["skipmissing"] = 0;
+        $("#skipmissing[listid="+z+"]")[0].checked = 0;
+    }
+    visFeedData();
+    modified();
+  });
+
+   $(baseElement).on("click","#average",function(event){
+    var z = $(this).attr("listid");
+    multigraphFeedlist[z]["average"] = $(this)[0].checked;
     visFeedData();
     modified();
   });

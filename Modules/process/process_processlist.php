@@ -825,6 +825,7 @@ class Process_ProcessList
     // / Below are functions of this module processlist
     public function scale($arg, $time, $value)
     {
+        if ($value===null) return $value;
         return $value * $arg;
     }
 
@@ -839,6 +840,7 @@ class Process_ProcessList
 
     public function offset($arg, $time, $value)
     {
+        if ($value===null) return $value;
         return $value + $arg;
     }
 
@@ -1472,17 +1474,20 @@ class Process_ProcessList
     // Loads full feed to data cache if it's the first time to load
     public function source_feed_data_time($feedid, $time, $value, $options)
     {
-        // Find out why these are not always set?
-        if (!isset($options['start']) || !isset($options['end'])) return false;
-        
-        // Load feed to data cache if it has not yet been loaded
-        if (!isset($this->data_cache[$feedid])) {
-            $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],$options['average'],$options['timezone'],'unix',false,0,0);
-        }
-
-        // Return value
-        if (isset($this->data_cache[$feedid][$options['index']])) {
-            return $this->data_cache[$feedid][$options['index']][1];
+        // If start and end are set this is a request over muultiple data points
+        if (isset($options['start']) && isset($options['end'])) {      
+            // Load feed to data cache if it has not yet been loaded
+            if (!isset($this->data_cache[$feedid])) {
+                $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],$options['average'],$options['timezone'],'unix',false,0,0);
+            }
+            // Return value
+            if (isset($this->data_cache[$feedid][$options['index']])) {
+                return $this->data_cache[$feedid][$options['index']][1];
+            }
+        } else {
+            // This is a request for the last value only
+            $timevalue = $this->feed->get_timevalue($feedid);
+            return $timevalue["value"];
         }
         return null;
     }

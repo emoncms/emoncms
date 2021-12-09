@@ -538,7 +538,7 @@ class PHPFina implements engine_methods
                 $date->modify("first day of this month");
                 $modify = "+1 month";
             } else if ($interval=="annual") {
-                $date->modify("first day of this year");
+                $date->modify("first day of january this year");
                 $modify = "+1 year";
             }
             $time = $date->getTimestamp();

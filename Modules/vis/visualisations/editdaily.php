@@ -7,17 +7,15 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $embed;
+    global $path, $embed, $vis_version;
 
     $type = 2;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
@@ -54,115 +52,157 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+$('#graph').width($('#graph_bound').width());
+$('#graph').height($('#graph_bound').height());
 
-  var feedid = <?php echo $feedid; ?>;
-  var feedname = "<?php echo $feedidname; ?>";
-  var type = "<?php echo $type; ?>";
-  var apikey = "<?php echo $write_apikey; ?>";
+var feedid = <?php echo $feedid; ?>;
+var feedname = "<?php echo $feedidname; ?>";
+var type = "<?php echo $type; ?>";
+var apikey = "<?php echo $write_apikey; ?>";
 
-  var timeWindow = (3600000*24.0*7);        //Initial time window
-  var start = ((new Date()).getTime())-timeWindow;  //Get start time
-  var end = (new Date()).getTime();         //Get end time
+var timeWindow = (3600000 * 24.0 * 7); // Initial time window
+view.start = ((new Date()).getTime()) - timeWindow; // Get start time
+view.end = (new Date()).getTime(); // Get end time
 
-  vis_feed_data();
+vis_feed_data();
 
-  function vis_feed_data() {
-    start = Math.floor(start / 86400000) * 86400000;
-    end = Math.ceil(end / 86400000) * 86400000;
-    var graph_data = get_feed_data(feedid,start,end,3600*24,1,0);
-    //var stats = power_stats(graph_data);
-    //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
+function vis_feed_data() {
 
-    var plotdata = {data: graph_data, lines: { show: true, fill: true }};
-    if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};
+    var graph_data = feed.getdata(feedid, view.start, view.end, "daily", 0, 0, 0, 0);
+
+    var plotdata = {
+        data: graph_data,
+        lines: {
+            show: true,
+            fill: true
+        }
+    };
+    if (type == 2) plotdata = {
+        data: graph_data,
+        bars: {
+            show: true,
+            align: "center",
+            barWidth: 3600 * 18 * 1000,
+            fill: true
+        }
+    };
 
     var plot = $.plot($("#graph"), [plotdata], {
-      canvas: true,
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-      selection: { mode: "x" },
-      touch: { pan: "x", scale: "x" }
+        canvas: true,
+        grid: {
+            show: true,
+            hoverable: true,
+            clickable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        selection: {
+            mode: "x"
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
     });
 
-  }
+}
 
-  $("#graph").bind("plotclick", function (event, pos, item) {
+$("#graph").bind("plotclick", function(event, pos, item) {
     if (item != null) {
-      $("#time").val(item.datapoint[0]/1000);
-      $("#newvalue").val(item.datapoint[1]);
-      //$("#stats").html("Value: "+item.datapoint[1]);
+        $("#time").val(item.datapoint[0] / 1000);
+        $("#newvalue").val(item.datapoint[1]);
     }
-  });
+});
 
-  //--------------------------------------------------------------------------------------
-  // Graph zooming
-  //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
-  //----------------------------------------------------------------------------------------------
-  // Operate buttons
-  //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-  $('#right').click(function () {inst_panright(); vis_feed_data();});
-  $('#left').click(function () {inst_panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+// Graph zooming
+//--------------------------------------------------------------------------------------
+$("#graph").bind("plotselected", function(event, ranges) {
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
+    vis_feed_data();
+});
+//----------------------------------------------------------------------------------------------
+// Operate buttons
+//----------------------------------------------------------------------------------------------
+$("#zoomout").click(function() {
+    view.zoomout();
+    vis_feed_data();
+});
+$("#zoomin").click(function() {
+    view.zoomin();
+    vis_feed_data();
+});
+$('#right').click(function() {
+    view.panright();
+    vis_feed_data();
+});
+$('#left').click(function() {
+    view.panleft();
+    vis_feed_data();
+});
+$('.graph-time').click(function() {
+    view.timewindow($(this).attr("time"));
+    vis_feed_data();
+});
+//-----------------------------------------------------------------------------------------------
 
-  $('#okb').click(function () {
+$('#okb').click(function() {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
 
     var updatetime = 0;
     $.ajax({
-      url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&updatetime="+updatetime,
-      dataType: 'json',
-      async: false,
-      success: function() {}
+        url: path + 'feed/update.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&value=" + newvalue + "&updatetime=" + updatetime,
+        dataType: 'json',
+        async: false,
+        success: function() {}
     });
     vis_feed_data();
-  });
+});
 
-  $('#delb').click(function () {
+$('#delb').click(function() {
     var time = $("#time").val();
 
     $.ajax({
-      url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&delete=1",
-      dataType: 'json',
-      async: false,
-      success: function() {}
+        url: path + 'feed/update.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&delete=1",
+        dataType: 'json',
+        async: false,
+        success: function() {}
     });
     vis_feed_data();
-  });
-  
-  
-  
-  // Graph buttons and navigation efects for mouse and touch
-  $("#graph").mouseenter(function(){
+});
+
+
+
+// Graph buttons and navigation efects for mouse and touch
+$("#graph").mouseenter(function() {
     $("#graph-navbar").show();
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-  });
-  $("#graph_bound").mouseleave(function(){
+});
+$("#graph_bound").mouseleave(function() {
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  $("#graph").bind("touchstarted", function (event, pos)
-  {
+});
+$("#graph").bind("touchstarted", function(event, pos) {
     $("#graph-navbar").hide();
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  
-  $("#graph").bind("touchended", function (event, ranges)
-  {
+});
+
+$("#graph").bind("touchended", function(event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    start = ranges.xaxis.from; end = ranges.xaxis.to;
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
     vis_feed_data();
-  });
+});
 </script>
 

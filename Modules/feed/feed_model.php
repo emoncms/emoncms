@@ -211,8 +211,10 @@ class Feed
         $response = $this->EngineClass($engine)->clear($feedid);
         
         // Clear feed last value (set to zero)
-        if ($this->redis->hExists("feed:$feedid",'value')) {
-            $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+        if ($this->redis) {
+            if ($this->redis->hExists("feed:$feedid",'value')) {
+                $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+            }
         }
 
         $this->log->info("feed model: clear() feedid=$feedid");
@@ -555,10 +557,14 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        
+        if ($delta && !$csv && $timeformat=="unix") {
+            $end = $this->delta_mode_next_interval($end,$interval,$timezone);
+        }
         
         // Maximum request size
         // $period = ($end-$start)*0.001;
@@ -569,9 +575,67 @@ class Feed
         if (!in_array($timeformat,array("unix","excel","iso8601"))) return array('success'=>false, 'message'=>'Invalid time format');
           
         $engine = $this->get_engine($feedid);
-
-        // Call to engine get_data
-        return $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+        
+        // Call to engine get_data_combined
+        $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+        
+        if ($delta && !$csv && $timeformat=="unix") {
+            $data = $this->delta_mode_convert($feedid,$data);
+        }
+        return $data;
+    }
+    
+    /*
+    Converts a data request to a cumulative kWh feed into kWh per day, week, month, year
+    Includes the current day, week, month, year
+    */ 
+    private function delta_mode_next_interval($end,$interval,$timezone) {
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($end*0.001);
+            $date->modify("tomorrow midnight");
+            if ($interval=="weekly") {
+                $date->modify("next monday");
+            } else if ($interval=="monthly") {
+                $date->modify("first day of next month");
+            } else if ($interval=="annual") {
+                $date->modify("first day of january next year");
+            }
+            $end = $date->getTimestamp();
+        } else {
+            // standard interval
+            $end = floor(($end*0.001)/$interval)*$interval;
+            $end += $interval;
+        }
+        $end *= 1000;
+        return $end;
+    }
+    
+    private function delta_mode_convert($feedid,$data) {
+        // Get last value
+        $dp = $this->get_timevalue($feedid);
+        $time = $dp["time"]*1000;
+        
+        // Calculate delta mode
+        $last_val = null;
+        for($i=0; $i<count($data)-1; $i++) {
+            // Apply current value to end of day, week, month, year, interval
+            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                $data[$i+1][1] = $dp['value'];
+            }
+            // Delta calculation
+            if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                $data[$i][1] = null;
+            } else {
+                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                $last_val = $data[$i+1][1];
+            }
+        }
+        array_pop($data);
+        
+        return $data;
     }
     
     public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)

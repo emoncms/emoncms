@@ -1,0 +1,152 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-11-07 19:48+0100\n"
+"PO-Revision-Date: 2021-11-07 19:48+0100\n"
+"Last-Translator: Aymeric THIBAUT\n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 3.0\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../api_tool_view.php:35
+msgid "Description"
+msgstr "Description"
+
+#: ../../../api_tool_view.php:39
+msgid "Path"
+msgstr "Chemin"
+
+#: ../../../api_tool_view.php:43
+msgid "Parameters"
+msgstr "Paramètres"
+
+#: ../../../api_tool_view.php:56
+msgid "No"
+msgstr "Non"
+
+#: ../../../api_tool_view.php:57
+msgid "Yes"
+msgstr "Oui"
+
+#: ../../../api_tool_view.php:66
+msgid "Authentication"
+msgstr "Authentification"
+
+#: ../../../api_tool_view.php:68
+msgid "Show"
+msgstr "Montrer"
+
+#: ../../../api_tool_view.php:71
+msgid "Example URL"
+msgstr "Exemple URL"
+
+#: ../../../api_tool_view.php:74
+msgid "Try"
+msgstr "Essayer"
+
+#: ../../../api_tool_view.php:79
+msgid "Response"
+msgstr "Réponse"
+
+#: ../../../api_tool_view.php:82
+msgid "This API end point will write data, click Try to test"
+msgstr ""
+"Ce point d'entrée API va écrire les données, cliquer Essayer pour tester"
+
+#: ../../../gridjs/grid-demo.php:80
+msgid "Dashboards"
+msgstr "Tableaux de bord"
+
+#: ../../../gridjs/grid-demo.php:87
+msgid "Search"
+msgstr "Rechercher"
+
+#: ../../../gridjs/grid-demo.php:87 ../../../gridjs/grid-demo.php:89
+msgid "Search the data by any column"
+msgstr "Rechercher les données par n'importe quelle colonne"
+
+#: ../../../gridjs/grid-demo.php:122
+msgid "Error"
+msgstr "Erreur"
+
+#: ../../../gridjs/grid-demo.php:123
+msgid "Error loading"
+msgstr "Erreur en chargeant"
+
+#: ../../../gridjs/grid-demo.php:124
+#, php-format
+msgid "Found %s entries"
+msgstr "%s entrées trouvées"
+
+#: ../../../gridjs/grid-demo.php:125
+msgid "JS Error"
+msgstr "Erreur JS"
+
+#: ../../../gridjs/grid-demo.php:126
+msgid "Reload"
+msgstr "Recharger"
+
+#: ../../../gridjs/grid-demo.php:127
+msgid "Loading"
+msgstr "Chargement"
+
+#: ../../../gridjs/grid-demo.php:128
+msgid "Saving"
+msgstr "Sauvegarde"
+
+#: ../../../gridjs/grid-demo.php:129
+msgid "Label this dashboard with a name"
+msgstr "Étiqueter ce tableau avec un nom"
+
+#: ../../../gridjs/grid-demo.php:130
+msgid "Short title to use in URL.\\neg \\\"roof-solar\\\""
+msgstr "Titre court à utiliser dans l'URL.\\neg \\\"roof-solar\\\""
+
+#: ../../../gridjs/grid-demo.php:131
+msgid ""
+"Adds a \\\"Default Dashboard\\\" bookmark in the sidebar.\\nAlso visible at "
+"\\\"dashboard/view\\\""
+msgstr ""
+"Ajoute un signet \\\"Default Dashboard\\\" dans la barre latérale."
+"\\nÉgalement visible dans \\\"dashboard/view\\\""
+
+#: ../../../gridjs/grid-demo.php:132
+msgid "Allow this Dashboard to be viewed by anyone"
+msgstr "Autoriser ce tableau de bord à être consulté par n'importe qui"
+
+#: ../../../gridjs/grid-demo.php:133
+msgid "Clone the layout of this dashboard to a new Dashboard"
+msgstr ""
+"Cloner la disposition de ce tableau de bord dans un nouveau tableau de bord"
+
+#: ../../../gridjs/grid-demo.php:134
+msgid "Edit this dashboard layout"
+msgstr "Modifier cette disposition de tableau de bord"
+
+#: ../../../gridjs/grid-demo.php:135
+msgid "Delete this dashboard"
+msgstr "Supprimer ce tableau de bord"
+
+#: ../../../gridjs/grid-demo.php:136
+msgid "View this dashboard"
+msgstr "Voir ce tableau de bord"
+
+#: ../../../gridjs/grid-demo.php:137
+msgid "Edit Layout"
+msgstr "Éditer la disposition"
+
+#: ../../../menu/menu_langjs.php:7
+msgid "Expand sidebar"
+msgstr "Développer la barre latérale"
+
+#: ../../../menu/menu_langjs.php:8
+msgid "Minimise sidebar"
+msgstr "Réduire la barre latérale"

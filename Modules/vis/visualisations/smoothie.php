@@ -20,89 +20,78 @@
 <?php if (!$embed) { ?> </div> <?php } ?>
 
 <script id="source" language="javascript" type="text/javascript">
-  var feedid = <?php echo $feedid; ?>;
-  var apikey = "<?php echo $apikey; ?>";
-  var ufac = "<?php echo $ufac; ?>";
-  var feedid2 = "<?php echo $feedid2; ?>";
+var feedid = <?php echo $feedid; ?>;
+var apikey = "<?php echo $apikey; ?>";
+var ufac = "<?php echo $ufac; ?>";
+var feedid2 = "<?php echo $feedid2; ?>";
 
-  var smoothie = new SmoothieChart( {fps:30}  );
-  smoothie.streamTo(document.getElementById("mycanvas"), ufac);
+var smoothie = new SmoothieChart({
+    fps: 30
+});
+smoothie.streamTo(document.getElementById("mycanvas"), ufac);
 
-  var now = new Date().getTime();
-  var start = now - 10000;
-  var end = now;
+var now = new Date().getTime();
+var start = now - 10000;
+var end = now;
 
-  var line1 = new TimeSeries();
+var line1 = new TimeSeries();
+var line2 = new TimeSeries();
 
-  if (feedid2 != "") var line2 = new TimeSeries();
+// Used to filter out repeated data (Might be bad)
+var old = 0;
+var old1 = 0;
+var lasttime = 0;
 
-  // Used to filter out repeated data (Might be bad)
-  var old = 0;
-  var old1  = 0;
-  var lasttime = 0;
+var canvas = document.getElementById('mycanvas'),
+    context = canvas.getContext('2d');
+window.addEventListener('resize', resizeCanvas, false);
 
-  var canvas = document.getElementById('mycanvas'),
-  context = canvas.getContext('2d');
-  window.addEventListener('resize', resizeCanvas, false);
-
-  function resizeCanvas() {
+function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  }
-  resizeCanvas();
+}
+resizeCanvas();
 
 
-  doSome();
-  setInterval ( doSome, 2000 );
+doSome();
+setInterval(doSome, 2000);
 
-  function doSome(){
+function doSome() {
     var now = new Date().getTime();
     start = now - 10000;
     end = now;
 
-    vis_feed_data(apikey,feedid,start,end,line1,0);
-    if (feedid2 != "") vis_feed_data(apikey,feedid2,start,end,line2,1);
-  }
+    vis_feed_data(apikey, feedid, start, end, line1, 0);
+    if (feedid2 != "") vis_feed_data(apikey, feedid2, start, end, line2, 1);
+}
 
-  function vis_feed_data(apikey,feedid,start,end,line,oldref){
+function vis_feed_data(apikey, feedid, start, end, line, oldref) {
     $.ajax({
-    url: path+'feed/timevalue.json',
-    data: "&apikey="+apikey+"&id="+feedid, //+"&start="+start+"&end="+end+"&interval=10",
-    dataType: 'json',
-    async: true, 
-    success: function(data)
-    {
-      if (data.time!=lasttime) { 
-          lasttime = data.time;
-          line.append(data.time*1000, data.value);
-      }
-      /*
-      var prev;
-      if (oldref == 0)
-      prev = old;
-      else
-      prev = old1;
-
-      if (data[1] != undefined && data[1][1] != prev)
-      {
-      line.append(new Date().getTime(), data[1][1]);
-      if (oldref == 0)
-        old = data[1][1];
-      else
-        old1 = data[1][1];
-      }*/
-    }
+        url: path + 'feed/timevalue.json',
+        data: "&apikey=" + apikey + "&id=" + feedid, //+"&start="+start+"&end="+end+"&interval=10",
+        dataType: 'json',
+        async: true,
+        success: function(data) {
+            if (data.time != lasttime) {
+                lasttime = data.time;
+                line.append(data.time * 1000, data.value);
+            }
+        }
     });
-  }
+}
 
-  smoothie.addTimeSeries(line1,
-  { strokeStyle:'rgb(0, 255, 0)',
-    fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:3 });
+smoothie.addTimeSeries(line1, {
+    strokeStyle: 'rgb(0, 255, 0)',
+    fillStyle: 'rgba(0, 255, 0, 0.4)',
+    lineWidth: 3
+});
 
-  if (feedid2 != ""){
-    smoothie.addTimeSeries(line2,
-    { strokeStyle:'rgb(255, 0, 0)',
-      fillStyle:'rgba(255, 0, 0, 0.4)', lineWidth:3 });
-  }
+if (feedid2 != "") {
+    smoothie.addTimeSeries(line2, {
+        strokeStyle: 'rgb(255, 0, 0)',
+        fillStyle: 'rgba(255, 0, 0, 0.4)',
+        lineWidth: 3
+    });
+}
 
 </script>
