@@ -215,7 +215,7 @@ $('#multiply-submit').click(function() {
 
     $.ajax({
         url: path + 'feed/scalerange.json',
-        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + view.start + "&end=" + view.end + "&value=" + multiplyvalue,
+        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001) + "&value=" + multiplyvalue,
         dataType: 'json',
         async: false,
         success: function(result) {
@@ -232,7 +232,7 @@ $('#delete-button').click(function() {
 $("#confirmdelete").click(function() {
     $.ajax({
         url: path + 'feed/deletedatarange.json',
-        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + view.start + "&end=" + view.end,
+        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001),
         dataType: 'json',
         async: false,
         success: function(result) {

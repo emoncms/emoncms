@@ -112,10 +112,9 @@ function feed_controller()
 
             $start = get('start',true);
             $end = get('end',true);
-            $default_interval = round((($end-$start)*0.001)/800);
-            $interval = get('interval',false,$default_interval);
+            $interval = get('interval',false,0);
             $timezone = get('timezone',false,$user_timezone);
-            $timeformat = get('timeformat',false,'unix');
+            $timeformat = get('timeformat',false,'unixms');
             $csv = get('csv',false,0);
             $skipmissing = get('skipmissing',false,0);
             $limitinterval = get('limitinterval',false,0);
@@ -157,7 +156,7 @@ function feed_controller()
                                 
                                 $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
                             } else {
-                                $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,get('split'));
+                                $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,get('split'));
                             }
                         }
                     } else {

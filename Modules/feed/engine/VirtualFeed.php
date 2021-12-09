@@ -94,9 +94,8 @@ class VirtualFeed implements engine_methods
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
         
-        // todo: consider supporting a variety of time formats here
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         
         $processList = $this->feed->get_processlist($feedid);
         if ($processList == '' || $processList == null) return false;
@@ -164,7 +163,7 @@ class VirtualFeed implements engine_methods
                 if ($csv) { 
                     $helperclass->csv_write($time,$dataValue);
                 } else {
-                    $data[] = array($time*1000, $dataValue);
+                    $data[] = array($time, $dataValue);
                 }
             }
             

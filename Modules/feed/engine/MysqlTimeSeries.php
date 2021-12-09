@@ -143,16 +143,13 @@ class MysqlTimeSeries implements engine_methods
     public function get_average($feedid, $start, $end, $interval)
     {
         $feedid = (int) $feedid;
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $interval= (int) $interval;
 
         // Minimum interval
         if ($interval < 1) $interval = 1;
-        // Maximum request size
-        $req_dp = round(($end - $start)/$interval);
-        if ($req_dp > 10000) return array('success'=>false, 'message'=>"Request datapoint limit reached (10000), increase request interval or time range, requested datapoints = $req_dp");
-
+        
         $table = $this->get_table_name($feedid);
         $data = array();
 
@@ -160,7 +157,7 @@ class MysqlTimeSeries implements engine_methods
         $result = $this->mysqli->query($sql);
         if ($result) {
             while($row = $result->fetch_array()) {
-                $data[] = array((int) $row['time']*1000, (float) $row['data_avg']);
+                $data[] = array((int) $row['time'], (float) $row['data_avg']);
             }
         }
         return $data;
@@ -180,8 +177,8 @@ class MysqlTimeSeries implements engine_methods
         $feedid = (int) $feedid;
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
 
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $table = $this->get_table_name($feedid);
         $data = array();
 
@@ -210,9 +207,9 @@ class MysqlTimeSeries implements engine_methods
                 $dp = $result->fetch_array();
                 if ($dp != null) {
                     if ($dp['dp'] !== null) $dp['dp'] = (float) $dp['dp'];
-                    $data[] = array( $interval_start*1000 , $dp['dp']);
+                    $data[] = array( $interval_start , $dp['dp']);
                 } else {
-                    $data[] = array( $interval_start*1000 , null);
+                    $data[] = array( $interval_start , null);
                 }
             }
             $n++;
@@ -306,8 +303,8 @@ class MysqlTimeSeries implements engine_methods
         global $settings;
 
         $feedid = intval($feedid);
-        $start = round($start/1000);
-        $end = round($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $interval = intval($interval); // time gap in seconds
 
         if ($interval < 1) $interval = 1;
@@ -332,7 +329,7 @@ class MysqlTimeSeries implements engine_methods
                 $stmt->execute();
                 if ($stmt->fetch()) {
                     if ($data_value != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
-                        $time = $data_time * 1000;
+                        $time = $data_time;
                         if ($data_value !== null) $data_value = (float) $data_value ;
                         $data[] = array($time, $data_value);
                     }
@@ -362,7 +359,7 @@ class MysqlTimeSeries implements engine_methods
                 while($row = $result->fetch_array()) {
                     $data_value = $row['data'];
                     if ($data_value != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
-                        $time = $row['time'] * 1000 * $td;
+                        $time = $row['time'] * $td;
                         if ($data_value !== null) $data_value = (float) $data_value ;
                         $data[] = array($time , $data_value);
                     }
@@ -386,8 +383,8 @@ class MysqlTimeSeries implements engine_methods
         if (!in_array($mode,array("daily","weekly","monthly","annual"))) return false;
         
         $feedid = (int) $feedid;
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $table = $this->get_table_name($feedid);
         $data = array();
 
@@ -426,16 +423,16 @@ class MysqlTimeSeries implements engine_methods
             // Limit DB requests to available datapoints in feed
             if ($range[0]['time'] < $time &&  $time < $range[1]['time']) {
                 // get datapoint using interpolation if necessary
-                $data[] = $this->get_datapoint_interpolated($feedid, $time * 1000);
+                $data[] = $this->get_datapoint_interpolated($feedid, $time);
             }
             elseif($time >= $range[1]['time']) {
                 // return latest feed value
-                $data[] = array($time *1000, (float) $range[1]['data']);
+                $data[] = array($time, (float) $range[1]['data']);
                 break;
             }
             else {
                 // return NULL if requested time is out of feed range
-                $data[] = array($time *1000, null);
+                $data[] = array($time, null);
             }
             $date->modify($increment);
             $n++;
@@ -448,8 +445,8 @@ class MysqlTimeSeries implements engine_methods
         if (!in_array($mode,array("daily","weekly","monthly","annual"))) return false;
 
         $feedid = (int) $feedid;
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $table = $this->get_table_name($feedid);
         $data = array();
         $split = json_decode($split);
@@ -501,7 +498,7 @@ class MysqlTimeSeries implements engine_methods
                 // Limit DB requests to available datapoints in feed
                 if ($range[0]['time'] < $time &&  $time < $range[1]['time']) {
                     // get datapoint using interpolation if necessary
-                    $result = $this->get_datapoint_interpolated($feedid, $split_time * 1000);
+                    $result = $this->get_datapoint_interpolated($feedid, $split_time);
                     $value = $result[1];
                 }
                 elseif($time >= $range[1]['time']) {
@@ -514,7 +511,7 @@ class MysqlTimeSeries implements engine_methods
                 }
                 $split_values[] = $value;
             }
-            $data[] = array($time*1000, $split_values);
+            $data[] = array($time, $split_values);
             $date->modify($increment);
             $n++;
         }
@@ -551,7 +548,7 @@ class MysqlTimeSeries implements engine_methods
                 }
             }
         } else {
-            return $this->csv_export($feedid, $start*0.001, $end*0.001, $interval, $timezone);
+            return $this->csv_export($feedid, $start, $end, $interval, $timezone);
         }
     }
 
@@ -743,8 +740,8 @@ class MysqlTimeSeries implements engine_methods
     public function delete_data_range($feedid,$start,$end)
     {
         $feedid = intval($feedid);
-        $start = intval($start/1000.0);
-        $end = intval($end/1000.0);
+        $start = (int) $start;
+        $end = (int) $end;
         $table = $this->get_table_name($feedid);
         $this->mysqli->query("DELETE FROM $table where `time` >= '$start' AND `time`<= '$end'");
 
@@ -929,7 +926,7 @@ class MysqlTimeSeries implements engine_methods
     private function get_datapoint_interpolated($feedid, $time)
     {
         $feedid = (int) $feedid;
-        $time = intval($time/1000);
+        $time = (int) $time;
         $table = $this->get_table_name($feedid);
         $data = array();
 
@@ -944,7 +941,7 @@ class MysqlTimeSeries implements engine_methods
             if (count($dp) == 2) {
                 if ($dp[0]['time'] == $time) {
                     // Datapoint to given timestamp found
-                    $data = array($time*1000 , (float) $dp[0]['data']);
+                    $data = array($time , (float) $dp[0]['data']);
                 }
                 else {
                     // No datapoint to given timestamp found. Datapoint will be interpolated
@@ -953,13 +950,13 @@ class MysqlTimeSeries implements engine_methods
                     if ($delta_t != 0){
                         // Linear interpolation
                         $value = $dp[0]['data'] + ($delta_data / $delta_t) * ($time - $dp[0]['time']);
-                        $data = array($time*1000 , (float) $value);
+                        $data = array($time , (float) $value);
                     }
                 }
             }
             else {
                 // only one datapoint found, interpolation not possible.
-                $data = array($time*1000 , null);
+                $data = array($time , null);
             }
         }
         return $data;

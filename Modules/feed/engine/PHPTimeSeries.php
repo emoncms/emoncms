@@ -318,10 +318,10 @@ class PHPTimeSeries implements engine_methods
     public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $id = (int) $id;
+        $start = (int) $start;
+        $end = (int) $end;   
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
-        $start = intval($start/1000);
-        $end = intval($end/1000);
         
         global $settings;
         if ($timezone===0) $timezone = "UTC";
@@ -493,7 +493,7 @@ class PHPTimeSeries implements engine_methods
                     if ($csv) { 
                         $helperclass->csv_write($div_start,$value);
                     } else {
-                        $data[] = array($div_start*1000,$value);
+                        $data[] = array($div_start,$value);
                     }
                 }
                 
@@ -511,7 +511,7 @@ class PHPTimeSeries implements engine_methods
                 if ($csv) { 
                     $helperclass->csv_write($time,$value);
                 } else {
-                    $data[] = array($time*1000,$value);
+                    $data[] = array($time,$value);
                 }
                 $n++;
             }*/

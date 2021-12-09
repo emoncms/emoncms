@@ -340,13 +340,16 @@ class PHPFina implements engine_methods
      * @param integer $end unix time stamp in ms of the end of the data rage
      * @param float $scale : numeric value for the scaling 
     */
-    public function scalerange($id,$start,$end,$scale){
-    
+    public function scalerange($id,$start,$end,$scale){    
         // Save buffer before processing feed data
         if ($meta->buffer_length) {
             $this->buffer_save($id);
         }
-    
+        
+        $id = (int) $id;
+        $start = (int) $start;
+        $end = (int) $end;
+        
         //echo("test on $scale not started");
         //case1: NAN
         if(preg_match("/^NAN$/i",$scale)){
@@ -365,15 +368,6 @@ class PHPFina implements engine_methods
             $this->log->warn("scale_range() : conversion to absolute values on the data range");
             $scale="abs(x)"; 
         } else return false;
-        
-        //echo("test finished>");
-        
-        //echo("<br>$scale");
-        //echo("<br>$start and $end");
-        $id = (int) $id;
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        //echo("<br>$start and $end");
         
         if(!$meta=$this->get_meta($id)){
             $this->log->warn("scale_range() failed to fetch meta id = $id");
@@ -493,12 +487,10 @@ class PHPFina implements engine_methods
     public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $id = (int) $id;
+        $start = (int) $start;
+        $end = (int) $end;
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
-        
-        // todo: consider supporting a variety of time formats here
-        $start = intval($start/1000);
-        $end = intval($end/1000);
         
         global $settings;
         if ($timezone===0) $timezone = "UTC";
@@ -628,7 +620,7 @@ class PHPFina implements engine_methods
                 if ($csv) { 
                     $helperclass->csv_write($div_start,$value);
                 } else {
-                    $data[] = array($div_start*1000,$value);
+                    $data[] = array($div_start,$value);
                 }
             }
             
@@ -649,8 +641,8 @@ class PHPFina implements engine_methods
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
-        $start = intval($start/1000);
-        $end = intval($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $split = json_decode($split);
         if (gettype($split)!="array") return false;
         if (count($split)>48) return false;
@@ -677,14 +669,10 @@ class PHPFina implements engine_methods
             $modify = "+1 month";
         }
         
-        $n = 0;
-        while($n<10000) // max iterations allows for approx 7 months with 1 day granularity
+        $time = $date->getTimestamp();
+        
+        while($time<=$end)
         {
-            $time = $date->getTimestamp();
-            if ($time>$end) break;
-
-            $value = null;
-
             $split_values = array();
 
             foreach ($split as $splitpoint)
@@ -699,11 +687,11 @@ class PHPFina implements engine_methods
 
                 $split_values[] = $value;
             }
-            if ($time>=$start && $time<$end) {
-                $data[] = array($time*1000,$split_values);
-            }
+
+            $data[] = array($time,$split_values);
+            
             $date->modify($modify);
-            $n++;
+            $time = $date->getTimestamp();
         }
         $this->close($fh);
         return $data;
