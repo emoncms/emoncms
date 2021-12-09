@@ -910,6 +910,16 @@ class Feed
 
         return $value;
     }
+    
+    public function post_multiple($feedid,$data,$arg=null)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
+        // $this->set_timevalue($feedid, $value, $updatetime);
+        return $value;
+    }
 
     public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
     {

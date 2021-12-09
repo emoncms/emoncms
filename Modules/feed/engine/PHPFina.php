@@ -713,7 +713,7 @@ class PHPFina implements engine_methods
     
     private function create_meta($id, $meta)
     {
-        $feednames= $id . ".meta";
+        $feedname = $id.".meta";
         $metafile = @fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {

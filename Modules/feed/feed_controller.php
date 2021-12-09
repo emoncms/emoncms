@@ -258,11 +258,7 @@ function feed_controller()
                         
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
                         
-                        foreach ($data as $dp) {
-                            if (count($dp)==2) {
-                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
-                            }
-                        }
+                        $feed->post_multiple($feedid,$data);
                         return array('success'=>true);
 
                     // Update datapoint
