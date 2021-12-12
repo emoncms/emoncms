@@ -593,7 +593,7 @@ class Feed
         }
         
         // Maximum request size
-        if (is_numeric($interval)) {
+        if (!$csv && is_numeric($interval)) {
             $period = $end-$start;
             $req_dp = round($period / $interval);
             if ($req_dp > $this->settings['max_datapoints']) {
