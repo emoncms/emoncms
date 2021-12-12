@@ -1361,6 +1361,16 @@ $(".feed-download").click(function(){
     }
     
     var selected_interval = $('#export-interval').val();
+     
+    if (ids.length>1) {
+        $("#export-interval").children('option[value="original"]').hide();
+        if (selected_interval=="original") {
+            $("#export-interval").val(10);
+        }
+    } else {
+        $("#export-interval").children('option[value="original"]').show();
+    }
+    
     // Enable averaging checkbox for single feed selection, phpfina & phptimeseries
     var engine = feeds[ids[0]].engine;
     if (ids.length==1 && (engine==2 || engine==5)) {
@@ -1369,7 +1379,7 @@ $(".feed-download").click(function(){
             $("#export-average").parent().show();
         }
     }
-
+    
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
     
@@ -1431,7 +1441,7 @@ $("#export").click(function()
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
     var export_timeformat = $("#export-timeformat").val();
-
+    
     if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
     if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
     if (export_start>=export_end) {alert("<?php echo _('Start date must be further back in time than end date.'); ?>"); return false; }
