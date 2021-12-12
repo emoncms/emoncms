@@ -128,8 +128,8 @@ class RedisBuffer implements engine_methods
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $feedid = intval($feedid);
-        $start = round($start/1000);
-        $end = round($end/1000);
+        $start = intval($start);
+        $end = intval($end);
         $data = array();
 
         $len = $this->redis->zCount("feed:$feedid:buffer",$start,$end);
@@ -143,7 +143,6 @@ class RedisBuffer implements engine_methods
                 foreach($buf_item as $rawvalue => $time) {
                     $f = explode("|",$rawvalue);
                     $value = $f[1];
-                    $time=$time*1000;
                     $data[$time] = array($time,(float)$value);
                 }
             }
