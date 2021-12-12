@@ -1483,7 +1483,7 @@ function calculate_download_size(feedcount){
         export_interval = 86400*30; 
     } else if (export_interval=="annual") {
         export_interval = 86400*365;  
-    } else if (export_interval=="original" && feedcount==1) {
+    } else if (export_interval=="original") {
         // Get interval from meta data if available
         var feedid = false;
         for (feedid in selected_feeds) {
