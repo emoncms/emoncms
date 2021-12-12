@@ -118,6 +118,22 @@ class RedisBuffer implements engine_methods
         }
         return false;
     }
+    
+    /**
+     * Get array with first time and value from a feed
+     *
+     * @param integer $feedid The id of the feed
+    */
+    public function firstvalue($feedid)
+    {
+        $buf_item = $this->redis->zRangeByScore("feed:$feedid:buffer", "-inf","+inf", array('withscores' => true, 'limit' => array(0, 1)));
+        foreach($buf_item as $rawvalue => $time) {
+            $f = explode("|",$rawvalue);    
+            $value = $f[1];
+            return array('time'=>(int)$time, 'value'=>(float)$value);   
+        }
+        return false;
+    }
 
     /**
      * Return the data for the given timerange - cf shared_helper.php
@@ -134,6 +150,12 @@ class RedisBuffer implements engine_methods
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         
         if ($timezone===0) $timezone = "UTC";
+
+        // Small speed optimisation dont try and load values older than available data      
+        $start_time = 0;
+        if ($firstvalue = $this->firstvalue($id)) {
+            $start_time = $firstvalue["time"];
+        }
        
         if ($csv) {
             require_once "Modules/feed/engine/shared_helper.php";
@@ -201,17 +223,19 @@ class RedisBuffer implements engine_methods
             // If average = 1, find average of values that are >= div_start && < div_end
             $value = null;
             
-            $dp = $this->redis->zRangeByScore("feed:$id:buffer",$time,($div_end-1), array('limit' => array(0,1)));
-            if (count($dp)>0) {
-                $f = explode("|",$dp[0]);    
-                $value = (float) $f[1];
+            if ($time>=$start_time) {
+                $dp = $this->redis->zRangeByScore("feed:$id:buffer",$time,($div_end-1), array('limit' => array(0,1)));
+                if (count($dp)>0) {
+                    $f = explode("|",$dp[0]);    
+                    $value = (float) $f[1];
+                }
             }
             
             // Write as csv or array
             if ($csv) { 
                 $helperclass->csv_write($div_start,$value);
             } else {
-                $data[] = array($div_start*1000,$value);
+                $data[] = array($div_start,$value);
             }
 
             // Advance position 
