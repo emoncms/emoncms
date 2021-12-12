@@ -289,7 +289,7 @@ body{padding:0!important}
         </table>
     </div>
     <div class="modal-footer">
-        <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span>MB</div>
+        <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
         <button class="btn" id="export"><?php echo _('Export'); ?></button>
     </div>
@@ -1443,8 +1443,6 @@ $("#export").click(function()
     var enable_average = $("#export-average")[0].checked*1;
     var average_str = "&average="+enable_average;
     
-    
-    
     var params = {
         ids: ids.join(","),
         start: export_start*1000,
@@ -1464,8 +1462,6 @@ $("#export").click(function()
     
     var url = path+"feed/data.json?"+param_parts.join("&");
     
-    console.log(url); return;
-
     if (downloadsize>(downloadlimit*1048576)) {
         var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
         if (!r) return false;
@@ -1478,6 +1474,28 @@ function calculate_download_size(feedcount){
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
+    
+    if (export_interval=="daily") {
+        export_interval = 86400;
+    } else if (export_interval=="weekly") {
+        export_interval = 86400*7;
+    } else if (export_interval=="monthly") {
+        export_interval = 86400*30; 
+    } else if (export_interval=="annual") {
+        export_interval = 86400*365;  
+    } else if (export_interval=="original" && feedcount==1) {
+        // Get interval from meta data if available
+        var feedid = false;
+        for (feedid in selected_feeds) {
+            if (selected_feeds[feedid]==true) break;
+        }
+        if (feeds[feedid].interval!=undefined) {
+            export_interval = feeds[feedid].interval;
+        } else {
+            export_interval = 10;
+        }
+    }
+    
     var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 20 : 11); // bytes per timestamp
     var export_data_size = 7;                                                         // avg bytes per data
     
@@ -1485,7 +1503,15 @@ function calculate_download_size(feedcount){
     if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
-    $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2));
+    
+    if (downloadsize<1024) {
+        $("#downloadsize").html((downloadsize).toFixed(0)+" bytes");
+    } else if (downloadsize<(1024*1024)) {
+        $("#downloadsize").html((downloadsize / 1024).toFixed(2)+" kB");
+    } else {
+        $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2)+" MB");
+    }
+
     var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
     
