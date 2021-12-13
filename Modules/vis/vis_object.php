@@ -33,7 +33,9 @@
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'2'),
             array('scale',dgettext('vis_messages','scale'),6,'1'),
-            array('average',dgettext('vis_messages','average'),4,'0')
+            array('average',dgettext('vis_messages','average'),4,'0'),
+            array('delta',dgettext('vis_messages','delta'),4,'0'),
+            array('skipmissing',dgettext('vis_messages','skipmissing'),4,'1')
             )
         ),
         
