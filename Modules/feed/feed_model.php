@@ -927,7 +927,7 @@ class Feed
             }
         }
         // $this->set_timevalue($feedid, $value, $updatetime);
-        return $value;
+        return array('success'=>true);
     }
     
     public function upload_fixed_interval($feedid,$start,$interval,$npoints)

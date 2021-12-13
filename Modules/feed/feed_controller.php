@@ -258,8 +258,7 @@ function feed_controller()
                         
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
                         
-                        $feed->post_multiple($feedid,$data);
-                        return array('success'=>true);
+                        return $feed->post_multiple($feedid,$data);
 
                     // Delete feed
                     } else if ($route->action == "delete") {

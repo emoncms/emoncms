@@ -154,7 +154,7 @@ $("#importData").click(function() {
     
     $.ajax({ 
         type: 'POST', 
-        url: path+"feed/insert.json?id="+feedid,
+        url: path+"feed/post.json?id="+feedid,
         data: "data="+JSON.stringify(import_data),
         async: true, 
         dataType: 'json',
