@@ -803,8 +803,7 @@ class Feed
     Write operations
     set_feed_fields : set feed fields
     set_timevalue   : set feed last value
-    insert_data     : insert current data
-    update_data     : update data at specified time
+    post            : add or update datapoint
     */
     public function set_feed_fields($id,$fields)
     {
@@ -887,7 +886,7 @@ class Feed
 
     public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
-        $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
+        $this->log->info("post() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
