@@ -885,7 +885,7 @@ class Feed
         }
     }
 
-    public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
+    public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
         $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
         $feedid = (int) $feedid;
@@ -918,31 +918,6 @@ class Feed
         $engine = $this->get_engine($feedid);
         $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
         // $this->set_timevalue($feedid, $value, $updatetime);
-        return $value;
-    }
-
-    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $updatetime = intval($updatetime);
-        if ($feedtime == null) $feedtime = $updatetime;
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
-
-        $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
-            // Call to buffer update
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime);
-            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);
-        } else {
-            // Call to engine update
-            $this->EngineClass($engine)->update($feedid,$feedtime,$value);
-        }
-
-        if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
-
         return $value;
     }
     
