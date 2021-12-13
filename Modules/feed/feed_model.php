@@ -593,7 +593,7 @@ class Feed
         }
         
         // Maximum request size
-        if (is_numeric($interval)) {
+        if (!$csv && is_numeric($interval)) {
             $period = $end-$start;
             $req_dp = round($period / $interval);
             if ($req_dp > $this->settings['max_datapoints']) {
@@ -786,7 +786,7 @@ class Feed
             $k = $keys[0];
             for ($i=0; $i<count($data[$k]['data']); $i++) {
                 // Time is index 0
-                $values = array($data[$k]['data'][$i][0]*0.001);
+                $values = array($data[$k]['data'][$i][0]);
                 foreach ($keys as $key) {
                     // Values index 1 upwards
                     $values[] = $data[$key]['data'][$i][1];

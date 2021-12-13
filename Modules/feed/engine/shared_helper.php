@@ -79,7 +79,7 @@ class SharedHelper
     }
     
     public function csv_write_multi($values) {
-        $values[0] = $this->format_time($values[0]);
+        // $values[0] = $this->format_time($values[0]);
         
         for ($z=1; $z<count($values); $z++) {
             if ($values[$z]==null) {

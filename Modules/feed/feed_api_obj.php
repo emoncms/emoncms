@@ -84,12 +84,14 @@ function feed_api_obj() {
       "path" => "feed/data.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
-        "start" => array( "default" => 0 ),
-        "end" => array( "default" => 0 ),
-        "interval" => array( "default" => 60 ),
+        "start" => array( "default" => 0, "description"=>"Can also be any php supported date time string e.g: -1 week, or 01-12-2021" ),
+        "end" => array( "default" => 0, "description"=>"Can also be any php supported date time string e.g: now, or 10-12-2021" ),
+        "interval" => array( "default" => 60, "description"=>"In addition to interval in seconds can also be timezone aligned: daily, weekly, monthly, annual" ),
         "average" => array( "type" => "bool", "default" => 0,  ),
+        "timeformat" => array( "type" => "select", "default" => "unix", "options" => array("unix","unixms","excel","iso8601")),
         "skipmissing" => array( "type" => "bool", "default" => 0 ),
-        "limitinterval" => array( "type" => "bool", "default" => 0 )
+        "limitinterval" => array( "type" => "bool", "default" => 0 ),
+        "delta" => array( "type" => "bool", "default" => 0 )      
       ),
       "mode"=>"read"
     ),
