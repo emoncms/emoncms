@@ -241,4 +241,19 @@ class RedisBuffer implements engine_methods
     public function clear($feedid){
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
+
+    /**
+     * Used for testing
+     *
+     */
+    public function print_all($id) {
+        $buf_item = $this->redis->zRange("feed:$id:buffer", 0,-1, true);
+        foreach($buf_item as $rawvalue => $time) {
+            $f = explode("|",$rawvalue);    
+            $updatetime = hexdec((string)$f[0]); // This is time it was received not time for value
+            $value = $f[1];
+            $arg = (isset($f[2]) ? $f[2] : "");
+            print $time." ".$value."\n";
+        }
+    }
 }

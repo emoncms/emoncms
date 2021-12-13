@@ -567,7 +567,7 @@ class PHPFina implements engine_methods
                 if ($n>0) $value = 1.0*$sum/$n;
                 
             } else {
-                if ($time>=$meta->start_time && $time<$meta->end_time) {
+                if ($time>=$meta->start_time && $time<=$meta->end_time) {
                     // Output value at start at div start
                     if (!$first_seek || !$fullres) {
                         $first_seek = true;
