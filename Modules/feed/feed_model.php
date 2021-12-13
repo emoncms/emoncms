@@ -915,7 +915,17 @@ class Feed
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
-        $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
+        
+        // Post directly if phpfina, phptimeseries and number of data points is more than 10
+        if (($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) && count($data)>10) {
+            $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
+        } else {
+            foreach ($data as $dp) {
+                if (count($dp)==2) {
+                    $feed->post($feedid,$dp[0],$dp[0],$dp[1]);
+                }
+            }
+        }
         // $this->set_timevalue($feedid, $value, $updatetime);
         return $value;
     }
