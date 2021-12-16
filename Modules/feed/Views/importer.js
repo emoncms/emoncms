@@ -37,14 +37,14 @@ $("#import-textarea").change(function() {
         if (value=='null') value = null;
         
         if (isNaN(time)) {
-            $("#import-alert").html("<b>Error:</b> invalid time: "+time).show();
+            $("#import-alert").html("<b>Error:</b> invalid time on line "+i).show();
             return false;
         } else {
             time = parseInt(time);
         }
 
         if (isNaN(value)) {
-            $("#import-alert").html("<b>Error:</b> invalid value: "+value).show();
+            $("#import-alert").html("<b>Error:</b> invalid value on line "+i).show();
             return false;
         } else {
             value = parseFloat(value);
