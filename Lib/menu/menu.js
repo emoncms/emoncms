@@ -252,7 +252,7 @@ var menu = {
             $(".menu-title-l2 span").hide();
             var ctrl = $("#menu-l2-controls");
             ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
-            ctrl.attr("title","Expand sidebar").removeClass("ctrl-hide").removeClass("ctrl-exp").addClass("ctrl-min");
+            ctrl.attr("title",_Tr_Menu("Expand sidebar")).removeClass("ctrl-hide").removeClass("ctrl-exp").addClass("ctrl-min");
         }
 
         var window_width = $(window).width();
@@ -282,7 +282,7 @@ var menu = {
             $(".menu-title-l2 span").show();
             var ctrl = $("#menu-l2-controls");
             ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
-            ctrl.attr("title","Minimise sidebar").removeClass("ctrl-hide").removeClass("ctrl-min").addClass("ctrl-exp");
+            ctrl.attr("title",_Tr_Menu("Minimise sidebar")).removeClass("ctrl-hide").removeClass("ctrl-min").addClass("ctrl-exp");
         }
 
         var left = 240;

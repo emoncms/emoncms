@@ -32,7 +32,11 @@
             array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'2'),
-            array('scale',dgettext('vis_messages','scale'),6,'1'))
+            array('scale',dgettext('vis_messages','scale'),6,'1'),
+            array('average',dgettext('vis_messages','average'),4,'0'),
+            array('delta',dgettext('vis_messages','delta'),4,'0'),
+            array('skipmissing',dgettext('vis_messages','skipmissing'),4,'1')
+            )
         ),
         
         'bargraph'=> array('label'=>dgettext('vis_messages','BarGraph'), 'options'=>array(
@@ -43,8 +47,8 @@
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'1'),
             array('scale',dgettext('vis_messages','scale'),6,'1'),
-            array('delta',dgettext('vis_messages','delta'),4,'0'),
-            array('mode',dgettext('vis_messages','mode'),7,'0')
+            array('average',dgettext('vis_messages','average'),4,'0'),
+            array('delta',dgettext('vis_messages','delta'),4,'0')
             )
         ),
         
@@ -112,10 +116,6 @@
             array('fill',dgettext('vis_messages','fill'),7,1),
             array('depth',dgettext('vis_messages','depth'),7,3),
             array('npoints',dgettext('vis_messages','data points'),7,800)
-        )),
-        
-        'graph'=> array('label'=>dgettext('vis_messages','Graph (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1)
         )),
 		
         // --------------------------------------------------------------------------------

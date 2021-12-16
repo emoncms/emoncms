@@ -570,19 +570,44 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=0)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
     {
         $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) {
+            return array('success'=>false, 'message'=>'Feed does not exist');
+        }
+                        
+        $start = $this->convert_time($start,$timezone);
+        $end = $this->convert_time($end,$timezone);
+
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         
+        // Default interval if interval
+        if (is_numeric($interval) && $interval<1) {
+            $interval = round(($end-$start)/800);
+        }
+        
+        // Delta mode prepare
+        if ($delta && !$csv) {
+            $end = $this->delta_mode_next_interval($end,$interval,$timezone);
+        }
+        
         // Maximum request size
-        // $period = ($end-$start)*0.001;
-        // $req_dp = round($period / $interval);
-        // if ($req_dp > $this->settings['max_datapoints']) return array("success"=>false, "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp");
+        if (!$csv && is_numeric($interval)) {
+            $period = $end-$start;
+            $req_dp = round($period / $interval);
+            if ($req_dp > $this->settings['max_datapoints']) {
+                return array(
+                    "success"=>false, 
+                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp"
+                );
+            }
+        }
 
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        if (!in_array($timeformat,array("unix","excel","iso8601"))) return array('success'=>false, 'message'=>'Invalid time format');
-          
+        if (!in_array($timeformat,array("unix","unixms","excel","iso8601"))) {
+            return array('success'=>false, 'message'=>'Invalid time format');
+        }
+        
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_data_combined
@@ -599,24 +624,23 @@ class Feed
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
             
             if (!empty($bufferdata)) {
-                $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
+                $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
-                    $intervalms = $interval * 1000;
-
+                    
                     // Convert buffered data to associative array - by timestamp
                     $bufferdata_assoc = array();
                     for ($z=0; $z<count($bufferdata); $z++) {
-                        $time = floor($bufferdata[$z][0]*0.001/$interval)*$interval;
+                        $time = floor($bufferdata[$z][0]/$interval)*$interval;
                         $bufferdata_assoc[$time] = $bufferdata[$z][1];
                     }
                     
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
                         $time = $data[$z][0];
-                        if (isset($bufferdata_assoc["".$time*0.001]) && $data[$z][1]==null) {
-                            $data[$z][1] = $bufferdata_assoc["".$time*0.001];
+                        if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
+                            $data[$z][1] = $bufferdata_assoc["".$time];
                         }
                     }
                     
@@ -625,24 +649,128 @@ class Feed
                 }
             }
         }
-
+        
+        if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        
+        // Apply different timeformats if applicable
+        if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
+        
         return $data;
     }
     
-    public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
+    /*
+    Converts a data request to a cumulative kWh feed into kWh per day, week, month, year
+    Includes the current day, week, month, year
+    */ 
+    private function delta_mode_next_interval($end,$interval,$timezone) {
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($end);
+            $date->modify("tomorrow midnight");
+            if ($interval=="weekly") {
+                $date->modify("next monday");
+            } else if ($interval=="monthly") {
+                $date->modify("first day of next month");
+            } else if ($interval=="annual") {
+                $date->modify("first day of january next year");
+            }
+            $end = $date->getTimestamp();
+        } else {
+            // standard interval
+            $end = floor($end/$interval)*$interval;
+            $end += $interval;
+        }
+        return $end;
+    }
+    
+    private function delta_mode_convert($feedid,$data) {
+        // Get last value
+        $dp = $this->get_timevalue($feedid);
+        $time = $dp["time"];
+        
+        // Calculate delta mode
+        $last_val = null;
+        for($i=0; $i<count($data)-1; $i++) {
+            // Apply current value to end of day, week, month, year, interval
+            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                $data[$i+1][1] = $dp['value'];
+            }
+            // Delta calculation
+            if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                $data[$i][1] = null;
+            } else {
+                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                $last_val = $data[$i+1][1];
+            }
+        }
+        array_pop($data);
+        
+        return $data;
+    }
+    
+    private function convert_time($time,$timezone) {
+        // Option to specify times as date strings
+        if (!is_numeric($time)) {
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->modify($time);
+            $time = $date->getTimestamp();
+        }    
+        
+        // If timestamp is in milliseconds convert to seconds
+        if (($time/1000000000)>100) {
+            $time *= 0.001;
+        }
+        return $time;
+    }
+    
+    private function format_output_time($data,$timeformat,$timezone) {
+        switch ($timeformat) {
+            case "unixms":
+                for ($i=0; $i<count($data); $i++) {
+                    $data[$i][0] *= 1000;
+                }
+                break;
+            case "excel":
+                $date = new DateTime();
+                $date->setTimezone(new DateTimeZone($timezone));          
+                for ($i=0; $i<count($data); $i++) {
+                    $date->setTimestamp($data[$i][0]);
+                    $data[$i][0] = $date->format("d/m/Y H:i:s"); 
+                }
+                break;
+            case "iso8601":
+                $date = new DateTime();
+                $date->setTimezone(new DateTimeZone($timezone)); 
+                for ($i=0; $i<count($data); $i++) {
+                    $date->setTimestamp($data[$i][0]);
+                    $data[$i][0] = $date->format("c"); 
+                }
+                break;
+        }
+        return $data;
+    }
+    
+    public function get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,$split)
     {
         $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $start = $this->convert_time($start,$timezone);
+        $end = $this->convert_time($end,$timezone);
+                
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+
         $engine = $this->get_engine($feedid);
-        
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-        
-        // Call to engine get_data_DMY_time_of_day
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
             
-        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$split);
+
+        // Apply different timeformats if applicable
+        if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
+
         return $data;
     }
     
@@ -658,7 +786,7 @@ class Feed
             $k = $keys[0];
             for ($i=0; $i<count($data[$k]['data']); $i++) {
                 // Time is index 0
-                $values = array($data[$k]['data'][$i][0]*0.001);
+                $values = array($data[$k]['data'][$i][0]);
                 foreach ($keys as $key) {
                     // Values index 1 upwards
                     $values[] = $data[$key]['data'][$i][1];
@@ -670,7 +798,7 @@ class Feed
         $helperclass->csv_close();
         exit;
     }
-
+    
     /*
     Write operations
     set_feed_fields : set feed fields
@@ -859,7 +987,6 @@ class Feed
     public function phpfina_export($feedid,$start) {
         return $this->EngineClass(Engine::PHPFINA)->export($feedid,$start);
     }
-
 
     /*
      Processlist functions

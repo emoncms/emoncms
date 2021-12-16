@@ -9,14 +9,13 @@
     http://openenergymonitor.org
     */
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $embed;
+    global $path, $embed, $vis_version;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <div id="vis-title"></div>
 
@@ -60,8 +59,6 @@ var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
 var previousPoint = false;
 
-var interval = urlParams.interval;
-    if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
 
@@ -75,6 +72,12 @@ var dp = urlParams.dp;
     if (dp==undefined || dp=='') dp = 1;
 var scale = urlParams.scale;
     if (scale==undefined || scale=='') scale = 1;
+var average = urlParams.average;
+    if (average==undefined || average=='') average = 0;
+var skipmissing = urlParams.skipmissing;
+    if (skipmissing==undefined || skipmissing=='') skipmissing = 1;
+var delta = urlParams.delta;
+    if (delta==undefined || delta=='') delta = 0;
 var fill = +urlParams.fill;
     if (fill==undefined || fill=='') fill = 0;
     if (fill>0) fill = true;
@@ -153,12 +156,9 @@ $(function() {
     });
 
     function draw()
-    {
-        
-        var npoints = 800;
-        interval = Math.round(((view.end - view.start)/npoints)/1000);
-
-        data = get_feed_data(feedid,view.start,view.end,interval,1,1);
+    {   
+        view.calc_interval(800);
+        data = feed.getdata(feedid,view.start,view.end,view.interval,average,delta,skipmissing,1);
         
         var out = [];
         
@@ -184,7 +184,7 @@ $(function() {
         var options = {
             canvas: true,
             lines: { fill: fill },
-            xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
+            xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [view.interval, "second"] },
             //yaxis: { min: 0 },
             grid: {hoverable: true, clickable: true},
             selection: { mode: "x" },

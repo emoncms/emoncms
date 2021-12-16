@@ -17,6 +17,10 @@ class Admin {
     private $redis;
     private $settings;
     private $log;
+    
+    private $emoncms_logfile;
+    private $update_logfile;
+    private $old_update_logfile;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -24,8 +28,24 @@ class Admin {
         $this->redis = $redis;
         $this->settings = $settings;
         $this->log = new EmonLogger(__FILE__);
+        
+        $this->emoncms_logfile = $settings['log']['location']."/emoncms.log";
+        $this->update_logfile = $settings['log']['location']."/update.log";
+        $this->old_update_logfile = $settings['log']['location']."/emonpiupdate.log";
     }
 
+    public function emoncms_logfile() {
+        return $this->emoncms_logfile;
+    }
+
+    public function update_logfile() {
+        return $this->update_logfile;
+    }
+
+    public function old_update_logfile() {
+        return $this->old_update_logfile;
+    }
+    
     public function get_services_list() {
         return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
     }
@@ -192,7 +212,6 @@ class Admin {
             $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
             return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
         } else {
-            
             $this->log->warn("runService() Redis not enabled. Trying PHP execution '$script $attributes'");
             $result = $this->exec("$script $attributes");
             $this->log->info("runService() PHP exec returned '$result'");
@@ -264,6 +283,9 @@ class Admin {
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
+                     'run_user' => $this->exec('whoami'),
+                     'run_group' => $this->exec('id -Gn'),
+                     'script_owner' => (function_exists('get_current_user') ? get_current_user() : 'n/a'),
                      'db_server' => $this->settings['sql']['server'],
                      'db_ip' => gethostbyname($this->settings['sql']['server']),
                      'db_version' => $this->mysqli->server_info,

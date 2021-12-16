@@ -7,15 +7,12 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $embed;
+    global $path, $embed, $vis_version;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
- 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Bar graph (ordered by height):"); ?> <?php echo $feedidname; ?></h2>
@@ -27,75 +24,74 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
-  var embed = <?php echo $embed; ?>;
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+var embed = <?php echo $embed; ?>;
+$('#graph').width($('#graph_bound').width());
+$('#graph').height($('#graph_bound').height());
+if (embed) $('#graph').height($(window).height());
 
-  var feedid = "<?php echo $feedid; ?>";
-  var feedname = "<?php echo $feedidname; ?>";
-  var apikey = "<?php echo $apikey; ?>";
-  var delta = <?php echo $delta; ?>;
-  
-  var timeWindow = (3600000*24.0*365*5);   //Initial time window
-  var start = +new Date - timeWindow;  //Get start time
-  var end = +new Date; 
+var feedid = "<?php echo $feedid; ?>";
+var feedname = "<?php echo $feedidname; ?>";
+var apikey = "<?php echo $apikey; ?>";
+var delta = <?php echo $delta; ?>;
 
-  var d = new Date()
-  var n = d.getTimezoneOffset();
-  var offset = n / -60;
-  start = Math.floor(start / 86400000) * 86400000;
-  end = Math.floor(end / 86400000) * 86400000;
-  start -= offset * 3600000;
-  end -= offset * 3600000;
-  
-  var graph_data = [];
-  vis_feed_data();
+feed.apikey = apikey;
 
-  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
-  function vis_resize() {
+var timeWindow = (3600000 * 24.0 * 365 * 5); //Initial time window
+var start = +new Date - timeWindow; //Get start time
+var end = +new Date;
+
+var graph_data = [];
+vis_feed_data();
+
+$(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse', vis_resize);
+
+function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     plot();
-  }
+}
 
-  function vis_feed_data()
-  {
-    graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
-    
-    if (window.delta==1) {
-        var tmp = [];
-        for (var n=1; n<graph_data.length; n++) {
-            tmp.push([graph_data[n-1][0], graph_data[n][1]-graph_data[n-1][1]]);
+function vis_feed_data() {
+    graph_data = feed.getdata(feedid, start, end, "daily", 0, window.delta, 1, 0);
+
+    for (x = 0; x < graph_data.length; x++) {
+        for (y = 0; y < (graph_data.length - 1); y++) {
+            if (graph_data[y][1] * 1 < graph_data[y + 1][1] * 1) {
+                holder = graph_data[y + 1];
+                graph_data[y + 1] = graph_data[y];
+                graph_data[y] = holder;
+            }
         }
-        graph_data = tmp;
     }
 
-    for(x = 0; x < graph_data.length; x++) {
-      for(y = 0; y < (graph_data.length-1); y++) {
-        if(graph_data[y][1]*1 < graph_data[y+1][1]*1) {
-          holder = graph_data[y+1];
-          graph_data[y+1] = graph_data[y];
-          graph_data[y] = holder;
-        }
-      }
-    }
-
-    for(x = 0; x < graph_data.length; x++) graph_data[x][0] = x;
+    for (x = 0; x < graph_data.length; x++) graph_data[x][0] = x;
 
     plot();
-  }
+}
 
-  function plot()
-  {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", fill: true}}], {
-      canvas: true,
-      grid: { show: true, hoverable: true },
-      yaxis: {min: 0},
-      touch: { pan: "x", scale: "x" }
+function plot() {
+    var plot = $.plot($("#graph"), [{
+        data: graph_data,
+        bars: {
+            show: true,
+            align: "center",
+            fill: true
+        }
+    }], {
+        canvas: true,
+        grid: {
+            show: true,
+            hoverable: true
+        },
+        yaxis: {
+            min: 0
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
     });
-  }
+}
 </script>
 

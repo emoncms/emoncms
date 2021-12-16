@@ -98,8 +98,8 @@ function vis_feed_data_delayed() {
           ajaxAsyncXdr[i].abort(); // Abort pending loads
           ajaxAsyncXdr[i] = undefined;
         }
-        var context = {index:i, plotlist:plotlist[i]}; 
-        ajaxAsyncXdr[i] = get_feed_data_async(vis_feed_data_callback, context, plotlist[i].id, plot_start, plot_end, interval,skipmissing, 1);
+        var context = {index:i, plotlist:plotlist[i]};         
+        ajaxAsyncXdr[i] = feed.getdata(plotlist[i].id,plot_start,plot_end,interval,0,0,skipmissing,1,vis_feed_data_callback,context);
       }
     }
   }

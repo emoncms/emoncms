@@ -226,74 +226,7 @@ body{padding:0!important}
     </div>
 </div>
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!-- FEED EXPORT                                                                                                                                   -->
-<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> <?php echo _('CSV export'); ?></h3>
-    </div>
-    <div class="modal-body">
-    <p><?php echo _('Select the time range and interval that you wish to export: '); ?></p>
-        <table class="table">
-        <tr>
-            <td>
-                <p><b><?php echo _('Start date & time'); ?></b></p>
-                <div id="datetimepicker1" class="input-append date">
-                    <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
-                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
-                </div>
-            </td>
-            <td>
-                <p><b><?php echo _('End date & time ');?></b></p>
-                <div id="datetimepicker2" class="input-append date">
-                    <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
-                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p><b><?php echo _('Interval');?></b></p>
-                <select id="export-interval" >
-                    <option value=original><?php echo _('Original feed interval');?></option>
-                    <option value=5><?php echo _('5s');?></option>
-                    <option value=10><?php echo _('10s');?></option>
-                    <option value=30><?php echo _('30s');?></option>
-                    <option value=60><?php echo _('1 min');?></option>
-                    <option value=300><?php echo _('5 mins');?></option>
-                    <option value=600><?php echo _('10 mins');?></option>
-                    <option value=900><?php echo _('15 mins');?></option>
-                    <option value=1800><?php echo _('30 mins');?></option>
-                    <option value=3600><?php echo _('1 hour');?></option>
-                    <option value=21600><?php echo _('6 hour');?></option>
-                    <option value=43200><?php echo _('12 hour');?></option>
-                    <option value=daily><?php echo _('Daily');?></option>
-                    <option value=weekly><?php echo _('Weekly');?></option>
-                    <option value=monthly><?php echo _('Monthly');?></option>
-                    <option value=annual><?php echo _('Annual');?></option>
-                </select>
-                
-                <p class="hide"><input id="export-average" type="checkbox" style="margin-top:-4px"> Return Averages</p>
-            </td>
-            <td>
-                <p><b><?php echo _('Date time format');?></b></p>
-                <select id="export-timeformat">
-                    <option value="unix">Unix timestamp</option>
-                    <option value="excel">Excel (d/m/Y H:i:s), Timezone set in user account</option>
-                    <option value="iso8601">ISO 8601 (e.g: 2020-01-01T10:00:00+01:00)</option>
-                </select>
-            </td>
-        </tr>
-        </table>
-    </div>
-    <div class="modal-footer">
-        <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span>MB</div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
-        <button class="btn" id="export"><?php echo _('Export'); ?></button>
-    </div>
-</div>
+<?php require "Modules/feed/Views/exporter.php"; ?>
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
@@ -397,7 +330,7 @@ var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
-var engines_hidden = JSON.parse(<?php echo json_encode($settings["feed"]['engines_hidden']); ?>);
+var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
 
 var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
 var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
@@ -1346,160 +1279,13 @@ $("#save-processlist").click(function (){
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
 }); 
 
-// ---------------------------------------------------------------------------------------------
-// Export feature
-// ---------------------------------------------------------------------------------------------
-$(".feed-download").click(function(){
-    $("#export-average").parent().hide();
-    $("#export-average").data("enabled",0);
-    
-    var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) {
-            ids.push(parseInt(feedid));
-        }
-    }
-    
-    var selected_interval = $('#export-interval').val();
-    // Enable averaging checkbox for single feed selection, phpfina & phptimeseries
-    var engine = feeds[ids[0]].engine;
-    if (ids.length==1 && (engine==2 || engine==5)) {
-        $("#export-average").data("enabled",1);
-        if (selected_interval!="original") {
-            $("#export-average").parent().show();
-        }
-    }
-
-    $("#export").attr('feedcount',ids.length);
-    calculate_download_size(ids.length);
-    
-    $('#feedExportModal').modal('show');
-});
-
-$('#datetimepicker1').datetimepicker({
-    language: 'en-EN'
-});
-
-$('#datetimepicker2').datetimepicker({
-    language: 'en-EN',
-    useCurrent: false //Important! See issue #1075
-});
-
-now = new Date();
-today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 00, 00);
-var picker1 = $('#datetimepicker1').data('datetimepicker');
-var picker2 = $('#datetimepicker2').data('datetimepicker');
-picker1.setLocalDate(today);
-picker2.setLocalDate(today);
-picker1.setEndDate(today);
-picker2.setStartDate(today);
-
-$('#datetimepicker1').on("changeDate", function (e) {
-    $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
-});
-
-$('#datetimepicker2').on("changeDate", function (e) {
-    $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
-});
-
-$('#export-interval').on('change', function(e) {
-    if ($("#export-average").data("enabled")) {
-        if ($(this).val()=="original") {
-            $("#export-average").parent().hide();
-        } else {
-            $("#export-average").parent().show();
-        }
-    }
-});
-
-$('#export-interval, #export-timeformat').on('change', function(e) {
-    calculate_download_size($("#export").attr('feedcount')); 
-});
-
-$('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
-    calculate_download_size($("#export").attr('feedcount')); 
-});
-
-$("#export").click(function()
-{
-    var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
-    }
-
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var export_timeformat = $("#export-timeformat").val();
-
-    if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
-    if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
-    if (export_start>=export_end) {alert("<?php echo _('Start date must be further back in time than end date.'); ?>"); return false; }
-    if (export_interval=="") {alert("<?php echo _('Please select interval to download.'); ?>"); return false; }
-
-    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
-    var downloadsize = calculate_download_size(ids.length);
-    
-    var enable_average = $("#export-average")[0].checked*1;
-    var average_str = "&average="+enable_average;
-    
-    var params = {
-        ids: ids.join(","),
-        start: export_start*1000,
-        end: export_end*1000,
-        interval: export_interval,
-        average: enable_average,
-        timeformat: export_timeformat,
-        csv: 1,
-        skipmissing: 0,
-        limitinterval: 0
-    }
-    
-    var param_parts = [];
-    for (var z in params) {
-        param_parts.push(z+"="+params[z]);
-    }
-    
-    var url = path+"feed/data.json?"+param_parts.join("&");
-
-    if (downloadsize>(downloadlimit*1048576)) {
-        var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
-        if (!r) return false;
-    }
-    window.open(url);
-});
-
-function calculate_download_size(feedcount){
-
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 20 : 11); // bytes per timestamp
-    var export_data_size = 7;                                                         // avg bytes per data
-    
-    var downloadsize = 0;
-    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
-        downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
-    }
-    $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2));
-    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
-    $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
-    
-    return downloadsize;
-}
-
-function parse_timepicker_time(timestr){
-    var tmp = timestr.split(" ");
-    if (tmp.length!=2) return false;
-
-    var date = tmp[0].split("/");
-    if (date.length!=3) return false;
-
-    var time = tmp[1].split(":");
-    if (time.length!=3) return false;
-
-    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
-}
-
+// Translations
+var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
+var str_enter_valid_start_date = "<?php echo _('Please enter a valid start date.'); ?>";
+var str_enter_valid_end_date = "<?php echo _('Please enter a valid end date.'); ?>";
+var str_start_before_end = "<?php echo _('Start date must be further back in time than end date.'); ?>";
+var str_interval_for_download = "<?php echo _('Please select interval to download.'); ?>";
+var str_large_download = "<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>";
 </script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js"></script>

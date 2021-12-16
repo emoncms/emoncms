@@ -14,11 +14,8 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
-
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
@@ -77,183 +74,197 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+$('#graph').width($('#graph_bound').width());
+$('#graph').height($('#graph_bound').height());
 
-  var feedid = "<?php echo $feedid; ?>";
-  var feedname = "<?php echo $feedidname; ?>";
-  var type = "<?php echo $type; ?>";
-  var apikey = "<?php echo $write_apikey; ?>";
+var feedid = "<?php echo $feedid; ?>";
+var feedname = "<?php echo $feedidname; ?>";
+var type = "<?php echo $type; ?>";
+var apikey = "<?php echo $write_apikey; ?>";
 
-  var timeWindow = (3600000*24.0*7);        //Initial time window
-  var start = ((new Date()).getTime())-timeWindow;    //Get start time
-  var end = (new Date()).getTime();       //Get end time
-  
-  var feed_interval = false;
+var timeWindow = (3600000 * 24.0 * 7); //Initial time window
+view.start = ((new Date()).getTime()) - timeWindow; //Get start time
+view.end = (new Date()).getTime(); //Get end time
 
-  vis_feed_data();
+var feed_interval = false;
+$.ajax({
+    url: path + 'feed/getmeta.json',
+    data: "&apikey=" + apikey + "&id=" + feedid,
+    dataType: 'json',
+    async: false,
+    success: function(result) {
+        if (result && result.interval != undefined) {
+            feed_interval = result.interval;
+        }
+    }
+});
 
-  function vis_feed_data()
-  {
-  
-    $.ajax({
-      url: path+'feed/getmeta.json',
-      data: "&apikey="+apikey+"&id="+feedid,
-      dataType: 'json',
-      async: false,
-      success: function(result) {
-          if (result && result.interval!=undefined) {
-              feed_interval = result.interval;
-          }
-      }
-    });
-  
-    var npoints = 800;
-    interval = Math.round(((end - start)/npoints)/1000);
-    
-    var outinterval = 5;
-    if (interval>10) outinterval = 10;
-    if (interval>15) outinterval = 15;
-    if (interval>20) outinterval = 20;
-    if (interval>30) outinterval = 30;
-    if (interval>60) outinterval = 60;
-    if (interval>120) outinterval = 120;
-    if (interval>180) outinterval = 180;
-    if (interval>300) outinterval = 300;
-    if (interval>600) outinterval = 600;
-    if (interval>900) outinterval = 900;
-    if (interval>1200) outinterval = 1200;
-    if (interval>1800) outinterval = 1800;
-    if (interval>3600*1) outinterval = 3600*1;
-    if (interval>3600*2) outinterval = 3600*2;
-    if (interval>3600*3) outinterval = 3600*3;
-    if (interval>3600*4) outinterval = 3600*4;
-    if (interval>3600*5) outinterval = 3600*5;
-    if (interval>3600*6) outinterval = 3600*6;
-    if (interval>3600*12) outinterval = 3600*12;
-    if (interval>3600*24) outinterval = 3600*24;
-    
-    interval = outinterval;
-    if (feed_interval && interval<feed_interval) interval = feed_interval;
+vis_feed_data();
 
-    start = Math.floor((start*0.001) / interval) * interval * 1000;
-    end = Math.ceil((end*0.001) / interval) * interval * 1000;
-    
-    var graph_data = get_feed_data(feedid,start,end,interval,1,0);
-    var stats = power_stats(graph_data);
-    //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
+function vis_feed_data() {
+    view.calc_interval(800);
 
-    var plotdata = {data: graph_data, lines: { show: true, fill: true }};
-    if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};
+    var interval = view.interval;
+    if (feed_interval !== false && interval < feed_interval) {
+        interval = feed_interval;
+    }
+
+    var graph_data = feed.getdata(feedid, view.start, view.end, interval, 0, 0, 1, 0);
+
+    var plotdata = {
+        data: graph_data,
+        lines: {
+            show: true,
+            fill: true
+        }
+    };
+    if (type == 2) plotdata = {
+        data: graph_data,
+        bars: {
+            show: true,
+            align: "center",
+            barWidth: 3600 * 18 * 1000,
+            fill: true
+        }
+    };
 
     var plot = $.plot($("#graph"), [plotdata], {
-      canvas: true,
-      //grid: { show: true, clickable: true},
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-      selection: { mode: "x" },
-      touch: { pan: "x", scale: "x" }
+        canvas: true,
+        //grid: { show: true, clickable: true},
+        grid: {
+            show: true,
+            hoverable: true,
+            clickable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        selection: {
+            mode: "x"
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
     });
 
-  }
+}
 
-  $("#graph").bind("plotclick", function (event, pos, item) {
+$("#graph").bind("plotclick", function(event, pos, item) {
     if (item != null) {
-      $("#time").val(item.datapoint[0]/1000);
-      $("#newvalue").val(item.datapoint[1]);
-      //$("#stats").html("Value: "+item.datapoint[1]);
+        $("#time").val(item.datapoint[0] / 1000);
+        $("#newvalue").val(item.datapoint[1]);
     }
-  });
+});
 
-  //--------------------------------------------------------------------------------------
-  // Graph zooming
-  //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
-  //----------------------------------------------------------------------------------------------
-  // Operate buttons
-  //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-  $('#right').click(function () {inst_panright(); vis_feed_data();});
-  $('#left').click(function () {inst_panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------
+// Graph zooming
+//--------------------------------------------------------------------------------------
+$("#graph").bind("plotselected", function(event, ranges) {
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
+    vis_feed_data();
+});
+//----------------------------------------------------------------------------------------------
+// Operate buttons
+//----------------------------------------------------------------------------------------------
+$("#zoomout").click(function() {
+    view.zoomout();
+    vis_feed_data();
+});
+$("#zoomin").click(function() {
+    view.zoomin();
+    vis_feed_data();
+});
+$('#right').click(function() {
+    view.panright();
+    vis_feed_data();
+});
+$('#left').click(function() {
+    view.panleft();
+    vis_feed_data();
+});
+$('.graph-time').click(function() {
+    view.timewindow($(this).attr("time"));
+    vis_feed_data();
+});
+//-----------------------------------------------------------------------------------------------
 
-  $('#okb').click(function () {
+$('#okb').click(function() {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
-    
-    console.log(time+" "+newvalue);
+
+    console.log(time + " " + newvalue);
 
     $.ajax({
-      url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&skipbuffer=1",
-      dataType: 'json',
-      async: false,
-      success: function() {}
+        url: path + 'feed/update.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&value=" + newvalue + "&skipbuffer=1",
+        dataType: 'json',
+        async: false,
+        success: function() {}
     });
     vis_feed_data();
-  });
+});
 
-  $('#multiply-submit').click(function () {
+$('#multiply-submit').click(function() {
 
     var multiplyvalue = $("#multiplyvalue").val();
 
     $.ajax({
-      url: path+'feed/scalerange.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&value="+multiplyvalue,
-      dataType: 'json',
-      async: false,
-      success: function(result) {
-          alert(result)
-      }
+        url: path + 'feed/scalerange.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001) + "&value=" + multiplyvalue,
+        dataType: 'json',
+        async: false,
+        success: function(result) {
+            alert(result)
+        }
     });
     vis_feed_data();
-  });
+});
 
-  $('#delete-button').click(function () {
+$('#delete-button').click(function() {
     $('#myModal').modal('show');
-  });
+});
 
-  $("#confirmdelete").click(function()
-  {
+$("#confirmdelete").click(function() {
     $.ajax({
-      url: path+'feed/deletedatarange.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end,
-      dataType: 'json',
-      async: false,
-      success: function(result) {
-          alert(result)
-      }
+        url: path + 'feed/deletedatarange.json',
+        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001),
+        dataType: 'json',
+        async: false,
+        success: function(result) {
+            alert(result)
+        }
     });
     vis_feed_data();
     $('#myModal').modal('hide');
-  });
-  
+});
 
-  // Graph buttons and navigation efects for mouse and touch
-  $("#graph").mouseenter(function(){
+
+// Graph buttons and navigation efects for mouse and touch
+$("#graph").mouseenter(function() {
     $("#graph-navbar").show();
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-  });
-  $("#graph_bound").mouseleave(function(){
+});
+$("#graph_bound").mouseleave(function() {
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  $("#graph").bind("touchstarted", function (event, pos)
-  {
+});
+$("#graph").bind("touchstarted", function(event, pos) {
     $("#graph-navbar").hide();
     $("#graph-buttons").stop().fadeOut();
     $("#stats").stop().fadeOut();
-  });
-  
-  $("#graph").bind("touchended", function (event, ranges)
-  {
+});
+
+$("#graph").bind("touchended", function(event, ranges) {
     $("#graph-buttons").stop().fadeIn();
     $("#stats").stop().fadeIn();
-    start = ranges.xaxis.from; end = ranges.xaxis.to;
+    view.start = ranges.xaxis.from;
+    view.end = ranges.xaxis.to;
     vis_feed_data();
-  });
-  
+});  
 </script>

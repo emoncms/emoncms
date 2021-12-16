@@ -171,8 +171,8 @@ class CassandraEngine implements engine_methods
         global $settings; // max_datapoints;
 
         $feedid = (int) $feedid;
-        $start = round($start/1000);
-        $end = round($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $interval = intval($interval);
         $feedname = $this->feedtable($feedid);
         // Minimum interval
@@ -192,7 +192,7 @@ class CassandraEngine implements engine_methods
                 if($time>=$dp_time){
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         if ($dataValue !== null) $dataValue = (float) $dataValue;
-                        $data[] = array($time * 1000, $dataValue);
+                        $data[] = array($time, $dataValue);
                     }
                     $dp_time+=$interval;
                 }
@@ -234,8 +234,8 @@ class CassandraEngine implements engine_methods
     public function deletedatarange($feedid,$start,$end)
     {
         $feedid = (int) $feedid;
-        $start = intval($start/1000.0);
-        $end = intval($end/1000.0);
+        $start = (int) $start;
+        $end = (int) $end;
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
 
         $feedname = $this->feedtable($feedid);

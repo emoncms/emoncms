@@ -12,7 +12,9 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $settings;
+    global $mysqli, $redis, $session, $route, $user, $settings, $vis_version;
+
+    $vis_version = 10;
 
     $result = false;
 
@@ -39,10 +41,10 @@
             $result = view("Modules/vis/Views/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
         }
         
-        else if ($route->action == "auto")
+        else if ($route->action == "auto" || $route->action == "graph")
         {
             $feedid = intval(get('feedid'));
-            $route->action = 'graph';
+            $route->action = 'rawdata';
         }
 
         while ($vis = current($visualisations))

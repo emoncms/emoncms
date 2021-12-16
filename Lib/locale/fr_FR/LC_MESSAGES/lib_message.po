@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-07 11:01+0100\n"
-"PO-Revision-Date: 2021-11-07 11:04+0100\n"
+"POT-Creation-Date: 2021-11-07 19:48+0100\n"
+"PO-Revision-Date: 2021-11-07 19:48+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -142,3 +142,11 @@ msgstr "Voir ce tableau de bord"
 #: ../../../gridjs/grid-demo.php:137
 msgid "Edit Layout"
 msgstr "Éditer la disposition"
+
+#: ../../../menu/menu_langjs.php:7
+msgid "Expand sidebar"
+msgstr "Développer la barre latérale"
+
+#: ../../../menu/menu_langjs.php:8
+msgid "Minimise sidebar"
+msgstr "Réduire la barre latérale"
