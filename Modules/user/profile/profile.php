@@ -10,7 +10,7 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=2;
+global $path; $v=3;
 ?>
 <link href="<?php echo $path; ?>Modules/user/profile/profile.css?v=<?php echo $v; ?>" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
@@ -53,13 +53,13 @@ global $path; $v=2;
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Write API Key'); ?></td>
+      <td class="muted"><?php echo _('Read & Write API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo _("Write API Key copied to clipboard"); ?>')"></i></td>
       <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo _('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Read API Key'); ?></td>
+      <td class="muted"><?php echo _('Read Only API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo _("Read API Key copied to clipboard"); ?>')"></i></td>
       <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo _('Generate New'); ?></button></td>

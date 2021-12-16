@@ -69,9 +69,10 @@ bindtextdomain("lib_messages",__DIR__."/locale");
       </td>
     </tr>
     <tr>
-      <td><b><?php dgettext('lib_messages','Authentication'); ?></b></td>
+      <td><b><?php echo dgettext('lib_messages','Authentication'); ?></b></td>
       <td>
         <button v-if="!auth_visible" class="btn btn-small" @click="show_auth"><?php echo dgettext('lib_messages','Show'); ?>
+        <button v-if="auth_visible" class="btn btn-small" @click="hide_auth"><?php echo dgettext('lib_messages','Hide'); ?>
     </tr>
     <tr>
       <td><b><?php echo dgettext('lib_messages','Example URL'); ?></b></td>
