@@ -85,10 +85,9 @@ function input_controller()
         } else if ($route->action == "cleanprocesslistfeeds") {
             $route->format = 'text';
             return $input->clean_processlist_feeds($process,$session['userid']);
-        } else if ($route->action == "set-node-input-descriptions") {
-            if (isset($_GET['node']) && isset($_GET['names'])) {
-                 return $input->set_node_input_descriptions($session['userid'],$_GET['node'],$_GET['names']);
-            }
+        } else if ($route->action == "populateindexes") {
+            $route->format = 'text';
+            $result = $input->populate_indexes($session['userid']);
         }
         else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
@@ -177,7 +176,6 @@ function input_controller()
             }
         }
     }
-
     else if ($route->action == "list") return $input->getlist($session['userid']);
     else if ($route->action == "getinputs") return $input->get_inputs($session['userid']);
     else if ($route->action == "get_inputs") return $input->get_inputs($session['userid']);

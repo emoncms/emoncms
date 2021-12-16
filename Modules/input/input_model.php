@@ -27,17 +27,18 @@ class Input
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function create_input($userid, $nodeid, $name)
+    public function create_input($userid, $nodeid, $indx, $name)
     {
         $userid = (int) $userid;
+        $indx = (int) $indx;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         // if (strlen($nodeid)>16) return false; // restriction placed on emoncms.org
         $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         $id = false;
         
-        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
-            $stmt->bind_param("iss",$userid,$name,$nodeid);
+        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,nodeid,indx,name,description,processList) VALUES (?,?,?,?,'','')")) {
+            $stmt->bind_param("isis",$userid,$nodeid,$indx,$name);
             $stmt->execute();
             $stmt->close();
 
@@ -45,10 +46,10 @@ class Input
 
             if ($this->redis && $id>0) {
                 $this->redis->sAdd("user:inputs:$userid", $id);
-                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'indx'=>$indx,'name'=>$name,'description'=>"", 'processList'=>""));
             }
         } else {
-           $this->log->warn("create_input mysql error $userid $nodeid $name ".$this->mysqli->error);
+           $this->log->warn("create_input mysql error $userid $nodeid $indx $name ".$this->mysqli->error);
         }
         return $id;
     }
@@ -172,42 +173,19 @@ class Input
         }
     }
     
-    public function set_node_input_descriptions($userid,$nodeid,$names)
+    public function set_name($id,$name)
     {
-        $names = explode(",",$names);
-        foreach ($names as $name) {
-            if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in input description');
-        }
+        $id = (int) $id;
+        if (!$this->exists($id)) return array('success'=>false, 'message'=>'Input does not exist');
+        if (preg_replace('/[^\p{N}\p{L}_\s-]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in input name');
         
-        $userid = (int) $userid;
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-        
-        $stmt = $this->mysqli->prepare("SELECT id,name FROM input WHERE userid=? AND nodeid=? ORDER BY id ASC");
-        $stmt->bind_param("is",$userid,$nodeid);
-        $stmt->execute();
-        $stmt->bind_result($id,$name);
-        
-        $descriptions_by_id = array();
-        $index = 0;
-        while ($result = $stmt->fetch()) {
-            if (isset($names[$index])) {
-                $descriptions_by_id[$id] = $names[$index];
-            }
-            $index++;
-        }
+        $stmt = $this->mysqli->prepare("UPDATE input SET name = ? WHERE id = ?");
+        $stmt->bind_param("si",$fields->name,$id);
+        if ($stmt->execute()) $success = true;
         $stmt->close();
         
-        foreach ($descriptions_by_id as $id=>$description) {
-            $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
-            $stmt->bind_param("si",$description,$id);
-            $stmt->execute();
-            $stmt->close();
-            
-            if ($this->redis) $this->redis->hset("input:$id",'description',$description);
-        }
-        return array('success'=>true, 'message'=>'input descriptions updated');
-    }    
-
+        if ($this->redis) $this->redis->hset("input:$id",'name',$name);
+    }
 
     // -----------------------------------------------------------------------------------------
     // get_inputs, returns user inputs by node name and input name
@@ -217,10 +195,31 @@ class Input
     public function get_inputs($userid)
     {
         if ($this->redis) {
-            return $this->redis_get_inputs($userid);
+            $result = $this->redis_get_inputs($userid);
         } else {
-            return $this->mysql_get_inputs($userid);
+            $result = $this->mysql_get_inputs($userid);
         }
+        
+        $dbinputs = array(
+            "byindx"=>array(),
+            "byname"=>array()
+        );
+        
+        foreach ($result as $row) {
+            if (!isset($row['indx']) || $row['indx']==-1) {
+                if (!$this->populate_indexes($userid)) return false;
+                return $this->get_inputs($userid);
+            }
+            
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs['byindx'][$row['nodeid']])) $dbinputs['byindx'][$row['nodeid']] = array();
+            if (!isset($dbinputs['byname'][$row['nodeid']])) $dbinputs['byname'][$row['nodeid']] = array();
+            
+            $dbinputs['byname'][$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'indx'=>$row['indx'], 'processList'=>$row['processList']);
+            $dbinputs['byindx'][$row['nodeid']][$row['indx']] = array('id'=>$row['id'], 'name'=>$row['name'], 'processList'=>$row['processList']);
+        }
+        
+        return $dbinputs;
     }
 
     private function redis_get_inputs($userid)
@@ -239,6 +238,8 @@ class Input
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
         
+        // Indexed inputs pre master merge: 
+        // foreach ($result as $row) $dbinputs[] = $row;
         foreach ($result as $row) {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
@@ -251,14 +252,45 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
-        while ($row = (array)$result->fetch_object())
-        {
-            if ($row['nodeid']==null) $row['nodeid'] = 0;
-            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
+        if (!$result = $this->mysqli->query("SELECT id,nodeid,indx,name,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc")) {
+            $this->log->warn("mysql_get_inputs sql query error");
+            return false;
         }
+        while ($row = (array)$result->fetch_object()) $dbinputs[] = $row;
         return $dbinputs;
+    }
+    
+    public function populate_indexes($userid) 
+    {
+        $userid = (int) $userid;
+        $this->log->warn("populate_indexes u=$userid");
+        
+        $nodes = array();
+        if (!$result = $this->mysqli->query("SELECT id,nodeid,indx,name,processList FROM input WHERE `userid` = '$userid' ORDER BY id")) {
+            $this->log->warn("populate_indexes, sql error, indx may be missing");
+            return false;
+        }
+        
+        while ($row = $result->fetch_object()) {
+            if (!isset($nodes[$row->nodeid])) $nodes[$row->nodeid] = array();
+            $nodes[$row->nodeid][] = $row;
+        }
+        
+        foreach ($nodes as $node) {
+            $indx = 0;
+            foreach ($node as $input) {
+                if ($input->indx==-1) {
+                    $this->mysqli->query("UPDATE input SET indx='$indx' WHERE `id` = '$input->id'");
+                } else {
+                    $indx = $input->indx;
+                }
+                $indx ++;
+            }
+        }
+        
+        if ($this->redis) $this->load_to_redis($userid);
+        
+        return true;
     }
 
     // -----------------------------------------------------------------------------------------
@@ -317,7 +349,7 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT nodeid,indx,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
@@ -390,7 +422,10 @@ class Input
     {
         $userid = (int) $userid;
         $inputs = array();
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        if (!$result = $this->mysqli->query("SELECT id,nodeid,indx,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc")) {
+            $this->log->warn("mysql_getlist sql query error");
+            return false;
+        }
         while ($row = (array)$result->fetch_object()) $inputs[] = $row;
         return $inputs;
     }
@@ -712,7 +747,10 @@ class Input
     private function load_input_to_redis($inputid)
     {
         $inputid = (int) $inputid;
-        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
+        if (!$result = $this->mysqli->query("SELECT id,userid,nodeid,indx,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc")) {
+            $this->log->warn("load_input_to_redis sql query error");
+            return false;
+        }
         if ($result->num_rows > 0) {
             $row = $result->fetch_object();
             $userid = $row->userid;
@@ -721,6 +759,7 @@ class Input
             $this->redis->hMSet("input:$row->id",array(
                 'id'=>$row->id,
                 'nodeid'=>$row->nodeid,
+                'indx'=>$row->indx,
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'processList'=>$row->processList
@@ -731,13 +770,17 @@ class Input
     private function load_to_redis($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        if (!$result = $this->mysqli->query("SELECT id,userid,nodeid,indx,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc")) {
+            $this->log->warn("load_to_redis sql query error");
+            return false;
+        }
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:inputs:$userid", $row->id);
             $this->redis->hMSet("input:$row->id",array(
                 'id'=>$row->id,
                 'nodeid'=>$row->nodeid,
+                'indx'=>$row->indx,
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'processList'=>$row->processList
