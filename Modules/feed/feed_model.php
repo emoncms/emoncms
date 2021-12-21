@@ -922,7 +922,7 @@ class Feed
         } else {
             foreach ($data as $dp) {
                 if (count($dp)==2) {
-                    $feed->post($feedid,$dp[0],$dp[0],$dp[1]);
+                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1]);
                 }
             }
         }
