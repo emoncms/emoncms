@@ -102,33 +102,49 @@ class MysqlTimeSeries implements engine_methods
     */
     public function get_meta($feedid)
     {
-        $feedid= intval($feedid);
+        $feedid = (int) $feedid;
         if (!$this->generic) {
             $meta = $this->read_meta($feedid);
         }
         else {
             $meta = new stdClass();
+            $meta->id = $feedid;
             $meta->table_name = ($this->prefix ? $this->prefix : "").trim($feedid);
             $meta->value_type = "FLOAT NOT NULL";
             $meta->start_time = 0;
+            $meta->end_time = 0;
         }
-        if ($meta->start_time == 0) {
-            $result = $this->mysqli->query("SELECT time FROM ".$meta->table_name." ORDER BY time ASC LIMIT 1");
-            if ($result && $row = $result->fetch_array()) {
-                $meta->start_time = (int) $row['time'];
-
-                if (!$this->generic) {
-                    $this->write_meta($feedid, $meta);
-                }
-            }
-        }
+       
         $result = $this->mysqli->query("SELECT COUNT(*) FROM ".$meta->table_name);
         if ($result && $row = $result->fetch_array()) {
-            $meta->npoints = $row[0];
-        }
-        else {
+            $meta->npoints = (int) $row[0];
+        } else {
             $meta->npoints = -1;
         }
+        
+        if ($meta->start_time == 0) {
+            $table = $this->get_table_name($feedid);
+            // Get first and last datapoint of feed
+            $sql = "SELECT DISTINCT time, data FROM $table WHERE ("
+                    ." time = (SELECT min(time) FROM $table )"
+                    ."OR  time = (SELECT max(time) FROM $table )"
+                    .")";
+            if ($result = $this->mysqli->query($sql)) {
+                $range = $result->fetch_all(MYSQLI_ASSOC);
+                if (isset($range[0])) {
+                    $meta->start_time = (int) $range[0]['time'];
+                }
+                if (isset($range[1])) {
+                    $meta->end_time = (int) $range[1]['time'];
+                }
+                $meta->interval = floor(($meta->end_time - $meta->start_time) / $meta->npoints);
+                
+                if (!$this->generic) {
+                    $this->write_meta($feedid, $meta);
+                }      
+            }
+        }
+
         return $meta;
     }
     
