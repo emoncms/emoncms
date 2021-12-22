@@ -50,11 +50,6 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
         $this->assertInstanceOf(\stdClass::class, $meta);
     }
 
-    public function testUpdate() {
-        $value = $this->engine->update($this->feedid,time(),rand(200,1500));
-        $this->assertNotFalse($value);
-    }
-
     public function testLastvalue() {
         $array = $this->engine->lastvalue($this->feedid);
         $this->assertNotFalse($array);

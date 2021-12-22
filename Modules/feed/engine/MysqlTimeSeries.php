@@ -246,35 +246,6 @@ class MysqlTimeSeries implements engine_methods
     }
 
     /**
-     * Updates a data point in the feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($feedid, $time, $value)
-    {
-        $feedid = intval($feedid);
-        if ($this->writebuffer_update_time($feedid, (int) $time, $value)) {
-            $this->post_bulk_save();// if data is on buffer, update it and flush buffer now
-            $this->log->info("update() feedid=$feedid with buffer");
-        }
-        else {
-            //$this->log->info("update() feedid=$feedid");
-            // else, update or insert data value in feed table
-            $table = $this->get_table_name(intval($feedid));
-            $result = $this->mysqli->query("SELECT * FROM $table WHERE time = '$time'");
-
-            if (!$result) return $value;
-            $row = $result->fetch_array();
-
-            if ($row) $this->mysqli->query("UPDATE $table SET data = '$value' WHERE time = '$time'");
-            if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $table (`time`,`data`) VALUES ('$time','$value')");}
-        }
-        return $value;
-    }
-
-    /**
      * Get array with last time and value from a feed
      *
      * @param integer $feedid The id of the feed
@@ -846,22 +817,7 @@ class MysqlTimeSeries implements engine_methods
     }
 
 // #### \/ Bellow are engine private methods
-
-    // Search time in buffer if found update its value and return true
-    private function writebuffer_update_time($feedid, $time, $newvalue)
-    {
-       if (isset($this->writebuffer[$feedid])) {
-           $array=$this->writebuffer[$feedid];
-           foreach ($array as $key => $val) {
-               if ($val[0] === $time) {
-                   $this->writebuffer[$feedid][$key][1] = $newvalue;
-                   return true;
-               }
-           }
-       }
-       return false;
-    }
-
+    
     private function create_meta($feedid, $options)
     {
         // Check to ensure ne existing feed will be overridden
@@ -1003,5 +959,18 @@ class MysqlTimeSeries implements engine_methods
         }
         return $data;
     }
-
+    
+    /**
+     * Used for testing
+     *
+     */
+    public function print_all($id) {
+        $table = $this->get_table_name($id);
+        $result = $this->mysqli->query("SELECT time, data FROM $table");
+        $n = 0;
+        while($row = $result->fetch_object()) {
+            print $n." ".$row->time." ".$row->data."\n";     
+            $n++; 
+        }
+    }
 }

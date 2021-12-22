@@ -9,9 +9,10 @@ class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
     public $log;
-    private $writebuffer = array();
     private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
+    private $post_buffer = array();
+    private $post_buffer_padding_mode = array();
 
     /**
      * Constructor.
@@ -153,107 +154,127 @@ class PHPFina implements engine_methods
     */
     public function post($id,$timestamp,$value,$padding_mode=null)
     {
-        $this->log->info("post() id=$id timestamp=$timestamp value=$value padding_mode=$padding_mode");
-        
+        $data = array(array($timestamp,$value));
+        $this->post_multiple($id,$data,$padding_mode);
+        return $value;
+    }
+    
+    public function post_bulk_prepare($id,$time,$value,$padding_mode=null)
+    {
         $id = (int) $id;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-        if (is_nan($value)) $value = NAN;
-        
-        $now = time();
-        $start = $now-(3600*24*365*5); // 5 years in past
-        $end = $now+(3600*48);         // 48 hours in future
-        
-        if ($timestamp<$start || $timestamp>$end) {
-            $this->log->warn("post() timestamp out of range");
-            return false;
+        $this->post_buffer[$id][] = array($time,$value);
+        $this->post_buffer_padding_mode[$id] = $padding_mode;
+    }
+
+    public function post_bulk_save()
+    {
+        foreach ($this->post_buffer as $id=>$data) {
+            $this->post_multiple($id,$data,$this->post_buffer_padding_mode[$id]);
         }
+        $this->post_buffer = array();
+    }
+    
+    public function post_multiple($id,$data,$padding_mode=null)
+    {
+        $id = (int) $id;
+        
+        if ($padding_mode=="join") $join = true; else $join = false;
         
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
         
-        // Calculate interval that this datapoint belongs too
-        $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
+        // Check that data is ordered timestamp ascending
+        // a small overhead when posting single updates but minor
+        $last_timestamp = 0;
+        $valid = array();
+        $index = 0;
+        foreach ($data as $dp) {
+            // Calculate interval that this datapoint belongs too 
+            $timestamp = (int) $dp[0];
+            $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
+            // Value is float or NAN
+            $value = (float) $dp[1];
+            if (is_nan($value)) $value = NAN;
+            // Append new
+            if ($timestamp>$last_timestamp) {
+                $last_timestamp = $timestamp;
+                $valid[] = array($timestamp,$value);
+                $index++;
+            // Update last
+            } else if ($timestamp==$last_timestamp) {
+                if ($index>0) {
+                    $valid[$index-1][1] = $value;
+                }
+            }
+        }
+        if (!count($valid)) return false;
         
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $meta->start_time = $timestamp;
+            $meta->start_time = $valid[0][0];
             $this->create_meta($id,$meta);
         }
 
-        if ($timestamp < $meta->start_time) {
-            $this->log->warn("post() timestamp older than feed start time id=$id");
-            return false; // in the past
-        }
-
-        // Calculate position in base data file of datapoint
-        $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
-
-        $last_pos = $meta->npoints - 1;
-
-
-        $fh = fopen($this->dir.$id.".dat", 'c+');
-        if (!$fh) {
+        if (!$fh = fopen($this->dir.$id.".dat", 'c+')) {
             $this->log->warn("post() could not open data file id=$id");
             return false;
         }
         
-        // Write padding
-        $padding = ($pos - $last_pos)-1;
-        
-        if ($padding>$this->maxpadding) {
-            $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
-            return false;
-        }
-        
-        if ($padding>0) {
-            $padding_value = NAN;
+        $last_pos = $meta->npoints - 1;
+        $last_val = false;
+
+        $buffer = "";
+        foreach ($valid as $dp) {
+            $timestamp = $dp[0];
+            $value = $dp[1];
+            // Calculate position in base data file of datapoint
+            $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
+            if ($pos<0) { continue; } // skip if timestamp is less than start time
             
-            if ($last_pos>=0 && $padding_mode!=null) {
-                fseek($fh,$last_pos*4);
-                $val = unpack("f",fread($fh,4));
-                $last_val = (float) $val[1];
+            // Update on disk
+            if ($pos<$meta->npoints) {
+                fseek($fh,4*$pos);
+                fwrite($fh,pack("f",$value));
+            } else {
+                // Calculate padding requirement
+                $padding = ($pos - $last_pos)-1;                
+                if ($padding>0) {
+                    if ($padding>$this->maxpadding) {
+                        $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
+                        return false;
+                    }
+                    $padding_value = NAN;
+                    
+                    if ($join && $last_pos>=0) {
+                        if ($last_val===false) {
+                            fseek($fh,$last_pos*4);
+                            $val = unpack("f",fread($fh,4));
+                            $last_val = (float) $val[1];
+                        }
+                        $padding_value = $last_val;
+                        $div = ($value - $last_val) / ($padding+1);
+                    }
+                    
+                    for ($i=0; $i<$padding; $i++) {
+                        if ($join) $padding_value += $div;
+                        $buffer .= pack("f",$padding_value);
+                    }
+                }
                 
-                $padding_value = $last_val;
-                $div = ($value - $last_val) / ($padding+1);
+                // Write new datapoint
+                $buffer .= pack("f",$value);
+                $last_pos += $padding + 1;
+                $last_val = $value;
             }
-            
-            $buffer = "";
-            for ($i=0; $i<$padding; $i++) {
-                if ($padding_mode=="join") $padding_value += $div;
-                $buffer .= pack("f",$padding_value);
-            }
+        }
+        if ($buffer!="") {
             fseek($fh,4*$meta->npoints);
             fwrite($fh,$buffer);
-            
         }
-        
-        // Write new datapoint
-        fseek($fh,4*$pos);
-        if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
-        
-        // Close file
-        fclose($fh);
-        
-        return $value;
+        fclose($fh);  
+        return true;
     }
-    
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $id The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($id,$timestamp,$value)
-    {
-        if (isset($this->writebuffer[$id]) && strlen($this->writebuffer[$id]) > 0) {
-            $this->post_bulk_save();// if data on buffer, flush buffer now, then update it
-            $this->log->info("update() $id with buffer");
-        }
-        return $this->post($id,$timestamp,$value);  //post can also update 
-    }
-
+        
     /**
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
@@ -546,7 +567,7 @@ class PHPFina implements engine_methods
                 if ($n>0) $value = 1.0*$sum/$n;
                 
             } else {
-                if ($time>=$meta->start_time && $time<$meta->end_time) {
+                if ($time>=$meta->start_time && $time<=$meta->end_time) {
                     // Output value at start at div start
                     if (!$first_seek || !$fullres) {
                         $first_seek = true;
@@ -704,159 +725,13 @@ class PHPFina implements engine_methods
 
 // #### /\ Above are required methods
 
-
-// #### \/ Below are buffer write methods
-
-    // Insert data in post write buffer, parameters like post()
-    public function post_bulk_prepare($id,$timestamp,$value,$padding_mode)
-    {   
-        $id = (int) $id;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-        $this->log->info("post_bulk_prepare() feedid=$id timestamp=$timestamp value=$value");
-        
-        // Check timestamp range
-        $now = time();
-        $start = $now-(3600*24*365*5); // 5 years in past
-        $end = $now+(3600*48);         // 48 hours in future
-        if ($timestamp<$start || $timestamp>$end) {
-            $this->log->warn("post_bulk_prepare() timestamp out of range");
-            return false;
-        }
-
-        // Check meta data file exists
-        if (!$meta = $this->get_meta($id)) return false;
-        
-        if (isset($this->writebuffer[$id])) {
-            $meta->npoints += floor(strlen($this->writebuffer[$id])/4.0);
-        }
-
-        // Calculate interval that this datapoint belongs too
-        $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-
-        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->start_time==0) {
-            if ($meta->npoints == 0) {
-                $meta->start_time = $timestamp;
-                $this->create_meta($id,$meta);
-                $this->log->info("post_bulk_prepare() start_time=0 setting meta start_time=$timestamp");
-            } else {
-                $this->log->error("post_bulk_prepare() start_time=0, npoints>0");
-                return false;
-            }
-        }
-        
-        if ($timestamp < $meta->start_time) {
-            $this->log->warn("post_bulk_prepare() timestamp=$timestamp older than feed starttime=$meta->start_time feedid=$id");
-            return false; // in the past
-        }
-
-        // Calculate position in base data file of datapoint
-        $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
-        $last_pos = $meta->npoints - 1;
-        
-        $this->log->info("post_bulk_prepare() pos=$pos last_pos=$last_pos timestampinterval=$timestamp");
-        
-        if ($pos>$last_pos) {
-            $npadding = ($pos - $last_pos)-1;
-            
-            if ($npadding>$this->maxpadding) {
-                $this->log->warn("post() padding max block size exeeded id=$id, $npadding dp");
-                return false;
-            }
-            
-            if (!isset($this->writebuffer[$id])) {
-                $this->writebuffer[$id] = "";    
-            }
-            
-            if ($npadding>0) {
-                $padding_value = NAN;
-                if ($padding_mode!=null) {
-                    if (!isset($this->lastvalue_cache[$id])) { // Not set, cache it from file data
-                        $lastvalue = $this->lastvalue($id);
-                        $this->lastvalue_cache[$id] = $lastvalue['value'];
-                    }
-                    $div = ($value - $this->lastvalue_cache[$id]) / ($npadding+1);
-                    $padding_value = $this->lastvalue_cache[$id];
-                }
-                
-                for ($n=0; $n<$npadding; $n++)
-                {
-                    if ($padding_mode!=null) $padding_value += $div; 
-                    $this->writebuffer[$id] .= pack("f",$padding_value);
-                    //$this->log->info("post_bulk_prepare() ##### paddings ". ((4*$meta->npoints) + (4*$n)) ." $n $padding_mode $padding_value");
-                }
-            }
-            
-            $this->writebuffer[$id] .= pack("f",$value);
-            $this->lastvalue_cache[$id] = $value; // cache last value
-            
-            //$this->log->info("post_bulk_prepare() ##### value saved $value");
-        } else {
-            // if data is in past, its not supported, could call update here to fix on file before continuing
-            // but really this should not happen for past data has process_feed_buffer uses update for that.
-            // so this must be data posted in less time of the feed interval and can be ignored
-            
-            // This error crouds out the log's but is behaviour expected if data is coming in at a quicker interval than the feed interval
-            // EmonPi posts at 5s where feed engine default size is 10s which means a log entry for every datapoint with this uncommented
-            // $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$id timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
-        }
-        
-        return $value;
-    }
-
-    // Saves post buffer to engine in bulk
-    // Writing data in larger blocks saves reduces disk write load
-    public function post_bulk_save()
-    {
-        $byteswritten = 0;
-        foreach ($this->writebuffer as $id=>$data) {
-            // Auto-correction if something happens to the datafile, it gets partitally written to
-            // this will correct the file size to always be an integer number of 4 bytes.
-            $filename = $this->dir.$id.".dat";
-            clearstatcache($filename);
-            if (@filesize($filename)%4 != 0) {
-                $npoints = floor(filesize($filename)/4.0);
-                $fh = fopen($filename,"c");
-                if (!$fh) {
-                    $this->log->warn("post_bulk_save() could not open data file '$filename'");
-                    return false;
-                }
-
-                fseek($fh,$npoints*4.0);
-                fwrite($fh,$data);
-                fclose($fh);
-                print "PHPFINA: FIXED DATAFILE WITH INCORRECT LENGHT '$filename'\n";
-                $this->log->warn("post_bulk_save() FIXED DATAFILE WITH INCORRECT LENGHT '$filename'");
-            }
-            else
-            {
-                $fh = fopen($filename,"ab");
-                if (!$fh) {
-                    $this->log->warn("save() could not open data file '$filename'");
-                    return false;
-                }
-                fwrite($fh,$data);
-                fclose($fh);
-            }
-            
-            $byteswritten += strlen($data);
-        }
-        
-        $this->writebuffer = array(); // clear buffer
-        
-        return $byteswritten;
-    }
-
-
-
 // #### \/ Below engine specific methods
 
 // #### \/ Bellow are engine private methods 
     
     private function create_meta($id, $meta)
     {
-        $feedname = $id . ".meta";
+        $feedname = $id.".meta";
         $metafile = @fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
@@ -888,10 +763,6 @@ class PHPFina implements engine_methods
             clearstatcache($this->dir.$id.".dat");
             $bytesize += filesize($this->dir.$id.".dat");
         }
-        
-        if (isset($this->writebuffer[$id]))
-            $bytesize += strlen($this->writebuffer[$id]);
-            
         return floor($bytesize / 4.0);
     }   
         
@@ -978,7 +849,7 @@ class PHPFina implements engine_methods
      */
     public function clear($id) {
         $id = (int) $id;
-        if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
+        if (isset($this->post_buffer[$id])) $this->post_buffer[$id] = array();
         if (!$meta = $this->get_meta($id)) return false;
         if (!$fh = $this->open($id,'r+')) return false;
         ftruncate($fh, 0);
@@ -1002,7 +873,7 @@ class PHPFina implements engine_methods
     public function trim($id,$start_time) {
         $id = (int) $id; 
         // Clear local buffer before trim
-        if (isset($this->writebuffer[$id])) $this->writebuffer[$id] = "";
+        if (isset($this->post_buffer[$id])) $this->post_buffer[$id] = array();
  
         if (!$meta = $this->get_meta($id)) return array('success'=>false,'message'=>'Could not open meta file');
         if (!$meta->npoints) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');

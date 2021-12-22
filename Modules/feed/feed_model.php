@@ -624,7 +624,7 @@ class Feed
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
             
             if (!empty($bufferdata)) {
-                $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
+                // $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
@@ -803,8 +803,7 @@ class Feed
     Write operations
     set_feed_fields : set feed fields
     set_timevalue   : set feed last value
-    insert_data     : insert current data
-    update_data     : update data at specified time
+    post            : add or update datapoint
     */
     public function set_feed_fields($id,$fields)
     {
@@ -885,9 +884,9 @@ class Feed
         }
     }
 
-    public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
+    public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
-        $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
+        $this->log->info("post() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -910,30 +909,25 @@ class Feed
 
         return $value;
     }
-
-    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
+    
+    public function post_multiple($feedid,$data,$arg=null)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $updatetime = intval($updatetime);
-        if ($feedtime == null) $feedtime = $updatetime;
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
-
         $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
-            // Call to buffer update
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime);
-            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);
+        
+        // Post directly if phpfina, phptimeseries and number of data points is more than 10
+        if (($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) && count($data)>10) {
+            $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
         } else {
-            // Call to engine update
-            $this->EngineClass($engine)->update($feedid,$feedtime,$value);
+            foreach ($data as $dp) {
+                if (count($dp)==2) {
+                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1]);
+                }
+            }
         }
-
-        if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
-
-        return $value;
+        // $this->set_timevalue($feedid, $value, $updatetime);
+        return array('success'=>true);
     }
     
     public function upload_fixed_interval($feedid,$start,$interval,$npoints)

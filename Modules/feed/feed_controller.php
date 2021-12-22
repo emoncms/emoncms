@@ -237,11 +237,11 @@ function feed_controller()
                         }
 
                     // insert available here for backwards compatibility
-                    } else if ($route->action == "insert" || $route->action == "post") {
+                    } else if ($route->action == "insert" || $route->action == "update" || $route->action == "post") {
                         
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
-                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                             return $feed->post($feedid,time(),get("time"),get("value"));
                         }
 
                         // Single or multiple datapoints via json format
@@ -258,18 +258,7 @@ function feed_controller()
                         
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
                         
-                        foreach ($data as $dp) {
-                            if (count($dp)==2) {
-                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
-                            }
-                        }
-                        return array('success'=>true);
-
-                    // Update datapoint
-                    } else if ($route->action == "update") {
-                        if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
-                        $skipbuffer = false; if (isset($_GET['skipbuffer'])) $skipbuffer = true;
-                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'),$skipbuffer);
+                        return $feed->post_multiple($feedid,$data);
 
                     // Delete feed
                     } else if ($route->action == "delete") {

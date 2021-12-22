@@ -68,7 +68,7 @@ class TemplateEngine implements engine_methods
     }
 
     /**
-     * Adds a data point to the feed
+     * Adds or updates a data point
      *
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
@@ -78,18 +78,6 @@ class TemplateEngine implements engine_methods
     public function post($feedid,$time,$value,$arg=null)
     {
 
-    }
-
-    /**
-     * Updates a data point in the feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($feedid,$time,$value)
-    {
-    
     }
 
     /**

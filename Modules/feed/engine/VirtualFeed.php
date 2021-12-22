@@ -51,11 +51,6 @@ class VirtualFeed implements engine_methods
         return false; // Not supported by engine
     }
 
-    public function update($feedid,$time,$value)
-    {
-        return false; // Not supported by engine
-    }
-
     /**
      * returns the feed's last value
      *
