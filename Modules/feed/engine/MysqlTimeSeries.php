@@ -131,124 +131,7 @@ class MysqlTimeSeries implements engine_methods
         }
         return $meta;
     }
-
-    /**
-     * Return the averaged data over interval for the given timerange. The returned timestamp denotes the intervals start time. Averaging is performed over all values from time to time+interval.
-     *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-    */
-    public function get_average($feedid, $start, $end, $interval)
-    {
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;
-        $interval= (int) $interval;
-
-        // Minimum interval
-        if ($interval < 1) $interval = 1;
-        
-        $table = $this->get_table_name($feedid);
-        
-        // 1. Create associative array of time => values
-        $data_assoc = array();
-        $sql = "SELECT time, AVG(data) AS data_avg FROM $table WHERE time >= $start AND time < $end GROUP BY FLOOR(time/$interval)";
-        $result = $this->mysqli->query($sql);
-        if ($result) {
-            while($row = $result->fetch_array()) {
-                $time = floor((int)$row['time']/$interval)*$interval;
-                $data_assoc[$time] = (float) $row['data_avg'];
-            }
-        }
-        
-        // 2. Assing values to correct output format 
-        // returns null if output does not exist for that timestamp
-        // allowing for easier cross feed comparison e.g in csv view
-        $data = array();
-        $time = $start;
-        while($time<=$end)
-        {
-            $value = null;
-            if (isset($data_assoc[$time])) {
-                $value = $data_assoc[$time];
-            }
-            $data[] = array($time,$value);
-            $time += $interval;
-        }
-        
-        return $data;
-    }
-
-    /**
-     * Return the averaged data over interval for the given timerange. The returned timestamp denotes the intervals start time. Averaging is performed over all values from time to time+interval.
-     *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param string $mode The name of the interval. Possible values are: daily, weekly, monthly, annual
-     * @param string $timezone The time zone to which the intervals refer
-    */
-    public function get_average_DMY($feedid, $start, $end, $interval, $timezone)
-    {
-        $feedid = (int) $feedid;
-        $start = (int) $start;
-        $end = (int) $end;              
-        if (!in_array($interval,array("weekly","daily","monthly","annual"))) return false;
-        
-        $table = $this->get_table_name($feedid);
-
-        // The first section here deals with the timezone aligned interval codes
-        // the start time is modified to align to the nearest day, week, month or year
-        // later the while loop is advanced by the value in the $modify string
-        // all using php DateTime aligned to user/feed timezone
-
-        if ($timezone===0) $timezone = "UTC";
-
-        $date = new DateTime();
-        $date->setTimezone(new DateTimeZone($timezone));
-        $date->setTimestamp($start);
-        $date->modify("midnight");
-        $modify = "+1 day";
-        if ($interval=="weekly") {
-            $date->modify("this monday");
-            $modify = "+1 week";
-        } else if ($interval=="monthly") {
-            $date->modify("first day of this month");
-            $modify = "+1 month";
-        } else if ($interval=="annual") {
-            $date->modify("first day of january this year");
-            $modify = "+1 year";
-        }
-        // Set time to start 
-        $time = $date->getTimestamp();
-
-        $data = array();
-        while($time<=$end)
-        {
-            // Start time of interval/division
-            $div_start = $time;
-            // calculate start of next interval 
-            $date->modify($modify);
-            $div_end = $date->getTimestamp();
-            
-            $value = null;
-            $sql = "SELECT AVG(data) AS dp FROM $table WHERE time >= $div_start AND time < $div_end";
-            if ($result = $this->mysqli->query($sql)) {
-                if ($dp = $result->fetch_array()) {
-                    if ($dp['dp'] !== null) $value = (float) $dp['dp'];
-                }
-            }
-            
-            $data[] = array( $div_start , $value);
-            
-            // Advance position 
-            $time = $div_end;
-        }
-        return $data;
-    }
-
+    
     /**
      * Returns engine occupied size in bytes
      *
@@ -292,6 +175,41 @@ class MysqlTimeSeries implements engine_methods
             return array('time'=>(int)$row['time'], 'value'=>$row['data']);
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval output data point interval
+     * @param integer $average enabled/disable averaging
+     * @param string $timezone a name for a php timezone eg. "Europe/London"
+     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601 (NOT CURRENTLY SUPPORTED IN MYSQL)
+     * @param integer $csv pipe output as csv                                            (NOT CURRENTLY SUPPORTED IN MYSQL)
+     * @param integer $skipmissing skip null datapoints
+     * @param integer $limitinterval limit interval to feed interval
+     * @return void or array
+     */
+    
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    {
+        if (!$csv) {
+            if (in_array($interval,array("daily","weekly","monthly","annual"))) {
+                if (!$average) {
+                    return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
+                } else {
+                    return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
+                }
+            } else {
+                if (!$average) {
+                    return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
+                } else {
+                    return $this->get_average($feedid, $start, $end, $interval);
+                }
+            }
+        } else {
+            return $this->csv_export($feedid, $start, $end, $interval, $timezone);
         }
     }
 
@@ -342,6 +260,55 @@ class MysqlTimeSeries implements engine_methods
             // Advance position 
             $time = $div_end;
         }
+        return $data;
+    }
+    
+    /**
+     * Return the averaged data over interval for the given timerange. The returned timestamp denotes the intervals start time. Averaging is performed over all values from time to time+interval.
+     *
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval The number os seconds for each data point to return (used by some engines)
+    */
+    public function get_average($feedid, $start, $end, $interval)
+    {
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $interval= (int) $interval;
+
+        // Minimum interval
+        if ($interval < 1) $interval = 1;
+        
+        $table = $this->get_table_name($feedid);
+        
+        // 1. Create associative array of time => values
+        $data_assoc = array();
+        $sql = "SELECT time, AVG(data) AS data_avg FROM $table WHERE time >= $start AND time < $end GROUP BY FLOOR(time/$interval)";
+        $result = $this->mysqli->query($sql);
+        if ($result) {
+            while($row = $result->fetch_array()) {
+                $time = floor((int)$row['time']/$interval)*$interval;
+                $data_assoc[$time] = (float) $row['data_avg'];
+            }
+        }
+        
+        // 2. Assing values to correct output format 
+        // returns null if output does not exist for that timestamp
+        // allowing for easier cross feed comparison e.g in csv view
+        $data = array();
+        $time = $start;
+        while($time<=$end)
+        {
+            $value = null;
+            if (isset($data_assoc[$time])) {
+                $value = $data_assoc[$time];
+            }
+            $data[] = array($time,$value);
+            $time += $interval;
+        }
+        
         return $data;
     }
 
@@ -410,6 +377,74 @@ class MysqlTimeSeries implements engine_methods
             // Advance position 
             $date->modify($modify);
             $time = $date->getTimestamp();
+        }
+        return $data;
+    }
+    
+    /**
+     * Return the averaged data over interval for the given timerange. The returned timestamp denotes the intervals start time. Averaging is performed over all values from time to time+interval.
+     *
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param string $mode The name of the interval. Possible values are: daily, weekly, monthly, annual
+     * @param string $timezone The time zone to which the intervals refer
+    */
+    public function get_average_DMY($feedid, $start, $end, $interval, $timezone)
+    {
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;              
+        if (!in_array($interval,array("weekly","daily","monthly","annual"))) return false;
+        
+        $table = $this->get_table_name($feedid);
+
+        // The first section here deals with the timezone aligned interval codes
+        // the start time is modified to align to the nearest day, week, month or year
+        // later the while loop is advanced by the value in the $modify string
+        // all using php DateTime aligned to user/feed timezone
+
+        if ($timezone===0) $timezone = "UTC";
+
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        $modify = "+1 day";
+        if ($interval=="weekly") {
+            $date->modify("this monday");
+            $modify = "+1 week";
+        } else if ($interval=="monthly") {
+            $date->modify("first day of this month");
+            $modify = "+1 month";
+        } else if ($interval=="annual") {
+            $date->modify("first day of january this year");
+            $modify = "+1 year";
+        }
+        // Set time to start 
+        $time = $date->getTimestamp();
+
+        $data = array();
+        while($time<=$end)
+        {
+            // Start time of interval/division
+            $div_start = $time;
+            // calculate start of next interval 
+            $date->modify($modify);
+            $div_end = $date->getTimestamp();
+            
+            $value = null;
+            $sql = "SELECT AVG(data) AS dp FROM $table WHERE time >= $div_start AND time < $div_end";
+            if ($result = $this->mysqli->query($sql)) {
+                if ($dp = $result->fetch_array()) {
+                    if ($dp['dp'] !== null) $value = (float) $dp['dp'];
+                }
+            }
+            
+            $data[] = array( $div_start , $value);
+            
+            // Advance position 
+            $time = $div_end;
         }
         return $data;
     }
@@ -492,41 +527,6 @@ class MysqlTimeSeries implements engine_methods
         return $data;
     }
     
-    /**
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval output data point interval
-     * @param integer $average enabled/disable averaging
-     * @param string $timezone a name for a php timezone eg. "Europe/London"
-     * @param string $timeformat csv datetime format e.g: unix timestamp, excel, iso8601 (NOT CURRENTLY SUPPORTED IN MYSQL)
-     * @param integer $csv pipe output as csv                                            (NOT CURRENTLY SUPPORTED IN MYSQL)
-     * @param integer $skipmissing skip null datapoints
-     * @param integer $limitinterval limit interval to feed interval
-     * @return void or array
-     */
-    
-    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
-    {
-        if (!$csv) {
-            if (in_array($interval,array("daily","weekly","monthly","annual"))) {
-                if (!$average) {
-                    return $this->get_data_DMY($feedid, $start, $end, $interval, $timezone);
-                } else {
-                    return $this->get_average_DMY($feedid, $start, $end, $interval, $timezone);
-                }
-            } else {
-                if (!$average) {
-                    return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
-                } else {
-                    return $this->get_average($feedid, $start, $end, $interval);
-                }
-            }
-        } else {
-            return $this->csv_export($feedid, $start, $end, $interval, $timezone);
-        }
-    }
-
     public function export($feedid, $start)
     {
         // Feed id and start time of feed to export
