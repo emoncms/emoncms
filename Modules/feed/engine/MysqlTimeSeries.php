@@ -304,7 +304,7 @@ class MysqlTimeSeries implements engine_methods
         $start = (int) $start;
         $end = (int) $end;
         $interval= (int) $interval;
-
+        $skipmissing = (int) $skipmissing;
         // Minimum interval
         if ($interval < 1) $interval = 1;
         
@@ -378,7 +378,7 @@ class MysqlTimeSeries implements engine_methods
         $start = (int) $start;
         $end = (int) $end;
         $average = (int) $average;
-        
+        $skipmissing = (int) $skipmissing;       
         $table = $this->get_table_name($feedid);
         
         $meta = $this->get_meta($feedid);
