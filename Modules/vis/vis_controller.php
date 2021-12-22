@@ -12,7 +12,9 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $settings;
+    global $mysqli, $redis, $session, $route, $user, $settings, $vis_version;
+
+    $vis_version = 10;
 
     $result = false;
 
@@ -38,17 +40,11 @@
             $feedlist = $feed->get_user_feeds($session['userid']);
             $result = view("Modules/vis/Views/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
         }
-
-        // Auto - automatically selects visualisation based on datatype
-        // and is used primarily for quick checking feeds from the feeds page.
-        else if ($route->action == "auto")
+        
+        else if ($route->action == "auto" || $route->action == "graph")
         {
             $feedid = intval(get('feedid'));
-            $datatype = $feed->get_field($feedid,'datatype');
-            if ($datatype == 0) $result = "Feed type or authentication not valid";
-            if ($datatype == 1) $route->action = 'graph';
-            if ($datatype == 2) $route->action = 'bargraph';
-            if ($datatype == 3) $route->action = 'histgraph';
+            $route->action = 'rawdata';
         }
 
         while ($vis = current($visualisations))
@@ -87,11 +83,15 @@
                             
                             if ($feedid) {
                               $f = $feed->get($feedid);
-                              $array[$key] = $feedid;
-                              $array[$key.'name'] = $f['name'];
+                              if (isset($f['name'])) {
+                                  $array[$key] = $feedid;
+                                  $array[$key.'name'] = $f['name'];
 
-                              if ($f['userid']!=$session['userid']) $array['valid'] = false;
-                              if ($f['public']) $array['valid'] = true;
+                                  if ($f['userid']!=$session['userid']) $array['valid'] = false;
+                                  if ($f['public']) $array['valid'] = true;
+                              } else {
+                                  $array['valid'] = false;
+                              }
                             } else {
                               $array['valid'] = false;
                             }

@@ -58,10 +58,6 @@ class Feed
                     require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
                     $engines[$e] =  new PHPFina($this->settings['phpfina']);
                     break;
-                case (string)Engine::PHPFIWA :
-                    require "Modules/feed/engine/PHPFiwa.php";          // Fixed interval with averaging
-                    $engines[$e] = new PHPFiwa($this->settings['phpfiwa']);
-                    break;
                 case (string)Engine::REDISBUFFER :
                     require "Modules/feed/engine/RedisBuffer.php";      // Redis buffer for low-write mode
                     $engines[$e] = new RedisBuffer($this->redis,$this->settings['redisbuffer'],$this);
@@ -75,17 +71,17 @@ class Feed
                     require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
                     $engines[$e] = new MysqlMemory($this->mysqli);
                     break;
-                case "histogram" :
-                    require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
-                    $engines[$e] = new Histogram($this->mysqli);
-                    break;
                 case (string)Engine::CASSANDRA :
                     require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
                     $engines[$e] = new CassandraEngine($this->settings['cassandra']);
                     break;
                 default :
-                    $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
-                    throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
+                    $this->log->error("EngineClass() Engine id '".$e."' is not supported.");        
+                    // throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
+                    // Load blank template engine here to avoid errors that otherwise break the interface                 
+                    require "Modules/feed/engine/TemplateEngine.php";
+                    $engines[$e] =  new TemplateEngine(false);
+                    break;
             }
             $this->log->info("EngineClass() Autoloaded new instance of '".get_class($engines[$e])."'.");
             return $engines[$e];
@@ -97,12 +93,11 @@ class Feed
     Configurations operations
     create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
-    public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
+    public function create($userid,$tag,$name,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
         if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
         if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
-        $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
         
@@ -114,9 +109,6 @@ class Feed
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
         
-        // Histogram engine requires MYSQL
-        if ($engine != Engine::MYSQL && $datatype == DataType::HISTOGRAM) $engine = Engine::MYSQL;
-        
         $options = array();
         if ($engine == Engine::MYSQL || $engine == Engine::MYSQLMEMORY) {
             if (!empty($options_in->name)) $options['name'] = $options_in->name;
@@ -124,10 +116,13 @@ class Feed
             if (isset($options_in->empty)) $options['empty'] = $options_in->empty;
         }
         else if ($engine == Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
-        else if ($engine == Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
         
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
-        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
+        // Datatype is no longer used but is required here for backwards 
+        // compatibility with tables already containing the field
+        $datatype = 1;
+        
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,public,datatype,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$public,$datatype,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
@@ -140,7 +135,6 @@ class Feed
                     'id'=>$feedid,
                     'userid'=>$userid,
                     'name'=>$name,
-                    'datatype'=>$datatype,
                     'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
@@ -149,12 +143,7 @@ class Feed
                 ));
             }
             
-            $engineresult = false;
-            if ($datatype==DataType::HISTOGRAM) {
-                $engineresult = $this->EngineClass("histogram")->create($feedid,$options);
-            } else {
-                $engineresult = $this->EngineClass($engine)->create($feedid,$options);
-            }
+            $engineresult = $this->EngineClass($engine)->create($feedid,$options);
 
             if ($engineresult !== true)
             {
@@ -237,8 +226,10 @@ class Feed
         $response = $this->EngineClass($engine)->clear($feedid);
         
         // Clear feed last value (set to zero)
-        if ($this->redis->hExists("feed:$feedid",'value')) {
-            $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+        if ($this->redis) {
+            if ($this->redis->hExists("feed:$feedid",'value')) {
+                $lastvalue = $this->redis->hset("feed:$feedid",'value',0);
+            }
         }
 
         $this->log->info("feed model: clear() feedid=$feedid");
@@ -405,7 +396,7 @@ class Feed
     {
         $userid = (int) $userid;
         $feeds = array();
-        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
@@ -465,7 +456,6 @@ class Feed
     get_timevalue   : feed last updated time and value
     get_value       : feed last updated value
     get_data        : feed data by time range
-    csv_export      : feed data by time range in csv format
     */
     public function get($id)
     {
@@ -477,7 +467,7 @@ class Feed
             $row = $this->redis->hGetAll("feed:$id");
         } else {
             // Get from mysql db
-            $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
+            $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
             $row = (array) $result->fetch_object();
         }
         $lastvalue = $this->get_timevalue($id);
@@ -580,20 +570,50 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
     {
         $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) {
+            return array('success'=>false, 'message'=>'Feed does not exist');
+        }
+                        
+        $start = $this->convert_time($start,$timezone);
+        $end = $this->convert_time($end,$timezone);
+
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-        if ($engine == Engine::VIRTUALFEED) {
-            $this->log->info("get_data() $feedid,$start,$end,$outinterval,$skipmissing,$limitinterval");
+        
+        // Default interval if interval
+        if (is_numeric($interval) && $interval<1) {
+            $interval = round(($end-$start)/800);
+        }
+        
+        // Delta mode prepare
+        if ($delta && !$csv) {
+            $end = $this->delta_mode_next_interval($end,$interval,$timezone);
+        }
+        
+        // Maximum request size
+        if (!$csv && is_numeric($interval)) {
+            $period = $end-$start;
+            $req_dp = round($period / $interval);
+            if ($req_dp > $this->settings['max_datapoints']) {
+                return array(
+                    "success"=>false, 
+                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp"
+                );
+            }
         }
 
-        // Call to engine get_data
-        $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+        if (!in_array($timeformat,array("unix","unixms","excel","iso8601"))) {
+            return array('success'=>false, 'message'=>'Invalid time format');
+        }
+        
+        $engine = $this->get_engine($feedid);
 
-        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
+        // Call to engine get_data_combined
+        $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+
+        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"]) && !$average && is_numeric($interval) && $csv==false) {
             // Add redisbuffer cache if available
             if ($data && $skipmissing) {
                 $bufferstart=end($data)[0];
@@ -601,27 +621,26 @@ class Feed
                 $bufferstart = $start;
             }
             
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
             
             if (!empty($bufferdata)) {
-                $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
+                // $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
-                    $outintervalms = $outinterval * 1000;
-
+                    
                     // Convert buffered data to associative array - by timestamp
                     $bufferdata_assoc = array();
                     for ($z=0; $z<count($bufferdata); $z++) {
-                        $time = floor($bufferdata[$z][0]*0.001/$outinterval)*$outinterval;
+                        $time = floor($bufferdata[$z][0]/$interval)*$interval;
                         $bufferdata_assoc[$time] = $bufferdata[$z][1];
                     }
                     
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
                         $time = $data[$z][0];
-                        if (isset($bufferdata_assoc["".$time*0.001]) && $data[$z][1]==null) {
-                            $data[$z][1] = $bufferdata_assoc["".$time*0.001];
+                        if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
+                            $data[$z][1] = $bufferdata_assoc["".$time];
                         }
                     }
                     
@@ -630,204 +649,161 @@ class Feed
                 }
             }
         }
-
+        
+        if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        
+        // Apply different timeformats if applicable
+        if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
+        
         return $data;
     }
     
-    public function get_data_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-        
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
-        
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
-        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
-        return $data;
-    }
-    
-    public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
-    {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-        
-        if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-        
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-            
-        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
-        return $data;
-    }
-    
-    public function get_average($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-        
-        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
-    }
-    
-    public function get_average_DMY($feedid,$start,$end,$mode)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        
-        $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
-
-        // Call to engine get_data
-        $userid = $this->get_field($feedid,"userid");
-        $timezone = $this->get_user_timezone($userid);
-        
-        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
-    {
-        $feedid = (int) $feedid;
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-        $engine = $this->get_engine($feedid);
-
-        // Download limit
-        $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->settings['csv_downloadlimit_mb']*1048576)) {
-            $this->log->warn("csv_export() CSV download limit exeeded downloadsize=$downloadsize feedid=$feedid");
-            return array('success'=>false, 'message'=>"CSV download limit exeeded downloadsize=$downloadsize");
-        }
-
-        if ($datetimeformat == 1) {
-            global $user,$session;
-            $usertimezone = $user->get_timezone($session['userid']);
+    /*
+    Converts a data request to a cumulative kWh feed into kWh per day, week, month, year
+    Includes the current day, week, month, year
+    */ 
+    private function delta_mode_next_interval($end,$interval,$timezone) {
+        if (in_array($interval,array("weekly","daily","monthly","annual"))) {
+            // align to day, month, year
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->setTimestamp($end);
+            $date->modify("tomorrow midnight");
+            if ($interval=="weekly") {
+                $date->modify("next monday");
+            } else if ($interval=="monthly") {
+                $date->modify("first day of next month");
+            } else if ($interval=="annual") {
+                $date->modify("first day of january next year");
+            }
+            $end = $date->getTimestamp();
         } else {
-            $usertimezone = false;
+            // standard interval
+            $end = floor($end/$interval)*$interval;
+            $end += $interval;
         }
-        // Call to engine csv_export method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval,$usertimezone);
+        return $end;
     }
-
-    // Prepare export multi data
-    public function csv_export_multi_prepare($feedids,$start,$end,$outinterval)
-    {
-        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        $exportdata = array();
-        for ($i=0; $i<count($feedids); $i++) {
-            $feedid = (int) $feedids[$i];
-            $feedname = $this->get_field($feedid,'name');
-            if (isset($feedname['success']) && !$feedname['success']) return $feedname;
-            $feeddata = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
-            if (isset($feeddata['success']) && !$feeddata['success']) return $feeddata;
-
-            if (isset($exportdata['Timestamp'])) {
-               $exportdata['Timestamp'] = $exportdata['Timestamp'] + array($feedid => $feedname);
+    
+    private function delta_mode_convert($feedid,$data) {
+        // Get last value
+        $dp = $this->get_timevalue($feedid);
+        $time = $dp["time"];
+        
+        // Calculate delta mode
+        $last_val = null;
+        for($i=0; $i<count($data)-1; $i++) {
+            // Apply current value to end of day, week, month, year, interval
+            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                $data[$i+1][1] = $dp['value'];
+            }
+            // Delta calculation
+            if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                $data[$i][1] = null;
             } else {
-               $exportdata['Timestamp'] = array($feedid => $feedname);
+                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                $last_val = $data[$i+1][1];
             }
-            for ($d=0;$d<count($feeddata); $d++) {
-                if (isset($feeddata[$d]['0'])) {
-                    $time = (int)($feeddata[$d]['0']/1000);
-                    $value = $feeddata[$d]['1'];
-                    if (isset($exportdata[$time])) {
-                       $exportdata[$time] = $exportdata[$time] + array($feedid => $value);
-                    } else {
-                        $exportdata[$time] = array($feedid => $value);
-                    }
-                }
-            }
-            $feeddata = null; // free memory
         }
-        ksort($exportdata); // Sort timestamps
-        return $exportdata;
+        array_pop($data);
+        
+        return $data;
     }
     
-    // Generate export multi file
-    public function csv_export_multi($feedids,$start,$end,$outinterval,$datetimeformat,$name)
-    {
-        // Ensure all feedids given are integers
-        $feedids = (array) (explode(",",$feedids));
-        for ($i=0; $i<count($feedids); $i++) {
-            $feedid = (int) $feedids[$i];
-            $feedids[$i] = $feedid;
-        }
-        // Basic name input sanitisation
-        $name = preg_replace('/[^\w\s\-]/','',$name);
+    private function convert_time($time,$timezone) {
+        // Option to specify times as date strings
+        if (!is_numeric($time)) {
+            $date = new DateTime();
+            $date->setTimezone(new DateTimeZone($timezone));
+            $date->modify($time);
+            $time = $date->getTimestamp();
+        }    
         
-        $exportdata = $this->csv_export_multi_prepare($feedids,$start,$end,$outinterval);
-        if (isset($exportdata['success']) && !$exportdata['success']) return $exportdata;
-
-        if ($datetimeformat == 1) {
-            global $user,$session;
-            $usertimezone = $user->get_timezone($session['userid']);
-        } else {
-            $usertimezone = false;
+        // If timestamp is in milliseconds convert to seconds
+        if (($time/1000000000)>100) {
+            $time *= 0.001;
         }
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-
-        $start = DateTime::createFromFormat("U", $start);
-        if ($usertimezone) $start->setTimezone(new DateTimeZone($usertimezone));
-        $startText= $start->format("YmdHis");
-        $end = DateTime::createFromFormat("U", $end);
-        if ($usertimezone) $end->setTimezone(new DateTimeZone($usertimezone));
-        $endText= $end->format("YmdHis");
-        if ($name != "") {
-            $filename = $startText."_".$endText."_".$name.".csv";
-        } else {
-            $filename = $startText."_".$endText."_".implode("_",$feedids).".csv";
-        }
-
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename={$filename}");
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $fh = @fopen( 'php://output', 'w' );
-
-        $firstline=true;
-        foreach ($exportdata as $time => $data) {
-            $dataline = array();
-            foreach ($exportdata['Timestamp'] as $feedid => $name) {
-                if ($firstline) {
-                    $dataline[$feedid] = $data[$feedid];
-                } else if (isset($data[$feedid])) {
-                    $dataline[$feedid] = number_format((float)$data[$feedid],$this->settings['csv_decimal_places'],$this->settings['csv_decimal_place_separator'],'');
-                } else {
-                    $dataline[$feedid] = "";
+        return $time;
+    }
+    
+    private function format_output_time($data,$timeformat,$timezone) {
+        switch ($timeformat) {
+            case "unixms":
+                for ($i=0; $i<count($data); $i++) {
+                    $data[$i][0] *= 1000;
                 }
-            }
-            if (!$firstline) {
-                $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
-            }
-            fputcsv($fh, array($time)+$dataline,$this->settings['csv_field_separator']);
-            $firstline = false;
+                break;
+            case "excel":
+                $date = new DateTime();
+                $date->setTimezone(new DateTimeZone($timezone));          
+                for ($i=0; $i<count($data); $i++) {
+                    $date->setTimestamp($data[$i][0]);
+                    $data[$i][0] = $date->format("d/m/Y H:i:s"); 
+                }
+                break;
+            case "iso8601":
+                $date = new DateTime();
+                $date->setTimezone(new DateTimeZone($timezone)); 
+                for ($i=0; $i<count($data); $i++) {
+                    $date->setTimestamp($data[$i][0]);
+                    $data[$i][0] = $date->format("c"); 
+                }
+                break;
         }
-        fclose($fh);
+        return $data;
+    }
+    
+    public function get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,$split)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $start = $this->convert_time($start,$timezone);
+        $end = $this->convert_time($end,$timezone);
+                
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+
+        $engine = $this->get_engine($feedid);
+        if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
+            
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$split);
+
+        // Apply different timeformats if applicable
+        if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
+
+        return $data;
+    }
+    
+    public function csv_export_multi($feedids,$data,$timezone,$timeformat)
+    {
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper($this->settings);
+        $helperclass->set_time_format($timezone,$timeformat);
+        $helperclass->csv_header(implode("-",$feedids));
+        $keys = [];
+        foreach ($data as $key=>$f) $keys[] = $key;
+        if ($num_of_feeds = count($keys)) {
+            $k = $keys[0];
+            for ($i=0; $i<count($data[$k]['data']); $i++) {
+                // Time is index 0
+                $values = array($data[$k]['data'][$i][0]);
+                foreach ($keys as $key) {
+                    // Values index 1 upwards
+                    $values[] = $data[$key]['data'][$i][1];
+                }
+                $helperclass->csv_write_multi($values);
+            }
+        }
+        
+        $helperclass->csv_close();
         exit;
     }
-
+    
     /*
     Write operations
     set_feed_fields : set feed fields
     set_timevalue   : set feed last value
-    insert_data     : insert current data
-    update_data     : update data at specified time
+    post            : add or update datapoint
     */
     public function set_feed_fields($id,$fields)
     {
@@ -908,9 +884,9 @@ class Feed
         }
     }
 
-    public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
+    public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
-        $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
+        $this->log->info("post() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -933,30 +909,25 @@ class Feed
 
         return $value;
     }
-
-    public function update_data($feedid,$updatetime,$feedtime,$value,$skipbuffer=false)
+    
+    public function post_multiple($feedid,$data,$arg=null)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $updatetime = intval($updatetime);
-        if ($feedtime == null) $feedtime = $updatetime;
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
-
         $engine = $this->get_engine($feedid);
-        if ($this->settings['redisbuffer']['enabled'] && !$skipbuffer) {
-            // Call to buffer update
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime);
-            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);
+        
+        // Post directly if phpfina, phptimeseries and number of data points is more than 10
+        if (($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) && count($data)>10) {
+            $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
         } else {
-            // Call to engine update
-            $this->EngineClass($engine)->update($feedid,$feedtime,$value);
+            foreach ($data as $dp) {
+                if (count($dp)==2) {
+                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1]);
+                }
+            }
         }
-
-        if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
-
-        return $value;
+        // $this->set_timevalue($feedid, $value, $updatetime);
+        return array('success'=>true);
     }
     
     public function upload_fixed_interval($feedid,$start,$interval,$npoints)
@@ -1001,35 +972,15 @@ class Feed
     public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
         return $this->EngineClass(Engine::MYSQL)->delete_data_range($feedid,$start,$end);
     }
-
-
-    // Histogram specific functions that we need to make available to the controller
-    public function histogram_get_power_vs_kwh($feedid,$start,$end) {
-        return $this->EngineClass("histogram")->get_power_vs_kwh($feedid,$start,$end);
-    }
-
-    public function histogram_get_kwhd_atpower($feedid, $min, $max) {
-        return $this->EngineClass("histogram")->get_kwhd_atpower($feedid, $min, $max);
-    }
-
-    public function histogram_get_kwhd_atpowers($feedid, $points) {
-        return $this->EngineClass("histogram")->get_kwhd_atpowers($feedid, $points);
-    }
-
-
+    
     // PHPTimeSeries specific functions that we need to make available to the controller
     public function phptimeseries_export($feedid,$start) {
         return $this->EngineClass(Engine::PHPTIMESERIES)->export($feedid,$start);
     }
 
-    public function phpfiwa_export($feedid,$start,$layer) {
-        return $this->EngineClass(Engine::PHPFIWA)->export($feedid,$start,$layer);
-    }
-
     public function phpfina_export($feedid,$start) {
         return $this->EngineClass(Engine::PHPFINA)->export($feedid,$start);
     }
-
 
     /*
      Processlist functions
@@ -1185,7 +1136,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,
@@ -1208,7 +1158,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,

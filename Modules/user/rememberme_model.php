@@ -40,16 +40,32 @@ class Rememberme {
     // ---------------------------------------------------------------------------------------------------------
     public function __construct($mysqli)
     {
-            $this->mysqli = $mysqli;
-            $this->log = new EmonLogger(__FILE__);
+        $this->mysqli = $mysqli;
+        $this->log = new EmonLogger(__FILE__);
     }
 
     // ---------------------------------------------------------------------------------------------------------
     public function setCookie($content,$expire) 
-    {
+    {          
         $this->log->info("setCookie: $content $expire");
+
+        if (is_https()) {
+            $this->secure = true;
+        }
         
-        setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
+        // May be limited to PHP7.3
+        if (PHP_VERSION_ID>=70300) {
+            setcookie($this->cookieName,$content, [
+                'expires' => $expire,
+                'path' => $this->path,
+                'domain' => $this->domain,
+                'secure' => $this->secure,
+                'httponly' => $this->httpOnly,
+                'samesite' => 'Strict'
+            ]);
+        } else {
+            setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
+        }
         
         // Double check cookie saved correctly
         if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!=$content) {
@@ -203,7 +219,7 @@ class Rememberme {
     // Create a pseudo-random token.
     // ---------------------------------------------------------------------------------------------------------
     private function createToken() {
-            return md5(uniqid(mt_rand(), true));
+            return generate_secure_key(16);
     }
     // ---------------------------------------------------------------------------------------------------------
     private function getCookieValues()

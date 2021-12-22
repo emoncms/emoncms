@@ -23,6 +23,7 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
         $this->start = strtotime("-1 week"); // 2 week interval ( 20160 minutes / 336 hours)
         $this->end = strtotime("+1 week");
         $this->interval = 1500; // 25 mins between points
+        $this->average = 0;
         $this->outinterval = 1500; //?? not sure if this is good
         $this->usertimezone = 'Europe/London';
         $this->baseUrl = 'http://localhost/emoncms';
@@ -49,11 +50,6 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
         $this->assertInstanceOf(\stdClass::class, $meta);
     }
 
-    public function testUpdate() {
-        $value = $this->engine->update($this->feedid,time(),rand(200,1500));
-        $this->assertNotFalse($value);
-    }
-
     public function testLastvalue() {
         $array = $this->engine->lastvalue($this->feedid);
         $this->assertNotFalse($array);
@@ -62,42 +58,13 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
     public function testGet_data() {
         $skipmissing = 0;
         $limitinterval = 1;
-		$data = $this->engine->get_data($this->feedid,$this->start,$this->end,$this->interval,$skipmissing,$limitinterval);
+		    $data = $this->engine->get_data_combined($this->feedid,$this->start,$this->end,$this->interval,0,"UTC","unix",false,$skipmissing,$limitinterval);
+		
         $this->assertTrue(!empty($data) && empty($data['success']), 'no blank result or success == false');
     }
-
-    public function testCsv_export() {
-        // $this->engine->csv_export($this->feedid,$this->start,$this->end,$this->outinterval,$this->usertimezone);
-        $urlToControllerThatGeneratesCsvDownload = $this->baseUrl.'/feed/csvexport';
-        $params = array(
-            'id'=>$this->feedid,
-            'start'=>$this->start,
-            'end'=>$this->end,
-            'interva'=>$this->outinterval,
-            'timeformat'=>$this->usertimezone
-        );
-        $urlToControllerThatGeneratesCsvDownload.=('?'.http_build_query($params));
-        $response = $this->call('GET', $urlToControllerThatGeneratesCsvDownload);
-        $this->assertTrue(strpos($response->content(), 'csv') !== false);
-	}
-
-    public function testGet_average_DMY() {
-		$this->engine->get_average_DMY($this->feedid,$this->start,$this->end,$mode,$timezone);
-		$this->assertTrue(false);
-	}
-
-    public function testGet_average() {
-		$this->engine->get_average($this->feedid,$this->start,$this->end,$this->outinterval);
-		$this->assertTrue(false);
-	}
-
+    
     public function testGet_data_DMY_time_of_day() {
 		$this->engine->get_data_DMY_time_of_day($this->feedid,$this->start,$this->end,$mode,$timezone,$split);
-		$this->assertTrue(false);
-	}
-
-    public function testGet_data_DMY() {
-		$this->engine->get_data_DMY($this->feedid,$this->start,$this->end,$mode,$timezone);
 		$this->assertTrue(false);
 	}
 

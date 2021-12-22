@@ -15,20 +15,30 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function get_application_path()
-{
-    // Default to http protocol
-    $proto = "http";
-
+function is_https() {
     // Detect if we are running HTTPS or proxied HTTPS
     if (server('HTTPS') == 'on') {
         // Web server is running native HTTPS
-        $proto = "https";
+        return true;
     } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
-        $proto = "https";
+        return true;
     } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
+        return true;
+    }
+    return false;
+}
+
+function get_application_path($manual_domain=false)
+{
+    if (is_https()) {
         $proto = "https";
+    } else {
+        $proto = "http";
+    }
+    
+    if ($manual_domain) {
+        return "$proto://".$manual_domain."/";
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
@@ -73,6 +83,8 @@ function controller($controller_name)
 
 function view($filepath, array $args = array())
 {
+    global $path;
+    $args['path'] = $path;
     $content = '';
     if (file_exists($filepath)) {
         extract($args);
@@ -88,11 +100,14 @@ function view($filepath, array $args = array())
  * @param string $index name of $_GET item
  *
  **/
-function get($index)
+function get($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_GET[$index])) {
         $val = rawurldecode($_GET[$index]);
+    } else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
     
     $val = stripslashes($val);
@@ -104,9 +119,9 @@ function get($index)
  * @param string $index name of $_POST item
  *
  **/
-function post($index)
+function post($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_POST[$index])) {
         // PHP automatically converts POST names with brackets `field[]` to type array
         if (!is_array($_POST[$index])) {
@@ -118,7 +133,11 @@ function post($index)
                 $val = $SANTIZED_POST[$index];
             }
         }
+    } else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
+    
     if (is_array($val)) {
         $val = array_map("stripslashes", $val);
     } else {
@@ -132,14 +151,18 @@ function post($index)
  * @param string $index name of $_POST or $_GET item
  *
  **/
-function prop($index)
+function prop($index,$error_if_missing=false,$default=null)
 {
-    $val = null;
+    $val = $default;
     if (isset($_GET[$index])) {
         $val = $_GET[$index];
     }
-    if (isset($_POST[$index])) {
+    else if (isset($_POST[$index])) {
         $val = $_POST[$index];
+    }
+    else if ($error_if_missing) {
+        header('Content-Type: text/plain');
+        die("missing $index parameter");
     }
     
     if (is_array($val)) {
@@ -203,9 +226,8 @@ function put($index)
 
 function version()
 {
-    $version_file = file_get_contents('./version.txt');
-    $version = filter_var($version_file, FILTER_SANITIZE_STRING);
-    return $version;
+    $version_file = json_decode(file_get_contents('./version.json'));
+    return $version_file->version;
 }
 
 
@@ -239,62 +261,23 @@ function load_language_files($path, $domain = 'messages')
 
 function load_menu()
 {
+    global $menu;
     $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++) {
-        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php")) {
-                load_language_files("Modules/".$dir[$i]."/locale");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link')
+        {
+            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
+            {
+                if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
+                    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
+                } else { 
+                    load_language_files("Modules/".$dir[$i]."/locale");
+                }
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
     }
-    // add old menu structure if module not updated
-    // @todo: remove this once all users updated (2019-02-15)
-    if (isset($menu_dropdown_config)) {
-        foreach ($menu_dropdown_config as $item) {
-            if (!empty($item['name'])) {
-                $item['text'] = $item['name'];
-            }
-            $item['icon'] .= ' icon-white';
-            $menu['sidebar']['setup'][] = $item;
-        }
-    }
-
-    return $menu;
-}
-
-function load_sidebar()
-{
-    global $route;
-    $sidebar = array(); // Sidebar 1st level nav
-    $sidebar_footer = array(); // Sidebar footer
-    $sidebar_sub = array(); // Sidebar 2nd level nav
-
-    $dir = $route->controller;
-    $path = implode(DIRECTORY_SEPARATOR, array('Modules', $dir, $dir . "_menu.php"));
-    
-    if (is_file($path)) {
-        require $path;
-    }
-
-    if (!empty($sidebar)) {
-        $sidebar['sidebar'] = $sidebar;
-    }
-    if (!empty($subnav)) {
-        $sidebar['subnav'] = $subnav;
-    }
-    if (!empty($sidebar_footer)) {
-        $sidebar['footer'] = $sidebar_footer;
-    }
-
-    if (!empty($sidebar_includes)) {
-        foreach ($sidebar_includes as $file) {
-            if (file_exists($file)) {
-                $sidebar['includes'][] = view($file);
-            }
-        }
-    }
-    return $sidebar;
 }
 
 function http_request($method, $url, $data)
@@ -360,4 +343,15 @@ function get_client_ip_env()
         $ipaddress = '';
     }
     return $ipaddress;
+}
+
+// ---------------------------------------------------------------------------------------------------------
+// Generate secure key
+// ---------------------------------------------------------------------------------------------------------
+function generate_secure_key($length) {
+    if (function_exists('random_bytes')) {
+        return bin2hex(random_bytes($length));
+    } else {
+        return bin2hex(openssl_random_pseudo_bytes($length));
+    }
 }

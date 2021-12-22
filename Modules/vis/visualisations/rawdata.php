@@ -8,16 +8,14 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
     */
-
-    global $path, $embed;
-    if (!isset($feedidname)) $feedidname = "";
+    defined('EMONCMS_EXEC') or die('Restricted access');
+    global $path, $embed, $vis_version;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <div id="vis-title"></div>
 
@@ -61,16 +59,25 @@ var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
 var previousPoint = false;
 
-var interval = urlParams.interval;
-    if (interval==undefined || interval=='') interval = 3600*24;
 var plotColour = urlParams.colour;
     if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+
+var backgroundColour = urlParams.colourbg;
+if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+$("body").css("background-color","#"+backgroundColour);
+
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;
     if (dp==undefined || dp=='') dp = 1;
 var scale = urlParams.scale;
     if (scale==undefined || scale=='') scale = 1;
+var average = urlParams.average;
+    if (average==undefined || average=='') average = 0;
+var skipmissing = urlParams.skipmissing;
+    if (skipmissing==undefined || skipmissing=='') skipmissing = 1;
+var delta = urlParams.delta;
+    if (delta==undefined || delta=='') delta = 0;
 var fill = +urlParams.fill;
     if (fill==undefined || fill=='') fill = 0;
     if (fill>0) fill = true;
@@ -98,6 +105,7 @@ if (embed) placeholder.height($(window).height()-top_offset);
 var timeWindow = (3600000*24.0*initzoom);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
+view.limit_x = false;
 
 var data = [];
 
@@ -148,12 +156,9 @@ $(function() {
     });
 
     function draw()
-    {
-        
-        var npoints = 800;
-        interval = Math.round(((view.end - view.start)/npoints)/1000);
-
-        data = get_feed_data(feedid,view.start,view.end,interval,1,1);
+    {   
+        view.calc_interval(800);
+        data = feed.getdata(feedid,view.start,view.end,view.interval,average,delta,skipmissing,1);
         
         var out = [];
         
@@ -165,12 +170,11 @@ $(function() {
             data = out;
         } 
        
-        stats.calc(data);
-        
-        $("#stats-mean").html(stats.mean.toFixed(dp)+units);
-        $("#stats-min").html(stats.min.toFixed(dp)+units);
-        $("#stats-max").html(stats.max.toFixed(dp)+units);
-        $("#stats-stdev").html(stats.stdev.toFixed(dp)+units);
+        var s = stats(data);
+        $("#stats-mean").html(s.mean.toFixed(dp)+units);
+        $("#stats-min").html(s.minval.toFixed(dp)+units);
+        $("#stats-max").html(s.maxval.toFixed(dp)+units);
+        $("#stats-stdev").html(s.stdev.toFixed(dp)+units);
         $("#stats-npoints").html(data.length);
         plot();
     }
@@ -180,7 +184,7 @@ $(function() {
         var options = {
             canvas: true,
             lines: { fill: fill },
-            xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
+            xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [view.interval, "second"] },
             //yaxis: { min: 0 },
             grid: {hoverable: true, clickable: true},
             selection: { mode: "x" },

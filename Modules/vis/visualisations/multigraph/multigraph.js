@@ -1,6 +1,6 @@
 //get_feed_data_async is defined in /Modules/vis/visualisations/common/api.js
 /*global get_feed_data_async */
-//view, tooltip and parse_timepicker_time are defined in Modules/vis/visualisations/common/vis.helper.js
+//view, tooltip and parse_timepicker_time are defined in Lib/vis.helper.js
 /*global tooltip */
 /*global parse_timepicker_time */
 /*global view */
@@ -16,10 +16,11 @@ var ajaxAsyncXdr = [];
 var eventVisFeedData;
 var eventRefresh;
 var showlegend = true;
+var backgroundColour = "ffffff";
 var datetimepicker1;
 var datetimepicker2;
-var datatype;
 var graphtype;
+var intervaltype;
 
 function convertToPlotlist(multigraphFeedlist) {
   if (multigraphFeedlist==undefined) return;
@@ -35,7 +36,8 @@ function convertToPlotlist(multigraphFeedlist) {
   view.y2min = (typeof multigraphFeedlist[0]["y2min"] !== "undefined" ? multigraphFeedlist[0]["y2min"] : null);
   view.y2max = (typeof multigraphFeedlist[0]["y2max"] !== "undefined" ? multigraphFeedlist[0]["y2max"] : null);
 
-  datatype=1;
+  backgroundColour = (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined" ? multigraphFeedlist[0]["backgroundColour"] : "ffffff");
+  $("body").css("background-color","#"+backgroundColour);
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
@@ -44,13 +46,9 @@ function convertToPlotlist(multigraphFeedlist) {
     barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"];
 
     if ( typeof currentFeed["graphtype"] === "undefined" ) {
-      currentFeed["datatype"] === "1" ? graphtype="lines" : graphtype="bars";
+      graphtype="lines"; // graphtype="bars"
     } else {
       graphtype=currentFeed["graphtype"];
-    }
-
-    if (currentFeed["datatype"] === "2") {
-      datatype=2;
     }
 
     if (graphtype.substring(0, 5) === "lines") {
@@ -170,16 +168,30 @@ function visFeedDataDelayed() {
   for(var i in plotlist) {
     if (plotlist[parseInt(i,10)].selected) {
       if (!plotlist[parseInt(i,10)].plot.data) {
-        var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) {skipmissing = 1;}
-
+        var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) skipmissing = 1;
+        var delta = 0;  
+        if (multigraphFeedlist[parseInt(i,10)]["delta"]!=undefined && multigraphFeedlist[parseInt(i,10)]["delta"]) {
+            delta = 1;
+            skipmissing = 0;
+        }
+        var average = 0;  
+        if (multigraphFeedlist[parseInt(i,10)]["average"]!=undefined && multigraphFeedlist[parseInt(i,10)]["average"]) {
+            average = 1;
+        }
+        
+        if (multigraphFeedlist[parseInt(i,10)]["intervaltype"]!=undefined && multigraphFeedlist[parseInt(i,10)]["intervaltype"]!="standard") {
+            interval = multigraphFeedlist[parseInt(i,10)]["intervaltype"];
+        }
+        
         if (typeof plotdata[parseInt(i,10)] === "undefined") {plotdata[parseInt(i,10)] = [];}
 
         if (typeof ajaxAsyncXdr[parseInt(i,10)] !== "undefined") {
           ajaxAsyncXdr[parseInt(i,10)].abort(); // Abort pending loads
           ajaxAsyncXdr[parseInt(i,10)]="undefined";
         }
+        
         var context = {index:i, plotlist:plotlist[parseInt(i,10)]};
-        ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
+        ajaxAsyncXdr[parseInt(i,10)] = feed.getdata(plotlist[parseInt(i,10)].id,view.start,view.end,interval,average,delta,skipmissing,1,visFeedDataCallback,context);
       }
     }
   }
@@ -188,10 +200,12 @@ function visFeedDataDelayed() {
 //load feed data to multigraph plot
 function visFeedDataCallback(context,data) {
   var i = context["index"];
+
   context["plotlist"].plot.data = data;
   if (context["plotlist"].plot.data) {
     plotdata[parseInt(i,10)] = context["plotlist"].plot;
   }
+
   plot();
 }
 
@@ -300,11 +314,9 @@ function multigraphInit(element) {
             y=Number((item.datapoint[1]-item.datapoint[2]).toFixed(2));
           }
 
-          if (datatype === 1) {
-            options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
-          } else {
-            options = { month:"short", day:"2-digit"};
-          }
+
+          options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
+          // options = { month:"short", day:"2-digit"}; daily data?
 
           var formattedTime=new Date(parseInt(x,10));
 

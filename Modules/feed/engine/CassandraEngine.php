@@ -166,13 +166,13 @@ class CassandraEngine implements engine_methods
      * @param integer $limitinterval not implemented
      *
      */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         global $settings; // max_datapoints;
 
         $feedid = (int) $feedid;
-        $start = round($start/1000);
-        $end = round($end/1000);
+        $start = (int) $start;
+        $end = (int) $end;
         $interval = intval($interval);
         $feedname = $this->feedtable($feedid);
         // Minimum interval
@@ -192,7 +192,7 @@ class CassandraEngine implements engine_methods
                 if($time>=$dp_time){
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         if ($dataValue !== null) $dataValue = (float) $dataValue;
-                        $data[] = array($time * 1000, $dataValue);
+                        $data[] = array($time, $dataValue);
                     }
                     $dp_time+=$interval;
                 }
@@ -207,17 +207,6 @@ class CassandraEngine implements engine_methods
         $feedid = (int) $feedid;
         $start = (int) $start;
         $this->log->info("export($feedid,$start)");
-        // TODO implement
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
-    {
-    		$feedid = (int) $feedid;
-    		$start = (int) $start;
-    		$end = (int) $end;
-    		$outinterval = (int) $outinterval;
-    		
-        $this->log->info("csv_export($feedid,$start,$end,$outinterval)");  // add: $usertimezone
         // TODO implement
     }
 
@@ -245,8 +234,8 @@ class CassandraEngine implements engine_methods
     public function deletedatarange($feedid,$start,$end)
     {
         $feedid = (int) $feedid;
-        $start = intval($start/1000.0);
-        $end = intval($end/1000.0);
+        $start = (int) $start;
+        $end = (int) $end;
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
 
         $feedname = $this->feedtable($feedid);

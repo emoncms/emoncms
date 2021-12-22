@@ -7,7 +7,7 @@
 -->
 
 <?php
-    global $path;
+    global $path, $vis_version;
     $embed = intval(get("embed"));
     $feedid = intval(get("feedid"));
     $fill = intval(get("fill"));
@@ -21,9 +21,9 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/timecompare/timecompare.js?v=2"></script>
 
 <?php if (!$embed) { ?>
 <h2><div id="timecompare_title"></div></h2>
@@ -33,19 +33,20 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-    var embed = <?php echo $embed; ?>;
-    var apikey = "<?php echo $apikey; ?>";
-    var feedid = "<?php echo $feedid; ?>";
-    var fill = "<?php echo $fill; ?>";
-    var depth = "<?php echo $depth; ?>";
-    var npoints = "<?php echo $npoints; ?>";
-    
-    var initzoom = urlParams.initzoom;
-    if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '168'; // Initial zoom 7*24=168 hours  (1 week)
+var embed = <?php echo $embed; ?>;
+var apikey = "<?php echo $apikey; ?>";
+feed.apikey = apikey;
+var feedid = "<?php echo $feedid; ?>";
+var fill = "<?php echo $fill; ?>";
+var depth = "<?php echo $depth; ?>";
+var npoints = "<?php echo $npoints; ?>";
 
-    $("#timecompare_title").replaceWith('<?php echo _("Time Compare: " . $feedidname); ?>');
-    timecompare_init("#timecompare");
-    vis_feed_data();
+var initzoom = urlParams.initzoom;
+if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '168'; // Initial zoom 7*24=168 hours  (1 week)
+
+$("#timecompare_title").replaceWith('<?php echo _("Time Compare: " . $feedidname); ?>');
+timecompare_init("#timecompare");
+vis_feed_data();
 
 </script>
 

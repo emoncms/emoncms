@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 13:12+0200\n"
-"PO-Revision-Date: 2018-08-06 13:16+0200\n"
+"POT-Creation-Date: 2021-07-14 07:49+0200\n"
+"PO-Revision-Date: 2021-07-14 07:49+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -12,18 +12,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 3.0\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/schedule_api.php:11
+#: ../../../Views/schedule_api.php:9
 msgid "Schedule API"
 msgstr "API Planification"
 
-#: ../../../Views/schedule_api.php:12
+#: ../../../Views/schedule_api.php:10
 msgid "Apikey authentication"
 msgstr "Authentification clé API"
 
-#: ../../../Views/schedule_api.php:13
+#: ../../../Views/schedule_api.php:11
 msgid ""
 "If you want to call any of the following actions when your not logged in you "
 "have this options to authenticate with the API key:"
@@ -31,94 +31,94 @@ msgstr ""
 "Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
 "pas connecté, vous pouvez vous authentifier avec votre clé API"
 
-#: ../../../Views/schedule_api.php:14
+#: ../../../Views/schedule_api.php:12
 msgid "Append on the URL of your request: &apikey=APIKEY"
 msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY"
 
-#: ../../../Views/schedule_api.php:15
+#: ../../../Views/schedule_api.php:13
 msgid "Use POST parameter: \"apikey=APIKEY\""
 msgstr "Utilisez le paramètre POST \"apikey=APIKEY\""
 
-#: ../../../Views/schedule_api.php:16
+#: ../../../Views/schedule_api.php:14
 msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
 msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
 
-#: ../../../Views/schedule_api.php:17
+#: ../../../Views/schedule_api.php:15
 msgid "Read only:"
 msgstr "Lecture uniquement :"
 
-#: ../../../Views/schedule_api.php:20
+#: ../../../Views/schedule_api.php:18
 msgid "Read & Write:"
 msgstr "Lecture & Écriture :"
 
-#: ../../../Views/schedule_api.php:24
+#: ../../../Views/schedule_api.php:22
 msgid "Available HTML URLs"
 msgstr "URLs HTML disponibles"
 
-#: ../../../Views/schedule_api.php:26
+#: ../../../Views/schedule_api.php:24
 msgid "The schedule list view"
 msgstr "La vue de la liste des planifications"
 
-#: ../../../Views/schedule_api.php:27
+#: ../../../Views/schedule_api.php:25
 msgid "This page"
 msgstr "Cette page"
 
-#: ../../../Views/schedule_api.php:30
+#: ../../../Views/schedule_api.php:28
 msgid "Available JSON commands"
 msgstr "Commandes JSON disponibles"
 
-#: ../../../Views/schedule_api.php:31
+#: ../../../Views/schedule_api.php:29
 msgid "To use the json api the request url needs to include <b>.json</b>"
 msgstr "Pour utiliser l'api json, vous devez ajouter .json à la fin de l'url"
 
-#: ../../../Views/schedule_api.php:33
+#: ../../../Views/schedule_api.php:31
 msgid "Schedule process actions"
 msgstr "Actions de traitement des planifications"
 
-#: ../../../Views/schedule_api.php:35
+#: ../../../Views/schedule_api.php:33
 msgid "List schedules"
 msgstr "Lister les planifications"
 
-#: ../../../Views/schedule_api.php:36
+#: ../../../Views/schedule_api.php:34
 msgid "Get schedule details"
 msgstr "Obtenir les détails de la planification"
 
-#: ../../../Views/schedule_api.php:37
+#: ../../../Views/schedule_api.php:35
 msgid "Get only the expression"
 msgstr "Obtenir uniquement l'expression"
 
-#: ../../../Views/schedule_api.php:38
+#: ../../../Views/schedule_api.php:36
 msgid "Add a schedule"
 msgstr "Ajouter une planification"
 
-#: ../../../Views/schedule_api.php:39 ../../../Views/schedule_view.php:40
+#: ../../../Views/schedule_api.php:37 ../../../Views/schedule_view.php:41
 msgid "Delete schedule"
 msgstr "Supprimer une planification"
 
-#: ../../../Views/schedule_api.php:40
+#: ../../../Views/schedule_api.php:38
 msgid "Update schedule"
 msgstr "Mettre à jour une planification"
 
-#: ../../../Views/schedule_api.php:41
+#: ../../../Views/schedule_api.php:39
 msgid "Test the expression"
 msgstr "Tester l'expression"
 
-#: ../../../Views/schedule_api.php:45
+#: ../../../Views/schedule_api.php:43
 msgid "Expression documentation"
 msgstr "Documentation de l'expression"
 
-#: ../../../Views/schedule_api.php:46
+#: ../../../Views/schedule_api.php:44
 msgid "Expression is used to specify active range."
 msgstr "L'expression est utilisée pour spécifier une plage active."
 
-#: ../../../Views/schedule_api.php:47
+#: ../../../Views/schedule_api.php:45
 msgid ""
 "Granularity is day light saving time, month, day, week day, hour and minute."
 msgstr ""
 "La granularité est l'heure d'été, le mois, le jour, le jour de la semaine, "
 "l'heure et les minutes."
 
-#: ../../../Views/schedule_api.php:48
+#: ../../../Views/schedule_api.php:46
 msgid ""
 "Expression is built mixing basic blocks with operation characters. An hour "
 "is always required. All other basic blocks are optional and can be mixed on "
@@ -132,7 +132,7 @@ msgstr ""
 "doivent être triées des plus anciennes aux plus récentes. Les espaces sont "
 "ignorés et peuvent être omis."
 
-#: ../../../Views/schedule_api.php:49
+#: ../../../Views/schedule_api.php:47
 msgid ""
 "Timezone of expression is the same of the user account that created or "
 "edited it. If the expression is public, timezones conversions are automatic "
@@ -143,31 +143,31 @@ msgstr ""
 "fuseaux horaires sont automatiquement pris en compte entre le propriétaire "
 "et l'utilisateur."
 
-#: ../../../Views/schedule_api.php:50
+#: ../../../Views/schedule_api.php:48
 msgid "Basic blocks:"
 msgstr "Blocs de base :"
 
-#: ../../../Views/schedule_api.php:57
+#: ../../../Views/schedule_api.php:55
 msgid "Operation characters:"
 msgstr "Caractères d'opération : "
 
-#: ../../../Views/schedule_api.php:64
+#: ../../../Views/schedule_api.php:62
 msgid "Expression examples:"
 msgstr "Exemples d'expression :"
 
-#: ../../../Views/schedule_view.php:20
+#: ../../../Views/schedule_view.php:18
 msgid "Schedule Help"
 msgstr "Aide Planification"
 
-#: ../../../Views/schedule_view.php:21
+#: ../../../Views/schedule_view.php:19 ../../../Views/schedule_view.php:22
 msgid "Schedules"
 msgstr "Planifications"
 
-#: ../../../Views/schedule_view.php:26
+#: ../../../Views/schedule_view.php:24
 msgid "No schedules"
 msgstr "Pas de planifications"
 
-#: ../../../Views/schedule_view.php:27
+#: ../../../Views/schedule_view.php:25
 msgid ""
 "There are no public schedules and you have not created your own yet. Please "
 "add a new schedule.<br><br>For help and examples on how to configure a "
@@ -179,15 +179,15 @@ msgstr ""
 "planification, lisez la <a href=\"api#expression\">documentation de "
 "l'expression</a>."
 
-#: ../../../Views/schedule_view.php:33
+#: ../../../Views/schedule_view.php:34
 msgid "New schedule"
 msgstr "Nouvelle planification"
 
-#: ../../../Views/schedule_view.php:43
+#: ../../../Views/schedule_view.php:44
 msgid "Deleting a schedule is permanent."
 msgstr "La suppression d'une planification est permanente."
 
-#: ../../../Views/schedule_view.php:45
+#: ../../../Views/schedule_view.php:46
 msgid ""
 "If you have an Input or Feed Processlist that use this schedule, after "
 "deleting it, review that process list or it will be in error freezing other "
@@ -197,15 +197,15 @@ msgstr ""
 "suppression de la Source ou du Flux, examinez cette liste de traitement "
 "sinon elle sera en erreur et gèlera les autres listes de traitement."
 
-#: ../../../Views/schedule_view.php:47
+#: ../../../Views/schedule_view.php:48
 msgid "Are you sure you want to delete?"
 msgstr "Êtes-vous sûr de vouloir supprimer?"
 
-#: ../../../Views/schedule_view.php:51
+#: ../../../Views/schedule_view.php:52
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/schedule_view.php:52
+#: ../../../Views/schedule_view.php:53
 msgid "Delete permanently"
 msgstr "Supprimer de façon permanente"
 
@@ -221,7 +221,7 @@ msgstr "Expression"
 msgid "Public"
 msgstr "Public"
 
-#: ../../../schedule_menu.php:7 ../../../schedule_processlist.php:41
+#: ../../../schedule_menu.php:3 ../../../schedule_processlist.php:41
 #: ../../../schedule_processlist.php:52 ../../../schedule_processlist.php:63
 #: ../../../schedule_processlist.php:74
 msgid "Schedule"
@@ -289,11 +289,6 @@ msgid "If schedule, NULL"
 msgstr "If schedule, NULL"
 
 #: ../../../schedule_processlist.php:75
-#| msgid ""
-#| "You can use this to get a feed for each of the multi-rate tariff rate "
-#| "your provider gives. Add the 'Reset to Original' process before this "
-#| "process to log the input value to a different feed for each schedule on "
-#| "the same processing list"
 msgid ""
 "<p>Validates if time is in range of schedule. If in schedule, value is "
 "NULLed.</p><p>You can use this to get a feed for each of the multi-rate "

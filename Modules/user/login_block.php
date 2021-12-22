@@ -18,9 +18,12 @@ global $path, $settings;
 <style>
   .main {
     max-width: 320px;
-    margin: 0 auto;
     padding: 10px;
   }
+  
+  .content-container { max-width:340px; }
+  
+  .container-fluid { padding:0px !important; }
   
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
@@ -31,7 +34,7 @@ global $path, $settings;
 
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
         <div id="login-form">
@@ -110,6 +113,8 @@ global $path, $settings;
 
 <script>
 "use strict";
+
+menu.disable();
 
 var verify = <?php echo json_encode($verify); ?>;
 var register_open = false;
@@ -209,7 +214,7 @@ function login(){
     } else {
         if (result.success)
         {
-            var href = result.hasOwnProperty('startingpage') ? result.startingpage: path; 
+            var href = result.hasOwnProperty('startingpage') ? path+result.startingpage: path; 
             window.location.href = href;
             return true;
         }

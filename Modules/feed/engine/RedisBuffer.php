@@ -59,7 +59,7 @@ class RedisBuffer implements engine_methods
     }
 
     /**
-     * Adds a data point to the buffer feed
+     * Adds or updates data point in the buffer feed
      *
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
@@ -73,34 +73,17 @@ class RedisBuffer implements engine_methods
         $updatetime = $args['updatetime']; // This is time it was received not time for value
         if ($arg != null) $arg="|".json_encode($arg); // passes arg to redis
 
-        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,dechex((int)$updatetime)."|".$value.$arg);
-        $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
-        //$this->log->info("post() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value arg=$arg");
-    }
-    
-    /**
-     * Updates a data point in the buffer feed
-     *
-     * @param integer $feedid The id of the feed to add to
-     * @param integer $time The unix timestamp of the data point, in seconds
-     * @param float $value The value of the data point
-    */
-    public function update($feedid,$time,$value,$args=null)
-    {
-        $engine = $args['engine'];
-        $updatetime = $args['updatetime']; // This is time it was received not time for value, used as score order
-        
         $this->setLock($feedid,"write"); // set write lock
 
         // A value update on a range being processed may get deleted without being saved, so check lock and wait for release
         $this->checkLock_blocking($feedid,"read");
 
         $remcnt = $this->redis->zRemRangeByScore("feed:$feedid:buffer", (int)$time, (int)$time); // Remove for buffer existing time, return num of removed
-        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,dechex((int)$updatetime)."|".$value."|U");   // Add new value to buffer
+        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,dechex((int)$updatetime)."|".$value.$arg);
         $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
+        //$this->log->info("post() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value arg=$arg");
 
         $this->removeLock($feedid,"write"); // remove write lock
-        //$this->log->info("update() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value remcnt=$remcnt");
     }
 
     /**
@@ -125,27 +108,24 @@ class RedisBuffer implements engine_methods
      * @param integer $skipmissing not implemented
      * @param integer $limitinterval not implemented
     */
-    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         $feedid = intval($feedid);
-        $start = round($start/1000);
-        $end = round($end/1000);
+        $start = intval($start);
+        $end = intval($end);
         $data = array();
 
         $len = $this->redis->zCount("feed:$feedid:buffer",$start,$end);
         // process if there is data on buffer for the range
         if ($len > 0) {
-            $this->log->info("get_data() feed=$feedid len=$len start=$start end=$end");
+            $this->log->info("get_data_combined() feed=$feedid len=$len start=$start end=$end");
             $range = 50000; // step range number of points to extract on each iteration 50k-100k is ok
             for ($i=0; $i<=$len; $i = $i + $range)
             {
-                //$this->log->info("get_data() Reading block $i");
                 $buf_item = $this->redis->zRangeByScore("feed:$feedid:buffer", $start, $end, array('withscores' => true, 'limit' => array($i, $range)));
                 foreach($buf_item as $rawvalue => $time) {
-                    //$this->log->info("get_data() time=$time rawvalue=$rawvalue");
                     $f = explode("|",$rawvalue);
                     $value = $f[1];
-                    $time=$time*1000;
                     $data[$time] = array($time,(float)$value);
                 }
             }
@@ -155,11 +135,6 @@ class RedisBuffer implements engine_methods
     }
 
     public function export($feedid,$start)
-    {
-        return false; // Not supported
-    }
-
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
         return false; // Not supported
     }
@@ -205,14 +180,11 @@ class RedisBuffer implements engine_methods
                         $updatetime = hexdec((string)$f[0]); // This is time it was received not time for value
                         $value = $f[1];
                         $arg = (isset($f[2]) ? $f[2] : "");
-                        if ($arg == "U" || $lasttime == $time) {
-                            //echo " Invoking update engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
-                            $this->feed->EngineClass($engine)->update($feedid,$time,$value);
-                        } else {
-                            //echo "  Invoking post_bulk_prepare engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
-                            $this->feed->EngineClass($engine)->post_bulk_prepare($feedid,$time,$value,$arg);
-                            //$this->feed->EngineClass($engine)->post($feedid,$time,$value,$arg);
-                        }
+                        
+                        //echo "  Invoking post_bulk_prepare engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
+                        $this->feed->EngineClass($engine)->post_bulk_prepare($feedid,$time,$value,$arg);
+                        //$this->feed->EngineClass($engine)->post($feedid,$time,$value,$arg);
+                        
                         $lasttime=$time;
                         $matchcnt++;
                     }
@@ -268,5 +240,20 @@ class RedisBuffer implements engine_methods
     }
     public function clear($feedid){
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+
+    /**
+     * Used for testing
+     *
+     */
+    public function print_all($id) {
+        $buf_item = $this->redis->zRange("feed:$id:buffer", 0,-1, true);
+        foreach($buf_item as $rawvalue => $time) {
+            $f = explode("|",$rawvalue);    
+            $updatetime = hexdec((string)$f[0]); // This is time it was received not time for value
+            $value = $f[1];
+            $arg = (isset($f[2]) ? $f[2] : "");
+            print $time." ".$value."\n";
+        }
     }
 }

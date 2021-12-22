@@ -27,7 +27,10 @@ function feed_controller()
     $input = new Input($mysqli,$redis,$feed);
     
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+    if (!$user_timezone = $user->get_timezone($session['userid'])) {
+        $user_timezone = 'UTC';
+    }
+    $process = new Process($mysqli,$input,$feed,$user_timezone);
 
     if ($route->format == 'html')
     {
@@ -37,7 +40,10 @@ function feed_controller()
         if (($route->action == "view" || $route->action == "list") && $session['write']) {
             return view("Modules/feed/Views/feedlist_view.php");
         }
-        else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
+        else if ($route->action == "api" && $session['write']) {
+            require "Modules/feed/feed_api_obj.php";
+            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>9));
+        }
         else if (!$session['read']) return ''; // empty strings force user back to login
         else return EMPTY_ROUTE; // this string displays error
     }
@@ -69,7 +75,7 @@ function feed_controller()
                 return false;
             }
         } elseif ($route->action == "create" && $session['write']) {
-            return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
+            return $feed->create($session['userid'],get('tag'),get('name'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             return $feed->update_user_feeds_size($session['userid']);
         } elseif ($route->action == "buffersize" && $session['write']) {
@@ -88,15 +94,10 @@ function feed_controller()
                 } else { $result[$i] = false; } // false means feed not found
             }
             return $result;
-        } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
-            // Export multiple feeds on the same csv
-            // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
-            return $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
-        
         // ----------------------------------------------------------------------------
         // Multi feed actions
         // ----------------------------------------------------------------------------
-        } else if (in_array($route->action,array("data","average"))) {
+        } else if (in_array($route->action,array("data","average","csvexport"))) {
             // get data for a list of existing feeds
             $result = array('success'=>false, 'message'=>'bad parameters');
             // return $_REQUEST;
@@ -108,41 +109,54 @@ function feed_controller()
                 $singular = true;
             }
             else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
+
+            $start = get('start',true);
+            $end = get('end',true);
+            $interval = get('interval',false,0);
+            $timezone = get('timezone',false,$user_timezone);
+            $timeformat = get('timeformat',false,'unixms');
+            $csv = get('csv',false,0);
+            $skipmissing = get('skipmissing',false,0);
+            $limitinterval = get('limitinterval',false,0);
+            
+            $averages = array();
+            if (isset($_GET['average'])) {
+                $averages = explode(",",get('average'));
+            }
+            
+            $deltas = array();
+            if (isset($_GET['delta'])) {
+                $deltas = explode(",",get('delta'));
+            }  
+            
+            // Backwards compatibility
+            if ($route->action=="average") $average = 1;
+            if ($route->action=="csvexport") $csv = 1;
+            if (isset($_GET['mode'])) $interval = $_GET['mode'];
+            
+            $multi_csv = false;
+            if ($csv && count($feedids)>1) {
+                $csv = false;
+                $multi_csv = true;
+            }
             
             if (!empty($feedids)) {
                 $missing = array();
-                foreach($feedids as $key => $feedid) {
+                foreach($feedids as $index => $feedid) {
                     if ($feed->exist($feedid)) { // if the feed exists
                         $f = $feed->get($feedid);
                         // if public or belongs to user
                         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                         {
-                        
-                            $results[$key] = array('feedid'=>$feedid);
+                            $results[$index] = array('feedid'=>$feedid);
+                            if (!isset($_GET['split'])) {
                             
-                            // feed/data ----------------------------------------------
-                            if ($route->action=="data") {
-                                $skipmissing = 1;
-                                $limitinterval = 1;
-                                if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
-                                if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
+                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index]; else $average = 0;
+                                if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
                                 
-                                if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
-                                } else if (isset($_GET['mode'])) {
-                                    if (isset($_GET['split'])) {
-                                        $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
-                                    } else {
-                                        $results[$key]['data'] = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
-                                    }
-                                }
-                            // feed/average --------------------------------------------   
-                            } else if ($route->action == 'average') {
-                                if (isset($_GET['mode'])) {
-                                    $results[$key]['data'] = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
-                                } else if (isset($_GET['interval'])) {
-                                    $results[$key]['data'] = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
-                                } 
+                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
+                            } else {
+                                $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,get('split'));
                             }
                         }
                     } else {
@@ -160,8 +174,12 @@ function feed_controller()
                     if ($singular && count($results)==1) {
                         return $results[0]['data'];
                     } else {
-                        return $results;
-                    } 
+                        if ($multi_csv) {
+                            return $feed->csv_export_multi($feedids,$results,$timezone,$timeformat);
+                        } else {
+                            return $results;
+                        }
+                    }
                     // @todo: return array for each feed's data 
                     // and a single array for each interval timestamp
                 }
@@ -187,15 +205,9 @@ function feed_controller()
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
                     else if ($route->action == "setstartdate") return $feed->set_start_date($feedid,get('startdate'));
-
-                    else if ($route->action == 'histogram') return $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
-                    else if ($route->action == 'kwhatpower') return $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
-                    else if ($route->action == 'kwhatpowers') return $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
-                    else if ($route->action == "csvexport") return $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
                         elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));
-                        elseif ($f['engine']==Engine::PHPFIWA) return $feed->phpfiwa_export($feedid,get('start'),get('layer'));
                         elseif ($f['engine']==Engine::PHPFINA) return $feed->phpfina_export($feedid,get('start'));
                     }
                 }
@@ -224,12 +236,12 @@ function feed_controller()
                             return $feed->set_feed_fields($feedid, get('fields'));
                         }
 
-                    // Insert datapoint
-                    } else if ($route->action == "insert") {
+                    // insert available here for backwards compatibility
+                    } else if ($route->action == "insert" || $route->action == "update" || $route->action == "post") {
                         
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
-                             return $feed->insert_data($feedid,time(),get("time"),get("value"));
+                             return $feed->post($feedid,time(),get("time"),get("value"));
                         }
 
                         // Single or multiple datapoints via json format
@@ -246,18 +258,7 @@ function feed_controller()
                         
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
                         
-                        foreach ($data as $dp) {
-                            if (count($dp)==2) {
-                                $feed->insert_data($feedid,$dp[0],$dp[0],$dp[1]);
-                            }
-                        }
-                        return array('success'=>true);
-
-                    // Update datapoint
-                    } else if ($route->action == "update") {
-                        if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
-                        $skipbuffer = false; if (isset($_GET['skipbuffer'])) $skipbuffer = true;
-                        return $feed->update_data($feedid,$updatetime,get("time"),get('value'),$skipbuffer);
+                        return $feed->post_multiple($feedid,$data);
 
                     // Delete feed
                     } else if ($route->action == "delete") {

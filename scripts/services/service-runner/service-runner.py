@@ -43,18 +43,28 @@ def main():
             continue
 
         print("Got flag:", flag, flush=True)
-        script, logfile = flag.split(">")
-        print("STARTING:", script, '&>', logfile, flush=True)
-        # Got a cmdline, now run it.
-        with open(logfile, "w") as f:
+        if ">" in flag:
+            script, logfile = flag.split(">")
+            print("STARTING:", script, '&>', logfile, flush=True)
+            # Got a cmdline, now run it.
+            with open(logfile, "w") as f:
+                try:
+                    subprocess.call(shlex.split(script), stdout=f, stderr=f)
+                except Exception as exc:
+                    # If an error occurs running the subprocess, add the error to
+                    # the specified logfile
+                    f.write("Error running [%s]" % script)
+                    f.write("Exception occurred: %s" % exc)
+                    continue          
+        else:
+            script = flag
+            print("STARTING:", script, flush=True)
             try:
-                subprocess.call(shlex.split(script), stdout=f, stderr=f)
+                subprocess.call(shlex.split(script), stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             except Exception as exc:
-                # If an error occurs running the subprocess, add the error to
-                # the specified logfile
-                f.write("Error running [%s]" % script)
-                f.write("Exception occurred: %s" % exc)
                 continue
+        
+
         print("COMPLETE:", script, flush=True)
 
 

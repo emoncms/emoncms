@@ -1,0 +1,58 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-07-14 08:10+0200\n"
+"PO-Revision-Date: 2021-07-14 08:10+0200\n"
+"Last-Translator: Aymeric THIBAUT\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
+"gaultier@telecom-bretagne.eu>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 3.0\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../theme.php:67
+msgid "My Account"
+msgstr "Mon Compte"
+
+#: ../../../theme.php:69
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: ../../../theme.php:74
+msgid "Login"
+msgstr "Connexion"
+
+#: ../../../theme.php:101
+msgid "Powered by"
+msgstr "Propulsé par"
+
+#~ msgid "Open/Close Sidebar"
+#~ msgstr "Ouvrir/Fermer la barre latérale"
+
+#~ msgid "Add Bookmark"
+#~ msgstr "Ajouter un signet"
+
+#~ msgid "Remove Bookmark"
+#~ msgstr "Retirer le signet"
+
+#~ msgid "Setup"
+#~ msgstr "Paramétrage"
+
+#~ msgid "Admin"
+#~ msgstr "Administration"
+
+#~ msgid "Close"
+#~ msgstr "Fermer"
+
+#~ msgid "Bookmarks"
+#~ msgstr "Signets"
+
+#~ msgid "Edit"
+#~ msgstr "Modifier"

@@ -23,8 +23,7 @@ $schema['users'] = array(
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int(11)', 'default'=>0),
     'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
-    'mqtthash' => array('type' => 'varchar(67)'),
-    'preferences' => array('type' => 'varchar(255)', 'default'=>NULL, 'Null'=>true)
+    'mqtthash' => array('type' => 'varchar(67)')
 );
 
 $schema['rememberme'] = array(

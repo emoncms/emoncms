@@ -4,7 +4,6 @@
       0 - feed realtime or daily
       1 - feed realtime
       2 - feed daily
-      3 - feed histogram
       4 - boolean
       5 - text
       6 - float value
@@ -20,6 +19,7 @@
         'realtime' => array('label'=>dgettext('vis_messages','RealTime'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('kw',dgettext('vis_messages','kW'),4,false),
             )
         ),
@@ -29,24 +29,29 @@
             array('feedid',dgettext('vis_messages','feed'),1),
             array('fill',dgettext('vis_messages','fill'),7,0),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'2'),
-            array('scale',dgettext('vis_messages','scale'),6,'1'))
+            array('scale',dgettext('vis_messages','scale'),6,'1'),
+            array('average',dgettext('vis_messages','average'),4,'0'),
+            array('delta',dgettext('vis_messages','delta'),4,'0'),
+            array('skipmissing',dgettext('vis_messages','skipmissing'),4,'1')
+            )
         ),
         
         'bargraph'=> array('label'=>dgettext('vis_messages','BarGraph'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),0),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('colourbg',dgettext('vis_messages','colourbg'),9,'ffffff'),
             array('interval',dgettext('vis_messages','interval'),7,'86400'),
             array('units',dgettext('vis_messages','units'),5,''),
             array('dp',dgettext('vis_messages','dp'),7,'1'),
             array('scale',dgettext('vis_messages','scale'),6,'1'),
-            array('delta',dgettext('vis_messages','delta'),4,'0'),
-            array('mode',dgettext('vis_messages','mode'),7,'0')
+            array('average',dgettext('vis_messages','average'),4,'0'),
+            array('delta',dgettext('vis_messages','delta'),4,'0')
             )
         ),
         
-        //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
         'zoom'=> array('label'=>dgettext('vis_messages','Zoom'), 'options'=>array(
             array('power',dgettext('vis_messages','power'),1),
             array('kwhd',dgettext('vis_messages','kwhd'),0),
@@ -56,7 +61,6 @@
             array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        //'comparison'=> array('options'=>array(array('feedid',3))),
         'stacked'=> array('label'=>dgettext('vis_messages','Stacked'), 'options'=>array(
             array('bottom',dgettext('vis_messages','bottom'),0),
             array('top',dgettext('vis_messages','top'),0),
@@ -113,34 +117,14 @@
             array('depth',dgettext('vis_messages','depth'),7,3),
             array('npoints',dgettext('vis_messages','data points'),7,800)
         )),
-        
-        'timestoredaily'=> array('label'=>dgettext('vis_messages','Timestore Daily (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1),
-            array('units',dgettext('vis_messages','units'),5,'kWh'))
-        ),
-        
-        'histgraph'=> array('label'=>dgettext('vis_messages','Histgraph (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('barwidth',dgettext('vis_messages','barwidth'),7,50),
-            array('start',dgettext('vis_messages','start'),7,0),
-            array('end',dgettext('vis_messages','end'),7,0))
-        ),  
-
-        'threshold'=> array('label'=>dgettext('vis_messages','Threshold (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500))
-        ),      
-
-        'orderthreshold'=> array('label'=>dgettext('vis_messages','OrderThreshold (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('power',dgettext('vis_messages','power'),1),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500)
-        )),
-        
-        'graph'=> array('label'=>dgettext('vis_messages','Graph (Deprecated)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1)
+		
+        // --------------------------------------------------------------------------------
+        // psychrographic diagrams to appreciate summer confort
+        // --------------------------------------------------------------------------------
+        'psychrograph' => array ('label'=>dgettext('vis_messages','Psychrometric Diagram'), 'action'=>'psychrograph', 'options'=>array(
+            array('mid',dgettext('vis_messages','mid'),8),
+            array('hrtohabs',dgettext('vis_messages','% to abso.'),4, 1),
+            array('givoni',dgettext('vis_messages','givoni style?'),4)
         ))
         // --------------------------------------------------------------------------------     
     );

@@ -36,13 +36,13 @@ function get_months(data)
 {
   var gdata = [];
   gdata.data = [];
-  gdata.days =[];
+  gdata.days = [];
 
   var sum=0, s=0, i=0;
   var lmonth=0,month=0,year;
   var tmp = []
   var d = new Date();
-
+  
   for (var z in data)
   {
     lmonth = month;
@@ -51,7 +51,7 @@ function get_months(data)
     month = d.getMonth();
     year = d.getFullYear();
 
-   if (month!=lmonth && z!=0)
+    if (month!=lmonth && z!=0)
     {
       var tmp = [];
       tmp[0] = Date.UTC(year,month-1,1);
@@ -63,7 +63,7 @@ function get_months(data)
       sum = 0; s = 0;
     }
 
-    sum += parseFloat(data[z][1]);
+    sum += data[z][1];
     s++;
 
    }

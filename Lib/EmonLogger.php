@@ -18,6 +18,13 @@ class EmonLogger
     private $caller = "";
     private $logenabled = false;
     private $log_level = 2;
+    public $stout = false;
+
+    private $log_levels = array(
+            1 =>'INFO',
+            2 =>'WARN', // default
+            3 =>'ERROR'
+        );
 
     public function __construct($clientFileName)
     {
@@ -69,10 +76,19 @@ class EmonLogger
         }
     }
 
+    public function levels()
+    {
+        return $this->log_levels;
+    }
+
     private function write($type, $message)
     {
         if (!$this->logenabled) {
             return;
+        }
+        
+        if ($this->stout) {
+            print $type." ".$message."\n";
         }
 
         $now = microtime(true);

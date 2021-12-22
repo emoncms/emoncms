@@ -1,4 +1,6 @@
 {
     "name"         : "Visualisation",
-    "version"      : ""
+    "version"      : "",
+    "location"     : "/var/www/emoncms/Modules",
+    "branches_available": ["stable","master","menu_v3"]
 }
