@@ -194,18 +194,14 @@ class MysqlTimeSeries implements engine_methods
     
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
-        if (!$csv) {
-            if (in_array($interval,array("daily","weekly","monthly","annual"))) {
-                return $this->get_data_DMY($feedid, $start, $end, $interval, $average, $timezone);
-            } else {
-                if (!$average) {
-                    return $this->get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval);
-                } else {
-                    return $this->get_average($feedid, $start, $end, $interval);
-                }
-            }
+        if (in_array($interval,array("daily","weekly","monthly","annual"))) {
+            return $this->get_data_DMY($feedid, $start, $end, $interval, $average, $timezone, $timeformat, $csv);
         } else {
-            return $this->csv_export($feedid, $start, $end, $interval, $timezone);
+            if (!$average) {
+                return $this->get_data($feedid, $start, $end, $interval, $timezone, $timeformat, $csv, $skipmissing, $limitinterval);
+            } else {
+                return $this->get_average($feedid, $start, $end, $interval, $timezone, $timeformat, $csv);
+            }
         }
     }
 
@@ -215,7 +211,7 @@ class MysqlTimeSeries implements engine_methods
      * @param integer $limitinterval not implemented
      *
     */
-    public function get_data($feedid, $start, $end, $interval, $skipmissing, $limitinterval)
+    public function get_data($feedid, $start, $end, $interval, $timezone, $timeformat, $csv, $skipmissing, $limitinterval)
     {
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -234,7 +230,16 @@ class MysqlTimeSeries implements engine_methods
         $stmt->bind_param("ii", $div_start, $div_end);
         $stmt->bind_result($data_time, $data_value);
 
-        $data = array();        
+        if ($csv) {
+            global $settings;
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+            $helperclass->csv_header($feedid);
+        } else {
+            $data = array();       
+        }
+
         while($time<=$end)
         {
             // Start time of interval/division
@@ -249,14 +254,24 @@ class MysqlTimeSeries implements engine_methods
                 $value = (float) $data_value;
             }
             
-            if ($value!==null || $skipmissing===0) {
-                $data[] = array($div_start,$value);
+            if ($value!==null || $skipmissing===0) {                
+                // Write as csv or array
+                if ($csv) { 
+                    $helperclass->csv_write($div_start,$value);
+                } else {
+                    $data[] = array($div_start,$value);
+                } 
             }
 
             // Advance position 
             $time = $div_end;
         }
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
     
     /**
@@ -267,7 +282,7 @@ class MysqlTimeSeries implements engine_methods
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $interval The number os seconds for each data point to return (used by some engines)
     */
-    public function get_average($feedid, $start, $end, $interval)
+    public function get_average($feedid, $start, $end, $interval, $timezone, $timeformat, $csv)
     {
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -293,7 +308,16 @@ class MysqlTimeSeries implements engine_methods
         // 2. Assing values to correct output format 
         // returns null if output does not exist for that timestamp
         // allowing for easier cross feed comparison e.g in csv view
-        $data = array();
+        if ($csv) {
+            global $settings;   
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+            $helperclass->csv_header($feedid);
+        } else {
+            $data = array();       
+        }
+
         $time = $start;
         while($time<=$end)
         {
@@ -301,11 +325,22 @@ class MysqlTimeSeries implements engine_methods
             if (isset($data_assoc[$time])) {
                 $value = $data_assoc[$time];
             }
-            $data[] = array($time,$value);
+            
+            // Write as csv or array
+            if ($csv) { 
+                $helperclass->csv_write($time,$value);
+            } else {
+                $data[] = array($time,$value);
+            }
             $time += $interval;
         }
         
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
 
     /**
@@ -317,7 +352,7 @@ class MysqlTimeSeries implements engine_methods
      * @param string $interval The name of the interval. Possible values are: daily, weekly, monthly, annual
      * @param string $timezone The time zone to which the intervals refer
     */
-    public function get_data_DMY($feedid, $start, $end, $interval, $average, $timezone)
+    public function get_data_DMY($feedid, $start, $end, $interval, $average, $timezone, $timeformat, $csv)
     {
         if (!in_array($interval,array("daily","weekly","monthly","annual"))) return false;
         
@@ -360,7 +395,16 @@ class MysqlTimeSeries implements engine_methods
         // Set time to start 
         $time = $date->getTimestamp();
         
-        $data = array();
+        if ($csv) {
+            global $settings;     
+            require_once "Modules/feed/engine/shared_helper.php";
+            $helperclass = new SharedHelper($settings['feed']);
+            $helperclass->set_time_format($timezone,$timeformat);
+            $helperclass->csv_header($feedid);
+        } else {
+            $data = array();       
+        }
+        
         while($time<=$end)
         {   
             // Start time of interval/division
@@ -387,12 +431,22 @@ class MysqlTimeSeries implements engine_methods
                 }
             }
             
-            $data[] = array( $div_start , $value);
-            
+            // Write as csv or array
+            if ($csv) { 
+                $helperclass->csv_write($div_start,$value);
+            } else {
+                $data[] = array($div_start,$value);
+            }
+                      
             // Advance position 
             $time = $div_end;
         }
-        return $data;
+        if ($csv) {
+            $helperclass->csv_close();
+            exit;
+        } else {
+            return $data;
+        }
     }
 
     public function get_data_DMY_time_of_day($feedid, $start, $end, $mode, $timezone, $split)
@@ -531,91 +585,6 @@ class MysqlTimeSeries implements engine_methods
         }
 
         fclose($fh);
-        exit;
-    }
-
-    public function csv_export($feedid, $start, $end, $interval, $timezone)
-    {
-        global $settings;
-
-        require_once "Modules/feed/engine/shared_helper.php";
-        $helperclass = new SharedHelper();
-
-        $feedid = intval($feedid);
-        $start = round($start);
-        $end = round($end);
-        $interval = intval($interval);
-        $skipmissing = 0;
-
-        if ($interval < 1) $interval = 1;
-        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
-        $end = $start + ($dp * $interval);
-        if ($dp < 1) return false;
-        if ($end == 0) $end = time();
-
-        $table = $this->get_table_name($feedid);
-        $file = $table.".csv";
-
-        // There is no need for the browser to cache the output
-        header("Cache-Control: no-cache, no-store, must-revalidate");
-
-        // Tell the browser to handle output as a csv file to be downloaded
-        header('Content-Description: File Transfer');
-        header("Content-type: application/octet-stream");
-        header("Content-Disposition: attachment; filename={$file}");
-
-        header("Expires: 0");
-        header("Pragma: no-cache");
-
-        // Write to output stream
-        $exportfh = @fopen( 'php://output', 'w' );
-        $range = $end - $start; // window duration in seconds
-        if ($settings["feed"]["mysqltimeseries"]["data_sampling"] && $range > 180000 && $dp > 0) // 50 hours
-        {
-            $time = null;
-            $data = null;
-            $td = $range / $dp; // time duration for each datapoint
-            $stmt = $this->mysqli->prepare("SELECT time, data FROM $table WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
-            $t = $start; $tb = 0;
-            $stmt->bind_param("ii", $t, $tb);
-            $stmt->bind_result($time, $data);
-            for ($i=0; $i<$dp; $i++) {
-                $tb = $start + intval(($i+1)*$td);
-                $stmt->execute();
-                if ($stmt->fetch()) {
-                    if ($data != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
-                        $timenew = $helperclass->getTimeZoneFormated($time, $timezone);
-                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$data, $settings["feed"]["csv_decimal_places"], $settings["feed"]["csv_decimal_place_separator"], '')."\n");
-                    }
-                }
-                $t = $tb;
-            }
-        }
-        else {
-            if ($range > 5000 && $dp > 0) // 83.33 min
-            {
-                $td = intval($range/$dp);
-                $sql = "SELECT time DIV $td AS time, AVG(data) AS data".
-                    " FROM $table WHERE time BETWEEN $start AND $end".
-                    " GROUP BY 1 ORDER BY time ASC";
-            } else {
-                $td = 1;
-                $sql = "SELECT time, data FROM $table".
-                    " WHERE time BETWEEN $start AND $end ORDER BY time ASC";
-            }
-            $result = $this->mysqli->query($sql);
-            if($result) {
-                while($row = $result->fetch_array()) {
-                    $data = $row['data'];
-                    if ($data != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
-                        $time = $row['time'] * $td;
-                        $timenew = $helperclass->getTimeZoneFormated($time, $timezone);
-                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$data, $settings["feed"]["csv_decimal_places"], $settings["feed"]["csv_decimal_place_separator"], '')."\n");
-                    }
-                }
-            }
-        }
-        fclose($exportfh);
         exit;
     }
 
