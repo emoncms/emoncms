@@ -380,19 +380,11 @@ class MysqlTimeSeries implements engine_methods
         $average = (int) $average;
         
         $table = $this->get_table_name($feedid);
-
-        // Get first and last datapoint of feed
-        $sql = "SELECT DISTINCT time, data FROM $table WHERE ("
-                ." time = (SELECT min(time) FROM $table )"
-                ."OR  time = (SELECT max(time) FROM $table )"
-                .")";
-        if ($result = $this->mysqli->query($sql)) {
-            $range = $result->fetch_all(MYSQLI_ASSOC);
-            if (count($range) < 2) return array('success'=>false, 'message'=>"Feed $feedid does not contain enough datapoints yet");;
-        } else {
-            return false;
-        }
-
+        
+        $meta = $this->get_meta($feedid);
+        if (!$start_time = $meta->start_time) return false;
+        if (!$end_time = $meta->end_time) return false;
+        
         if ($timezone===0) $timezone = "UTC";
 
         $date = new DateTime();
@@ -442,7 +434,7 @@ class MysqlTimeSeries implements engine_methods
                 }
             } else {
                 // Limit DB requests to available datapoints in feed
-                if ($range[0]['time'] < $time && $time < $range[1]['time']) {
+                if ($start_time < $time && $time < $end_time) {
                     // get datapoint using interpolation if necessary
                     $dp = $this->get_datapoint_interpolated($feedid, $time);
                     $value = $dp[1];
