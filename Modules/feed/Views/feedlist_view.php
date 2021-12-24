@@ -425,6 +425,8 @@ function update_feed_list() {
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
+                } else {
+                    title_lines.push(_('Feed Interval (approx)')+": "+(feed.interval||'')+'s')
                 }
                 var processListHTML = '';
                 if(feed.processList!=undefined && feed.processList.length > 0){
@@ -435,6 +437,11 @@ function update_feed_list() {
                 if(feed.start_time > 0) {
                     title_lines.push(_('Feed Start Time')+": "+feed.start_time);
                     title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
+                }
+
+                if(feed.end_time > 0) {
+                    title_lines.push(_('Feed End Time')+": "+feed.end_time);
+                    title_lines.push(format_time(feed.end_time,'LL LTS')+" UTC");
                 }
 
                 row_title = title_lines.join("\n");

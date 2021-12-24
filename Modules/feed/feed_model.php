@@ -385,6 +385,7 @@ class Feed
             $row['value'] = $lastvalue['value'];
             $meta = $this->get_meta($id);
             if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
+            if (isset($meta->end_time)) $row['end_time'] = $meta->end_time;
             if (isset($meta->interval)) $row['interval'] = $meta->interval;
             $feeds[] = $row;
         }
