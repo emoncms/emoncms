@@ -88,7 +88,7 @@ class MysqlTimeSeries implements engine_methods
     public function delete($feedid)
     {
         $meta = $this->dir."$feedid.meta";
-        if (!file_exists($meta)) {
+        if (file_exists($meta)) {
             unlink($meta);
         }
         $table = $this->get_table_name(intval($feedid));
@@ -137,7 +137,11 @@ class MysqlTimeSeries implements engine_methods
                 if (isset($range[1])) {
                     $meta->end_time = (int) $range[1]['time'];
                 }
-                $meta->interval = floor(($meta->end_time - $meta->start_time) / $meta->npoints);
+                
+                $meta->interval = 0;
+                if ($meta->npoints>0) {
+                    $meta->interval = floor(($meta->end_time - $meta->start_time) / $meta->npoints);
+                }
                 
                 if (!$this->generic) {
                     $this->write_meta($feedid, $meta);
