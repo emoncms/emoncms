@@ -203,11 +203,15 @@ class InputMethods
     public function bulk($userid)
     {
         global $param;
-
+        
         $data = $param->val('data');
 
-        if ($param->exists('c')) {
-            // data is compressed
+        if ($param->exists('cb')) {
+            // data is compressed binary format
+            $data = file_get_contents('php://input');
+            $data = gzuncompress($data);
+        } elseif ($param->exists('c')) {
+            // data is compressed hex format
             $data = gzuncompress(hex2bin($data));
         }
         
