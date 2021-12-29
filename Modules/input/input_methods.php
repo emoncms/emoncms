@@ -40,7 +40,7 @@ class InputMethods
     {   
         // Nodeid
         global $route,$param,$log;
-        
+
         // Default nodeid is zero
         $nodeid = 0;
         
@@ -257,8 +257,9 @@ class InputMethods
                 {
                     if (is_object($item[$i]))
                     {
-                        $value = (float) current($item[$i]);
-                        $inputs[key($item[$i])] = $value;
+                        foreach ($item[$i] as $key=>$value) {
+                            $inputs[$key] = (float) $value;
+                        }
                         continue;
                     }
                     if (strlen($item[$i]))
@@ -325,24 +326,5 @@ class InputMethods
         foreach ($tmp as $i) $this->process->input($time,$i['value'],$i['processList'],$i['opt']);
         
         return true;
-    }
-
-    // ------------------------------------------------------------------------------------
-    // Fall back for older PHP versions
-    // ------------------------------------------------------------------------------------
-    private function hex2bin($hexstr) 
-    { 
-        $n = strlen($hexstr); 
-        $sbin="";   
-        $i=0; 
-        while($i<$n) 
-        {       
-            $a =substr($hexstr,$i,2);           
-            $c = pack("H*",$a); 
-            if ($i==0){$sbin=$c;} 
-            else {$sbin.=$c;} 
-            $i+=2; 
-        } 
-        return $sbin; 
     }
 }
