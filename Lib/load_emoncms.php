@@ -12,7 +12,7 @@ http://openenergymonitor.org
 */
 
 define('EMONCMS_EXEC', 1);
-chdir("/var/www/emoncms");
+chdir("/var/www/master");
 require "process_settings.php";
 require "Lib/EmonLogger.php";
 $log = new EmonLogger(__FILE__);
