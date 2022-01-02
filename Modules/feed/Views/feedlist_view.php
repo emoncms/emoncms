@@ -1295,4 +1295,4 @@ var str_interval_for_download = "<?php echo _('Please select interval to downloa
 var str_large_download = "<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>";
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>

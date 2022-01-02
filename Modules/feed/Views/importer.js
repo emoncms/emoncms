@@ -27,30 +27,27 @@ $("#import-textarea").change(function() {
     // 1. Check format of pasted data
     for (var i=0; i<lines.length; i++) {
         var time_value_str = lines[i].split(",");
-        if (time_value_str.length!=2) {
-            $("#import-alert").html("<b>Error:</b> invalid number of columns").show();
-            return false;
-        }
-        
-        var time = time_value_str[0].trim();
-        var value = time_value_str[1].trim();
-        if (value=='null') value = null;
-        
-        if (isNaN(time)) {
-            $("#import-alert").html("<b>Error:</b> invalid time on line "+i).show();
-            return false;
-        } else {
-            time = parseInt(time);
-        }
+        if (time_value_str.length==2) {
+            var time = time_value_str[0].trim();
+            var value = time_value_str[1].trim();
+            if (value=='null') value = null;
+            
+            if (isNaN(time)) {
+                $("#import-alert").html("<b>Error:</b> invalid time on line "+i).show();
+                return false;
+            } else {
+                time = parseInt(time);
+            }
 
-        if (isNaN(value)) {
-            $("#import-alert").html("<b>Error:</b> invalid value on line "+i).show();
-            return false;
-        } else {
-            value = parseFloat(value);
+            if (isNaN(value)) {
+                $("#import-alert").html("<b>Error:</b> invalid value on line "+i).show();
+                return false;
+            } else {
+                value = parseFloat(value);
+            }
+            
+            import_data.push([time,value]);
         }
-        
-        import_data.push([time,value]);
     }
 
     if (import_data.length==1) {
@@ -79,15 +76,15 @@ $("#import-textarea").change(function() {
         }
         
         if (!fixed_interval && import_data.length>2) {
-            interval = (import_data[import_data.length-1][0] - import_data[0][0])/(import_data.length-1);
+            interval = (import_data[import_data.length-1][0] - import_data[0][0])/(import_data.length+1);
         }
         
         var message = "<b>Format valid:</b> "+import_data.length+" data points";
         if (interval!==false) message += ", "+(fixed_interval?"fixed interval "+interval+"s":"variable interval, average: "+(interval.toFixed(1))+"s");
         $("#import-alert").html(message).removeClass("alert-danger").addClass("alert-success").show();
         
-        if (available_intervals.indexOf(interval)!=-1) {
-            $("#import-feed-interval").val(interval);
+        if (available_intervals.indexOf(parseInt(interval))!=-1) {
+            $("#import-feed-interval").val(parseInt(interval));
         }
     }
 
