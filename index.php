@@ -116,7 +116,7 @@ if (isset($_GET['apikey'])) {
     //      Host: server.example.com
     //      Authorization: Bearer THE_API_KEY_HERE
     
-    if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
+    if (isset($_SERVER["CONTENT_TYPE"]) && ($_SERVER["CONTENT_TYPE"]=="aes128cbc" || $_SERVER["CONTENT_TYPE"]=="aes128cbcgz")) {
         // If content_type is AES128CBC
     } else {
         $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
