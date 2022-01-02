@@ -71,7 +71,7 @@ class RedisBuffer implements engine_methods
         $arg = $args['arg'];
         $engine = $args['engine'];
         $updatetime = $args['updatetime']; // This is time it was received not time for value
-        if ($arg != null) $arg="|".json_encode($arg); // passes arg to redis
+        if ($arg != null) $arg="|".$arg; // passes arg to redis
 
         $this->setLock($feedid,"write"); // set write lock
 
