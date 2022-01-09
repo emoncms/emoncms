@@ -600,7 +600,7 @@ class Feed
             if ($req_dp > $this->settings['max_datapoints']) {
                 return array(
                     "success"=>false, 
-                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp"
+                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or reduce time range, requested datapoints = $req_dp"
                 );
             }
         }
