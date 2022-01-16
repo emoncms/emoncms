@@ -4,7 +4,7 @@ There are three main approaches to backing up an emoncms.org account
 
 ### 1\. Download account data to a local raspberrypi using the sync module
 
-This is a nice solution as it provides a local installation of emoncms that you can use to explore your backed up or archived data. It also avoids any complicated installation process on your computer, you just need a RaspberryPi and an SD card running the pre-built emonSD image. The SD card image can be downloaded here: https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log
+This is a nice solution as it provides a local installation of emoncms that you can use to explore your backed up or archived data, you can also transfer to using this installation directly rather than posting data to emoncms.org or an other remote server. It also avoids any complicated installation process on your computer, you just need a RaspberryPi and an SD card running the pre-built emonSD image. The SD card image can be downloaded here: https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log
 
 Once you have the RaspberryPi up and running, create an emoncms account on the emoncms installation running on the Pi and then navigate to Setup > Sync. Enter the login credentials of your emoncms.org account and click on Download All to download all of your emoncms feed data. Once complete navigate to Setup > Feeds to start browsing the downloaded feed data.
 
