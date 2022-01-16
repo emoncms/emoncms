@@ -1,18 +1,18 @@
-# Backing up an emoncms.org account (or other remote server account)
+## Backing up an emoncms.org account (or other remote server account)
 
 There are three main approaches to backing up an emoncms.org account
 
-## 1\. Download account data to a local raspberrypi using the sync module
+### 1\. Download account data to a local raspberrypi using the sync module
 
 This is a nice solution as it provides a local installation of emoncms that you can use to explore your backed up or archived data. It also avoids any complicated installation process on your computer, you just need a RaspberryPi and an SD card running the pre-built emonSD image. The SD card image can be downloaded here: https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log
 
 Once you have the RaspberryPi up and running, create an emoncms account on the emoncms installation running on the Pi and then navigate to Setup > Sync. Enter the login credentials of your emoncms.org account and click on Download All to download all of your emoncms feed data. Once complete navigate to Setup > Feeds to start browsing the downloaded feed data.
 
-## 2\. Download account data to your computer using a python script
+### 2\. Download account data to your computer using the emoncms backup_py python script
 
 This is a nice cross platform solution for backing up to your computer. You just need to have python installed and a couple of associated libraries. See the forum post here for details on how to use this tool: https://community.openenergymonitor.org/t/python-based-emoncms-backup-utility/19526. This tool also includes an option to covert the downloaded binary data into CSV format.
 
-## 3\. Download account data to your computer using the emoncms backup php script
+### 3\. Download account data to your computer using the emoncms backup php script
 
 This script is very similar to the python script in option 2. It does provides an additional option to download all account data and then link to a local emoncms installation that you may have running on your computer. 
 
