@@ -16,7 +16,14 @@ Once you have the RaspberryPi up and running, create an emoncms account on the e
 
 This is a nice cross platform solution for backing up to your computer. You just need to have python installed and a couple of associated libraries. See the forum post here for details on how to use this tool: https://community.openenergymonitor.org/t/python-based-emoncms-backup-utility/19526. This tool also includes an option to covert the downloaded binary data into CSV format.
 
-### 3\. Download account data to your computer using the emoncms backup php script
+### 3\. Use the emoncms backup module to create a backup archive
+
+*Suitable for backing up your own remote server or local raspberrypi installation*
+
+Designed for those running emoncms on a RaspberryPi running the standard emonSD image, this option creates a compressed backup archive of all local emoncms account data. The archive can then be used to restore a system in case of failure. To use this tool login to your local emoncms account and navigate to Setup > Backup. For more information see: https://guide.openenergymonitor.org/setup/import/
+
+
+### 4\. Download account data to your computer using the emoncms backup php script
 
 *Suitable for backing up an emoncms.org account, other remote server or local raspberrypi installation*
 
@@ -40,7 +47,7 @@ Tested with emoncms.org (v8.0.9: 4 July 2014), and local emoncms v8.2.8
 
 That's it, it should now work through all your feeds. When you first run this script it can take a long time. When you run this script again it will only download the most recent data and so will complete much faster.
 
-### 4\. Backing up a full emoncms installation, all accounts, full SQL database (raspberrypi install or your own server)
+### 5\. Backing up a full emoncms installation, all accounts, full SQL database (raspberrypi install or your own server)
 
 *Suitable for backing up your own remote server or local raspberrypi installation*
 
