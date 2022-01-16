@@ -12,6 +12,8 @@ Once you have the RaspberryPi up and running, create an emoncms account on the e
 
 This is a nice cross platform solution for backing up to your computer. You just need to have python installed and a couple of associated libraries. See the forum post here for details on how to use this tool: https://community.openenergymonitor.org/t/python-based-emoncms-backup-utility/19526. This tool also includes an option to covert the downloaded binary data into CSV format.
 
+---
+
 ### 3\. Download account data to your computer using the emoncms backup php script
 
 This script is very similar to the python script in option 2. It does provides an additional option to download all account data and then link to a local emoncms installation that you may have running on your computer. 
