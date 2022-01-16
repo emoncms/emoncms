@@ -16,15 +16,7 @@ This is a nice cross platform solution for backing up to your computer. You just
 
 This script is very similar to the python script in option 2. It does provides an additional option to download all account data and then link to a local emoncms installation that you may have running on your computer. 
 
----
-
-## Backing up a raspberrypi or emoncms.org account
-
-### Backing up an emoncms.org account (or other remote server account)
-
-**(Optional) To view data on the backup computer a local emoncms installation is required**
-
-Create an account on the backup emoncms installation and note down the mysql credentials.
+If you wish to link to a local emoncms installation, create an account first on the local installation.
 
 1) Download the usefulscripts repository: [https://github.com/emoncms/usefulscripts](https://github.com/emoncms/usefulscripts)
 
@@ -42,7 +34,7 @@ Tested with emoncms.org (v8.0.9: 4 July 2014), and local emoncms v8.2.8
 
 That's it, it should now work through all your feeds. When you first run this script it can take a long time. When you run this script again it will only download the most recent data and so will complete much faster.
 
-### Backing up a full emoncms installation (raspberrypi install or your own server)
+### 4\. Backing up a full emoncms installation, all accounts, full SQL database (raspberrypi install or your own server)
 
 Start by making a backup of your emoncms data and emoncms application folder.
 
@@ -60,8 +52,7 @@ Make a backup copy of the feed data folders on your system, the default location
 
     /var/lib/phpfina
     /var/lib/phptimeseries
-    /var/lib/timestore
     
-**Important** Make sure you disable oem\_gateway/emonhub or raspberrypi\_run and any posting to the http api's (stop apache) before copying the data files so that when you make the copy the data is in a state where its not being written to.
+**Important** Make sure you stop apache2, emonhub, emoncms_mqtt and the feedwriter services before copying the data files so that when you make the copy the data is in a state where its not being written to.
 
 Make a copy of the emoncms application folder usually found under /var/www/emoncms
