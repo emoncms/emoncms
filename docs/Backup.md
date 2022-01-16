@@ -1,8 +1,10 @@
-## Backing up an emoncms.org account (or other remote server account)
+## Backing up, archiving, or cloning an emoncms account:
 
-There are three main approaches to backing up an emoncms.org account
+There are a number of different approaches to backing up an emoncms account. We would recommend option 1 or 2 in most cases.
 
 ### 1\. Download account data to a local raspberrypi using the sync module
+
+*Suitable for backing up an emoncms.org account or other remote server.*
 
 This is a nice solution as it provides a local installation of emoncms that you can use to explore your backed up or archived data, you can also transfer to using this installation directly rather than posting data to emoncms.org or an other remote server. It also avoids any complicated installation process on your computer, you just need a RaspberryPi and an SD card running the pre-built emonSD image. The SD card image can be downloaded here: https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log
 
@@ -10,11 +12,13 @@ Once you have the RaspberryPi up and running, create an emoncms account on the e
 
 ### 2\. Download account data to your computer using the emoncms backup_py python script
 
+*Suitable for backing up an emoncms.org account, other remote server or local raspberrypi installation*
+
 This is a nice cross platform solution for backing up to your computer. You just need to have python installed and a couple of associated libraries. See the forum post here for details on how to use this tool: https://community.openenergymonitor.org/t/python-based-emoncms-backup-utility/19526. This tool also includes an option to covert the downloaded binary data into CSV format.
 
----
-
 ### 3\. Download account data to your computer using the emoncms backup php script
+
+*Suitable for backing up an emoncms.org account, other remote server or local raspberrypi installation*
 
 This script is very similar to the python script in option 2. It does provides an additional option to download all account data and then link to a local emoncms installation that you may have running on your computer. 
 
@@ -37,6 +41,8 @@ Tested with emoncms.org (v8.0.9: 4 July 2014), and local emoncms v8.2.8
 That's it, it should now work through all your feeds. When you first run this script it can take a long time. When you run this script again it will only download the most recent data and so will complete much faster.
 
 ### 4\. Backing up a full emoncms installation, all accounts, full SQL database (raspberrypi install or your own server)
+
+*Suitable for backing up your own remote server or local raspberrypi installation*
 
 Start by making a backup of your emoncms data and emoncms application folder.
 
