@@ -915,6 +915,7 @@ class Feed
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        if (!count($data)) return array('success'=>false, 'message'=>'Data empty');
         $engine = $this->get_engine($feedid);
         
         // Post directly if phpfina, phptimeseries and number of data points is more than 10
@@ -927,7 +928,15 @@ class Feed
                 }
             }
         }
-        // $this->set_timevalue($feedid, $value, $updatetime);
+        
+        // Only update last time value if datapoint is >= the most recent datapoint
+        $lastdp = end($data);
+        if (count($lastdp)==2) {
+            $last = $this->get_timevalue($feedid);
+            if ($lastdp[0]>=$last['time']) {
+                $this->set_timevalue($feedid, $lastdp[1], $lastdp[0]);
+            }
+        }
         return array('success'=>true);
     }
     
