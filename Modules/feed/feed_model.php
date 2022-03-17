@@ -533,6 +533,10 @@ class Feed
                     $lastvalue['value'] = (float) $lastvalue['value'];
                 }
                 // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
+                // Test for avoid to reset PowerToKWh process feed
+                if (is_null($lastvalue['time']) || is_null($lastvalue['value'])) {
+                    $lastvalue = $this->EngineClass($engine)->lastvalue($id);
+                }
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 if ($lastvalue = $this->EngineClass($engine)->lastvalue($id)) {
