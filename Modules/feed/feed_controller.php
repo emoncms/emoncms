@@ -130,7 +130,7 @@ function feed_controller()
             }  
             
             // Backwards compatibility
-            if ($route->action=="average") $average = 1;
+            if ($route->action=="average") $average = 1; else $average = 0;
             if ($route->action=="csvexport") $csv = 1;
             if (isset($_GET['mode'])) $interval = $_GET['mode'];
             
@@ -151,7 +151,7 @@ function feed_controller()
                             $results[$index] = array('feedid'=>$feedid);
                             if (!isset($_GET['split'])) {
                             
-                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index]; else $average = 0;
+                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index];
                                 if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
                                 
                                 $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
