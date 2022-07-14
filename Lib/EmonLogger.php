@@ -40,11 +40,13 @@ class EmonLogger
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile)) {
                 $fh = @fopen($this->logfile, "a");
-                @fclose($fh);
+                if (!$fh) {
+                   error_log("Log file could not be created");
+                } else {
+                   @fclose($fh);
+                }
             }
-            if (is_writable($this->logfile)) {
-                $this->logenabled = true;
-            }
+            $this->logenabled = is_writable($this->logfile);
         }
     }
     
