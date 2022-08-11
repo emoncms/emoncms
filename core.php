@@ -76,6 +76,9 @@ function controller($controller_name)
             if (!is_array($output) || !isset($output["content"])) {
                 $output = array("content"=>$output);
             }
+            $output['is_controller'] = true;
+        } else {
+            $output['is_controller'] = false;
         }
     }
     return $output;

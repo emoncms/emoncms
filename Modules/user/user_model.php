@@ -66,6 +66,8 @@ class User
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
                 $session['gravatar'] = '';
+                $session['public_userid'] = 0;
+                $session['public_username'] = "";
                 return $session;
             }
             
@@ -77,6 +79,8 @@ class User
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
                 $session['gravatar'] = '';
+                $session['public_userid'] = 0;
+                $session['public_username'] = "";
                 return $session;
             }
         }
@@ -99,6 +103,8 @@ class User
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
             $session['gravatar'] = '';
+            $session['public_userid'] = 0;
+            $session['public_username'] = "";     
             if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
             return $session;
         }
@@ -118,6 +124,8 @@ class User
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
             $session['gravatar'] = '';
+            $session['public_userid'] = 0;
+            $session['public_username'] = "";       
             if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
             return $session;
         }
@@ -233,6 +241,9 @@ class User
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
         if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
+
+        $session['public_userid'] = 0;
+        $session['public_username'] = "";
 
         return $session;
     }
