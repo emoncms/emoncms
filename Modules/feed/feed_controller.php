@@ -42,6 +42,7 @@ function feed_controller()
             return view("Modules/feed/Views/feedlist_view.php");
         }
         else if ($route->action == "api") {
+            if (!$session['read'] && !$session['public_userid']) return "";       
             require "Modules/feed/feed_api_obj.php";
             return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
         }
