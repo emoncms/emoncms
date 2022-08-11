@@ -241,25 +241,28 @@ if ($route->controller == 'input' && $route->action == 'bulk') {
 // 6) Load the main page controller
 $output = controller($route->controller);
 // If no controller of this name - then try username
-// need to actually test if there isnt a controller rather than if no content
-// is returned from the controller.
-if ($output['content'] == EMPTY_ROUTE && $settings["public_profile"]["enabled"] && $route->controller!='admin') {
+if (!$output['is_controller'] && $settings["public_profile"]["enabled"] && $route->controller!='admin') {
     $userid = $user->get_id($route->controller);
     if ($userid) {
-        $route->subaction = $route->action;
-        $session['userid'] = $userid;
-        $session['username'] = $route->controller;
-        $session['read'] = 1;
-        $session['profile'] = 1;
-        $route->controller = $settings["public_profile"]["controller"];
-        $route->action = $settings["public_profile"]["action"];
+        // Set public access
+        $session['public_userid'] = $userid;
+        $session['public_username'] = $route->controller;
+        // Disable standard access
+        $session['admin'] = 0;
+        $session['write'] = 0;
+        $session['read'] = 0;
+        // Move route up
+        $route->controller = $route->action;
+        $route->action = $route->subaction;
+        $route->subaction = $route->subaction2;
+        // Try again
         $output = controller($route->controller);
-
-        // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
-        if ($output["content"]=="" && $route->subaction=="graph") {
-            $route->controller = "graph";
-            $route->action = "";
-            $_GET['userid'] = $userid;
+        
+        // Backwards compatibility
+        if ($output['content'] === EMPTY_ROUTE) {            
+            $route->subaction = $route->controller;
+            $route->controller = "dashboard";
+            $route->action = "view";
             $output = controller($route->controller);
         }
     }
@@ -289,7 +292,7 @@ if ($output['content'] === EMPTY_ROUTE) {
 }
 
 // If not authenticated and no ouput, asks for login
-if ($output['content'] == "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
+if ($output['content'] === "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
     $log->error(sprintf('%s|%s', _('Not Authenticated'), implode('/', array_filter(array($route->controller,$route->action,$route->subaction)))));
     $route->controller = "user";
     $route->action = "login";
@@ -351,7 +354,11 @@ if ($route->format == 'json') {
         $menu = array();
         // Create initial entry for setup menu
         $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
-        if (!$session["write"]) $menu["setup"]["name"] = "Emoncms";
+        if (!$session["write"]) {
+            if ($session["public_userid"]) {
+                $menu["setup"]["name"] = ucfirst($session["public_username"]);
+            }
+        }
 
         // Itterates through installed modules to load module menus
         load_menu();

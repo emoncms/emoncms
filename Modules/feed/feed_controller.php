@@ -37,12 +37,13 @@ function feed_controller()
         if ($route->action=="") $route->action = "view";
 
         textdomain("messages");
-        if (($route->action == "view" || $route->action == "list") && $session['write']) {
+        if (($route->action == "view" || $route->action == "list")) {
+            if (!$session['read'] && !$session['public_userid']) return "";
             return view("Modules/feed/Views/feedlist_view.php");
         }
-        else if ($route->action == "api" && $session['write']) {
+        else if ($route->action == "api") {
             require "Modules/feed/feed_api_obj.php";
-            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>9));
+            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
         }
         else if (!$session['read']) return ''; // empty strings force user back to login
         else return EMPTY_ROUTE; // this string displays error
@@ -53,12 +54,10 @@ function feed_controller()
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
-            if ($session['read']) {
-                if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
-                else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
-            }
-            else if (isset($_GET['userid'])) {
-                return $feed->get_user_public_feeds(get('userid'));
+            if ($session['public_userid']) {
+                return $feed->get_user_public_feeds($session['public_userid']);
+            } else if ($session['read']) {
+                return $feed->get_user_feeds($session['userid']);
             } else {
                 return false;
             }

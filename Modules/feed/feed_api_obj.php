@@ -5,20 +5,20 @@ function feed_api_obj() {
   // Auto generated data for feed insert api
   $data = array(); for($i=0; $i<4; $i++) { $data[] = array(floor((time()+($i*10))*0.1)*10,100+50*$i); }
 
+  global $session;
+  
+  $public_username_str = "";
+  if ($session['public_userid']) {
+      $public_username_str = $session['public_username']."/";
+  }
+
   return array(
     // Read feed actions
     array(
-      "description" => _("List feeds for authenticated user"),
-      "path" =>  "feed/list.json",
+      "description" => _("List feeds"),
+      "path" =>  $public_username_str."feed/list.json",
       "parameters" => array(),
       "mode"=>"read"
-    ),
-    array(
-      "description" => _("List public feeds for the given user"),
-      "path" => "feed/list.json",
-      "parameters" => array(
-        "userid" => array( "default" => 1 ),
-      )
     ),
     array(
       "description" => _("Get feed field"),
@@ -38,7 +38,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Get feed meta (PHPFina)"),
+      "description" => _("Get feed meta"),
       "path" => "feed/getmeta.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -154,18 +154,18 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Return total engines size"),
+      "description" => _("Refresh feed disk use"),
       "path" => "feed/updatesize.json",
       "parameters" => array(
       ),
-      "mode"=>"read"
+      "mode"=>"write"
     ),
     array(
       "description" => _("Return buffer points pending write"),
       "path" => "feed/buffersize.json",
       "parameters" => array(
       ),
-      "mode"=>"read"
+      "mode"=>"write"
     ),
     // Virtual feed process actions
     array(
@@ -174,7 +174,7 @@ function feed_api_obj() {
       "parameters" => array(
         "id" => array( "type" => "feed" )
       ),
-      "mode"=>"read"
+      "mode"=>"write"
     ),
     array(
       "description" => _("Set feed process list"),

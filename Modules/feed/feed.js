@@ -2,6 +2,8 @@
 var feed = {
 
     apikey: false,
+    public_userid: 0,
+    public_username: "",
     
     apikeystr: function() {
         if (feed.apikey) {
@@ -9,6 +11,14 @@ var feed = {
         } else {
             return "";
         }
+    },
+    
+    public_username_str: function() {
+        if (feed.public_userid) {
+            return public_username+"/";
+        } else {
+            return "";
+        }    
     },
     
     create: function(tag, name, engine, options, unit){
@@ -28,7 +38,7 @@ var feed = {
     {   
         var feeds = null;
         $.ajax({                                      
-            url: path+"feed/list.json"+this.apikeystr(),
+            url: path+this.public_username_str()+"feed/list.json"+this.apikeystr(),
             dataType: 'json',
             cache: false,
             async: false,                      
@@ -56,7 +66,7 @@ var feed = {
     {   
         var feeds = null;
         $.ajax({                                      
-            url: path+"feed/list.json"+this.apikeystr(),
+            url: path+this.public_username_str()+"feed/list.json"+this.apikeystr(),
             dataType: 'json',
             async: true,                      
             success: function(result) {
