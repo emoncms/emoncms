@@ -354,15 +354,17 @@ if ($route->format == 'json') {
         $menu = array();
         // Create initial entry for setup menu
         $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
-        if (!$session["write"]) {
-            if ($session["public_userid"]) {
-                $menu["setup"]["name"] = ucfirst($session["public_username"]);
-            }
+        if ($session["public_userid"]) {
+            $menu["setup"]["name"] = ucfirst($session["public_username"]);
         }
 
         // Itterates through installed modules to load module menus
         load_menu();
         // Pass menu through to output view - passed on the js based builder
+        
+        // Hide menu if nothing to see
+        if (!$menu["setup"]["l2"]) $menu = array();
+        
         $output['menu'] = $menu;
         
         $output['svg_icons'] = view("Theme/svg_icons.svg", array());
