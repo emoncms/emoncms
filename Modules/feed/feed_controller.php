@@ -57,6 +57,8 @@ function feed_controller()
         {
             if ($session['public_userid']) {
                 return $feed->get_user_public_feeds($session['public_userid']);
+            } else if (isset($_GET['id'])) {
+                return $feed->get_user_public_feeds((int)$_GET['id']);
             } else if ($session['read']) {
                 return $feed->get_user_feeds($session['userid']);
             } else {
