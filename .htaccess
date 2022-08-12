@@ -19,7 +19,7 @@ DirectoryIndex index.php
   # Skip rewrites for known files, folders and 4xx/5xx errors so we know if something is wrong
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteCond %{REQUEST_URI} !=/robots.txt
-  RewriteCond %{REQUEST_URI} !^/.well-known/.$
+  RewriteCond %{REQUEST_URI} !^/.well-known/.*$
   RewriteCond %{REQUEST_URI} !^/?docs.*$
   RewriteCond %{REQUEST_URI} !^/?Lib.*$
   RewriteCond %{REQUEST_URI} !^/?Modules.*$
@@ -177,6 +177,7 @@ AddDefaultCharset utf-8
 <IfModule mod_rewrite.c>
     RewriteCond %{SCRIPT_FILENAME} -d [OR]
     RewriteCond %{SCRIPT_FILENAME} -f
+    RewriteCond %{REQUEST_URI} !^/.well-known/.*$
     RewriteRule "(^|/)\." - [F]
 </IfModule>
 
