@@ -258,10 +258,17 @@ if (!$output['is_controller'] && $settings["public_profile"]["enabled"] && $rout
         // Try again
         $output = controller($route->controller);
         
-        // Backwards compatibility
+        // If no content, try showing any public dashboards
         if ($output['content'] === EMPTY_ROUTE) {            
             $route->subaction = $route->controller;
             $route->controller = "dashboard";
+            $route->action = "view";
+            $output = controller($route->controller);
+        }
+        // If no content or dashboards, try showing any public apps
+        if ($output['content'] === EMPTY_ROUTE) {            
+            $route->subaction = $route->controller;
+            $route->controller = "app";
             $route->action = "view";
             $output = controller($route->controller);
         }
