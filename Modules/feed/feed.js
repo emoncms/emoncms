@@ -123,6 +123,7 @@ var feed = {
             id: feedid,
             time: time
         }
+        if (feed.apikey) data.apikey = feed.apikey;
         let response = false;
         $.ajax({ url: path+"feed/value.json", data: data, async: false, success: function(data){ response = data} });
         return response;

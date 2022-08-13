@@ -16,7 +16,7 @@
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 
-<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
+<script src="<?php echo $path; ?>Lib/moment.min.js?v=1"></script>
 <script>
     var _user = {};
     _user.lang = "<?php echo $lang; ?>";
