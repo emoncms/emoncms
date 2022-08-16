@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $path,$settings;
+global $path,$settings,$session;
 $v = 10;
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","copper","black"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -33,6 +33,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <script>
         var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
         var current_themesidebar = "dark";
+    
+        var path = "<?php echo $path; ?>";
+        var public_userid = <?php echo $session['public_userid']; ?>;
+        var public_username = "<?php echo $session['public_username']; ?>";
+        var session_write = <?php echo $session['write']; ?>;
+        var session_read = <?php echo $session['read']; ?>;    
+        
         </script>
         <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     </head>
