@@ -571,7 +571,7 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false,$dp=-1)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) {
@@ -605,7 +605,7 @@ class Feed
             }
         }
 
-        if (!in_array($timeformat,array("unix","unixms","excel","iso8601"))) {
+        if (!in_array($timeformat,array("unix","unixms","excel","iso8601","notime"))) {
             return array('success'=>false, 'message'=>'Invalid time format');
         }
         
@@ -652,6 +652,14 @@ class Feed
         }
         
         if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        
+        // Apply dp setting
+        if ($dp!=-1) {
+            $dp = (int) $dp;
+            for ($i=0; $i<count($data); $i++) {
+                $data[$i][1] = round($data[$i][1],$dp);
+            }
+        }
         
         // Apply different timeformats if applicable
         if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
@@ -749,6 +757,13 @@ class Feed
                     $date->setTimestamp($data[$i][0]);
                     $data[$i][0] = $date->format("c"); 
                 }
+                break;
+            case "notime":
+                $tmp = array();
+                for ($i=0; $i<count($data); $i++) {
+                    $tmp[] = $data[$i][1];
+                }
+                $data = $tmp;
                 break;
         }
         return $data;

@@ -129,7 +129,7 @@ var feed = {
         return response;
     },
 
-    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false){
+    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false,timeformat='unixms'){
         let data = {
             id: feedid,
             start: start,
@@ -138,7 +138,8 @@ var feed = {
             average:average,
             delta:delta,
             skipmissing: skipmissing,
-            limitinterval: limitinterval
+            limitinterval: limitinterval,
+            timeformat: timeformat
         };
         if (feed.apikey) data.apikey = feed.apikey;
 
@@ -164,7 +165,17 @@ var feed = {
                         callback(context,result);
                     }
                 } else {
-                    feed_data = result;
+                
+                    if (timeformat=="notime") {
+                        var intervalms = interval*1000;
+                        var time = Math.floor(start/intervalms)*intervalms;
+                        for (var z in result) {
+                            feed_data.push([time,result[z]]);
+                            time += intervalms;
+                        }
+                    } else {
+                        feed_data = result;
+                    }
                 }
             }
         });

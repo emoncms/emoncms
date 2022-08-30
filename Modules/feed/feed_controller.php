@@ -120,6 +120,7 @@ function feed_controller()
             $csv = get('csv',false,0);
             $skipmissing = get('skipmissing',false,0);
             $limitinterval = get('limitinterval',false,0);
+            $dp = get('dp',false,-1);
             
             $averages = array();
             if (isset($_GET['average'])) {
@@ -156,7 +157,7 @@ function feed_controller()
                                 if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index];
                                 if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
                                 
-                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
+                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta,$dp);
                             } else {
                                 $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,get('split'));
                             }
