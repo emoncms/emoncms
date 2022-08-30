@@ -1,6 +1,6 @@
 <?php
 global $session;
-if ($session["write"] || $session['public_userid']) {
+if ($session["read"] || $session['public_userid']) {
 
     $menu["setup"]["l2"]['feed'] = array(
         "name"=>_("Feeds"),

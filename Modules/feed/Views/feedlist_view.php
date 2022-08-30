@@ -348,8 +348,11 @@ body{padding:0!important}
 if (public_userid) {
    $("#feeds-title").hide();
    $("#public-feeds-title").show();
+}
+if (!session_write) {
    $("#feed-footer").hide();
 }
+
 
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 
@@ -1276,7 +1279,11 @@ function feed_selection()
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
     // Only show feed process button for Virtual feeds
-    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) {
+        if (session_write) $(".feed-process").show(); 
+    } else {
+        $(".feed-process").hide();
+    }
 }
 
 // -------------------------------------------------------------------------------------------------------
