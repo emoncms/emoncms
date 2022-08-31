@@ -31,13 +31,26 @@ function user_controller()
     {
         if ($route->action == 'login' && !$session['read']) {
             $route_query = array();
+            
             // pass through the referring path
-            parse_str($route->query, $route_query );
+            if(!is_null($route->query)){
+                parse_str($route->query, $route_query );
+            }
+            
             $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
             $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
-            $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
-            $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
             
+            if(!is_null($msg)){
+                $message = htmlspecialchars(urldecode($msg));
+            } else {
+                $message="";
+            }
+            
+            if(!is_null($ref)){
+                $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
+            } else {
+                $referrer="";
+            }
             // load login template with the above parameters
             $result = view("Modules/user/login_block.php", array(
                 'allowusersregister'=>$allowusersregister,
