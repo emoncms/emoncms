@@ -52,7 +52,7 @@ function user_controller()
                 $referrer="";
             }
             // load login template with the above parameters
-            $result = view("Modules/user/login_block.php", array(
+            return view("Modules/user/login_block.php", array(
                 'allowusersregister'=>$allowusersregister,
                 'verify'=>array(),
                 'message'=>$message,
@@ -60,8 +60,8 @@ function user_controller()
                 'v' => 3
             ));
         }
-        if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
-        
+        if ($route->action == 'view' && $session['write']) return view("Modules/user/profile/profile.php", array());
+          
         if ($route->action == 'logout') {
             // decode url parameters
             $next = $path;
@@ -83,7 +83,7 @@ function user_controller()
         
         if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
-            $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
+            return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
     }
 
@@ -91,34 +91,34 @@ function user_controller()
     if ($route->format == 'json')
     {
         // Core session
-        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'),post('timezone'));
+        if ($route->action == 'login' && !$session['read']) return $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
+        if ($route->action == 'register' && $allowusersregister) return $user->register(post('username'),post('password'),post('email'),post('timezone'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
         if ($route->action == 'resend-verify' && $settings["interface"]["email_verification"]) {
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
-            $result = $user->send_verification_email($username);
+            return  $user->send_verification_email($username);
         }
 
-        if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
-        if ($route->action == 'changeemail' && $session['write']) $result = $user->change_email($session['userid'],get('email'));
-        if ($route->action == 'changepassword' && $session['write']) $result = $user->change_password($session['userid'],post('old'),post('new'));
+        if ($route->action == 'changeusername' && $session['write']) return  $user->change_username($session['userid'],get('username'));
+        if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],get('email'));
+        if ($route->action == 'changepassword' && $session['write']) return  $user->change_password($session['userid'],post('old'),post('new'));
         
-        if ($route->action == 'passwordreset') $result = $user->passwordreset(get('username'),get('email'));
+        if ($route->action == 'passwordreset') return  $user->passwordreset(get('username'),get('email'));
         // Apikey
-        if ($route->action == 'newapikeyread' && $session['write']) $result = $user->new_apikey_read($session['userid']);
-        if ($route->action == 'newapikeywrite' && $session['write']) $result = $user->new_apikey_write($session['userid']);
+        if ($route->action == 'newapikeyread' && $session['write']) return  $user->new_apikey_read($session['userid']);
+        if ($route->action == 'newapikeywrite' && $session['write']) return  $user->new_apikey_write($session['userid']);
 
-        if ($route->action == 'auth' && !$session['read']) $result = $user->get_apikeys_from_login(post('username'),post('password'));
+        if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));
 
         // Get and set - user by profile client
-        if ($route->action == 'get' && $session['write']) $result = $user->get($session['userid']);
-        if ($route->action == 'set' && $session['write']) $result = $user->set($session['userid'],json_decode(post('data')));
+        if ($route->action == 'get' && $session['write']) return  $user->get($session['userid']);
+        if ($route->action == 'set' && $session['write']) return  $user->set($session['userid'],json_decode(post('data')));
 
-        if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
-        if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
-        if ($route->action == 'gettimezones') $result = $user->get_timezones();
-        
+        if ($route->action == 'timezone' && $session['read']) return $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
+        if ($route->action == 'gettimezone' && $session['read']) return $user->get_timezone($session['userid']);
+        if ($route->action == 'gettimezones') return $user->get_timezones();
+           
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
             $userid = $session['userid'];
@@ -132,8 +132,8 @@ function user_controller()
                 if ($mode=="permanentdelete") {
                     if (isset($_POST['password'])) {
                         // Check password
-                        $result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
-                        $row = $result->fetch_object();
+                        $query_result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
+                        $row = $query_result->fetch_object();
                         $hash = hash('sha256', $row->salt . hash('sha256', $_POST['password']));
 
                         if ($hash == $row->password || $session['admin']==1) {
@@ -143,22 +143,24 @@ function user_controller()
                             
                             $user->logout();
                             call_hook('on_logout',[]);
+                            return $result;
                         } else {
-                            $result = "invalid password";
+                            return "invalid password";
                         }
                     } else {
-                        $result = "missing password field";
+                        return "missing password field";
                     }
                 } else {
                     $result = "DRY RUN:\n";
                     $result .= delete_user($userid,"dryrun");
                     $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'dryrun']);
+                    return $result;
                 }
             } else {
-                $result = "missing mode field";
+                return "missing mode field";
             }
         }
     }
 
-    return array('content'=>$result);
+    return array('content'=>false);
 }
