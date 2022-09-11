@@ -102,7 +102,7 @@
                             else if (get($key) || get($key) == "false" || get($key) == 0)
                                 $array[$key] = 0;
                             else $array[$key] = $default;
-                        else if ($type==5)
+                        else if ($type==5 && !is_null(get($key)))
                             $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥₽]/u','',get($key))?get($key):$default;
                         else if ($type==6)
                             $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
