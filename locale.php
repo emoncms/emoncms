@@ -127,7 +127,7 @@ function set_lang($language)
     // loop through all given $language values
     // if given language is a key or value in the above list use it
     foreach ($language as $lang_code) {
-        $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
+        $lang_code = htmlspecialchars($lang_code);
         if (isset($supported_languages[$lang_code])) { // key check
             $lang = $supported_languages[$lang_code];
             break;

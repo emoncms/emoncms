@@ -14,8 +14,16 @@
 
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $user, $path, $session;
-$apikey_read = $user->get_apikey_read($session['userid']);
-$apikey_write = $user->get_apikey_write($session['userid']);
+
+$apikey_read = false;
+if ($session['read']) {
+    $apikey_read = $user->get_apikey_read($session['userid']);
+}
+
+$apikey_write = false;
+if ($session['write']) {
+    $apikey_write = $user->get_apikey_write($session['userid']);
+}
 
 bindtextdomain("lib_messages",__DIR__."/locale");
 ?>
@@ -27,7 +35,7 @@ bindtextdomain("lib_messages",__DIR__."/locale");
 <div id="app" v-cloak>
 
   <select v-model="selected_api" @change="update">
-    <option v-for="i,index in api" :value="index">{{ i.description }}</option>
+    <option v-for="description,index in api_options" :value="index">{{ description }}</option>
   </select>
 
   <table class="table">
@@ -68,7 +76,7 @@ bindtextdomain("lib_messages",__DIR__."/locale");
         </div>
       </td>
     </tr>
-    <tr>
+    <tr v-if="!public_userid">
       <td><b><?php echo dgettext('lib_messages','Authentication'); ?></b></td>
       <td>
         <button v-if="!auth_visible" class="btn btn-small" @click="show_auth"><?php echo dgettext('lib_messages','Show'); ?>
@@ -97,6 +105,9 @@ bindtextdomain("lib_messages",__DIR__."/locale");
 var apikey_read = "<?php echo $apikey_read; ?>";
 var apikey_write = "<?php echo $apikey_write; ?>";
 
+var public_username_str = "";
+if (public_userid) public_username_str = public_username+"/";
+
 // ---------------------------------------------------------------------
 // Fetch feeds to create dropdown feed selector
 // ---------------------------------------------------------------------
@@ -104,7 +115,7 @@ var feeds = [];
 var nodes = {};
 var selected_feed = 0;
 
-$.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(result) {
+$.ajax({ url: path+public_username_str+"feed/list.json", dataType: 'json', async: false, success: function(result) {
     feeds = result;
     if (feeds.length) {
         selected_feed = feeds[0].id;
@@ -124,6 +135,14 @@ $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: fu
 var api = <?php echo json_encode($api); ?>;
 var now = Math.round((new Date()).getTime()*0.001);
 
+var api_options = {};
+
+for (var i in api) {
+    if ((apikey_read || public_userid) && api[i].mode=="read") api_options[i] = api[i].description
+    if (apikey_write && api[i].mode=="write") api_options[i] = api[i].description
+}
+
+
 for (var i in api) {
     if (api[i].response == undefined) api[i].url = "";
     if (api[i].response == undefined) api[i].response = "";
@@ -141,10 +160,12 @@ var app = new Vue({
     el: '#app',
     data: {
         api:api,
+        api_options: api_options,
         nodes: nodes,
         selected_api: <?php echo $selected_api; ?>,
         selected_feed: selected_feed,
-        auth_visible: false
+        auth_visible: false,
+        public_userid: public_userid
     },
     methods: {
        update: function() {

@@ -27,13 +27,18 @@ var menu = {
     // ------------------------------------------------------------------
     // Init Menu
     // ------------------------------------------------------------------    
-    init: function(obj,session) {
+    init: function(obj,public_username) {
         menu.init_time = new Date().getTime()
     
         var q_parts = q.split("#");
         q_parts = q.split("?");
         q_parts = q_parts[0].split("/");
-        var controller = false; if (q_parts[0]!=undefined) controller = q_parts[0];
+        var controller = false; 
+        if (public_username) {
+            if (q_parts[1]!=undefined) controller = q_parts[0]+"/"+q_parts[1];
+        } else {
+            if (q_parts[0]!=undefined) controller = q_parts[0];
+        }
         
         menu.obj = obj;
         

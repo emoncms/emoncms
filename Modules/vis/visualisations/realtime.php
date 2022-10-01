@@ -164,6 +164,7 @@ $('.viewWindow').click(function() {
     console.log("realtime timewindow " + timeWindow / 1000 + "s get rate " + rate / 1000 + "s");
 
     interval = parseInt(((end * 0.001 + 10) - (start * 0.001 - 10)) / 800);
+    if (interval<1) interval = 1;
     data = feed.getdata(feedid, (start - 10000), (end + 10000), interval, 0, 0, 1, 1);
 });
 </script>

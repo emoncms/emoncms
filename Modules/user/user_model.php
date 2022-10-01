@@ -66,6 +66,8 @@ class User
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
                 $session['gravatar'] = '';
+                $session['public_userid'] = 0;
+                $session['public_username'] = "";
                 return $session;
             }
             
@@ -77,6 +79,8 @@ class User
                 $session['lang'] = "en";      // API access is always in english
                 $session['username'] = "API"; // TBD
                 $session['gravatar'] = '';
+                $session['public_userid'] = 0;
+                $session['public_username'] = "";
                 return $session;
             }
         }
@@ -99,6 +103,8 @@ class User
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
             $session['gravatar'] = '';
+            $session['public_userid'] = 0;
+            $session['public_username'] = "";     
             if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
             return $session;
         }
@@ -118,6 +124,8 @@ class User
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = $username;
             $session['gravatar'] = '';
+            $session['public_userid'] = 0;
+            $session['public_username'] = "";       
             if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
             return $session;
         }
@@ -233,6 +241,9 @@ class User
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
         if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
+
+        $session['public_userid'] = 0;
+        $session['public_username'] = "";
 
         return $session;
     }
@@ -375,60 +386,44 @@ class User
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
 
         // filter out all except for alphanumeric white space and dash
-        // if (!ctype_alnum($username))
         $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
-
-        if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
-
-        // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
-        // without cuasing an error if it has not yet been created in the database.
-        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone,gravatar FROM users WHERE username=?")) {
-            return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
-        }
-        $stmt->bind_param("s",$username);
-        $stmt->execute();
+        if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone,$userData_gravatar);
-        $result = $stmt->fetch();
-        $stmt->close();
-        
-        //$result = $stmt->get_result();
-        //$userData = $result->fetch_object();
-        //$stmt->close();
-        
-        if (!$result) {
-            $ip_address = get_client_ip_env();
-            $this->log->error("Login: Username does not exist username:$username ip:$ip_address");
-        
+        if (!$userid = $this->get_id($username)) {
+            $this->log->error("Login: Username does not exist username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>_("Username does not exist"));
         }
-        if ($this->email_verification && !$email_verified) return array('success'=>false, 'message'=>_("Please verify email address"));
         
-        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
+        $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$userid'");
+        if (!$result) return array('success'=>false, 'message'=>_("Database error"));
+        
+        $userData = $result->fetch_object();
+        
+        if ($this->email_verification && isset($userData->email_verified) && !$userData->email_verified) return array('success'=>false, 'message'=>_("Please verify email address"));
+        
+        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
 
-        if ($hash != $userData_password)
+        if ($hash != $userData->password)
         {
-            $ip_address = get_client_ip_env();
-            $this->log->error("Login: Incorrect password username:$username ip:$ip_address");
-            
-            return array('success'=>false, 'message'=>_("Incorrect password, if you're sure it's correct try clearing your browser cache"));
+            $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
+            return array('success'=>false, 'message'=>_("Incorrect password"));
         }
         else
         {
             session_regenerate_id();
-            $_SESSION['userid'] = $userData_id;
+            $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
             $_SESSION['read'] = 1;
             $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData_admin;
-            $_SESSION['lang'] = $userData_language;
-            $_SESSION['timezone'] = $userData_timezone;
-            $_SESSION['startingpage'] = $userData_startingpage;
-            $_SESSION['gravatar'] = $userData_gravatar;
+            $_SESSION['admin'] = $userData->admin;
+            $_SESSION['lang'] = $userData->language;
+            $_SESSION['timezone'] = $userData->timezone;
+            $_SESSION['startingpage'] = $userData->startingpage;
+            $_SESSION['gravatar'] = $userData->gravatar;
                                         
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
-                    if (!$this->rememberme->createCookie($userData_id)) {
+                    if (!$this->rememberme->createCookie($userData->id)) {
                         $this->logout();
                         return array('success'=>false, 'message'=>_("Error creating rememberme cookie, try login without rememberme"));
                     }
@@ -437,10 +432,10 @@ class User
                 }
             }
             
-            if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
+            if ($this->redis) $this->redis->hmset("user:".$userData->id,array('apikey_write'=>$userData->apikey_write));
 
-            if(!empty($referrer)) $userData_startingpage = urldecode($referrer);
-            return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
+            if(!empty($referrer)) $userData->startingpage = urldecode($referrer);
+            return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData->startingpage);
         }
     }
 
@@ -737,19 +732,23 @@ class User
     //---------------------------------------------------------------------------------------
     // Get by other paramater methods
     //---------------------------------------------------------------------------------------
-
     public function get_id($username)
-    {
-        if (!ctype_alnum($username)) return false;
+    {   
+        if (!ctype_alnum($username)) return 0;
         
-        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username = ?");
+        if (!$stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username = ?")) {
+            return 0;
+        }
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $stmt->bind_result($id);
-        $stmt->fetch();
-        $stmt->close();
-        
-        return $id;
+        if (!$stmt->fetch()) {
+            $stmt->close();
+            return 0;
+        } else {
+            $stmt->close();
+            return $id;
+        }
     }
 
     //---------------------------------------------------------------------------------------

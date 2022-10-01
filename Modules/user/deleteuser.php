@@ -46,9 +46,12 @@ function delete_user($userid,$mode) {
             if ($mode=="permanentdelete") $redis->del("writeapikey:$apikey");
         }
         
-        $tables = array("app_config","autoconfig","dashboard","emailreport","graph","multigraph","myip","node","statico","rememberme");
-        foreach ($tables as $tablename) {
-            $result .= delete_entry_in_table($tablename,$userid,$mode);
+        $schema = load_db_schema();
+        
+        foreach ($schema as $tablename=>$columns) {
+            if (isset($columns['userid'])) {
+                $result .= delete_entry_in_table($tablename,$userid,$mode);
+            }
         }
         
         $result .= "- user entry\n";
@@ -71,15 +74,19 @@ function delete_user($userid,$mode) {
 function delete_entry_in_table($tablename,$userid,$mode) { 
     global $mysqli;
     
-    $result = "";
-    
-    if ($result1 = $mysqli->query("SELECT * FROM $tablename WHERE `userid`='$userid'")) {
-        if ($result1->num_rows>0) {
-            $result = "- $tablename entry\n";
-            if ($mode=="permanentdelete") $mysqli->query("DELETE FROM $tablename WHERE `userid`='$userid'");
+    if ($result = $mysqli->query("SHOW TABLES LIKE '$tablename'")) {
+        if ($result->num_rows) {
+            if ($result = $mysqli->query("SELECT * FROM $tablename WHERE `userid`='$userid'")) {
+                if ($result->num_rows>0) {
+                    if ($mode=="permanentdelete") $mysqli->query("DELETE FROM $tablename WHERE `userid`='$userid'");      
+                    return "- $tablename entry\n";
+                }
+            }
         }
     }
-    return $result;
+    
+
+    return "";
 }
 
 function check_entry_in_table($tablename,$userid) { 

@@ -2,6 +2,8 @@
 var feed = {
 
     apikey: false,
+    public_userid: 0,
+    public_username: "",
     
     apikeystr: function() {
         if (feed.apikey) {
@@ -9,6 +11,14 @@ var feed = {
         } else {
             return "";
         }
+    },
+    
+    public_username_str: function() {
+        if (feed.public_userid) {
+            return public_username+"/";
+        } else {
+            return "";
+        }    
     },
     
     create: function(tag, name, engine, options, unit){
@@ -28,7 +38,7 @@ var feed = {
     {   
         var feeds = null;
         $.ajax({                                      
-            url: path+"feed/list.json"+this.apikeystr(),
+            url: path+this.public_username_str()+"feed/list.json"+this.apikeystr(),
             dataType: 'json',
             cache: false,
             async: false,                      
@@ -56,7 +66,7 @@ var feed = {
     {   
         var feeds = null;
         $.ajax({                                      
-            url: path+"feed/list.json"+this.apikeystr(),
+            url: path+this.public_username_str()+"feed/list.json"+this.apikeystr(),
             dataType: 'json',
             async: true,                      
             success: function(result) {
@@ -113,12 +123,13 @@ var feed = {
             id: feedid,
             time: time
         }
+        if (feed.apikey) data.apikey = feed.apikey;
         let response = false;
         $.ajax({ url: path+"feed/value.json", data: data, async: false, success: function(data){ response = data} });
         return response;
     },
 
-    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false){
+    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false,timeformat='unixms'){
         let data = {
             id: feedid,
             start: start,
@@ -127,7 +138,8 @@ var feed = {
             average:average,
             delta:delta,
             skipmissing: skipmissing,
-            limitinterval: limitinterval
+            limitinterval: limitinterval,
+            timeformat: timeformat
         };
         if (feed.apikey) data.apikey = feed.apikey;
 
@@ -153,7 +165,17 @@ var feed = {
                         callback(context,result);
                     }
                 } else {
-                    feed_data = result;
+                
+                    if (timeformat=="notime") {
+                        var intervalms = interval*1000;
+                        var time = Math.floor(start/intervalms)*intervalms;
+                        for (var z in result) {
+                            feed_data.push([time,result[z]]);
+                            time += intervalms;
+                        }
+                    } else {
+                        feed_data = result;
+                    }
                 }
             }
         });

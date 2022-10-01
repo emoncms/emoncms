@@ -70,7 +70,7 @@ function copyToClipboard(elem) {
 // Internet Explorer: The clipboard feature may be disabled by
 // an administrator. By default a prompt is shown the first
 // time the clipboard is used (per session).
-function copy_text_to_clipboard(text,message) {
+function copy_text_to_clipboard(text,message="Text copied to clipboard") {
     if (window.clipboardData && window.clipboardData.setData) {
         // Internet Explorer-specific code path to prevent textarea being shown while dialog is visible.
         return window.clipboardData.setData("Text", text);

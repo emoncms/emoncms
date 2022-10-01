@@ -76,6 +76,9 @@ function controller($controller_name)
             if (!is_array($output) || !isset($output["content"])) {
                 $output = array("content"=>$output);
             }
+            $output['is_controller'] = true;
+        } else {
+            $output['is_controller'] = false;
         }
     }
     return $output;
@@ -109,8 +112,9 @@ function get($index,$error_if_missing=false,$default=null)
         header('Content-Type: text/plain');
         die("missing $index parameter");
     }
-    
+    if(!is_null($val)){
     $val = stripslashes($val);
+	}
     return $val;
 }
 /**
@@ -140,9 +144,10 @@ function post($index,$error_if_missing=false,$default=null)
     
     if (is_array($val)) {
         $val = array_map("stripslashes", $val);
-    } else {
+    }	
+	if(!is_null($val)){
         $val = stripslashes($val);
-    }
+	}
     return $val;
 }
 /**

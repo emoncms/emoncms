@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 37;
+$v = 41;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -57,7 +57,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
             
-            <?php if ($session["write"]) { ?>
+            <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
                 <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
@@ -67,8 +67,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             </a>
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
+                    <?php if ($session["write"]) { ?> 
                     <li><a href="<?php echo $path; ?>user/view" title="<?php echo _("My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo _("My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
+                    <?php } ?>
                     <li><a href="<?php echo $path; ?>user/logout" title="<?php echo _("Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo _("Logout"); ?></a></li>
                 </ul>
             </li>
@@ -94,8 +96,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <script>
             // Draw menu just before drawing content but after defining content-container
             var path = "<?php echo $path; ?>";
+            var public_userid = <?php echo $session['public_userid']; ?>;
+            var public_username = "<?php echo $session['public_username']; ?>";
+            var session_write = <?php echo $session['write']; ?>;
+            var session_read = <?php echo $session['read']; ?>; 
+            
             var q = "<?php echo preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q); ?>"+location.search+location.hash;
-            menu.init(<?php echo json_encode($menu); ?>);
+            menu.init(<?php echo json_encode($menu); ?>,"<?php echo $session['public_username']; ?>");
             </script>
             <?php echo $content; ?>
         </main>

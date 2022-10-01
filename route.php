@@ -76,7 +76,10 @@ class Route
      */
     public function decode($q, $documentRoot, $requestMethod)
     {
-        // filter out the applications relative root
+        if(is_null($q)){
+			$q="";
+		}
+		// filter out the applications relative root
 
         // If we're running in a subdirectory "emoncms", $q would look like '/emoncms/user/view' instead or just 'user/view'
         // for the example of viewing a users profile. We need to remove the first directory to get the "clean" routing path
@@ -90,7 +93,9 @@ class Route
         // for example this will perform the following:
         // Running at root: str_replace('/var/www', '', '/var/www') => ''
         // Running at subdirectory: str_replace('/var/www', '', '/var/www/emoncms') => '/emoncms'
+		if (!is_null($documentRoot)) {
         $relativeApplicationPath = str_replace($documentRoot, '', $absolutePath);
+		}
 
         // Next up we will need to remove the '/emoncms' from the route path '/emoncms/user/view'
         // str_replace('/emoncms', '', '/emoncms/user/view') => '/user/view'

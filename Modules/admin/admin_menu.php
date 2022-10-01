@@ -1,6 +1,6 @@
 <?php
 global $session;
-if ($session["admin"]) {
+if ($session["write"] && $session["admin"]) {
     $menu['setup']['l2']['admin'] = array(
         'name' => _("Admin"),
         'href' => 'admin',
