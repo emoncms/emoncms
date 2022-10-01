@@ -78,7 +78,11 @@ function lang_http_accept()
 {
     $langs = array();
 
-    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) {
+    if (!$http_accept_language = server('HTTP_ACCEPT_LANGUAGE')) {
+        return $langs;
+    }
+    
+    foreach (explode(',',$http_accept_language) as $lang) {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
