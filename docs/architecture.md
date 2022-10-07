@@ -1,18 +1,12 @@
-## Architecture
+### Architecture
 
-***
+The emoncms architecture is a combination of a front controller on the server, a model-view-controller design pattern and a directory structure that makes adding features in a self contained modular way easy. 
 
-#### Overview
+As with most web applications emoncms has both a server side component and a client side component. The server side is written in PHP and client side is a mixture of html, css & javascript. This client side component is typically called a 'view' within emoncms. The server side 'controller' typically defines the HTTP API as well as providing the route for loading a view. Models typically implement a class that defines and implements interaction with the underlying database.
 
-As with an increasing number of web applications the basic design of emoncms is that you have client side html, css, javascript code that makes up your user interface and is loaded from the server when a page is initially requested.
+Although not adheared to strictly, emoncms does try to avoid siginificant use of PHP templating. It instead renders dynamic content and interacts with the server side API using Javascript, jQuery and VueJS. Data is usually passed back and forth in JSON format.
 
-With the client up and running the client side javascript queries the server API via AJAX requests with data passed back and forth in JSON format. The server API is a HTTP API to internal models which carry out things like data storage, processing and validation.
-
-Energy monitoring equipment directly interface with the server side API.
-
-#### Architecture
-
-In brief the emoncms architecture is a combination of a front controller on the server and model-view-controller design pattern and a directory structure that makes adding features in a self contained modular way easy. We will delve into each of these core architectural components in turn below.
+The server side API is also used directly by energy monitoring equipment posting data to emoncms.
 
 **Directory Structure**
 
