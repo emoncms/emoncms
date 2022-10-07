@@ -135,18 +135,18 @@ For developers: The following lists the locations of the files that define Emonc
 
 *Note: due to ongoing development some docs may now be outdated*
 
-- [Emoncms architecture](docs/architecture)
-- [Input processing implementation](docs/input-processing)
-- [Developing a new Module](docs/developing-a-new-module)
-- [Global variables in Emoncms](docs/global-variables)
+- [Emoncms architecture](docs/architecture.md)
+- [Input processing implementation](docs/input-processing.md)
+- [Developing a new Module](docs/developing-a-new-module.md)
+- [Global variables in Emoncms](docs/global-variables.md)
 
 **Emoncms timeseries database design (feed storage)**
 
-- [Emoncms time series database development history](docs/timeseries/History)
-- [Variable interval time series](docs/timeseries/Variable-interval)
-- [Fixed interval time series](docs/timeseries/Fixed-interval)
-- [Fixed interval with averaging time series](docs/Fixed-interval-averaging)
-- [Improving write performance with buffering](docs/timeseries/Write-load-investigation)
+- [Emoncms time series database development history](docs/timeseries/History.md)
+- [Variable interval time series](docs/timeseries/Variable-interval.md)
+- [Fixed interval time series](docs/timeseries/Fixed-interval.md)
+- [Fixed interval with averaging time series](docs/Fixed-interval-averaging.md)
+- [Improving write performance with buffering](docs/timeseries/Write-load-investigation.md)
 
 #### Android App
 
