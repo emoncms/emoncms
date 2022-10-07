@@ -135,18 +135,18 @@ For developers: The following lists the locations of the files that define Emonc
 
 *Note: due to ongoing development some docs may now be outdated*
 
-- [Emoncms architecture](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/architecture)
-- [Input processing implementation](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/input-processing)
-- [Developing a new Module](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/developing-a-new-module)
-- [Global variables in Emoncms](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/global-variables)
+- [Emoncms architecture](docs/architecture)
+- [Input processing implementation](docs/input-processing)
+- [Developing a new Module](docs/developing-a-new-module)
+- [Global variables in Emoncms](docs/global-variables)
 
 **Emoncms timeseries database design (feed storage)**
 
-- [Emoncms time series database development history](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/History)
-- [Variable interval time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Variable-interval)
-- [Fixed interval time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Fixed-interval)
-- [Fixed interval with averaging time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Fixed-interval-averaging)
-- [Improving write performance with buffering](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Write-load-investigation)
+- [Emoncms time series database development history](docs/timeseries/History)
+- [Variable interval time series](docs/timeseries/Variable-interval)
+- [Fixed interval time series](docs/timeseries/Fixed-interval)
+- [Fixed interval with averaging time series](docs/Fixed-interval-averaging)
+- [Improving write performance with buffering](docs/timeseries/Write-load-investigation)
 
 #### Android App
 
