@@ -78,7 +78,11 @@ function lang_http_accept()
 {
     $langs = array();
 
-    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) {
+    if (!$http_accept_language = server('HTTP_ACCEPT_LANGUAGE')) {
+        return $langs;
+    }
+    
+    foreach (explode(',',$http_accept_language) as $lang) {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
@@ -127,7 +131,7 @@ function set_lang($language)
     // loop through all given $language values
     // if given language is a key or value in the above list use it
     foreach ($language as $lang_code) {
-        $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
+        $lang_code = htmlspecialchars($lang_code);
         if (isset($supported_languages[$lang_code])) { // key check
             $lang = $supported_languages[$lang_code];
             break;

@@ -63,7 +63,7 @@ class Param
         
         // Decode encrypted parameters
         
-        if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
+        if (isset($_SERVER["CONTENT_TYPE"]) && ($_SERVER["CONTENT_TYPE"]=="aes128cbc" || $_SERVER["CONTENT_TYPE"]=="aes128cbcgz")) {
             // Fetch authorization header
             if (!isset($_SERVER["HTTP_AUTHORIZATION"])) {
                 echo "missing authorization header";
@@ -98,10 +98,10 @@ class Param
             // The binary encrypted data is decrypted using the apikey.
             // Note that the first 16 bytes of the encrypted data string are the IV and
             // the actual data follows
-            $dataString = @openssl_decrypt(substr($encryptedData, 16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData, 0, 16));
+            $decrypted = @openssl_decrypt(substr($encryptedData, 16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData, 0, 16));
             
             // HMAC generated from decoded data
-            $hmac2 = hash_hmac('sha256', $dataString, hex2bin($apikey));
+            $hmac2 = hash_hmac('sha256', $decrypted, hex2bin($apikey));
             
             if (!hash_equals($hmac1, $hmac2)) {
                 echo "invalid data";
@@ -113,6 +113,12 @@ class Param
             $session["read"] = true;
             $session["userid"] = $userid;
             
+            if ($_SERVER["CONTENT_TYPE"]=="aes128cbcgz") {
+                $dataString = gzuncompress($decrypted);
+            } else {
+                $dataString = $decrypted;
+            }
+            
             foreach (explode('&', $dataString) as $chunk) {
                 $param = explode("=", $chunk);
                 if (count($param)==2) {
@@ -122,7 +128,7 @@ class Param
                 }
             }
             
-            $this->sha256base64_response = str_replace(array('+','/'), array('-','_'), base64_encode(hash("sha256", $dataString, true)));
+            $this->sha256base64_response = str_replace(array('+','/'), array('-','_'), base64_encode(hash("sha256", $decrypted, true)));
         }
     }
     

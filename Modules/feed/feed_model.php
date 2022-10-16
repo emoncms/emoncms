@@ -385,6 +385,7 @@ class Feed
             $row['value'] = $lastvalue['value'];
             $meta = $this->get_meta($id);
             if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
+            if (isset($meta->end_time)) $row['end_time'] = $meta->end_time;
             if (isset($meta->interval)) $row['interval'] = $meta->interval;
             $feeds[] = $row;
         }
@@ -570,7 +571,7 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false,$dp=-1)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) {
@@ -599,12 +600,12 @@ class Feed
             if ($req_dp > $this->settings['max_datapoints']) {
                 return array(
                     "success"=>false, 
-                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or time range, requested datapoints = $req_dp"
+                    "message"=>"request datapoint limit reached (".$this->settings['max_datapoints']."), increase request interval or reduce time range, requested datapoints = $req_dp"
                 );
             }
         }
 
-        if (!in_array($timeformat,array("unix","unixms","excel","iso8601"))) {
+        if (!in_array($timeformat,array("unix","unixms","excel","iso8601","notime"))) {
             return array('success'=>false, 'message'=>'Invalid time format');
         }
         
@@ -651,6 +652,14 @@ class Feed
         }
         
         if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        
+        // Apply dp setting
+        if ($dp!=-1) {
+            $dp = (int) $dp;
+            for ($i=0; $i<count($data); $i++) {
+                $data[$i][1] = round($data[$i][1],$dp);
+            }
+        }
         
         // Apply different timeformats if applicable
         if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
@@ -748,6 +757,13 @@ class Feed
                     $date->setTimestamp($data[$i][0]);
                     $data[$i][0] = $date->format("c"); 
                 }
+                break;
+            case "notime":
+                $tmp = array();
+                for ($i=0; $i<count($data); $i++) {
+                    $tmp[] = $data[$i][1];
+                }
+                $data = $tmp;
                 break;
         }
         return $data;
@@ -914,6 +930,7 @@ class Feed
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        if (!count($data)) return array('success'=>false, 'message'=>'Data empty');
         $engine = $this->get_engine($feedid);
         
         // Post directly if phpfina, phptimeseries and number of data points is more than 10
@@ -926,7 +943,15 @@ class Feed
                 }
             }
         }
-        // $this->set_timevalue($feedid, $value, $updatetime);
+        
+        // Only update last time value if datapoint is >= the most recent datapoint
+        $lastdp = end($data);
+        if (count($lastdp)==2) {
+            $last = $this->get_timevalue($feedid);
+            if ($lastdp[0]>=$last['time']) {
+                $this->set_timevalue($feedid, $lastdp[1], $lastdp[0]);
+            }
+        }
         return array('success'=>true);
     }
     

@@ -40,7 +40,7 @@ class InputMethods
     {   
         // Nodeid
         global $route,$param,$log;
-        
+
         // Default nodeid is zero
         $nodeid = 0;
         
@@ -203,11 +203,15 @@ class InputMethods
     public function bulk($userid)
     {
         global $param;
-
+        
         $data = $param->val('data');
 
-        if ($param->exists('c')) {
-            // data is compressed
+        if ($param->exists('cb')) {
+            // data is compressed binary format
+            $data = file_get_contents('php://input');
+            $data = gzuncompress($data);
+        } elseif ($param->exists('c')) {
+            // data is compressed hex format
             $data = gzuncompress(hex2bin($data));
         }
         
@@ -257,8 +261,9 @@ class InputMethods
                 {
                     if (is_object($item[$i]))
                     {
-                        $value = (float) current($item[$i]);
-                        $inputs[key($item[$i])] = $value;
+                        foreach ($item[$i] as $key=>$value) {
+                            $inputs[$key] = (float) $value;
+                        }
                         continue;
                     }
                     if (strlen($item[$i]))
@@ -325,24 +330,5 @@ class InputMethods
         foreach ($tmp as $i) $this->process->input($time,$i['value'],$i['processList'],$i['opt']);
         
         return true;
-    }
-
-    // ------------------------------------------------------------------------------------
-    // Fall back for older PHP versions
-    // ------------------------------------------------------------------------------------
-    private function hex2bin($hexstr) 
-    { 
-        $n = strlen($hexstr); 
-        $sbin="";   
-        $i=0; 
-        while($i<$n) 
-        {       
-            $a =substr($hexstr,$i,2);           
-            $c = pack("H*",$a); 
-            if ($i==0){$sbin=$c;} 
-            else {$sbin.=$c;} 
-            $i+=2; 
-        } 
-        return $sbin; 
     }
 }

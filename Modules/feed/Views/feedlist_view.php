@@ -1,15 +1,25 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $settings;
+    global $path, $settings, $session;
     $v=1;
+    
+    $lang = "";
+    if (isset($_SESSION['lang'])) {
+        $lang = $_SESSION['lang']; 
+    }
+    
+    $public_username_str = "";
+    if ($session['public_userid']) {
+        $public_username_str = $session['public_username']."/";
+    }
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 
-<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
+<script src="<?php echo $path; ?>Lib/moment.min.js?v=1"></script>
 <script>
     var _user = {};
-    _user.lang = "<?php echo $_SESSION['lang']; ?>";
+    _user.lang = "<?php echo $lang; ?>";
 </script>
 <script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script>
@@ -151,8 +161,9 @@ body{padding:0!important}
 
 </style>
 <div id="feed-header">
-    <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
-    <h3><?php echo _('Feeds'); ?></h3>
+    <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
+    <h3 id="feeds-title"><?php echo _('Feeds'); ?></h3>
+    <h3 id="public-feeds-title" class="hide"><?php echo _('Public Feeds'); ?></h3>
 </div>
 
 <div class="controls" data-spy="affix" data-offset-top="100">
@@ -172,6 +183,10 @@ body{padding:0!important}
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
 
+<div id="public-feeds-none" class="alert alert-block hide">
+    <h4 class="alert-heading"><?php echo _('No public feeds available'); ?></h4>
+</div>
+
 <div id="feed-footer">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New feed'); ?></button>
@@ -189,40 +204,49 @@ body{padding:0!important}
         <h3 id="feedEditModalLabel"><?php echo _('Edit feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Feed node:'); ?><br>
-        <div class="autocomplete">
-            <input id="feed-node" type="text" style="margin-bottom:0">
+
+        <div class="input-prepend input-append" id="edit-feed-name-div">
+          <span class="add-on" style="width:100px"><?php echo _('Name'); ?></span>
+          <input id="feed-name" type="text" style="width:250px">
+          <button class="btn btn-primary feed-edit-save" field="name">Save</button>
         </div>
-        </p>
+    
+        <div class="input-prepend input-append">
+          <span class="add-on" style="width:100px"><?php echo _('Node'); ?></span>
+          <div class="autocomplete">
+              <input id="feed-node" type="text" style="width:250px">
+          </div>
+          <button class="btn btn-primary feed-edit-save" field="node">Save</button>
+        </div>
 
-        <p><?php echo _('Feed name:'); ?><br>
-        <input id="feed-name" type="text"></p>
+        <div class="input-prepend input-append">
+          <span class="add-on" style="width:100px"><?php echo _('Make public'); ?></span>
+          <span class="add-on" style="width:255px"><input id="feed-public" type="checkbox"></span>
+          <button class="btn btn-primary feed-edit-save" field="public">Save</button>
+        </div>
 
-        <p><?php echo _('Make feed public:'); ?>
-        <input id="feed-public" type="checkbox"></p>
-
-        <p><?php echo _('Feed Unit'); ?></p>
-        <div class="input-prepend">
-        <select id="feed_unit_dropdown" style="width:auto">
-            <option value=""></option>
-        <?php
-        // add available units from units.php
-        include('Lib/units.php');
-        if (defined('UNITS')) {
-            foreach(UNITS as $unit){
-                printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
-            }
-        }
-        ?>
-            <option value="_other"><?php echo _('Other'); ?></option>
-        </select>
-        <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>
+        <div class="input-prepend input-append" id="edit-feed-name-div">
+          <span class="add-on" style="width:100px"><?php echo _('Unit'); ?></span>
+          <select id="feed_unit_dropdown" style="width:auto">
+              <option value=""></option>
+              <?php
+              // add available units from units.php
+              include('Lib/units.php');
+              if (defined('UNITS')) {
+                  foreach(UNITS as $unit){
+                      printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
+                  }
+              }
+              ?>
+              <option value="_other"><?php echo _('Other'); ?></option>
+          </select>
+          <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>       
+          <button class="btn btn-primary feed-edit-save" field="unit">Save</button>
         </div>
     </div>
     <div class="modal-footer">
         <div id="feed-edit-save-message" style="position:absolute"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
-        <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>
 
@@ -321,6 +345,14 @@ body{padding:0!important}
 <?php require "Modules/process/Views/process_ui.php"; ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
+if (public_userid) {
+   $("#feeds-title").hide();
+   $("#public-feeds-title").show();
+}
+if (!session_write) {
+   $("#feed-footer").hide();
+}
+
 
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 
@@ -341,7 +373,10 @@ setInterval(update_feed_list,5000);
 
 var firstLoad = true;
 function update_feed_list() {
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
+    var public_username_str = "";
+    if (public_userid) public_username_str = public_username+"/";
+
+    $.ajax({ url: path+public_username_str+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
         if (data.message!=undefined && data.message=="Username or password empty") {
             window.location.href = "/";
@@ -352,10 +387,15 @@ function update_feed_list() {
         $('#feed-loader').hide();
         if (data.length == 0){
             //$("#feed-header").hide();
-            $("#feed-none").show();
+            if (public_userid) {
+                $("#public-feeds-none").show();
+            } else {
+                $("#feed-none").show();
+            }
         } else {
             //$("#feed-header").show();
             $("#feed-none").hide();
+            $("#public-feeds-none").hide();
         }
         feeds = {};
         for (var z in data) feeds[data[z].id] = data[z];
@@ -425,6 +465,8 @@ function update_feed_list() {
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
+                } else {
+                    title_lines.push(_('Feed Interval (approx)')+": "+(feed.interval||'')+'s')
                 }
                 var processListHTML = '';
                 if(feed.processList!=undefined && feed.processList.length > 0){
@@ -435,6 +477,11 @@ function update_feed_list() {
                 if(feed.start_time > 0) {
                     title_lines.push(_('Feed Start Time')+": "+feed.start_time);
                     title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
+                }
+
+                if(feed.end_time > 0) {
+                    title_lines.push(_('Feed End Time')+": "+feed.end_time);
+                    title_lines.push(format_time(feed.end_time,'LL LTS')+" UTC");
                 }
 
                 row_title = title_lines.join("\n");
@@ -494,7 +541,11 @@ $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
     if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
-    window.location = path+feedviewpath+feedid;
+    
+    var public_username_str = "";
+    if (public_userid) public_username_str = public_username+"/";
+    
+    window.location = path+public_username_str+feedviewpath+feedid;
 });
 
 $(".feed-graph").click(function(){
@@ -502,7 +553,11 @@ $(".feed-graph").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-    window.location = path+feedviewpath+graph_feeds.join(",");      
+
+    var public_username_str = "";
+    if (public_userid) public_username_str = public_username+"/";
+    
+    window.location = path+public_username_str+feedviewpath+graph_feeds.join(",");      
 });
 
 function buildFeedNodeList() {
@@ -561,8 +616,9 @@ $(".feed-edit").click(function() {
             feedid = z;
             if (edited_feeds.length == 1) {
                 $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
+                $("#edit-feed-name-div").show();               
             } else {
-                $("#feed-name").prop('disabled',true).val('').attr('placeholder',"<?php echo _('Unable to rename multiple feeds') ?>");
+                $("#edit-feed-name-div").hide();
             }
             $("#feed-node").val(feeds[feedid].tag);
             var checked = false; if (feeds[feedid]['public']==1) checked = true;
@@ -603,29 +659,40 @@ $(".feed-node").on('input', function(event){
     $('#feed-node').val($(this).val());
 });
 
-$("#feed-edit-save").click(function() {
+$(".feed-edit-save").click(function() {
     var feedid = 0;
     var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+    
+    var edit_field = $(this).attr("field");
+
+    var error = false;
 
     for (var z in selected_feeds) {
         if (selected_feeds[z]) {
             feedid = z; 
             
-            var publicfeed = 0;
-            if ($("#feed-public")[0].checked) publicfeed = 1;
-            
-            var unit = $('#feed_unit_dropdown').val();
-            unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit;
-            
-            var fields = {
-                'tag': $("#feed-node").val(), 
-                'public': publicfeed,
-                'unit': unit
-            };
-            // if only one feed selected add the name value
-            if(edited_feeds.length==1) {
+            var fields = {}
+
+            if (edit_field=="name" && edited_feeds.length==1) {
                 fields.name = $("#feed-name").val();
             }
+            
+            if (edit_field=="node") {
+                fields.tag = $("#feed-node").val();
+            }
+            
+            if (edit_field=="public") {
+                var publicfeed = 0;
+                if ($("#feed-public")[0].checked) publicfeed = 1;  
+                fields.public = publicfeed;
+            }
+
+            if (edit_field=="unit") {
+                var unit = $('#feed_unit_dropdown').val();
+                unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit;
+                fields.unit = unit;
+            }
+            
             // only send changed values
             var data = {};
             for (f in fields) {
@@ -644,15 +711,18 @@ $("#feed-edit-save").click(function() {
                 if(response.success !== true) {
                     // error
                     $('#feed-edit-save-message').text(response.message).fadeIn();
-                } else {
-                    // ok
-                    update_feed_list();
-                    $('#feedEditModal').modal('hide');
-                    $('#feed-edit-save-message').text('').hide();
+                    error = true;
                 }
             })
         }
     }
+    
+    if (!error) {
+        update_feed_list();
+        $('#feedEditModal').modal('hide');
+        $('#feed-edit-save-message').text('').hide();
+    }
+    
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -1195,10 +1265,10 @@ function feed_selection()
     });
     
     if (num_selected>0) {
-        $(".feed-delete").show();
+        if (session_write) $(".feed-delete").show();
         $(".feed-download").show();
         $(".feed-graph").show();
-        $(".feed-edit").show();
+        if (session_write) $(".feed-edit").show();
     } else {
         $(".feed-delete").hide();
         $(".feed-download").hide();
@@ -1209,7 +1279,11 @@ function feed_selection()
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
     // Only show feed process button for Virtual feeds
-    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) {
+        if (session_write) $(".feed-process").show(); 
+    } else {
+        $(".feed-process").hide();
+    }
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -1288,4 +1362,4 @@ var str_interval_for_download = "<?php echo _('Please select interval to downloa
 var str_large_download = "<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>";
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>

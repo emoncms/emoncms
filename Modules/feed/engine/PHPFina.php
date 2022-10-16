@@ -129,6 +129,7 @@ class PHPFina implements engine_methods
         }
         
         $meta->end_time = $meta->start_time + ($meta->interval * ($meta->npoints-1));
+        if ($meta->end_time<0) $meta->end_time = 0;
         
         return $meta;
     }

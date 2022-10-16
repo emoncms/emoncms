@@ -37,12 +37,14 @@ function feed_controller()
         if ($route->action=="") $route->action = "view";
 
         textdomain("messages");
-        if (($route->action == "view" || $route->action == "list") && $session['write']) {
+        if (($route->action == "view" || $route->action == "list")) {
+            if (!$session['read'] && !$session['public_userid']) return "";
             return view("Modules/feed/Views/feedlist_view.php");
         }
-        else if ($route->action == "api" && $session['write']) {
+        else if ($route->action == "api") {
+            if (!$session['read'] && !$session['public_userid']) return "";       
             require "Modules/feed/feed_api_obj.php";
-            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>9));
+            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
         }
         else if (!$session['read']) return ''; // empty strings force user back to login
         else return EMPTY_ROUTE; // this string displays error
@@ -53,12 +55,12 @@ function feed_controller()
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
-            if ($session['read']) {
-                if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
-                else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
-            }
-            else if (isset($_GET['userid'])) {
-                return $feed->get_user_public_feeds(get('userid'));
+            if ($session['public_userid']) {
+                return $feed->get_user_public_feeds($session['public_userid']);
+            } else if (isset($_GET['userid'])) {
+                return $feed->get_user_public_feeds((int)$_GET['userid']);
+            } else if ($session['read']) {
+                return $feed->get_user_feeds($session['userid']);
             } else {
                 return false;
             }
@@ -118,6 +120,7 @@ function feed_controller()
             $csv = get('csv',false,0);
             $skipmissing = get('skipmissing',false,0);
             $limitinterval = get('limitinterval',false,0);
+            $dp = get('dp',false,-1);
             
             $averages = array();
             if (isset($_GET['average'])) {
@@ -130,7 +133,7 @@ function feed_controller()
             }  
             
             // Backwards compatibility
-            if ($route->action=="average") $average = 1;
+            if ($route->action=="average") $average = 1; else $average = 0;
             if ($route->action=="csvexport") $csv = 1;
             if (isset($_GET['mode'])) $interval = $_GET['mode'];
             
@@ -151,10 +154,10 @@ function feed_controller()
                             $results[$index] = array('feedid'=>$feedid);
                             if (!isset($_GET['split'])) {
                             
-                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index]; else $average = 0;
+                                if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index];
                                 if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
                                 
-                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta);
+                                $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta,$dp);
                             } else {
                                 $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,get('split'));
                             }

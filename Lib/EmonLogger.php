@@ -40,11 +40,13 @@ class EmonLogger
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile)) {
                 $fh = @fopen($this->logfile, "a");
-                @fclose($fh);
+                if (!$fh) {
+                   error_log("Log file could not be created");
+                } else {
+                   @fclose($fh);
+                }
             }
-            if (is_writable($this->logfile)) {
-                $this->logenabled = true;
-            }
+            $this->logenabled = is_writable($this->logfile);
         }
     }
     
@@ -92,7 +94,7 @@ class EmonLogger
         }
 
         $now = microtime(true);
-        $micro = sprintf("%03d", ($now - ($now >> 0)) * 1000);
+        $micro = sprintf("%03d", ($now - round($now,0,PHP_ROUND_HALF_DOWN)) * 1000);
         $now = DateTime::createFromFormat('U', (int)$now); // Only use UTC for logs
         $now = $now->format("Y-m-d H:i:s").".$micro";
         // Clear log file if more than 256MB (temporary solution)
