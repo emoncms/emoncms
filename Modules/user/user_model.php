@@ -277,8 +277,7 @@ class User
         $apikey_read = generate_secure_key(16);
         
         // MQTT hash
-        include "Lib/mqtt_hash.php";
-        $mqtthash = create_hash($password);
+        $mqtthash = generate_pbkdf2($password);
 
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, mqtthash, admin) VALUES (?,?,?,?,?,?,?,0)");
         $stmt->bind_param("sssssss", $username, $hash, $email, $salt, $apikey_read, $apikey_write, $mqtthash);
@@ -515,11 +514,8 @@ class User
             $hash = hash('sha256', $new);
             $salt = generate_secure_key(16);
             $hash = hash('sha256', $salt . $hash);
-            
-            // MQTT hash
-            include "Lib/mqtt_hash.php";
-            $mqtthash = create_hash($new);
-
+            $mqtthash = generate_pbkdf2($new);
+        
             $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ?, mqtthash = ? WHERE id = ?");
             $stmt->bind_param("sssi", $hash, $salt, $mqtthash, $userid);
             $stmt->execute();
@@ -554,6 +550,7 @@ class User
             {
                 // Generate new random password
                 $newpass = hash('sha256',generate_secure_key(32));
+                $mqtthash = generate_pbkdf2($newpass);
 
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
@@ -573,8 +570,8 @@ class User
                 } else {
                     $this->log->info("Email sent to $emailto");
                     // Save password and salt
-                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
-                    $stmt->bind_param("ssi", $password, $salt, $userid);
+                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ?, mqtthash = ? WHERE id = ?");
+                    $stmt->bind_param("ssi", $password, $salt, $mqtthash, $userid);
                     $stmt->execute();
                     $stmt->close();
                     return array('success'=>true, 'message'=>"Password recovery email sent!");

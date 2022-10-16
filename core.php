@@ -360,3 +360,13 @@ function generate_secure_key($length) {
         return bin2hex(openssl_random_pseudo_bytes($length));
     }
 }
+
+function generate_pbkdf2($password) {
+	  $saltSize = 16;
+	  $iterations = 1000;
+	  $algorithm = "sha256";
+	  $hash_size = 32; // Set to 64 if sha512
+	  $salt = random_bytes($saltSize);
+    $hash = hash_pbkdf2($algorithm,$password,$salt,$iterations,$hash_size,true);
+    return 'PBKDF2$'.$algorithm.'$'.$iterations.'$'.base64_encode($salt).'$'.base64_encode($hash);
+}
