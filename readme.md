@@ -54,6 +54,8 @@ The following API references apply to emoncms.org. They differ slightly to the A
 
 ## Install
 
+Emoncms is designed and tested to run on either Ubuntu Linux (Local, Dedicated machine or VPS) or RaspberryPi OS. It should work on other Debian Linux systems though we dont test or provide documentation for installation on these. We do not recommend or support installation on shared hosting or XAMPP servers, there is now a large choice of low cost miniature VPS hosting solutions that provide a much better installation environment than is provided by shared hosting options.
+
 Recommended: 
 
 * [New: Debian build script](https://github.com/openenergymonitor/EmonScripts/tree/master/install/readme.md)
@@ -63,11 +65,6 @@ Recommended:
 Experimental (not currently up to date):
 
 * [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
-
-Other (less supported, not tested on latest versions of Emoncms)
-
-* [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
-* [Windows](docs/WindowsInstall.md) Emoncms is developed and tested on Linux only and so additional research, steps may be required that are not covered in this guide.
 
 ## Modules
 
