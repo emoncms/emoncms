@@ -188,6 +188,7 @@ class Feed
             $this->redis->srem("user:feeds:$userid",$feedid);
         }
         $this->log->info("delete() feedid=$feedid");
+        return array('success'=>true, 'message'=>'Feed removed successfully.');
     }
 
     public function trim($feedid,$start_time)
