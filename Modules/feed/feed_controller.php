@@ -56,17 +56,17 @@ function feed_controller()
         if ($route->action == "list")
         {
             if ($session['public_userid']) {
-                return $feed->get_user_public_feeds($session['public_userid']);
+                return $feed->get_user_public_feeds($session['public_userid'],get("meta",false,0));
             } else if (isset($_GET['userid'])) {
-                return $feed->get_user_public_feeds((int)$_GET['userid']);
+                return $feed->get_user_public_feeds((int)$_GET['userid'],get("meta",false,0));
             } else if ($session['read']) {
-                return $feed->get_user_feeds($session['userid']);
+                return $feed->get_user_feeds($session['userid'],get("meta",false,0));
             } else {
                 return false;
             }
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
-            return $feed->get_user_feeds_with_meta($session['userid']);
+            return $feed->get_user_feeds($session['userid'],1);
         } elseif ($route->action == "getid" && $session['read']) { 
             $route->format = "text";
             if (isset($_GET["tag"]) && isset($_GET["name"])) {
@@ -207,7 +207,7 @@ function feed_controller()
                     else if ($route->action == "get") return $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") return $feed->get($feedid);
                     else if ($route->action == "getmeta") return $feed->get_meta($feedid);
-                    else if ($route->action == "setstartdate") return $feed->set_start_date($feedid,get('startdate'));
+                    else if ($route->action == "getfeedsize") return $feed->get_feed_size($feedid);
                     else if ($route->action == "export") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
                         elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));

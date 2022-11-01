@@ -325,6 +325,12 @@ class Feed
         return $total;
     }
 
+    public function get_feed_size($feedid) {
+        $feedid = (int) $feedid;
+        $engine = $this->get_engine($feedid);
+        return $this->EngineClass($engine)->get_feed_size($feedid);
+    }
+
     // Get REDISBUFFER date value elements pending save to a feed
     public function get_buffer_size()
     {
@@ -352,50 +358,66 @@ class Feed
     get_user_public_feeds  : all the public feeds table data
     get_user_feed_ids      : only the feeds id's
     */
-    public function get_user_feeds($userid)
+    public function get_user_feeds($userid,$getmeta=0)
     {
         $userid = (int) $userid;
+        $getmeta= (int) $getmeta;
+        
         if ($this->redis) {
-            $feeds = $this->redis_get_user_feeds($userid);
+            $feeds = $this->redis_get_user_feeds($userid,$getmeta);
         } else {
-            $feeds = $this->mysql_get_user_feeds($userid);
+            $feeds = $this->mysql_get_user_feeds($userid,$getmeta);
         }
         return $feeds;
     }
 
-    public function get_user_public_feeds($userid)
+    public function get_user_public_feeds($userid,$getmeta=0)
     {
-        $feeds = $this->get_user_feeds($userid);
+        $userid = (int) $userid;
+        $getmeta= (int) $getmeta;
+        
+        $feeds = $this->get_user_feeds($userid,$getmeta);
         $publicfeeds = array();
         foreach ($feeds as $feed) { if ($feed['public']) $publicfeeds[] = $feed; }
         return $publicfeeds;
     }
 
-    private function redis_get_user_feeds($userid)
+    private function redis_get_user_feeds($userid,$getmeta=0)
     {
         $userid = (int) $userid;
+        $getmeta= (int) $getmeta;
+        
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
-        $feeds = array();
+
         $feedids = $this->redis->sMembers("user:feeds:$userid");
-        foreach ($feedids as $id)
-        {
-            $row = $this->redis->hGetAll("feed:$id");
-            $lastvalue = $this->get_timevalue($id);
-            $row['time'] = $lastvalue['time'];
-            $row['value'] = $lastvalue['value'];
-            $meta = $this->get_meta($id);
-            if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
-            if (isset($meta->end_time)) $row['end_time'] = $meta->end_time;
-            if (isset($meta->interval)) $row['interval'] = $meta->interval;
-            $feeds[] = $row;
+        
+        $pipe = $this->redis->multi(Redis::PIPELINE);
+        foreach ($feedids as $id) $this->redis->hGetAll("feed:$id");
+        $feeds = $pipe->exec();
+        
+        if ($getmeta) {
+            foreach ($feeds as $k=>$f) {
+                $lastvalue = $this->get_timevalue($f['id']);
+                $row['time'] = $f['time'];
+                $row['value'] = $f['value'];
+
+                $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
+                if (isset($meta->start_time)) $f['start_time'] = $meta->start_time;
+                if (isset($meta->end_time)) $f['end_time'] = $meta->end_time;
+                if (isset($meta->interval)) $f['interval'] = $meta->interval;
+                if (isset($meta->npoints)) $f['npoints'] = $meta->npoints;
+                $feeds[$k] = $f;
+            }
         }
 
         return $feeds;
     }
 
-    private function mysql_get_user_feeds($userid)
+    private function mysql_get_user_feeds($userid,$getmeta=false)
     {
         $userid = (int) $userid;
+        $getmeta= (int) $getmeta;
+        
         $feeds = array();
         $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
@@ -417,16 +439,7 @@ class Feed
     public function get_user_feeds_with_meta($userid)
     {
         $userid = (int) $userid;
-        $feeds = $this->get_user_feeds($userid);
-        for ($i=0; $i<count($feeds); $i++) {
-            $id = $feeds[$i]["id"];
-            if ($meta = $this->get_meta($id)) {
-                foreach ($meta as $meta_key=>$meta_val) {
-                    $feeds[$i][$meta_key] = $meta_val;
-                }
-            }
-        }
-        return $feeds;
+        return $this->get_user_feeds($userid,1);
     }
 
     /**
@@ -595,6 +608,9 @@ class Feed
         
         // Maximum request size
         if (!$csv && is_numeric($interval)) {
+        
+            if ($interval<1) return array('success'=>false, 'message'=>"Invalid interval");
+        
             $period = $end-$start;
             $req_dp = round($period / $interval);
             if ($req_dp > $this->settings['max_datapoints']) {
@@ -965,7 +981,11 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
         if ($engine==Engine::PHPFINA) {
-            return $this->EngineClass($engine)->upload_fixed_interval($feedid,$start,$interval,$npoints);
+            $result = $this->EngineClass($engine)->upload_fixed_interval($feedid,$start,$interval,$npoints);
+            $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+            $this->redis->hMset("feed:$feedid", $lastvalue);
+            return $result;
+            
         } else {
             return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
         }

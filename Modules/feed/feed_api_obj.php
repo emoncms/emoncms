@@ -17,7 +17,9 @@ function feed_api_obj() {
     array(
       "description" => _("List feeds"),
       "path" =>  $public_username_str."feed/list.json",
-      "parameters" => array(),
+      "parameters" => array(
+        "meta" => array( "default" => 1 )
+      ),
       "mode"=>"read"
     ),
     array(

@@ -319,7 +319,7 @@ class User
         if ($email_verified) return array('success'=>false, 'message'=>_("Email already verified"));
         
         // Create new verification key
-        $verification_key = generate_secure_key(16);
+        $verification_key = generate_secure_key(32);
         // Save new verification key
         $stmt = $this->mysqli->prepare("UPDATE users SET verification_key=? WHERE id=?");
         $stmt->bind_param("si",$verification_key,$id);
@@ -355,7 +355,7 @@ class User
     public function verify_email($email,$verification_key)
     {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
-        if (strlen($verification_key)!=32) return array('success'=>false, 'message'=>_("Invalid verification key"));
+        if (strlen($verification_key)!=64) return array('success'=>false, 'message'=>_("Invalid verification key"));
         
         $stmt = $this->mysqli->prepare("SELECT id,email_verified FROM users WHERE email=? AND verification_key=?");
         $stmt->bind_param("ss",$email,$verification_key);

@@ -101,11 +101,17 @@ function getdp() {
         dataType: 'json',
         async: true,
         success: function(result) {
-            if (data.length == 0 || data[data.length - 1][0] != result.time * 1000) {
+            if (data.length == 0) {
                 data.push([result.time * 1000, parseFloat(result.value)]);
             }
-            if (data.length > 0 && data[1] && data[1][0] < (start)) data.splice(0, 1);
-            data.sort();
+            else if (data.length>0) {
+                if (data[data.length - 1][0] != result.time * 1000) {
+                    data.push([result.time * 1000, parseFloat(result.value)]);
+                }
+                
+                if (data[1] && data[1][0] < (start)) data.splice(0, 1);
+                data.sort();
+            }
         }
     });
 }

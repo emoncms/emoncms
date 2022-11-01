@@ -376,7 +376,7 @@ function update_feed_list() {
     var public_username_str = "";
     if (public_userid) public_username_str = public_username+"/";
 
-    $.ajax({ url: path+public_username_str+"feed/list.json", dataType: 'json', async: true, success: function(data) {
+    $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data) {
     
         if (data.message!=undefined && data.message=="Username or password empty") {
             window.location.href = "/";
