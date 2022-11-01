@@ -399,8 +399,8 @@ class Feed
         if ($getmeta) {
             foreach ($feeds as $k=>$f) {
                 $lastvalue = $this->get_timevalue($f['id']);
-                $row['time'] = $f['time'];
-                $row['value'] = $f['value'];
+                $f['time'] = $lastvalue['time'];
+                $f['value'] = $lastvalue['value'];
 
                 $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
                 if (isset($meta->start_time)) $f['start_time'] = $meta->start_time;
