@@ -242,9 +242,11 @@ function feed_controller()
                     // insert available here for backwards compatibility
                     } else if ($route->action == "insert" || $route->action == "update" || $route->action == "post") {
                         
+                        $join = get('join',false,false);
+
                         // Single data point
                         if (isset($_GET['time']) || isset($_GET['value'])) {
-                             return $feed->post($feedid,time(),get("time"),get("value"));
+                             return $feed->post($feedid,time(),get("time"),get("value"),$join);
                         }
 
                         // Single or multiple datapoints via json format
@@ -261,7 +263,7 @@ function feed_controller()
                         
                         if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
                         
-                        return $feed->post_multiple($feedid,$data);
+                        return $feed->post_multiple($feedid,$data,$join);
 
                     // Delete feed
                     } else if ($route->action == "delete") {

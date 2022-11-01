@@ -68,7 +68,7 @@ class RedisBuffer implements engine_methods
     */
     public function post($feedid,$time,$value,$args=null)
     {
-        $arg = $args['arg'];
+        $arg = $args['padding_mode'];
         $engine = $args['engine'];
         $updatetime = $args['updatetime']; // This is time it was received not time for value
         if ($arg != null) $arg="|".$arg; // passes arg to redis

@@ -100,12 +100,12 @@ class CassandraEngine implements engine_methods
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param arg $value optional padding mode argument
+     * @param padding_mode $value optional padding mode argument
      *
      * {@inheritdoc}
      *
      */
-    public function post($feedid,$time,$value,$arg=null)
+    public function post($feedid,$time,$value,$padding_mode=null)
     {
         $feedid = (int) $feedid;
         $time = (int) $time;

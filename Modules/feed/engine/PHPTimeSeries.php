@@ -146,16 +146,16 @@ class PHPTimeSeries implements engine_methods
      * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param array $arg optional padding mode argument
+     * @param array $padding_mode optional padding mode argument
     */
-    public function post($id,$timestamp,$value,$arg=null)
+    public function post($id,$timestamp,$value,$padding_mode=null)
     {
         $data = array(array($timestamp,$value));
-        $this->post_multiple($id,$data,$arg);
+        $this->post_multiple($id,$data,$padding_mode);
         return $value;
     }
     
-    public function post_bulk_prepare($id,$time,$value,$arg=null)
+    public function post_bulk_prepare($id,$time,$value,$padding_mode=null)
     {
         $id = (int) $id;
         $this->post_buffer[$id][] = array($time,$value);
@@ -169,7 +169,7 @@ class PHPTimeSeries implements engine_methods
         $this->post_buffer = array();
     }
     
-    public function post_multiple($id,$data,$arg=null)
+    public function post_multiple($id,$data,$padding_mode=null)
     {
         $id = (int) $id;
         

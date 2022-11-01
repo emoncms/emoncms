@@ -151,7 +151,7 @@ class PHPFina implements engine_methods
      * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param array $arg optional padding mode argument
+     * @param array $padding_mode optional padding mode argument
     */
     public function post($id,$timestamp,$value,$padding_mode=null)
     {

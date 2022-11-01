@@ -171,10 +171,10 @@ class MysqlTimeSeries implements engine_methods
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param array arg $value optional padding mode argument
+     * @param array padding_mode $value optional padding mode argument
      * $feedname, $time and $value are all typecased in feed->insert and feed->update
     */
-    public function post($feedid, $time, $value, $arg=null)
+    public function post($feedid, $time, $value, $padding_mode=null)
     {
         $table = $this->get_table_name(intval($feedid));
         $this->mysqli->query("INSERT INTO $table (time,data) VALUES ('$time','$value') ON DUPLICATE KEY UPDATE data=VALUES(data)");
@@ -637,10 +637,10 @@ class MysqlTimeSeries implements engine_methods
 // #### \/ Below are buffer write methods
 
     // Insert data in post buffer
-    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
+    public function post_bulk_prepare($feedid,$time,$value,$padding_mode=null)
     {
         $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
-        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $arg");
+        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $padding_mode");
     }
 
     // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point

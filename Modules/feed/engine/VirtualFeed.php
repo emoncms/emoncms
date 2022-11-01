@@ -46,7 +46,7 @@ class VirtualFeed implements engine_methods
         return 0;  // Always 0
     }
 
-    public function post($feedid,$time,$value,$arg=null)
+    public function post($feedid,$time,$value,$padding_mode=null)
     {
         return false; // Not supported by engine
     }

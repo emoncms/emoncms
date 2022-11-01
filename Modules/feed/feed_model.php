@@ -917,9 +917,9 @@ class Feed
         }
     }
 
-    public function post($feedid,$updatetime,$feedtime,$value,$arg=null)
+    public function post($feedid,$updatetime,$feedtime,$value,$padding_mode=null)
     {
-        $this->log->info("post() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
+        $this->log->info("post() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value padding_mode=$padding_mode");
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -931,11 +931,11 @@ class Feed
         $engine = $this->get_engine($feedid);
         if ($this->settings['redisbuffer']['enabled']) {
             // Call to buffer post
-            $args = array('engine'=>$engine,'updatetime'=>$updatetime,'arg'=>$arg);
+            $args = array('engine'=>$engine,'updatetime'=>$updatetime,'padding_mode'=>$padding_mode);
             $this->EngineClass(Engine::REDISBUFFER)->post($feedid,$feedtime,$value,$args);
         } else {
             // Call to engine post
-            $this->EngineClass($engine)->post($feedid,$feedtime,$value,$arg);
+            $this->EngineClass($engine)->post($feedid,$feedtime,$value,$padding_mode);
         }
 
         $this->set_timevalue($feedid, $value, $updatetime);
@@ -943,7 +943,7 @@ class Feed
         return $value;
     }
     
-    public function post_multiple($feedid,$data,$arg=null)
+    public function post_multiple($feedid,$data,$padding_mode=null)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -952,11 +952,11 @@ class Feed
         
         // Post directly if phpfina, phptimeseries and number of data points is more than 10
         if (($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) && count($data)>10) {
-            $this->EngineClass($engine)->post_multiple($feedid,$data,$arg);
+            $this->EngineClass($engine)->post_multiple($feedid,$data,$padding_mode);
         } else {
             foreach ($data as $dp) {
                 if (count($dp)==2) {
-                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1]);
+                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1],$padding_mode);
                 }
             }
         }
