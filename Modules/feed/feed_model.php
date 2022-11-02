@@ -395,20 +395,30 @@ class Feed
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($feedids as $id) $this->redis->hGetAll("feed:$id");
         $feeds = $pipe->exec();
-        
-        if ($getmeta) {
-            foreach ($feeds as $k=>$f) {
-                $lastvalue = $this->get_timevalue($f['id']);
-                $f['time'] = $lastvalue['time'];
-                $f['value'] = $lastvalue['value'];
 
+        foreach ($feeds as $k=>$f) {
+            
+            if ($f['engine']==Engine::VIRTUALFEED) {
+                $timevalue = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($f['id']);
+                $f['time'] = $timevalue['time'];
+                $f['value'] = $timevalue['value'];
+            } else if (!isset($f['time'])) {
+                if ($timevalue = $this->EngineClass($f['engine'])->lastvalue($f['id'])) {
+                    $this->redis->hMset("feed:$id", $timevalue);
+                    $f['time'] = $timevalue['time'];
+                    $f['value'] = $timevalue['value'];               
+                }
+            }
+            $f = $this->validate_timevalue($f);
+            
+            if ($getmeta) {
                 $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
                 if (isset($meta->start_time)) $f['start_time'] = $meta->start_time;
                 if (isset($meta->end_time)) $f['end_time'] = $meta->end_time;
                 if (isset($meta->interval)) $f['interval'] = $meta->interval;
                 if (isset($meta->npoints)) $f['npoints'] = $meta->npoints;
-                $feeds[$k] = $f;
             }
+            $feeds[$k] = $f;
         }
 
         return $feeds;
@@ -536,17 +546,7 @@ class Feed
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
-                if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
-                    $lastvalue['time'] = null;
-                } else {
-                    $lastvalue['time'] = (int) $lastvalue['time'];
-                }
-                if (!isset($lastvalue['value']) || !is_numeric($lastvalue['value']) || is_nan($lastvalue['value'])) {
-                    $lastvalue['value'] = null;
-                } else {
-                    $lastvalue['value'] = (float) $lastvalue['value'];
-                }
-                // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
+                $lastvalue = $this->validate_timevalue($lastvalue);
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 if ($lastvalue = $this->EngineClass($engine)->lastvalue($id)) {
@@ -1177,18 +1177,27 @@ class Feed
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
         {
+            $properties = array(
+                'id'=>$row->id,
+                'userid'=>$row->userid,
+                'name'=>$row->name,
+                'tag'=>$row->tag,
+                'public'=>$row->public,
+                'size'=>$row->size,
+                'engine'=>$row->engine,
+                'processList'=>$row->processList,
+                'unit'=> !empty($row->unit) ? $row->unit : ''
+            );
+            
+            if ($row->engine!=Engine::VIRTUALFEED) {
+                if ($timevalue = $this->EngineClass($row->engine)->lastvalue($row->id)) {
+                    $properties['time'] = $timevalue['time'];
+                    $properties['value'] = $timevalue['value'];
+                }
+            }
+            
             $this->redis->sAdd("user:feeds:$userid", $row->id);
-            $this->redis->hMSet("feed:$row->id",array(
-            'id'=>$row->id,
-            'userid'=>$row->userid,
-            'name'=>$row->name,
-            'tag'=>$row->tag,
-            'public'=>$row->public,
-            'size'=>$row->size,
-            'engine'=>$row->engine,
-            'processList'=>$row->processList,
-            'unit'=> !empty($row->unit) ? $row->unit : ''
-            ));
+            $this->redis->hMSet("feed:$row->id",$properties);
         }
     }
 
@@ -1200,7 +1209,8 @@ class Feed
             $this->log->warn("Feed model: Requested feed does not exist feedid=$id");
             return false;
         }
-        $this->redis->hMSet("feed:$row->id",array(
+        
+        $properties = array(
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
@@ -1210,7 +1220,16 @@ class Feed
             'engine'=>$row->engine,
             'processList'=>$row->processList,
             'unit'=> !empty($row->unit) ? $row->unit : ''
-        ));
+        );
+
+        if ($row->engine!=Engine::VIRTUALFEED) {
+            if ($timevalue = $this->EngineClass($row->engine)->lastvalue($row->id)) {
+                $properties['time'] = $timevalue['time'];
+                $properties['value'] = $timevalue['value'];
+            }
+        }
+        
+        $this->redis->hMSet("feed:$row->id",$properties);
         return true;
     }
 
@@ -1242,6 +1261,20 @@ class Feed
             $timezone = "UTC";
         }
         return $timezone;
+    }
+    
+    public function validate_timevalue($timevalue) {
+        if (!isset($timevalue['time']) || !is_numeric($timevalue['time']) || is_nan($timevalue['time'])) {
+            $timevalue['time'] = null;
+        } else {
+            $timevalue['time'] = (int) $timevalue['time'];
+        }
+        if (!isset($timevalue['value']) || !is_numeric($timevalue['value']) || is_nan($timevalue['value'])) {
+            $timevalue['value'] = null;
+        } else {
+            $timevalue['value'] = (float) $timevalue['value'];
+        }
+        return $timevalue;
     }
     
     // ------------------------------------------
