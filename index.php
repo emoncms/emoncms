@@ -96,6 +96,11 @@ if (!$mysqli->connect_error && $settings["sql"]["dbtest"]==true) {
     }
 }
 
+if (!$redis) {
+    require("Lib/SQLMemoryCache.php");
+    $redis = new SQLMemoryCache($mysqli);
+}
+
 // 3) User sessions
 require("Modules/user/user_model.php");
 $user = new User($mysqli, $redis);
