@@ -102,6 +102,14 @@ function admin_controller()
             'serial_ports'=>$admin->listSerialPorts()
         ));
     }
+
+    // Firmware view
+    if ($route->action == 'serconfig') {
+        $route->format = 'html';
+        return view("Modules/admin/Views/serial_config_view.php", array(
+            'serial_ports'=>$admin->listSerialPorts()
+        ));
+    }
     
     // Emoncms log view
     if ($route->action == 'log') {

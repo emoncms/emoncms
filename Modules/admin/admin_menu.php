@@ -33,6 +33,12 @@ if ($session["write"] && $session["admin"]) {
                 "order"=>1, 
                 "icon"=>"input"
             ),
+            "serialconfig"=>array(
+                "name"=>_("Serial Config"),
+                "href"=>"admin/serconfig", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
             "log"=>array(
                 "name"=>_("Emoncms Log"),
                 "href"=>"admin/log", 

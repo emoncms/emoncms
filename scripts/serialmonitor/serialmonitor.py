@@ -119,6 +119,6 @@ while True:
             if cmd=="exit":
                 sys.exit(0)   
             elif cmd!="":
-                ser.write((cmd+"\r\n").encode())
+                ser.write((cmd+"\n").encode())
 # -------------------------------------------------------------
 
