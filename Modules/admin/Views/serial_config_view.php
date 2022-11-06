@@ -7,39 +7,36 @@
   line-height:31px;
 }
 </style>
-<div class="admin-container">
 
-<div class="input-prepend input-append start-options hide" style="float:right; margin-top:4px">
-  <button id="start" class="btn"><?php echo _('Start'); ?></button>
-  <select id="serialport">
-    <?php foreach ($serial_ports as $port) { ?>
-    <option><?php echo $port; ?></option>
-    <?php } ?>
-  </select>  
-  <select id="baudrate">
-    <option>9600</option>
-    <option selected>38400</option>
-    <option>115200</option>
-  </select>
-</div>
+<div id="app">
 
-<button id="stop" class="btn hide" style="float:right; margin-top:4px"><?php echo _('Stop'); ?></button>
+  <div class="input-prepend input-append start-options" style="float:right; margin-top:4px" v-if="!connected">
+    <button class="btn btn-success" @click="start"><?php echo _('Start'); ?></button>
+    <select v-model="serialport">
+      <?php foreach ($serial_ports as $port) { ?>
+      <option><?php echo $port; ?></option>
+      <?php } ?>
+    </select>  
+    <select v-model="baudrate">
+      <option>9600</option>
+      <option selected>38400</option>
+      <option>115200</option>
+    </select>
+  </div>
+
+  <button class="btn btn-danger" style="float:right; margin-top:4px" @click="stop" v-if="connected"><?php echo _('Stop Serial'); ?></button>
 
   <h3 style="color:#333">EmonTx4 Serial Config Tool</h3>
 
-<div id="emonhub-running-notice" class="alert hide">
-  <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently running and may conflict with serial monitor'); ?>
-  <button id="stopEmonHub" class="btn" style="float:right"><?php echo _('Stop EmonHub'); ?></button>
-</div>
+  <div id="emonhub-running-notice" class="alert hide">
+    <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently running and may conflict with serial monitor'); ?>
+    <button id="stopEmonHub" class="btn" style="float:right"><?php echo _('Stop EmonHub'); ?></button>
+  </div>
 
-<div id="emonhub-stopped-notice" class="alert alert-success hide">
-  <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
-  <button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
-</div>
-
-</div>
-
-<div id="app">
+  <div id="emonhub-stopped-notice" class="alert alert-success hide">
+    <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
+    <button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
+  </div>
 
   <div class="input-prepend input-append">
     <span class="add-on">WiFi</span>
@@ -112,6 +109,8 @@ var flag = false;
 var app = new Vue({
   el: '#app',
   data: {
+    serialport: "ttyUSB0",
+    baudrate: 115200,
     button_connect_text: "Connect",
     cts_available: [200,100,50,25,20],
     emontx: {
@@ -136,8 +135,45 @@ var app = new Vue({
     input: ''
   },
   methods: {
-    connect: function() {
-      // connect();
+    start: function() {
+      $("#log").html("");
+      $.ajax({ 
+          type: "POST",
+          url: path+"admin/serialmonitor/start", 
+          data: "baudrate="+app.baudrate+"&serialport="+app.serialport,
+          async: true, 
+          dataType: "json", 
+          success: function(result) {
+              if (result.reauth == true) { window.location.reload(true); }
+              if (result.success == false)  { 
+                  $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+              } else {
+                  $("#log").append(htmlEntities(result.message) + "\n");
+              }
+              setTimeout(function(){
+                  is_running();
+              },500);
+          } 
+      });
+    },
+    stop: function() {
+      $("#log").html("");
+      $.ajax({ 
+          url: path+"admin/serialmonitor/stop", 
+          async: true, 
+          dataType: "json", 
+          success: function(result) {
+              if (result.reauth == true) { window.location.reload(true); }
+              if (result.success == false)  { 
+                  $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
+              } else {
+                  $("#log").append(htmlEntities(result.message) + "\n");
+              }
+              setTimeout(function(){
+                  is_running();
+              },500);
+          } 
+      });  
     },
     set_ical: function(i) {
       let ical = app.emontx.channels[i].ical / 0.333;
@@ -204,8 +240,6 @@ function writeToStream(cmd) {
         } 
     });
 }
-
-
 
 function process_line(line) {
 
@@ -283,10 +317,8 @@ function process_line(line) {
 
 }
 
-
 var updates_log_interval;
 updates_log_interval = setInterval(update_log,1000);
-$("#logreply-bound").slideDown();
 
 function update_log() {
     $.ajax({ 
@@ -343,6 +375,7 @@ function is_running() {
                 $("#stop").hide();
                 $(".send-cmd").hide();
                 $("#log").append("Serialmonitor service is not running, click start to start!\n");
+                app.connected = false;
             }
         }
     });
@@ -391,50 +424,6 @@ is_running();
 var updates_is_running;
 updates_is_running = setInterval(is_running,2000);
 
-$("#start").click(function() {
-    $("#log").html("");
-    var serialport = $("#serialport").val();
-    var baudrate = $("#baudrate").val();
-
-    $.ajax({ 
-        type: "POST",
-        url: path+"admin/serialmonitor/start", 
-        data: "baudrate="+baudrate+"&serialport="+serialport,
-        async: true, 
-        dataType: "json", 
-        success: function(result) {
-            if (result.reauth == true) { window.location.reload(true); }
-            if (result.success == false)  { 
-                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
-            } else {
-                $("#log").append(htmlEntities(result.message) + "\n");
-            }
-            setTimeout(function(){
-                is_running();
-            },500);
-        } 
-    });
-});
-
-$("#stop").click(function() {
-    $("#log").html("");
-    $.ajax({ 
-        url: path+"admin/serialmonitor/stop", 
-        async: true, 
-        dataType: "json", 
-        success: function(result) {
-            if (result.reauth == true) { window.location.reload(true); }
-            if (result.success == false)  { 
-                $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
-            } else {
-                $("#log").append(htmlEntities(result.message) + "\n");
-            }
-            setTimeout(function(){
-                is_running();
-            },500);
-        } 
-    });
-});
 /*
 $("#cmd").on('keyup', function (e) {
     if (e.key === 'Enter' || e.keyCode === 13) {
@@ -442,7 +431,6 @@ $("#cmd").on('keyup', function (e) {
     }
 });
 */
-
 
 $("#stopEmonHub").click(function() {
     setService("emonhub","stop");
