@@ -547,6 +547,12 @@ class Feed
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
                 $lastvalue = $this->validate_timevalue($lastvalue);
+            
+                // Test for avoid to reset PowerToKWh process feed
+                if (is_null($lastvalue['time']) || is_null($lastvalue['value']))
+                $lastvalue = $this->EngineClass($engine)->lastvalue($id);
+                 
+            
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 if ($lastvalue = $this->EngineClass($engine)->lastvalue($id)) {
