@@ -74,8 +74,9 @@
             <div class="input-prepend" style="margin-bottom:0px">
                 <span class="add-on">Radio format:</span>     
                 <select id="selected_radio_format">
-                    <option value="rfm69n">Native RFM69 (New)</option>
-                    <option value="jeelib" selected>JeeLib</option>
+                   <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
+                    <!--<option value="jeelib_native">RFM69 JeeLib Native</option>-->
+                    <option value="jeelib_classic">RFM69 JeeLib Classic</option>
                 </select>
             </div>
             <br>
