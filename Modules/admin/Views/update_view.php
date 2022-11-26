@@ -13,10 +13,10 @@
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Full Update'); ?></h4>
-            <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
+            <p><?php echo _('OS, Packages, EmonHub, Emoncms (Does not include firmware update)'); ?></p>
         </div>
         <div class="btn-group">
-        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
+        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms'); ?>">
             <?php echo _('Full Update'); ?>
         </button>
         </div>
