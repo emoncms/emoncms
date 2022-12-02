@@ -105,6 +105,17 @@ class Process_ProcessList
               "description"=>_("<p>Offset current value by given value. This can again be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
            ),
            array(
+              "id_num"=>60,
+              "name"=>_("/"),
+              "short"=>"/",
+              "argtype"=>ProcessArg::VALUE,
+              "function"=>"divide",
+              "datafields"=>0,
+              "unit"=>"",
+              "group"=>_("Calibration"),
+              "description"=>_("<p>Divide current value by given constant. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
+           ),
+           array(
               "id_num"=>4,
               "name"=>_("Power to kWh"),
               "short"=>"kwh",
