@@ -1483,6 +1483,7 @@ class Process_ProcessList
         } else {
             // This is a request for the last value only
             $timevalue = $this->feed->get_timevalue($feedid);
+            if (is_null($timevalue)) return null;
             return $timevalue["value"];
         }
         return null;
