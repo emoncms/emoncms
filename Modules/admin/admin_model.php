@@ -75,11 +75,11 @@ class Admin {
 
     public function firmware_available() {
         $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json";
-        if (file_exists($localfile)) {
-            return json_decode(file_get_contents($localfile));
-        }
-        else if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/firmware_available.json")) {
+        if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/master/firmware_available.json?v=".time())) {
             return json_decode($response);
+        }
+        else if (file_exists($localfile)) {
+            return json_decode(file_get_contents($localfile));
         }
         return array('success'=>false, 'message'=>"Can't get firmware available file");
     }
