@@ -86,8 +86,6 @@ class Process
 
     public function input($time, $value, $processList, $options = null)
     {
-        if (!is_numeric($value)) return false;
- 
         //$this->log->info("input() received time=$time\tvalue=$value");
 
         $this->proc_initialvalue = $value; // save the input value at beginning of the processes list execution

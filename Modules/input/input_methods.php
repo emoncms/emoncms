@@ -135,6 +135,10 @@ class InputMethods
                     $time = time();
                 }
                 $inputs = $jsondata;
+                foreach ($inputs as $name => $value) {
+                    if (!is_numeric($value) && $value!='null') return "Format error, json value is not numeric";
+                }
+                
             } else {
                 $log->error("Invalid JSON: $datain");
                 return "Input in not a valid JSON object";
