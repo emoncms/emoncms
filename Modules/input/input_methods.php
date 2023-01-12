@@ -136,7 +136,9 @@ class InputMethods
                 }
                 $inputs = $jsondata;
                 foreach ($inputs as $name => $value) {
-                    if (!is_numeric($value) && $value!='null') return "Format error, json value is not numeric";
+                    if (!is_numeric($value) && $value!='null') {
+                        $inputs[$name] = (float) $value;
+                    }
                 }
                 
             } else {
