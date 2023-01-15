@@ -7,7 +7,7 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $embed;
+    global $path, $embed, $vis_version;
 
     $type = 1;
 ?>
