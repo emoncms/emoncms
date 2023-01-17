@@ -272,7 +272,7 @@ class InputMethods
                         }
                         continue;
                     }
-                    if (strlen($item[$i]))
+                    if ($item[$i]==null || strlen($item[$i]))
                     {
                         $value = (float) $item[$i];
                         $inputs[$name] = $value;
