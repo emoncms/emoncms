@@ -63,9 +63,10 @@ function get_months(data)
       sum = 0; s = 0;
     }
 
-    sum += data[z][1];
-    s++;
-
+    if (data[z][1]!=null) {
+      sum += parseFloat(data[z][1]);
+      s++;
+    }
    }
 
   var tmp = [];
@@ -98,20 +99,22 @@ function get_years(data)
   for (var z in data)
   {
     if (data[z][0]>1000000){
-    lyear = year;
+      lyear = year;
 
-    d.setTime(data[z][0]);		// Get the date of the day
-    year = d.getFullYear();		// Get the year of the day
-    if (year!=lyear && z!=0)		// We sum all days until we find a new year
-    {
-      years.data[i] = [Date.UTC(year-1,0,1), sum];
-      years.days[i] = s;
-      i++;
-      sum = 0; s = 0;
-    }
+      d.setTime(data[z][0]);		// Get the date of the day
+      year = d.getFullYear();		// Get the year of the day
+      if (year!=lyear && z!=0)		// We sum all days until we find a new year
+      {
+        years.data[i] = [Date.UTC(year-1,0,1), sum];
+        years.days[i] = s;
+        i++;
+        sum = 0; s = 0;
+      }
 
-    sum += parseFloat(data[z][1]);	// Add the day kwh/d value to the sum
-    s++;				// Sum count
+      if (data[z][1]!=null) {
+        sum += parseFloat(data[z][1]);	// Add the day kwh/d value to the sum
+        s++;				// Sum count
+      }
     }
 
   }
