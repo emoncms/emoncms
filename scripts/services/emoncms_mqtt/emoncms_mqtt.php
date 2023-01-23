@@ -370,6 +370,8 @@
                 $name = $i['name'];
                 $value = $i['value'];
                 
+                if (!is_numeric($value)) $value = null;
+                
                 if ($settings["mqtt"]["multiuser"]) {
                     $process->timezone = $user->get_timezone($userid);
                 }

@@ -135,6 +135,12 @@ class InputMethods
                     $time = time();
                 }
                 $inputs = $jsondata;
+                foreach ($inputs as $name => $value) {
+                    if (!is_numeric($value) && $value!='null') {
+                        $inputs[$name] = (float) $value;
+                    }
+                }
+                
             } else {
                 $log->error("Invalid JSON: $datain");
                 return "Input in not a valid JSON object";
@@ -266,7 +272,7 @@ class InputMethods
                         }
                         continue;
                     }
-                    if (strlen($item[$i]))
+                    if ($item[$i]==null || strlen($item[$i]))
                     {
                         $value = (float) $item[$i];
                         $inputs[$name] = $value;
