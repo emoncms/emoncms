@@ -23,3 +23,4 @@ emonCMS user guide
    import.md
    update.md
    remoteaccess.md
+   troubleshooting.md
