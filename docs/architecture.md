@@ -157,7 +157,7 @@ Now that we have our routing specification we can use the first part of the rout
 
 #### Modules
 
-An emoncms module is simply a directory with all the files that belong to a certain distinct feature inside. The use of the single module directory was [introduced in October 2012](http://openenergymonitor.blogspot.co.uk/2012/10/emoncms-development-update-modules.html) with the main reason being to make it really easy to add features to emoncms just by dropping a new module in the modules folder. A module can then be developed in its own github repository, making development easier. The core emoncms modules are: user, input, feed, vis and dashboard.
+An emoncms module is simply a directory with all the files that belong to a certain distinct feature inside, making it easy to add features to emoncms just by dropping a new module in the modules folder. A module can then be developed in its own github repository, making development easier.
 
 A module usually includes the following files, but does not have to include all of them:
 
@@ -194,8 +194,6 @@ Create a file called core.php and add the controller loading function to it:
     
     function controller($controller_name)
     {
-        $output = array('content'=>'');
-
         if ($controller_name)
         {
             $controller = $controller_name."_controller";
@@ -225,14 +223,11 @@ Create a folder called Modules and a sub-folder called feed. Inside the feed fol
     function feed_controller()
     {
         global $route;
-    
-        // JSON API
-        if ($route->format == 'json')
-        {
-            if ($route->action == 'list') $output = "There will be a feed list here soon";
+        
+        if ($route->action == 'list') {
+            $route->format = 'text';
+            return "There will be a feed list here soon";
         }
-
-        return $output;
     }
 
 Navigate again to [http://localhost/framework/feed/list.json](http://localhost/framework/feed/list.json) in your browser and you should see the following:
@@ -243,7 +238,7 @@ That completes the implementation and use of routing in the emoncms framework. T
 
 #### The Module Model
 
-As of [February 2013](http://openenergymonitor.blogspot.co.uk/2013/02/ideas-for-improving-emoncms-framework.html) the new recommended model construction is a php class that contains the properties and methods that define the functionality of a module rather than straight functions.
+A model should be created as a php class that contains the properties and methods that define the functionality of a module rather than straight functions.
 
 Lets create a simple model for our feed module that allows us to create, get a list of and delete feeds. The model below shows a complete example of input sanitation and returned success or error reporting for each method:
 
@@ -327,14 +322,10 @@ Next we need to update the feed model controller to route actions to the feed mo
         $feed = new Feed($mysqli);
 
         // JSON API
-        if ($route->format == 'json')
-        {
-            if ($route->action == 'create') $output = $feed->create($userid,get('name'));
-            if ($route->action == 'list') $output = $feed->select($userid);
-            if ($route->action == 'delete') $output = $feed->delete($userid,get('id'));
-        }
-
-        return $output;
+        $route->format = 'json';
+        if ($route->action == 'create') return $feed->create($userid,get('name'));
+        if ($route->action == 'list') return $feed->select($userid);
+        if ($route->action == 'delete') return $feed->delete($userid,get('id'));
     }
 
 We also need to update index.php to include the connection to the database, placing the connection here means we can use $mysqli in all modules as we add more modules. We also want to add here the line to format the output as json if the request format is json:
