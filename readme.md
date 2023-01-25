@@ -5,7 +5,7 @@
 
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
 
-![Emoncms](docs/files/emoncms_graphic.png)
+![Emoncms](emoncms_graphic.png)
 
 ## Requirements
 
@@ -43,20 +43,23 @@ _*Redis is recommended because it reduces the number of disk writes and therefor
 
 **Design**
 
-*Note: due to ongoing development some docs may now be outdated*
-
-- [Emoncms architecture](docs/architecture.md)
-- [Input processing implementation](docs/input-processing.md)
-- [Developing a new Module](docs/developing-a-new-module.md)
-- [Global variables in Emoncms](docs/global-variables.md)
+- [Emoncms architecture](docs/design/architecture.md)
+- [Input processing implementation](docs/design/input-processing.md)
+- [Developing a new Module](docs/design/developing-a-new-module.md)
+- [Global variables in Emoncms](docs/design/global-variables.md)
 
 **Emoncms timeseries database design (feed storage)**
 
 - [Emoncms time series database development history](docs/timeseries/History.md)
-- [Variable interval time series](docs/timeseries/Variable-interval.md)
 - [Fixed interval time series](docs/timeseries/Fixed-interval.md)
-- [Fixed interval with averaging time series](docs/Fixed-interval-averaging.md)
+- [Variable interval time series](docs/timeseries/Variable-interval.md)
 - [Improving write performance with buffering](docs/timeseries/Write-load-investigation.md)
+
+**Other**
+
+- [Backup](docs/Backup.md)
+- [CLI](docs/CLI.md)
+- [Encrypted Input](input_encrypted.md)
 
 **Emoncms Terminology**
 

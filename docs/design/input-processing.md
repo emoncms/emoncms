@@ -18,12 +18,12 @@ What I have tried to do below is to extract the main parts of registering inputs
 
 This first part takes the json-like string and explodes it into first data pairs and then into the constituent input name, value pairs.
 
-1) Copy and paste the code in a php script on your server called 01.php:
+1\) Copy and paste the code in a php script on your server called 01.php:
 
     <?php
       $json = $_GET['json'];
       $datapairs = explode(',', $json);
-    
+
       echo "<table border=1>";
       foreach ($datapairs as $datapair)       
       {
@@ -40,7 +40,7 @@ This first part takes the json-like string and explodes it into first data pairs
 
 $\_GET\['json'\] fetches the json attribute from the URL and the function explode splits a given string by the character specified. So first power:100,temperature:16.5 is split into an array with two strings power:100 and temperature:16.5 and then for each of these strings they are further split into input name and value variables.
 
-2) Goto the script in your browser and send a couple of variables to the script, for example:
+2\) Goto the script in your browser and send a couple of variables to the script, for example:
 
     01.php?json=power:100,temperature:16.5
 
