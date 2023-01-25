@@ -59,7 +59,7 @@ _*Redis is recommended because it reduces the number of disk writes and therefor
 
 - [Backup](docs/Backup.md)
 - [CLI](docs/CLI.md)
-- [Encrypted Input](input_encrypted.md)
+- [Encrypted Input](docs/input_encrypted.md)
 
 **Emoncms Terminology**
 
