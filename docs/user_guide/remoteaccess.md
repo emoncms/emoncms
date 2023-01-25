@@ -10,7 +10,7 @@ Sometimes for convenience or troubleshooting it's useful to be able to access th
 
 Follow these steps to setup Dataplicity on an emonPi
 
-1\. [Connect to emonPi or emonBase via SSH](/technical/credentials/#ssh)
+1\. Find the SSH Credentials for your image on [emonSD Download](../emonsd/download.md)
 
 2\. Create an account with dataplicity.
 
@@ -38,7 +38,7 @@ Once setup is complete the emonPi/emonBase will appear in the Dataplicity dashbo
 
 Wormhole creates a secure tunnel to the emonPi port 80 http over a https connection.
 
-If you encounter any issues using Dataplicity please post on the [Community Forum](httsp://community.openenergymonitor.org) using the `dataplicity` tag.
+If you encounter any issues using Dataplicity please post on the [Community Forum](https://community.openenergymonitor.org) using the `dataplicity` tag.
 
 ## Port Forwarding / Dynamic DNS
 

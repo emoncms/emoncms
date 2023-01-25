@@ -78,7 +78,7 @@ sudo fsck.ext2 /dev/sda3 (data partition)
 Importing / restoring a backup will overwrite <strong>ALL</strong> data in the current Emoncms account.
 </p>
 
-*Note for emonSD-30Oct18.img.zip: If the image has been written to an SD card larger than 4GB the data partition should be expanded to fill the SD card to create sufficient space to import a backup. **Do not use Raspbian raspi-config**, instead [connect via SSH](/technical/credentials/#ssh)) and run `$ sudo emonSDexpand` and follow prompts.*
+*Note for emonSD-30Oct18.img.zip: If the image has been written to an SD card larger than 4GB the data partition should be expanded to fill the SD card to create sufficient space to import a backup. **Do not use Raspbian raspi-config**, instead connect via SSH and run `$ sudo emonSDexpand` and follow prompts.*
 
 *The latest emonSD-17Oct19.img.zip has already been expanded to fit a minimum 16 GB SD card size. To expand the data partition further run: `/opt/emoncms/modules/usefulscripts/sdpart/./sdpart_imagefile`.*
 
@@ -338,7 +338,7 @@ Restarting feedwriter...
 
 - nodeRED custom flows: select all flows then `menu > export > clipboard` copy the JSON text
 - Connect via SSH:
-  - See [Technical > Service Credentials](technical/credentials/#ssh)
+  - See credentials for your image [emonSD download](../emonsd/download.md)
   - WiFi settings & password: backup copy: `~/data/wpa_supplicant.conf`
   - openHAB custom config: copy `~/data/open_openHab` folder
 

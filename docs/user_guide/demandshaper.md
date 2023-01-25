@@ -17,14 +17,14 @@ The DemandShaper module is part of our work on demand side response and is a rel
 
 ## Smart EV Charging
 
-The following guide covers how to setup the Emon/OpenEVSE charging station and [Emoncms DemandShaper module](/integrations/demandshaper/) to smart charge an electric vehicle based on day-ahead forecasts for the best time to use power.
+The following guide covers how to setup the Emon/OpenEVSE charging station and Emoncms DemandShaper module to smart charge an electric vehicle based on day-ahead forecasts for the best time to use power.
 
 ![emonevse_hub.png](img/demandshaper/emonevse/emonevse_hub.png)
 
 **You will need:**
  
-- [OpenEVSE or EmonEVSE open source EV charging station](/integrations/ev-charging/)
-- emonBase or emonPi base-station running [emonSD-17Oct19 or newer](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log#emonsd-17oct19-stable).
+- [OpenEVSE or EmonEVSE open source EV charging station](https://docs.openenergymonitor.org/emonevse/index.html)
+- emonBase or emonPi base-station running [emonSD-17Oct19 or newer](../emonsd/download.md).
 - Optional: [OVMS Open Vehicle Monitoring System](https://shop.openenergymonitor.com/open-vehicle-monitor-ovms-wifi-3g-europe) for automatic reading of EV battery state of charge.
 
 **OVMS:** The [OVMS Open Vehicle Monitor](https://shop.openenergymonitor.com/open-vehicle-monitor-ovms-wifi-3g-europe/) is a module that plugs into the ODB2 port of an EV. It can access a lot of detailed information about the vehicle and battery status for a wide variety of EV models. The DemandShaper module integrates with OVMS [European Server (dexters-web)](https://dexters-web.de/)in order to access the state-of-charge (SoC) to calculate how long a charge session needs to be.
@@ -67,7 +67,7 @@ The DemandShaper Interface and the OpenEVSE interface should not be used at the 
 
 ## Sonoff WiFi Smart Plug
 
-The following guide covers setup of the Sonoff S20 WiFi Smart Plug and [Emoncms DemandShaper module](/integrations/demandshaper/) for smart scheduling based on day-ahead forecasts for the best time to use power.
+The following guide covers setup of the Sonoff S20 WiFi Smart Plug and Emoncms DemandShaper module for smart scheduling based on day-ahead forecasts for the best time to use power.
 
 **Potential applications:** De-humidifiers, Ebike battery charging. Note that Sonoff S20 smart plugs have a 10A maximum current capacity and a standby power draw of ~1W.
 
@@ -81,7 +81,7 @@ The following guide covers setup of the Sonoff S20 WiFi Smart Plug and [Emoncms 
 
 ### Setting up your emonBase or emonPi base-station
 
-Start by setting up your emonBase or emonPi following the [Software Setup > Connect](/setup/connect/) guide. Create an local emoncms account on your emonBase/emonPi and run the software updater from the Admin page to make sure that you have the latest software.
+Start by setting up your emonBase or emonPi following the [Software Setup > Connect](../emonpi/connect.md) guide. Create an local emoncms account on your emonBase/emonPi and run the software updater from the Admin page to make sure that you have the latest software.
 
 ### Setting up your WiFi Smart Plug
 

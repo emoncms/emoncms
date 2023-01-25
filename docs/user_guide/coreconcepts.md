@@ -18,9 +18,9 @@ The following guide introduces the core concepts behind emoncms and provides lin
 
 The following guides provide an overview of how to use these features:
 
-- [Log Locally](/setup/local/): An example of configuring emonPi inputs, adding input processing and logging data to feeds
-- [Calculating Daily kWh](/emoncms/daily-kwh/): Covers input processes: power_to_kwh, log_to_feed (join) & kWh Accumulator
-- Application guides: [Home Energy](/applications/home-energy/) and [Solar PV](/applications/solar-pv/) cover input processing and feed creation for these applications.
+- [Log Locally](../emoncms/intro-rpi.md): An example of configuring emonPi inputs, adding input processing and logging data to feeds
+- [Calculating Daily kWh](../emoncms/daily-kwh.md): Covers input processes: power_to_kwh, log_to_feed (join) & kWh Accumulator
+- Application guides: [Home Energy](../applications/home-energy.md) and [Solar PV](../applications/solar-pv.md) cover input processing and feed creation for these applications.
 
 ## Graphs, Visualisations, Apps & Dashboards
 
@@ -28,7 +28,7 @@ Data recorded in feeds can be visualised with a number of different tools to sui
 
 **Emoncms Graph module:** The emoncms graph module is the standard feed data viewer accessible directly from the emoncms feeds page by selecting or clicking on feeds. This interface provides options to compare multiple feeds on a single graph, calculate averages, daily, monthly and annual values and export data as CSV. Graphs created using this interface can be saved and included on Emoncms dashboards. 
 
-Guides: [View Graphs](/emoncms/graphs/), [Calculating Daily kWh](/emoncms/daily-kwh/), [Calculating Averages](/emoncms/daily-averages/), [Exporting CSV](/emoncms/export-csv/), [Histograms](/emoncms/histograms/)
+Guides: [View Graphs](../emoncms/graphs.md), [Calculating Daily kWh](../emoncms/daily-kwh.md), [Calculating Averages](../emoncms/daily-averages.md), [Exporting CSV](../emoncms/export-csv.md), [Histograms](../emoncms/histograms.md)
 
 **Visualisations:** Emoncms visualisations pre-dated the graph module and include a wider range of different visualisations - some of which are reproducable using the graph module such as 'rawdata', 'bargraph' and many aspects of 'multigraph'. Visualisations can also be included in dashboards.
 

@@ -19,7 +19,7 @@ Navigate now to the Emoncms inputs page, you should see a new node with inputs a
 
 ![postingdata1.png](img/postingdata1.png)
 
-*Once inputs have been created the next step is to record the inputs to feeds using input processing. See [Log Locally](/setup/local) for an example of how to do this.*
+*Once inputs have been created the next step is to record the inputs to feeds using input processing. See [Log Locally](../emoncms/intro-rpi.md) for an example of how to do this.*
 
 
 **Authentication:**<br>
@@ -66,7 +66,7 @@ http://emonpi.local/input/post?<b>time=1581112821</b>&node=1&csv=100,200,300
 
 ## Sending data to Emoncms using MQTT
 
-Both the emonPi and emonBase running the emonSD software stack have a local Mosquitto MQTT server running as standard. This server is accessible with authentication on port 1883. See MQTT [Service Credentials](/technical/credentials).
+Both the emonPi and emonBase running the emonSD software stack have a local Mosquitto MQTT server running as standard. This server is accessible with authentication on port 1883. Find the MQTT Service Credentials for your image on [emonSD Download](../emonsd/download.md)
 
 The standard base topic to which emoncms subscribes is: **emon/**. The following publish example posts the power1 input associated with node: mynode.
 

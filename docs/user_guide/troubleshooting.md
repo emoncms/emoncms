@@ -150,13 +150,13 @@ Make a note of any error's shown in the logs, create a post on our [community fo
 
 Check available disk space in the data partition by looking at the table at the bottom of: **Emoncms > Setup > Admin**.
 
-![emoncms_diskuse.png](/images/setup/emoncms_diskuse.png)
+![emoncms_diskuse.png](img/emoncms_diskuse.png)
 
 Make a note of any full partitions, create a post on our [community forums](https://community.openenergymonitor.org/) to ask for further assistance, make sure to include in your post the 'Server Information' section on the Admin page (click on copy as markdown or copy to clipboard and paste the result in your post).
 
 ## Incorrect system time
 
-It's important that the emonPi/emonBase has the correct time (The time should reflect the UTC time). The emonPi requires an active Internet connection at boot to obtain the time from a NTP server. If using an emonPi for a long period with no web connection it's recommended to [add a hardware Real-Time-Clock (RTC)](https://wiki.openenergymonitor.org/index.php/EmonPi#Adding_a_Real_Time_Clock_.28RTC.29).
+It's important that the emonPi/emonBase has the correct time (The time should reflect the UTC time). The emonPi requires an active Internet connection at boot to obtain the time from a NTP server. If using an emonPi for a long period with no web connection it's recommended to [add a hardware Real-Time-Clock (RTC)](https://docs.openenergymonitor.org/emonpi/modifications.html).
 
 
 To check the time on the emonPi LCD display, press LCD push-button until `uptime` page is displayed.
@@ -168,7 +168,7 @@ To check the time via SSH type: `$ date`
    - Check that the emonPi/emonBase has a connection to the internet
    - Try a reboot
    - If time is still incorrect, force a manual NTP update:
-   - [Connect Via SSH](/technical/credentials/#ssh) and restart ntp:
+   - Connect Via SSH, [Find credentials here](../emonsd/download.md) and restart ntp:
    
 ```
 sudo service ntp stop
