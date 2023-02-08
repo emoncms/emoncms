@@ -17,6 +17,6 @@ If the update fails the first time, make a record of the update log and try agai
 
 ## Upgrading to a new emonSD image
 
-The most straightforward method of upgrading to a new emonSD image is to start with a new SD card, keep your existing emonPi/emonBase SD card as a backup to which you can revert if needed and then plug the old SD card into the emonPi/emonBase using a USB SD card reader and import the data directly. 
+The most straightforward method of upgrading to a new emonSD image is to start with a new SD card, keep your existing emonPi/emonBase SD card as a backup to which you can revert if needed and then plug the old SD card into the emonPi/emonBase using a USB SD card reader and import the data directly.
 
-This process is documented in the import guide here: [Guide: Import](https://guide.openenergymonitor.org/setup/import/#import-using-a-usb-sd-card-reader)
+This process is documented in the import guide here: [Guide: Update SD Card](https://guide.openenergymonitor.org/setup/import/#update-sd-card-and-import-using-an-usb-sd-card-reader)

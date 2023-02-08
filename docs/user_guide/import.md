@@ -1,4 +1,6 @@
-# Import / Backup
+# Import / Backup / Restore / Update
+
+## Emoncms Backup Module
 
 The [Emoncms backup module](https://github.com/emoncms/backup) can be used to backup and restore/import an emoncms installation and migrate from an older emonPi / emonBase image to the latest image.
 
@@ -14,7 +16,9 @@ The archive export/import approach is useful for creating backup snapshot's and 
 <p class="note">
 Currently the Backup Module can only be used with Local Emoncms <strong>not</strong> Emoncms.org </p>
 
-## Import using a USB SD card reader
+## Update SD Card and Import using an USB SD card reader
+
+This process will take you through creating a new SD Card, the initial boot and then importing your current system (data, settings, dashboards etc).
 
 ### 1. Prepare a new card
 
@@ -26,15 +30,21 @@ There are 2 options for a new card:
 2. Burn/flash a new image to an SD Card. To do this:
     1. Download image from the [Release Page](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).
     2. The easiest method of flashing the new image to an SD card is to use a cross-platform tool called Etcher, see: [https://www.etcher.io/](https://www.etcher.io/)
-    
-### 2. Initial boot
+
+### 2. Install Card and Initial boot
 
 1. Shutdown your existing system by clicking on Shutdown on the emonCMS Admin page, after 30s remove the USB power cable to fully power down.
 2. Remove your existing SD card (you will need this SD card again in a moment).
-3. Insert the new SD card & power up the device. Then wait, wait, wait, make a cup of coffee, wait, wait, wait… (lots of updates etc) - really do not rush this part it does take a while.
+
+    1. On an EmonPi replacing the card will involve removing the Black end plate with a Torx Bit (T20).
+    2. You can then access the SD Card (circled below). Use a pair of pliers or tweezers. Older Pis are push to release.
+
+![EmonPi Sd Card](img/emonpi_sd_card.png)
+
+3. Insert the new SD card (and replace the end plate on the emonPi) & power up the device. Then wait, wait, wait, make a cup of coffee, wait, wait, wait… (lots of updates etc) - really do not rush this part it does take a while.
 4. If you do not have a wired Ethernet connection you will need to [setup your WiFi](https://guide.openenergymonitor.org/setup/connect/#1a-connect-to-wifi). **Note** the updates will not happen until after you have connected the Pi to the Internet.
 
-Once the initial update and setup is complete, you can proceed to import your data.
+Once the initial update and setup is complete, you can proceed to import your data, settings etc.
 
 ### 3. Restoring your system
 
@@ -46,7 +56,7 @@ Once the initial update and setup is complete, you can proceed to import your da
 
 ![USB Import](img/usb_import.png)
 
-**Fixing a corrupt SD card**
+## Fixing a corrupt SD card
 
 After a system failure the SD card may become corrupted and will not mount when the USB importer is ran. It can be possible to restore a corrupted SD card by running fsck to fix the card errors. To do this: 
 
@@ -63,7 +73,9 @@ sudo fsck.ext2 /dev/sda3 (data partition)
 
 ---
 
-## Archive Export
+## Backup Module Archives
+
+### Archive Export
 
 1. Navigate to Setup > Backup
 2. Click `Create Backup` (see screenshot below)
@@ -72,7 +84,7 @@ sudo fsck.ext2 /dev/sda3 (data partition)
 
 ![backup old data](img/export.png)
 
-## Archive Import
+### Archive Import
 
 <p class='note warning'>
 Importing / restoring a backup will overwrite <strong>ALL</strong> data in the current Emoncms account.
@@ -150,156 +162,6 @@ settings.ini
 phpfina/
 phpfina/165119.meta
 phpfina/165146.dat
-phpfina/165117.meta
-phpfina/165148.dat
-phpfina/165073.dat
-phpfina/165139.dat
-phpfina/165107.meta
-phpfina/165072.meta
-phpfina/165106.dat
-phpfina/165134.dat
-phpfina/165152.meta
-phpfina/165154.dat
-phpfina/165106.meta
-phpfina/165157.meta
-phpfina/165076.dat
-phpfina/165087.dat
-phpfina/3.meta
-phpfina/165080.meta
-phpfina/165128.dat
-phpfina/165102.dat
-phpfina/1.meta
-phpfina/165138.meta
-phpfina/165085.dat
-phpfina/165153.meta
-phpfina/165089.dat
-phpfina/165113.meta
-phpfina/165159.meta
-phpfina/165138.dat
-phpfina/165079.dat
-phpfina/165159.dat
-phpfina/165094.dat
-phpfina/2.dat
-phpfina/165088.meta
-phpfina/165135.dat
-phpfina/3.dat
-phpfina/165095.dat
-phpfina/165073.meta
-phpfina/165137.dat
-phpfina/165124.dat
-phpfina/165081.meta
-phpfina/165156.dat
-phpfina/165110.dat
-phpfina/165122.dat
-phpfina/165136.dat
-phpfina/165080.dat
-phpfina/165104.meta
-phpfina/165122.meta
-phpfina/165092.meta
-phpfina/165147.meta
-phpfina/165088.dat
-phpfina/165077.dat
-phpfina/165154.meta
-phpfina/2.meta
-phpfina/165092.dat
-phpfina/165124.meta
-phpfina/165072.dat
-phpfina/165133.dat
-phpfina/165082.meta
-phpfina/165113.dat
-phpfina/165105.dat
-phpfina/165152.dat
-phpfina/1.dat
-phpfina/165118.meta
-phpfina/165096.dat
-phpfina/165083.dat
-phpfina/165074.meta
-phpfina/165158.dat
-phpfina/165074.dat
-phpfina/165136.meta
-phpfina/165134.meta
-phpfina/165119.dat
-phpfina/165146.meta
-phpfina/165107.dat
-phpfina/165150.dat
-phpfina/165084.meta
-phpfina/165093.meta
-phpfina/165127.dat
-phpfina/165149.meta
-phpfina/165096.meta
-phpfina/165091.dat
-phpfina/165137.meta
-phpfina/165127.meta
-phpfina/165081.dat
-phpfina/165148.meta
-phpfina/165125.dat
-phpfina/165131.dat
-phpfina/165112.dat
-phpfina/165086.dat
-phpfina/165145.dat
-phpfina/165147.dat
-phpfina/165110.meta
-phpfina/165145.meta
-phpfina/165104.dat
-phpfina/165076.meta
-phpfina/165084.dat
-phpfina/165102.meta
-phpfina/165155.meta
-phpfina/165139.meta
-phpfina/165121.dat
-phpfina/165149.dat
-phpfina/165079.meta
-phpfina/165077.meta
-phpfina/165071.dat
-phpfina/165123.meta
-phpfina/165120.meta
-phpfina/165157.dat
-phpfina/165075.dat
-phpfina/165153.dat
-phpfina/165123.dat
-phpfina/165125.meta
-phpfina/165150.meta
-phpfina/165103.dat
-phpfina/165089.meta
-phpfina/165118.dat
-phpfina/165093.dat
-phpfina/165083.meta
-phpfina/165133.meta
-phpfina/165135.meta
-phpfina/165078.meta
-phpfina/165156.meta
-phpfina/165075.meta
-phpfina/165151.meta
-phpfina/165112.meta
-phpfina/165155.dat
-phpfina/165078.dat
-phpfina/165085.meta
-phpfina/165130.meta
-phpfina/165140.dat
-phpfina/165111.meta
-phpfina/165082.dat
-phpfina/165128.meta
-phpfina/165130.dat
-phpfina/165087.meta
-phpfina/165111.dat
-phpfina/165121.meta
-phpfina/165090.dat
-phpfina/165151.dat
-phpfina/165086.meta
-phpfina/165090.meta
-phpfina/165158.meta
-phpfina/165091.meta
-phpfina/165103.meta
-phpfina/165071.meta
-phpfina/165132.dat
-phpfina/165131.meta
-phpfina/165117.dat
-phpfina/165105.meta
-phpfina/165140.meta
-phpfina/165120.dat
-phpfina/165132.meta
-phpfina/165095.meta
-phpfina/165094.meta
 phpfiwa/
 phptimeseries/
 Removing compressed backup to save disk space..
@@ -318,7 +180,7 @@ Restarting feedwriter...
 
 ---
 
-## Included in backup
+### Included in backup
 
 - Emoncms account credentials
 - Historic Feed data
@@ -327,24 +189,25 @@ Restarting feedwriter...
 - Emoncms App settings
 - EmonHub config: `emonhub.conf`
 
-## Not included in backup
+### Not included in backup
 
 - WiFi passcode & custom network config
-- Custom NodeRED flows
-- Custom openHAB settings
+- Custom NodeRED flows (old systems with this included)
+- Custom openHAB settings (old systems whith this included)
 - Input processing setup if migrating from Emoncms V8, input processing will need to be re-created after import and new inputs should be logged to imported feeds
+- Any other system or software modifications
 
-## How-to backup items not automatically included
+### How-to backup items not automatically included
 
-- nodeRED custom flows: select all flows then `menu > export > clipboard` copy the JSON text
+- nodeRED custom flows: select all flows then `menu > export > clipboard` copy the JSON text (deprecated)
 - Connect via SSH:
   - See credentials for your image [emonSD download](../emonsd/download.md)
   - WiFi settings & password: backup copy: `~/data/wpa_supplicant.conf`
-  - openHAB custom config: copy `~/data/open_openHab` folder
+  - openHAB custom config: copy `~/data/open_openHab` folder (deprecated)
 
 ---
 
-## Video Guide (Export/Import method)
+### Video Guide (Export/Import method)
 
 The following video guide was put together using emoncms v9, the appearance will be different if you are using v10 of emoncms or newer but the functionality is much the same. We will be updating this video soon.
 
