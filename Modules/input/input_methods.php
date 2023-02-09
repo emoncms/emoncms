@@ -12,6 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+#[\AllowDynamicProperties] 
 class InputMethods
 {
     private $mysqli;
