@@ -62,6 +62,18 @@ Latest log file entries can be viewed with: `$ tail /var/log/emonpilcd/emonpilcd
 
 ## Testing MQTT
 
+### Install the mosquitto-clients package
+
+To test from the command line you first need to install the `mosquitto-clients` package
+
+```shell
+ sudo apt install -y mosquitto-clients
+```
+
+### Testing MQTT From the command line
+
+Note all example commands presume you are using the MQTT Broker on the emonPi/emonBase/emonSD. Change the username/password/host if not.
+
 To view all MQTT messages subscribe to  `emon/#` base topic :
 
     $ mosquitto_sub -v -u 'emonpi' -P 'emonpimqtt2016' -t 'emon/#'
@@ -72,7 +84,7 @@ To view all MQTT messages for a particular node subscribe to sub-topic:
 
 *Note: `#` denotes a wild-card*
 
-**Test publishing and subscribing on a test topic:**
+### Test publishing and subscribing on a test topic
 
 Subscribe to test topic:
 
@@ -84,4 +96,8 @@ Open *another shell window* to publish to the test topic :
 
 If all is working we should see `helloWord`.
 
+### View the data from a browser or other device
+
 To avoid connecting via SSH alternately you could use [MQTTlens Chrome Extension](https://chrome.google.com/webstore/detail/mqttlens/hemojaaeigabkbcookmlgmdigohjobjm?hl=en) or any other MQTT client connected to the emonPi IP address on port 1883 with user name: `emonpi` and password: `emonpimqtt2016`.
+
+There are also MQTT clients for your phone or tablet.
