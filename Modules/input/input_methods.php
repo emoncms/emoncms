@@ -17,6 +17,11 @@ class InputMethods
     private $mysqli;
     private $feed;
     private $redis;
+ 
+    private $user;
+    private $input;
+    private $process;
+    private $device;
 
     public function __construct($mysqli,$redis,$user,$input,$feed,$process,$device)
     {
