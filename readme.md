@@ -85,7 +85,7 @@ We do not recommend and are unable to support installation on shared hosting or 
 
 Recommended: 
 
-* [New: Debian build script](https://github.com/openenergymonitor/EmonScripts/tree/master/install/readme.md)
+* [Install with emonScripts](https://docs.openenergymonitor.org/emonsd/install.html)
 * [Pre built emonSD SD-card Image Download](https://docs.openenergymonitor.org/emonsd/download.html)
 * [Purchase pre-loaded SD card](http://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
 
