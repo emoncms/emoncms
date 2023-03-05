@@ -212,7 +212,9 @@ function tooltip(x, y, contents, bgColour, borderColour="rgb(255, 221, 221)")
     });
 }
 
-function parseTimepickerTime(timestr){
+//CHAVEIRO: dont change function names that are used on other modules.
+// This is original function name used across emoncms vis and tables date time picker
+function parse_timepicker_time(timestr){
     var tmp = timestr.split(" ");
     if (tmp.length!=2) return false;
 
@@ -223,4 +225,9 @@ function parseTimepickerTime(timestr){
     if (time.length!=3) return false;
 
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+}
+
+// this is only used on graph module, should change on that
+function parseTimepickerTime(timestr){
+  return parse_timepicker_time(timestr);
 }
