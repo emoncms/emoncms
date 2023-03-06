@@ -65,8 +65,11 @@ function user_controller()
         if ($route->action == 'logout') {
             // decode url parameters
             $next = $path;
-            $message = filter_var(urldecode(get('msg')), FILTER_SANITIZE_STRING);
-            $referrer = htmlentities(filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL));
+            
+            $msg = get('msg');
+            $message = isset($msg) ? htmlspecialchars(urldecode($msg)) : '';
+            $ref = get('ref');
+            $referrer = isset($ref) ? htmlspecialchars(urldecode(base64_decode(get('ref')))) : '';
             
             // encode url parameters to pass through to login page
             $msg = urlencode($message);

@@ -848,7 +848,7 @@ class Feed
 
         if (isset($fields->name)) {
             //remove illegal characters
-            $fields->name = trim(filter_var($fields->name, FILTER_SANITIZE_STRING));
+            $fields->name = trim(htmlspecialchars($fields->name));
             //prepare an sql statement that cannot be altered by sql injection
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET name = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->name, $id);
