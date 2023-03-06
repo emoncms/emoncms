@@ -545,7 +545,7 @@ class Admin {
             $prefix = $this->redis->getOption(Redis::OPT_PREFIX);
             $this->redis->del(array_map(
                 function ($key) use ($prefix) {
-                    return preg_replace( "/^${prefix}/", '', $key );
+                    return preg_replace( "/^{$prefix}/", '', $key );
                 }, $this->redis->keys('diskstats*'))
             );
             return array('success'=>true);
