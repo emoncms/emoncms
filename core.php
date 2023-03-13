@@ -23,6 +23,9 @@ function is_https() {
     } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
         return true;
+    } elseif (server('HTTP_X_FORWARDED_PORT') == 443) {
+        // Web server is running behind a proxy which is running HTTPS
+        return true;   
     } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
         return true;
     }
