@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 41;
+$v = 42;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";

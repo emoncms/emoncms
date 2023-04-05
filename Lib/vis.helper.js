@@ -19,8 +19,17 @@ var view =
     var time_window = this.end - this.start;
     var middle = this.start + time_window / 2;
     time_window = time_window * 2;
-    this.start = Math.max(middle - (time_window/2), this.first_data);
-    this.end = Math.min(middle + (time_window/2), this.now());
+    
+    this.start = middle - (time_window/2);
+    this.end = middle + (time_window/2);
+    
+    if (this.limit_x && this.start<this.first_data) {
+        this.start = this.first_data;
+    }
+    
+    if (this.limit_x && this.end>this.now()) {
+        this.end = this.now();
+    }
   },
 
   'zoomin':function ()
@@ -223,4 +232,20 @@ function parseTimepickerTime(timestr){
     if (time.length!=3) return false;
 
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+}
+
+function tooltip_date(time_ms){
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    var d = new Date(time_ms);
+    var date = days[d.getDay()]+", "+months[d.getMonth()]+" "+d.getDate();
+    
+    var h = d.getHours();
+    if (h<10) h = "0"+h;
+    var m = d.getMinutes();
+    if (m<10) m = "0"+m;
+    var time = h+":"+m;
+
+    return date+", "+time;
 }
