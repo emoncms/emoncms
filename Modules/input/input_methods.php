@@ -15,6 +15,10 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class InputMethods
 {
     private $mysqli;
+    private $user;
+    private $input;
+    private $process;
+    private $device;
     private $feed;
     private $redis;
  
