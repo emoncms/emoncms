@@ -27,7 +27,7 @@ switch ($commandName) {
         runMigrations();
         break;
     default:
-        echo "${commandName} is an invalid command\n\n";
+        echo "{$commandName} is an invalid command\n\n";
         printAvailableCommands();
         exit(1);
 }

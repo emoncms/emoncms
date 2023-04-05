@@ -110,7 +110,7 @@ function resolve_env_vars($value)
         $env_name = $match;
         $env_value = getenv($env_name);
         if ($env_value === false) {
-            echo "<p>Error: environment var '${env_name}' not defined</p>";
+            echo "<p>Error: environment var '{$env_name}' not defined</p>";
             return $value;
         }
 
