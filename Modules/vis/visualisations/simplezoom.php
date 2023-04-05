@@ -100,16 +100,20 @@ function vis_feed_data() {
     plotdata = [];
     for(var i in feedlist) {
         if (feedlist[i].selected) {
-
+            var datastart = view.start;
+            var dataend = view.end;
             if (feedlist[i].interval=="daily") {
                 interval = "daily";
+                var intervalms = 86400 * 1000;
+                datastart = Math.floor(view.start / intervalms) * intervalms;
+                dataend = Math.ceil(view.end / intervalms) * intervalms;
                 skipmissing = 0
             } else {
                 view.calc_interval(1200);
                 interval = view.interval;
                 skipmissing = 1
             }
-            feedlist[i].plot.data = feed.getdata(feedlist[i].id,view.start,view.end,interval,0,feedlist[i].delta,skipmissing,0);
+            feedlist[i].plot.data = feed.getdata(feedlist[i].id,datastart,dataend,interval,0,feedlist[i].delta,skipmissing,0);
         
             if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
         }
