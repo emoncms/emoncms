@@ -1,5 +1,12 @@
 <?php
 
+    /*
+
+       This script is deprecated.  You should probably be using
+       scripts/services/emoncms_mqtt/emoncms_mqtt.php instead.
+
+     */
+
     // TBD: support user target in message schema
     $mqttsettings = array(
         'userid' => 1
@@ -164,7 +171,7 @@
 
         // PUBLISH
         // loop through all queued items in redis
-        if ($connected && $pub_count>10) {
+        if ($redis !== false && $connected && $pub_count>10) {
             $pub_count = 0;
             $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
             foreach ($publish_to_mqtt as $topic=>$value) {
