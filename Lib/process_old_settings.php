@@ -53,7 +53,7 @@ $settings = array(
     'capath'    => isset($mqtt_server["capath"])?$mqtt_server["capath"]:null,
     'certpath'  => isset($mqtt_server["certpath"])?$mqtt_server["certpath"]:null,
     'keypath'   => isset($mqtt_server["keypath"])?$mqtt_server["keypath"]:null,
-    'keypw'     => isset($mqtt_server["keypwpath"])?$mqtt_server["keypw"]:null
+    'keypw'     => isset($mqtt_server["keypw"])?$mqtt_server["keypw"]:null
 ),
 
 // Input
