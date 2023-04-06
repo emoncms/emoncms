@@ -103,7 +103,8 @@ class Admin {
                     'loadstate' => ucfirst($value['LoadState']),
                     'state' => ucfirst($value['ActiveState']),
                     'text' => ucfirst($value['SubState']),
-                    'running' => $value['SubState']==='running'
+                    'running' => $value['SubState']==='running',
+                    'unitfilestate' => isset($value['UnitFileState'])?$value['UnitFileState']:false
                 );
                 
                 // Set 'cssClass' based on service's configuration and current status
@@ -182,17 +183,13 @@ class Admin {
             $parts = explode('=',$line);
             $status[$parts[0]] = $parts[1];
         }
-        if (    isset($status["ActiveState"]) &&
-                isset($status["SubState"]) &&
-                isset($status["LoadState"])
-                ) {
-            return array(
-                'ActiveState' => $status["ActiveState"],
-                'SubState' => $status["SubState"],
-                'LoadState' => $status["LoadState"]
-            );
-        } else {
-            $return = array();
+        
+        $return = array();
+        $keys = array("LoadState","ActiveState","SubState","UnitFileState");
+        foreach ($keys as $key) {
+            if (isset($status[$key])) {
+                $return[$key] = $status[$key];
+            }
         }
         return $return;
     }
