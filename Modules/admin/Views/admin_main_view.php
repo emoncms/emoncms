@@ -91,7 +91,7 @@ listItem;
                         <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
                         <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
                       <?php } ?>
-                      <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                      <?php if ($value['state']!="Active") { ?><button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button><?php } ?>
                       <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
                       </div>
                   <?php } else { ?>
