@@ -64,6 +64,14 @@
     <input type="text" v-model="emontx.vcal" style="width:80px" @change="set_vcal" :disabled="!connected" />
   </div>
     
+  <div class="input-prepend">
+    <span class="add-on">Firmware version</span>
+    <select v-model="emontx.calibration_type" @change="set_calibration_type" :disabled="!connected">
+      <option value="emonlibcm">emonLibCM</option>
+      <option value="emonlibdb">emonLibDB</option>
+    </select>
+  </div>
+    
   <table class="table">
   <tr>
     <th>Channel</th>
@@ -121,6 +129,7 @@ var app = new Vue({
       group: '',
       vcal: '',
       radio_enabled: 1,
+      calibration_type: "emonlibcm",
       channels: [
         {enabled:1, ical:20, ilead: '', name:"P1", value:''},
         {enabled:1, ical:20, ilead: '', name:"P2", value:''},
@@ -175,8 +184,14 @@ var app = new Vue({
           } 
       });  
     },
+    set_calibration_type: function() {
+    
+    },
     set_ical: function(i) {
       let ical = app.emontx.channels[i].ical / 0.333;
+      if (app.emontx.calibration_type=="emonlibdb") {
+        ical = app.emontx.channels[i].ical;
+      }
       let ilead = app.emontx.channels[i].ilead*1;
       writeToStream("k"+(i+1)+" "+ical.toFixed(3)+" "+ilead.toFixed(3))
       app.changes = true;
@@ -256,19 +271,51 @@ function process_line(line) {
       } 
     }
     
-  // CT calibration
+  // -------------------------------------------------------
+    
+  // CT calibration (format 1)
   } else if (line[0]=='i' && line.substring(2,5)=="Cal") {
     let p = line.split("=");
     let c = line[1].trim();
     let cal = p[1].trim();
-    app.emontx.channels[c-1].ical = Math.round(cal*0.333);
     
-  // CT phase lead
+    if (app.emontx.calibration_type=="emonlibcm") {
+      app.emontx.channels[c-1].ical = Math.round(cal*0.333);
+    } else {
+      app.emontx.channels[c-1].ical = Math.round(cal);
+    }
+    
+  // CT phase lead (format 1)
   } else if (line[0]=='i' && line.substring(2,6)=="Lead") {
     let p = line.split("=");
     let c = line[1].trim();
     let cal = p[1].trim();
     app.emontx.channels[c-1].ilead = cal;
+
+  // -------------------------------------------------------
+
+  // CT calibration (format 2)
+  } else if (line.substring(0,4)=="iCal") {
+    let l = line.replace("iCal","");
+    let p = l.split("=");
+    let c = p[0].trim();
+    let cal = p[1].trim();
+    
+    if (app.emontx.calibration_type=="emonlibcm") {
+      app.emontx.channels[c-1].ical = Math.round(cal*0.333);
+    } else {
+      app.emontx.channels[c-1].ical = Math.round(cal);
+    }
+    
+  // CT phase lead (format 2)
+  } else if (line.substring(0,5)=="iLead") {
+    let l = line.replace("iLead","");
+    let p = l.split("=");
+    let c = p[0].trim();
+    let cal = p[1].trim();
+    app.emontx.channels[c-1].ilead = cal;
+
+  // -------------------------------------------------------
     
   // Voltage calibration
   } else if (line.substring(0,4)=="vCal") {
@@ -285,6 +332,10 @@ function process_line(line) {
     let p = line.replace(/\s+/g, '').split(",");
     app.emontx.group = p[1].replace("Group",'');
     app.emontx.nodeid = p[2].replace("Node",'');
+  } else if (line.substring(0,12)=="emonTx V4 DB") {
+    app.emontx.calibration_type = "emonlibdb";
+  } else if (line.substring(0,12)=="emonTx V4 CM") {
+    app.emontx.calibration_type = "emonlibcm";
   }
 
   /*
