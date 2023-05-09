@@ -116,8 +116,8 @@ function get($index,$error_if_missing=false,$default=null)
         die("missing $index parameter");
     }
     if(!is_null($val)){
-    $val = stripslashes($val);
-	}
+        $val = stripslashes($val);
+    }
     return $val;
 }
 /**
@@ -134,23 +134,20 @@ function post($index,$error_if_missing=false,$default=null)
         if (!is_array($_POST[$index])) {
             $val = rawurldecode($_POST[$index]); // does not decode the plus symbol into spaces
         } else {
-            // sanitize the array values
-            $SANTIZED_POST  = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-            if (!empty($SANTIZED_POST[$index])) {
-                $val = $SANTIZED_POST[$index];
-            }
+            $val = htmlspecialchars(json_encode($_POST[$index]));
         }
     } else if ($error_if_missing) {
         header('Content-Type: text/plain');
         die("missing $index parameter");
     }
     
-    if (is_array($val)) {
-        $val = array_map("stripslashes", $val);
-    }	
-	if(!is_null($val)){
-        $val = stripslashes($val);
-	}
+    if(!is_null($val)) {
+        if (is_array($val)) {
+            $val = array_map("stripslashes", $val);
+        }	else {
+            $val = stripslashes($val);
+        }
+    }
     return $val;
 }
 /**
@@ -173,10 +170,12 @@ function prop($index,$error_if_missing=false,$default=null)
         die("missing $index parameter");
     }
     
-    if (is_array($val)) {
-        $val = array_map("stripslashes", $val);
-    } else {
-        $val = stripslashes($val);
+    if(!is_null($val)) {
+        if (is_array($val)) {
+            $val = array_map("stripslashes", $val);
+        }	else {
+            $val = stripslashes($val);
+        }
     }
     return $val;
 }
