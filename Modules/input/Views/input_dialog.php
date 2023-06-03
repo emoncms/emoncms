@@ -99,13 +99,13 @@
             <h3 id="inputEditModalLabel"><?php echo _('Edit Input'); ?></h3>
         </div>
         <div class="modal-body">
-            <p><?php echo _("Edit the input's name and description."); ?>
+            <p><?php echo _("Edit the input's description."); ?>
             <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
             </p>
             <form class="d-flex align-items-center" v-for="input in inputs" :key="input.id" v-if="selected.indexOf(input.id)>-1" @submit.prevent="save">
                 <div class="input-prepend form-group mb-0">
                     <span class="add-on">{{input.nodeid}}:</span>
-                    <input :id="'name_' + input.id" type="text" class="input-small" placeholder="<?php echo _('Name') ?>" v-model="input.name" name="name">
+                    <input :id="'name_' + input.id" type="text" class="input-small" placeholder="<?php echo _('Name') ?>" v-model="input.name" name="name" disabled>
                     <label :for="'name_' + input.id" :class="{away: input.name.length > 0}" class="text-muted muted"><?php echo _('Name') ?></label>
                 </div>
                 <div class="form-group mx-2">

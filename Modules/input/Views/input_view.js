@@ -656,7 +656,6 @@ var edit_input = new Vue({
                     if(input.id === inputid) {
                         // store any changed fields
                         let fields = {
-                            name: form.get('name'),
                             description: form.get('description')
                         }
                         // if something changed submit data to api
