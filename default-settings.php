@@ -209,5 +209,9 @@ $_settings = array(
     "enable_UDP_broadcast" => true
 ),
 
-"cydynni"=>array()
+"cydynni"=>array(),
+
+"postprocess"=>array(
+    "cron_enabled"=>0
+)
 );
