@@ -216,7 +216,7 @@ class PHPFina implements engine_methods
             $this->create_meta($id,$meta);
         }
 
-        if (!$fh = fopen($this->dir.$id.".dat", 'c+')) {
+        if (!$fh = @fopen($this->dir.$id.".dat", 'c+')) {
             $this->log->warn("post() could not open data file id=$id");
             return false;
         }
