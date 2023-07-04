@@ -103,6 +103,20 @@ $.ajax({
     }
 });
 
+var feed_engine = false;
+$.ajax({
+    url: path + 'feed/get.json',
+    data: "&apikey=" + apikey + "&id=" + feedid + "&field=engine",
+    dataType: 'json',
+    async: true,
+    success: function(result) {
+        feed_engine = result;
+        if (feed_engine!=0) {
+            $("#delete-button").hide();
+        }
+    }
+});
+
 vis_feed_data();
 
 function vis_feed_data() {
