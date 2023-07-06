@@ -61,10 +61,19 @@
     <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
 </div>
-<br>
 <?php if (!$embed) { ?>
-    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
+<div class="input-prepend input-append">
+    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i> <?php echo _('Delete data in window'); ?></button>
+</div>
 <?php } ?>
+
+<div style="margin-top:10px">
+    <button id="show-csv" class="btn btn-info"><i class="icon-download-alt icon-white"></i> <span id="show-csv-text"><?php echo _('Show CSV'); ?></span></button>
+    <!-- save csv -->
+    <a id="save-csv" class="btn btn-warning" style="display:none"><?php echo _('Import CSV'); ?></a>
+</div>
+
+<textarea id="csv" style="width:100%; height:200px; margin-top:10px; display:none"></textarea>
 
 
 <script id="source" language="javascript" type="text/javascript">
@@ -133,12 +142,15 @@ function vis_feed_data() {
     if (interval>feed_interval) {
         $("#alert").html("Current view interval "+interval+"s. Please zoom to feed interval ("+feed_interval+"s) to enable individual data point editing");
         $("#dp-edit").hide();
+        $("#show-csv").hide();
     } else if (interval==feed_interval) {
         $("#alert").html("Current view interval matches "+feed_interval+"s feed interval. Individual data point editing enabled");
         $("#dp-edit").show();
+        $("#show-csv").show();
     } else {
         $("#alert").html("Current view interval is less than "+feed_interval+"s feed interval. Individual data point editing enabled");
         $("#dp-edit").show();
+        $("#show-csv").show();
     }
 
     // feedid,start,end,interval,average,delta,skipmissing,limitinterval,callback=false,context=false,timeformat='unixms'){
@@ -170,6 +182,13 @@ function vis_feed_data() {
         };
 
         redraw();
+
+        // load csv
+        var csv = "";
+        for (var z in graph_data) {
+            csv += parseInt(graph_data[z][0]*0.001) + ", " + graph_data[z][1] + "\n";
+        }
+        $("#csv").val(csv);
     });
 
 
@@ -228,6 +247,60 @@ $("#feedselector").change(function() {
     var meta = feed.getmeta(feedid);
     if (meta) feed_interval = meta.interval;
     vis_feed_data();
+});
+
+// Show hide csv
+$("#show-csv").click(function() {
+    // change button text
+    if ($("#show-csv-text").html() == "Show CSV") {
+        $("#show-csv-text").html("Hide CSV");
+    } else {
+        $("#show-csv-text").html("Show CSV");
+    }
+    $("#csv").toggle();
+});
+
+$("#csv").change(function() {
+    // show save csv
+    $("#save-csv").show();
+});
+
+var import_data = [];
+$("#save-csv").click(function() {
+
+    var csv = $("#csv").val();
+    var lines = csv.split("\n");
+    import_data = [];
+    var time = 0;
+    for (var z in lines) {
+        var line = lines[z].split(",");
+        if (line.length == 2) {
+            var last_time = time;
+            time = parseInt(line[0]);
+            var value = parseFloat(line[1]);
+            if (!isNaN(time) && !isNaN(value) && time > last_time) {
+                import_data.push([time, value]);
+            }
+        }
+    }
+
+    $.ajax({ 
+        type: 'POST', 
+        url: path+"feed/post.json?id="+feedid,
+        data: "data="+JSON.stringify(import_data),
+        async: true, 
+        dataType: 'json',
+        success: function(result) {
+            if (result.success!=undefined) {
+                if (result.success) {
+                    vis_feed_data();    
+                } else {
+                    alert('ERROR: '+result.message);
+                }
+            }
+        }
+    });
+
 });
 
 //--------------------------------------------------------------------------------------
