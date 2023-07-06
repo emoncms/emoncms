@@ -186,7 +186,9 @@ function vis_feed_data() {
         // load csv
         var csv = "";
         for (var z in graph_data) {
-            csv += parseInt(graph_data[z][0]*0.001) + ", " + graph_data[z][1] + "\n";
+            let value = graph_data[z][1];
+            if (value % 1 != 0) value = value.toFixed(3);
+            csv += parseInt(graph_data[z][0]*0.001) + ", " + value + "\n";
         }
         $("#csv").val(csv);
     });
