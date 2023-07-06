@@ -141,26 +141,38 @@ function vis_feed_data() {
         $("#dp-edit").show();
     }
 
-    var graph_data = feed.getdata(feedid, view.start, view.end, interval, 0, 0, 1, 0);
+    // feedid,start,end,interval,average,delta,skipmissing,limitinterval,callback=false,context=false,timeformat='unixms'){
+    var average = 0;
+    var delta = 0;
+    var skipmissing = 1;
+    var limitinterval = 0;
 
-     plotdata = {
+    // PHPTimeSeries engine return original
+    if (feeds_by_id[feedid].engine==0 || feeds_by_id[feedid].engine==2) {
+        limitinterval = 2;
+    }
+    feed.getdata(feedid, view.start, view.end, interval, average, delta, skipmissing, limitinterval, function(graph_data) {
+        plotdata = {
         data: graph_data,
         lines: {
             show: true,
             fill: false
         }
-    };
-    if (type == 2) plotdata = {
-        data: graph_data,
-        bars: {
-            show: true,
-            align: "center",
-            barWidth: 3600 * 18 * 1000,
-            fill: true
-        }
-    };
+        };
+        if (type == 2) plotdata = {
+            data: graph_data,
+            bars: {
+                show: true,
+                align: "center",
+                barWidth: 3600 * 18 * 1000,
+                fill: true
+            }
+        };
 
-    redraw();
+        redraw();
+    });
+
+
 }
 
 function redraw() {
@@ -256,7 +268,7 @@ $('#okb').click(function() {
     var newvalue = $("#newvalue").val();
 
     $.ajax({
-        url: path + 'feed/update.json',
+        url: path + 'feed/post.json',
         data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&value=" + newvalue + "&skipbuffer=1",
         dataType: 'json',
         async: false,

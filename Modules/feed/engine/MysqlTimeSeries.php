@@ -264,6 +264,7 @@ class MysqlTimeSeries implements engine_methods
         {
             // Start time of interval/division
             $div_start = $time;
+            $timestamp = $div_start;
             
             // calculate start of next interval 
             $div_end = $time + $interval;
@@ -271,15 +272,18 @@ class MysqlTimeSeries implements engine_methods
             $value = null;
             $stmt->execute();
             if ($stmt->fetch() && $data_value !== null) {
+                if ($limitinterval==2) {
+                    $timestamp = $data_time;
+                }  
                 $value = (float) $data_value;
             }
             
             if ($value!==null || $skipmissing===0) {                
                 // Write as csv or array
                 if ($csv) { 
-                    $helperclass->csv_write($div_start,$value);
+                    $helperclass->csv_write($timestamp,$value);
                 } else {
-                    $data[] = array($div_start,$value);
+                    $data[] = array($timestamp,$value);
                 } 
             }
 

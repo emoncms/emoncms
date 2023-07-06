@@ -336,8 +336,6 @@ class PHPTimeSeries implements engine_methods
                 $interval_check = 3600*24*365;
             }
             $time = $date->getTimestamp();
-        } elseif ($interval=="original") {
-            $time = $start;
         } else {
             // If interval codes are not specified then we advanced by a fixed numeric interval 
             $fixed_interval = true;
@@ -365,105 +363,91 @@ class PHPTimeSeries implements engine_methods
             }
         }
         
-        if ($interval!="original") {
-            while($time<=$end)
-            {               
-                $div_start = $time;
-                
-                // Advance position
-                if ($fixed_interval) {
-                    $div_end = $time + $interval;
-                } else {
-                    $date->modify($modify);
-                    $div_end = $date->getTimestamp();
-                }
-                
-                $value = null;
-                
-                if (!$average) {
-                    // returns nearest datapoint that is >= search time
-                    $result = $this->binarysearch($fh,$time,$npoints);
-                    if ($result!=-1) {
-                        // check that datapoint is within interval
-                        if ($result[1]<$div_end) {
-                            $value = $result[2];
-                        }
-                    }
-                } else {
-                    $sum = 0;
-                    $n = 0;
-
-                    $next_start_dp = $this->binarysearch($fh,$div_end,$npoints);
-                    
-                
-                    // if end_dp is -1 it means we have a search time that
-                    // is greater than the last datapoint in the series
-                    // if this is the case we read up to the last datapoint
-                    if ($next_start_dp==-1) {
-                        $next_start_dp = array($npoints);
-                    } else if ($next_start_dp[1]>$div_end) {
-                        // withing valid data range end_dp should always be
-                        // greater or equall to end. If it is greater then 
-                        // we need to limit the range to the previous datapoint
-                        $next_start_dp[0] -= 1;
-                        // if end_dp is now less than 0 it means the end search
-                        // time is before the start of our timeseries
-                        if ($next_start_dp[0]<0) {
-                            // return null;
-                            $next_start_dp[0] = 0;
-                        }       
-                    }      
-                    
-                    $len = $next_start_dp[0]-$start_dp[0];
-                    if ($len) {
-                        fseek($fh,$start_dp[0]*9);
-                        $s = fread($fh,$len*9);
-                        $s2 = "";
-                        for ($x=0; $x<$len; $x++) {
-                            $s2 .= substr($s,($x*9)+5,4);
-                        }
-                        $tmp = unpack("f*",$s2);
-                        for ($x=0; $x<count($tmp); $x++) {
-                            if (!is_nan($tmp[$x+1])) {
-                                // print $tmp[$x+1]."\n";
-                                $sum += $tmp[$x+1];
-                                $n++;
-                            }
-                        }
-                    }
-                    
-                    $start_dp[0] = $next_start_dp[0];
-                    
-                    if ($n>0) $value = $sum / $n;
-                
-                }
-                
-                if ($value!==null || $skipmissing===0) {
-                    if ($csv) { 
-                        $helperclass->csv_write($div_start,$value);
-                    } else {
-                        $data[] = array($div_start,$value);
-                    }
-                }
-                
-                $time = $div_end;
+        while($time<=$end)
+        {               
+            $div_start = $time;
+            
+            // Advance position
+            if ($fixed_interval) {
+                $div_end = $time + $interval;
+            } else {
+                $date->modify($modify);
+                $div_end = $date->getTimestamp();
             }
-        } else {
-            // Export original data
-            /**
-            $n = 0;
-            fseek($fh,0);
-            while($time<=$end && $n<$npoints) {
-                $dp = unpack("x/Itime/fvalue",fread($fh,9));
-                $time = $dp['time']; $value = $dp['value'];
-                
-                if ($csv) { 
-                    $helperclass->csv_write($time,$value);
-                } else {
-                    $data[] = array($time,$value);
+            
+            $timestamp = $div_start;
+            $value = null;
+            
+            if (!$average) {
+                // returns nearest datapoint that is >= search time
+                $result = $this->binarysearch($fh,$time,$npoints);
+                if ($result!=-1) {
+                    // check that datapoint is within interval
+                    if ($result[1]<$div_end) {
+                        if ($limitinterval==2) {
+                            $timestamp = $result[1];
+                        }
+                        $value = $result[2];
+                    }
                 }
-                $n++;
-            }*/
+            } else {
+                $sum = 0;
+                $n = 0;
+
+                $next_start_dp = $this->binarysearch($fh,$div_end,$npoints);
+                
+            
+                // if end_dp is -1 it means we have a search time that
+                // is greater than the last datapoint in the series
+                // if this is the case we read up to the last datapoint
+                if ($next_start_dp==-1) {
+                    $next_start_dp = array($npoints);
+                } else if ($next_start_dp[1]>$div_end) {
+                    // withing valid data range end_dp should always be
+                    // greater or equall to end. If it is greater then 
+                    // we need to limit the range to the previous datapoint
+                    $next_start_dp[0] -= 1;
+                    // if end_dp is now less than 0 it means the end search
+                    // time is before the start of our timeseries
+                    if ($next_start_dp[0]<0) {
+                        // return null;
+                        $next_start_dp[0] = 0;
+                    }       
+                }      
+                
+                $len = $next_start_dp[0]-$start_dp[0];
+                if ($len) {
+                    fseek($fh,$start_dp[0]*9);
+                    $s = fread($fh,$len*9);
+                    $s2 = "";
+                    for ($x=0; $x<$len; $x++) {
+                        $s2 .= substr($s,($x*9)+5,4);
+                    }
+                    $tmp = unpack("f*",$s2);
+                    for ($x=0; $x<count($tmp); $x++) {
+                        if (!is_nan($tmp[$x+1])) {
+                            // print $tmp[$x+1]."\n";
+                            $sum += $tmp[$x+1];
+                            $n++;
+                        }
+                    }
+                }
+                
+                $start_dp[0] = $next_start_dp[0];
+                
+                if ($n>0) $value = $sum / $n;
+            
+            }
+            
+            if ($value!==null || $skipmissing===0) {
+                if ($csv) { 
+                    $helperclass->csv_write($timestamp,$value);
+                } else {
+                    $data[] = array($timestamp,$value);
+                }
+            }
+            
+            $time = $div_end;
         }
         
         fclose($fh);
