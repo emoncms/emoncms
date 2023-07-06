@@ -90,12 +90,8 @@
             array('mid',dgettext('vis_messages','mid'),8)
         )),
         
-        'editrealtime'=> array('label'=>dgettext('vis_messages','EditRealtime'), 'options'=>array(
+        'editor'=> array('label'=>dgettext('vis_messages','Editor'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1)
-        )),
-        
-        'editdaily'=> array('label'=>dgettext('vis_messages','EditDaily'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),2)
         )),
         
         // --------------------------------------------------------------------------------
