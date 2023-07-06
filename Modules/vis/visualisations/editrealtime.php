@@ -18,11 +18,11 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
+<h3><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h3>
 <p><?php echo _("Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint."); ?></p>
 <?php } ?>
 
-<div id="graph_bound" style="height:350px; width:100%; position:relative; ">
+<div id="graph_bound" style="width:100%; position:relative; ">
     <div id="graph"></div>
     <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
@@ -42,9 +42,11 @@
     </div>
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
-
-<div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
-    <?php echo _("Edit feed_"); ?><?php echo $feedid; ?> <?php echo _("@ time:"); ?> <input type="text" id="time" style="width:150px;" value="" /> <?php echo _("new value:"); ?>
+<br>
+<div class="input-prepend input-append"> 
+    <span class="add-on"><?php echo _("Edit feed @ time"); ?></span>
+    <input type="text" id="time" style="width:150px;" value="" />
+    <span class="add-on"><?php echo _("new value"); ?></span>
     <input type="text" id="newvalue" style="width:150px;" value="" />
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
     <?php if (!$embed) { ?>
@@ -52,11 +54,13 @@
     <?php } ?>
 </div>
 
-<div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
-    <?php echo _("Multiply data in the window by a float or a fraction"); ?> <input type="text" id="multiplyvalue" style="width:150px;" value="" />
+<div class="input-prepend input-append">
+    <span class="add-on"><?php echo _("Multiply data in the window by a float or a fraction"); ?>
+    <i class="icon icon-question-sign" style="cursor:pointer; margin-top:-1px" title="<?php echo _("To erase all the window with NAN > type NAN - To convert all the window to absolute values > type abs(x)"); ?>"></i></span>
+    <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
-    <?php echo _("<br>To erase all the window with NAN > type NAN - To convert all the window to absolute values > type abs(x)"); ?>
 </div>
+
 
 <?php if (!$embed) { ?>
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
@@ -99,6 +103,8 @@ $.ajax({
     success: function(result) {
         if (result && result.interval != undefined) {
             feed_interval = result.interval;
+            view.end = result.end_time * 1000;
+            view.start = view.end - timeWindow;
         }
     }
 });
@@ -117,6 +123,9 @@ $.ajax({
     }
 });
 
+var plotdata = {};
+
+resize();
 vis_feed_data();
 
 function vis_feed_data() {
@@ -129,7 +138,7 @@ function vis_feed_data() {
 
     var graph_data = feed.getdata(feedid, view.start, view.end, interval, 0, 0, 1, 0);
 
-    var plotdata = {
+     plotdata = {
         data: graph_data,
         lines: {
             show: true,
@@ -146,29 +155,33 @@ function vis_feed_data() {
         }
     };
 
-    var plot = $.plot($("#graph"), [plotdata], {
-        canvas: true,
-        //grid: { show: true, clickable: true},
-        grid: {
-            show: true,
-            hoverable: true,
-            clickable: true
-        },
-        xaxis: {
-            mode: "time",
-            timezone: "browser",
-            min: view.start,
-            max: view.end
-        },
-        selection: {
-            mode: "x"
-        },
-        touch: {
-            pan: "x",
-            scale: "x"
-        }
-    });
+    redraw();
 
+}
+
+function redraw() {
+    var plot = $.plot($("#graph"), [plotdata], {
+    canvas: true,
+    //grid: { show: true, clickable: true},
+    grid: {
+        show: true,
+        hoverable: true,
+        clickable: true
+    },
+    xaxis: {
+        mode: "time",
+        timezone: "browser",
+        min: view.start,
+        max: view.end
+    },
+    selection: {
+        mode: "x"
+    },
+    touch: {
+        pan: "x",
+        scale: "x"
+    }
+});
 }
 
 $("#graph").bind("plotclick", function(event, pos, item) {
@@ -285,4 +298,22 @@ $("#graph").bind("touchended", function(event, ranges) {
     view.end = ranges.xaxis.to;
     vis_feed_data();
 });  
+
+// on window resize, redraw graph
+$(window).resize(function() {
+    resize();
+});
+
+function resize() {
+    // get width from graph bound
+    var width = $("#graph_bound").width();
+    $("#graph").width(width);
+
+    // Find available height
+    var height = $(window).height() - $("#graph_bound").offset().top - 20 - 200;
+    $("#graph").height(height);
+
+    redraw();
+}
+
 </script>
