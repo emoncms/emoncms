@@ -18,21 +18,18 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h3><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h3>
+<h3><?php echo _("Datapoint editor:"); ?> <span id="feed_name"></span></h3>
 <p><?php echo _("Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint."); ?></p>
 <?php } ?>
 
-<div id="graph_bound" style="width:100%; position:relative; ">
+<div id="graph_bound" style="width:100%; position:relative; margin-bottom:10px">
     <div id="graph"></div>
-    <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+    <div id="graph-buttons" style="position:absolute; top:18px; right:42px">
         <div class='btn-group'>
             <button class='btn graph-time' type='button' time='1'>D</button>
             <button class='btn graph-time' type='button' time='7'>W</button>
             <button class='btn graph-time' type='button' time='30'>M</button>
             <button class='btn graph-time' type='button' time='365'>Y</button>
-        </div>
-
-        <div class='btn-group' id='graph-navbar' style='display: none;'>
             <button class='btn graph-nav' id='zoomin'>+</button>
             <button class='btn graph-nav' id='zoomout'>-</button>
             <button class='btn graph-nav' id='left'><</button>
@@ -42,16 +39,20 @@
     </div>
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
-<br>
-<div class="input-prepend input-append"> 
+
+<div class="alert alert-info" id="alert"></span> seconds</div>
+
+<div class="input-prepend" style="margin-right:10px"> 
+    <span class="add-on"><?php echo _("Select feed"); ?></span>
+    <select id="feedselector"></select>
+</div>
+
+<div id="dp-edit" class="input-prepend input-append" style="margin-right:10px"> 
     <span class="add-on"><?php echo _("Edit feed @ time"); ?></span>
-    <input type="text" id="time" style="width:150px;" value="" />
+    <input type="text" id="time" style="width:100px;" value="" />
     <span class="add-on"><?php echo _("new value"); ?></span>
-    <input type="text" id="newvalue" style="width:150px;" value="" />
+    <input type="text" id="newvalue" style="width:80px;" value="" />
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
-    <?php if (!$embed) { ?>
-    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
-    <?php } ?>
 </div>
 
 <div class="input-prepend input-append">
@@ -60,68 +61,61 @@
     <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
 </div>
-
-
+<br>
 <?php if (!$embed) { ?>
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('Delete feed data'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><?php echo _('Deleting feed data in this window is permanent.'); ?>
-           <br><br>
-           <?php echo _('Are you sure you want to delete?'); ?>
-        </p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-    </div>
-</div>
+    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
 <?php } ?>
 
+
 <script id="source" language="javascript" type="text/javascript">
-$('#graph').width($('#graph_bound').width());
-$('#graph').height($('#graph_bound').height());
 
 var feedid = "<?php echo $feedid; ?>";
 var feedname = "<?php echo $feedidname; ?>";
+$("#feed_name").html(feedname);
 var type = "<?php echo $type; ?>";
 var apikey = "<?php echo $write_apikey; ?>";
 
 var timeWindow = (3600000 * 24.0 * 7); //Initial time window
 view.start = ((new Date()).getTime()) - timeWindow; //Get start time
 view.end = (new Date()).getTime(); //Get end time
+// disable x-axis limits
+view.limit_x = false;
+
+// Create feed selector
+var feeds = feed.list();
+// feeds by tag
+var feeds_by_tag = {};
+var feeds_by_id = {};
+for (var z in feeds) {
+    var tag = feeds[z].tag;
+    if (!feeds_by_tag[tag]) feeds_by_tag[tag] = [];
+    // check that engine is not virtual
+    if (feeds[z].engine != 7) { 
+        feeds_by_tag[tag].push(feeds[z]);
+    }
+    feeds_by_id[feeds[z].id] = feeds[z];
+}
+// populate feed selector with optgroups by tag
+var feedselector = $("#feedselector");
+for (var tag in feeds_by_tag) {
+    var optgroup = $("<optgroup label='"+tag+"'>");
+    for (var z in feeds_by_tag[tag]) {
+        var f = feeds_by_tag[tag][z];
+        optgroup.append("<option value='"+f.id+"'>"+f.name+"</option>");
+    }
+    feedselector.append(optgroup);
+}
+// select current feed
+feedselector.val(feedid);
 
 var feed_interval = false;
-$.ajax({
-    url: path + 'feed/getmeta.json',
-    data: "&apikey=" + apikey + "&id=" + feedid,
-    dataType: 'json',
-    async: false,
-    success: function(result) {
-        if (result && result.interval != undefined) {
-            feed_interval = result.interval;
-            view.end = result.end_time * 1000;
-            view.start = view.end - timeWindow;
-        }
-    }
-});
-
-var feed_engine = false;
-$.ajax({
-    url: path + 'feed/get.json',
-    data: "&apikey=" + apikey + "&id=" + feedid + "&field=engine",
-    dataType: 'json',
-    async: true,
-    success: function(result) {
-        feed_engine = result;
-        if (feed_engine!=0) {
-            $("#delete-button").hide();
-        }
-    }
-});
+var meta = feed.getmeta(feedid);
+if (meta) {
+    feed_interval = meta.interval;
+    view.end = meta.end_time * 1000;
+    view.start = view.end - timeWindow;
+}
+var feed_engine = feeds_by_id[feedid].engine;
 
 var plotdata = {};
 
@@ -129,11 +123,22 @@ resize();
 vis_feed_data();
 
 function vis_feed_data() {
-    view.calc_interval(800);
+    view.calc_interval(1200);
 
     var interval = view.interval;
-    if (feed_interval !== false && interval < feed_interval) {
+    if (feed_interval !== false && interval < feed_interval && feed_engine==5) {
         interval = feed_interval;
+    }
+
+    if (interval>feed_interval) {
+        $("#alert").html("Current view interval "+interval+"s. Please zoom to feed interval ("+feed_interval+"s) to enable individual data point editing");
+        $("#dp-edit").hide();
+    } else if (interval==feed_interval) {
+        $("#alert").html("Current view interval matches "+feed_interval+"s feed interval. Individual data point editing enabled");
+        $("#dp-edit").show();
+    } else {
+        $("#alert").html("Current view interval is less than "+feed_interval+"s feed interval. Individual data point editing enabled");
+        $("#dp-edit").show();
     }
 
     var graph_data = feed.getdata(feedid, view.start, view.end, interval, 0, 0, 1, 0);
@@ -142,7 +147,7 @@ function vis_feed_data() {
         data: graph_data,
         lines: {
             show: true,
-            fill: true
+            fill: false
         }
     };
     if (type == 2) plotdata = {
@@ -156,39 +161,67 @@ function vis_feed_data() {
     };
 
     redraw();
-
 }
 
 function redraw() {
     var plot = $.plot($("#graph"), [plotdata], {
-    canvas: true,
-    //grid: { show: true, clickable: true},
-    grid: {
-        show: true,
-        hoverable: true,
-        clickable: true
-    },
-    xaxis: {
-        mode: "time",
-        timezone: "browser",
-        min: view.start,
-        max: view.end
-    },
-    selection: {
-        mode: "x"
-    },
-    touch: {
-        pan: "x",
-        scale: "x"
-    }
-});
+        canvas: true,
+        //grid: { show: true, clickable: true},
+        grid: {
+            show: true,
+            hoverable: true,
+            clickable: true
+        },
+        xaxis: {
+            mode: "time",
+            timezone: "browser",
+            min: view.start,
+            max: view.end
+        },
+        selection: {
+            mode: "x"
+        },
+        touch: {
+            pan: "x",
+            scale: "x"
+        }
+    });
+    // get right hand graph offset
+    var offset = plot.getPlotOffset();
+    $("#graph-buttons").css("right", (offset.right+10) + "px");
 }
 
 $("#graph").bind("plotclick", function(event, pos, item) {
     if (item != null) {
         $("#time").val(item.datapoint[0] / 1000);
-        $("#newvalue").val(item.datapoint[1]);
+        // if integer, show integer, else show 3dp
+        var value = item.datapoint[1];
+        if (value % 1 == 0) {
+            $("#newvalue").val(value);
+        } else {
+            var valuestr = value.toFixed(3);
+            // remove trailing zeros
+            while (valuestr[valuestr.length - 1] == '0') {
+                valuestr = valuestr.substring(0, valuestr.length - 1);
+            }
+            $("#newvalue").val(valuestr);
+        }
     }
+});
+
+// feed selector
+$("#feedselector").change(function() {
+    feedid = $(this).val();
+    feedname = $("#feedselector option:selected").text();
+    $("#feed_name").html(feedname);
+    feed_interval = false;
+    var meta = feed.getmeta(feedid);
+    if (meta) {
+        feed_interval = meta.interval;
+        view.end = meta.end_time * 1000;
+        view.start = view.end - timeWindow;
+    }
+    vis_feed_data();
 });
 
 //--------------------------------------------------------------------------------------
@@ -228,8 +261,6 @@ $('#okb').click(function() {
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
 
-    console.log(time + " " + newvalue);
-
     $.ajax({
         url: path + 'feed/update.json',
         data: "&apikey=" + apikey + "&id=" + feedid + "&time=" + time + "&value=" + newvalue + "&skipbuffer=1",
@@ -257,43 +288,22 @@ $('#multiply-submit').click(function() {
 });
 
 $('#delete-button').click(function() {
-    $('#myModal').modal('show');
+    // confirm delete data range
+    if (confirm("Are you sure you want to delete this data range?")) {
+        $.ajax({
+            url: path + 'feed/deletedatarange.json',
+            data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001),
+            dataType: 'json',
+            async: true,
+            success: function(result) {
+                vis_feed_data();
+            }
+        });
+    }
 });
 
-$("#confirmdelete").click(function() {
-    $.ajax({
-        url: path + 'feed/deletedatarange.json',
-        data: "&apikey=" + apikey + "&id=" + feedid + "&start=" + parseInt(view.start*0.001) + "&end=" + parseInt(view.end*0.001),
-        dataType: 'json',
-        async: false,
-        success: function(result) {
-            alert(result)
-        }
-    });
-    vis_feed_data();
-    $('#myModal').modal('hide');
-});
-
-
-// Graph buttons and navigation efects for mouse and touch
-$("#graph").mouseenter(function() {
-    $("#graph-navbar").show();
-    $("#graph-buttons").stop().fadeIn();
-    $("#stats").stop().fadeIn();
-});
-$("#graph_bound").mouseleave(function() {
-    $("#graph-buttons").stop().fadeOut();
-    $("#stats").stop().fadeOut();
-});
-$("#graph").bind("touchstarted", function(event, pos) {
-    $("#graph-navbar").hide();
-    $("#graph-buttons").stop().fadeOut();
-    $("#stats").stop().fadeOut();
-});
-
+// on graph touch end, redraw graph
 $("#graph").bind("touchended", function(event, ranges) {
-    $("#graph-buttons").stop().fadeIn();
-    $("#stats").stop().fadeIn();
     view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
