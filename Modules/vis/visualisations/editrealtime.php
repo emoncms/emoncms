@@ -212,15 +212,9 @@ $("#graph").bind("plotclick", function(event, pos, item) {
 // feed selector
 $("#feedselector").change(function() {
     feedid = $(this).val();
-    feedname = $("#feedselector option:selected").text();
-    $("#feed_name").html(feedname);
-    feed_interval = false;
+    $("#feed_name").html(feeds_by_id[feedid].name);
     var meta = feed.getmeta(feedid);
-    if (meta) {
-        feed_interval = meta.interval;
-        view.end = meta.end_time * 1000;
-        view.start = view.end - timeWindow;
-    }
+    if (meta) feed_interval = meta.interval;
     vis_feed_data();
 });
 
