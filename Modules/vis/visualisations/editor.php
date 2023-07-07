@@ -124,8 +124,6 @@ if (meta) {
     view.end = meta.end_time * 1000;
     view.start = view.end - timeWindow;
 }
-var feed_engine = feeds_by_id[feedid].engine;
-
 var plotdata = {};
 
 resize();
@@ -134,9 +132,18 @@ vis_feed_data();
 function vis_feed_data() {
     view.calc_interval(1200);
 
+    var feed_engine = feeds_by_id[feedid].engine;
+
     var interval = view.interval;
     if (feed_interval !== false && interval < feed_interval && feed_engine==5) {
         interval = feed_interval;
+    }
+
+    // hide delete button if engine == 5
+    if (feed_engine==5) {
+        $("#delete-button").hide();
+    } else {
+        $("#delete-button").show();
     }
 
     if (interval>feed_interval) {
@@ -192,8 +199,6 @@ function vis_feed_data() {
         }
         $("#csv").val(csv);
     });
-
-
 }
 
 function redraw() {
