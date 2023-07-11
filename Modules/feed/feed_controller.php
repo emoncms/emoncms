@@ -41,6 +41,11 @@ function feed_controller()
             if (!$session['read'] && !$session['public_userid']) return "";
             return view("Modules/feed/Views/feedlist_view.php");
         }
+        if (($route->action == "edit")) {
+            if (!$session['write']) return "";
+            $feedid = (int) get('id');
+            return view("Modules/feed/Views/editor.php",array("feedid"=>$feedid));
+        }        
         else if ($route->action == "api") {
             if (!$session['read'] && !$session['public_userid']) return "";       
             require "Modules/feed/feed_api_obj.php";
