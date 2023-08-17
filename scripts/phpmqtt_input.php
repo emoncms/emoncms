@@ -14,57 +14,57 @@
 
 
     /*
-    
+
     **MQTT input interface script**
-    
+
     SERVICE INSTALL INSTRUCTIONS:
     https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
-    
+
     EXAMPLES:
-    
+
     create an input from emonTx node called power with value 10:
         [basetopic]/emontx/power 10
-    
+
     create an input from node 10 called power with value 10 :
         [basetopic]/10/power 10
-        
+
     create input from emontx with key 0 of value 10
         [basetopic]/emontx 10
-        
+
     create input from emontx with key 0 of value 10, key 1 of value 11 and key 2 of value 11
         [basetopic]/emontx 10,11,12
 
     * [basetopic] and user ID of target Emoncms account can be set in settings.php
-    
+
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
-    
+
     */
 
     // This code is released under the GNU Affero General Public License.
     // OpenEnergyMonitor project:
     // http://openenergymonitor.org
-    
+
     define('EMONCMS_EXEC', 1);
 
     $fp = fopen("/var/lock/emoncms_mqtt.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
-    
+
     chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
     require "process_settings.php";
-    
+
     set_error_handler('exceptions_error_handler');
-    
+
     $log = new EmonLogger(__FILE__);
     $log->info("Starting MQTT Input script");
-    
+
     if (!$settings["mqtt"]["enabled"]) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
         $log->error("MQTT must be enabled in settings.php");
         die;
     }
-    
+
     $mysqli = @new mysqli(
         $settings["sql"]["server"],
         $settings["sql"]["username"],
@@ -72,7 +72,7 @@
         $settings["sql"]["database"],
         $settings["sql"]["port"]
     );
-    
+
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
@@ -101,10 +101,10 @@
     } else {
         $redis = false;
     }
-    
+
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
-    
+
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$settings['feed']);
 
@@ -123,16 +123,16 @@
         new Mosquitto\Client($id,$cleanSession)
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
-    */ 
+    */
     $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
-    
+
     $connected = false;
     $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $count = 0;
     $pub_count = 0; // used to reduce load relating to checking for messages to be published
-    
+
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
@@ -208,7 +208,7 @@
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
-            // if CONACK is zero 
+            // if CONACK is zero
             $connected = true;
             if ($subscribed==0) {
                 $topic = $settings['mqtt']['basetopic']."/#";
@@ -296,13 +296,13 @@
 
             $log->info($topic." ".$value);
             $count ++;
-            
+
             #Emoncms user ID TBD: incorporate on message via authentication mechanism
             global $mqttsettings;
             $userid = $mqttsettings['userid'];
-            
+
             $inputs = array();
-            
+
             $route = explode("/",$topic);
             $basetopic = explode("/",$settings['mqtt']['basetopic']);
 
@@ -311,7 +311,7 @@
             foreach ($basetopic as $subtopic) {
                 if(isset($route[$st+1])) {
                     if($basetopic[$st+1] == $route[$st+1]) {
-                        $st = $st + 1;
+                        $st++;
                     } else {
                         break;
                     }
@@ -324,14 +324,14 @@
                     $nodeid = $route[$st+1];
                     // Filter nodeid, pre input create, to avoid duplicate inputs
                     $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-                    
+
                     $dbinputs = $input->get_inputs($userid);
 
                     if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
-                    } else if (isset($route[$st+2])) {
+                    } elseif (isset($route[$st+2])) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
                     }
                     else
@@ -344,7 +344,7 @@
                     }
                 }
             } else {
-                $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
+                $log->error("No matching MQTT topics! None or null inputs will be recorded!");
             }
 
             if (!isset($dbinputs[$nodeid])) {
@@ -360,10 +360,10 @@
                 $nodeid = $i['nodeid'];
                 $name = $i['name'];
                 $value = $i['value'];
-                
+
                 // Filter name, pre input create, to avoid duplicate inputs
                 $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
-                
+
                 // Automatic device configuration using device module if 'describe' keyword found
                 if (strtolower($name)=="describe") {
                     if ($device && method_exists($device,"autocreate")) {
@@ -371,33 +371,32 @@
                         $log->info(json_encode($result));
                     }
                 }
-                else 
+                else
                 {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         if (!$inputid) {
                             $log->warn("error creating input"); die;
                         }
-                        $dbinputs[$nodeid][$name] = true;
                         $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     } else {
                         $inputid = $dbinputs[$nodeid][$name]['id'];
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                        
+
                         if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                     }
                 }
             }
-            
+
             foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-            
+
         } catch (Exception $e) {
             $log->error($e);
         }
     }
-    
-    
+
+
     function exceptions_error_handler($severity, $message, $filename, $lineno) {
         if (error_reporting() == 0) {
             return;

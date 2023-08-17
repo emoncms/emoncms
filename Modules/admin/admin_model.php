@@ -17,7 +17,7 @@ class Admin {
     private $redis;
     private $settings;
     private $log;
-    
+
     private $emoncms_logfile;
     private $update_logfile;
     private $old_update_logfile;
@@ -28,7 +28,7 @@ class Admin {
         $this->redis = $redis;
         $this->settings = $settings;
         $this->log = new EmonLogger(__FILE__);
-        
+
         $this->emoncms_logfile = $settings['log']['location']."/emoncms.log";
         $this->update_logfile = $settings['log']['location']."/update.log";
         $this->old_update_logfile = $settings['log']['location']."/emonpiupdate.log";
@@ -45,11 +45,11 @@ class Admin {
     public function old_update_logfile() {
         return $this->old_update_logfile;
     }
-    
+
     public function get_services_list() {
         return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
     }
-    
+
     public function listSerialPorts() {
         $ports = array();
         for ($i=0; $i<5; $i++) {
@@ -77,8 +77,7 @@ class Admin {
         $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/firmware_available.json";
         if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/master/firmware_available.json?v=".time())) {
             return json_decode($response);
-        }
-        else if (file_exists($localfile)) {
+        } elseif (file_exists($localfile)) {
             return json_decode(file_get_contents($localfile));
         }
         return array('success'=>false, 'message'=>"Can't get firmware available file");
@@ -95,7 +94,7 @@ class Admin {
         // create array of installed services
         $services = array();
         $system = $this->system_information();
-        
+
         foreach($system['services'] as $key=>$value) {
             if (!empty($system['services'][$key])) {    // If the service was found on this system
                 // Populate service status fields
@@ -106,7 +105,7 @@ class Admin {
                     'running' => $value['SubState']==='running',
                     'unitfilestate' => isset($value['UnitFileState'])?$value['UnitFileState']:false
                 );
-                
+
                 // Set 'cssClass' based on service's configuration and current status
                 if ($value['LoadState']==='masked') {          // Check if service is masked (installed, but configured not to run)
                     $services[$key]['cssClass'] = 'masked';
@@ -122,16 +121,16 @@ class Admin {
                 }
             }
         }
-        
+
         // sorts conveniently showing active first
         asort($services);
-        
+
         // Hide mqtt_input if not found
         if (isset($services['mqtt_input']) && $services['mqtt_input']['loadstate']=='Not-found') {
             unset($services['mqtt_input']);
         }
-        
-        
+
+
         // add custom messages for feedwriter service
         if(isset($services['feedwriter'])) {
             $message = "";
@@ -183,7 +182,7 @@ class Admin {
             $parts = explode('=',$line);
             $status[$parts[0]] = $parts[1];
         }
-        
+
         $return = array();
         $keys = array("LoadState","ActiveState","SubState","UnitFileState");
         foreach ($keys as $key) {
@@ -193,7 +192,7 @@ class Admin {
         }
         return $return;
     }
-    
+
     public function setService($name, $action) {
         $script = __DIR__ . "/../../scripts/service-action.sh";
         return $this->runService($script, "$name $action");
@@ -204,15 +203,15 @@ class Admin {
             $this->log->error("runService() Script not found '$script' attributes=$attributes");
             return array('success'=>false, 'message'=>"File not found '$script' attributes=$attributes");
         }
-        if ($this->redis) { 
+        if ($this->redis) {
             $this->redis->rpush("service-runner","$script $attributes");
             $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
-            return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'"); 
+            return array('success'=>true, 'message'=>"service-runner trigger sent for '$script $attributes'");
         } else {
             $this->log->warn("runService() Redis not enabled. Trying PHP execution '$script $attributes'");
             $result = $this->exec("$script $attributes");
             $this->log->info("runService() PHP exec returned '$result'");
-            return array('success'=>true, 'message'=>"$result"); 
+            return array('success'=>true, 'message'=>"$result");
         }
     }
 
@@ -242,7 +241,7 @@ class Admin {
               }
           }
         }
-        
+
         $cpuinfo = false;
         if (@is_readable('/usr/bin/lscpu')) {
           $data = $this->exec_array("lscpu");
@@ -268,7 +267,7 @@ class Admin {
             $component_summary[] = $component["name"]." v".$component["version"];
         }
         $component_summary = implode(" | ",$component_summary);
-        
+
         return array('date' => date('Y-m-d H:i:s T'),
                      'system' => $system,
                      'kernel' => $kernel,
@@ -319,23 +318,39 @@ class Admin {
         $bios = "";
 
         $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_vendor');
-        if (trim($res != "")) $machine_string = trim($res);
-        
+        if (trim($res) != "") {
+            $machine_string = trim($res);
+        }
+
         $res = $this->exec('cat /sys/devices/virtual/dmi/id/product_name');
-        if (trim($res != "")) $product = trim($res); 
-        
+        if (trim($res) != "") {
+            $product = trim($res);
+        }
+
         $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_name');
-        if (trim($res != "")) $board = trim($res); 
-        
+        if (trim($res) != "") {
+            $board = trim($res);
+        }
+
         $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_version');
-        if (trim($res != "")) $bios = trim($res); 
-        
+        if (trim($res) != "") {
+            $bios = trim($res);
+        }
+
         $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_date');
-        if (trim($res != "")) $bios = trim($bios." ".trim($res));  
-        
-        if ($product != "") $machine_string .= " ".$product; 
-        if ($board != "") $machine_string .= "/".$board; 
-        if ($bios != "") $machine_string .= ", BIOS ".$bios;
+        if (trim($res) != "") {
+            $bios = trim($bios." ".trim($res));
+        }
+
+        if ($product != "") {
+            $machine_string .= " ".$product;
+        }
+        if ($board != "") {
+            $machine_string .= "/".$board;
+        }
+        if ($bios != "") {
+            $machine_string .= ", BIOS ".$bios;
+        }
         if ($machine_string != "") {
             $machine_string = trim(preg_replace("/^\/,?/", "", preg_replace("/ ?(To be filled by O\.E\.M\.|System manufacturer|System Product Name|Not Specified|Default string) ?/i", "", $machine_string)));
         }
@@ -346,21 +361,19 @@ class Admin {
         $localfile = $this->settings['openenergymonitor_dir']."/EmonScripts/components_available.json";
         if (file_exists($localfile)) {
             return json_decode(file_get_contents($localfile));
-        }
-        else if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
+        } elseif ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
             return json_decode($response);
-        }
-        else {
+        } else {
             return array('success'=>false, 'message'=>"Can't get components available file");
         }
     }
 
-    public function component_list($git_info=true) 
+    public function component_list($git_info=true)
     {
         $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
-      
+
         $components = array();
-      
+
         // Emoncms core
         if (file_exists($emoncms_path."/version.json")) {                           // JSON Version informatmion exists
             $json = json_decode(file_get_contents($emoncms_path."/version.json"));  // Get JSON version information
@@ -376,21 +389,21 @@ class Admin {
                 );
             }
         }
-      
+
         foreach (array("$emoncms_path/Modules",$this->settings['emoncms_dir']."/modules",$this->settings['openenergymonitor_dir']) as $path) {
-          
+
             $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
-          
+
             foreach($directories as $module_fullpath) {                                           // loop through the folders
 
                 if (!is_link($module_fullpath)) {
 
                     $fullpath_parts = explode("/",$module_fullpath);
                     $name = $fullpath_parts[count($fullpath_parts)-1];
-                  
+
                     if (file_exists($module_fullpath."/module.json")) {                           // JSON Version informatmion exists
                         $json = json_decode(file_get_contents($module_fullpath."/module.json"));  // Get JSON version information
-                      
+
                         if (isset($json->version) && $json->version!="") {
                             $components[$name] = array(
                                 "name"=>ucfirst(isset($json->name)?$json->name:$name),
@@ -408,19 +421,19 @@ class Admin {
 
         if ($git_info) {
             foreach ($components as $name=>$component) {
-                $path = $components[$name]["path"];
+                $path = $component["path"];
                 $components[$name]["describe"] = $this->exec("git -C $path describe");
                 $components[$name]["branch"] = str_replace("* ","",$this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
                 $components[$name]["local_changes"] = $this->exec("git -C $path diff-index -G. HEAD --");
                 $components[$name]["url"] = $this->exec("git -C $path ls-remote --get-url origin");
-              
+
                 if (!in_array($components[$name]["branch"],$components[$name]["branches_available"])) {
                     $components[$name]["branches_available"][] = $components[$name]["branch"];
                 }
-            }             
-        }   
-      
-      
+            }
+        }
+
+
         return $components;
     }
 
@@ -477,7 +490,7 @@ class Admin {
                 $readload = 0;
                 $writeload = 0;
                 $loadtime = 0;
-                
+
                 ob_start();
                 @passthru("iostat -o JSON -k $filesystem");
                 $output = trim(ob_get_clean());
@@ -487,23 +500,35 @@ class Admin {
                     $partition_name = $disk["disk_device"];
                     $readload = round($disk["kB_read/s"] * 1024); // convert to bytes (used if no redis is available)
                     $writeload = round($disk["kB_wrtn/s"] * 1024); // convert to bytes (used if no redis is available)
-                    $bytes_read = round($disk["kB_read"] * 1024); // convert to bytes 
+                    $bytes_read = round($disk["kB_read"] * 1024); // convert to bytes
                     $bytes_written = round($disk["kB_wrtn"] * 1024); // convert to bytes
                     $loadtime = -1; // -1 = since reboot
                 } else {
                     // ALTERNATIVE: When iostats not available, use hard coded partitions, only works on raspberrypi.
                     // translate partition mount point to mmcblk0pX based name
-                    if ($partition=="/boot") $partition_name = "mmcblk0p1";
-                    else if ($partition=="/") $partition_name = "mmcblk0p2";
-                    else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
-                    else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
+                    if ($partition=="/boot") {
+                        $partition_name = "mmcblk0p1";
+                    }
+                    elseif ($partition=="/") {
+                        $partition_name = "mmcblk0p2";
+                    } elseif ($partition=="/var/opt/emoncms") {
+                        $partition_name = "mmcblk0p3";
+                    } elseif ($partition=="/home/pi/data") {
+                        $partition_name = "mmcblk0p3";
+                    }
                     if ($partition_name) {
                         $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
                         $sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats");
-                        if ($sectors_read==null || $sectors_written==null) $partition_name = false;
+                        if ($sectors_read==null || $sectors_written==null) {
+                            $partition_name = false;
+                        }
 
-                        if ($sectors_read!=null) $bytes_read = $sectors_read * 512;
-                        if ($sectors_written!=null) $bytes_written = $sectors_written * 512;
+                        if ($sectors_read!=null) {
+                            $bytes_read = $sectors_read * 512;
+                        }
+                        if ($sectors_written!=null) {
+                            $bytes_written = $sectors_written * 512;
+                        }
                     }
                 }
                 if ($this->redis && $partition_name) {
@@ -620,9 +645,11 @@ class Admin {
                     $model = substr($model, 1);
                     $rpi_info['model'] .= $ver." Model ".$model;
                 }
-                else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
+                elseif (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
                     $rpi_info['model'] .= " Compute Module";
-                    if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2];
+                    if (ctype_digit($model[2]) && $model[2]>1) {
+                        $rpi_info['model'] .= " ".$model[2];
+                    }
                 }
                 else { //Raspberry Pi
                     $rpi_info['model'] .= " Model ".$model;
@@ -742,7 +769,7 @@ class Admin {
                     }
                     if ($loadTime == -1){
                         $loadstr = "since boot";
-                    } else if ($loadTime > 0) {
+                    } elseif ($loadTime > 0) {
                         $days = floor($loadTime / 86400);
                         $hours = floor(($loadTime - ($days*86400))/3600);
                         $mins = floor(($loadTime - ($days*86400) - ($hours*3600))/60);
@@ -801,7 +828,7 @@ class Admin {
         for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
         return( round( $bytes, 2 ) . " " . $types[$i] );
     }
-    
+
     private function exec($cmd) {
         $output = false;
         if (function_exists("exec")) {
@@ -809,7 +836,7 @@ class Admin {
         }
         return $output;
     }
-    
+
     private function exec_array($cmd) {
         $output = false;
         if (function_exists("exec")) {

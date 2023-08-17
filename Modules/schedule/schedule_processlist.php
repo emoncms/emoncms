@@ -17,7 +17,7 @@ class Schedule_ProcessList
     private $schedule;
 
     // Module required constructor, receives parent as reference
-    public function __construct(&$parent)
+    public function __construct($parent)
     {
         $this->log = new EmonLogger(__FILE__);
 
@@ -26,10 +26,10 @@ class Schedule_ProcessList
     }
 
     public function process_list() {
-        
+
         textdomain("schedule_messages");
-        
-        $list = array(
+
+        return array(
           array(
             "name"=>_("If !schedule, ZERO"),
             "short"=>"!sched 0",
@@ -71,10 +71,9 @@ class Schedule_ProcessList
             "description"=>_("<p>Validates if time is in range of schedule. If in schedule, value is NULLed.</p><p>You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list</p>")
           )
         );
-        return $list;
     }
     // / Below are functions of this module processlist, same name must exist on process_list()
-    
+
     public function if_not_schedule_zero($scheduleid, $time, $value) {
         $result = $this->schedule->match($scheduleid, $time);
         return ($result ? $value : 0);

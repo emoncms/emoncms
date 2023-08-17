@@ -25,12 +25,12 @@ class Eventp_ProcessList
     }
 
     // / Below are functions of this module processlist, same name must exist on process_list()
-    
+
     public function process_list() {
 
         textdomain("eventp_messages");
-          
-        $list = array(
+
+        return array(
             array(
               "name"=>_("If rate >=, skip next"),
               "short"=>"?rate>=",
@@ -90,10 +90,9 @@ class Eventp_ProcessList
               "nochange"=>true,
               "description"=>_("<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.</p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.</p>")
            )
-        ); 
-        return $list;
+        );
     }
-    
+
     public function sendEmail($emailbody, $time, $value, $options) {
         global $user, $session, $settings;
 
@@ -110,14 +109,14 @@ class Eventp_ProcessList
             $tag = array("{key}","{name}","{node}");
             $replace = array($inputdetails['name'], $inputdetails['description'], $inputdetails['nodeid']);
             $emailbody = str_replace($tag, $replace, $emailbody);
-        } else if ($options['sourcetype'] == "VIRTUALFEED") {
-            // Not suported for VIRTUAL FEEDS
+        } elseif ($options['sourcetype'] == "VIRTUALFEED") {
+            // Not supported for VIRTUAL FEEDS
         }
 
         //need to get an email address from the config file or the form ?
         $emailto = $settings['smtp']['default_emailto'];
 
-        if (!empty($emailto)) { 
+        if (!empty($emailto)) {
             require_once "Lib/email.php";
             $email = new Email();
             //$email->from(from);
@@ -134,7 +133,7 @@ class Eventp_ProcessList
             $this->log->error("No email address specified");
         }
     }
-    
+
     public function ifMuteSkip($ttl, $time, $value, $options)
     {
         global $redis;
@@ -167,7 +166,7 @@ class Eventp_ProcessList
         }
         return $value;
     }
-    
+
     public function ifRateGtEqualSkip($arg, $time, $value, $options)
     {
         global $redis;
@@ -184,7 +183,7 @@ class Eventp_ProcessList
         }
         return $value;
     }
-    
+
     public function ifRateLtSkip($arg, $time, $value, $options)
     {
         global $redis;

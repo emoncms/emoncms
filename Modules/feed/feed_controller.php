@@ -25,7 +25,7 @@ function feed_controller()
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
-    
+
     require_once "Modules/process/process_model.php";
     if (!$user_timezone = $user->get_timezone($session['userid'])) {
         $user_timezone = 'UTC';
@@ -34,32 +34,40 @@ function feed_controller()
 
     if ($route->format == 'html')
     {
-        if ($route->action=="") $route->action = "view";
+        if ($route->action=="") {
+            $route->action = "view";
+        }
 
         textdomain("messages");
         if (($route->action == "view" || $route->action == "list")) {
-            if (!$session['read'] && !$session['public_userid']) return "";
+            if (!$session['read'] && !$session['public_userid']) {
+                return "";
+            }
             return view("Modules/feed/Views/feedlist_view.php");
-        }
-        else if ($route->action == "api") {
-            if (!$session['read'] && !$session['public_userid']) return "";       
+        } elseif ($route->action == "api") {
+            if (!$session['read'] && !$session['public_userid']) {
+                return "";
+            }
             require "Modules/feed/feed_api_obj.php";
             return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
+        } elseif (!$session['read']) {
+            return ''; // empty strings force user back to login
         }
-        else if (!$session['read']) return ''; // empty strings force user back to login
-        else return EMPTY_ROUTE; // this string displays error
+        else {
+            return EMPTY_ROUTE;
+        } // this string displays error
     }
 
-    else if ($route->format == 'json')
+    elseif ($route->format == 'json')
     {
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
             if ($session['public_userid']) {
                 return $feed->get_user_public_feeds($session['public_userid'],get("meta",false,0));
-            } else if (isset($_GET['userid'])) {
+            } elseif (isset($_GET['userid'])) {
                 return $feed->get_user_public_feeds((int)$_GET['userid'],get("meta",false,0));
-            } else if ($session['read']) {
+            } elseif ($session['read']) {
                 return $feed->get_user_feeds($session['userid'],get("meta",false,0));
             } else {
                 return false;
@@ -67,11 +75,11 @@ function feed_controller()
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             return $feed->get_user_feeds($session['userid'],1);
-        } elseif ($route->action == "getid" && $session['read']) { 
+        } elseif ($route->action == "getid" && $session['read']) {
             $route->format = "text";
             if (isset($_GET["tag"]) && isset($_GET["name"])) {
                 return $feed->exists_tag_name($session['userid'],get("tag"),get("name"));
-            } else if (isset($_GET["name"])) {
+            } elseif (isset($_GET["name"])) {
                 return $feed->get_id($session['userid'],get("name"));
             } else {
                 return false;
@@ -100,7 +108,7 @@ function feed_controller()
         // ----------------------------------------------------------------------------
         // Multi feed actions
         // ----------------------------------------------------------------------------
-        } else if (in_array($route->action,array("data","average","csvexport"))) {
+        } elseif (in_array($route->action,array("data","average","csvexport"))) {
             // get data for a list of existing feeds
             $result = array('success'=>false, 'message'=>'bad parameters');
             // return $_REQUEST;
@@ -110,8 +118,9 @@ function feed_controller()
             if (isset($_GET['id'])) {
                 $feedids = explode(",", get('id'));
                 $singular = true;
+            } elseif (isset($_GET['ids'])) {
+                $feedids = explode(",", get('ids'));
             }
-            else if (isset($_GET['ids'])) $feedids = explode(",", get('ids'));
 
             $start = get('start',true);
             $end = get('end',true);
@@ -122,28 +131,28 @@ function feed_controller()
             $skipmissing = get('skipmissing',false,0);
             $limitinterval = get('limitinterval',false,0);
             $dp = get('dp',false,-1);
-            
+
             $averages = array();
             if (isset($_GET['average'])) {
                 $averages = explode(",",get('average'));
             }
-            
+
             $deltas = array();
             if (isset($_GET['delta'])) {
                 $deltas = explode(",",get('delta'));
-            }  
-            
+            }
+
             // Backwards compatibility
             if ($route->action=="average") $average = 1; else $average = 0;
             if ($route->action=="csvexport") $csv = 1;
             if (isset($_GET['mode'])) $interval = $_GET['mode'];
-            
+
             $multi_csv = false;
             if ($csv && count($feedids)>1) {
                 $csv = false;
                 $multi_csv = true;
             }
-            
+
             if (!empty($feedids)) {
                 $missing = array();
                 foreach($feedids as $index => $feedid) {
@@ -154,10 +163,10 @@ function feed_controller()
                         {
                             $results[$index] = array('feedid'=>$feedid);
                             if (!isset($_GET['split'])) {
-                            
+
                                 if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index];
                                 if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; else $delta = 0;
-                                
+
                                 $results[$index]['data'] = $feed->get_data($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$delta,$dp);
                             } else {
                                 $results[$index]['data'] = $feed->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,get('split'));
@@ -174,7 +183,7 @@ function feed_controller()
                     else
                         return array('success'=>false, 'message'=> count($missing) .' feeds do not exist', 'feeds' => $missing);
                 } else {
-                    
+
                     if ($singular && count($results)==1) {
                         return $results[0]['data'];
                     } else {
@@ -184,7 +193,7 @@ function feed_controller()
                             return $results;
                         }
                     }
-                    // @todo: return array for each feed's data 
+                    // @todo: return array for each feed's data
                     // and a single array for each interval timestamp
                 }
             } else {
@@ -203,16 +212,28 @@ function feed_controller()
                 // if public or belongs to user
                 if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                 {
-                    if ($route->action == "timevalue") return $feed->get_timevalue($feedid);
-                    else if ($route->action == "value") return $feed->get_value($feedid,get('time')); // null is a valid response
-                    else if ($route->action == "get") return $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
-                    else if ($route->action == "aget") return $feed->get($feedid);
-                    else if ($route->action == "getmeta") return $feed->get_meta($feedid);
-                    else if ($route->action == "getfeedsize") return $feed->get_feed_size($feedid);
-                    else if ($route->action == "export") {
-                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) return $feed->mysqltimeseries_export($feedid,get('start'));
-                        elseif ($f['engine']==Engine::PHPTIMESERIES) return $feed->phptimeseries_export($feedid,get('start'));
-                        elseif ($f['engine']==Engine::PHPFINA) return $feed->phpfina_export($feedid,get('start'));
+                    if ($route->action == "timevalue") {
+                        return $feed->get_timevalue($feedid);
+                    } elseif ($route->action == "value") {
+                        // null is a valid response
+                        return $feed->get_value($feedid,get('time'));
+                    } elseif ($route->action == "get") {
+                        // '/[^\w\s-]/'
+                        return $feed->get_field($feedid,get('field'));
+                    } elseif ($route->action == "aget") {
+                        return $feed->get($feedid);
+                    } elseif ($route->action == "getmeta") {
+                        return $feed->get_meta($feedid);
+                    } elseif ($route->action == "getfeedsize") {
+                        return $feed->get_feed_size($feedid);
+                    } elseif ($route->action == "export") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                            return $feed->mysqltimeseries_export($feedid,get('start'));
+                        } elseif ($f['engine']==Engine::PHPTIMESERIES) {
+                            return $feed->phptimeseries_export($feedid,get('start'));
+                        } elseif ($f['engine']==Engine::PHPFINA) {
+                            return $feed->phpfina_export($feedid,get('start'));
+                        }
                     }
                 }
 
@@ -241,8 +262,8 @@ function feed_controller()
                         }
 
                     // insert available here for backwards compatibility
-                    } else if ($route->action == "insert" || $route->action == "update" || $route->action == "post") {
-                        
+                    } elseif ($route->action == "insert" || $route->action == "update" || $route->action == "post") {
+
                         $join = get('join',false,false);
 
                         // Single data point
@@ -255,63 +276,74 @@ function feed_controller()
                         $data = false;
                         if (isset($_GET['data'])) {
                             $data = json_decode($_GET['data']);
-                        } else if (isset($_POST['data'])) {
+                        } elseif (isset($_POST['data'])) {
                             $data = json_decode($_POST['data']);
                         } else {
                             return array('success'=>false, 'message'=>'missing data parameter');
                         }
-                        if ($data==null) return array('success'=>false, 'message'=>'error decoding json');
-                        
-                        if (!$data || count($data)==0) return array('success'=>false, 'message'=>'empty data object');
-                        
+                        if ($data==null) {
+                            return array('success'=>false, 'message'=>'error decoding json');
+                        }
+
+                        if (!$data || count($data)==0) {
+                            return array('success'=>false, 'message'=>'empty data object');
+                        }
+
                         return $feed->post_multiple($feedid,$data,$join);
 
                     // Delete feed
-                    } else if ($route->action == "delete") {
+                    } elseif ($route->action == "delete") {
                         return $feed->delete($feedid);
-                        
+
                     // scale range for PHPFINA
-                    // added by Alexandre CUER - january 2019 
-                    } else if ($route->action == "scalerange") {
+                    // added by Alexandre CUER - january 2019
+                    } elseif ($route->action == "scalerange") {
 
                         if ($f['engine'] == Engine::PHPFINA) {
                             return $feed->EngineClass(Engine::PHPFINA)->scalerange($feedid,get("start"),get("end"),get("value"));
                         } else {
                             return "scalerange only supported by phpfina engine";
                         }
-                        
+
                     // Clear feed
-                    } else if ($route->action == "clear") {
+                    } elseif ($route->action == "clear") {
                         return $feed->clear($feedid);
-                    
+
                     // Trim feed
-                    } else if ($route->action == "trim") {
-                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
+                    } elseif ($route->action == "trim") {
+                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) {
+                            return false;
+                        }
                         $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
                         return $feed->trim($feedid, $start_time);
-                        
+
                     // Process
-                    } else if ($route->action == "process") {
-                        if ($f['engine']!=Engine::VIRTUALFEED) { return array('success'=>false, 'message'=>'Feed is not Virtual'); }
-                        else if ($route->subaction == "get") return $feed->get_processlist($feedid);
-                        else if ($route->subaction == "set") return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process->get_process_list());
-                        else if ($route->subaction == "reset") return $feed->reset_processlist($feedid);
+                    } elseif ($route->action == "process") {
+                        if ($f['engine']!=Engine::VIRTUALFEED) {
+                            return array('success'=>false, 'message'=>'Feed is not Virtual');
+                        } elseif ($route->subaction == "get") {
+                            return $feed->get_processlist($feedid);
+                        } elseif ($route->subaction == "set") {
+                            return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process->get_process_list());
+                        } elseif ($route->subaction == "reset") {
+                            return $feed->reset_processlist($feedid);
+                        }
 
                     // Fast bulk uploader
-                    } else if ($route->action == "upload") {
+                    } elseif ($route->action == "upload") {
                         // Start time and interval
                         if (isset($_GET['start']) && isset($_GET['interval']) && isset($_GET['npoints'])) {
                             return $feed->upload_fixed_interval($feedid,get("start"),get("interval"),get("npoints"));
-                        } else if (isset($_GET['npoints'])) {
+                        } elseif (isset($_GET['npoints'])) {
                             return $feed->upload_variable_interval($feedid,get("npoints"));
                         }
-                    } else if ($route->action == "deletedatapoint") {
+                    } elseif ($route->action == "deletedatapoint") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
                             return $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
                         } else {
                             return "deletedatapoint only supported by mysqltimeseries engine";
                         }
-                    } else if ($route->action == "deletedatarange") {
+                    } elseif ($route->action == "deletedatarange") {
                         if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
                             return $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
                         } else {

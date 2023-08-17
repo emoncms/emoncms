@@ -42,21 +42,21 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-    
+
     <script>
     var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
     var current_themesidebar = "dark";
     </script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     <?php echo $svg_icons; // THEME ICONS ?>
-	
+
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
         <div class="menu-top bg-menu-top">
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
-            
+
             <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
@@ -67,7 +67,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             </a>
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
-                    <?php if ($session["write"]) { ?> 
+                    <?php if ($session["write"]) { ?>
                     <li><a href="<?php echo $path; ?>user/view" title="<?php echo _("My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo _("My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
@@ -86,10 +86,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <div class="menu-l2"><div class="menu-l2-inner"><ul></ul></div><div id="menu-l2-controls" class="ctrl-hide"></div></div><div class="menu-l3"><ul></ul></div>
         <?php
         $contentContainerClasses[] = 'content-container';
-        
-        if ($route->controller=="dashboard") { 
+
+        if ($route->controller=="dashboard") {
             $contentContainerClasses[] = '';
-        } else { 
+        } else {
             $contentContainerClasses[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
@@ -99,8 +99,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             var public_userid = <?php echo $session['public_userid']; ?>;
             var public_username = "<?php echo $session['public_username']; ?>";
             var session_write = <?php echo $session['write']; ?>;
-            var session_read = <?php echo $session['read']; ?>; 
-            
+            var session_read = <?php echo $session['read']; ?>;
+
             var q = "<?php echo preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q); ?>"+location.search+location.hash;
             menu.init(<?php echo json_encode($menu); ?>,"<?php echo $session['public_username']; ?>");
             </script>
@@ -108,7 +108,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         </main>
     </div><!-- eof #wrap -->
     <div id="footer">
-        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="https://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
