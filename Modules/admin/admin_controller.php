@@ -91,7 +91,9 @@ function admin_controller()
     if ($route->action == 'components') {
         $route->format = 'html';
         return view("Modules/admin/Views/components_view.php", array(
-            "components"=>$admin->component_list()
+            "components_installed"=>$admin->component_list(), 
+            "components_available"=>$admin->components_available(),
+            'redis_enabled'=>$settings['redis']['enabled']
         ));
     }
     
@@ -282,7 +284,7 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     if ($route->action == 'components-installed' && $session['write']) {
         $route->format = "json";
-        return $admin->component_list(true);
+        return $admin->component_list();
     }
     
     if ($route->action == 'components-available' && $session['write']) {
@@ -292,39 +294,30 @@ function admin_controller()
    
     if ($route->action == 'component-update' && $session['write']) {
         $route->format = "json";
-             
-        $components = $admin->component_list(false);
-        
         if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
         if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");;
-        $module_path = $components[$module]["path"];     
-        
-        // if branch is not in available branches, check that it is not the current branch
-        if (!in_array($branch,$components[$module]["branches_available"])) {
-            $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
-            if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");;
-        }
-
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, "$module_path $branch>".$admin->update_logfile());
+        $reset = (isset($_GET['reset']) && ($_GET['reset'] == "true") ? true : false);
+        return $admin->component_update($module, $branch, $reset);
     }
     
     if ($route->action == 'components-update-all' && $session['write']) {
         $route->format = "json";
         if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        
-        // Validate branch
-        $available_branches = array();
-        foreach ($admin->component_list(false) as $c) {
-            foreach ($c["branches_available"] as $b) {
-                if (!in_array($b,$available_branches)) $available_branches[] = $b;
-            }
-        }
-        if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");;
-        
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, "$branch>".$admin->update_logfile());
+        return $admin->component_update_all($branch);
+    }
+
+    if ($route->action == 'component-install' && $session['write']) {
+        $route->format = "json";
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
+        return $admin->component_install($module, $branch);
+    }
+
+    if ($route->action == 'component-uninstall' && $session['write']) {
+        $route->format = "json";
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
+        $reset = (isset($_GET['reset']) && ($_GET['reset'] == "true") ? true : false);
+        return $admin->component_uninstall($module, $reset);
     }
     
     // ----------------------------------------------------------------------------------------
@@ -345,7 +338,6 @@ function admin_controller()
             if (!isset($_POST['baudrate'])) return array('success'=>false, 'message'=>"missing parameter: baudrate");
             $serialport = $_POST['serialport'];
             $baudrate = (int) $_POST['baudrate'];
-            
             if (!in_array($serialport,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"invalid serial port");
             if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
             
