@@ -222,7 +222,7 @@ class Input
             return $this->mysql_get_inputs($userid);
         }
     }
-
+    
     private function redis_get_inputs($userid)
     {
         $userid = (int) $userid;
@@ -235,8 +235,24 @@ class Input
             $inputids = $this->redis->sMembers("user:inputs:$userid");
         }
         
+        // Higher CPU intensity but without PHP 8.1.23, phpredis latest memory leak issue
+        // apparent only when run with emoncms_mqtt
+        foreach ($inputids as $id) {
+            $row = $this->redis->hGetAll("input:$id");
+
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
+        }
+        
+        /*
+        
+        // Original implementation
+        
         $pipe = $this->redis->multi(Redis::PIPELINE);
-        foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
+        foreach ($inputids as $id) {
+            $pipe->hGetAll("input:$id");
+        }
         $result = $pipe->exec();
         
         foreach ($result as $row) {
@@ -244,6 +260,7 @@ class Input
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
             $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
         }
+        */
         return $dbinputs;
     }
 
