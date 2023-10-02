@@ -285,9 +285,6 @@ function getUpdateLog() {
                 refresh_updateLog(result);
                 if (result.indexOf("System update done")!=-1) {
                     clearInterval(updates_log_interval);
-                    setTimeout(function() {
-                        $("#update-logfile-view").slideUp();
-                    },3000);
                 }
             }
         }
