@@ -111,10 +111,21 @@ class PHPFina implements engine_methods
         $meta->id = $id;
         $metafile = fopen($this->dir.$feedname, 'rb');
         fseek($metafile,8);
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->interval = $tmp[1];
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->start_time = $tmp[1];
+        $tmp = fread($metafile,4);
+        if (strlen($tmp)==4) {
+            $tmp = unpack("I",$tmp); 
+            $meta->interval = $tmp[1];
+        } else {
+            $meta->interval = 0;
+        }
+        
+        $tmp = fread($metafile,4);
+        if (strlen($tmp)==4) {
+            $tmp = unpack("I",$tmp); 
+            $meta->start_time = $tmp[1];
+        } else {
+            $meta->start_time = 0;
+        }
         fclose($metafile);
         
         $meta->npoints = 0;
