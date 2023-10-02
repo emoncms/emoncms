@@ -174,7 +174,22 @@ body{padding:0!important}
     <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
     <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
+
+
+    <!-- Sort by selection -->
+    <select id="sort-by" class="input-medium" style="width:120px; margin-bottom:0px">
+        <option value="id"> <?php echo _('Sort by ID') ?></option>
+        <option value="name"><?php echo _('Sort by name') ?></option>
+        <option value="time"><?php echo _('Sort by time') ?></option>
+        <option value="size"><?php echo _('Sort by size') ?></option>
+    </select>
+
+    <select id="sort-order" class="input-medium" style="width:100px; margin-bottom:0px">
+        <option value="1"><?php echo _('Ascending') ?></option>
+        <option value="-1"><?php echo _('Descending') ?></option>
+    </select>
 </div>
+
 
 <div id="table" class="feed-list"></div>
 
@@ -367,6 +382,10 @@ var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden'])
 var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
 var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
 
+
+var sort_by = false;
+var sort_order = 1;
+
 // auto refresh
 update_feed_list();
 setInterval(update_feed_list,5000);
@@ -406,7 +425,31 @@ function update_feed_list() {
 
             if (nodes_display[node]==undefined) nodes_display[node] = true;
             nodes[node].push(feeds[z]);
+
+            if (sort_by) {
+                nodes[node].sort(function(a,b) {
+                    if (a[sort_by] < b[sort_by]) return -1*sort_order;
+                    if (a[sort_by] > b[sort_by]) return 1*sort_order;
+                    return 0; 
+                });
+            }
         }
+
+        // sort nodes by key
+        if (sort_by == "name") {
+            var sorted_nodes = {};
+            Object.keys(nodes).sort(function(a, b) {
+                if (sort_order == 1) {
+                    return a.localeCompare(b);
+                } else {
+                    return b.localeCompare(a);
+                }
+            }).forEach(function(key) {
+                sorted_nodes[key] = nodes[key];
+            });
+            nodes = sorted_nodes;
+        }
+
         if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
                 // collapse all if more than one node and not cached in cookie
@@ -723,6 +766,18 @@ $(".feed-edit-save").click(function() {
         $('#feed-edit-save-message').text('').hide();
     }
     
+});
+
+// Sort sort_by
+$("#sort-by").change(function() {
+    sort_by = $(this).val();
+    update_feed_list();
+});
+
+// sort order
+$("#sort-order").change(function() {
+    sort_order = $(this).val();
+    update_feed_list();
 });
 
 // ---------------------------------------------------------------------------------------------
