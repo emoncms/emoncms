@@ -37,7 +37,7 @@ class Feed
         static $engines = array();
         if (!Engine::is_valid($e)) {
             $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
-            return array('success'=>false, 'message'=>"ABORTED: Engine id $d is not supported.");
+            return array('success'=>false, 'message'=>"ABORTED: Engine id $e is not supported.");
         }
         if (isset($engines[$e])) {
             //$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'.");
@@ -364,6 +364,8 @@ class Feed
     // Expose metadata from engines
     public function get_meta($feedid) {
         $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
         $engine = $this->get_engine($feedid);
         return $this->EngineClass($engine)->get_meta($feedid);
     }
