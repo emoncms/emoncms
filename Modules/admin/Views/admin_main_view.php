@@ -53,17 +53,17 @@ eot;
         <dd class="col-sm-10 col-8 border-box px-1 {$value_css}">{$value}</dd>
 listItem;
     }
-    
+
 ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 
 <div class="admin-container">
 
 <?php if (PHP_VERSION_ID<70300) { ?>
-<div class="alert alert-error" style="text-align:left"><b>Important:</b> PHP version <?php echo phpversion(); ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
+<div class="alert alert-error" style="text-align:left"><b>Important:</b> PHP version <?php echo PHP_VERSION; ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
 <?php } ?>
 
-    <?php 
+    <?php
     // SERVER INFO
     // -------------------
     ?>
@@ -76,7 +76,7 @@ listItem;
             <button class="btn btn-info" id="copyserverinfo_txt" type="button" title="<?php echo _('Formatted as plain text')?>" data-success="<?php echo _('Server info copied to clipboard as Text [text/plain]')?>"><?php echo _('Copy as Text'); ?></button>
         </div>
     </div>
-    
+
 
 
     <div id="serverinfo-container">
@@ -88,22 +88,22 @@ listItem;
                   <?php if ($value['loadstate']=="Loaded") { ?>
                       <strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
                       <div class="btn-group" role="group" style="float:right">
-                      
+
                       <?php if ($value['unitfilestate']!="disabled" && $value['state']!="Active") { ?>
                       <button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button>
                       <?php } ?>
-                      
+
                       <?php if ($value['state']=="Active") { ?>
                         <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
                         <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
                       <?php } ?>
-                      
+
                       <?php if ($value['unitfilestate']=="disabled") { ?>
                       <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
-                      <?php } else if ($value['state']!="Active") { ?>
+                      <?php } elseif ($value['state']!="Active") { ?>
                       <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
                       <?php } ?>
-                      
+
                       </div>
                   <?php } else { ?>
                       <?php echo $value['text']; ?>
@@ -139,7 +139,7 @@ listItem;
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
         <dl class="row">
-            <?php 
+            <?php
             echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), array(
                 'Total'=>$ram_info['total'],
                 'Used'=>$ram_info['used'],
@@ -153,17 +153,17 @@ listItem;
                 )));
             }
             ?>
-            
+
         </dl>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
         <dl class="row">
-            <?php 
-            if ($redis_enabled) { 
+            <?php
+            if ($redis_enabled) {
                 $reset_write_load_btn = sprintf('<button id="resetdiskstats" class="btn btn-info btn-small pull-right">%s</button>',_('Reset Disk Stats'));
                 echo row('', sprintf('<span id="add-on"></span>%s',$reset_write_load_btn),'d-flex','d-flex align-items-center justify-content-between');
             }
             foreach($disk_info as $mount_info) {
-                echo row($mount_info['mountpoint'], 
+                echo row($mount_info['mountpoint'],
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
@@ -203,7 +203,7 @@ listItem;
             }
             echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
-            <?php 
+            <?php
             $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
             $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
             $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
@@ -307,7 +307,7 @@ function copyTextToClipboard(text, message) {
     var msg = successful ? 'successful' : 'unsuccessful';
     // console.log('Copying text command was ' + msg);
     snackbar(message || 'Copied to clipboard');
-  } 
+  }
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
@@ -387,7 +387,7 @@ function markdownify(markup) {
     .replace(/<\/h4>\s+/g,"\n")
     .replace(/<dd class="__inline__">/g,'    ')
     // remove <dl>
-    .replace(/<dl *[^/]*?>/g," ")   
+    .replace(/<dl *[^/]*?>/g," ")
     .replace(/<\/dl>[ \n]/g,"\n" + newline)
     // remove <dt>
     .replace(/<dt *[^/]*?>/g,' - **')
@@ -444,9 +444,9 @@ function getClientInfoDetails() {
 // format <html> as tabbed text (text/plain) and copy to system clipboard
 $("#copyserverinfo_txt").on('click', function(event) {
     copyTextToClipboard(
-        'Server Information\n-----------------------\n' + 
+        'Server Information\n-----------------------\n' +
         markdownStringify(getServerInfoDetails()) +
-        '\n\nClient Information\n-----------------------\n' + 
+        '\n\nClient Information\n-----------------------\n' +
         markdownStringify(getClientInfoDetails()),
         event.target.dataset.success
     );
@@ -455,11 +455,11 @@ $("#copyserverinfo_txt").on('click', function(event) {
 // format <html> as markdown (text/markdown) and copy to system clipboard
 $("#copyserverinfo_md").on('click', function(event) {
     copyTextToClipboard(
-        '<details><summary>Server Information</summary>\n' + 
-        '\n# Server Information\n' + 
-        getServerInfoDetails().replace(/\n+/g, '\n') + 
-        '\n</details>' + 
-        '\n\n<details><summary>Client Information</summary>\n' + 
+        '<details><summary>Server Information</summary>\n' +
+        '\n# Server Information\n' +
+        getServerInfoDetails().replace(/\n+/g, '\n') +
+        '\n</details>' +
+        '\n\n<details><summary>Client Information</summary>\n' +
         '\n# Client Information\n' + getClientInfoDetails() +
         '\n</details>',
         this.dataset.success
@@ -473,7 +473,7 @@ $(".row dd").on('click', function(event) {
         title = $this.prev('dt').text().trim(),
         markup = $this.clone().find('script').remove().end().html()
         value = markdownStringify(markdownify(markup));
-        
+
     copyTextToClipboard(
         [title, value].join(': '),
         _('Copied to clipboard')
@@ -485,7 +485,7 @@ $(".row dt").on('click', function(event) {
         title = $this.text().trim(),
         markup = $this.next('dd').clone().find('script').remove().end().html()
         value = markdownStringify(markdownify(markup));
-        
+
     copyTextToClipboard(
         [title, value].join(': '),
         _('Copied to clipboard')
@@ -580,7 +580,7 @@ $(".service-action").click(function() {
     var name = $(this).attr("service_key");
     var action = $(this).attr("service_action");
     console.log(action+" "+name)
-    
+
     $.ajax({ url: path+"admin/service/"+action+"?name="+name, async: true, dataType: "json", success: function(result) {
         if (result.reauth == true) { window.location.reload(true); }
         setTimeout(function() {

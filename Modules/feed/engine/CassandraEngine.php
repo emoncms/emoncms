@@ -110,10 +110,10 @@ class CassandraEngine implements engine_methods
         $feedid = (int) $feedid;
         $time = (int) $time;
         $value = (float) $value;
-        
+
         $feedname = $this->feedtable($feedid);
         $day = $this->unixtoday($time);
-        
+
         $this->execCQL("INSERT INTO $feedname(feed_id,day,time,data) VALUES($feedid,$day,$time,$value)");
     }
 
@@ -129,7 +129,7 @@ class CassandraEngine implements engine_methods
         $feedid = (int) $feedid;
         $time = (int) $time;
         $value = (float) $value;
-        
+
         $feedname = $this->feedtable($feedid);
         $day = $this->unixtoday($time);
         $this->execCQL("UPDATE $feedname SET data = $value WHERE feed_id = $feedid AND day = $day AND time = $time");
@@ -183,7 +183,7 @@ class CassandraEngine implements engine_methods
 
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();
-        $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
+        $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND day IN (". implode(',', $day_range) .") AND time >= $start AND time <= $end");
         $dp_time = $start;
         while($result) {
             foreach ($result as $row) {
@@ -239,12 +239,12 @@ class CassandraEngine implements engine_methods
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
 
         $feedname = $this->feedtable($feedid);
-        $this->execCQL("DELETE FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
+        $this->execCQL("DELETE FROM $feedname WHERE feed_id=$feedid AND day IN (". implode(',', $day_range) .") AND time >= $start AND time <= $end");
         return true;
     }
 
 
-// #### \/ Below are engine private methods    
+// #### \/ Below are engine private methods
     private function execCQL($cql)
     {
         $statement = new Cassandra\SimpleStatement($cql);

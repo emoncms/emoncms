@@ -70,7 +70,7 @@ if (!extension_loaded('gettext')) {
     echo "Your PHP installation appears to be missing the <b>gettext</b> extension which is required by Emoncms. <br> See <a href='". $path. "php-info.php'>PHP Info</a> (restricted to local access)";
     die;
 }
-    
+
 $mysqli = @new mysqli(
     $settings["sql"]["server"],
     $settings["sql"]["username"],
@@ -115,7 +115,7 @@ if (isset($_GET['apikey'])) {
     //      GET /resource HTTP/1.1
     //      Host: server.example.com
     //      Authorization: Bearer THE_API_KEY_HERE
-    
+
     if (isset($_SERVER["CONTENT_TYPE"]) && ($_SERVER["CONTENT_TYPE"]=="aes128cbc" || $_SERVER["CONTENT_TYPE"]=="aes128cbcgz")) {
         // If content_type is AES128CBC
     } else {
@@ -206,7 +206,7 @@ if ($route->isRouteNotDefined()) {
             }
         }
     }
-    
+
     if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
         // Non authenticated defaults
         $route->controller = $settings["interface"]["default_controller"];
@@ -257,16 +257,16 @@ if (!$output['is_controller'] && $settings["public_profile"]["enabled"] && $rout
         $route->subaction = $route->subaction2;
         // Try again
         $output = controller($route->controller);
-        
+
         // If no content, try showing any public dashboards
-        if ($output['content'] === EMPTY_ROUTE) {            
+        if ($output['content'] === EMPTY_ROUTE) {
             $route->subaction = $route->controller;
             $route->controller = "dashboard";
             $route->action = "view";
             $output = controller($route->controller);
         }
         // If no content or dashboards, try showing any public apps
-        if ($output['content'] === EMPTY_ROUTE) {            
+        if ($output['content'] === EMPTY_ROUTE) {
             $route->subaction = $route->controller;
             $route->controller = "app";
             $route->action = "view";
@@ -353,7 +353,7 @@ if ($route->format == 'json') {
             }
         }
     }
-} else if ($route->format == 'html') {
+} elseif ($route->format == 'html') {
     if ($embed == 1) {
         print view("Theme/embed.php", $output);
     } else {
@@ -368,17 +368,17 @@ if ($route->format == 'json') {
         // Itterates through installed modules to load module menus
         load_menu();
         // Pass menu through to output view - passed on the js based builder
-        
+
         // Hide menu if nothing to see
         if (!$menu["setup"]["l2"]) $menu = array();
-        
+
         $output['menu'] = $menu;
-        
+
         $output['svg_icons'] = view("Theme/svg_icons.svg", array());
-        
+
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
-        
+
         if (!$session['read']) {
             $output['page_classes'][] = 'collapsed manual';
         } else {

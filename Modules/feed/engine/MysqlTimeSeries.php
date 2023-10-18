@@ -109,19 +109,19 @@ class MysqlTimeSeries implements engine_methods
         else {
             $meta = new stdClass();
             $meta->id = $feedid;
-            $meta->table_name = ($this->prefix ? $this->prefix : "").trim($feedid);
+            $meta->table_name = ($this->prefix ?: "") . trim($feedid);
             $meta->value_type = "FLOAT NOT NULL";
             $meta->start_time = 0;
             $meta->end_time = 0;
         }
-       
+
         $result = $this->mysqli->query("SELECT COUNT(*) FROM ".$meta->table_name);
         if ($result && $row = $result->fetch_array()) {
             $meta->npoints = (int) $row[0];
         } else {
             $meta->npoints = -1;
         }
-        
+
         if ($meta->start_time == 0) {
             $table = $this->get_table_name($feedid);
             // Get first and last datapoint of feed
@@ -137,21 +137,21 @@ class MysqlTimeSeries implements engine_methods
                 if (isset($range[1])) {
                     $meta->end_time = (int) $range[1]['time'];
                 }
-                
+
                 $meta->interval = 0;
                 if ($meta->npoints>0) {
                     $meta->interval = floor(($meta->end_time - $meta->start_time) / $meta->npoints);
                 }
-                
+
                 if (!$this->generic) {
                     $this->write_meta($feedid, $meta);
-                }      
+                }
             }
         }
 
         return $meta;
     }
-    
+
     /**
      * Returns engine occupied size in bytes
      *
@@ -171,7 +171,7 @@ class MysqlTimeSeries implements engine_methods
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param array padding_mode $value optional padding mode argument
+     * @param array $padding_mode optional padding mode argument
      * $feedname, $time and $value are all typecased in feed->insert and feed->update
     */
     public function post($feedid, $time, $value, $padding_mode=null)
@@ -211,7 +211,7 @@ class MysqlTimeSeries implements engine_methods
      * @param integer $limitinterval limit interval to feed interval
      * @return void or array
      */
-    
+
     public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
     {
         if (in_array($interval,array("daily","weekly","monthly","annual"))) {
@@ -244,7 +244,7 @@ class MysqlTimeSeries implements engine_methods
         $time = $start;
 
         $table = $this->get_table_name($feedid);
-        
+
         $stmt = $this->mysqli->prepare("SELECT time, data FROM $table WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
         $t = $start; $tb = 0;
         $stmt->bind_param("ii", $div_start, $div_end);
@@ -257,7 +257,7 @@ class MysqlTimeSeries implements engine_methods
             $helperclass->set_time_format($timezone,$timeformat);
             $helperclass->csv_header($feedid);
         } else {
-            $data = array();       
+            $data = array();
         }
 
         while($time<=$end)
@@ -265,29 +265,29 @@ class MysqlTimeSeries implements engine_methods
             // Start time of interval/division
             $div_start = $time;
             $timestamp = $div_start;
-            
-            // calculate start of next interval 
+
+            // calculate start of next interval
             $div_end = $time + $interval;
-            
+
             $value = null;
             $stmt->execute();
             if ($stmt->fetch() && $data_value !== null) {
                 if ($limitinterval==2) {
                     $timestamp = $data_time;
-                }  
+                }
                 $value = (float) $data_value;
             }
-            
-            if ($value!==null || $skipmissing===0) {                
+
+            if ($value!==null || $skipmissing===0) {
                 // Write as csv or array
-                if ($csv) { 
+                if ($csv) {
                     $helperclass->csv_write($timestamp,$value);
                 } else {
                     $data[] = array($timestamp,$value);
-                } 
+                }
             }
 
-            // Advance position 
+            // Advance position
             $time = $div_end;
         }
         if ($csv) {
@@ -297,7 +297,7 @@ class MysqlTimeSeries implements engine_methods
             return $data;
         }
     }
-    
+
     /**
      * Return the averaged data over interval for the given timerange. The returned timestamp denotes the intervals start time. Averaging is performed over all values from time to time+interval.
      *
@@ -315,9 +315,9 @@ class MysqlTimeSeries implements engine_methods
         $skipmissing = (int) $skipmissing;
         // Minimum interval
         if ($interval < 1) $interval = 1;
-        
+
         $table = $this->get_table_name($feedid);
-        
+
         // 1. Create associative array of time => values
         $data_assoc = array();
         $sql = "SELECT time, AVG(data) AS data_avg FROM $table WHERE time >= $start AND time < $end GROUP BY FLOOR(time/$interval)";
@@ -328,18 +328,18 @@ class MysqlTimeSeries implements engine_methods
                 $data_assoc[$time] = (float) $row['data_avg'];
             }
         }
-        
-        // 2. Assing values to correct output format 
+
+        // 2. Assing values to correct output format
         // returns null if output does not exist for that timestamp
         // allowing for easier cross feed comparison e.g in csv view
         if ($csv) {
-            global $settings;   
+            global $settings;
             require_once "Modules/feed/engine/shared_helper.php";
             $helperclass = new SharedHelper($settings['feed']);
             $helperclass->set_time_format($timezone,$timeformat);
             $helperclass->csv_header($feedid);
         } else {
-            $data = array();       
+            $data = array();
         }
 
         $time = $start;
@@ -349,10 +349,10 @@ class MysqlTimeSeries implements engine_methods
             if (isset($data_assoc[$time])) {
                 $value = $data_assoc[$time];
             }
-            
+
             // Write as csv or array
             if ($value!==null || $skipmissing===0) {
-                if ($csv) { 
+                if ($csv) {
                     $helperclass->csv_write($time,$value);
                 } else {
                     $data[] = array($time,$value);
@@ -360,7 +360,7 @@ class MysqlTimeSeries implements engine_methods
             }
             $time += $interval;
         }
-        
+
         if ($csv) {
             $helperclass->csv_close();
             exit;
@@ -381,18 +381,18 @@ class MysqlTimeSeries implements engine_methods
     public function get_data_DMY($feedid, $start, $end, $interval, $average, $timezone, $timeformat, $csv, $skipmissing)
     {
         if (!in_array($interval,array("daily","weekly","monthly","annual"))) return false;
-        
+
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
         $average = (int) $average;
-        $skipmissing = (int) $skipmissing;       
+        $skipmissing = (int) $skipmissing;
         $table = $this->get_table_name($feedid);
-        
+
         $meta = $this->get_meta($feedid);
         if (!$start_time = $meta->start_time) return false;
         if (!$end_time = $meta->end_time) return false;
-        
+
         if ($timezone===0) $timezone = "UTC";
 
         $date = new DateTime();
@@ -403,36 +403,36 @@ class MysqlTimeSeries implements engine_methods
         if ($interval=="weekly") {
             $date->modify("this monday");
             $modify = "+1 week";
-        } else if ($interval=="monthly") {
+        } elseif ($interval=="monthly") {
             $date->modify("first day of this month");
             $modify = "+1 month";
-        } else if ($interval=="annual") {
+        } elseif ($interval=="annual") {
             $date->modify("first day of january this year");
             $modify = "+1 year";
         }
-        // Set time to start 
+        // Set time to start
         $time = $date->getTimestamp();
-        
+
         if ($csv) {
-            global $settings;     
+            global $settings;
             require_once "Modules/feed/engine/shared_helper.php";
             $helperclass = new SharedHelper($settings['feed']);
             $helperclass->set_time_format($timezone,$timeformat);
             $helperclass->csv_header($feedid);
         } else {
-            $data = array();       
+            $data = array();
         }
-        
+
         while($time<=$end)
-        {   
+        {
             // Start time of interval/division
             $div_start = $time;
-            // calculate start of next interval 
+            // calculate start of next interval
             $date->modify($modify);
             $div_end = $date->getTimestamp();
-            
+
             $value = null;
-            
+
             if ($average) {
                 $sql = "SELECT AVG(data) AS dp FROM $table WHERE time >= $div_start AND time < $div_end";
                 if ($result = $this->mysqli->query($sql)) {
@@ -448,17 +448,17 @@ class MysqlTimeSeries implements engine_methods
                     $value = $dp[1];
                 }
             }
-            
+
             // Write as csv or array
             if ($value!==null || $skipmissing===0) {
-                if ($csv) { 
+                if ($csv) {
                     $helperclass->csv_write($div_start,$value);
                 } else {
                     $data[] = array($div_start,$value);
                 }
             }
-                      
-            // Advance position 
+
+            // Advance position
             $time = $div_end;
         }
         if ($csv) {
@@ -504,10 +504,9 @@ class MysqlTimeSeries implements engine_methods
         if($result) {
             $range = $result->fetch_all(MYSQLI_ASSOC);
             if (count($range) < 2) {
-                return array('success'=>false, 'message'=>"Feed $feedid does not contain enough datapoints yet");;
+                return array('success'=>false, 'message'=>"Feed $feedid does not contain enough datapoints yet");
             }
-        }
-        else {
+        } else {
             return false;
         }
 
@@ -546,7 +545,7 @@ class MysqlTimeSeries implements engine_methods
         }
         return $data;
     }
-    
+
     public function export($feedid, $start)
     {
         // Feed id and start time of feed to export
@@ -724,12 +723,10 @@ class MysqlTimeSeries implements engine_methods
                 "name" => $this->get_table_name($feedid),
                 "type" => "FLOAT NOT NULL"
             );
-        }
-        else if ($this->redis && $this->redis->exists("feed:$feedid:table")) {
+        } elseif ($this->redis && $this->redis->exists("feed:$feedid:table")) {
             if (!empty($field)) {
                 return $this->redis->hget("feed:$feedid:table", $field);
-            }
-            else {
+            } else {
                 return $this->redis->get("feed:$feedid:table");
             }
         }
@@ -756,30 +753,28 @@ class MysqlTimeSeries implements engine_methods
     }
 
 // #### \/ Bellow are engine private methods
-    
+
     private function create_meta($feedid, $options)
     {
         // Check to ensure ne existing feed will be overridden
         if (empty($this->dir) || !is_dir($this->dir) || !is_writable($this->dir)) {
             return true;
-        }
-        else if (file_exists($this->dir.$feedid.".meta")) {
+        } elseif (file_exists($this->dir.$feedid.".meta")) {
             $result = "Unable to create MySQL already existing meta file '".$this->dir.$feedid.".meta'";
             $this->log->error($result);
             return $result;
         }
         if ($this->generic) {
-            $name = ($this->prefix ? $this->prefix : "").trim($feedid);
+            $name = ($this->prefix ?: "") . trim($feedid);
             $type = "FLOAT";
             $empty = false;
-        }
-        else {
+        } else {
             $name = "";
             if ($this->prefix) {
                 $name .= $this->prefix;
             }
             if (empty($options["name"])) {
-                $name .= "".trim($feedid);
+                $name .= "" . trim($feedid);
             }
             else {
                 $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
@@ -898,7 +893,7 @@ class MysqlTimeSeries implements engine_methods
         }
         return $data;
     }
-    
+
     /**
      * Used for testing
      *
@@ -908,8 +903,8 @@ class MysqlTimeSeries implements engine_methods
         $result = $this->mysqli->query("SELECT time, data FROM $table");
         $n = 0;
         while($row = $result->fetch_object()) {
-            print $n." ".$row->time." ".$row->data."\n";     
-            $n++; 
+            print $n." ".$row->time." ".$row->data."\n";
+            $n++;
         }
     }
 }

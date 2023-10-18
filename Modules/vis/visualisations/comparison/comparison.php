@@ -7,7 +7,7 @@
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
+    https://openenergymonitor.org
   -->
 <?php
 
@@ -15,11 +15,11 @@
 
     $power = (int) get('power');
     $kwhd = (int) get('kwhd');
-    
-    $currency = get('currency')?get('currency'):'&euro;';
+
+    $currency = get('currency') ?: '&euro;';
     $currency = preg_replace('/[^\w\s&;]/','',$currency);
-    
-    $pricekwh = get('pricekwh')?get('pricekwh'):0.12;
+
+    $pricekwh = get('pricekwh') ?: 0.12;
     $pricekwh = (float) $pricekwh;
 ?>
 

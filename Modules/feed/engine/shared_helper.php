@@ -21,7 +21,7 @@ class SharedHelper
     private $timezone;
     private $timeformat;
     private $date;
-    
+
     public function __construct($feed_settings=false)
     {
         if ($feed_settings) {
@@ -30,7 +30,7 @@ class SharedHelper
             $this->csv_dp_separator = $feed_settings["csv_decimal_place_separator"];
         }
     }
-    
+
     public function set_time_format($timezone,$timeformat) {
         $this->timezone = $timezone;
         $this->timeformat = $timeformat;
@@ -38,22 +38,22 @@ class SharedHelper
         $this->date = new DateTime();
         $this->date->setTimezone(new DateTimeZone($timezone));
     }
-    
+
     public function format_time($timestamp) {
         if ($this->timeformat=="excel") {
             $this->date->setTimestamp($timestamp);
             return $this->date->format("d/m/Y H:i:s");
-        } else if ($this->timeformat=="iso8601") {
+        } elseif ($this->timeformat=="iso8601") {
             $this->date->setTimestamp($timestamp);
             return $this->date->format("c");
         } else {
             return $timestamp;
         }
     }
-        
+
     public function csv_header($feedid) {
         // check for cli here allows removes header errors when testing with command line
-        if (php_sapi_name() != 'cli') {
+        if (PHP_SAPI != 'cli') {
             // There is no need for the browser to cache the output
             header("Cache-Control: no-cache, no-store, must-revalidate");
             // Tell the browser to handle output as a csv file to be downloaded
@@ -67,7 +67,7 @@ class SharedHelper
         // Write to output stream
         $this->export_fh = @fopen( 'php://output', 'w' );
     }
-    
+
     public function csv_write($time,$value) {
         $time = $this->format_time($time);
         if ($value!=null) {
@@ -77,10 +77,10 @@ class SharedHelper
         }
         fwrite($this->export_fh,$time.$this->csv_field_separator.$value."\n");
     }
-    
+
     public function csv_write_multi($values) {
         // $values[0] = $this->format_time($values[0]);
-        
+
         for ($z=1; $z<count($values); $z++) {
             if ($values[$z]==null) {
                 $values[$z] = 'null';
@@ -90,7 +90,7 @@ class SharedHelper
         }
         fwrite($this->export_fh,implode($this->csv_field_separator,$values)."\n");
     }
-    
+
     public function csv_close() {
         fclose($this->export_fh);
     }
@@ -107,12 +107,12 @@ class SharedHelper
 }
 /**
  * Required methods for each engine (Template/Interface for what methods are required)
- * 
- * custom engine methods can be added by extending a new interface with this one. 
+ *
+ * custom engine methods can be added by extending a new interface with this one.
  * use the newly extended interface to implement the custom engine class
  */
 interface engine_methods{
-    
+
     /**
      * Create feed
      *
@@ -120,28 +120,28 @@ interface engine_methods{
      * @param array $options for the engine
     */
     public function create($feedid,$options);
-    
+
     /**
      * Delete feed
      *
      * @param integer $feedid The id of the feed to be created
     */
     public function delete($feedid);
-    
+
     /**
      * Gets engine metadata
      *
      * @param integer $feedid The id of the feed to be created
     */
     public function get_meta($feedid);
-    
+
     /**
      * Returns engine occupied size in bytes
      *
      * @param integer $feedid The id of the feed to be created
     */
     public function get_feed_size($feedid);
-    
+
     /**
      * Adds a data point to the feed
      *
@@ -151,7 +151,7 @@ interface engine_methods{
      * @param array $padding_mode optional padding mode argument
     */
     public function post($feedid,$feedtime,$value,$padding_mode);
-    
+
     /**
      * Get value at specified time
      *
@@ -159,7 +159,7 @@ interface engine_methods{
      * @param integer $time in seconds
     */
     // public function get_value($feedid,$time);
-    
+
     /**
      * Return the data for the given timerange
      *
@@ -176,26 +176,26 @@ interface engine_methods{
      * @return void or array
      */
     public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
-    
+
     /**
      * delete all past data for a feed. keeping all the feed settings the same
-     * 
-     * a new feed starttime of "[CURRENT_TIMESTAMP]" is created 
+     *
+     * a new feed starttime of "[CURRENT_TIMESTAMP]" is created
      *
      * @param integer $feedid The id of the feed to fetch from
      * @return array associative array with success and message
      */
     public function clear($feedid);
-    
+
     /**
      * delete past data for a feed up to a point.
-     * 
-     * a new feed starttime of "$start_time" is created 
+     *
+     * a new feed starttime of "$start_time" is created
      *
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start_time The unix timestamp in ms of the start of the data range
      * @return array associative array with success and message
-     * 
+     *
      */
     public function trim($feedid, $start_time);
 }
