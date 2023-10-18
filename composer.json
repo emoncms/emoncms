@@ -23,7 +23,7 @@
         "ext-mbstring": "*",
         "ext-mysqli": "*",
         "ext-openssl": "*",
-        "ext-zlib": ""
+        "ext-zlib": "*"
     },
     "suggest": {
         "ext-cassandra": "Cassandra storage engine",
