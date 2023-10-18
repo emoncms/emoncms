@@ -80,7 +80,7 @@ function ini_merge($defaults, $overrides)
 {
     foreach ($overrides as $k => $v) {
         if (is_array($v)) {
-            $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
+            $defaults[$k] = ini_merge($defaults[$k], $v);
         } else {
             $defaults[$k] = resolve_env_vars($v, $defaults[$k]);
 #            $defaults[$k] = $v;
@@ -88,7 +88,7 @@ function ini_merge($defaults, $overrides)
     }
 
     return $defaults;
-};
+}
 
 // This function iterates over all the config file entries, replacing values
 // of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
@@ -125,7 +125,7 @@ function resolve_env_vars($value)
 
     // Convert numbers from strings
     } elseif (is_numeric($value)) {
-        $value = $value + 0;
+        $value += 0;
     }
 
     // Set the new value

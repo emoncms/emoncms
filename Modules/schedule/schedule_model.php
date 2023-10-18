@@ -49,9 +49,7 @@ class Schedule
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Schedule does not exist');
 
         $result = $this->mysqli->query("SELECT * FROM schedule WHERE id = '$id'");
-        $row = (array) $result->fetch_object();
-
-        return $row;
+        return (array) $result->fetch_object();
     }
 
     public function get_list($userid)
@@ -112,7 +110,7 @@ class Schedule
         $fields = json_decode(stripslashes($fields));
 
         $success = false;
-        
+
         if (isset($fields->name)) {
             if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in schedule name');
             $stmt = $this->mysqli->prepare("UPDATE schedule SET name = ? WHERE id = ?");
@@ -120,7 +118,7 @@ class Schedule
             if ($stmt->execute()) $success = true;
             $stmt->close();
         }
-        
+
         if (isset($fields->public)) {
             $public = (int) $fields->public;
             if ($public>0) $public = 1;
@@ -129,7 +127,7 @@ class Schedule
             if ($stmt->execute()) $success = true;
             $stmt->close();
         }
-        
+
         if (isset($fields->expression)) {
             if (preg_replace('/[^\/\|\,\w\s\-:]/','',$fields->expression)!=$fields->expression) return array('success'=>false, 'message'=>'invalid characters in schedule expression');
             if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
@@ -138,7 +136,7 @@ class Schedule
             if ($stmt->execute()) $success = true;
             $stmt->close();
         }
-        
+
         if ($success){
             return array('success'=>true, 'message'=>'Field updated');
         } else {
@@ -151,14 +149,15 @@ class Schedule
         $expression = $get_expression["expression"];
         $exp_timezone = $get_expression["timezone"];
         $time = time(); //epoch is in UTC
-        $result = $this->match_engine($expression,$exp_timezone,$time,true);
-        return $result;
+        return $this->match_engine($expression,$exp_timezone,$time,true);
     }
 
     public function match($scheduleid, $time) {
         //$this->log->info("match() $scheduleid, $time");
         $get_expression = $this->get_expression($scheduleid);
-        if ($get_expression == null) return null;
+        if ($get_expression == null) {
+            return null;
+        }
         $expression = $get_expression["expression"];
         $exp_timezone = $get_expression["timezone"];
         return $this->match_engine($expression,$exp_timezone,$time,false);
@@ -228,7 +227,9 @@ class Schedule
 
         preg_match_all('/((?<dst>((Summer|Winter)?\s*)+)\|?\s*)((?<days>((\d{1,2}\/\d{1,2})?\s*[-,]?\s*)+)\|?\s*)((?<daysweek>((Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\s*[-,]?\s*)+)\|?\s*)(?<hours>((\d\d:\d\d)\s*[-,]?\s*)*)/x', $expression, $matches, PREG_SET_ORDER);
 
-        if ($debug) $debug_schedule = array();
+        if ($debug) {
+            $debug_schedule = array();
+        }
         foreach($matches as $match) {
             $dst =  str_replace(" ", "", $match['dst']);
             $days = str_replace(" ", "", $match['days']);
@@ -237,12 +238,16 @@ class Schedule
             $daysweek = explode(',', $daysweek);
             $hours = str_replace(" ", "", $match['hours']);
             $hours = array_filter(explode(',', $hours));
-            if ($debug) $debugval.= "\n\n________________________________________\nMATCH\n". print_r($match,true)."\n";
+            if ($debug) {
+                $debugval.= "\n\n________________________________________\nMATCH\n". print_r($match,true)."\n";
+            }
 
             if (empty($dst) || ((strpos($dst, "S") === 0 && $timeDST) || (strpos($dst, "W") === 0 && !$timeDST))) {
                 foreach($days as $day) {
-                    if ($debug) $debugval.= "\n";
-                    if ($debug) $debugval.= print_r($day,true);
+                    if ($debug) {
+                        $debugval.= "\n";
+                        $debugval.= print_r($day,true);
+                    }
                     $inrange_day = false;
                     if (!empty($day)) {
                         if (strpos($day, '-') !== false) {  // Is a day range
@@ -253,7 +258,9 @@ class Schedule
                             list($m, $d) = explode('/', $end, 2);
                             $end = clone $timeDay;
                             $end->setDate($end->format('Y') , $m , $d);  // set the wanted day and month for 00:00 of input year
-                            if ($debug) $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " - " . $end->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            if ($debug) {
+                                $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " - " . $end->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            }
                             if ($timeDay >= $start && $timeDay <= $end) {
                                 $inrange_day = true;
                             }
@@ -261,12 +268,16 @@ class Schedule
                             list($m, $d) = explode('/', $day, 2);
                             $start = clone $timeDay;
                             $start->setDate($start->format('Y') , $m , $d); // set the wanted day and month for 00:00 of input year
-                            if ($debug) $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            if ($debug) {
+                                $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            }
                             if ($timeDay == $start) {
                                 $inrange_day = true;
                             }
                         }
-                        if ($debug && $inrange_day) $debugval.=(" <- FOUND DAY");
+                        if ($debug && $inrange_day) {
+                            $debugval.=(" <- FOUND DAY");
+                        }
                     } else {
                         $inrange_day = true;                // No day give, assume all
                     }
@@ -283,7 +294,7 @@ class Schedule
                                         if ($timeWeekDay == $start->format('D')) {
                                             $inrange_dayweek = true;
                                             break;
-                                        } else if ($start->format('D') == $end) {
+                                        } elseif ($start->format('D') == $end) {
                                             break;
                                         }
                                         $start->modify('+1 day');
@@ -293,7 +304,9 @@ class Schedule
                                         $inrange_dayweek = true;
                                     }
                                 }
-                                if ($debug && $inrange_dayweek) $debugval.=(" <- FOUND A WEEKDAY");
+                                if ($debug && $inrange_dayweek) {
+                                    $debugval.=(" <- FOUND A WEEKDAY");
+                                }
                             }
                             else {
                                 $inrange_dayweek = true;                    // No day give, assume all
@@ -303,32 +316,41 @@ class Schedule
                                 if (!empty($hours)) {
                                     foreach($hours as $hour) {
                                         $inrange_hour = false;
-                                        if ($debug) { $debugval .= "\nH " . print_r($hour,true); }
+                                        if ($debug) {
+                                            $debugval .= "\nH " . print_r($hour,true);
+                                            $debugval .= "\n\t\t" . print_r($hour,true);
+                                        }
+                                        if (strpos($hour, '-') !== false) {      // Is a time range
+                                            list($start, $end) = explode('-', $hour, 2);
+                                        } else {                                 // Is just one time
+                                            $start = $end = $hour;
+                                        }
+                                        list($h, $m) = explode(':', $start, 2);
+                                        $startTime = clone $timeHrMin;
+                                        $startTime->setTime($h, $m, 00); // set the time for the input date
 
-                                            if ($debug) $debugval .= "\n\t\t" . print_r($hour,true);
-                                            if (strpos($hour, '-') !== false) {      // Is a time range
-                                                list($start, $end) = explode('-', $hour, 2);
-                                            } else {                                 // Is just one time
-                                                $start = $end = $hour;
+                                        list($h, $m) = explode(':', $end, 2);
+                                        $endTime = clone $timeHrMin;
+                                        $endTime->setTime($h, $m, 59); // set the time for the input date
+
+                                        if ($startTime > $endTime) {
+                                            $endTime->modify('+1 day');
+                                        }
+
+                                        if ($debug) {
+                                            $debugval.=("  ---->". $startTime->format('D Y-m-d H:i:s e')   . " - " . $endTime->format('D Y-m-d H:i:s e') . " ? ". $timeHrMin->format('D Y-m-d H:i:s e'));
+                                        }
+                                        if ($timeHrMin >= $startTime && $timeHrMin <= $endTime) {
+                                            $inrange_hour = true;
+                                            if ($debug && $inrange_hour) {
+                                                $debugval.=(" <- FOUND A HOUR1");
                                             }
-                                            list($h, $m) = explode(':', $start, 2);
-                                            $startTime = clone $timeHrMin;
-                                            $startTime->setTime($h, $m, 00); // set the time for the input date
+                                            break;
+                                        }
 
-                                            list($h, $m) = explode(':', $end, 2);
-                                            $endTime = clone $timeHrMin;
-                                            $endTime->setTime($h, $m, 59); // set the time for the input date
-
-                                            if ($startTime > $endTime) { $endTime->modify('+1 day'); }
-
-                                            if ($debug) $debugval.=("  ---->". $startTime->format('D Y-m-d H:i:s e')   . " - " . $endTime->format('D Y-m-d H:i:s e') . " ? ". $timeHrMin->format('D Y-m-d H:i:s e'));
-                                            if ($timeHrMin >= $startTime && $timeHrMin <= $endTime) {
-                                                $inrange_hour = true;
-                                                if ($debug && $inrange_hour) $debugval.=(" <- FOUND A HOUR1");
-                                                break;
-                                            }
-
-                                        if ($debug) $debug_schedule[] = array ("day" => $day, "dayweek" => $dayweek, "hour" => $hour);
+                                        if ($debug) {
+                                            $debug_schedule[] = array ("day" => $day, "dayweek" => $dayweek, "hour" => $hour);
+                                        }
                                     }
                                 }
                             }

@@ -41,7 +41,7 @@ class Route
      * @var string
      */
     public $query = '';
-    
+
     /**
      * @var string
      */
@@ -114,7 +114,7 @@ class Route
         $args = preg_split('/[\/]/', $q);
 
         // get format (part of last argument after . i.e view.json)
-        $lastArgIndex = sizeof($args) - 1;
+        $lastArgIndex = count($args) - 1;
         $lastArgSplit = preg_split('/[.]/', $args[$lastArgIndex]);
         if (count($lastArgSplit) > 1) {
             $this->format = $lastArgSplit[1];
@@ -134,7 +134,7 @@ class Route
             $this->subaction2 = $args[3];
         }
         $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        
+
         // allow for method to be added as post variable
         if (post('_method')=='DELETE') {
             $this->method = 'DELETE';

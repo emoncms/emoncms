@@ -1,56 +1,56 @@
 <?php
     /*
-    
+
     **MQTT input interface script**
-    
+
     SERVICE INSTALL INSTRUCTIONS:
     https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
-    
+
     EXAMPLES:
-    
+
     create an input from emonTx node called power with value 10:
         [basetopic]/emontx/power 10
-    
+
     create an input from node 10 called power with value 10 :
         [basetopic]/10/power 10
-        
+
     create input from emontx with key 0 of value 10
         [basetopic]/emontx 10
-        
+
     create input from emontx with key 0 of value 10, key 1 of value 11 and key 2 of value 11
         [basetopic]/emontx 10,11,12
 
     * [basetopic] and user ID of target Emoncms account can be set in settings.php
-    
+
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
-    
+
     */
 
     // This code is released under the GNU Affero General Public License.
     // OpenEnergyMonitor project:
     // http://openenergymonitor.org
-    
+
     define('EMONCMS_EXEC', 1);
 
     $fp = fopen("/var/lock/emoncms_mqtt.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
-    
+
     chdir(dirname(__FILE__)."/../../../");
     require "Lib/EmonLogger.php";
     require "process_settings.php";
-    
+
     set_error_handler('exceptions_error_handler');
-    
+
     $log = new EmonLogger(__FILE__);
     $log->info("Starting MQTT Input script");
-    
+
     if (!$settings["mqtt"]["enabled"]) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
         $log->error("MQTT must be enabled in settings.php");
         die;
     }
-    
+
     $retry = 0;
     $mysqli_connected = false;
     while(!$mysqli_connected) {
@@ -62,9 +62,9 @@
             $settings["sql"]["database"],
             $settings["sql"]["port"]
         );
-        
-        if ($mysqli->connect_error) { 
-            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  
+
+        if ($mysqli->connect_error) {
+            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);
             $retry ++;
             if ($retry>3) die;
             sleep(5.0);
@@ -73,7 +73,7 @@
             break;
         }
     }
-    
+
     // Enable for testing
     // $mysqli->query("SET interactive_timeout=60;");
     // $mysqli->query("SET wait_timeout=60;");
@@ -92,16 +92,16 @@
     } else {
         $redis = false;
     }
-    
+
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
-    
+
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$settings['feed']);
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
-    
+
     $timezone = 'UTC';
     if (!$settings["mqtt"]["multiuser"]) {
         $timezone = $user->get_timezone($settings["mqtt"]["userid"]);
@@ -121,14 +121,14 @@
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */
     $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
-    
+
     $connected = false;
     $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $count = 0;
     $pub_count = 0; // used to reduce load relating to checking for messages to be published
-    
+
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
@@ -217,7 +217,7 @@
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
-            // if CONACK is zero 
+            // if CONACK is zero
             $connected = true;
             if ($subscribed==0) {
                 $topic = $settings['mqtt']['basetopic']."/#";
@@ -306,17 +306,17 @@
 
             $log->info($topic." ".$value);
             $count ++;
-            
+
             $inputs = array();
-            
+
             // 1. Filter out basetopic
             $topic = str_replace($settings['mqtt']['basetopic']."/","",$topic);
             // 2. Split by /
             $route = explode("/",$topic);
             $route_len = count($route);
-            
+
             if ($route_len>=1) {
-                
+
                 if ($settings["mqtt"]["multiuser"]) {
                     // Userid is first entry
                     $userid = (int) $route[0];
@@ -334,7 +334,7 @@
                 }
                 // Filter nodeid, pre input create, to avoid duplicate inputs
                 $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-                
+
                 $dbinputs = $input->get_inputs($userid);
 
                 if ($jsoninput) {
@@ -349,12 +349,12 @@
                     foreach ($jsondata as $key=>$value) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
                     }
-                } else if ($route_len>=$min_route_len) {
+                } elseif ($route_len>=$min_route_len) {
                     // Input name is all the remaining parts connected together
                     $input_name_parts = array();
                     for ($i=$min_route_len-1; $i<$route_len; $i++) $input_name_parts[] = $route[$i];
                     $input_name = implode("_",$input_name_parts);
-                
+
                     $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name, "value"=>$value);
                 }
                 else
@@ -366,7 +366,7 @@
                     }
                 }
             } else {
-                $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
+                $log->error("No matching MQTT topics! None or null inputs will be recorded!");
             }
 
             if (!isset($dbinputs[$nodeid])) {
@@ -382,15 +382,15 @@
                 $nodeid = $i['nodeid'];
                 $name = $i['name'];
                 $value = $i['value'];
-                
+
                 if (!is_numeric($value)) $value = null;
-                
+
                 if ($settings["mqtt"]["multiuser"]) {
                     $process->timezone = $user->get_timezone($userid);
                 }
                 // Filter name, pre input create, to avoid duplicate inputs
                 $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
-                
+
                 // Automatic device configuration using device module if 'describe' keyword found
                 if (strtolower($name)=="describe") {
                     if ($device && method_exists($device,"autocreate")) {
@@ -398,33 +398,32 @@
                         $log->info(json_encode($result));
                     }
                 }
-                else 
+                else
                 {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         if (!$inputid) {
                             $log->warn("error creating input"); die;
                         }
-                        $dbinputs[$nodeid][$name] = true;
                         $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     } else {
                         $inputid = $dbinputs[$nodeid][$name]['id'];
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                        
+
                         if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                     }
                 }
             }
-            
+
             foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-            
+
         } catch (Exception $e) {
             $log->error($e);
         }
     }
-    
-    
+
+
     function exceptions_error_handler($severity, $message, $filename, $lineno) {
         if (error_reporting() == 0) {
             return;

@@ -6,10 +6,14 @@ $filejs=array();
 
 function get_js_file($dir){
     global $filejs;
-    $dirs = array_diff( scandir( $dir ), Array( ".", ".." ) );
+    $dirs = array_diff( scandir( $dir ), array( ".", ".." ) );
     foreach( $dirs as $d ){
-        if( is_dir($dir."/".$d)  ) get_js_file( $dir."/".$d);
-        else if (pathinfo($d, PATHINFO_EXTENSION)=='js') $filejs[]=$dir."/".$d;
+        if( is_dir($dir."/".$d)  ) {
+            get_js_file( $dir."/".$d);
+        }
+        elseif (pathinfo($d, PATHINFO_EXTENSION)=='js') {
+            $filejs[]=$dir."/".$d;
+        }
     }
     //return $dir_array;
 }
@@ -19,7 +23,7 @@ function extract_translation($filejs){
   foreach ($filejs as $file){
    $lines = explode("\n", file_get_contents($file));
    $tr=array();
-   foreach ($lines as $line){ 
+   foreach ($lines as $line){
      $pos = strpos($line, '_Tr(');
       if ($pos !== false) {
           $r = explode('_Tr("', $line);
@@ -41,7 +45,7 @@ function extract_translation($filejs){
   return $translation;
 }
 
-get_js_file($dir); 
+get_js_file($dir);
 //echo "<pre>".print_r($filejs,true)."</pre>";
 
  $translation= extract_translation($filejs);
@@ -54,4 +58,4 @@ get_js_file($dir);
    }
  }
 ?>
-//END 
+//END

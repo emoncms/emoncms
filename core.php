@@ -25,7 +25,7 @@ function is_https() {
         return true;
     } elseif (server('HTTP_X_FORWARDED_PORT') == 443) {
         // Web server is running behind a proxy which is running HTTPS
-        return true;   
+        return true;
     } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
         return true;
     }
@@ -39,7 +39,7 @@ function get_application_path($manual_domain=false)
     } else {
         $proto = "http";
     }
-    
+
     if ($manual_domain) {
         return "$proto://".$manual_domain."/";
     }
@@ -57,11 +57,7 @@ function db_check($mysqli, $database)
 {
     $result = $mysqli->query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
     $row = $result->fetch_array();
-    if ($row['0']>0) {
-        return true;
-    } else {
-        return false;
-    }
+    return $row['0'] > 0;
 }
 
 function controller($controller_name)
@@ -111,11 +107,11 @@ function get($index,$error_if_missing=false,$default=null)
     $val = $default;
     if (isset($_GET[$index])) {
         $val = rawurldecode($_GET[$index]);
-    } else if ($error_if_missing) {
+    } elseif ($error_if_missing) {
         header('Content-Type: text/plain');
         die("missing $index parameter");
     }
-    if(!is_null($val)){
+    if (!is_null($val)) {
         $val = stripslashes($val);
     }
     return $val;
@@ -136,15 +132,15 @@ function post($index,$error_if_missing=false,$default=null)
         } else {
             $val = htmlspecialchars(json_encode($_POST[$index]));
         }
-    } else if ($error_if_missing) {
+    } elseif ($error_if_missing) {
         header('Content-Type: text/plain');
         die("missing $index parameter");
     }
-    
-    if(!is_null($val)) {
+
+    if (!is_null($val)) {
         if (is_array($val)) {
             $val = array_map("stripslashes", $val);
-        }	else {
+        } else {
             $val = stripslashes($val);
         }
     }
@@ -161,19 +157,17 @@ function prop($index,$error_if_missing=false,$default=null)
     $val = $default;
     if (isset($_GET[$index])) {
         $val = $_GET[$index];
-    }
-    else if (isset($_POST[$index])) {
+    } elseif (isset($_POST[$index])) {
         $val = $_POST[$index];
-    }
-    else if ($error_if_missing) {
+    } elseif ($error_if_missing) {
         header('Content-Type: text/plain');
         die("missing $index parameter");
     }
-    
+
     if(!is_null($val)) {
         if (is_array($val)) {
             $val = array_map("stripslashes", $val);
-        }	else {
+        } else {
             $val = stripslashes($val);
         }
     }
@@ -207,7 +201,7 @@ function delete($index)
     if (isset($_DELETE[$index])) {
         $val = $_DELETE[$index];
     }
-    
+
     if (is_array($val)) {
         $val = array_map("stripslashes", $val);
     } else {
@@ -222,12 +216,12 @@ function put($index)
     if (isset($_PUT[$index])) {
         $val = $_PUT[$index];
     }
-    
+
     if (is_array($val)) {
         $val = array_map("stripslashes", $val);
     } else {
         $val = stripslashes($val);
-    };
+    }
     return $val;
 }
 
@@ -278,7 +272,7 @@ function load_menu()
             {
                 if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
                     load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
-                } else { 
+                } else {
                     load_language_files("Modules/".$dir[$i]."/locale");
                 }
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
@@ -290,7 +284,7 @@ function load_menu()
 function http_request($method, $url, $data)
 {
     $options = array();
-    
+
     if ($method=="GET") {
         $urlencoded = http_build_query($data);
         $url = "$url?$urlencoded";
@@ -298,7 +292,7 @@ function http_request($method, $url, $data)
         $options[CURLOPT_POST] = 1;
         $options[CURLOPT_POSTFIELDS] = $data;
     }
-    
+
     $options[CURLOPT_URL] = $url;
     $options[CURLOPT_RETURNTRANSFER] = 1;
     $options[CURLOPT_CONNECTTIMEOUT] = 2;

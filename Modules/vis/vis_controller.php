@@ -40,8 +40,8 @@
             $feedlist = $feed->get_user_feeds($session['userid']);
             $result = view("Modules/vis/Views/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
         }
-        
-        else if ($route->action == "auto" || $route->action == "graph")
+
+        elseif ($route->action == "auto" || $route->action == "graph")
         {
             $feedid = intval(get('feedid'));
             $route->action = 'rawdata';
@@ -62,67 +62,76 @@
 
                 if (isset($vis['options']))
                 {
-                    foreach ($vis['options'] as $option)
-                    {
-                        $key = $option[0]; $type = $option[2];
+                    foreach ($vis['options'] as $option) {
+                        $key = $option[0];
+                        $type = $option[2];
                         if (isset($option[3])) $default = $option[3]; else $default = "";
 
-                        if ($type==0 || $type==1 || $type==2 || $type==3) {
+                        if ($type == 0 || $type == 1 || $type == 2 || $type == 3) {
                             $feedid = get($key);
-                            
+
                             // Option to use tag:name feed reference format
                             // only works with feeds belonging to the active session
                             if (!is_numeric($feedid)) {
-                                $tagname = explode(":",$feedid);
-                                if (count($tagname)==2) {
-                                    $feedid = $feed->exists_tag_name($session['userid'],$tagname[0],$tagname[1]);
+                                $tagname = explode(":", $feedid);
+                                if (count($tagname) == 2) {
+                                    $feedid = $feed->exists_tag_name($session['userid'], $tagname[0], $tagname[1]);
                                 }
                             } else {
-                                $feedid = (int) $feedid;
+                                $feedid = (int)$feedid;
                             }
-                            
-                            if ($feedid) {
-                              $f = $feed->get($feedid);
-                              if (isset($f['name'])) {
-                                  $array[$key] = $feedid;
-                                  $array[$key.'name'] = $f['name'];
 
-                                  if ($f['userid']!=$session['userid']) $array['valid'] = false;
-                                  if ($f['public']) $array['valid'] = true;
-                              } else {
+                            if ($feedid) {
+                                $f = $feed->get($feedid);
+                                if (isset($f['name'])) {
+                                    $array[$key] = $feedid;
+                                    $array[$key . 'name'] = $f['name'];
+
+                                    if ($f['userid'] != $session['userid']) {
+                                        $array['valid'] = false;
+                                    }
+                                    if ($f['public']) {
+                                        $array['valid'] = true;
+                                    }
+                                } else {
+                                    $array['valid'] = false;
+                                }
+                            } else {
+                                $array['valid'] = false;
+                            }
+                        } elseif ($type == 4) {// Boolean
+                            if (get($key) == "true" || get($key) == 1) {
+                                $array[$key] = 1;
+                            } elseif (get($key) || get($key) == "false" || get($key) == 0) {
+                                $array[$key] = 0;
+                            } else {
+                                $array[$key] = $default;
+                            }
+                        }
+                        elseif ($type==5 && !is_null(get($key)))
+                            $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥₽]/u','',get($key))?get($key):$default;
+                        elseif ($type==6)
+                            $array[$key] = str_replace(',', '.', floatval((get($key) ?: $default)));
+                        elseif ($type==7)
+                            $array[$key] = intval((get($key) ?: $default));
+                        elseif ($type==8) {
+                            $mid = (int) get($key);
+                            if ($mid) {
+                              $f = $multigraph->get($mid,$session['userid']);
+                              $array[$key] = intval(($mid ?: $default));
+                              if (!isset($f['feedlist'])) {
                                   $array['valid'] = false;
                               }
                             } else {
                               $array['valid'] = false;
                             }
                         }
-                        else if ($type==4) // Boolean
-                            if (get($key) == "true" || get($key) == 1)
-                                $array[$key] = 1;
-                            else if (get($key) || get($key) == "false" || get($key) == 0)
-                                $array[$key] = 0;
-                            else $array[$key] = $default;
-                        else if ($type==5 && !is_null(get($key)))
-                            $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥₽]/u','',get($key))?get($key):$default;
-                        else if ($type==6)
-                            $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
-                        else if ($type==7)
-                            $array[$key] = intval((get($key)?get($key):$default));
-                        else if ($type==8) {
-                            $mid = (int) get($key);
-                            if ($mid) {
-                              $f = $multigraph->get($mid,$session['userid']);
-                              $array[$key] = intval(($mid?$mid:$default));
-                              if (!isset($f['feedlist'])) $array['valid'] = false;
-                            } else {
-                              $array['valid'] = false;
-                            }
-                        }
 
                         # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
-                        # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
-                        else if ($type==9 && !is_null(get($key))) // Color
-                            $array[$key] = preg_replace('/[^\dA-Za-z]/','',get($key))?get($key):$default;
+                        # we can be fairly confident that colours are either a hex or a simple word (e.g. "blue" or such)
+                        elseif ($type==9 && !is_null(get($key))) {// Color
+                            $array[$key] = preg_replace('/[^\dA-Za-z]/', '', get($key)) ? get($key) : $default;
+                        }
                     }
                 }
 
@@ -143,15 +152,20 @@
     MULTIGRAPH ACTIONS
     */
 
-    else if ($route->format == 'json' && $route->action == 'multigraph')
+    elseif ($route->format == 'json' && $route->action == 'multigraph')
     {
-        if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
-        else if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
-
-        else if ($session['write']) {
-            if ($route->subaction == 'new') $result = $multigraph->create($session['userid']);
-            else if ($route->subaction == 'delete') $result = $multigraph->delete(get('id'),$session['userid']);
-            else if ($route->subaction == 'set') $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
+        if ($route->subaction == 'get') {
+            $result = $multigraph->get(get('id'),$session['userid']);
+        } elseif ($route->subaction == 'getlist') {
+            $result = $multigraph->getlist($session['userid']);
+        } elseif ($session['write']) {
+            if ($route->subaction == 'new') {
+                $result = $multigraph->create($session['userid']);
+            } elseif ($route->subaction == 'delete') {
+                $result = $multigraph->delete(get('id'),$session['userid']);
+            } elseif ($route->subaction == 'set') {
+                $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
+            }
         }
 
     }
