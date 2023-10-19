@@ -24,7 +24,7 @@ class PHPFina implements engine_methods
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
         $this->log = new EmonLogger(__FILE__);
     }
-    
+
 // #### \/ Below are required methods
 
     /**
@@ -38,7 +38,7 @@ class PHPFina implements engine_methods
         $id = (int)$id;
         $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
-        
+
         // Check to ensure we dont overwrite an existing feed
         $feedname = "$id.meta";
         if (!file_exists($this->dir.$feedname)) {
@@ -89,7 +89,7 @@ class PHPFina implements engine_methods
             unlink($this->dir.$id.".dat");
         }
     }
-    
+
     /**
      * Gets engine metadata
      *
@@ -111,6 +111,7 @@ class PHPFina implements engine_methods
         $meta->id = $id;
         $metafile = fopen($this->dir.$feedname, 'rb');
         fseek($metafile,8);
+
         $tmp = fread($metafile,4);
         if (strlen($tmp)==4) {
             $tmp = unpack("I",$tmp); 
@@ -126,8 +127,9 @@ class PHPFina implements engine_methods
         } else {
             $meta->start_time = 0;
         }
+
         fclose($metafile);
-        
+
         $meta->npoints = 0;
         if (file_exists($this->dir.$id.".dat")) {
             clearstatcache($this->dir.$id.".dat");
@@ -138,10 +140,10 @@ class PHPFina implements engine_methods
             $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
             return false;
         }
-        
+
         $meta->end_time = $meta->start_time + ($meta->interval * ($meta->npoints-1));
         if ($meta->end_time<0) $meta->end_time = 0;
-        
+
         return $meta;
     }
 
@@ -170,7 +172,7 @@ class PHPFina implements engine_methods
         $this->post_multiple($id,$data,$padding_mode);
         return $value;
     }
-    
+
     public function post_bulk_prepare($id,$time,$value,$padding_mode=null)
     {
         $id = (int) $id;
@@ -185,23 +187,23 @@ class PHPFina implements engine_methods
         }
         $this->post_buffer = array();
     }
-    
+
     public function post_multiple($id,$data,$padding_mode=null)
     {
         $id = (int) $id;
-        
+
         if ($padding_mode=="join") $join = true; else $join = false;
-        
+
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
-        
+
         // Check that data is ordered timestamp ascending
         // a small overhead when posting single updates but minor
         $last_timestamp = 0;
         $valid = array();
         $index = 0;
         foreach ($data as $dp) {
-            // Calculate interval that this datapoint belongs too 
+            // Calculate interval that this datapoint belongs too
             $timestamp = (int) $dp[0];
             $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
             // Value is float or NAN
@@ -213,14 +215,14 @@ class PHPFina implements engine_methods
                 $valid[] = array($timestamp,$value);
                 $index++;
             // Update last
-            } else if ($timestamp==$last_timestamp) {
+            } elseif ($timestamp==$last_timestamp) {
                 if ($index>0) {
                     $valid[$index-1][1] = $value;
                 }
             }
         }
         if (!count($valid)) return false;
-        
+
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints == 0 && $meta->start_time==0) {
             $meta->start_time = $valid[0][0];
@@ -231,7 +233,7 @@ class PHPFina implements engine_methods
             $this->log->warn("post() could not open data file id=$id");
             return false;
         }
-        
+
         $last_pos = $meta->npoints - 1;
         $last_val = false;
 
@@ -242,21 +244,21 @@ class PHPFina implements engine_methods
             // Calculate position in base data file of datapoint
             $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
             if ($pos<0) { continue; } // skip if timestamp is less than start time
-            
+
             // Update on disk
             if ($pos<$meta->npoints) {
                 fseek($fh,4*$pos);
                 fwrite($fh,pack("f",$value));
             } else {
                 // Calculate padding requirement
-                $padding = ($pos - $last_pos)-1;                
+                $padding = ($pos - $last_pos)-1;
                 if ($padding>0) {
                     if ($padding>$this->maxpadding) {
                         $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
                         return false;
                     }
                     $padding_value = NAN;
-                    
+
                     if ($join && $last_pos>=0) {
                         if ($last_val===false) {
                             fseek($fh,$last_pos*4);
@@ -266,13 +268,13 @@ class PHPFina implements engine_methods
                         $padding_value = $last_val;
                         $div = ($value - $last_val) / ($padding+1);
                     }
-                    
+
                     for ($i=0; $i<$padding; $i++) {
                         if ($join) $padding_value += $div;
                         $buffer .= pack("f",$padding_value);
                     }
                 }
-                
+
                 // Write new datapoint
                 $buffer .= pack("f",$value);
                 $last_pos += $padding + 1;
@@ -283,51 +285,57 @@ class PHPFina implements engine_methods
             fseek($fh,4*$meta->npoints);
             fwrite($fh,$buffer);
         }
-        fclose($fh);  
+        fclose($fh);
         return true;
     }
-        
+
     /**
      * scale a portion of a feed
-     * added by Alexandre CUER - january 2019 
+     * added by Alexandre CUER - january 2019
      *
      * @param integer $id The id of the feed
      * @param integer $start unix time stamp in ms of the start of the data range
      * @param integer $end unix time stamp in ms of the end of the data rage
-     * @param float $scale : numeric value for the scaling 
+     * @param float $scale : numeric value for the scaling
     */
     public function scalerange($id,$start,$end,$scale){
-        
+
         $id = (int) $id;
         $start = (int) $start;
         $end = (int) $end;
-        
+
         //echo("test on $scale not started");
         //case1: NAN
         if(preg_match("/^NAN$/i",$scale)){
             $this->log->warn("scale_range() : going to erase data range with NAN");
             $scale = NAN;
         //case2: scaling value - possible to use a fraction
-        } else if(preg_match("/^(1\/|-1\/|-)?([0-9]+((\.|,)[0-9]+)?)$/",$scale,$a)){
+        } elseif(preg_match("/^(1\/|-1\/|-)?([0-9]+((\.|,)[0-9]+)?)$/",$scale,$a)){
             $this->log->warn("scale_range() : being given a float scale parameter");
             $scale = (float) $a[2];
-            if ($a[1]=="1/")$scale = 1/$scale;
-            else if ($a[1]=="-1/") $scale = -1/$scale;
-            else if ($a[1]=="-") $scale = -$scale;
+            if ($a[1]=="1/") {
+                $scale = 1/$scale;
+            } elseif ($a[1]=="-1/") {
+                $scale = -1/$scale;
+            } elseif ($a[1]=="-") {
+                $scale = -$scale;
+            }
             //print_r($a);
         //case3: absolute value
-        } else if(preg_match("/^abs\(x\)$/i",$scale)){
+        } elseif(preg_match("/^abs\(x\)$/i",$scale)){
             $this->log->warn("scale_range() : conversion to absolute values on the data range");
-            $scale="abs(x)"; 
-        } else return false;
-        
+            $scale="abs(x)";
+        } else {
+            return false;
+        }
+
         if(!$meta=$this->get_meta($id)){
             $this->log->warn("scale_range() failed to fetch meta id = $id");
             return false;
         }
-        
+
         $this->log->warn("scale_range() successfully fetched meta id = $id");
-        
+
         //integrity checks
         $start=floor($start/$meta->interval)*$meta->interval;
         $end=floor($end/$meta->interval)*$meta->interval;
@@ -340,13 +348,13 @@ class PHPFina implements engine_methods
         if($start<$meta->start_time) $start=$meta->start_time;
         $end_time=$this->lastvalue($id)['time'];
         if($end>$end_time) $end=$end_time;
-        
+
         //calculates address in dat file and number of values to write
         $pos_start=4*floor(($start-$meta->start_time)/$meta->interval);
         $pos_end=4*floor(($end-$meta->start_time)/$meta->interval);
         $nbwrites=($pos_end-$pos_start)/4;
         //echo("<br>$nbwrites");
-        
+
         //open the dat file
         $fh = fopen ($this->dir.$id.".dat","c+");
         if (!$fh){
@@ -354,7 +362,7 @@ class PHPFina implements engine_methods
             return false;
         }
         $this->log->warn("scale_range() : going to write $nbwrites values from address $pos_start to $pos_end");
-        
+
         //create a buffer with the processed values
         $buffer="";
         if ($scale==0 || $scale==NAN) {
@@ -372,7 +380,7 @@ class PHPFina implements engine_methods
                  $buffer.=pack("f",$val);
              }
         }
-        
+
         //write the processed buffer to the dat file
         fseek($fh,$pos_start);
         if(!$written_bytes = fwrite($fh,$buffer)){
@@ -384,7 +392,7 @@ class PHPFina implements engine_methods
         fclose($fh);
         return $written_bytes;
     }
-    
+
     /**
      * Get array with last time and value from a feed
      *
@@ -393,7 +401,7 @@ class PHPFina implements engine_methods
     public function lastvalue($id)
     {
         $id = (int) $id;
-        
+
         if (!$meta = $this->get_meta($id)) return false;
         if (!$meta->npoints) return false;
         if (!$fh = $this->open($id,"rb")) return false;
@@ -416,14 +424,14 @@ class PHPFina implements engine_methods
      *
     */
     public function get_value($id,$time)
-    {        
+    {
         $id = (int) $id;
         $time = (int) $time;
-        
+
         if (!$meta = $this->get_meta($id)) return false;
         if (!$meta->npoints) return false;
         if (!$fh = $this->open($id,"rb")) return false;
-        
+
         $value = null;
         $pos = round(($time - $meta->start_time) / $meta->interval);
         if ($pos>=0 && $pos < $meta->npoints) {
@@ -455,10 +463,10 @@ class PHPFina implements engine_methods
         $end = (int) $end;
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
-        
+
         global $settings;
         if ($timezone===0) $timezone = "UTC";
-        
+
         if ($csv) {
             require_once "Modules/feed/engine/shared_helper.php";
             $helperclass = new SharedHelper($settings['feed']);
@@ -471,10 +479,10 @@ class PHPFina implements engine_methods
         // If meta data file does not exist exit
         // todo: combine npoints and end_time into get_meta
         if (!$meta = $this->get_meta($id)) return false;
-        
+
         $fullres = false;
         if ($interval=="original") $interval = $meta->interval;
-        
+
         // The first section here deals with the timezone aligned interval codes
         // the start time is modified to align to the nearest day, week, month or year
         // later the while loop is advanced by the value in the $modify string
@@ -490,16 +498,16 @@ class PHPFina implements engine_methods
             if ($interval=="weekly") {
                 $date->modify("this monday");
                 $modify = "+1 week";
-            } else if ($interval=="monthly") {
+            } elseif ($interval=="monthly") {
                 $date->modify("first day of this month");
                 $modify = "+1 month";
-            } else if ($interval=="annual") {
+            } elseif ($interval=="annual") {
                 $date->modify("first day of january this year");
                 $modify = "+1 year";
             }
             $time = $date->getTimestamp();
         } else {
-            // If interval codes are not specified then we advanced by a fixed numeric interval 
+            // If interval codes are not specified, then we advanced by a fixed numeric interval
             $fixed_interval = true;
             $interval = (int) $interval;
             if ($interval<1) $interval = 1;
@@ -508,7 +516,7 @@ class PHPFina implements engine_methods
                 $interval = round($interval/$meta->interval)*$meta->interval;     // round interval to be integer multiple of feed interval
             }
             $time = $start;
-            
+
             // turn off averaging if export interval is the same as the feed interval
             if ($interval==$meta->interval) {
                 $average = false;
@@ -518,22 +526,22 @@ class PHPFina implements engine_methods
                 $average = false;
             }
         }
-        
+
         if ($csv) {
             $helperclass->csv_header($id);
         } else {
             $data = array();
         }
-        
+
         if (!$fh = $this->open($id,"rb")) return false;
- 
+
         // seek only once for full resolution export
         $first_seek = false;
-        
+
         while($time<=$end)
-        {   
+        {
             $div_start = $time;
-            
+
             // Advance position
             if ($fixed_interval) {
                 $div_end = $time + $interval;
@@ -541,28 +549,28 @@ class PHPFina implements engine_methods
                 $date->modify($modify);
                 $div_end = $date->getTimestamp();
             }
-            
+
             // seek to starting position
             $pos_start = floor(($div_start-$meta->start_time) / $meta->interval);
 
             $value = null;
-            
+
             if ($average) {
                 // Calculate average in period
                 $sum = 0;
                 $n = 0;
-                
+
                 // calculate end position
                 $pos_end = floor(($div_end-$meta->start_time) / $meta->interval);
-                
+
                 // limit start and end by available data
                 // results in dp_to_read being 0 outside of range
                 if ($pos_start<0) $pos_start = 0;
                 if ($pos_end<0) $pos_end = 0;
-                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;                
+                if ($pos_start>$meta->npoints) $pos_start = $meta->npoints;
                 if ($pos_end>$meta->npoints) $pos_end = $meta->npoints;
                 $dp_to_read = $pos_end-$pos_start;
-                
+
                 if ($dp_to_read) {
                     fseek($fh,$pos_start*4);
                     // read division in one block, much faster!
@@ -575,9 +583,9 @@ class PHPFina implements engine_methods
                         }
                     }
                 }
-                
+
                 if ($n>0) $value = 1.0*$sum/$n;
-                
+
             } else {
                 if ($time>=$meta->start_time && $time<=$meta->end_time) {
                     // Output value at start at div start
@@ -590,15 +598,15 @@ class PHPFina implements engine_methods
                     if (is_nan($value)) $value = null;
                 }
             }
-            
+
             if ($value!==null || $skipmissing===0) {
-                if ($csv) { 
+                if ($csv) {
                     $helperclass->csv_write($div_start,$value);
                 } else {
                     $data[] = array($div_start,$value);
                 }
             }
-            
+
             $time = $div_end;
         }
         fclose($fh);
@@ -610,9 +618,9 @@ class PHPFina implements engine_methods
             return $data;
         }
     }
-    
+
     // Splits daily, weekly, monthly output into time of use segments defined by $split
-    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split)
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
@@ -626,7 +634,7 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($id)) return false;
 
         $data = array();
-        
+
         if (!$fh = $this->open($id,"rb")) return false;
 
         $date = new DateTime();
@@ -639,13 +647,13 @@ class PHPFina implements engine_methods
         if ($mode=="weekly") {
             $date->modify("this monday");
             $modify = "+1 week";
-        } else if ($mode=="monthly") {
+        } elseif ($mode=="monthly") {
             $date->modify("first day of this month");
             $modify = "+1 month";
         }
-        
+
         $time = $date->getTimestamp();
-        
+
         while($time<=$end)
         {
             $split_values = array();
@@ -674,7 +682,7 @@ class PHPFina implements engine_methods
             }
 
             $data[] = array($time,$split_values);
-            
+
             $date->modify($modify);
             $time = $date->getTimestamp();
         }
@@ -686,12 +694,12 @@ class PHPFina implements engine_methods
     {
         $id = (int) $id;
         $start = (int) $start;
-        
+
         $feedname = $id.".dat";
-        
+
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($id)) return false;
-        
+
         // There is no need for the browser to cache the output
         header("Cache-Control: no-cache, no-store, must-revalidate");
 
@@ -705,17 +713,17 @@ class PHPFina implements engine_methods
 
         // Write to output stream
         $fh = @fopen( 'php://output', 'w' );
-        
+
         $primary = fopen($this->dir.$feedname, 'rb');
         $primarysize = filesize($this->dir.$feedname);
-        
+
         $localsize = $start;
         $localsize = intval($localsize / 4) * 4;
         if ($localsize<0) $localsize = 0;
 
         // Get the first point which will be updated rather than appended
-        if ($localsize>=4) $localsize = $localsize - 4;
-        
+        if ($localsize>=4) $localsize -= 4;
+
         fseek($primary,$localsize);
         $left_to_read = $primarysize - $localsize;
         if ($left_to_read>0){
@@ -739,13 +747,13 @@ class PHPFina implements engine_methods
 
 // #### \/ Below engine specific methods
 
-// #### \/ Bellow are engine private methods 
-    
+// #### \/ Bellow are engine private methods
+
     private function create_meta($id, $meta)
     {
         $feedname = $id.".meta";
         $metafile = @fopen($this->dir.$feedname, 'wb');
-        
+
         if (!$metafile) {
             $error = error_get_last();
             $msg = "could not write meta data file ".$error['message'];
@@ -758,7 +766,7 @@ class PHPFina implements engine_methods
             fclose($metafile);
             return $msg;
         }
-        
+
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",$meta->interval));
@@ -766,18 +774,18 @@ class PHPFina implements engine_methods
         fclose($metafile);
         return true;
     }
-    
+
     private function get_npoints($id)
     {
         $bytesize = 0;
-        
+
         if (file_exists($this->dir.$id.".dat")) {
             clearstatcache($this->dir.$id.".dat");
             $bytesize += filesize($this->dir.$id.".dat");
         }
         return floor($bytesize / 4.0);
-    }   
-        
+    }
+
     public function upload_fixed_interval($id,$start,$interval,$npoints)
     {
         $id = (int) $id;
@@ -796,49 +804,49 @@ class PHPFina implements engine_methods
         $this->post_bulk_save();
         fclose($fh);
         */
-        
+
         // Faster direct block write method
-        
+
         // Fetch data from post body and check length match
         $data = file_get_contents('php://input');
         if ($npoints!=(strlen($data) / 4.0)) {
             $this->log->warn("upload() data body does not match blocksize param id=$id");
             return false;
         }
-        
+
         // Load feed meta to fetch start time and interval
         if (!$meta = $this->get_meta($id)) return false;
-        
+
         if ($meta->start_time==0 && $meta->npoints != 0) {
             $this->log->warn("upload() start time is zero but data in feed =$id");
             return false;
         }
-        
+
         // If no data in feed and start time is zero, create meta
         if ($meta->npoints == 0 && $meta->start_time==0) {
             $meta->start_time = $start;
             $this->create_meta($id,$meta);
         }
-        
+
         // Calculate start position
         $pos = floor(($start - $meta->start_time)/$meta->interval);
-        
+
         // Open feed data file, seek to position and write in data block
         $fh = fopen($this->dir.$id.".dat","c");
         fseek($fh,$pos*4);
         fwrite($fh,$data);
         fclose($fh);
-        
+
         return true;
     }
-    
+
     public function upload_variable_interval($id,$npoints)
     {
         $id = (int) $id;
         $npoints = (int) $npoints;
-        
+
         if (!$fh=fopen('php://input','r')) return false;
-        
+
         for ($i=0; $i<$npoints; $i++) {
             $tmp = unpack("If",fread($fh,8));
             $time = $tmp[1];
@@ -849,7 +857,7 @@ class PHPFina implements engine_methods
         $this->post_bulk_save();
 
         fclose($fh);
-        
+
         return true;
     }
 
@@ -874,7 +882,7 @@ class PHPFina implements engine_methods
         $this->log->info("Feed $id datapoints deleted");
         return array('success'=>true,'message'=>"Feed cleared successfully");
     }
-    
+
     /**
      * clear out data from file before $start_time
      *
@@ -883,18 +891,18 @@ class PHPFina implements engine_methods
      * @return boolean
      */
     public function trim($id,$start_time) {
-        $id = (int) $id; 
+        $id = (int) $id;
         // Clear local buffer before trim
         if (isset($this->post_buffer[$id])) $this->post_buffer[$id] = array();
- 
+
         if (!$meta = $this->get_meta($id)) return array('success'=>false,'message'=>'Could not open meta file');
         if (!$meta->npoints) return array('success'=>false,'message'=>'Empty data file, nothing to trim.');
         if ($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range');
-        if ($start_time == $meta->start_time) return array('success'=>false,'message'=>'Feed already starts at trim time');   
-          
+        if ($start_time == $meta->start_time) return array('success'=>false,'message'=>'Feed already starts at trim time');
+
         $start_pos = ceil(($start_time - $meta->start_time) / $meta->interval);
         if ($start_pos>=$meta->npoints) return array('success'=>false,'message'=>'New start time out of range');
-        
+
         if (!$fh = $this->open($id,'rb')) {
             return array('success'=>false,'message'=>'Error opening data file');
         }
@@ -916,14 +924,14 @@ class PHPFina implements engine_methods
         $this->create_meta($id, $meta); // set the new start time in the feed meta file
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
     }
-    
+
     /**
      * Abstracted open
      *
      */
-    public function open($id,$mode) {        
+    public function open($id,$mode) {
         if (!$fh = @fopen($this->dir.$id.".dat", $mode)) {
-            $this->log->error("PHPFina could not open $id.dat");      
+            $this->log->error("PHPFina could not open $id.dat");
             return false;
         }
         return $fh;
@@ -939,7 +947,7 @@ class PHPFina implements engine_methods
 
         $sum = 0;
         $sn = 0;
-        
+
         for ($n=0; $n<$meta->npoints; $n++) {
             $time = $meta->start_time + ($meta->interval * $n);
             $tmp = unpack("f",fread($fh,4));
@@ -956,5 +964,5 @@ class PHPFina implements engine_methods
 
         if ($sn>0) print "average: ".($sum/$sn)."\n";
     }
-     
+
 }

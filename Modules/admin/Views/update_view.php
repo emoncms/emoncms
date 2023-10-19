@@ -3,11 +3,11 @@
     <h3><?php echo _('Update'); ?></h3>
 
 <?php if (PHP_VERSION_ID<70300) { ?>
-<div class="alert alert-error"><b>Important:</b> PHP version <?php echo phpversion(); ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
+<div class="alert alert-error"><b>Important:</b> PHP version <?php echo PHP_VERSION; ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
 <?php } ?>
 
-    <?php 
-    // UPDATES 
+    <?php
+    // UPDATES
     // -------------------
     ?>
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
@@ -21,8 +21,8 @@
         </button>
         </div>
     </section>
-    
-    <?php 
+
+    <?php
     // EMONCMS UPDATE
     // -------------------
     ?>
@@ -35,7 +35,7 @@
         <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
     </aside>
 
-    <?php 
+    <?php
     // SYSTEM UPDATE
     // -------------------
     ?>
@@ -52,7 +52,7 @@
                     <?php } ?>
                 </select>
             </div>
-            
+
             <?php
             $hardware_options = array();
             foreach ($firmware_available as $firmware) {
@@ -62,7 +62,7 @@
             }
             ?>
             <div class="input-prepend" style="margin-bottom:0px">
-                <span class="add-on">Hardware:</span>     
+                <span class="add-on">Hardware:</span>
                 <select id="selected_hardware">
                     <option value="none">none</option>
                     <?php foreach ($hardware_options as $hardware) { ?>
@@ -72,7 +72,7 @@
             </div>
 
             <div class="input-prepend" style="margin-bottom:0px">
-                <span class="add-on">Radio format:</span>     
+                <span class="add-on">Radio format:</span>
                 <select id="selected_radio_format">
                    <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
                     <!--<option value="jeelib_native">RFM69 JeeLib Native</option>-->
@@ -81,17 +81,17 @@
             </div>
             <br>
             <div class="input-prepend" style="margin-bottom:0px; margin-top:10px">
-                <span class="add-on">Firmware:</span>     
+                <span class="add-on">Firmware:</span>
                 <select id="selected_firmware" style="width:552px">
                     <option value="none">none</option>
                 </select>
             </div>
         </div>
-        
+
         <button id="update-firmware" class="btn btn-info"><?php echo _('Update Firmware'); ?></button>
     </aside>
 
-    <?php 
+    <?php
     // DATABASE UPDATE
     // -------------------
     ?>
@@ -102,7 +102,7 @@
         </div>
         <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
     </aside>
-    
+
     <?php
     // UPDATE LOG FILE VIEWER
     // -------------------
@@ -177,7 +177,7 @@ $("#getupdatelog").click(function() {
     if ($this.is('.active')) {
         clearInterval(updates_log_interval);
     } else {
-        refresherStart(getUpdateLog, 1000); 
+        refresherStart(getUpdateLog, 1000);
     }
 });
 // update all button clicked
@@ -186,13 +186,13 @@ $(".update").click(function() {
     var type = $(this).attr("type");
     var serial_port = $("#select_serial_port").val();
     var firmware_key = $("#selected_firmware").val();
-    
-    $.ajax({ 
-        type: "POST", 
-        url: path+"admin/update-start", 
-        data: "type="+type+"&serial_port="+serial_port+"&firmware_key="+firmware_key, 
-        async: true, 
-        dataType: "json", 
+
+    $.ajax({
+        type: "POST",
+        url: path+"admin/update-start",
+        data: "type="+type+"&serial_port="+serial_port+"&firmware_key="+firmware_key,
+        async: true,
+        dataType: "json",
         success: function(result) {
             if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
@@ -216,14 +216,14 @@ $("#selected_radio_format").change(function(){
 
 function draw_firmware_select_list() {
     refresh_updateLog("");
-    var hardware = $("#selected_hardware").val(); 
+    var hardware = $("#selected_hardware").val();
     var radio_format = $("#selected_radio_format").val();
-    
+
     if (hardware=="none") {
         $("#selected_firmware").html("<option>none</option>");
         return;
     }
-       
+
     var out = "";
     for (var firmware_key in firmware_available) {
         var firmware = firmware_available[firmware_key];
@@ -239,13 +239,13 @@ $("#update-firmware").click(function() {
     refresh_updateLog("");
     var serial_port = $("#select_serial_port").val();
     var firmware_key = $("#selected_firmware").val();
-    
-    $.ajax({ 
-        type: "POST", 
-        url: path+"admin/update-firmware", 
+
+    $.ajax({
+        type: "POST",
+        url: path+"admin/update-firmware",
         data: "serial_port="+serial_port+"&firmware_key="+firmware_key,
-        async: true, 
-        dataType: "json", 
+        async: true,
+        dataType: "json",
         success: function(result) {
             if (result.reauth == true) { window.location.reload(true); }
             if (result.success == false)  {
@@ -273,8 +273,8 @@ function getUpdateLog() {
         try {
             data = JSON.parse(result);
             if (data.reauth == true) { window.location.reload(true); }
-            if (data.success == false)  { 
-                clearInterval(updates_log_interval); 
+            if (data.success == false)  {
+                clearInterval(updates_log_interval);
                 refresh_updateLog("<text style='color:red;'>"+ data.message+"</text>");
             }
         } catch (e) {
@@ -285,9 +285,6 @@ function getUpdateLog() {
                 refresh_updateLog(result);
                 if (result.indexOf("System update done")!=-1) {
                     clearInterval(updates_log_interval);
-                    setTimeout(function() {
-                        $("#update-logfile-view").slideUp();
-                    },3000);
                 }
             }
         }
@@ -314,7 +311,7 @@ function copyTextToClipboard(text, message) {
     var msg = successful ? 'successful' : 'unsuccessful';
     // console.log('Copying text command was ' + msg);
     snackbar(message || 'Copied to clipboard');
-  } 
+  }
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }

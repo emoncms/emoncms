@@ -1,0 +1,29 @@
+name: PHP Composer
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  run-ci:
+    name: PHP ${{ matrix.php-versions }} test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-versions:
+          - "7.4"
+          - "8.0"
+          - "8.1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup PHP with XDebug
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          coverage: xdebug
+          tools: composer
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+      - name: Run tests
+        run: composer test

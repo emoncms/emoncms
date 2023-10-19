@@ -15,7 +15,7 @@
     $time = time();     // generate export for last month of this time
     $exportpath = './exports';     // where to save export backup file (relative to base emoncms path)
 
-    // Dont change bellow this  
+    // Dont change bellow this
 
     $fp = fopen("/var/lock/export_daily.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
@@ -32,29 +32,29 @@
 
     if ($redis_enabled) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
-            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n'); 
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) {
+            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n');
         }
         if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
         if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) { 
+            if (!$redis->auth($redis_server['auth'])) {
                 $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
             }
         }
     } else {
         $redis = false;
     }
-    
+
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 
     include "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
-    
+
     require_once "Modules/feed/engine/shared_helper.php";
     $helperclass = new SharedHelper();
-    
-    $session['userid'] = $userid; // required 
+
+    $session['userid'] = $userid; // required
     $emailto = $user->get_email($session['userid']);
     $usertimezone = $user->get_timezone($session['userid']);
     $now = DateTime::createFromFormat("U", $time);
@@ -68,7 +68,7 @@
     $start = $now->format("U");
     $startText= $now->format("YmdHis");
 
-    
+
     // Get user feeds
     $userfeeds = $feed->get_user_feeds($session['userid']);
     $groups = array();
@@ -78,7 +78,7 @@
 
     echo "Starting export job ($startText-$endText) interval $outinterval for user '$userid'.\n";
     $log->info("Starting export job ($startText-$endText) interval $outinterval for user '$userid'.\n");
-     
+
     // Get feed ids grouped by tags
     foreach($groups as $tag => $ids){
         echo "    Processing '$tag' tag with feeds: " . implode(",",$ids) . "\n";
@@ -103,7 +103,7 @@
                 foreach ($exportdata['Timestamp'] as $feedid => $name) {
                     if ($firstline) {
                         $dataline[$feedid] = $data[$feedid];
-                    } else if (isset($data[$feedid])) {
+                    } elseif (isset($data[$feedid])) {
                         $dataline[$feedid] = number_format((float)$data[$feedid],$csv_decimal_places,$csv_decimal_place_separator,'');
                     } else {
                         $dataline[$feedid] = "";
@@ -116,7 +116,7 @@
                 $firstline = false;
             }
             fclose($fh);
-            
+
             if ($firstline == false) {
                 echo "Sending Email to $emailto ...\n";
                 $log->info("Sending Email to $emailto ...");

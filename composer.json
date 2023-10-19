@@ -16,11 +16,18 @@
     },
     "license": "AGPL-3.0-or-later",
     "require": {
-        "ext-mysqli": "*",
+        "ext-ctype": "*",
+        "ext-curl": "*",
         "ext-gettext": "*",
         "ext-json": "*",
-        "ext-curl": "*",
+        "ext-mbstring": "*",
+        "ext-mysqli": "*",
         "ext-openssl": "*",
-        "ext-ctype": "*"
+        "ext-zlib": ""
+    },
+    "suggest": {
+        "ext-cassandra": "Cassandra storage engine",
+        "ext-mosquitto-php": "Mosquitto MQTT",
+        "ext-redis": "Redis storage engine"
     }
 }

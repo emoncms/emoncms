@@ -35,7 +35,7 @@ class Input
         $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         $id = false;
-        
+
         if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
             $stmt->bind_param("iss",$userid,$name,$nodeid);
             $stmt->execute();
@@ -59,37 +59,37 @@ class Input
         $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
         if ($result->num_rows == 1) return true; else return false;
     }
-    
+
     public function access($userid,$inputid)
     {
         $userid = (int) $userid;
         $inputid = (int) $inputid;
-        
+
         $stmt = $this->mysqli->prepare("SELECT id FROM input WHERE userid=? AND id=?");
         $stmt->bind_param("ii",$userid,$inputid);
         $stmt->execute();
         $stmt->bind_result($id);
         $result = $stmt->fetch();
         $stmt->close();
-        
+
         if ($result && $id>0) return true; else return false;
     }
-    
+
     public function exists_nodeid_name($userid,$nodeid,$name)
     {
         $userid = (int) $userid;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
-        
+
         $stmt = $this->mysqli->prepare("SELECT id FROM input WHERE userid=? AND nodeid=? AND name=?");
         $stmt->bind_param("iss",$userid,$nodeid,$name);
         $stmt->execute();
         $stmt->bind_result($id);
         $result = $stmt->fetch();
         $stmt->close();
-        
+
         if ($result && $id>0) return $id; else return false;
-    }    
+    }
 
     public function validate_access($dbinputs, $nodeid)
     {
@@ -100,17 +100,17 @@ class Input
             if (!isset($dbinputs[$nodeid])) {
                 $success = false;
                 $message = "Device not initialized.";
-            } else if ($nodeid != $session['nodeid']) {
+            } elseif ($nodeid != $session['nodeid']) {
                 $success = false;
                 $message = "Node '$nodeid' does not belong to device.";
             }
-        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $settings["input"]["max_node_id_limit"] )) {
+        } elseif (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $settings["input"]["max_node_id_limit"] )) {
             $success = false;
             $message = "Reached the maximal allowed number of different NodeIds, limit is ".$settings["input"]["max_node_id_limit"].". Node '$nodeid' was ignored.";
         }
         return array('success'=>$success, 'message'=>$message);
     }
-    
+
     public function set_timevalue($id, $time, $value)
     {
         $id = (int) $id;
@@ -142,7 +142,7 @@ class Input
         $id = (int) $id;
         if (!$this->exists($id)) return array('success'=>false, 'message'=>'Input does not exist');
         $fields = json_decode(stripslashes($fields));
-        
+
         $success = false;
 
         if (isset($fields->name)) {
@@ -151,17 +151,17 @@ class Input
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) $success = true;
             $stmt->close();
-            
+
             if ($this->redis) $this->redis->hset("input:$id",'name',$fields->name);
         }
-        
+
         if (isset($fields->description)) {
             if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in input description');
             $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) $success = true;
             $stmt->close();
-            
+
             if ($this->redis) $this->redis->hset("input:$id",'description',$fields->description);
         }
 
@@ -171,22 +171,22 @@ class Input
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
     }
-    
+
     public function set_node_input_descriptions($userid,$nodeid,$names)
     {
         $names = explode(",",$names);
         foreach ($names as $name) {
             if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in input description');
         }
-        
+
         $userid = (int) $userid;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
-        
+
         $stmt = $this->mysqli->prepare("SELECT id,name FROM input WHERE userid=? AND nodeid=? ORDER BY id ASC");
         $stmt->bind_param("is",$userid,$nodeid);
         $stmt->execute();
         $stmt->bind_result($id,$name);
-        
+
         $descriptions_by_id = array();
         $index = 0;
         while ($result = $stmt->fetch()) {
@@ -196,17 +196,17 @@ class Input
             $index++;
         }
         $stmt->close();
-        
+
         foreach ($descriptions_by_id as $id=>$description) {
             $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$description,$id);
             $stmt->execute();
             $stmt->close();
-            
+
             if ($this->redis) $this->redis->hset("input:$id",'description',$description);
         }
         return array('success'=>true, 'message'=>'input descriptions updated');
-    }    
+    }
 
 
     // -----------------------------------------------------------------------------------------
@@ -229,16 +229,16 @@ class Input
 
         $dbinputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
-        
+
         if ($inputids==null) {
             $this->load_to_redis($userid);
             $inputids = $this->redis->sMembers("user:inputs:$userid");
         }
-        
+
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
-        
+
         foreach ($result as $row) {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
@@ -293,7 +293,7 @@ class Input
         {
             $row = $this->redis->hGetAll("input:$id");
             if ($row['nodeid']==null) $row['nodeid'] = 0;
-            
+
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
             if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
                 $row['time'] = null;
@@ -305,7 +305,7 @@ class Input
             } else {
                 $row['value'] = (float) $lastvalue['value'];
             }
-            
+
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
             $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
         }
@@ -322,7 +322,7 @@ class Input
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            
+
             if (!is_numeric($row['time']) || is_nan($row['time'])) {
                 $row['time'] = null;
             } else {
@@ -333,7 +333,7 @@ class Input
             } else {
                 $row['value'] = (float) $row['value'];
             }
-            
+
             $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
         }
         return $dbinputs;
@@ -358,7 +358,7 @@ class Input
 
         $inputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
-        
+
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id)
         {
@@ -366,7 +366,7 @@ class Input
             $this->redis->hmget("input:lastvalue:$id",array('time','value'));
         }
         $result = $pipe->exec();
-        
+
         for ($i=0; $i<count($result); $i+=2) {
             $row = $result[$i];
             $lastvalue = $result[$i+1];
@@ -394,7 +394,7 @@ class Input
         while ($row = (array)$result->fetch_object()) $inputs[] = $row;
         return $inputs;
     }
-    
+
     // -----------------------------------------------------------------------------------------
 
     public function get_name($id)
@@ -428,7 +428,7 @@ class Input
         $id = (int) $id;
 
         if ($this->redis) {
-            $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
+            $lastvalue = $this->redis->hget("input:lastvalue:$id",'value');
             if (!isset($lastvalue) || !is_numeric($lastvalue) || is_nan($lastvalue)) {
                 $lastvalue = null;
             } else {
@@ -446,7 +446,7 @@ class Input
     public function get_last_timevalue($id)
     {
         $id = (int) $id;
-        
+
         if ($this->redis) {
             $lastvalue = $this->redis->hmget("input:lastvalue:$id", array('time','value'));
             if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
@@ -465,7 +465,7 @@ class Input
             $result = $this->mysqli->query("SELECT time, value FROM input WHERE `id` = '$id'");
             if ($result->num_rows > 0) {
                 $row = $result->fetch_array();
-                return $lastvalue = array('time'=> (int) $row['time'], 'value'=> (float) $row['value']);
+                return array('time'=> (int) $row['time'], 'value'=> (float) $row['value']);
             }
         }
         return null;
@@ -485,7 +485,7 @@ class Input
         }
         return "input deleted";
     }
-    
+
     // userid and inputids are checked in belongs_to_user and delete
     public function delete_multiple($userid, $inputids) {
         foreach ($inputids as $inputid) {
@@ -515,8 +515,8 @@ class Input
         }
         return "Deleted $n inputs";
     }
-    
-    public function clean_processlist_feeds($process_class,$userid) 
+
+    public function clean_processlist_feeds($process_class,$userid)
     {
         $processes = $process_class->get_process_list();
         $out = "";
@@ -536,7 +536,7 @@ class Input
                 if (count($keyarg)==2) {
                     $key = $keyarg[0];
                     $arg = $keyarg[1];
-                    
+
                     // Map ids to process key names
                     if (isset($process_class->process_map[$key])) $key = $process_class->process_map[$key];
 
@@ -590,61 +590,61 @@ class Input
     // however emoncms also supports text based process reference and a number of processes
     // are only available via the text based function reference.
     // $process_list is a list of processes
-    
+
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {    
+    {
         $userid = (int) $userid;
         $id = (int) $id;
-        
+
         // Validate processlist
         $pairs = explode(",",$processlist);
         $pairs_out = array();
-        
+
         // Build map of processids where set
         $map = array();
         foreach ($process_list as $key=>$process) {
             if (isset($process['id_num'])) $map[$process['id_num']] = $key;
         }
-        
+
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
-            
+
                 // Verify process id
                 $processkey = $inputprocess[0];
                 // If key is in the map, switch to associated full process key
                 if (isset($map[$processkey])) $processkey = $map[$processkey];
-            
+
                 // Load process
                 if (isset($process_list[$processkey])) {
                     $processarg = $process_list[$processkey]['argtype'];
-                    
+
                     if ($process_list[$processkey]['group']=="Deleted") {
                         return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
                     }
-                    
+
                     // remap process back to use map id if available
                     if (isset($process_list[$processkey]['id_num']))
                         $processkey = $process_list[$processkey]['id_num'];
-                    
+
                 } else {
                     return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
                 }
-                
+
                 // Verify argument
                 $arg = $inputprocess[1];
-                
+
                 // Check argument against process arg type
                 switch($processarg){
-                
+
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
                         if (!$this->feed->access($userid,$feedid)) {
                             return array('success'=>false, 'message'=>_("Invalid feed"));
                         }
                         break;
-                        
+
                     case ProcessArg::INPUTID:
                         $inputid = (int) $arg;
                         if (!$this->access($userid,$inputid)) {
@@ -654,44 +654,41 @@ class Input
 
                     case ProcessArg::VALUE:
                         if (!is_numeric($arg)) {
-                            return array('success'=>false, 'message'=>'Value is not numeric'); 
+                            return array('success'=>false, 'message'=>'Value is not numeric');
                         }
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg) 
-                            return array('success'=>false, 'message'=>'Invalid characters in arg'); 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
+                            return array('success'=>false, 'message'=>'Invalid characters in arg');
                         break;
-                                                
+
                     case ProcessArg::SCHEDULEID:
                         $scheduleid = (int) $arg;
                         if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
-                            return array('success'=>false, 'message'=>'Invalid schedule'); 
+                            return array('success'=>false, 'message'=>'Invalid schedule');
                         }
                         break;
-                        
+
                     case ProcessArg::NONE:
-                        $arg = false;
-                        break;
-                        
                     default:
                         $arg = false;
                         break;
                 }
-                
+
                 $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
-        
+
         // rebuild processlist from verified content
         $processlist_out = implode(",",$pairs_out);
-    
+
         $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
         $stmt->bind_param("si", $processlist_out, $id);
         if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error setting processlist"));
         }
-        
+
         if ($this->mysqli->affected_rows>0){
             if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist_out);
             return array('success'=>true, 'message'=>'Input processlist updated');
@@ -716,7 +713,7 @@ class Input
         if ($result->num_rows > 0) {
             $row = $result->fetch_object();
             $userid = $row->userid;
-            
+
             $this->redis->sAdd("user:inputs:$userid", $row->id);
             $this->redis->hMSet("input:$row->id",array(
                 'id'=>$row->id,
