@@ -24,5 +24,5 @@ Modules/*/
 !Modules/time/
 !Modules/user/
 !Modules/vis/
-
+!Modules/account/
 /vendor/

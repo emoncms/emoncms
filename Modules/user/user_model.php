@@ -410,12 +410,25 @@ class User
         }
         else
         {
+            // Default write access
+            if (!isset($userData->access)) $userData->access = 2;
+            
+            // If no access via login
+            if ($userData->access==0) {
+                return array('success'=>false, 'message'=>_("Login disabled for this account"));
+            }
+            
             session_regenerate_id();
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
-            $_SESSION['read'] = 1;
-            $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData->admin;
+            
+            if ($userData->access>0) { 
+                $_SESSION['read'] = 1;
+            }
+            if ($userData->access>1) {
+                $_SESSION['write'] = 1;
+                $_SESSION['admin'] = $userData->admin;
+            }
             $_SESSION['lang'] = $userData->language;
             $_SESSION['timezone'] = $userData->timezone;
             $_SESSION['startingpage'] = $userData->startingpage;
@@ -771,6 +784,22 @@ class User
         $stmt->bind_param("si", $timezone, $userid);
         $stmt->execute();
         $stmt->close();
+    }
+    
+    //---------------------------------------------------------------------------------------
+    // Access
+    //---------------------------------------------------------------------------------------
+    public function set_access($userid, $access) {
+        $userid = (int) $userid;
+        $access = (int) $access;
+        $this->mysqli->query("UPDATE users SET `access`='$access' WHERE `id`='$userid'");
+    }
+    
+    public function get_access($userid) {
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT `access` FROM users WHERE `id`='$userid'");
+        $data = $result->fetch_object();
+        return $data->access;
     }
 
     //---------------------------------------------------------------------------------------
