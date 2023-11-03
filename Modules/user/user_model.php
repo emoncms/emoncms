@@ -38,6 +38,10 @@ class User
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
     }
+    
+    public function set_email_verification($email_verification) {
+        $this->email_verification = $email_verification;
+    }
 
     //---------------------------------------------------------------------------------------
     // Core session methods

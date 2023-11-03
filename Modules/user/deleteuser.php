@@ -62,7 +62,7 @@ function delete_user($userid,$mode) {
         // It would be better to implement some kind of standard interface for this
         if (file_exists("Modules/account/account_model.php")) {
             require_once("Modules/account/account_model.php");
-            $account_class = new Accounts($mysqli, $user);
+            $account_class = new Accounts($mysqli, $redis, $user);
             $account_result = $account_class->delete_user($userid, $dryrun);
             if ($account_result['success']) {
                 $result .= "- ".$account_result['message']."\n";
