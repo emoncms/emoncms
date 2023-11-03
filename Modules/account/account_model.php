@@ -99,7 +99,7 @@ class Accounts
 
         // Check if linkeduser belongs to adminuser
         if (!$this->is_linked($adminuser,$linkeduser)) {
-            return array("success"=>false,"message"=>"access denied");
+            return array("success"=>false,"message"=>"invalid linked userid");
         }
 
         // Unlink user
@@ -124,7 +124,7 @@ class Accounts
 
         // check that linkeduser is linked to adminuser
         if (!$this->is_linked($adminuser,$linkeduser)) {
-            return array("success"=>false,"message"=>"access denied");
+            return array("success"=>false,"message"=>"invalid linked userid");
         }
 
         // switch user
@@ -157,7 +157,7 @@ class Accounts
 
         // Check if linkeduser belongs to adminuser
         if (!$this->is_linked($adminuser,$linkeduser)) {
-            return array("success"=>false,"message"=>"access denied");
+            return array("success"=>false,"message"=>"invalid linked userid");
         }
 
         // Set access
@@ -175,5 +175,36 @@ class Accounts
             return true;
         }
         return false;
+    }
+    
+    // Delete user method
+    public function delete_user($userid, $dryrun = true) {
+        $userid = (int) $userid;
+
+        // Check if user is a linked user
+        $result = $this->mysqli->query("SELECT * FROM ".$this->table." WHERE linkeduser='$userid'");
+        if ($result->fetch_object()) {
+            if (!$dryrun) {
+                // Unlink user
+                $this->mysqli->query("DELETE FROM ".$this->table." WHERE linkeduser='$userid'");
+            }
+            return array("success"=>true,"message"=>"removed user from accounts table");
+        }
+
+        // Check if user is an admin user
+        $result = $this->mysqli->query("SELECT * FROM ".$this->table." WHERE adminuser='$userid'");
+        // If user is an admin user then delete all linked users
+        // get number of linked users
+        $num_linked_users = $result->num_rows;
+        if ($num_linked_users) {
+            if (!$dryrun) {
+                // Delete all linked users
+                $this->mysqli->query("DELETE FROM ".$this->table." WHERE adminuser='$userid'");
+            }
+            return array("success"=>true,"message"=>"removed $num_linked_users linked users from accounts table");
+        }
+        
+        // no linked or admin users
+        return array("success"=>false,"message"=>"user not found in accounts table");
     }
 }

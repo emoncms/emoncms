@@ -35,6 +35,7 @@ function account_controller() {
     // Unlink account
     // GET /account/unlink.json (get body: userid)
     if ($route->action == "unlink" && $session["write"]) {
+        $route->format = 'json';
         $userid = post("userid",true);
         return $account_class->unlink($session["userid"],$userid);
     }
@@ -42,13 +43,15 @@ function account_controller() {
     // Switch user
     // GET /account/switch.json?userid=123
     if ($route->action == "switch" && $session["write"]) {
+        $route->format = 'json';
         $userid = get("userid",false);
-        $account_class->switch($session["userid"],$userid);
+        return $account_class->switch($session["userid"],$userid);
     }
 
     // Set access
     // POST /account/access.json (post body: userid, access)
     if ($route->action == "setaccess" && $session["write"]) {
+        $route->format = 'json';
         $userid = post("userid",true);
         $access = post("access",true);
         return $account_class->set_access($session["userid"],$userid,$access);
