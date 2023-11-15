@@ -1276,11 +1276,13 @@ function feed_selection()
         $(".feed-download").show();
         $(".feed-graph").show();
         if (session_write) $(".feed-edit").show();
+        $("#filter").hide();
     } else {
         $(".feed-delete").hide();
         $(".feed-download").hide();
         $(".feed-graph").hide();
         $(".feed-edit").hide();
+        $("#filter").show();
     }
 
     // There should only ever be one feed that is selected here:
