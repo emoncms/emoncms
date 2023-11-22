@@ -703,7 +703,9 @@ class Feed
         if ($dp!=-1) {
             $dp = (int) $dp;
             for ($i=0; $i<count($data); $i++) {
-                $data[$i][1] = round($data[$i][1],$dp);
+                if ($data[$i][1]!=null) {
+                    $data[$i][1] = round($data[$i][1],$dp);
+                }
             }
         }
 
