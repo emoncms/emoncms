@@ -401,7 +401,12 @@ var processlist_ui =
             
             var options = {};
             if (engine==6 || engine==5 || engine==4 || engine==1) {
-              options = {"interval":$('#feed-interval').val()};
+              let interval = $('#feed-interval').val();
+              if (interval=="") {
+                alert('ERROR: Please select a feed interval');
+                return false;
+              }
+              options = {"interval":interval};
             }
             else if (engine==8 || engine==0) {
               options = {"name":$('#feed-table').val()};
