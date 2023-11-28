@@ -174,6 +174,7 @@ body{padding:0!important}
     <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
     <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
+    <input name="filter" id="filter" placeholder="Filter feeds" style="position: fixed; right: 23px">
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -370,6 +371,7 @@ var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]
 // auto refresh
 update_feed_list();
 setInterval(update_feed_list,5000);
+filter.oninput = update_feed_list;
 
 var firstLoad = true;
 function update_feed_list() {
@@ -398,7 +400,12 @@ function update_feed_list() {
             $("#public-feeds-none").hide();
         }
         feeds = {};
-        for (var z in data) feeds[data[z].id] = data[z];
+        filterText = filter.value.toLowerCase()
+        for (var z in data) {
+            if (filterText == '' || data[z].name.toLowerCase().includes(filterText)) {
+                feeds[data[z].id] = data[z];
+            }
+        }
         nodes = {};
         for (var z in feeds) {
             var node = feeds[z].tag;
@@ -1269,11 +1276,13 @@ function feed_selection()
         $(".feed-download").show();
         $(".feed-graph").show();
         if (session_write) $(".feed-edit").show();
+        $("#filter").hide();
     } else {
         $(".feed-delete").hide();
         $(".feed-download").hide();
         $(".feed-graph").hide();
         $(".feed-edit").hide();
+        $("#filter").show();
     }
 
     // There should only ever be one feed that is selected here:
