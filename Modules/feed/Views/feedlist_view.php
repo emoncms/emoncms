@@ -469,7 +469,8 @@ function update_feed_list() {
                 var title_lines = [feed.name,
                                   '-----------------------',
                                   _('Tag') + ': ' + feed.tag,
-                                  _('Feed ID') + ': ' + feedid]
+                                  _('Feed ID') + ': ' + feedid,
+                                  _('Feed Engine') + ': ' + feed_engines[feed.engine]]
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
@@ -503,7 +504,17 @@ function update_feed_list() {
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
+                
+                let intervalstr = "";
+                if (feed.engine==5) {
+                    intervalstr = " ("+feed.interval+"s)";
+                }
+                
+                let engine_name = feed_engines[feed.engine];
+                if (engine_name=="PHPFINA") engine_name = "FIXED";
+                else if (engine_name=="PHPTIMESERIES") engine_name = "VARIABLE";  
+                
+                out += '  <div class="engine" data-col="G">'+engine_name+intervalstr+'</div>';
                 out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
