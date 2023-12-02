@@ -166,6 +166,8 @@ body{padding:0!important}
     <h3 id="public-feeds-title" class="hide"><?php echo _('Public Feeds'); ?></h3>
 </div>
 
+<input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
+
 <div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
@@ -174,7 +176,6 @@ body{padding:0!important}
     <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
     <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
-    <input name="filter" id="filter" placeholder="Filter feeds" style="position: fixed; right: 23px">
 </div>
 
 <div id="table" class="feed-list"></div>
