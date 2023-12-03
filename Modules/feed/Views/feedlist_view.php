@@ -166,6 +166,8 @@ body{padding:0!important}
     <h3 id="public-feeds-title" class="hide"><?php echo _('Public Feeds'); ?></h3>
 </div>
 
+<input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
+
 <div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
@@ -174,7 +176,6 @@ body{padding:0!important}
     <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
     <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
-    <input name="filter" id="filter" placeholder="Filter feeds" style="position: fixed; right: 23px">
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -468,7 +469,8 @@ function update_feed_list() {
                 var title_lines = [feed.name,
                                   '-----------------------',
                                   _('Tag') + ': ' + feed.tag,
-                                  _('Feed ID') + ': ' + feedid]
+                                  _('Feed ID') + ': ' + feedid,
+                                  _('Feed Engine') + ': ' + feed_engines[feed.engine]]
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
@@ -502,7 +504,17 @@ function update_feed_list() {
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
+                
+                let intervalstr = "";
+                if (feed.engine==5) {
+                    intervalstr = " ("+feed.interval+"s)";
+                }
+                
+                let engine_name = feed_engines[feed.engine];
+                if (engine_name=="PHPFINA") engine_name = "FIXED";
+                else if (engine_name=="PHPTIMESERIES") engine_name = "VARIABLE";  
+                
+                out += '  <div class="engine" data-col="G">'+engine_name+intervalstr+'</div>';
                 out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';

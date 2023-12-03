@@ -157,7 +157,7 @@ var feed = {
             async = true;
         }
 
-        var feed_data = [];        
+        var non_async_result = false;
         var ajaxAsyncXdr = $.ajax({
             url: path+'feed/data.json',
             data: data,
@@ -166,19 +166,19 @@ var feed = {
             success: function(result) {
                 if (!result || result===null || result==="" || result.constructor!=Array) {
                     console.log("ERROR","feed.getdata invalid response: "+result);
-                }
-                
-                if (timeformat=="notime") {
-                    if (data.ids!=undefined) {
-                        for (var i in result) {
-                            result[i].data = feed.populate_timestamps(result[i].data, start, interval);
-                        }
-                        feed_data = result;
-                    } else {
-                        feed_data = feed.populate_timestamps(result, start, interval);
-                    }
                 } else {
-                    feed_data = result;
+                    if (timeformat=="notime") {
+                        if (data.ids!=undefined) {
+                            for (var i in result) {
+                                result[i].data = feed.populate_timestamps(result[i].data, start, interval);
+                            }
+                            non_async_result = result;
+                        } else {
+                            non_async_result = feed.populate_timestamps(result, start, interval);
+                        }
+                    } else {
+                        non_async_result = result;
+                    }
                 }
                 
                 if (async) {
@@ -193,7 +193,7 @@ var feed = {
         if (async) {
             return ajaxAsyncXdr;
         } else {
-            return feed_data;
+            return non_async_result;
         }
     },
     
