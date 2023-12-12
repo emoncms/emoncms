@@ -598,7 +598,7 @@ class Admin {
      * @return bool
      */
     public function is_Pi() {
-        return !empty($this->exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|e4:5f:01:"'));
+        return !empty($this->exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|d8:3a:dd:\|e4:5f:01:"'));
     }
 
     /**
