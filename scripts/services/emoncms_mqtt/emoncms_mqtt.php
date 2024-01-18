@@ -43,7 +43,7 @@
     set_error_handler('exceptions_error_handler');
 
     $log = new EmonLogger(__FILE__);
-    $log->info("Starting MQTT Input script");
+    $log->warn("Starting MQTT Input script");
 
     if (!$settings["mqtt"]["enabled"]) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
@@ -248,7 +248,7 @@
         $subscribed = 0;
         $connected = false;
         //echo "Disconnected cleanly\n";
-        $log->info("Disconnected cleanly");
+        $log->warn("MQTT has disconnected - cleanly");
     }
 
     function message($message)
