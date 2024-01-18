@@ -56,36 +56,36 @@ Use the feed selection helper to select feeds when entering the formula.
 
 **Calibration**
 
-- **scalefeed:** scale a feed by the value given
-- **offsetfeed:** add an offset to a feed
+- scalefeed: scale a feed by the value given
+- offsetfeed: add an offset to a feed
 
 **Power & Energy**
 
-- **powertokwh:** calculate a cumulative kwh feed from a power feed
+- powertokwh: calculate a cumulative kwh feed from a power feed
 
 **Limits**
 
-- **allowpositive:**
-- **allownegative:**
-- **remove_morethan_lessthan**
+- allowpositive:
+- allownegative:
+- remove\_morethan\_lessthan:
 
 **Misc**
 
-- **accumulator:** calculate a cumulative sum of the source feed
-- **constantflow_tokwh:** calculate kWh from flow, return temperature, flow rate constant and specific heat
-- **liquidairflow_tokwh:** calculate kWh from flow, return temperature, flow rate feed and specific heat
-- **to_signed:**
+- accumulator: calculate a cumulative sum of the source feed
+- constantflow_tokwh: calculate kWh from flow, return temperature, flow rate constant and specific heat
+- liquidairflow_tokwh: calculate kWh from flow, return temperature, flow rate feed and specific heat
+- to_signed:
 
 **Feeds**
 
-- **addfeeds:** add multiple feeds together (see basic_formula to add more than 2 feeds)
-- **average**
-- **downsample**
-- **mergefeeds:** calculates the average of both feeds where data is available 
+- addfeeds: add multiple feeds together (see basic_formula to add more than 2 feeds)
+- average**
+- downsample**
+- mergefeeds: calculates the average of both feeds where data is available 
 
 **Formula**
 
-- **basic_formula:** Vesatile formula post processor for custom calculations
+- basic_formula: Vesatile formula post processor for custom calculations
 
 **Simulation**
 
@@ -94,14 +94,14 @@ Use the feed selection helper to select feeds when entering the formula.
 
 **Solar**
 
-- **exportcalc:** calculate grid export from house consumption and solar generation (ignores any import values)
-- **importcalc:** calculate grid import from house consumption and solar generation (ignores any export values)
-- **solardirectcalc
+- exportcalc: calculate grid export from house consumption and solar generation (ignores any import values)
+- importcalc: calculate grid import from house consumption and solar generation (ignores any export values)
+- solardirectcalc
 
 **Data cleanup**
 
-- **removeresets:** remove resets in a accumulating feed
-- **removenan:** join across missing data points with a straight line
+- removeresets: remove resets in a accumulating feed
+- removenan: join across missing data points with a straight line
 
 ## Open Source
 
