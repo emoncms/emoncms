@@ -65,22 +65,22 @@ Use the feed selection helper to select feeds when entering the formula.
 
 **Limits**
 
-- allowpositive:
-- allownegative:
-- remove\_morethan\_lessthan:
+- allowpositive: Either create a new feed with only positive values or remove negative values from the source feed.
+- allownegative: Either create a new feed with only negative values or remove positive values from the source feed.
+- remove\_morethan\_lessthan: Remove values from a feed if they are more than or less than the set limits.
 
 **Misc**
 
 - accumulator: calculate a cumulative sum of the source feed
 - constantflow_tokwh: calculate kWh from flow, return temperature, flow rate constant and specific heat
 - liquidairflow_tokwh: calculate kWh from flow, return temperature, flow rate feed and specific heat
-- to_signed:
+- to_signed: convert unsigned values in a feed to a signed values
 
 **Feeds**
 
 - addfeeds: add multiple feeds together (see basic_formula to add more than 2 feeds)
-- average**
-- downsample**
+- average: average and downsample effectively do the same thing. Take feed at a higher resolution e.g 10s interval and reduce to the set output interval e.g 60s
+- downsample: same as above.
 - mergefeeds: calculates the average of both feeds where data is available 
 
 **Formula**
@@ -89,14 +89,14 @@ Use the feed selection helper to select feeds when entering the formula.
 
 **Simulation**
 
-- batterysimulator: 
-- carnot\_cop\_simulator:
+- batterysimulator
+- carnot\_cop\_simulator
 
 **Solar**
 
 - exportcalc: calculate grid export from house consumption and solar generation (ignores any import values)
 - importcalc: calculate grid import from house consumption and solar generation (ignores any export values)
-- solardirectcalc
+- solardirectcalc: calculate solar generation used directly from a solar generation feed and house consumption feed.
 
 **Data cleanup**
 
