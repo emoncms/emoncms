@@ -166,6 +166,12 @@ $param = new Param($route, $user);
 // --------------------------------------------------------------------------------------
 // Special routes
 
+// Captive portal (android only)
+if ($route->controller=="generate_204") {
+    header('Location: /');
+    exit;
+}
+
 // Return brief device descriptor for hub detection
 if ($route->controller=="describe") {
     header('Content-Type: text/plain');
