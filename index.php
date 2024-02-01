@@ -166,11 +166,13 @@ $param = new Param($route, $user);
 // --------------------------------------------------------------------------------------
 // Special routes
 
-// Captive portal (android only)
-if ($route->controller=="generate_204") {
+// Captive portal (android working, no luck on iOS yet)
+if ($route->controller=="generate_204" || $route->controller=="hotspot-detect") {
     header('Location: /');
     exit;
 }
+// if (get('q')=="library/test/success.html") { header('Location: /'); exit; }
+
 
 // Return brief device descriptor for hub detection
 if ($route->controller=="describe") {
