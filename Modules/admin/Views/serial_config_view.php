@@ -129,7 +129,7 @@ var app = new Vue({
       group: '',
       vcal: '',
       radio_enabled: 1,
-      calibration_type: "emonlibcm",
+      calibration_type: "emonlibdb",
       channels: [
         {enabled:1, ical:20, ilead: '', name:"P1", value:''},
         {enabled:1, ical:20, ilead: '', name:"P2", value:''},
