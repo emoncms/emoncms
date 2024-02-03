@@ -168,7 +168,7 @@ $param = new Param($route, $user);
 
 // Captive portal (android working, no luck on iOS yet)
 if ($route->controller=="generate_204" || $route->controller=="hotspot-detect") {
-    header('Location: /');
+    header('Location: http://192.168.42.1');
     exit;
 }
 // if (get('q')=="library/test/success.html") { header('Location: /'); exit; }
@@ -206,11 +206,18 @@ if ($route->isRouteNotDefined()) {
         if (file_exists("Modules/setup")) {
             require "Modules/setup/setup_model.php";
             $setup = new Setup($mysqli);
+            
             if ($setup->status()=="unconfigured") {
-                $settings["interface"]["default_controller"] = "setup";
-                $settings["interface"]["default_action"] = "";
                 // Provide special setup access to WIFI module functions
                 $_SESSION['setup_access'] = true;
+            } else {
+                $_SESSION['setup_access'] = false;
+            }
+            
+            // Either show setup interface if unconfigured or if access point login
+            if ($setup->status()=="unconfigured" || $route->is_ap) {
+                $settings["interface"]["default_controller"] = "setup";
+                $settings["interface"]["default_action"] = "";
             }
         }
     }
