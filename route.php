@@ -58,6 +58,11 @@ class Route
     public $is_ajax = false;
 
     /**
+     * @var bool
+     */
+    public $is_ap = false;
+    
+    /**
      * @param string $q
      * @param string $documentRoot
      * @param string $requestMethod
@@ -67,6 +72,11 @@ class Route
         $this->decode($q, $documentRoot, $requestMethod);
         //this can be faked by the client. not to be trusted.
         $this->is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+        
+        // is this an access point login?
+        if ($_SERVER['SERVER_ADDR']=="192.168.42.1") {
+            $this->is_ap = true;
+        }
     }
 
     /**

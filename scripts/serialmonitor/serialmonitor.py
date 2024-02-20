@@ -79,6 +79,13 @@ except:
     print("Could not open serial port "+str(device)+" "+str(baudrate))
     sys.exit(0)
 # -------------------------------------------------------------
+
+
+time.sleep(1)
+
+ser.write(("l\n").encode())
+r.rpush('serialmonitor-log',"Loading configuration, list (l) command sent:\n")
+
 linestr = ""
 while True:
     # Check for standard input or serial input (timeout of .2 sec):

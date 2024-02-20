@@ -598,7 +598,7 @@ class Admin {
      * @return bool
      */
     public function is_Pi() {
-        return !empty($this->exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|e4:5f:01:"'));
+        return !empty($this->exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|d8:3a:dd:\|e4:5f:01:"'));
     }
 
     /**
@@ -630,9 +630,11 @@ class Admin {
             $matches = array_filter($matches);
             if(!empty($matches)) {
                 // $rpi_info['hw'] = "Broadcom ".$matches[2][0];
-                $rpi_info['rev'] = $matches[2][1];
-                $rpi_info['sn'] = $matches[2][2];
-                $rpi_info['model'] = '';
+                if (isset($matches[2])) {
+                    $rpi_info['rev'] = isset($matches[2][1])?$matches[2][1]:"";
+                    $rpi_info['sn'] = isset($matches[2][2])?$matches[2][2]:"";
+                    $rpi_info['model'] = '';
+                }
             }
             //build model string
             if(!empty($rpi_revision[$rpi_info['rev']]) || 1)  {
