@@ -37,7 +37,20 @@ class PHPFina implements engine_methods
     {
         $id = (int)$id;
         $interval = (int) $options['interval'];
-        if ($interval<5) $interval = 5;
+        
+        global $settings;
+        // Set minimum feed interval
+        $min_feed_interval = 10;
+        if (isset($settings['feed']['min_feed_interval'])) {
+             $min_feed_interval = (int) $settings['feed']['min_feed_interval'];
+             if ($min_feed_interval<1) {
+                 $min_feed_interval = 1;
+             }
+        }
+        
+        if ($interval<$min_feed_interval) {
+            $interval = $min_feed_interval;
+        }
 
         // Check to ensure we dont overwrite an existing feed
         $feedname = "$id.meta";

@@ -93,6 +93,9 @@ $_settings = array(
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
     'max_datapoints'        => 8928,
     
+    // Minumum feed interval
+    'min_feed_interval' => 10,
+    
     // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
     // The thousands separator is not used (specified as "nothing")
     // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
