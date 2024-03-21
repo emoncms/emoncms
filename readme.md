@@ -88,7 +88,7 @@ Recommended:
 
 ## docker standalone container
 
-An easy way to start with emoncms is to use the [all-in-one docker container](https://hub.docker.com/alexjunk/emoncms) 
+An easy way to start with emoncms is to use the [all-in-one docker container](https://hub.docker.com/r/alexjunk/emoncms) 
 
 A pipeline using github actions is producing builds with latest emoncms stable version for different architectures : amd64, arm64, arm/v7 
 
