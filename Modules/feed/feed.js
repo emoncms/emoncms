@@ -136,7 +136,7 @@ var feed = {
 			data: data, 
 			async: async, 
             success: function(result) {
-                if (!result || result===null || result==="") {
+                if (result===null || result==="") {
                     console.log("ERROR","feed.getvalue invalid response: "+result);
 					result = false;
                 } else {
