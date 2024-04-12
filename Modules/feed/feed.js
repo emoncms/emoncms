@@ -130,15 +130,15 @@ var feed = {
             async = true;
         }
        
-		var non_async_result = false;
+        var non_async_result = false;
         var ajaxAsyncXdr = $.ajax({ 
-			url: path+"feed/value.json", 
-			data: data, 
-			async: async, 
+            url: path+"feed/value.json", 
+            data: data, 
+            async: async, 
             success: function(result) {
                 if (result===null || result==="") {
                     console.log("ERROR","feed.getvalue invalid response: "+result);
-					result = false;
+                    result = false;
                 } else {
                     non_async_result = result;
                 }
