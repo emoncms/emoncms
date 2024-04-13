@@ -118,21 +118,48 @@ var feed = {
         return response;
     },
 
-    getvalue: function(feedid,time) {
+    getvalue: function(feedid,time,callback=false,context=false) {
         let data = {
             id: feedid,
             time: time
         }
         if (feed.apikey) data.apikey = feed.apikey;
-        let response = false;
-        $.ajax({ url: path+"feed/value.json", data: data, async: false, success: function(data){ response = data} });
-        return response;
+
+        var async = false;
+        if ( typeof callback === "function" ) {
+            async = true;
+        }
+       
+        var non_async_result = false;
+        var ajaxAsyncXdr = $.ajax({ 
+            url: path+"feed/value.json", 
+            data: data, 
+            async: async, 
+            success: function(result) {
+                if (result===null || result==="") {
+                    console.log("ERROR","feed.getvalue invalid response: "+result);
+                    result = false;
+                } else {
+                    non_async_result = result;
+                }
+                
+                if (async) {
+                    if (!context) {
+                        callback(result);
+                    } else {
+                        callback(context,result);
+                    }
+                }
+            }
+        });
+        if (async) {
+            return ajaxAsyncXdr;
+        } else {
+            return non_async_result;
+        }
     },
 
     getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false,timeformat='unixms'){
-    
-
-    
         let data = {
             id: feedid,
             start: start,
