@@ -45,7 +45,13 @@ function get_application_path($manual_domain=false)
     }
 
     if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
-        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_HOST') . server('SCRIPT_NAME')) . "/";
+        $filepath = "$proto://" . server('HTTP_X_FORWARDED_HOST');
+        if (isset($_SERVER['HTTP_X_INGRESS_PATH'])) {
+            // web server is running in ingress mode in home assistant
+            $filepath .= server('HTTP_X_INGRESS_PATH');
+        }
+        $filepath .= server('SCRIPT_NAME');
+        $path = dirname($filepath) . "/";
     } else {
         $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
     }
