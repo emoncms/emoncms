@@ -86,9 +86,37 @@ Recommended:
 * [Pre built emonSD SD-card Image Download](https://docs.openenergymonitor.org/emonsd/download.html)
 * [Purchase pre-loaded SD card](http://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
 
-Experimental (not currently up to date):
+## docker standalone container
 
-* [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
+An easy way to start with emoncms is to use the [all-in-one docker container](https://hub.docker.com/r/alexjunk/emoncms) 
+
+A pipeline using github actions is producing builds with latest emoncms stable version for different architectures : amd64, arm64, arm/v7 
+
+These docker images, based on the [alpine linux](https://www.alpinelinux.org) distribution, are designed for iot. Images are tagged using alpine and emoncms versions, for example alpine3.19_emoncms11.4.11. 
+
+The images have onboard :
+- the mariadb and redis databases,
+- the mosquitto mqtt broker,
+- the main modules : graph, sync, backup, dashboard and app,
+- the workers : emoncms_mqtt, service-runner and feedwriter. 
+
+You can easily : 
+* deactivate the low-write
+* use an external broker. 
+
+To pull the latest image for testing : 
+
+```
+sudo docker pull alexjunk/emoncms
+```
+More on https://emoncms-docker.github.io
+
+
+### Experimental
+
+not currently up to date
+
+[Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
 
 ## Modules
 

@@ -77,7 +77,10 @@ class Engine
      */ 
     public static function available_intervals() 
     {
-        return array(
+        
+        $intervals = array(
+            array("interval"=>1, "description"=>"1s"),
+            array("interval"=>5, "description"=>"5s"),
             array("interval"=>10, "description"=>"10s"),
             array("interval"=>15, "description"=>"15s"),
             array("interval"=>20, "description"=>"20s"),
@@ -99,6 +102,22 @@ class Engine
             array("interval"=>43200, "description"=>"12h"),
             array("interval"=>86400, "description"=>"1d")
         );
+        
+        global $settings;
+        
+        $min_feed_interval = 10;
+        if (isset($settings['feed']['min_feed_interval'])) {
+             $min_feed_interval = (int) $settings['feed']['min_feed_interval'];
+        }
+        
+        $intervals_out = array();
+        foreach ($intervals as $row) {
+            if ($row['interval']>=$min_feed_interval) {
+                $intervals_out[] = $row;
+            }
+        }
+    
+        return $intervals_out;
     }
      
      
