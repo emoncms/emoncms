@@ -199,13 +199,6 @@ var app = new Vue({
                 device_dialog.loadConfig(device_templates)
             }
         },
-        inputStatus: function(input) {
-            return missedIntervalClassName(missedIntervals(input));
-        },
-        deviceStatus: function(device) {
-            var input = this.oldestDeviceInput(device);
-            return missedIntervalClassName(missedIntervals(input));
-        },
         oldestDeviceInput: function(device) {
             var oldest = false;
             device.inputs.forEach(function(input) {
@@ -858,7 +851,7 @@ function update(){
 function update_inputs() {
     var requestTime = (new Date()).getTime();
     return $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+        if( typeof app !== 'undefined') app.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
         
         if (data.message!=undefined && data.message=="Username or password empty") {
             window.location.href = "/";
@@ -958,8 +951,17 @@ function draw_devices() {
         if (devices[nodeid].nodeid.length > max_name_length) max_name_length = devices[nodeid].nodeid.length;
         if (devices[nodeid].description.length > max_description_length) max_description_length = devices[nodeid].description.length;
         
+        var oldest_time = 0;
+        var device_oldest_input = null;
+
         for (var z in devices[nodeid].inputs) {
             var input = devices[nodeid].inputs[z];
+
+            var last_update = list_format_last_update(input.time);
+            if (input.time != null && last_update > oldest_time) {
+                oldest_time = last_update;
+                device_oldest_input = input;
+            }
             
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
             input.processlistHtml = processlistHtml;
@@ -976,6 +978,14 @@ function draw_devices() {
             if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
             if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
         }
+        if (device_oldest_input == null) {
+            var fv = list_format_updated_obj(0);
+        } else {
+            var fv = list_format_updated_obj(device_oldest_input.time);
+        }
+        devices[nodeid].time_color = fv.color
+        devices[nodeid].time_value = fv.value
+
     }
 
     // Conversion of string length to px width
@@ -1332,68 +1342,6 @@ $(window).on("window.resized",function() {
     draw_devices();
 });
 
-
-
-/**
- * find out how many intervals an feed/input has missed
- * 
- * @param {Object} nodeItem
- * @return mixed
- */
-function missedIntervals(nodeItem) {
-    // @todo: interval currently fixed to 5s
-    var interval = 5;
-    if (!nodeItem || !nodeItem.time) return null;
-    var lastUpdated = new Date(nodeItem.time * 1000);
-    var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / interval);
-    return missedIntervals;
-}
-/**
- * get css class name based on number of missed intervals
- * 
- * @param {*} missed - number of missed intervals, false if error
- * @return string
- */
-function missedIntervalClassName (missed) {
-    let result = 'status-success';
-    if (missed > 4) result = 'status-warning'; 
-    if (missed > 11) result = 'status-danger';
-    if (missed === null) result = 'status-danger';
-    return result;
-}
-/**
- * get css class name for node item status
- * 
- * first gets number of missed intervals since last update
- * @param {object} nodeItem
- * @return {string} 
- */
-function nodeItemIntervalClass (nodeItem) {
-    let missed = missedIntervals(nodeItem);
-    return missedIntervalClassName(missed);
-}
-/**
- * get css class name for latest node status
- * 
- * only returns the status for the most recent update
- * @param {array} - array of nodeItems
- * @return {string} 
- */
-function nodeIntervalClass (node) {
-    let nodeMissed = 0;
-    let missed = null;
-    // find most recent interval status
-    for (f in node.inputs) {
-        let nodeItem = node.inputs[f];
-        missed = missedIntervals(nodeItem);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
-        }
-    }
-    return missedIntervalClassName(missed);
-}
 
 
 /**
