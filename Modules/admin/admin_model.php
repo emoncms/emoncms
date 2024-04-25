@@ -449,7 +449,7 @@ class Admin {
         // I would have used disk_free_space() and disk_total_space() here but
         // there appears to be no way to get a list of partitions in PHP?
         $output = array();
-        if (!$output = $this->exec_array('df --block-size=1 -x squashfs')) {
+        if (!$output = $this->exec_array('df -B 1 -x squashfs')) {
             return $partitions;
         }
         foreach($output as $line)
