@@ -88,7 +88,7 @@ function translate(property) {
 body{padding:0!important}
 
 #table {
-    margin-top:3rem
+    margin-top:4rem
 }
 #footer {
     margin-left: 0px;
@@ -133,30 +133,9 @@ body{padding:0!important}
     right: 0;
 }
 
-.node-feeds .node-feed.status-warning:after,
-.node.status-warning .accordion-toggle:after {
-    background: #FFC107;
-}
-.node-feeds .node-feed.status-success:after,
-.node.status-success .accordion-toggle:after {
-    background: #28A745;
-}
-.node-feeds .node-feed.status-danger:after,
-.node.status-danger .accordion-toggle:after {
-    background: #DC3545;
-}
-
-.node.status-warning .accordion-toggle .last-update,
-.node-feeds .node-feed.status-warning .last-update{
-    color: #C70!important;
-}
-.node.status-success .accordion-toggle .last-update,
-.node-feeds .node-feed.status-success .last-update{
-    color: #28A745!important; 
-}
-.node.status-danger .accordion-toggle .last-update,
-.node-feeds .node-feed.status-danger .last-update{
-    color: #DC3545!important;
+.node-feeds .node-feed:after,
+.accordion-toggle:after {
+    background: var(--status-color)!important;
 }
 
 </style>
@@ -355,9 +334,9 @@ if (!session_write) {
    $("#feed-footer").hide();
 }
 
-
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 
+var app = {};
 var feeds = {};
 var nodes = {};
 var selected_feeds = {};
@@ -378,9 +357,10 @@ var firstLoad = true;
 function update_feed_list() {
     var public_username_str = "";
     if (public_userid) public_username_str = public_username+"/";
+    var requestTime = (new Date()).getTime();
 
-    $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data) {
-    
+    $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+        if( typeof app !== 'undefined') app.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
         if (data.message!=undefined && data.message=="Username or password empty") {
             window.location.href = "/";
             return false;
@@ -426,37 +406,48 @@ function update_feed_list() {
         firstLoad = false;
         var out = "";
         
-        // get node overview
-        var node_size = {},
-            node_time = {};
 
-        for (let n in nodes) {
-            let node = nodes[n];
-            node_size[n] = 0;
-            node_time[n] = 0;
-            for (let f in node) {
-                let feed = node[f];
-                node_size[n] += Number(feed.size);
-                node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
-            }
-        }
 
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
+
+            var node_size = 0;
+            var node_time = null;
+            var oldest_time = 0;
+            for (var feed in nodes[node]) {
+                var feed = nodes[node][feed];
+                node_size += Number(feed.size);
+
+                var last_update = list_format_last_update(feed.time);
+                if (feed.time != null && parseInt(feed.engine) !== 7 && last_update > oldest_time) {
+                    oldest_time = last_update;
+                    node_time = feed;
+                }
+            }
+
+            if (node_time == null) {
+                var fv = list_format_updated_obj(0);
+                fv.value_color = list_format_updated(0);
+            } else {
+                var fv = list_format_updated_obj(node_time.time);
+                fv.value_color = list_format_updated(node_time.time);
+            }
+
+
+            out += '<div class="node accordion" style="--status-color: '+ fv.color + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
             out += '      <div class="engine" data-col="G"></div>';
-            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size)+'</div>';
             out += '      <div class="processlist" data-col="F"></div>';
             out += '      <div class="node-feed-right pull-right">';
-            out += '        <div class="value" data-col="C"></div>';
-            out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
+            out += '        <div class="value text-center" data-col="C"></div>';
+            out += '        <div class="time text-center" data-col="D">'+fv.value_color+'</div>';
             out += '      </div>';
             out += '    </div>';
             
@@ -495,7 +486,9 @@ function update_feed_list() {
 
                 row_title = title_lines.join("\n");
 
-                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                var fv = list_format_updated_obj(feed.time);
+
+                out += "<div class='node-feed feed-graph-link' style=\"--status-color: "+ fv.color + "\" feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                 out += "<div class='name' data-col='A'>"+feed.name+"</div>";
@@ -519,8 +512,8 @@ function update_feed_list() {
                 out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
-                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
-                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
+                out += '    <div class="value text-center" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time text-center" data-col="D">'+list_format_updated(feed.time)+'</div>';
                 out += '  </div>';
                 out += '</div>';
             }
@@ -586,39 +579,6 @@ function buildFeedNodeList() {
         node_names.push(feed[0].tag)
     }
     autocomplete(document.getElementById("feed-node"), node_names);
-}
-
-
-function missedIntervals(feed) {
-    if (!feed) return void 0;
-    var lastUpdated = new Date(feed.time * 1000);
-    var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / feed.interval);
-    return missedIntervals;
-}
-function feedListItemIntervalClass (feed) {
-    if (!feed) return void 0;
-    let missed = missedIntervals(feed);
-    let result = [];
-    if (missed < 3) result.push('status-success');
-    if (missed > 2 && missed < 9) result.push('status-warning');
-    if (missed > 8) result.push('status-danger');
-    return result.join(' ');
-}
-function nodeIntervalClass (feeds) {
-    let nodeMissed = 0;
-    for (f in feeds) {
-        let missed = missedIntervals(feeds[f]);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
-        }
-    }
-    let result = [];
-    if (nodeMissed < 3) result.push('status-success');
-    if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
-    if (nodeMissed > 8) result.push('status-danger');
-    return result.join(' ');
 }
 
 

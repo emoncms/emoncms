@@ -91,31 +91,12 @@ input[type="checkbox"] { margin:0px; }
 .buttons{
     padding-right: .4em;
 }
-.status-success.node-info::after,
-.status-success.node-input::after{
-    background: #28A745!important;
-}
-.status-danger.node-info::after,
-.status-danger.node-input::after{
-    background: #DC3545!important;
-}
-.status-warning.node-info::after,
-.status-warning.node-input::after{
-    background: #FFC107!important;
+
+.node-info::after,
+.node-input::after {
+    background: var(--status-color)!important;
 }
 
-.status-success.node-info .last-update,
-.status-success.node-input .last-update{
-    color: #28A745!important;
-}
-.status-danger.node-info .last-update,
-.status-danger.node-input .last-update{
-    color: #DC3545!important;
-}
-.status-warning.node-info .last-update,
-.status-warning.node-input .last-update{
-    color: #C70!important;
-}
 
 [data-col] { overflow:hidden; }
 
@@ -228,7 +209,7 @@ input.checkbox-lg,
       <template v-if="loaded">
         <template v-if="total_devices > 0">
         <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
-            <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :class="[deviceStatus(device)]" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
+            <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :style="{ '--status-color': device.time_color }" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
 
             <div class="select text-center has-indicator" data-col="B">
                 <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
@@ -244,7 +225,7 @@ input.checkbox-lg,
             <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
             <div class="buttons pull-right">
                 <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
-                <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
+                <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px', color:device.time_color}">{{ device.time_value }}</div>
                 <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="<?php echo _('Show device key'); ?>">
                     <i class="icon-lock"></i>
                 </a>
@@ -254,7 +235,7 @@ input.checkbox-lg,
             </div>
             </div>
             <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-            <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :class="[inputStatus(input), {'selected': selected.indexOf(input.id) > -1}]">
+            <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :style="{ '--status-color': input.time_color }" :class="[{'selected': selected.indexOf(input.id) > -1}]">
                 <div class="select text-center" data-col="B">
                     <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
                 </div>
