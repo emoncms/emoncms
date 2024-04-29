@@ -117,12 +117,24 @@ $(function() {
 
 
 // Calculate and color updated time
-function list_format_updated(time) {
-    var fv = list_format_updated_obj(time);
+function list_format_updated(time, interval = false) {
+    var fv = list_format_updated_obj(time, interval);
     return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
 }
 
-function list_format_updated_obj(time) {
+function list_format_color(color_code) {
+    var colours = [
+        "rgb(60,135,170)",  // 0: blue
+        "rgb(50,200,50)",   // 1: green
+        "rgb(240,180,20)",  // 2: yellow
+        "rgb(255,125,20)",  // 3: orange
+        "rgb(255,0,0)",     // 4: red
+        "rgb(150,150,150)", // 5: grey
+    ];
+    return colours[color_code];
+}
+
+function list_format_updated_obj(time, interval = false) {
     var servertime = (new Date()).getTime() - app.timeServerLocalOffset;
     time = new Date(time * 1000);
     var update = time.getTime();
@@ -142,15 +154,22 @@ function list_format_updated_obj(time) {
     else if (hour > 2) updated = hour.toFixed(0) + " hrs";
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
     
-    secs = Math.abs(secs);
-    var color = "rgb(150,150,150)";
-    if (delta < 0) color = "rgb(60,135,170)"
-    else if (secs < 25) color = "rgb(50,200,50)"
-    else if (secs < 60) color = "rgb(240,180,20)"; 
-    else if (secs < (3600*2)) color = "rgb(255,125,20)"
-    else if (secs < (3600*24*31)) color = "rgb(255,0,0)"
+    if (interval == false ) {
+        interval = 10;
+    }
 
-    return {color:color,value:updated};
+    secs = Math.abs(secs);
+
+    var color_code = 5;                                     // grey                       
+    if (delta < 0) color_code = 0;                          // blue
+    else if (secs < interval*3) color_code = 1;             // green
+    else if (secs < interval*6) color_code = 2;             // yellow
+    else if (secs < interval*12) color_code = 3;            // orange
+    else if (secs < interval*24) color_code = 4;            // red
+
+    var color = list_format_color(color_code);
+
+    return {color:color, color_code: color_code, value:updated};
 }
 
 // Number of ms from last update

@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=1;
+    $v=6;
     
     $lang = "";
     if (isset($_SESSION['lang'])) {
@@ -413,46 +413,17 @@ function update_feed_list() {
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-
+            
+            let feed_section = "";
+            feed_section += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
+            
+            // Color code for node is based on highest level of feeds
+            var node_color_code = 0;
+            var node_fv = false;
             var node_size = 0;
-            var node_time = null;
-            var oldest_time = 0;
-            for (var feed in nodes[node]) {
-                var feed = nodes[node][feed];
-                node_size += Number(feed.size);
 
-                var last_update = list_format_last_update(feed.time);
-                if (feed.time != null && parseInt(feed.engine) !== 7 && last_update > oldest_time) {
-                    oldest_time = last_update;
-                    node_time = feed;
-                }
-            }
+            // 1. Generate the feed rows
 
-            if (node_time == null) {
-                var fv = list_format_updated_obj(0);
-                fv.value_color = list_format_updated(0);
-            } else {
-                var fv = list_format_updated_obj(node_time.time);
-                fv.value_color = list_format_updated(node_time.time);
-            }
-
-
-            out += '<div class="node accordion" style="--status-color: '+ fv.color + '">';
-            out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-            out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
-            out += '      <h5 class="name" data-col="A">'+node+':</h5>';
-            out += '      <div class="public" class="text-center" data-col="E"></div>';
-            out += '      <div class="engine" data-col="G"></div>';
-            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size)+'</div>';
-            out += '      <div class="processlist" data-col="F"></div>';
-            out += '      <div class="node-feed-right pull-right">';
-            out += '        <div class="value text-center" data-col="C"></div>';
-            out += '        <div class="time text-center" data-col="D">'+fv.value_color+'</div>';
-            out += '      </div>';
-            out += '    </div>';
-            
-            out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-            
             for (var feed in nodes[node]) {
                 var feed = nodes[node][feed];
                 var feedid = feed.id;
@@ -486,17 +457,32 @@ function update_feed_list() {
 
                 row_title = title_lines.join("\n");
 
-                var fv = list_format_updated_obj(feed.time);
+                var this_feed_interval = false;
+                if (feed.engine == 5) {
+                    this_feed_interval = feed.interval;
+                }
 
-                out += "<div class='node-feed feed-graph-link' style=\"--status-color: "+ fv.color + "\" feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                // Get the format for the feed
+                var fv = list_format_updated_obj(feed.time,this_feed_interval);
+                
+                // If not set, set the first feed as the node color code
+                if (node_fv==false) node_fv = fv;
+
+                // If the current feed has a higher color code, set it as the node color code
+                if (fv.color_code > node_color_code) {
+                    node_color_code = fv.color_code;
+                    node_fv = fv;
+                }
+
+                feed_section += "<div class='node-feed feed-graph-link' style=\"--status-color: "+ fv.color + "\" feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                out += "<div class='name' data-col='A'>"+feed.name+"</div>";
+                feed_section += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                feed_section += "<div class='name' data-col='A'>"+feed.name+"</div>";
                 
                 var publicfeed = "<i class='icon-lock'></i>";
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
-                out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                feed_section += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
                 
                 let intervalstr = "";
                 if (feed.engine==5) {
@@ -507,19 +493,39 @@ function update_feed_list() {
                 if (engine_name=="PHPFINA") engine_name = "FIXED";
                 else if (engine_name=="PHPTIMESERIES") engine_name = "VARIABLE";  
                 
-                out += '  <div class="engine" data-col="G">'+engine_name+intervalstr+'</div>';
-                out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
-                out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
-                out += '  <div class="node-feed-right pull-right">';
+                feed_section += '  <div class="engine" data-col="G">'+engine_name+intervalstr+'</div>';
+                feed_section += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
+                feed_section += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
+                feed_section += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
-                out += '    <div class="value text-center" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
-                out += '    <div class="time text-center" data-col="D">'+list_format_updated(feed.time)+'</div>';
-                out += '  </div>';
-                out += '</div>';
+                feed_section += '    <div class="value text-center" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
+                feed_section += '    <div class="time text-center" data-col="D">'+list_format_updated(feed.time,this_feed_interval)+'</div>';
+                feed_section += '  </div>';
+                feed_section += '</div>';
+
+                // Sum the size of all feeds in this node
+                node_size += Number(feed.size);
             }
             
-            out += "</div>";
-            out += "</div>";
+            feed_section += "</div>";
+
+            // 2. Generate the node row for the feeds above
+            let node_row = "";
+            node_row += '<div class="node accordion" style="--status-color: '+ node_fv.color + '">';
+            node_row += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+            node_row += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
+            node_row += '      <h5 class="name" data-col="A">'+node+':</h5>';
+            node_row += '      <div class="public" class="text-center" data-col="E"></div>';
+            node_row += '      <div class="engine" data-col="G"></div>';
+            node_row += '      <div class="size text-center" data-col="H">'+list_format_size(node_size)+'</div>';
+            node_row += '      <div class="processlist" data-col="F"></div>';
+            node_row += '      <div class="node-feed-right pull-right">';
+            node_row += '        <div class="value text-center" data-col="C"></div>';
+            node_row += '        <div class="time text-center" data-col="D"><span class="last-update" style="color:' + node_fv.color + ';">' + node_fv.value + '</span></div>';
+            node_row += '      </div>';
+            node_row += '    </div>';
+
+            out += node_row + feed_section + "</div>";
         }
         $container = $('#table');
         $container.html(out);
