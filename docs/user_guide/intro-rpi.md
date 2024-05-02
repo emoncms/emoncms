@@ -8,11 +8,9 @@ This guide picks up at the point where the emonPi, emonBase or raspberryPi is po
 
 EmonCMS is the main user interface on the emonPi/base, it can be used to store and visualise data locally or just used to configure posting data to a remote server, or both.
 
-1\. As this is a new system, the first thing to do is to create a local account on your emonPi/base. Click register and enter suitable details for your first account:
+1\. Login with default username `emonsd` and password `emonsd`
 
-**Note: New systems have an account pre-created with username `emonsd` and password `emonsd`. Use these credentials to login, they can be changed on the account page once logged in** 
-
-![emoncms_register.png](img/emoncms_register.png)
+These credentials can be changed once logged in.
 
 2\. When you first login, emonCMS opens on the Feeds page. **Feeds store time-series data**. This page will be empty to start with, once created, feeds will appear listed on this page. 
 
