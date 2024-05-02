@@ -10,6 +10,8 @@ EmonCMS is the main user interface on the emonPi/base, it can be used to store a
 
 1\. As this is a new system, the first thing to do is to create a local account on your emonPi/base. Click register and enter suitable details for your first account:
 
+**Note: New systems have an account pre-created with username `emonsd` and password `emonsd`. Use these credentials to login, they can be changed on the account page once logged in** 
+
 ![emoncms_register.png](img/emoncms_register.png)
 
 2\. When you first login, emonCMS opens on the Feeds page. **Feeds store time-series data**. This page will be empty to start with, once created, feeds will appear listed on this page. 
