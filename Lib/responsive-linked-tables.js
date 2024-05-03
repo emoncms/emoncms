@@ -117,7 +117,7 @@ $(function() {
 
 
 // Calculate and color updated time
-function list_format_updated(time, interval = false) {
+function list_format_updated(time, interval = 1) {
     var fv = list_format_updated_obj(time, interval);
     return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
 }
@@ -134,7 +134,7 @@ function list_format_color(color_code) {
     return colours[color_code];
 }
 
-function list_format_updated_obj(time, interval = false) {
+function list_format_updated_obj(time, interval = 1) {
     var servertime = (new Date()).getTime() - app.timeServerLocalOffset;
     time = new Date(time * 1000);
     var update = time.getTime();
@@ -150,22 +150,28 @@ function list_format_updated_obj(time, interval = false) {
     else if (secs.toFixed(0) == 0) updated = "now";
     else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
     else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
-    else if (day > 2) updated = day.toFixed(1) + " days";
+    else if (day > 2) updated = day.toFixed(0) + " days";
     else if (hour > 2) updated = hour.toFixed(0) + " hrs";
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
-    
-    if (interval == false ) {
-        interval = 10;
-    }
 
     secs = Math.abs(secs);
 
-    var color_code = 5;                                     // grey                       
-    if (delta < 0) color_code = 0;                          // blue
-    else if (secs < interval*3) color_code = 1;             // green
-    else if (secs < interval*6) color_code = 2;             // yellow
-    else if (secs < interval*12) color_code = 3;            // orange
-    else if (secs < interval*24) color_code = 4;            // red
+    var color_code = 5;                                  // grey    - Inactive
+
+    if (interval == 1) {                                 // => Variable Interval Feeds
+        if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+        else if (secs < 30) color_code = 1;              // green   - < 30s
+        else if (secs < 60) color_code = 2;              // yellow  - < 2 min
+        else if (secs < (60 * 60)) color_code = 3;       // orange  - < 1h
+        else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+    }
+    else {                                               // => Fixed Interval Feeds
+        if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+        else if (secs < interval*3) color_code = 1;      // green   - < 3x interval
+        else if (secs < interval*6) color_code = 2;      // yellow  - < 6x interval
+        else if (secs < interval*12) color_code = 3;     // orange  - < 12x interval
+        else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+    }
 
     var color = list_format_color(color_code);
 

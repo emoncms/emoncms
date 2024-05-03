@@ -419,7 +419,7 @@ function update_feed_list() {
             
             // Color code for node is based on highest level of feeds
             var node_color_code = 0;
-            var node_fv = false;
+            var node_fv = null;
             var node_size = 0;
 
             // 1. Generate the feed rows
@@ -427,6 +427,8 @@ function update_feed_list() {
             for (var feed in nodes[node]) {
                 var feed = nodes[node][feed];
                 var feedid = feed.id;
+                // Sum the size of all feeds in this node
+                node_size += Number(feed.size);
 
                 var title_lines = [feed.name,
                                   '-----------------------',
@@ -457,19 +459,10 @@ function update_feed_list() {
 
                 row_title = title_lines.join("\n");
 
-                var this_feed_interval = false;
-                if (feed.engine == 5) {
-                    this_feed_interval = feed.interval;
-                }
-
                 // Get the format for the feed
-                var fv = list_format_updated_obj(feed.time,this_feed_interval);
-                
-                // If not set, set the first feed as the node color code
-                if (node_fv==false) node_fv = fv;
-
-                // If the current feed has a higher color code, set it as the node color code
-                if (fv.color_code > node_color_code) {
+                var fv = list_format_updated_obj(feed.time,feed.interval);
+                if (feed.time != null && parseInt(feed.engine) !== 7 && fv.color_code > node_color_code) {
+                    // If the current feed has a higher color code, set it as the node color code
                     node_color_code = fv.color_code;
                     node_fv = fv;
                 }
@@ -499,17 +492,19 @@ function update_feed_list() {
                 feed_section += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
                 feed_section += '    <div class="value text-center" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
-                feed_section += '    <div class="time text-center" data-col="D">'+list_format_updated(feed.time,this_feed_interval)+'</div>';
+                feed_section += '    <div class="time text-center" data-col="D">'+list_format_updated(feed.time,feed.interval)+'</div>';
                 feed_section += '  </div>';
                 feed_section += '</div>';
 
-                // Sum the size of all feeds in this node
-                node_size += Number(feed.size);
             }
             
             feed_section += "</div>";
 
             // 2. Generate the node row for the feeds above
+
+            // If not set, use default
+            if (node_fv==null) node_fv = list_format_updated_obj(0);
+
             let node_row = "";
             node_row += '<div class="node accordion" style="--status-color: '+ node_fv.color + '">';
             node_row += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
