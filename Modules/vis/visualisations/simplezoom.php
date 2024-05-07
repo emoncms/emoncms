@@ -40,6 +40,9 @@ global $path, $embed, $vis_version;
             <button class='btn graph-nav' id='right'>></button>
         </div>
 
+        <div class='btn-group'>
+            <button class='btn graph-exp' id='graph-fullscreen' type='button'><i class='icon-resize-full'></i></button>
+        </div>
     </div>
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
@@ -109,7 +112,7 @@ function vis_feed_data() {
                 dataend = Math.ceil(view.end / intervalms) * intervalms;
                 skipmissing = 0
             } else {
-                view.calc_interval(1200);
+                view.calc_interval(2400);
                 interval = view.interval;
                 skipmissing = 1
             }
@@ -175,6 +178,7 @@ $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
 $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
 $('#right').click(function () {view.panright(); vis_feed_data();});
 $('#left').click(function () {view.panleft(); vis_feed_data();});
+$("#graph-fullscreen").click(function () {view.fullscreen();});
 $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
 
 $('#mode').click(function () {

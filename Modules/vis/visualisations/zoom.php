@@ -50,6 +50,10 @@
             <button class='btn graph-nav' id='left'><</button>
             <button class='btn graph-nav' id='right'>></button>
         </div>
+
+        <div class='btn-group'>
+            <button class='btn graph-exp' id='graph-fullscreen' type='button'><i class='icon-resize-full'></i></button>
+        </div>
     </div>
 
 </div>
@@ -136,7 +140,7 @@ function vis_feed_data() {
 }
 
 function vis_feed_data_delayed() {
-    view.calc_interval(800);
+    view.calc_interval(2400);
     if (typeof ajaxAsyncXdr !== 'undefined') {
         ajaxAsyncXdr.abort(); // abort pending requests
         ajaxAsyncXdr = undefined;
@@ -219,6 +223,7 @@ $('#left').click(function() {
     view.panleft();
     vis_feed_data();
 });
+$("#graph-fullscreen").click(function () {view.fullscreen();});
 $('.graph-time').click(function() {
     view.timewindow($(this).attr("time"));
     vis_feed_data();

@@ -81,7 +81,7 @@ function vis_feed_data_delayed() {
   var plotlist;
   fill = fill > 0 ? true : false;
   if (depth <= 0) depth = 3;
-  if (npoints <= 0) npoints = 800;
+  if (npoints <= 0) npoints = 2400;
 	
   plotlist = create_plotlist(feedid, fill, depth);
   for(var i in plotlist) {
@@ -166,6 +166,9 @@ function timecompare_init(element) {
         "<button class='btn graph-nav' id='zoomout'>-</button>"+
         "<button class='btn graph-nav' id='left'><</button>"+
         "<button class='btn graph-nav' id='right'>></button></div>"+
+
+        "<div class='btn-group'>"+
+         "<button class='btn graph-exp' id='graph-fullscreen' type='button'><i class='icon-resize-full'></i></button></div>"+
       "</div>"+
     "</div>"
   ;
@@ -224,6 +227,7 @@ function timecompare_init(element) {
   $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
+  $("#graph-fullscreen").click(function () {view.fullscreen();});
   $('.graph-time').click(function () {
     view.timewindow($(this).attr("time"));
     compare_unit = view.end - view.start;

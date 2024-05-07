@@ -100,7 +100,14 @@ http://openenergymonitor.org
 /* ------------------------------ */
 
 
-html,body{height: initial!important}
+html,body{
+    height: initial!important;
+    --bg-vis-graph-color: rgba(255,255,255,0);
+}
+
+:fullscreen, ::backdrop {
+    background-color: var(--bg-vis-graph-color);
+}
 
 #wrap{
   min-height: calc(100vh - 5.4rem)!important;
