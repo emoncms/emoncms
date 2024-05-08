@@ -201,6 +201,11 @@ function timecompare_init(element) {
     }
   });
 
+  var backgroundColour; //= urlParams.colourbg;
+  if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+  $("body").css("background-color","#"+backgroundColour);
+  document.body.style.setProperty("--bg-vis-graph-color", "#"+backgroundColour);
+
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());

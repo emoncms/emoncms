@@ -68,7 +68,12 @@ var delta = <?php echo $delta; ?>;
 
 var timeWindow = (3600000*24.0*365*10);   //Initial time window 10 years
 view.start = +new Date - timeWindow;  //Get start time
-view.end = +new Date; 
+view.end = +new Date;
+
+var backgroundColour; //= urlParams.colourbg;
+if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
+$("body").css("background-color","#"+backgroundColour);
+document.body.style.setProperty("--bg-vis-graph-color", "#"+backgroundColour);
 
 $('#placeholder').width($('#placeholder_bound').width());
 $('#placeholder').height($('#placeholder_bound').height()-80);
