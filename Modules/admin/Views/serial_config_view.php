@@ -26,7 +26,7 @@
 
   <button class="btn btn-danger" style="float:right; margin-top:4px" @click="stop" v-if="connected"><?php echo _('Stop Serial'); ?></button>
 
-  <h3 style="color:#333">EmonTx4 Serial Config Tool</h3>
+  <h3 style="color:#333">Serial Config Tool</h3>
 
   <div id="emonhub-running-notice" class="alert hide">
     <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently running and may conflict with serial monitor'); ?>
@@ -38,6 +38,7 @@
     <button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
   </div>
 
+  <!--
   <div class="input-prepend input-append">
     <span class="add-on">WiFi</span>
     <span class="add-on">SSID</span>
@@ -48,6 +49,7 @@
     <input type="text" v-model="emontx.apikey" style="width:150px" @change="set_apikey" :disabled="!connected" />
   </div>
   <br>
+  -->
     
   <div class="input-prepend input-append">
     <span class="add-on">Radio</span>
