@@ -38,106 +38,116 @@
 		<b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
 		<button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
 	</div>
+	
+	<div v-if="new_config_format">
 
-	<table class="table table-bordered" v-if="new_config_format">
-		<thead>
-			<tr>
-				<th>Hardware</th>
-				<th>Firmware</th>
-				<th>Version</th>
-				<th>Voltage</th>
-				<th>Emon Library</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr>
-				<td>{{ device.hardware }}</td>
-				<td>{{ device.firmware }}</td>
-				<td>{{ device.firmware_version }}</td>
-				<td>{{ device.voltage }}</td>
-				<td>{{ device.emon_library }}</td>
-			</tr>
-		</tbody>
-	</table>
+	  <table class="table table-bordered">
+		  <thead>
+			  <tr>
+				  <th>Hardware</th>
+				  <th>Firmware</th>
+				  <th>Version</th>
+				  <th>Voltage</th>
+				  <th>Emon Library</th>
+			  </tr>
+		  </thead>
+		  <tbody>
+			  <tr>
+				  <td>{{ device.hardware }}</td>
+				  <td>{{ device.firmware }}</td>
+				  <td>{{ device.firmware_version }}</td>
+				  <td>{{ device.voltage }}</td>
+				  <td>{{ device.emon_library }}</td>
+			  </tr>
+		  </tbody>
+	  </table>
 
 
 
-	<div class="input-prepend input-append">
-		<span class="add-on">Voltage calibration</span>
-		<input type="text" v-model="device.vcal" style="width:60px" @change="set_vcal" :disabled="!connected" />
-		<span class="add-on">%</span>
+	  <div class="input-prepend input-append">
+		  <span class="add-on">Voltage calibration</span>
+		  <input type="text" v-model="device.vcal" style="width:60px" @change="set_vcal" :disabled="!connected" />
+		  <span class="add-on">%</span>
+	  </div>
+
+	  <table class="table">
+		  <tr>
+			  <th>Channel</th>
+			  <th>CT Type</th>
+			  <th>Phase Correction</th>
+			  <th>Power</th>
+			  <th>Energy</th>
+		  </tr>
+		  <tr v-for="(channel,index) in device.channels">
+			  <td>CT {{ index+1 }}</td>
+			  <td>
+				  <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected">
+					  <option v-for="rating in cts_available" v-bind:value="rating">{{ rating }}A</option>
+				  </select>
+			  </td>
+			  <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:80px" :disabled="!connected" /></td>
+			  <td>{{ channel.power }}</td>
+			  <td>{{ channel.energy }}</td>
+		  </tr>
+	  </table>
+
+
+	  <div class="input-prepend input-append">
+		  <span class="add-on">Radio enabled</span>
+		  <span class="add-on"><input type="checkbox" style="margin-top:2px" v-model="device.RF" @change="set_radio" :disabled="!connected"></span>
+	  </div><br>
+
+	  <table class="table table-bordered">
+		  <tr v-if="device.RF">
+			  <th>Node ID</th>
+			  <th>Group</th>
+			  <th>Frequency</th>
+			  <th>Format</th>
+		  </tr>
+		  <tr v-if="device.RF">
+			  <td><input type="text" v-model="device.rfNode" style="width:80px; margin:0" @change="set_rfNode" :disabled="!connected" /></td>
+			  <td><input type="text" v-model="device.rfGroup" style="width:80px; margin:0" @change="set_rfGroup" :disabled="!connected" /></td>
+			  <td><select style="width:100px; margin:0" v-model="device.rfBand" @change="set_rfBand" :disabled="!connected">
+					  <option>433 MHz</option>
+					  <option>868 Mhz</option>
+					  <option>915 MHz</option>
+				  </select></td>
+			  <td>{{ device.rfFormat }}</td>
+		  </tr>
+
+		  <tr>
+			  <th>Pulse enabled</th>
+			  <th>Pulse period</th>
+			  <th>Datalog</th>
+			  <th>Serial format</th>
+		  </tr>
+		  <tr>
+			  <td><input type="checkbox" v-model="device.pulse" style="width:80px" :disabled="!connected" @change="set_pulse" /></td>
+			  <td><input type="text" v-model="device.pulsePeriod" style="width:80px" :disabled="!connected" @change="set_pulsePeriod" /></td>
+			  <td><input type="text" v-model="device.datalog" style="width:80px" :disabled="!connected" @change="set_datalog"/></td>
+			  <td><select v-model="device.json" :disabled="!connected" @change="set_json">
+					  <option value=0>Simple key:value pairs</option>
+					  <option value=1>Full JSON</option>
+				  </select></td>
+		  </tr>
+	  </table>
+
+	  <!-- reset to default values -->
+	  <button class="btn btn-primary" @click="reset_to_defaults" :disabled="!connected" style="float:right; margin-left:10px">Reset to default values</button>
+	  <!-- zero energy values -->
+	  <button class="btn btn-info" @click="zero_energy_values" :disabled="!connected" style="float:right">Zero energy values</button>
+	  <button v-if="changes" class="btn btn-warning" :disabled="!changes" @click="save">Save changes</button>
+	  
+
+
+	  <br><br>
 	</div>
 
-	<table class="table">
-		<tr>
-			<th>Channel</th>
-			<th>CT Type</th>
-			<th>Phase Correction</th>
-			<th>Power</th>
-			<th>Energy</th>
-		</tr>
-		<tr v-for="(channel,index) in device.channels">
-			<td>CT {{ index+1 }}</td>
-			<td>
-				<select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected">
-					<option v-for="rating in cts_available" v-bind:value="rating">{{ rating }}A</option>
-				</select>
-			</td>
-			<td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:80px" :disabled="!connected" /></td>
-			<td>{{ channel.power }}</td>
-			<td>{{ channel.energy }}</td>
-		</tr>
-	</table>
+	<div v-if="!config_received" class="alert alert-info">Waiting for configuration from device...</div>
 
-
-	<div class="input-prepend input-append">
-		<span class="add-on">Radio enabled</span>
-		<span class="add-on"><input type="checkbox" style="margin-top:2px" v-model="device.RF" @change="set_radio" :disabled="!connected"></span>
-	</div><br>
-
-	<table class="table table-bordered" v-if="new_config_format">
-		<tr v-if="device.RF">
-			<th>Node ID</th>
-			<th>Group</th>
-			<th>Frequency</th>
-			<th>Format</th>
-		</tr>
-		<tr v-if="device.RF">
-			<td><input type="text" v-model="device.rfNode" style="width:80px; margin:0" @change="set_rfNode" :disabled="!connected" /></td>
-			<td><input type="text" v-model="device.rfGroup" style="width:80px; margin:0" @change="set_rfGroup" :disabled="!connected" /></td>
-			<td><select style="width:100px; margin:0" v-model="device.rfBand" @change="set_rfBand" :disabled="!connected">
-					<option>433 MHz</option>
-					<option>868 Mhz</option>
-					<option>915 MHz</option>
-				</select></td>
-			<td>{{ device.rfFormat }}</td>
-		</tr>
-
-		<tr>
-			<th>Pulse enabled</th>
-			<th>Pulse period</th>
-			<th>Datalog</th>
-			<th>Serial format</th>
-		</tr>
-		<tr>
-			<td><input type="checkbox" v-model="device.pulse" style="width:80px" :disabled="!connected" @change="set_pulse" /></td>
-			<td><input type="text" v-model="device.pulsePeriod" style="width:80px" :disabled="!connected" @change="set_pulsePeriod" /></td>
-			<td><input type="text" v-model="device.datalog" style="width:80px" :disabled="!connected" @change="set_datalog"/></td>
-			<td><select v-model="device.json" :disabled="!connected" @change="set_json">
-					<option value=0>Simple key:value pairs</option>
-					<option value=1>Full JSON</option>
-				</select></td>
-		</tr>
-	</table>
-
-	<!-- reset to default values -->
-	<button class="btn btn-primary" @click="reset_to_defaults" :disabled="!connected" style="float:right; margin-left:10px">Reset to default values</button>
-	<!-- zero energy values -->
-	<button class="btn btn-info" @click="zero_energy_values" :disabled="!connected" style="float:right">Zero energy values</button>
-	<button v-if="changes" class="btn btn-warning" :disabled="!changes" @click="save">Save changes</button>
-
-	<br><br>
-
+	
+	<div class="alert alert-danger" v-if="upgrade_required"><b>Firmware update required:</b> Looks like you are running an older firmware version on this device, please upgrade the device firmware to use this tool.<br><br>Alternatively, enter commands manually to configure, send command ? to list configuration commands and options.</div>
+	
 	<div class="input-prepend input-append">
 		<span class="add-on"><b>Console</b></span>
 		<input v-model="input" type="text" :disabled="!connected" />
@@ -160,6 +170,7 @@
 			button_connect_text: "Connect",
 			cts_available: [200, 100, 50, 25, 20],
 			new_config_format: false,
+			upgrade_required: false,
 			device: {
 				ssid: '',
 				psk: '',
@@ -408,6 +419,11 @@
 				app.device.emon_library = "emonLibCM";
 			}
 			return;
+		}
+		
+		if (line == "Settings:") {
+		  app.config_received = true;
+		  app.upgrade_required = true;
 		}
 
 		if (app.new_config_format) {
