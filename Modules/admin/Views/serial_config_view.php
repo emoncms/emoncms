@@ -92,19 +92,19 @@
         </table>
 
 
-        <div class="input-prepend input-append">
+        <div class="input-prepend input-append" v-if="device.hardware!='emonPi2'">
             <span class="add-on">Radio enabled</span>
             <span class="add-on"><input type="checkbox" style="margin-top:2px" v-model="device.RF" @change="set_radio" :disabled="!connected"></span>
         </div><br>
 
         <table class="table table-bordered">
-            <tr v-if="device.RF">
+            <tr v-if="device.hardware!='emonPi2' && device.RF">
                 <th>Node ID</th>
                 <th>Group</th>
                 <th>Frequency</th>
                 <th>Format</th>
             </tr>
-            <tr v-if="device.RF">
+            <tr v-if="device.hardware!='emonPi2' && device.RF">
                 <td><input type="text" v-model="device.rfNode" style="width:80px; margin:0" @change="set_rfNode" :disabled="!connected" /></td>
                 <td><input type="text" v-model="device.rfGroup" style="width:80px; margin:0" @change="set_rfGroup" :disabled="!connected" /></td>
                 <td><select style="width:100px; margin:0" v-model="device.rfBand" @change="set_rfBand" :disabled="!connected">
