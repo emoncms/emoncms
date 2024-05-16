@@ -417,6 +417,8 @@
                 app.device.emon_library = "emonLibDB";
             } else if (app.device.firmware == "emon_CM_6CT_temperature") {
                 app.device.emon_library = "emonLibCM";
+            } else if (app.device.firmware == "emon_CM_6CT") {
+                app.device.emon_library = "emonLibCM";
             }
             return;
         }
