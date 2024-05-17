@@ -415,10 +415,16 @@
 
             if (app.device.firmware == "emon_DB_6CT") {
                 app.device.emon_library = "emonLibDB";
+                populate_channels(6);
+            } else if (app.device.firmware == "emon_DB_12CT") {
+                app.device.emon_library = "emonLibDB";
+                populate_channels(12);
             } else if (app.device.firmware == "emon_CM_6CT_temperature") {
                 app.device.emon_library = "emonLibCM";
+                populate_channels(6);
             } else if (app.device.firmware == "emon_CM_6CT") {
                 app.device.emon_library = "emonLibCM";
+                populate_channels(6);
             }
             return;
         }
@@ -539,15 +545,20 @@
         }
     }
 
-    // Populate 6 CT channels
-    for (var i = 0; i < 6; i++) {
-        app.device.channels.push({
-            ical: 20,
-            ilead: '',
-            name: "P" + (i + 1),
-            power: '',
-            energy: ''
-        });
+    populate_channels(6);
+
+    function populate_channels(num_i_channels) {
+        app.device.channels = [];
+        // Populate 6 CT channels
+        for (var i = 0; i < num_i_channels; i++) {
+            app.device.channels.push({
+                ical: 20,
+                ilead: '',
+                name: "P" + (i + 1),
+                power: '',
+                energy: ''
+            });
+        }
     }
 
 
