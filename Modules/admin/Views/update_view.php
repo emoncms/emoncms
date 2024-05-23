@@ -86,6 +86,12 @@
                     <option value="none">none</option>
                 </select>
             </div>
+            <div id="custom_firmware_bound" style="display: none; color:#333; font-size:14px">
+                <hr>
+                <!-- option to upload custom firmware -->
+                <p>- or - upload custom firmware to <b><span id="custom_firmware_hardware"></span></b> on <b><span id="custom_firmware_port"></span></b>:
+                <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex"></p>
+            </div>
         </div>
 
         <button id="update-firmware" class="btn btn-info"><?php echo _('Update Firmware'); ?></button>
@@ -208,10 +214,78 @@ $(".update").click(function() {
 
 $("#selected_hardware").change(function(){
     draw_firmware_select_list();
+
+    // show custom firmware upload if hardware is not none
+    if ($("#selected_hardware").val() != "none") {
+        $("#custom_firmware_bound").show();
+        $("#custom_firmware_hardware").text($("#selected_hardware").val());
+        $("#custom_firmware_port").text($("#select_serial_port").val());
+    } else {
+        $("#custom_firmware_bound").hide();
+    }
+});
+
+// port change
+$("#select_serial_port").change(function(){
+    $("#custom_firmware_port").text($("#select_serial_port").val());
 });
 
 $("#selected_radio_format").change(function(){
     draw_firmware_select_list();
+});
+
+// custom firmware upload
+$("#custom_firmware").change(function(){
+    // get the file
+    var file = this.files[0];
+
+    // check if file is a hex file
+    if (file.name.split('.').pop() != "hex") {
+        alert("Please select a .hex file");
+        return;
+    }
+
+    // create form data
+    var formData = new FormData();
+
+    // Get the baud rate from the selected firmware
+    var firmware_key = $("#selected_firmware").val();
+    var firmware = firmware_available[firmware_key];
+
+    // 1. port
+    formData.append('port', $("#select_serial_port").val());
+    // 2. baud rate
+    formData.append('baud_rate', firmware.baud);
+    // 3. core
+    formData.append('core', firmware.core);
+    // 4. autoreset
+    formData.append('autoreset', firmware.autoreset);
+
+    // 5. file
+    formData.append('custom_firmware', file);
+    
+    // just submit the file
+    $.ajax({
+        type: "POST",
+        url: path+"admin/upload-custom-firmware",
+        data: formData,
+        async: true,
+        cache: false,
+        contentType: false,
+        processData: false,
+        dataType: "json",
+        success: function(result) {
+            if (result.reauth == true) { window.location.reload(true); }
+            if (result.success == false)  {
+                clearInterval(updates_log_interval);
+                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
+            } else {
+                refresh_updateLog(result.message);
+                refresherStart(getUpdateLog, 1000)
+            }
+          
+        }
+    });
 });
 
 function draw_firmware_select_list() {

@@ -238,6 +238,43 @@ function admin_controller()
         return $admin->runService($update_script, "$serial_port $firmware_key>".$admin->update_logfile());
     }
 
+
+    if ($route->action == 'upload-custom-firmware') {
+        $route->format = "json";
+
+        if (!isset($_POST['port'])) return array('success'=>false, 'message'=>"missing parameter: port");
+        if (!isset($_POST['baud_rate'])) return array('success'=>false, 'message'=>"missing parameter: baud_rate");
+        if (!isset($_POST['core'])) return array('success'=>false, 'message'=>"missing parameter: core");
+        if (!isset($_POST['autoreset'])) return array('success'=>false, 'message'=>"missing parameter: autoreset");
+        if (!isset($_FILES['custom_firmware'])) return array('success'=>false, 'message'=>"missing parameter: custom_firmware");
+
+        $port = $_POST['port'];
+        $baud_rate = $_POST['baud_rate'];
+        $core = $_POST['core'];
+        $autoreset = $_POST['autoreset'];
+
+        $file = $_FILES['custom_firmware'];
+
+        if (!in_array($port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
+
+        // Save file to /opt/openenergymonitor/data/firmware
+        $filename = $file['name'];
+        $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$filename;
+        // write uploaded file contents using fopne
+        $fp = fopen($tmpfile, 'w');
+        fwrite($fp, file_get_contents($file['tmp_name']));
+        fclose($fp);
+        
+        // Get file size
+        $filesize = filesize($tmpfile);
+        // kb
+        $filesize = round($filesize/1024,2);
+        
+        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
+        // provide port, custom, filename, baudrate, core, autoreset
+        return $admin->runService($update_script, "$port custom $filename $baud_rate $core $autoreset>".$admin->update_logfile());
+    }
+
     if ($route->action == 'update-log') {
         $route->format = "text";
         if (file_exists($admin->update_logfile())) {
