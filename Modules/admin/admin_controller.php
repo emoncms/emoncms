@@ -260,15 +260,12 @@ function admin_controller()
         // Save file to /opt/openenergymonitor/data/firmware
         $filename = $file['name'];
         $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$filename;
-        // write uploaded file contents using fopne
-        $fp = fopen($tmpfile, 'w');
-        fwrite($fp, file_get_contents($file['tmp_name']));
-        fclose($fp);
-        
-        // Get file size
-        $filesize = filesize($tmpfile);
-        // kb
-        $filesize = round($filesize/1024,2);
+        // write uploaded file contents using fopen
+        if (file_exists("/opt/openenergymonitor/data/firmware/upload")) {
+            $fp = fopen($tmpfile, 'w');
+            fwrite($fp, file_get_contents($file['tmp_name']));
+            fclose($fp);
+        }
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
         // provide port, custom, filename, baudrate, core, autoreset
