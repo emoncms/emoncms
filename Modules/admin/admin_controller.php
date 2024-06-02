@@ -138,7 +138,9 @@ function admin_controller()
         // return server mac address
         $route->format = 'text';
         $cmd = "ifconfig -a | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'";
-        return str_replace("\n", "", shell_exec($cmd));
+        $result=shell_exec($cmd);
+        if (!isset($result)) return "UNKNOWN_DEVICE";
+        return str_replace("\n", "", $result);
     }
 
     if ($route->action == 'service') {
