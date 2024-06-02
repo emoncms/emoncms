@@ -134,6 +134,12 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // System info page actions
     // ----------------------------------------------------------------------------------------
+    if ($route->action == 'getmac') {
+        // return server mac address
+        $route->format = 'text';
+        $cmd = "ifconfig -a | grep -o -E '([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}'";
+        return str_replace("\n", "", shell_exec($cmd));
+    }
 
     if ($route->action == 'service') {
         $route->format = 'json';
