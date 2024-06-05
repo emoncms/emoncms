@@ -396,13 +396,28 @@ class Feed
         } else {
             $feeds = $this->mysql_get_user_feeds($userid,$getmeta);
         }
-        $result = $this->mysqli->query("SELECT uuid FROM users WHERE `id` = '$userid'");
+        try {
+            $result = $this->mysqli->query("SELECT uuid FROM users WHERE `id` = '$userid'");
+        } catch (Exception $e) {
+            $this->log->error("exception $e");
+            $this->log->error("PLEASE UPDATE THE DATABASE STRUCTURE IN THE ADMIN MODULE !!");
+            return $feeds;
+        }
         if ($row = $result->fetch_object()) {
             $uuid = $row->uuid;
             if ($uuid) {
                 foreach ($feeds as $k=>$f) {
                     $f['uuid'] = $uuid."-".$f['userid']."-".$f['id'];
                     $feeds[$k] = $f;
+                }
+            } else {
+                $uuid = guidv4();
+                $stmt = $this->mysqli->prepare("UPDATE users set uuid = ?");
+                $stmt->bind_param("s", $uuid);
+                if (!$stmt->execute()) {
+                    $error = $this->mysqli->error;
+                    $this->log->error("Error generating the uuid $error");
+                    $stmt->close();
                 }
             }
         }
