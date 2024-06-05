@@ -276,8 +276,8 @@ class User
         $apikey_read = generate_secure_key(16);
         $uuid = guidv4();
 
-        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin, uuid) VALUES (?,?,?,?,?,?,?,?,?)");
-        $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone, 0, $uuid);
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, uuid, admin) VALUES (?,?,?,?,?,?,?,?,0)");
+        $stmt->bind_param("ssssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone, $uuid);
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
             $stmt->close();

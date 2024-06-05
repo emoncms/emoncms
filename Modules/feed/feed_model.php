@@ -396,6 +396,16 @@ class Feed
         } else {
             $feeds = $this->mysql_get_user_feeds($userid,$getmeta);
         }
+        $result = $this->mysqli->query("SELECT uuid FROM users WHERE `id` = '$userid'");
+        if ($row = $result->fetch_object()) {
+            $uuid = $row->uuid;
+            if ($uuid) {
+                foreach ($feeds as $k=>$f) {
+                    $f['uuid'] = $uuid."-".$f['userid']."-".$f['id'];
+                    $feeds[$k] = $f;
+                }
+            }
+        }
         return $feeds;
     }
 
