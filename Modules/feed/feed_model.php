@@ -407,7 +407,7 @@ class Feed
             $uuid = $row->uuid;
             if ($uuid) {
                 foreach ($feeds as $k=>$f) {
-                    $f['uuid'] = $uuid."-".$f['userid']."-".$f['id'];
+                    $f['uuid'] = $uuid."-".$f['id'];
                     $feeds[$k] = $f;
                 }
             } else {
