@@ -153,9 +153,9 @@ class User
         $request = "SELECT uuid FROM users WHERE `id` = '$userid'";
         try {
             $result = $this->mysqli->query($request);
-        } catch (Exception) {
+        } catch (Exception $e) {
             $message = "PLEASE UPDATE THE DATABASE STRUCTURE IN THE ADMIN MODULE !!";
-            $this->log->error($message);
+            $this->log->error("exception $e - $message");
             return array('success'=>false, 'result'=>$message);
         }
         if ($row = $result->fetch_object()) {
