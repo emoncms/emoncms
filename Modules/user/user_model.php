@@ -156,7 +156,7 @@ class User
         } catch (Exception $e) {
             $message = "PLEASE UPDATE THE DATABASE STRUCTURE IN THE ADMIN MODULE !!";
             $this->log->error("exception $e - $message");
-            return array('success'=>false, 'result'=>$message);
+            return array('success'=>false, 'message'=>$message);
         }
         if ($row = $result->fetch_object()) {
             if (!($row->uuid)) {
@@ -167,13 +167,13 @@ class User
                     $error = $this->mysqli->error;
                     $this->log->error($error);
                     $stmt->close();
-                    return array('success'=>false, 'result'=>"ERROR COULD NOT SAVE UUID");
+                    return array('success'=>false, 'message'=>"ERROR COULD NOT SAVE UUID");
                 }
                 $stmt->close();
             } else {
                 $uuid = $row->uuid;
             }
-            return array('success'=>true, 'result'=>$uuid);
+            return array('success'=>true, 'message'=>$uuid);
         }
     }
 
