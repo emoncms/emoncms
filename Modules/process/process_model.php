@@ -40,6 +40,7 @@ class Process
     
     private $process_list = array();
     public $process_map = array();
+    public $new_inputs = array();
     
     public function __construct($mysqli,$input,$feed,$timezone)
     {
@@ -150,6 +151,7 @@ class Process
                 return false;
             }
         }
+        
         return $value;
     }
 

@@ -23,6 +23,7 @@ class Process_ProcessList
     private $proc_initialvalue;  // save the input value at beginning of the processes list execution
     private $proc_skip_next;     // skip execution of next process in process list
     private $proc_goto;          // goto step in process list
+    private $new_inputs;
 
     private $log;
     private $mqtt = false;
@@ -39,6 +40,7 @@ class Process_ProcessList
         $this->proc_initialvalue = &$parent->proc_initialvalue;
         $this->proc_skip_next = &$parent->proc_skip_next;
         $this->proc_goto = &$parent->proc_goto;
+        $this->new_inputs = &$parent->new_inputs;
 
         $this->log = new EmonLogger(__FILE__);
 
@@ -819,6 +821,17 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("New input"),
+              "short"=>"new",
+              "argtype"=>ProcessArg::TEXT,
+              "function"=>"new_input",
+              "datafields"=>1,
+              "unit"=>"",
+              "group"=>_("Input"),
+              "nochange"=>true,
+              "description"=>_("<p>Records value to new input. 'sum/total_power'</p>")
            )
         );
     }
@@ -1401,6 +1414,22 @@ class Process_ProcessList
         return $value;
     }
 
+    public function new_input($topic, $time, $value)
+    {
+        $topic_parts = explode("/",$topic);
+        if (count($topic_parts)==2) {
+            $node = $topic_parts[0];
+            $name = $topic_parts[1];
+        
+        
+            if (!isset($this->new_inputs[$node])) {
+                $this->new_inputs[$node] = array();
+            }
+            
+            $this->new_inputs[$node][$name] = $value;
+        }
+        return $value;
+    }
 
     // Conditional process list flow
     public function if_zero_skip($noarg, $time, $value) {

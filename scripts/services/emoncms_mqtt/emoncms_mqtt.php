@@ -253,13 +253,17 @@
 
     function message($message)
     {
+        
         try {
             $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
             $time = time();
+            print $topic." ".$value."\n";
 
             global $settings, $user, $input, $process, $device, $log, $count;
+            // Clear the new inputs array
+            $process->new_inputs = array();
 
             //remove characters that emoncms topics cannot handle
             $topic = str_replace(":","",$topic);
@@ -417,6 +421,12 @@
             }
 
             foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+            
+            //foreach ($process->new_inputs as $nodeid=>$inputs) {
+            
+            //} 
+            
+            print json_encode($process->new_inputs)."\n";   
 
         } catch (Exception $e) {
             $log->error($e);

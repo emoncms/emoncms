@@ -180,6 +180,11 @@ class InputMethods
         }
 
         $result = $this->process_node($userid,$time,$nodeid,$inputs);
+        
+        foreach ($this->process->new_inputs as $nodeid=>$inputs) {
+            $this->process_node($userid,$time,$nodeid,$inputs);
+        }
+        
         if ($result!==true) return $result;
 
         return "ok";
@@ -293,6 +298,11 @@ class InputMethods
                 }
 
                 $result = $this->process_node($userid,$time,$nodeid,$inputs);
+                
+                foreach ($this->process->new_inputs as $nodeid=>$inputs) {
+                    $this->process_node($userid,$time,$nodeid,$inputs);
+                }
+                
                 if ($result!==true) return $result;
             }
         }
