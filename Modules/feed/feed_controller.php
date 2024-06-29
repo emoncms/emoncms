@@ -32,6 +32,12 @@ function feed_controller()
     }
     $process = new Process($mysqli,$input,$feed,$user_timezone);
 
+    // Specialised 2 way feed sync API
+    if ($route->action == "sync" && $session['write']) {
+        $route->format = "json";
+        return $feed->sync($session['userid'],file_get_contents('php://input'));
+    }
+
     if ($route->format == 'html')
     {
         if ($route->action=="") {

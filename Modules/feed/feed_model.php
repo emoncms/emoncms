@@ -1036,6 +1036,98 @@ class Feed
             return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
         }
     }
+    
+    // Specialised 2-way sync api
+    public function sync($userid, $upload_str) {
+        global $settings;
+        
+        // 1. Validate checksum
+        if (!$this->validate_checksum($upload_str)) {
+            return array("success"=>false, "message"=>"Invalid checksum");
+        }
+        
+        $upload_str_len = strlen($upload_str);
+        
+        $updated_feed_meta = array();
+
+        $pos = 0;
+        while($pos<$upload_str_len-4) {
+
+            $left = $upload_str_len-$pos;
+            if ($left<20) break;
+
+            $feedid = unpack("I",substr($upload_str,$pos,4))[1];
+            $pos += 4;
+            
+            if (!$this->access($userid,$feedid)) {
+                return array("success"=>false, "message"=>"Invalid feedid or access u=$userid f=$feedid");
+            }
+            
+            $engine = $this->get_engine($feedid);
+            if ($engine==Engine::PHPFINA) {
+                
+                // Start time
+                $start_time = unpack("I",substr($upload_str,$pos,4))[1];
+                $pos += 4;
+                
+                $interval = unpack("I",substr($upload_str,$pos,4))[1];
+                $pos += 4;
+                
+                $data_start = unpack("I",substr($upload_str,$pos,4))[1];
+                $pos += 4;
+                
+                $data_len = unpack("I",substr($upload_str,$pos,4))[1];
+                $pos += 4;
+                
+                // Sanity check
+                if ($start_time<=0) return array("success"=>false, "message"=>"Invalid start_time for feed $feedid");
+                if ($interval<=0) return array("success"=>false, "message"=>"Invalid interval for feed $feedid");      
+                if ($data_start<0) return array("success"=>false, "message"=>"Invalid data_start for feed $feedid");         
+                if ($data_len<=0) return array("success"=>false, "message"=>"Invalid data_len for feed $feedid");        
+                
+                $meta = $this->get_meta($feedid);
+                
+                // If no data in feed, write meta file
+                if ($meta->npoints == 0 && $meta->start_time==0) {
+                    $metafile = fopen($settings['feed']['phpfina']['datadir']."$feedid.meta", 'wb');
+                    fwrite($metafile,pack("I",0));
+                    fwrite($metafile,pack("I",0));
+                    fwrite($metafile,pack("I",$interval));
+                    fwrite($metafile,pack("I",$start_time));
+                    fclose($metafile);
+                } else { 
+                    // Else Validate
+                    if ($meta->start_time!=$start_time) {
+                        return array("success"=>false, "message"=>"Upload start_time does not match local start_time for feedid=$feedid");
+                    }
+                    
+                    if ($meta->interval!=$interval) {
+                        return array("success"=>false, "message"=>"Upload interval does not match local interval for feedid=$feedid");
+                    } 
+                    
+                    if ($meta->npoints*4!=$data_start) {
+                        return array("success"=>false, "message"=>"Upload data_start does not match local npoints for feedid=$feedid");
+                    }
+                }
+                
+                $data_str = substr($upload_str,$pos,$data_len);
+                $pos += $data_len;
+
+                // Write binary data
+                $datafile = fopen($settings['feed']['phpfina']['datadir']."$feedid.dat", 'c+');
+                fseek($datafile,$data_start);
+                fwrite($datafile,$data_str);
+                fclose($datafile);
+                
+                $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+                $this->redis->hMset("feed:$feedid", $lastvalue);
+                
+                $updated_feed_meta[] = $this->get_meta($feedid);
+            }
+        }
+        
+        return array("success"=>true, "updated_feed_meta"=>$updated_feed_meta);
+    }
 
     // MysqlTimeSeries specific functions that we need to make available to the controller
     public function mysqltimeseries_export($feedid,$start) {
@@ -1331,6 +1423,25 @@ class Feed
         $result = $stmt->fetch();
         $stmt->close();
         if ($result && $id>0) return true; else return false;
+    }
+    
+    private function validate_checksum($data)
+    {
+        if (strlen($data)<4) return false;
+
+        $checksum_str = substr($data,-4);
+        if (strlen($checksum_str)!=4) return false;
+
+        $tmp = unpack("I",$checksum_str);
+        $checksum = $tmp[1];
+        $upload_str = substr($data,0,-4);
+        
+        $checksum2 = crc32($upload_str);
+        if ($checksum!=$checksum2) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 
