@@ -21,7 +21,7 @@ require "process_settings.php";     // load mqtt settings from settings.php
 // create new instance of mosquitto client    
 $mqtt = new Mosquitto\Client('Emoncms feed subscribe example');
 $qos = 2;
-$topic = 'emoncms';
+$topic = 'emon';
 
 // ------------------------------------------------------------------------
 // Callback functions
@@ -46,7 +46,7 @@ $mqtt->onSubscribe( function($mid, $qosCount) use ($mqtt, $qos, $topic) {
 // print topic value once received 
 // $message is instance of Mosquitto\Message
 $mqtt->onMessage( function($message) { 
-    printf("%s - Got a message on topic %s with payload: %s\n", $message->mid, $message->topic, $message->payload); 
+    printf("%s : %s : %s\n", $message->mid, $message->topic, $message->payload); 
 });
 
 // Disconnect
@@ -56,8 +56,8 @@ $mqtt->onDisconnect( function() { echo "Disconnected cleanly\n"; });
 // Connect and loop forever
 // ------------------------------------------------------------------------
 
-$mqtt->setCredentials($mqtt_server['user'],$mqtt_server['password']);
-$mqtt->connect($mqtt_server['host'], $mqtt_server['port'], 5);
+$mqtt->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
+$mqtt->connect($settings['mqtt']['host'], $settings['mqtt']['port'], 5);
 
 // Call loop() in an infinite blocking loop
 $mqtt->loopForever();
