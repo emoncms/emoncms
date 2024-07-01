@@ -20,3 +20,14 @@ If the update fails the first time, make a record of the update log and try agai
 The most straightforward method of upgrading to a new emonSD image is to start with a new SD card, keep your existing emonPi/emonBase SD card as a backup to which you can revert if needed and then plug the old SD card into the emonPi/emonBase using a USB SD card reader and import the data directly.
 
 This process is documented in the import guide here: [Guide: Update SD Card](https://guide.openenergymonitor.org/setup/import/#update-sd-card-and-import-using-an-usb-sd-card-reader)
+
+## Upgrading to a version producing a unique identifier
+
+Emoncms produces a [unique identifier](https://en.wikipedia.org/wiki/Universally_unique_identifier) from version 11.5.7.
+
+If you upgrade from a previous version, you have to migrate your emoncms database :
+
+1. Login to Emoncms and navigate to Setup > Admin > Update
+2. Click on `Update Database` to update the database only
+3. Then click on `Apply Changes`:
+![migrate_database_to_uuid](img/emoncms_update_migrate_database_to_uuid.png)
