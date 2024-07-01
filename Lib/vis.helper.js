@@ -17,6 +17,22 @@ var view =
   'datetimepicker_previous':null,
   // ---
 
+  'fullscreen':function ()
+  {
+    var ctrl = $("#graph-fullscreen");
+    if (document.fullscreenElement) {
+      ctrl.html("<i class='icon-resize-full'></i>");
+      ctrl.attr("title", "Restore").removeClass("graph-min").addClass("graph-exp");
+      document.exitFullscreen();
+    } else {
+      ctrl.html("<i class='icon-resize-small'></i>");
+      ctrl.attr("title", "Expand").removeClass("graph-exp").addClass("graph-min");
+      $('body').get(0).requestFullscreen().catch(err => {
+        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    }
+  },
+
   'zoomout':function ()
   {
     var time_window = this.end - this.start;
@@ -73,7 +89,7 @@ var view =
     this.end = (new Date()).getTime();    //Get end time
   },
 
-  'calc_interval':function(npoints=600, min_interval=10)
+  'calc_interval':function(npoints=600, min_interval=5)
   {
     var interval = Math.round(((this.end - this.start)*0.001)/npoints);
     var outinterval = this.round_interval(interval);
@@ -88,7 +104,8 @@ var view =
   
   'round_interval':function(interval)
   {
-      var outinterval = 10;
+      var outinterval = 5;
+      if (interval>5) outinterval = 5;
       if (interval>10) outinterval = 10;
       if (interval>15) outinterval = 15;
       if (interval>20) outinterval = 20;
@@ -112,7 +129,7 @@ var view =
       if (interval>3600*36) outinterval = 3600*36;
       if (interval>3600*48) outinterval = 3600*48;
       if (interval>3600*72) outinterval = 3600*72;
-      
+
       return outinterval;
   },
 

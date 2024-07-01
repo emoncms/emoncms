@@ -36,6 +36,9 @@
             <button class='btn graph-nav' id='right'>></button>
         </div>
 
+        <div class='btn-group'>
+            <button class='btn graph-exp' id='graph-fullscreen' type='button'><i class='icon-resize-full'></i></button>
+        </div>
     </div>
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
@@ -65,7 +68,8 @@ var plotColour = urlParams.colour;
 var backgroundColour = urlParams.colourbg;
 if (backgroundColour==undefined || backgroundColour=='') backgroundColour = "ffffff";
 $("body").css("background-color","#"+backgroundColour);
-
+document.body.style.setProperty("--bg-vis-graph-color", "#"+backgroundColour);
+  
 var units = urlParams.units;
     if (units==undefined || units=='') units = "";
 var dp = urlParams.dp;
@@ -121,6 +125,7 @@ $(function() {
     $("#zoomin").click(function () {view.zoomin(); draw();});
     $('#right').click(function () {view.panright(); draw();});
     $('#left').click(function () {view.panleft(); draw();});
+    $("#graph-fullscreen").click(function () {view.fullscreen();});
     $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
     
     placeholder.bind("plotselected", function (event, ranges)
@@ -157,7 +162,7 @@ $(function() {
 
     function draw()
     {   
-        view.calc_interval(800);
+        view.calc_interval(2400);
         data = feed.getdata(feedid,view.start,view.end,view.interval,average,delta,skipmissing,1);
         
         var out = [];
