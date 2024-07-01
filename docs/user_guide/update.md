@@ -30,4 +30,4 @@ If you upgrade from a previous version, you have to migrate your emoncms databas
 1. Login to Emoncms and navigate to Setup > Admin > Update
 2. Click on `Update Database` to update the database only
 3. Then click on `Apply Changes`:
-![migrate_database_to_uuid](/img/emoncms_update_migrate_database_to_uuid.png)
+![migrate_database_to_uuid](img/emoncms_update_migrate_database_to_uuid.png)
