@@ -10,7 +10,7 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     public $log;
     private $lastvalue_cache = array();
-    private $maxpadding = 3153600; // 1 year @ 10s
+    private $maxpadding = 15768000; // 5 year @ 10s
     private $post_buffer = array();
     private $post_buffer_padding_mode = array();
 
