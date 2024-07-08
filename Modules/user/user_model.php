@@ -322,7 +322,7 @@ class User
         // Email verification
         if ($this->email_verification) {
             $result = $this->send_verification_email($username);
-            if ($result['success']) return array('success'=>true, 'verifyemail'=>true, 'message'=>"Email verification email sent, please check your inbox");
+            if ($result['success']) return array('success'=>true, 'userid'=>$userid, 'verifyemail'=>true, 'message'=>"Email verification email sent, please check your inbox");
         } else {
             return array('success'=>true, 'verifyemail'=>false, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
         }        
