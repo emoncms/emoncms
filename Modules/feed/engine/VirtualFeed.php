@@ -43,15 +43,17 @@ class VirtualFeed implements engine_methods
         $pairs = explode(",",$processList);
         for ($i=0; $i<count($pairs); $i++) {
             $inputprocess = explode(":",$pairs[$i]);
-            $processkey = (int) $inputprocess[0];
-            $processval = (int) $inputprocess[1];  
-            
-            if ($processkey==53) {
-                if ($source_feed_meta = $this->feed->get_meta($processval)) {
-                    $meta->start_time = $source_feed_meta->start_time;
-                    $meta->end_time = $source_feed_meta->end_time;
-                    $meta->interval = $source_feed_meta->interval;
-                    $meta->npoints = $source_feed_meta->npoints;
+            if (count($inputprocess)==2) {
+                $processkey = (int) $inputprocess[0];
+                $processval = (int) $inputprocess[1];  
+                
+                if ($processkey==53) {
+                    if ($source_feed_meta = $this->feed->get_meta($processval)) {
+                        $meta->start_time = $source_feed_meta->start_time;
+                        $meta->end_time = $source_feed_meta->end_time;
+                        $meta->interval = $source_feed_meta->interval;
+                        $meta->npoints = $source_feed_meta->npoints;
+                    }
                 }
             }
         }

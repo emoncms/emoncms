@@ -38,7 +38,8 @@ function convertToPlotlist(multigraphFeedlist) {
 
   backgroundColour = (typeof multigraphFeedlist[0]["backgroundColour"] !== "undefined" ? multigraphFeedlist[0]["backgroundColour"] : "ffffff");
   $("body").css("background-color","#"+backgroundColour);
-
+  document.body.style.setProperty("--bg-vis-graph-color", "#"+backgroundColour);
+  
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
     var tag = (showtag && typeof currentFeed["tag"] !== "undefined" && currentFeed["tag"] !== "" ? currentFeed["tag"]+": " : "");
@@ -162,7 +163,7 @@ function visFeedDataOri() {
 // Load relevant feed data asynchronously
 function visFeedDataDelayed() {
   var plotlist = convertToPlotlist(multigraphFeedlist);
-  var npoints = 800;
+  var npoints = 2400;
   var interval = Math.round(((view.end - view.start)/npoints)/1000);
 
   for(var i in plotlist) {
@@ -266,7 +267,7 @@ function multigraphInit(element) {
         "</div> "+
       "</div>"+
 
-      "<div id='graph-buttons' style='position:absolute; top:15px; right:35px; opacity:0.5; display: none;'>"+
+      "<div id='graph-buttons' style='position:absolute; top:15px; right:50px; opacity:0.5; display: none;'>"+
         "<div id='graph-buttons-normal'>"+
             "<div class='input-prepend input-append' id='graph-tooltip' style='margin:0'>"+
              "<span class='add-on'>Tooltip:</span>"+
@@ -285,6 +286,9 @@ function multigraphInit(element) {
              "<button class='btn graph-nav' id='zoomout'>-</button>"+
              "<button class='btn graph-nav' id='left'><</button>"+
              "<button class='btn graph-nav' id='right'>></button></div>"+
+
+            "<div class='btn-group'>"+
+             "<button class='btn graph-exp' id='graph-fullscreen' type='button'><i class='icon-resize-full'></i></button></div>"+
 
         "</div>"+
       "</div>"+
@@ -360,6 +364,7 @@ function multigraphInit(element) {
   $("#zoomin").click(function () {view.zoomin(); visFeedData();});
   $("#right").click(function () {view.panright(); visFeedData();});
   $("#left").click(function () {view.panleft(); visFeedData();});
+  $("#graph-fullscreen").click(function () {view.fullscreen();});
   $(".graph-time").click(function () {view.timewindow($(this).attr("time")); visFeedData();});
 
   $(".graph-timewindow").click(function () {
@@ -397,7 +402,7 @@ function multigraphInit(element) {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
         out = d;
-		$("#datetimepicker1").data("datetimepicker").setDate(out);
+        $("#datetimepicker1").data("datetimepicker").setDate(out);
     } else {
         out = e.date;
     }
@@ -413,7 +418,7 @@ function multigraphInit(element) {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
         out = d;
-		$("#datetimepicker2").data("datetimepicker").setDate(out);
+        $("#datetimepicker2").data("datetimepicker").setDate(out);
     } else {
         out = e.date;
     }

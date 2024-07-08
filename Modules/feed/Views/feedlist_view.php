@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=6;
+    $v=7;
     
     $lang = "";
     if (isset($_SESSION['lang'])) {

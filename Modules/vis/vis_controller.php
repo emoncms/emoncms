@@ -59,6 +59,7 @@
             {
                 $array = array();
                 $array['valid'] = true;
+                $array['message'] = '';
 
                 if (isset($vis['options']))
                 {
@@ -89,15 +90,19 @@
 
                                     if ($f['userid'] != $session['userid']) {
                                         $array['valid'] = false;
+                                        $array['message'] = "authentication not valid";
                                     }
                                     if ($f['public']) {
                                         $array['valid'] = true;
+                                        $array['message'] = '';
                                     }
                                 } else {
                                     $array['valid'] = false;
+                                    $array['message'] = 'feed name not set';
                                 }
                             } else {
                                 $array['valid'] = false;
+                                $array['message'] = 'invalid feedid';
                             }
                         } elseif ($type == 4) {// Boolean
                             if (get($key) == "true" || get($key) == 1) {
@@ -121,9 +126,11 @@
                               $array[$key] = intval(($mid ?: $default));
                               if (!isset($f['feedlist'])) {
                                   $array['valid'] = false;
+                                  $array['message'] = 'invalid feedlist';
                               }
                             } else {
                               $array['valid'] = false;
+                              $array['message'] = 'invalid multigraph id';
                             }
                         }
 
@@ -139,7 +146,7 @@
                 $array['write_apikey'] = $write_apikey;
 
                 if ($array['valid'] == false) {
-                    $result .= "<div style='position:absolute; top:0px; left:0px; width:100%; height:100%; display: table;'><div class='alert-error' style='text-align:center; display:table-cell; vertical-align:middle;'><h4>"._('Not configured')."<br>"._('or')."<br>"._('Authentication not valid')."</h4></div></div>";
+                    $result .= "<div style='position:absolute; top:0px; left:0px; width:100%; height:100%; display: table;'><div class='alert-error' style='text-align:center; display:table-cell; vertical-align:middle;'><h4>".$array['message']."</h4></div></div>";
                 } else {
                     $result .= view("Modules/".$visdir.$viskey.".php", $array);
                 }
