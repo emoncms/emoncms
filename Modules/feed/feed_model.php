@@ -1037,7 +1037,7 @@ class Feed
         }
     }
     
-    // Specialised 2-way sync api
+    // Efficient sync
     public function sync($userid, $upload_str) {
         global $settings;
         
@@ -1056,74 +1056,36 @@ class Feed
             $left = $upload_str_len-$pos;
             if ($left<20) break;
 
-            $feedid = unpack("I",substr($upload_str,$pos,4))[1];
-            $pos += 4;
+            // Data length including meta section
+            $data_len = unpack("I",substr($upload_str,$pos+0,4))[1];
+
+            // Second integer is always the feedid
+            // we read this here in order to validate that the feed exists
+            // and the user has permission to write to this feed.
+            $feedid = unpack("I",substr($upload_str,$pos+4,4))[1];
             
+            // Check that the userid has ownership of feed feedid
             if (!$this->access($userid,$feedid)) {
                 return array("success"=>false, "message"=>"Invalid feedid or access u=$userid f=$feedid");
             }
             
+            // Get the feed engine, use to call relevant engine class
             $engine = $this->get_engine($feedid);
-            if ($engine==Engine::PHPFINA) {
-                
-                // Start time
-                $start_time = unpack("I",substr($upload_str,$pos,4))[1];
-                $pos += 4;
-                
-                $interval = unpack("I",substr($upload_str,$pos,4))[1];
-                $pos += 4;
-                
-                $data_start = unpack("I",substr($upload_str,$pos,4))[1];
-                $pos += 4;
-                
-                $data_len = unpack("I",substr($upload_str,$pos,4))[1];
-                $pos += 4;
-                
-                // Sanity check
-                if ($start_time<=0) return array("success"=>false, "message"=>"Invalid start_time for feed $feedid");
-                if ($interval<=0) return array("success"=>false, "message"=>"Invalid interval for feed $feedid");      
-                if ($data_start<0) return array("success"=>false, "message"=>"Invalid data_start for feed $feedid");         
-                if ($data_len<=0) return array("success"=>false, "message"=>"Invalid data_len for feed $feedid");        
-                
-                $meta = $this->get_meta($feedid);
-                
-                // If no data in feed, write meta file
-                if ($meta->npoints == 0 && $meta->start_time==0) {
-                    $metafile = fopen($settings['feed']['phpfina']['datadir']."$feedid.meta", 'wb');
-                    fwrite($metafile,pack("I",0));
-                    fwrite($metafile,pack("I",0));
-                    fwrite($metafile,pack("I",$interval));
-                    fwrite($metafile,pack("I",$start_time));
-                    fclose($metafile);
-                } else { 
-                    // Else Validate
-                    if ($meta->start_time!=$start_time) {
-                        return array("success"=>false, "message"=>"Upload start_time does not match local start_time for feedid=$feedid");
-                    }
-                    
-                    if ($meta->interval!=$interval) {
-                        return array("success"=>false, "message"=>"Upload interval does not match local interval for feedid=$feedid");
-                    } 
-                    
-                    if ($meta->npoints*4!=$data_start) {
-                        return array("success"=>false, "message"=>"Upload data_start does not match local npoints for feedid=$feedid");
-                    }
-                }
-                
-                $data_str = substr($upload_str,$pos,$data_len);
-                $pos += $data_len;
-
-                // Write binary data
-                $datafile = fopen($settings['feed']['phpfina']['datadir']."$feedid.dat", 'c+');
-                fseek($datafile,$data_start);
-                fwrite($datafile,$data_str);
-                fclose($datafile);
-                
-                $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
-                $this->redis->hMset("feed:$feedid", $lastvalue);
-                
-                $updated_feed_meta[] = $this->get_meta($feedid);
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                $result = $this->EngineClass($engine)->sync(substr($upload_str, $pos, $data_len));
+                if (!$result['success']) return $result;
             }
+            
+            // Update the last value of the feed.
+            $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+            $this->redis->hMset("feed:$feedid", $lastvalue);
+            
+            // Return the updated meta data so that the 
+            // client sync script can verify it's position in the upload
+            $updated_feed_meta[] = $this->get_meta($feedid);
+            
+            // Move on to the next feed data segment
+            $pos += $data_len;
         }
         
         return array("success"=>true, "updated_feed_meta"=>$updated_feed_meta);
