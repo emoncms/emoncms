@@ -918,7 +918,7 @@ class PHPFina implements engine_methods
         
         // If no data in feed, write meta file
         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $metafile = fopen($settings['feed']['phpfina']['datadir']."$feedid.meta", 'wb');
+            $metafile = fopen($this->dir."$feedid.meta", 'wb');
             fwrite($metafile,pack("I",0));
             fwrite($metafile,pack("I",0));
             fwrite($metafile,pack("I",$interval));
