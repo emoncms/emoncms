@@ -506,6 +506,48 @@ class PHPTimeSeries implements engine_methods
         exit;
     }
 
+    /**
+     * Fixed interval sync upload
+     *
+     * @param binary $binary_data
+     * @return array 
+     */
+    public function sync($binary_data) {
+    
+        $pos = 0;
+        
+        // Length of data + 12 byte meta
+        $data_len = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+
+        // Feedid is validated in the feed model
+        $feedid = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // Start position of this data segment
+        $data_start = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // We have now read the 12 byte meta
+        
+        // -----------------------
+
+        if ($data_start<0) return array("success"=>false, "message"=>"Invalid data_start for feed $feedid");
+        if ($data_len<=12) return array("success"=>false, "message"=>"Invalid data_len for feed $feedid");        
+
+        // Get data segment
+        $data_str = substr($binary_data,$pos,$data_len-$pos);
+
+        // Write binary data
+        $datafile = fopen($this->dir."feed_$feedid.MYD", 'c+');
+        fseek($datafile,$data_start);
+        fwrite($datafile,$data_str);
+        fclose($datafile);
+        
+        return array("success"=>true);
+    }
+
+
     // returns nearest datapoint that is >= search time
     private function binarysearch($fh,$time,$npoints,$exact=false)
     {

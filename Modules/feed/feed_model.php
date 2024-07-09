@@ -1036,6 +1036,60 @@ class Feed
             return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
         }
     }
+    
+    // Efficient sync
+    public function sync($userid, $upload_str) {
+        global $settings;
+        
+        // 1. Validate checksum
+        if (!$this->validate_checksum($upload_str)) {
+            return array("success"=>false, "message"=>"Invalid checksum");
+        }
+        
+        $upload_str_len = strlen($upload_str);
+        
+        $updated_feed_meta = array();
+
+        $pos = 0;
+        while($pos<$upload_str_len-4) {
+
+            $left = $upload_str_len-$pos;
+            if ($left<20) break;
+
+            // Data length including meta section
+            $data_len = unpack("I",substr($upload_str,$pos+0,4))[1];
+
+            // Second integer is always the feedid
+            // we read this here in order to validate that the feed exists
+            // and the user has permission to write to this feed.
+            $feedid = unpack("I",substr($upload_str,$pos+4,4))[1];
+            
+            // Check that the userid has ownership of feed feedid
+            if (!$this->access($userid,$feedid)) {
+                return array("success"=>false, "message"=>"Invalid feedid or access u=$userid f=$feedid");
+            }
+            
+            // Get the feed engine, use to call relevant engine class
+            $engine = $this->get_engine($feedid);
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                $result = $this->EngineClass($engine)->sync(substr($upload_str, $pos, $data_len));
+                if (!$result['success']) return $result;
+            }
+            
+            // Update the last value of the feed.
+            $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+            $this->redis->hMset("feed:$feedid", $lastvalue);
+            
+            // Return the updated meta data so that the 
+            // client sync script can verify it's position in the upload
+            $updated_feed_meta[] = $this->get_meta($feedid);
+            
+            // Move on to the next feed data segment
+            $pos += $data_len;
+        }
+        
+        return array("success"=>true, "updated_feed_meta"=>$updated_feed_meta);
+    }
 
     // MysqlTimeSeries specific functions that we need to make available to the controller
     public function mysqltimeseries_export($feedid,$start) {
@@ -1331,6 +1385,25 @@ class Feed
         $result = $stmt->fetch();
         $stmt->close();
         if ($result && $id>0) return true; else return false;
+    }
+    
+    private function validate_checksum($data)
+    {
+        if (strlen($data)<4) return false;
+
+        $checksum_str = substr($data,-4);
+        if (strlen($checksum_str)!=4) return false;
+
+        $tmp = unpack("I",$checksum_str);
+        $checksum = $tmp[1];
+        $upload_str = substr($data,0,-4);
+        
+        $checksum2 = crc32($upload_str);
+        if ($checksum!=$checksum2) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 
