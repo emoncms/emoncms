@@ -1074,11 +1074,11 @@ class Feed
             if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
                 $result = $this->EngineClass($engine)->sync(substr($upload_str, $pos, $data_len));
                 if (!$result['success']) return $result;
+                
+                // Update the last value of the feed.
+                $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+                $this->redis->hMset("feed:$feedid", $lastvalue);             
             }
-            
-            // Update the last value of the feed.
-            $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
-            $this->redis->hMset("feed:$feedid", $lastvalue);
             
             // Return the updated meta data so that the 
             // client sync script can verify it's position in the upload
