@@ -1,6 +1,6 @@
 # emonCMS: Getting started emoncms.org
 
-In addition to local logging, we also offer a remote data logging and visualisation service called [Emoncms.org](https://emoncms.org). 
+In addition to local logging, we also offer a remote data logging and visualization service called [Emoncms.org](https://emoncms.org). 
 
 Emoncms.org is a pay-as-you-go service, with pricing based on the number of time-series feeds. OpenEnergyMonitor shop hardware purchases come with 20% free emoncms.org credit which is designed to give 5-10 years of free use. See [Emoncms.org pricing](https://emoncms.org/site/pricing) for more information.
 

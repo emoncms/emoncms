@@ -6,7 +6,7 @@
     See COPYRIGHT.txt and LICENSE.txt.
 
     ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
+    Emoncms - open source energy visualization
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
 
@@ -338,8 +338,8 @@ function call_hook($function_name, $args)
  * return ip address of requesting machine
  * the ip address can be stored in different variables by the system.
  * which variable name may change dependant on different system setups.
- * this function *should return an acceptible value in most cases
- * @todo: more testing on different hardware/opperating systems/proxy servers etc.
+ * this function should return an acceptable value in most cases.
+ * @todo: more testing on different hardware/operating systems/proxy servers etc.
  *
  * @return string
  */

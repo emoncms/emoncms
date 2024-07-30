@@ -1,5 +1,5 @@
 // view class
-// used by emoncms visualisations
+// used by emoncms visualizations
 // handles zooming and panning of time based data
 var view =
 {

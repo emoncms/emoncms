@@ -995,7 +995,7 @@ function draw_devices() {
         G: ((max_description_length * 8) + 70),  // description   +70
         H: 200,                                  // processList
         F: 50,                                   // schedule
-        E: ((max_time_length * 8) + 40),         // time          +40 (needs to accomodate weeks/days/hours/minutes/s)
+        E: ((max_time_length * 8) + 40),         // time          +40 (needs to accommodate weeks/days/hours/minutes/s)
         D: ((max_value_length * 8) + 17),        // value         +17
         C: 50                                    // config        
     };

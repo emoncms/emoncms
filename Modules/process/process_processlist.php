@@ -3,7 +3,7 @@
  All Emoncms code is released under the GNU Affero General Public License.
  See COPYRIGHT.txt and LICENSE.txt.
  ---------------------------------------------------------------------
- Emoncms - open source energy visualisation
+ Emoncms - open source energy visualization
  Part of the OpenEnergyMonitor project: http://openenergymonitor.org
  */
 
@@ -117,7 +117,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
-              "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualization tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualization with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>5,
@@ -475,7 +475,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualization tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualization with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>35,
@@ -766,7 +766,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualization tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "name"=>_("Log to feed (Join)"),
@@ -1580,7 +1580,7 @@ class Process_ProcessList
     // Calculate the energy used to heat up water based on the rate of change for the current and a previous temperature reading
     // See http://harizanov.com/2012/05/measuring-the-solar-yield/ for more info on how to use it
     //------------------------------------------------------------------------------------------------------
-    public function heat_flux($feedid,$time_now,$value) { return $value; } // Removed to be reintroduced as a post-processing based visualisation calculated on the fly.
+    public function heat_flux($feedid,$time_now,$value) { return $value; } // Removed to be reintroduced as a post-processing based visualization calculated on the fly.
 
     // Get the start of the day
     public function getstartday($time_now)

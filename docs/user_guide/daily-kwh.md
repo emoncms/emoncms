@@ -62,7 +62,7 @@ Select the cumulative kWh feed created above.
 
 The same options can be used in dashboards for the same output.
 
-All of the visualisations in emoncms that make use of daily data also support this approach including: SimpleZoom, Stacked, StackedSolar, Zoom and OrderBars.
+All of the visualization in emoncms that make use of daily data also support this approach including: SimpleZoom, Stacked, StackedSolar, Zoom and OrderBars.
 
 The **Graph module** (set as default data viewer on the emonPi/emonBase and Emoncms.org) can also be used to create kWh per day bar graph from cumultive Wh / kWh data:
 
