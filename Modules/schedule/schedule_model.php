@@ -6,7 +6,7 @@
 
      Schedule module contributed by Nuno Chaveiro nchaveiro(at)gmail.com 2015
      ---------------------------------------------------------------------
-     Emoncms - open source energy visualisation
+     Emoncms - open source energy visualization
      Part of the OpenEnergyMonitor project:
      http://openenergymonitor.org
 

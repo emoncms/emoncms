@@ -1,4 +1,4 @@
-    Emoncms - open source energy visualisation
+    Emoncms - open source energy visualization
     Part of the openenergymonitor.org project
 
     Copyright (C) 2011,2012,2013,2014,2015,2016,2017,2018,2019 the OpenEnergyMonitor researchers (see individual contributions from github commits)
