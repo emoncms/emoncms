@@ -47,7 +47,7 @@ class Admin {
     }
 
     public function get_services_list() {
-        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper','emoncms_sync');
     }
 
     public function listSerialPorts() {
