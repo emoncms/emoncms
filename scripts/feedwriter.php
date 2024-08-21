@@ -59,7 +59,6 @@
     $log->info("Buffered feed writer daemon started with sleep " . $settings['feed']['redisbuffer']['sleep'] . "s...");
     while(true)
     {
-        $log->error("process_buffers");
         $feed->EngineClass(Engine::REDISBUFFER)->process_buffers();
         sleep(1); // minimum sleep time
 
@@ -69,7 +68,6 @@
         $sleepInterval = (int) $settings['feed']['redisbuffer']['sleep'];
         $nextRun = ceil($currentTime / $sleepInterval) * $sleepInterval; 
         $sleepTime = $nextRun - $currentTime;
-
-        $log->error($sleepTime);
+        
         sleep($sleepTime);
     }
