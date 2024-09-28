@@ -47,7 +47,7 @@ class Feed
             // Load different storage engines
             switch ($e) {
                 case (string)Engine::MYSQL :
-                    require "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
+                    require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     $engines[$e] = new MysqlTimeSeries($this->mysqli,$this->redis,$this->settings['mysqltimeseries']);
                     break;
                 case (string)Engine::VIRTUALFEED :
