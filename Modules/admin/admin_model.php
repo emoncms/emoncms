@@ -173,6 +173,11 @@ class Admin {
      * @return array | true == running | false == stopped | empty == not installed
      */
     public function getServiceStatus($name) {
+        // Validate service name
+        if (!in_array($name, $this->get_services_list())) {
+            return array();
+        }
+
         if (!$exec = $this->exec_array('systemctl show '.$name.' | grep State')) {
             return array();
         }
@@ -194,11 +199,17 @@ class Admin {
     }
 
     public function setService($name, $action) {
+        // $action = start | stop | restart | enable | disable
+        if (!in_array($action, array('start','stop','restart','enable','disable'))) {
+            return array('success'=>false, 'message'=>"Invalid action '$action'");
+        }
+
         $script = __DIR__ . "/../../scripts/service-action.sh";
         return $this->runService($script, "$name $action");
     }
 
-    public function runService($script, $attributes) {
+    private function runService($script, $attributes) {
+        
         if (!file_exists($script)) {
             $this->log->error("runService() Script not found '$script' attributes=$attributes");
             return array('success'=>false, 'message'=>"File not found '$script' attributes=$attributes");
