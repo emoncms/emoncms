@@ -174,7 +174,9 @@ class Admin {
      */
     public function getServiceStatus($name) {
         // Validate service name
-        if (!in_array($name, $this->get_services_list())) {
+        // remove .service from name
+        $service_name = str_replace('.service','',$name);
+        if (!in_array($service_name, $this->get_services_list())) {
             return array();
         }
 
