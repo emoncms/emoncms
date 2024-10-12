@@ -416,7 +416,7 @@ class PHPTimeSeries implements engine_methods
                 }
 
                 $len = $next_start_dp[0]-$start_dp[0];
-                if ($len) {
+                if ($len>0) {
                     fseek($fh,$start_dp[0]*9);
                     $s = fread($fh,$len*9);
                     $s2 = "";
