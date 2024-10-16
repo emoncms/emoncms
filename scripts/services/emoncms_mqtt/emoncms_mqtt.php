@@ -199,7 +199,9 @@
 
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
-            $log->info("$count Messages processed in last 5 minutes");
+	    $log->warn("$count Messages processed in last 5 minutes");
+            $topic = $settings['mqtt']['basetopic']. "/emoncms/mqtt_msg_five_mins";
+            $mqtt_client->publish($topic, $count);
             $count = 0;
 
             // Keep mysql connection open with periodic ping
