@@ -29,13 +29,13 @@ Inputs hold only the most recent value and time associated with incoming data. E
 At this point you might want to choose if you want to record and access your data locally on your emonPi/base or post the data to a remote server such as [Emoncms.org](https://emoncms.org), or you may want to do both. This will determine where you carry out the next set of configuration steps.
 
 ```{admonition} Local vs Remote logging
-Both the emonPi and emonBase feature full local data logging and visualisation capability, making it easy to keep your energy data within the privacy of your home and without any online service subscription requirements. The local web interface is accessible via the emonPi/emonBase hostname or IP address.
+Both the emonPi and emonBase feature full local data logging and visualization capability, making it easy to keep your energy data within the privacy of your home and without any online service subscription requirements. The local web interface is accessible via the emonPi/emonBase hostname or IP address.
 
 The emonPi and emonBase SD card includes 10 GB’s of data storage enough for 138 years! worth of feed data for our solar PV application (6 feeds at 10s resolution). The software has also been designed to minimise write wear to prolong SD card lifespan.
 
 If you wish to access your data away from home this is possible using remote access services such as [Dataplicity](https://www.dataplicity.com). Dataplicity currently offer a free-tier of one device per user. For more information see: Remote Access.
 
-We do also offer a remote data logging and visualisation service called [Emoncms.org](https://emoncms.org). Emoncms.org is a pay-as-you-go service but all OpenEnergyMonitor shop hardware purchases come with 20% free emoncms.org credit which is designed to give 5-10 years of free use.
+We do also offer a remote data logging and visualization service called [Emoncms.org](https://emoncms.org). Emoncms.org is a pay-as-you-go service but all OpenEnergyMonitor shop hardware purchases come with 20% free emoncms.org credit which is designed to give 5-10 years of free use.
 
 It is possible to install our emonCMS on your own remote server, we have a nice installation script to help with this for use with Debian systems, see [EmonScripts](../emonsd/install.md).
 
