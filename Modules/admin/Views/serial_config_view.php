@@ -429,7 +429,7 @@
             return;
         }
 
-        if (line == "Settings:") {
+        if (line.startsWith("Settings:")) {
             app.config_received = true;
             app.upgrade_required = true;
         }
