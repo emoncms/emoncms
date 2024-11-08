@@ -210,8 +210,8 @@ class Admin {
         return $this->runService($script, "$name $action");
     }
 
-    private function runService($script, $attributes) {
-        
+    public function runService($script, $attributes) {
+
         if (!file_exists($script)) {
             $this->log->error("runService() Script not found '$script' attributes=$attributes");
             return array('success'=>false, 'message'=>"File not found '$script' attributes=$attributes");
