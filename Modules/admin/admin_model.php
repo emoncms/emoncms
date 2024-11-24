@@ -617,8 +617,8 @@ class Admin {
     /**
      * get an array of raspberry pi properites
      *
-     * @see: SoC 'hw' now not required - https://github.com/emoncms/emoncms/issues/1364
-     * @return array has keys [hw,]rev,sn,model     * @return array has keys hw,rev,sn,model
+     * @see: SoC 'hw' is no longer used - https://github.com/emoncms/emoncms/issues/1364
+     * @return array has keys rev,sn,model
      */
     public function get_rpi_info() {
         // create empty array with all the required keys
@@ -642,7 +642,6 @@ class Admin {
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
             $matches = array_filter($matches);
             if(!empty($matches)) {
-                // $rpi_info['hw'] = "Broadcom ".$matches[2][0];
                 if (isset($matches[2])) {
                     $rpi_info['rev'] = isset($matches[2][1])?$matches[2][1]:"";
                     $rpi_info['sn'] = isset($matches[2][2])?$matches[2][2]:"";
