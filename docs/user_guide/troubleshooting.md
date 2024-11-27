@@ -208,7 +208,8 @@ If the account username has also been forgotten this can be retrieved by connect
 When prompted enter the emonPi MYSQL root password (Find MYSQL credentials for your image download [here](../emonsd/download.md)).
 
 ```
-$ mysql -u emoncms -p emoncms
+$ mysql -u emoncms -p emonpiemoncmsmysql2016
+use emoncms;
 SELECT * FROM users;
 exit
 ```
