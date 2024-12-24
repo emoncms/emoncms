@@ -640,14 +640,26 @@ class Admin {
             }
             //get cpu info
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
-            $matches = array_filter($matches);
-            if(!empty($matches)) {
-                if (isset($matches[2])) {
-                    $rpi_info['rev'] = isset($matches[2][1])?$matches[2][1]:"";
-                    $rpi_info['sn'] = isset($matches[2][2])?$matches[2][2]:"";
-                    $rpi_info['model'] = '';
+            $rpi_info = [
+                'rev' => '',
+                'sn' => '',
+                'model' => '',
+            ];
+
+            // If matches are found, map them correctly
+            if (!empty($matches)) {
+                foreach ($matches[1] as $index => $key) {
+                    $key = strtolower($key); // Normalize keys to lowercase
+                    if ($key === 'revision') {
+                        $rpi_info['rev'] = $matches[2][$index];
+                    } elseif ($key === 'serial') {
+                        $rpi_info['sn'] = $matches[2][$index];
+                    } elseif ($key === 'hardware') {
+                        $rpi_info['model'] = $matches[2][$index];
+                    }
                 }
             }
+
             //build model string
             if(!empty($rpi_revision[$rpi_info['rev']]) || 1)  {
                 $empty_model = array_map(function($n) {return '';},array_flip(explode(',','Model,Revision,RAM,Manufacturer,currentfs')));
