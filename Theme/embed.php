@@ -5,7 +5,7 @@
   See COPYRIGHT.txt and LICENSE.txt.
 
   ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
+  Emoncms - open source energy visualization
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
