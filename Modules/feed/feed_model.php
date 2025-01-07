@@ -987,7 +987,11 @@ class Feed
         } else {
             foreach ($data as $dp) {
                 if (count($dp)==2) {
-                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1],$padding_mode);
+
+                    $timestamp = (int) $dp[0];
+                    $value = (float) $dp[1];
+
+                    $this->EngineClass($engine)->post($feedid,$timestamp,$value,$padding_mode);
                 }
             }
         }

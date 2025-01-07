@@ -176,6 +176,9 @@ class MysqlTimeSeries implements engine_methods
     */
     public function post($feedid, $time, $value, $padding_mode=null)
     {
+        $time = intval($time);
+        $value = floatval($value);
+        
         $table = $this->get_table_name(intval($feedid));
         $this->mysqli->query("INSERT INTO $table (time,data) VALUES ('$time','$value') ON DUPLICATE KEY UPDATE data=VALUES(data)");
     }
