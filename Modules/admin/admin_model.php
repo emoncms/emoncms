@@ -185,7 +185,7 @@ class Admin {
                 "mosquitto",
                 "emoncms_sync"
             ];
-            if (in_array(needle: $service_name, haystack: $container_services)) {
+            if (in_array($service_name, $container_services)) {
                 return [
                     "LoadState"=>"loaded",
                     "ActiveState"=>"active",
@@ -480,7 +480,7 @@ class Admin {
         // I would have used disk_free_space() and disk_total_space() here but
         // there appears to be no way to get a list of partitions in PHP?
         $output = array();
-        if (file_exists(filename: "/.dockerenv")) {
+        if (file_exists("/.dockerenv")) {
             //return $partitions;
             $output = $this->exec_array('df -B 1 /data');
         } else {
@@ -526,7 +526,7 @@ class Admin {
                 $readload = 0;
                 $writeload = 0;
                 $loadtime = 0;
-                if (!file_exists(filename: "/.dockerenv")) {
+                if (!file_exists("/.dockerenv")) {
                     ob_start();
                     @passthru("iostat -o JSON -k $filesystem");
                     $output = trim(ob_get_clean());
@@ -553,7 +553,7 @@ class Admin {
                     } elseif ($partition=="/home/pi/data") {
                         $partition_name = "mmcblk0p3";
                     }
-                    if (file_exists(filename: "/.dockerenv")) {
+                    if (file_exists("/.dockerenv")) {
                         $elements = explode(separator: "/", string: $filesystem);
                         $partition_name = end(array: $elements);
                     }
@@ -741,7 +741,7 @@ class Admin {
             $v = "n/a";
         } else {
             if (@file_exists('/usr/sbin/mosquitto')) {
-                if (file_exists(filename: "/.dockerenv")) {
+                if (file_exists("/.dockerenv")) {
                     $v = $this->exec('/usr/sbin/mosquitto -h | grep version');
                 } else {
                     $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
