@@ -554,8 +554,8 @@ class Admin {
                         $partition_name = "mmcblk0p3";
                     }
                     if (file_exists("/.dockerenv")) {
-                        $elements = explode(separator: "/", string: $filesystem);
-                        $partition_name = end(array: $elements);
+                        $elements = explode("/", $filesystem);
+                        $partition_name = end($elements);
                     }
                     if ($partition_name) {
                         $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
