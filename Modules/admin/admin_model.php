@@ -176,7 +176,7 @@ class Admin {
         // Validate service name
         // remove .service from name
         $service_name = str_replace('.service','',$name);
-        if (file_exists("/.dockerenv")) {
+        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
             $container_services = [
                 "emoncms_mqtt",
                 "feedwriter",
