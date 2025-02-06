@@ -89,19 +89,21 @@ listItem;
                       <strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
                       <div class="btn-group" role="group" style="float:right">
 
-                      <?php if ($value['unitfilestate']!="disabled" && $value['state']!="Active") { ?>
-                      <button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button>
-                      <?php } ?>
+                      <?php if ($value["unitfilestate"]!="container") { ?>
+                          <?php if ($value['unitfilestate']!="disabled" && $value['state']!="Active") { ?>
+                          <button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button>
+                          <?php } ?>
 
-                      <?php if ($value['state']=="Active") { ?>
-                        <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
-                        <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
-                      <?php } ?>
+                          <?php if ($value['state']=="Active") { ?>
+                          <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
+                          <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
+                          <?php } ?>
 
-                      <?php if ($value['unitfilestate']=="disabled") { ?>
-                      <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
-                      <?php } elseif ($value['state']!="Active") { ?>
-                      <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                          <?php if ($value['unitfilestate']=="disabled") { ?>
+                          <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
+                          <?php } elseif ($value['state']!="Active") { ?>
+                          <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                          <?php } ?>
                       <?php } ?>
 
                       </div>

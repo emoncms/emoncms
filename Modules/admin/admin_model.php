@@ -176,6 +176,24 @@ class Admin {
         // Validate service name
         // remove .service from name
         $service_name = str_replace('.service','',$name);
+        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
+            $container_services = [
+                "emoncms_mqtt",
+                "feedwriter",
+                "service-runner",
+                "redis-server",
+                "mosquitto",
+                "emoncms_sync"
+            ];
+            if (in_array($service_name, $container_services)) {
+                return [
+                    "LoadState"=>"loaded",
+                    "ActiveState"=>"active",
+                    "SubState"=>"running",
+                    "UnitFileState"=>"container",
+                ];
+            } else return [];
+        }
         if (!in_array($service_name, $this->get_services_list())) {
             return array();
         }
@@ -462,8 +480,13 @@ class Admin {
         // I would have used disk_free_space() and disk_total_space() here but
         // there appears to be no way to get a list of partitions in PHP?
         $output = array();
-        if (!$output = $this->exec_array('df -B 1 -x squashfs')) {
-            return $partitions;
+        if (file_exists("/.dockerenv")) {
+            //return $partitions;
+            $output = $this->exec_array('df -B 1 /data');
+        } else {
+            if (!$output = $this->exec_array('df -B 1 -x squashfs')) {
+                return $partitions;
+            }
         }
         foreach($output as $line)
         {
@@ -503,11 +526,12 @@ class Admin {
                 $readload = 0;
                 $writeload = 0;
                 $loadtime = 0;
-
-                ob_start();
-                @passthru("iostat -o JSON -k $filesystem");
-                $output = trim(ob_get_clean());
-                $stats = json_decode($output, true);
+                if (!file_exists("/.dockerenv")) {
+                    ob_start();
+                    @passthru("iostat -o JSON -k $filesystem");
+                    $output = trim(ob_get_clean());
+                    $stats = json_decode($output, true);
+                }
                 if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
                     $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
                     $partition_name = $disk["disk_device"];
@@ -528,6 +552,10 @@ class Admin {
                         $partition_name = "mmcblk0p3";
                     } elseif ($partition=="/home/pi/data") {
                         $partition_name = "mmcblk0p3";
+                    }
+                    if (file_exists("/.dockerenv")) {
+                        $elements = explode("/", $filesystem);
+                        $partition_name = end($elements);
                     }
                     if ($partition_name) {
                         $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
@@ -713,7 +741,11 @@ class Admin {
             $v = "n/a";
         } else {
             if (@file_exists('/usr/sbin/mosquitto')) {
-                $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                if (file_exists("/.dockerenv")) {
+                    $v = $this->exec('/usr/sbin/mosquitto -h | grep version');
+                } else {
+                    $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                }
             }
         }
         return $v;
