@@ -99,8 +99,8 @@ function feed_api_obj() {
     ),
     // Write feed data actions
     array(
-      "description" => _("Insert new data point"),
-      "path" => "feed/insert.json",
+      "description" => _("Insert or update data point"),
+      "path" => "feed/post.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
         "time" => array( "default" => 0 ),
@@ -109,8 +109,8 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Insert multiple data points"),
-      "path" => "feed/insert.json",
+      "description" => _("Insert or update multiple data points"),
+      "path" => "feed/post.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
         "data" => array( "default" => json_encode($data) )
