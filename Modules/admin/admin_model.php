@@ -176,22 +176,24 @@ class Admin {
         // Validate service name
         // remove .service from name
         $service_name = str_replace('.service','',$name);
-        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
-            $container_services = [
-                "emoncms_mqtt",
-                "feedwriter",
-                "service-runner",
-                "redis-server",
-                "mosquitto",
-                "emoncms_sync"
-            ];
-            if (in_array($service_name, $container_services)) {
-                return [
-                    "LoadState"=>"loaded",
-                    "ActiveState"=>"active",
-                    "SubState"=>"running",
-                    "UnitFileState"=>"container",
+        if (file_exists("/.dockerenv")) {
+            if (file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
+                $container_services = [
+                    "emoncms_mqtt",
+                    "feedwriter",
+                    "service-runner",
+                    "redis-server",
+                    "mosquitto",
+                    "emoncms_sync"
                 ];
+                if (in_array($service_name, $container_services)) {
+                    return [
+                        "LoadState"=>"loaded",
+                        "ActiveState"=>"active",
+                        "SubState"=>"running",
+                        "UnitFileState"=>"container",
+                    ];
+                } else return [];
             } else return [];
         }
         if (!in_array($service_name, $this->get_services_list())) {
@@ -480,7 +482,7 @@ class Admin {
         // I would have used disk_free_space() and disk_total_space() here but
         // there appears to be no way to get a list of partitions in PHP?
         $output = array();
-        if (file_exists("/.dockerenv")) {
+        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
             //return $partitions;
             $output = $this->exec_array('df -B 1 /data');
         } else {
