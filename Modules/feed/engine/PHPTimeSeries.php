@@ -307,6 +307,11 @@ class PHPTimeSeries implements engine_methods
             $helperclass->set_time_format($timezone,$timeformat);
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
 
         // The first section here deals with the timezone aligned interval codes
@@ -442,6 +447,8 @@ class PHPTimeSeries implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($timestamp,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($timestamp,$value);
                 }

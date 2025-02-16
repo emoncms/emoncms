@@ -64,7 +64,7 @@ class PHPFinaTest extends \PHPUnit\Framework\TestCase {
     }
     
     public function testGet_data_DMY_time_of_day() {
-		$this->engine->get_data_DMY_time_of_day($this->feedid,$this->start,$this->end,$mode,$timezone,$split);
+		$this->engine->get_data_DMY_time_of_day($this->feedid,$this->start,$this->end,$mode,$timezone,$timeformat,$split);
 		$this->assertTrue(false);
 	}
 

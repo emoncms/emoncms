@@ -246,6 +246,11 @@ class MysqlTimeSeries implements engine_methods
         // Set time to start
         $time = $start;
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         $table = $this->get_table_name($feedid);
 
         $stmt = $this->mysqli->prepare("SELECT time, data FROM $table WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
@@ -285,6 +290,8 @@ class MysqlTimeSeries implements engine_methods
                 // Write as csv or array
                 if ($csv) {
                     $helperclass->csv_write($timestamp,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($timestamp,$value);
                 }
@@ -318,6 +325,11 @@ class MysqlTimeSeries implements engine_methods
         $skipmissing = (int) $skipmissing;
         // Minimum interval
         if ($interval < 1) $interval = 1;
+
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         $table = $this->get_table_name($feedid);
 
@@ -357,6 +369,8 @@ class MysqlTimeSeries implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($time,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($time,$value);
                 }
@@ -395,6 +409,11 @@ class MysqlTimeSeries implements engine_methods
         $meta = $this->get_meta($feedid);
         if (!$start_time = $meta->start_time) return false;
         if (!$end_time = $meta->end_time) return false;
+
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         if ($timezone===0) $timezone = "UTC";
 
@@ -456,6 +475,8 @@ class MysqlTimeSeries implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($div_start,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($div_start,$value);
                 }
@@ -472,7 +493,7 @@ class MysqlTimeSeries implements engine_methods
         }
     }
 
-    public function get_data_DMY_time_of_day($feedid, $start, $end, $mode, $timezone, $split)
+    public function get_data_DMY_time_of_day($feedid, $start, $end, $mode, $timezone, $timeformat, $split)
     {
         if (!in_array($mode,array("daily","weekly","monthly","annual"))) return false;
 
@@ -513,6 +534,11 @@ class MysqlTimeSeries implements engine_methods
             return false;
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         // Iterate intervals
         $n = 0;
         while($n < 10000) // max iterations
@@ -542,7 +568,11 @@ class MysqlTimeSeries implements engine_methods
                 }
                 $split_values[] = $value;
             }
-            $data[] = array($time, $split_values);
+            if ($notime) {
+                $data[] = $split_values;
+            } else {
+                $data[] = array($time, $split_values);
+            }
             $date->modify($increment);
             $n++;
         }

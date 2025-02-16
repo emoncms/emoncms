@@ -123,6 +123,11 @@ class VirtualFeed implements engine_methods
             $helperclass->csv_header($feedid);
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
@@ -177,6 +182,8 @@ class VirtualFeed implements engine_methods
 
                 if ($csv) {
                     $helperclass->csv_write($time,$dataValue);
+                } else if ($notime) {
+                    $data[] = $dataValue;
                 } else {
                     $data[] = array($time, $dataValue);
                 }

@@ -545,6 +545,11 @@ class PHPFina implements engine_methods
         } else {
             $data = array();
         }
+        
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         if (!$fh = $this->open($id,"rb")) return false;
 
@@ -615,6 +620,8 @@ class PHPFina implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($div_start,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($div_start,$value);
                 }
@@ -633,7 +640,7 @@ class PHPFina implements engine_methods
     }
 
     // Splits daily, weekly, monthly output into time of use segments defined by $split
-    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split)
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$timeformat,$split)
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
@@ -649,6 +656,11 @@ class PHPFina implements engine_methods
         $data = array();
 
         if (!$fh = $this->open($id,"rb")) return false;
+
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
@@ -694,7 +706,11 @@ class PHPFina implements engine_methods
                 $split_values[] = $value;
             }
 
-            $data[] = array($time,$split_values);
+            if ($notime) {
+                $data[] = $split_values;
+            } else {
+                $data[] = array($time,$split_values);
+            }
 
             $date->modify($modify);
             $time = $date->getTimestamp();

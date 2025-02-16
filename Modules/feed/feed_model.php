@@ -807,11 +807,7 @@ class Feed
                 }
                 break;
             case "notime":
-                $tmp = array();
-                for ($i=0; $i<count($data); $i++) {
-                    $tmp[] = $data[$i][1];
-                }
-                $data = $tmp;
+                // pass through
                 break;
         }
         return $data;
@@ -830,7 +826,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
 
-        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$split);
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,$split);
 
         // Apply different timeformats if applicable
         if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);

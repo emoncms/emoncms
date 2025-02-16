@@ -181,6 +181,11 @@ class CassandraEngine implements engine_methods
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp > $settings["feed"]["max_datapoints"]) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $settings["feed"]["max_datapoints"] . "), increase request interval or time range, requested datapoints = $req_dp");
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();
         $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND day IN (". implode(',', $day_range) .") AND time >= $start AND time <= $end");
@@ -192,7 +197,12 @@ class CassandraEngine implements engine_methods
                 if($time>=$dp_time){
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         if ($dataValue !== null) $dataValue = (float) $dataValue;
-                        $data[] = array($time, $dataValue);
+                        
+                        if ($notime) {
+                            $data[] = $dataValue;
+                        } else {
+                            $data[] = array($time, $dataValue);
+                        }
                     }
                     $dp_time+=$interval;
                 }
