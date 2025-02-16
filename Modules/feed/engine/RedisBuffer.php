@@ -115,11 +115,6 @@ class RedisBuffer implements engine_methods
         $end = intval($end);
         $data = array();
 
-        $notime = false;
-        if ($timeformat === "notime") {
-            $notime = true;
-        }
-
         $len = $this->redis->zCount("feed:$feedid:buffer",$start,$end);
         // process if there is data on buffer for the range
         if ($len > 0) {
@@ -132,12 +127,7 @@ class RedisBuffer implements engine_methods
                     $f = explode("|",$rawvalue);
                     $value = $f[1];
 
-
-                    if ($notime) {
-                        $data[$time] = (float)$value;
-                    } else {
-                        $data[$time] = array($time,(float)$value);
-                    }
+                    $data[$time] = array($time,(float)$value);
                 }
             }
             $data = array_values($data); // re-index array

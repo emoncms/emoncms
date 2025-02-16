@@ -673,6 +673,11 @@ class Feed
             if (!empty($bufferdata)) {
                 // $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
 
+                $notime = false;
+                if ($timeformat === "notime") {
+                    $notime = true;
+                }
+
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
 
@@ -685,9 +690,16 @@ class Feed
 
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
-                        $time = $data[$z][0];
-                        if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
-                            $data[$z][1] = $bufferdata_assoc["".$time];
+                        if ($notime) {
+                            $time = $start + ($z * $interval);
+                            if (isset($bufferdata_assoc["".$time]) && $data[$z]==null) {
+                                $data[$z] = $bufferdata_assoc["".$time];
+                            }   
+                        } else {
+                            $time = $data[$z][0];
+                            if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
+                                $data[$z][1] = $bufferdata_assoc["".$time];
+                            }      
                         }
                     }
 
