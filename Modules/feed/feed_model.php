@@ -709,14 +709,23 @@ class Feed
             }
         }
 
-        if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        if ($delta) $data = $this->delta_mode_convert($feedid,$data,$timeformat);
 
         // Apply dp setting
         if ($dp!=-1) {
             $dp = (int) $dp;
-            for ($i=0; $i<count($data); $i++) {
-                if ($data[$i][1]!=null) {
-                    $data[$i][1] = round($data[$i][1],$dp);
+
+            if ($timeformat=="notime") {
+                for ($i=0; $i<count($data); $i++) {
+                    if ($data[$i] !== null) {
+                        $data[$i] = round($data[$i],$dp);
+                    }
+                }
+            } else {
+                for ($i=0; $i<count($data); $i++) {
+                    if ($data[$i][1] !== null) {
+                        $data[$i][1] = round($data[$i][1],$dp);
+                    }
                 }
             }
         }
@@ -754,27 +763,44 @@ class Feed
         return $end;
     }
 
-    private function delta_mode_convert($feedid,$data) {
+    private function delta_mode_convert($feedid,$data,$timeformat) {
         // Get last value
         $dp = $this->get_timevalue($feedid);
         $time = $dp["time"];
 
-        // Calculate delta mode
-        $last_val = null;
-        for($i=0; $i<count($data)-1; $i++) {
-            // Apply current value to end of day, week, month, year, interval
-            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
-                $data[$i+1][1] = $dp['value'];
+        if ($timeformat=="notime") {
+             // Calculate delta mode
+             $last_val = null;
+             for($i=0; $i<count($data)-1; $i++) {
+                 // Delta calculation
+                 if ($data[$i]===null || $data[$i+1]===null) {
+                     $data[$i] = null;
+                 } else {
+                     $data[$i] = $data[$i+1] - $data[$i];
+                     $last_val = $data[$i+1];
+                 }
+             }
+             array_pop($data);           
+        } else {
+            // Calculate delta mode
+            $last_val = null;
+            for($i=0; $i<count($data)-1; $i++) {
+                // Apply current value to end of day, week, month, year, interval
+                if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                    $data[$i+1][1] = $dp['value'];
+                }
+                // Delta calculation
+                if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                    $data[$i][1] = null;
+                } else {
+                    $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                    $last_val = $data[$i+1][1];
+                }
             }
-            // Delta calculation
-            if ($data[$i][1]===null || $data[$i+1][1]===null) {
-                $data[$i][1] = null;
-            } else {
-                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
-                $last_val = $data[$i+1][1];
-            }
+            array_pop($data);
         }
-        array_pop($data);
+
+
 
         return $data;
     }
