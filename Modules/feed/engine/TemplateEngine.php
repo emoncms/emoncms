@@ -149,6 +149,11 @@ class TemplateEngine implements engine_methods
             $helperclass->set_time_format($timezone,$timeformat);
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         // The first section here deals with the timezone aligned interval codes
         // the start time is modified to align to the nearest day, week, month or year
         // later the while loop is advanced by the value in the $modify string
@@ -212,6 +217,8 @@ class TemplateEngine implements engine_methods
             // Write as csv or array
             if ($csv) {
                 $helperclass->csv_write($div_start,$value);
+            } else if ($notime) {
+                $data[] = $value;
             } else {
                 $data[] = array($div_start,$value);
             }
@@ -228,7 +235,7 @@ class TemplateEngine implements engine_methods
         }
     }
 
-    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split)
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$timeformat,$split)
     {
 
     }

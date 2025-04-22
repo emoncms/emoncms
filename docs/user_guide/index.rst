@@ -22,5 +22,6 @@ emonCMS user guide
    demandshaper.md
    import.md
    update.md
+   sync.md
    remoteaccess.md
    troubleshooting.md

@@ -89,19 +89,21 @@ listItem;
                       <strong><?php echo $value['state']; ?></strong> <?php echo $value['text']; ?>
                       <div class="btn-group" role="group" style="float:right">
 
-                      <?php if ($value['unitfilestate']!="disabled" && $value['state']!="Active") { ?>
-                      <button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button>
-                      <?php } ?>
+                      <?php if ($value["unitfilestate"]!="container") { ?>
+                          <?php if ($value['unitfilestate']!="disabled" && $value['state']!="Active") { ?>
+                          <button class="btn btn-small btn-success service-action" service_action="start" service_key="<?php echo $key; ?>">Start</button>
+                          <?php } ?>
 
-                      <?php if ($value['state']=="Active") { ?>
-                        <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
-                        <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
-                      <?php } ?>
+                          <?php if ($value['state']=="Active") { ?>
+                          <button class="btn btn-small btn-danger service-action" service_action="stop" service_key="<?php echo $key; ?>">Stop</button>
+                          <button class="btn btn-small btn-warning service-action" service_action="restart" service_key="<?php echo $key; ?>">Restart</button>
+                          <?php } ?>
 
-                      <?php if ($value['unitfilestate']=="disabled") { ?>
-                      <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
-                      <?php } elseif ($value['state']!="Active") { ?>
-                      <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                          <?php if ($value['unitfilestate']=="disabled") { ?>
+                          <button class="btn btn-small btn-primary service-action" service_action="enable" service_key="<?php echo $key; ?>">Enable</button>
+                          <?php } elseif ($value['state']!="Active") { ?>
+                          <button class="btn btn-small btn-inverse service-action" service_action="disable" service_key="<?php echo $key; ?>">Disable</button>
+                          <?php } ?>
                       <?php } ?>
 
                       </div>
@@ -232,7 +234,6 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
         <dl class="row">
             <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
-            <!-- <?php echo row(_('SoC'), $rpi_info['hw']) ?> -->
             <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
             <?php echo row(_('CPU Temperature'), $rpi_info['cputemp']) ?>
             <?php echo row(_('GPU Temperature'), $rpi_info['gputemp']) ?>

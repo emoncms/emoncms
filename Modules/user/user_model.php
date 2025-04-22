@@ -147,6 +147,36 @@ class User
         return $id;
     }
 
+    public function get_uuid($userid)
+    {       
+        // return unique id associated to user and generate if missing
+        $request = "SELECT uuid FROM users WHERE `id` = '$userid'";
+        try {
+            $result = $this->mysqli->query($request);
+        } catch (Exception $e) {
+            $message = "PLEASE UPDATE THE DATABASE STRUCTURE IN THE ADMIN MODULE !!";
+            $this->log->error("exception $e - $message");
+            return array('success'=>false, 'message'=>$message);
+        }
+        if ($row = $result->fetch_object()) {
+            if (!($row->uuid)) {
+                $uuid = guidv4();
+                $stmt = $this->mysqli->prepare("UPDATE users set uuid = ?");
+                $stmt->bind_param("s", $uuid);
+                if (!$stmt->execute()) {
+                    $error = $this->mysqli->error;
+                    $this->log->error($error);
+                    $stmt->close();
+                    return array('success'=>false, 'message'=>"ERROR COULD NOT SAVE UUID");
+                }
+                $stmt->close();
+            } else {
+                $uuid = $row->uuid;
+            }
+            return array('success'=>true, 'message'=>$uuid);
+        }
+    }
+
     public function emon_session_start()
     {
         // useful for testing session and rememberme
@@ -274,9 +304,10 @@ class User
 
         $apikey_write = generate_secure_key(16);
         $apikey_read = generate_secure_key(16);
+        $uuid = guidv4();
 
-        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, admin) VALUES (?,?,?,?,?,?,?,0)");
-        $stmt->bind_param("sssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone);
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, timezone, uuid, admin) VALUES (?,?,?,?,?,?,?,?,0)");
+        $stmt->bind_param("ssssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone, $uuid);
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
             $stmt->close();
@@ -291,7 +322,7 @@ class User
         // Email verification
         if ($this->email_verification) {
             $result = $this->send_verification_email($username);
-            if ($result['success']) return array('success'=>true, 'verifyemail'=>true, 'message'=>"Email verification email sent, please check your inbox");
+            if ($result['success']) return array('success'=>true, 'userid'=>$userid, 'verifyemail'=>true, 'message'=>"Email verification email sent, please check your inbox");
         } else {
             return array('success'=>true, 'verifyemail'=>false, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
         }        

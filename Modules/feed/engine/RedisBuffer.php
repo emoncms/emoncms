@@ -126,6 +126,7 @@ class RedisBuffer implements engine_methods
                 foreach($buf_item as $rawvalue => $time) {
                     $f = explode("|",$rawvalue);
                     $value = $f[1];
+
                     $data[$time] = array($time,(float)$value);
                 }
             }

@@ -10,7 +10,7 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     public $log;
     private $lastvalue_cache = array();
-    private $maxpadding = 3153600; // 1 year @ 10s
+    private $maxpadding = 15768000; // 5 year @ 10s
     private $post_buffer = array();
     private $post_buffer_padding_mode = array();
 
@@ -545,6 +545,11 @@ class PHPFina implements engine_methods
         } else {
             $data = array();
         }
+        
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         if (!$fh = $this->open($id,"rb")) return false;
 
@@ -615,6 +620,8 @@ class PHPFina implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($div_start,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($div_start,$value);
                 }
@@ -633,7 +640,7 @@ class PHPFina implements engine_methods
     }
 
     // Splits daily, weekly, monthly output into time of use segments defined by $split
-    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split)
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$timeformat,$split)
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
@@ -649,6 +656,11 @@ class PHPFina implements engine_methods
         $data = array();
 
         if (!$fh = $this->open($id,"rb")) return false;
+
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
 
         $date = new DateTime();
         if ($timezone===0) $timezone = "UTC";
@@ -694,7 +706,11 @@ class PHPFina implements engine_methods
                 $split_values[] = $value;
             }
 
-            $data[] = array($time,$split_values);
+            if ($notime) {
+                $data[] = $split_values;
+            } else {
+                $data[] = array($time,$split_values);
+            }
 
             $date->modify($modify);
             $time = $date->getTimestamp();
@@ -872,6 +888,82 @@ class PHPFina implements engine_methods
         fclose($fh);
 
         return true;
+    }
+    
+    /**
+     * Fixed interval sync upload
+     *
+     * @param binary $binary_data
+     * @return array 
+     */
+    public function sync($binary_data) {
+    
+        $pos = 0;
+        
+        // Length of data + 20 byte meta
+        $data_len = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+
+        // Feedid is validated in the feed model
+        $feedid = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // Feed start time (not this data segment start time)
+        $start_time = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // Feed interval
+        $interval = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // Start position of this data segment
+        $data_start = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // We have now read the 20 byte meta
+        
+        // -----------------------
+                        
+        // Sanity check
+        if ($start_time<=0) return array("success"=>false, "message"=>"Invalid start_time for feed $feedid");
+        if ($interval<=0) return array("success"=>false, "message"=>"Invalid interval for feed $feedid");      
+        if ($data_start<0) return array("success"=>false, "message"=>"Invalid data_start for feed $feedid");
+        if ($data_len<=20) return array("success"=>false, "message"=>"Invalid data_len for feed $feedid");        
+        
+        $meta = $this->get_meta($feedid);
+        
+        // If no data in feed, write meta file
+        if ($meta->npoints == 0 && $meta->start_time==0) {
+            $metafile = fopen($this->dir."$feedid.meta", 'wb');
+            fwrite($metafile,pack("I",0));
+            fwrite($metafile,pack("I",0));
+            fwrite($metafile,pack("I",$interval));
+            fwrite($metafile,pack("I",$start_time));
+            fclose($metafile);
+        } else { 
+            // Else Validate
+            if ($meta->start_time!=$start_time) {
+                return array("success"=>false, "message"=>"Upload start_time does not match local start_time for feedid=$feedid");
+            }
+            
+            if ($meta->interval!=$interval) {
+                return array("success"=>false, "message"=>"Upload interval does not match local interval for feedid=$feedid");
+            } 
+            
+            if ($meta->npoints*4!=$data_start) {
+                return array("success"=>false, "message"=>"Upload data_start does not match local npoints for feedid=$feedid");
+            }
+        }
+        
+        $data_str = substr($binary_data,$pos,$data_len-$pos);
+
+        // Write binary data
+        $datafile = fopen($this->dir."$feedid.dat", 'c+');
+        fseek($datafile,$data_start);
+        fwrite($datafile,$data_str);
+        fclose($datafile);
+        
+        return array("success"=>true);
     }
 
     /**

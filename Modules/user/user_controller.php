@@ -102,7 +102,7 @@ function user_controller()
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
             return  $user->send_verification_email($username);
         }
-
+        if ($route->action == 'getuuid' && $session['read']) return $user->get_uuid($session['userid']);
         if ($route->action == 'changeusername' && $session['write']) return  $user->change_username($session['userid'],get('username'));
         if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],get('email'));
         if ($route->action == 'changepassword' && $session['write']) return  $user->change_password($session['userid'],post('old'),post('new'));

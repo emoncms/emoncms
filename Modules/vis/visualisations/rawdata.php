@@ -58,6 +58,7 @@
 var feedid = <?php echo $feedid; ?>;
 var feedname = "<?php echo $feedidname; ?>";
 var apikey = "<?php echo $apikey; ?>";
+feed.apikey = apikey;
 var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
 var previousPoint = false;

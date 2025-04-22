@@ -307,6 +307,11 @@ class PHPTimeSeries implements engine_methods
             $helperclass->set_time_format($timezone,$timeformat);
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
 
         // The first section here deals with the timezone aligned interval codes
@@ -416,7 +421,7 @@ class PHPTimeSeries implements engine_methods
                 }
 
                 $len = $next_start_dp[0]-$start_dp[0];
-                if ($len) {
+                if ($len>0) {
                     fseek($fh,$start_dp[0]*9);
                     $s = fread($fh,$len*9);
                     $s2 = "";
@@ -442,6 +447,8 @@ class PHPTimeSeries implements engine_methods
             if ($value!==null || $skipmissing===0) {
                 if ($csv) {
                     $helperclass->csv_write($timestamp,$value);
+                } else if ($notime) {
+                    $data[] = $value;
                 } else {
                     $data[] = array($timestamp,$value);
                 }
@@ -505,6 +512,48 @@ class PHPTimeSeries implements engine_methods
         fclose($fh);
         exit;
     }
+
+    /**
+     * Fixed interval sync upload
+     *
+     * @param binary $binary_data
+     * @return array 
+     */
+    public function sync($binary_data) {
+    
+        $pos = 0;
+        
+        // Length of data + 12 byte meta
+        $data_len = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+
+        // Feedid is validated in the feed model
+        $feedid = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // Start position of this data segment
+        $data_start = unpack("I",substr($binary_data,$pos,4))[1];
+        $pos += 4;
+        
+        // We have now read the 12 byte meta
+        
+        // -----------------------
+
+        if ($data_start<0) return array("success"=>false, "message"=>"Invalid data_start for feed $feedid");
+        if ($data_len<=12) return array("success"=>false, "message"=>"Invalid data_len for feed $feedid");        
+
+        // Get data segment
+        $data_str = substr($binary_data,$pos,$data_len-$pos);
+
+        // Write binary data
+        $datafile = fopen($this->dir."feed_$feedid.MYD", 'c+');
+        fseek($datafile,$data_start);
+        fwrite($datafile,$data_str);
+        fclose($datafile);
+        
+        return array("success"=>true);
+    }
+
 
     // returns nearest datapoint that is >= search time
     private function binarysearch($fh,$time,$npoints,$exact=false)

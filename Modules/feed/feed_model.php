@@ -47,7 +47,7 @@ class Feed
             // Load different storage engines
             switch ($e) {
                 case (string)Engine::MYSQL :
-                    require "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
+                    require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     $engines[$e] = new MysqlTimeSeries($this->mysqli,$this->redis,$this->settings['mysqltimeseries']);
                     break;
                 case (string)Engine::VIRTUALFEED :
@@ -673,6 +673,11 @@ class Feed
             if (!empty($bufferdata)) {
                 // $this->log->info("get_data_combined() Buffer cache merged feedid=$feedid start=". reset($data)[0] ." end=". end($data)[0] ." bufferstart=". reset($bufferdata)[0] ." bufferend=". end($bufferdata)[0]);
 
+                $notime = false;
+                if ($timeformat === "notime") {
+                    $notime = true;
+                }
+
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if (!$skipmissing && ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES)) {
 
@@ -685,9 +690,16 @@ class Feed
 
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
-                        $time = $data[$z][0];
-                        if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
-                            $data[$z][1] = $bufferdata_assoc["".$time];
+                        if ($notime) {
+                            $time = $start + ($z * $interval);
+                            if (isset($bufferdata_assoc["".$time]) && $data[$z]==null) {
+                                $data[$z] = $bufferdata_assoc["".$time];
+                            }   
+                        } else {
+                            $time = $data[$z][0];
+                            if (isset($bufferdata_assoc["".$time]) && $data[$z][1]==null) {
+                                $data[$z][1] = $bufferdata_assoc["".$time];
+                            }      
                         }
                     }
 
@@ -697,14 +709,23 @@ class Feed
             }
         }
 
-        if ($delta) $data = $this->delta_mode_convert($feedid,$data);
+        if ($delta) $data = $this->delta_mode_convert($feedid,$data,$timeformat);
 
         // Apply dp setting
         if ($dp!=-1) {
             $dp = (int) $dp;
-            for ($i=0; $i<count($data); $i++) {
-                if ($data[$i][1]!=null) {
-                    $data[$i][1] = round($data[$i][1],$dp);
+
+            if ($timeformat=="notime") {
+                for ($i=0; $i<count($data); $i++) {
+                    if ($data[$i] !== null) {
+                        $data[$i] = round($data[$i],$dp);
+                    }
+                }
+            } else {
+                for ($i=0; $i<count($data); $i++) {
+                    if ($data[$i][1] !== null) {
+                        $data[$i][1] = round($data[$i][1],$dp);
+                    }
                 }
             }
         }
@@ -742,27 +763,44 @@ class Feed
         return $end;
     }
 
-    private function delta_mode_convert($feedid,$data) {
+    private function delta_mode_convert($feedid,$data,$timeformat) {
         // Get last value
         $dp = $this->get_timevalue($feedid);
         $time = $dp["time"];
 
-        // Calculate delta mode
-        $last_val = null;
-        for($i=0; $i<count($data)-1; $i++) {
-            // Apply current value to end of day, week, month, year, interval
-            if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
-                $data[$i+1][1] = $dp['value'];
+        if ($timeformat=="notime") {
+             // Calculate delta mode
+             $last_val = null;
+             for($i=0; $i<count($data)-1; $i++) {
+                 // Delta calculation
+                 if ($data[$i]===null || $data[$i+1]===null) {
+                     $data[$i] = null;
+                 } else {
+                     $data[$i] = $data[$i+1] - $data[$i];
+                     $last_val = $data[$i+1];
+                 }
+             }
+             array_pop($data);           
+        } else {
+            // Calculate delta mode
+            $last_val = null;
+            for($i=0; $i<count($data)-1; $i++) {
+                // Apply current value to end of day, week, month, year, interval
+                if ($data[$i+1][1]===null && $time>$data[$i][0] && $time<=$data[$i+1][0]) {
+                    $data[$i+1][1] = $dp['value'];
+                }
+                // Delta calculation
+                if ($data[$i][1]===null || $data[$i+1][1]===null) {
+                    $data[$i][1] = null;
+                } else {
+                    $data[$i][1] = $data[$i+1][1] - $data[$i][1];
+                    $last_val = $data[$i+1][1];
+                }
             }
-            // Delta calculation
-            if ($data[$i][1]===null || $data[$i+1][1]===null) {
-                $data[$i][1] = null;
-            } else {
-                $data[$i][1] = $data[$i+1][1] - $data[$i][1];
-                $last_val = $data[$i+1][1];
-            }
+            array_pop($data);
         }
-        array_pop($data);
+
+
 
         return $data;
     }
@@ -807,11 +845,7 @@ class Feed
                 }
                 break;
             case "notime":
-                $tmp = array();
-                for ($i=0; $i<count($data); $i++) {
-                    $tmp[] = $data[$i][1];
-                }
-                $data = $tmp;
+                // pass through
                 break;
         }
         return $data;
@@ -830,7 +864,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
 
-        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$split);
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$interval,$timezone,$timeformat,$split);
 
         // Apply different timeformats if applicable
         if ($timeformat!="unix") $data = $this->format_output_time($data,$timeformat,$timezone);
@@ -987,7 +1021,11 @@ class Feed
         } else {
             foreach ($data as $dp) {
                 if (count($dp)==2) {
-                    $this->EngineClass($engine)->post($feedid,$dp[0],$dp[1],$padding_mode);
+
+                    $timestamp = (int) $dp[0];
+                    $value = (float) $dp[1];
+
+                    $this->EngineClass($engine)->post($feedid,$timestamp,$value,$padding_mode);
                 }
             }
         }
@@ -1035,6 +1073,60 @@ class Feed
         } else {
             return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
         }
+    }
+    
+    // Efficient sync
+    public function sync($userid, $upload_str) {
+        global $settings;
+        
+        // 1. Validate checksum
+        if (!$this->validate_checksum($upload_str)) {
+            return array("success"=>false, "message"=>"Invalid checksum");
+        }
+        
+        $upload_str_len = strlen($upload_str);
+        
+        $updated_feed_meta = array();
+
+        $pos = 0;
+        while($pos<$upload_str_len-4) {
+
+            $left = $upload_str_len-$pos;
+            if ($left<20) break;
+
+            // Data length including meta section
+            $data_len = unpack("I",substr($upload_str,$pos+0,4))[1];
+
+            // Second integer is always the feedid
+            // we read this here in order to validate that the feed exists
+            // and the user has permission to write to this feed.
+            $feedid = unpack("I",substr($upload_str,$pos+4,4))[1];
+            
+            // Check that the userid has ownership of feed feedid
+            if (!$this->access($userid,$feedid)) {
+                return array("success"=>false, "message"=>"Invalid feedid or access u=$userid f=$feedid");
+            }
+            
+            // Get the feed engine, use to call relevant engine class
+            $engine = $this->get_engine($feedid);
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                $result = $this->EngineClass($engine)->sync(substr($upload_str, $pos, $data_len));
+                if (!$result['success']) return $result;
+                
+                // Update the last value of the feed.
+                $lastvalue = $this->EngineClass($engine)->lastvalue($feedid);
+                $this->redis->hMset("feed:$feedid", $lastvalue);             
+            }
+            
+            // Return the updated meta data so that the 
+            // client sync script can verify it's position in the upload
+            $updated_feed_meta[] = $this->get_meta($feedid);
+            
+            // Move on to the next feed data segment
+            $pos += $data_len;
+        }
+        
+        return array("success"=>true, "updated_feed_meta"=>$updated_feed_meta);
     }
 
     // MysqlTimeSeries specific functions that we need to make available to the controller
@@ -1331,6 +1423,25 @@ class Feed
         $result = $stmt->fetch();
         $stmt->close();
         if ($result && $id>0) return true; else return false;
+    }
+    
+    private function validate_checksum($data)
+    {
+        if (strlen($data)<4) return false;
+
+        $checksum_str = substr($data,-4);
+        if (strlen($checksum_str)!=4) return false;
+
+        $tmp = unpack("I",$checksum_str);
+        $checksum = $tmp[1];
+        $upload_str = substr($data,0,-4);
+        
+        $checksum2 = crc32($upload_str);
+        if ($checksum!=$checksum2) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
 

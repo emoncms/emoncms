@@ -47,7 +47,7 @@ class Admin {
     }
 
     public function get_services_list() {
-        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper');
+        return array('emonhub','mqtt_input','emoncms_mqtt','feedwriter','service-runner','emonPiLCD','redis-server','mosquitto','demandshaper','emoncms_sync');
     }
 
     public function listSerialPorts() {
@@ -173,6 +173,33 @@ class Admin {
      * @return array | true == running | false == stopped | empty == not installed
      */
     public function getServiceStatus($name) {
+        // Validate service name
+        // remove .service from name
+        $service_name = str_replace('.service','',$name);
+        if (file_exists("/.dockerenv")) {
+            if (file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
+                $container_services = [
+                    "emoncms_mqtt",
+                    "feedwriter",
+                    "service-runner",
+                    "redis-server",
+                    "mosquitto",
+                    "emoncms_sync"
+                ];
+                if (in_array($service_name, $container_services)) {
+                    return [
+                        "LoadState"=>"loaded",
+                        "ActiveState"=>"active",
+                        "SubState"=>"running",
+                        "UnitFileState"=>"container",
+                    ];
+                } else return [];
+            } else return [];
+        }
+        if (!in_array($service_name, $this->get_services_list())) {
+            return array();
+        }
+
         if (!$exec = $this->exec_array('systemctl show '.$name.' | grep State')) {
             return array();
         }
@@ -194,11 +221,17 @@ class Admin {
     }
 
     public function setService($name, $action) {
+        // $action = start | stop | restart | enable | disable
+        if (!in_array($action, array('start','stop','restart','enable','disable'))) {
+            return array('success'=>false, 'message'=>"Invalid action '$action'");
+        }
+
         $script = __DIR__ . "/../../scripts/service-action.sh";
         return $this->runService($script, "$name $action");
     }
 
     public function runService($script, $attributes) {
+
         if (!file_exists($script)) {
             $this->log->error("runService() Script not found '$script' attributes=$attributes");
             return array('success'=>false, 'message'=>"File not found '$script' attributes=$attributes");
@@ -449,8 +482,13 @@ class Admin {
         // I would have used disk_free_space() and disk_total_space() here but
         // there appears to be no way to get a list of partitions in PHP?
         $output = array();
-        if (!$output = $this->exec_array('df -B 1 -x squashfs')) {
-            return $partitions;
+        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
+            //return $partitions;
+            $output = $this->exec_array('df -B 1 /data');
+        } else {
+            if (!$output = $this->exec_array('df -B 1 -x squashfs')) {
+                return $partitions;
+            }
         }
         foreach($output as $line)
         {
@@ -490,11 +528,12 @@ class Admin {
                 $readload = 0;
                 $writeload = 0;
                 $loadtime = 0;
-
-                ob_start();
-                @passthru("iostat -o JSON -k $filesystem");
-                $output = trim(ob_get_clean());
-                $stats = json_decode($output, true);
+                if (!file_exists("/.dockerenv")) {
+                    ob_start();
+                    @passthru("iostat -o JSON -k $filesystem");
+                    $output = trim(ob_get_clean());
+                    $stats = json_decode($output, true);
+                }
                 if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
                     $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
                     $partition_name = $disk["disk_device"];
@@ -515,6 +554,10 @@ class Admin {
                         $partition_name = "mmcblk0p3";
                     } elseif ($partition=="/home/pi/data") {
                         $partition_name = "mmcblk0p3";
+                    }
+                    if (file_exists("/.dockerenv")) {
+                        $elements = explode("/", $filesystem);
+                        $partition_name = end($elements);
                     }
                     if ($partition_name) {
                         $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
@@ -598,14 +641,14 @@ class Admin {
      * @return bool
      */
     public function is_Pi() {
-        return !empty($this->exec('ip addr | grep -i "b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|d8:3a:dd:\|e4:5f:01:"'));
+        return !empty($this->exec('ip addr | grep -i "2c:cf:67:\|b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|d8:3a:dd:\|e4:5f:01:"'));
     }
 
     /**
      * get an array of raspberry pi properites
      *
-     * @see: SoC 'hw' now not required - https://github.com/emoncms/emoncms/issues/1364
-     * @return array has keys [hw,]rev,sn,model     * @return array has keys hw,rev,sn,model
+     * @see: SoC 'hw' is no longer used - https://github.com/emoncms/emoncms/issues/1364
+     * @return array has keys rev,sn,model
      */
     public function get_rpi_info() {
         // create empty array with all the required keys
@@ -627,15 +670,26 @@ class Admin {
             }
             //get cpu info
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
-            $matches = array_filter($matches);
-            if(!empty($matches)) {
-                // $rpi_info['hw'] = "Broadcom ".$matches[2][0];
-                if (isset($matches[2])) {
-                    $rpi_info['rev'] = isset($matches[2][1])?$matches[2][1]:"";
-                    $rpi_info['sn'] = isset($matches[2][2])?$matches[2][2]:"";
-                    $rpi_info['model'] = '';
+            $rpi_info = [
+                'rev' => '',
+                'sn' => '',
+                'model' => '',
+            ];
+
+            // If matches are found, map them correctly
+            if (!empty($matches)) {
+                foreach ($matches[1] as $index => $key) {
+                    $key = strtolower($key); // Normalize keys to lowercase
+                    if ($key === 'revision') {
+                        $rpi_info['rev'] = $matches[2][$index];
+                    } elseif ($key === 'serial') {
+                        $rpi_info['sn'] = $matches[2][$index];
+                    } elseif ($key === 'hardware') {
+                        $rpi_info['model'] = $matches[2][$index];
+                    }
                 }
             }
+
             //build model string
             if(!empty($rpi_revision[$rpi_info['rev']]) || 1)  {
                 $empty_model = array_map(function($n) {return '';},array_flip(explode(',','Model,Revision,RAM,Manufacturer,currentfs')));
@@ -689,7 +743,11 @@ class Admin {
             $v = "n/a";
         } else {
             if (@file_exists('/usr/sbin/mosquitto')) {
-                $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                if (file_exists("/.dockerenv")) {
+                    $v = $this->exec('/usr/sbin/mosquitto -h | grep version');
+                } else {
+                    $v = $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
+                }
             }
         }
         return $v;

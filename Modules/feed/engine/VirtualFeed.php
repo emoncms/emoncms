@@ -38,6 +38,26 @@ class VirtualFeed implements engine_methods
         $meta->start_time = 0;
         $meta->nlayers = 1;
         $meta->interval = 1;
+        
+        $processList = $this->feed->get_processlist($feedid);
+        $pairs = explode(",",$processList);
+        for ($i=0; $i<count($pairs); $i++) {
+            $inputprocess = explode(":",$pairs[$i]);
+            if (count($inputprocess)==2) {
+                $processkey = (int) $inputprocess[0];
+                $processval = (int) $inputprocess[1];  
+                
+                if ($processkey==53) {
+                    if ($source_feed_meta = $this->feed->get_meta($processval)) {
+                        $meta->start_time = $source_feed_meta->start_time;
+                        $meta->end_time = $source_feed_meta->end_time;
+                        $meta->interval = $source_feed_meta->interval;
+                        $meta->npoints = $source_feed_meta->npoints;
+                    }
+                }
+            }
+        }
+        
         return $meta;
     }
 
@@ -103,6 +123,11 @@ class VirtualFeed implements engine_methods
             $helperclass->csv_header($feedid);
         }
 
+        $notime = false;
+        if ($timeformat === "notime") {
+            $notime = true;
+        }
+
         // Lets instantiate a new class of process so we can run many proceses recursively without interference
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
@@ -157,6 +182,8 @@ class VirtualFeed implements engine_methods
 
                 if ($csv) {
                     $helperclass->csv_write($time,$dataValue);
+                } else if ($notime) {
+                    $data[] = $dataValue;
                 } else {
                     $data[] = array($time, $dataValue);
                 }
