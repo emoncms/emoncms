@@ -479,15 +479,16 @@ class Process_ProcessList
            ),
            array(
               "id_num"=>35,
-              "name"=>_("Publish to MQTT"),
-              "short"=>"MQTT",
+              "name"=>_("Publish to MQTT via Redis"),
+              "short"=>"mqtt",
               "argtype"=>ProcessArg::TEXT,
               "function"=>"publish_to_mqtt",
               "datafields"=>1,
               "unit"=>"",
               "group"=>_("Misc"),
               "nochange"=>true,
-              "description"=>_("<p>Publishes value to MQTT topic e.g. 'home/power/kitchen'</p>")
+              "requireredis"=>true,
+              "description"=>_("<p>Publishes value to REDIS for phpmqtt_input.php to publish the values to MQTT topic e.g. 'home/power/kitchen'</p>")
            ),
            array(
               "id_num"=>36,
@@ -819,6 +820,18 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("Power to kWh/15min"),
+              "short"=>"kwh15m",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"power_to_kwh_15m",
+              "datafields"=>1,
+              "unit"=>"kWh/15m",
+              "group"=>_("Power & Energy"),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
+              "nochange"=>true,
+              "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every 15 min (starting mid night) (kWh/15min)</p>")
            )
         );
     }
@@ -1054,6 +1067,46 @@ class Process_ProcessList
             $new_kwh = $kwh_inc;
         }
         $this->feed->post($feedid, $time_now, $current_slot, $new_kwh);
+
+        return $value;
+    }
+
+    public function power_to_kwh_15m($feedid, $time_now, $value)
+    {
+        $new_kwh = 0;
+
+        // Get last value
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
+
+        // Define stop interval in minutes
+        $slot_interval_m = 15;
+        $current_slot = $this->get_time_slot($time_now, $slot_interval_m);
+        $last_slot = $this->get_time_slot($last_time, $slot_interval_m);
+
+        $time_elapsed = ($time_now - $last_time);
+        if ($time_elapsed>0 && $time_elapsed <= $slot_interval_m*60) { //15m
+            // kWh calculation
+            $kwh_inc = ($time_elapsed * $value) / 3600000.0;
+        } else {
+            // in the event that redis is flushed the last time will
+            // likely be > slot interal ago and so kwh inc is not calculated
+            // rather than enter 0 we dont increase it
+            $kwh_inc = 0;
+        }
+
+        if($last_slot['start_time'] == $current_slot['start_time']) {
+            $new_kwh = $last_kwh + $kwh_inc;
+        } else {
+            # We are working in a new 15min slot so don't increment it with the data from last slot
+            $new_kwh = $kwh_inc;
+        }
+        $this->feed->post($feedid, $time_now, $current_slot['end_time'], $new_kwh);
+
+        $this->log->info("power_to_kwh_15m() feedid=$feedid start=". $current_slot['start_time']." end=". $current_slot['end_time']." new_kwh=$new_kwh value=$value ");
 
         return $value;
     }
@@ -1591,4 +1644,28 @@ class Process_ProcessList
         return $now->format("U");
     }
 
+    // Get the start and end time of the $slot_interval_m minutes slot starting 00:00
+    public function get_time_slot($time_now, $slot_interval_m)
+    {
+        $now = DateTime::createFromFormat("U", (int)$time_now);
+        $now->setTimezone(new DateTimeZone($this->timezone));
+        $start_of_day = clone $now;
+        $start_of_day->setTime(0, 0); // Today at 00:00
+
+        $seconds_since_start_of_day = $now->getTimestamp() - $start_of_day->getTimestamp();
+        $slot_index = intdiv($seconds_since_start_of_day, $slot_interval_m * 60); // Find the interval slot index
+
+        $slot_start_time = clone $start_of_day;
+        $slot_start_minutes = $slot_index * $slot_interval_m; // Slot start time in minutes from midnight
+        $slot_start_time->modify("+{$slot_start_minutes} minutes"); // Calculate the slot start time
+
+        $slot_end_time = clone $start_of_day;
+        $slot_end_minutes = ($slot_index + 1) * $slot_interval_m; // Slot end time in minutes from midnight
+        $slot_end_time->modify("+{$slot_end_minutes} minutes"); // Calculate the slot end time
+
+        return array(
+            'start_time' => $slot_start_time->format("U"),
+            'end_time' => $slot_end_time->format("U")
+        );
+    }
 }
