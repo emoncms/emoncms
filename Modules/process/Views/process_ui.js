@@ -331,7 +331,7 @@ var processlist_ui =
       } else {
         // default else
         badges.push({
-          text: ' 🕒… ',
+          text: ' ⌛ ',
           title: '',
           cssClass: 'muted',
           href: false

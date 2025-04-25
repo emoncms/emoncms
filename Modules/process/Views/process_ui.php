@@ -79,7 +79,7 @@
 			<div id="process-controls" class="controls">
 				<button id="select-all-lines" class="btn" title="<?php echo _('Select All') ?>" data-alt-title="<?php echo _('Unselect All') ?>"><i class="icon icon-check"></i></button>
 				<button class="btn process-cut hide" title="<?php echo _('Cut') ?>" style="display: inline-block;"><span class="icon">&#9986;</span></button>
-				<button class="btn process-copy hide" title="<?php echo _('Copy') ?>" style="display: inline-block;"><span class="icon">&#128464;</span></button>
+				<button class="btn process-copy hide" title="<?php echo _('Copy') ?>" style="display: inline-block;"><span class="icon">&#9112;</span></button>
 				<button class="btn process-paste hide" title="<?php echo _('Paste') ?>" style="display: inline-block;"><i class="icon icon-briefcase"></i></button>
 				<button class="btn process-delete hide" title="<?php echo _('Delete') ?>" style="display: inline-block;"><i class="icon icon-trash"></i></button>
 			</div>

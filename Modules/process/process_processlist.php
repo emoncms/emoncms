@@ -1133,7 +1133,7 @@ class Process_ProcessList
     {
         $feedid = intval($argsmulti['feed']);
         $mins = intval($argsmulti['interval']);
-        
+
         $new_kwh = 0;
 
         // Get last value
@@ -1167,10 +1167,9 @@ class Process_ProcessList
         }
         $this->feed->post($feedid, $time_now, $current_slot['end_time'], $new_kwh);
 
-        $this->log->info("power_to_kwh_15m() feedid=$feedid start=". $current_slot['start_time']." end=". $current_slot['end_time']." new_kwh=$new_kwh value=$value ");
+        $this->log->info("power_to_kwh_custom() feedid=$feedid start=". $current_slot['start_time']." end=". $current_slot['end_time']." new_kwh=$new_kwh value=$value ");
 
         return $value;
-
     }
 
     public function kwh_to_kwhd($feedid, $time_now, $value)
