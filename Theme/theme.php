@@ -27,7 +27,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1">
     <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
     <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["favicon"]; ?>" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
     <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/logo_normal.png">

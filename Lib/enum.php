@@ -8,6 +8,7 @@ class ProcessArg
     const NONE = 3;
     const TEXT = 4;
     const SCHEDULEID = 5;
+	const MULTI = 6;
 }
 
 class DataType
