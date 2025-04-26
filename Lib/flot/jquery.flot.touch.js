@@ -217,8 +217,6 @@ Use as follow:
                 }
                 
                 placeholder.trigger("touchstarted", [ startTouchPosition ]);
-                // return false to prevent touch scrolling.
-                return false;
             });
 
             placeholder.bind('touchmove', function(evt) {
@@ -264,7 +262,9 @@ Use as follow:
                         lastRedraw = now;
                         window.requestAnimationFrame(redraw);
                     }
-                } 
+                }
+                // return false to prevent touch scrolling.
+                return false;
             });
 
             placeholder.bind('touchend', function(evt) {
@@ -275,7 +275,7 @@ Use as follow:
                 // reset the tap counter
                 tapTimer = setTimeout(function() { tapNum = 0; }, options.touch.dbltapThreshold);  
                 // check if tap or dbltap
-                if (isPanning && touches.length === 1 && (tapTimestamp + options.touch.tapThreshold) - getTimestamp() >= 0 &&
+                if (isPanning && touches.length === 1 && (tapTimestamp + options.touch.tapThreshold) - getTimestamp() <= 0 &&
                     startTouchPosition.x >= lastTouchPosition.x - options.touch.tapPrecision &&
                     startTouchPosition.x <= lastTouchPosition.x + options.touch.tapPrecision &&
                     startTouchPosition.y >= lastTouchPosition.y - options.touch.tapPrecision &&
@@ -451,9 +451,9 @@ Use as follow:
                 delayTouchEnded: 500,   // delay in ms before touchended event is fired if no more touches
                 callback: null,         // other plot draw callback
                 simulClick: true,       // plugin will generate Mouse click event to brwoser on tap or double tap
-                tapThreshold:150,       // range of time where a tap event could be detected
-                dbltapThreshold:200,    // delay needed to detect a double tap
-                tapPrecision:60/2       // tap events boundaries ( 60px square by default )
+                tapThreshold:250,       // range of time where a tap event could be detected
+                dbltapThreshold:450,    // delay needed to detect a double tap
+                tapPrecision:160/2      // tap events boundaries ( 60px square by default )
             }
         },
         name: 'touch',
