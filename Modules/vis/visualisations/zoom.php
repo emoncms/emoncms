@@ -299,6 +299,7 @@ function bargraph(data, barwidth, mode) {
         touch: {
             pan: "",
             scale: "",
+            simulClick: false,
             callback: function() {}
         }
     });
