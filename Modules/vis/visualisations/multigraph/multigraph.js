@@ -218,7 +218,7 @@ function plot() {
     selection: { mode: "x" },
     legend: { show: showlegend, position: "nw", toggle: true },
     toggle: { scale: "visible" },
-    touch: { pan: "x", scale: "x" },
+    touch: { pan: "x", scale: "x", simulClick: false },
     yaxis: { min: view.ymin , max: view.ymax},
     y2axis: { min: view.y2min , max: view.y2max}
   });

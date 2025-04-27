@@ -1250,6 +1250,13 @@ class Feed
                             return array('success'=>false, 'message'=>'Invalid characters in argx');
                         break;
 
+                    case ProcessArg::MULTI:
+                        $decoded = base64_decode($arg, true); 
+                        if ($decoded === false || json_decode($decoded, true) === null) {
+                            return array('success' => false, 'message' => 'Value is not valid base64-encoded JSON '.$arg);
+                        }
+                        break;
+
                     case ProcessArg::SCHEDULEID:
                         $scheduleid = (int) $arg;
                         if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model

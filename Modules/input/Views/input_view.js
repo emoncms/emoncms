@@ -820,7 +820,6 @@ function getInput(devices, inputid, returnIndex) {
 // ---------------------------------------------------------------------------------------------
 var firstLoad = true;
 function update(){
-    devices = {};
     // Join and include device data
     if (DEVICE_MODULE) {
         var def = $.Deferred()
@@ -830,8 +829,9 @@ function update(){
                 window.location.href = "/";
                 return false;
             }
-        
+
             // Associative array of devices by nodeid
+            devices = {};
             for (var z in result) {
                 devices[String(result[z].nodeid)] = result[z]
                 devices[String(result[z].nodeid)].inputs = []
@@ -886,7 +886,8 @@ function update_inputs() {
                     // Device creation
                     $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(result) {
                         if (result.success!=undefined) {
-                            alert("There was an error creating device: nodeid="+nodeid+" message="+result.message); 
+                            //alert("There was an error creating device: nodeid="+nodeid+" message="+result.message); 
+                            console.error("There was an error creating device: nodeid="+nodeid+" message="+result.message);
                         } else {
                             devices[nodeid].id = result;
                             devices[nodeid].devicekey = "";

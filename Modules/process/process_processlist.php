@@ -82,7 +82,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
-              "description"=>_("<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>Emoncms Fixed Interval TimeSeries (PHPFina)</b> is the recommended feed engine, it is a fixed interval timeseries engine.</li><li><b>Emoncms Variable Interval TimeSeries (PHPTimeseries)</b> is for data posted at a non regular interval.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
+              "description"=>_("<p>This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>Emoncms Fixed Interval TimeSeries (PHPFina)</b> is the recommended feed engine, it is a fixed interval timeseries engine.</li><li><b>Emoncms Variable Interval TimeSeries (PHPTimeseries)</b> is for data posted at a non regular interval.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
            ),
            array(
               "id_num"=>2,
@@ -117,7 +117,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
-              "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<p>Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>5,
@@ -475,19 +475,20 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "id_num"=>35,
-              "name"=>_("Publish to MQTT"),
-              "short"=>"MQTT",
+              "name"=>_("Publish to MQTT via Redis"),
+              "short"=>"mqtt",
               "argtype"=>ProcessArg::TEXT,
               "function"=>"publish_to_mqtt",
               "datafields"=>1,
               "unit"=>"",
               "group"=>_("Misc"),
               "nochange"=>true,
-              "description"=>_("<p>Publishes value to MQTT topic e.g. 'home/power/kitchen'</p>")
+              "requireredis"=>true,
+              "description"=>_("<p>Publishes value to REDIS for phpmqtt_input.php to publish the values to MQTT topic e.g. 'home/power/kitchen'</p>")
            ),
            array(
               "id_num"=>36,
@@ -766,7 +767,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
-              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "name"=>_("Log to feed (Join)"),
@@ -778,7 +779,7 @@ class Process_ProcessList
               "group"=>_("Main"),
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
-              "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+              "description"=>_("<p>In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
            ),
            array(
               "name"=>_("max by input"),
@@ -819,9 +820,39 @@ class Process_ProcessList
               "unit"=>"",
               "group"=>_("Feed"),
               "description"=>_("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
+           ),
+           array(
+              "name"=>_("Power to kWh/15min"),
+              "short"=>"kwh15m",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"power_to_kwh_15m",
+              "datafields"=>1,
+              "unit"=>"kWh/15m",
+              "group"=>_("Power & Energy"),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
+              "nochange"=>true,
+              "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every 15 min (starting mid night) (kWh/15min)</p>")
+           ),
+           array(
+              "name"=>_("Power to kWh / custom minutes"),
+              "short"=>"kwhslot",
+              "argtype" => ProcessArg::MULTI,
+              "argmulti" => array(
+                array("key" => "interval", "argmtype" => ProcessArg::VALUE,  "name" => "Minutes", "desc" => _("Slot in minutes slot to accumulate"), "default" => "15"),
+                array("key" => "feed",     "argmtype" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => _("Output feed"))
+              ),
+              "function"=>"power_to_kwh_custom",
+              "datafields"=>1,
+              "unit"=>"kWh/slot",
+              "group"=>_("Power & Energy"),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
+              "nochange"=>true,
+              "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every selected minutes (starting mid night) (kWh/x min)</p>")
            )
         );
     }
+
+
 
     // / Below are functions of this module processlist
     public function scale($arg, $time, $value)
@@ -857,7 +888,7 @@ class Process_ProcessList
         return $value;
     }
 
-     public function max_value_allowed($arg, $time, $value)
+    public function max_value_allowed($arg, $time, $value)
     {
         if ($value>$arg) $value = $arg;
         return $value;
@@ -1054,6 +1085,89 @@ class Process_ProcessList
             $new_kwh = $kwh_inc;
         }
         $this->feed->post($feedid, $time_now, $current_slot, $new_kwh);
+
+        return $value;
+    }
+
+    public function power_to_kwh_15m($feedid, $time_now, $value)
+    {
+        $new_kwh = 0;
+
+        // Get last value
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
+
+        // Define stop interval in minutes
+        $slot_interval_m = 15;
+        $current_slot = $this->get_time_slot($time_now, $slot_interval_m);
+        $last_slot = $this->get_time_slot($last_time, $slot_interval_m);
+
+        $time_elapsed = ($time_now - $last_time);
+        if ($time_elapsed>0 && $time_elapsed <= $slot_interval_m*60) { //15m
+            // kWh calculation
+            $kwh_inc = ($time_elapsed * $value) / 3600000.0;
+        } else {
+            // in the event that redis is flushed the last time will
+            // likely be > slot interal ago and so kwh inc is not calculated
+            // rather than enter 0 we dont increase it
+            $kwh_inc = 0;
+        }
+
+        if($last_slot['start_time'] == $current_slot['start_time']) {
+            $new_kwh = $last_kwh + $kwh_inc;
+        } else {
+            # We are working in a new 15min slot so don't increment it with the data from last slot
+            $new_kwh = $kwh_inc;
+        }
+        $this->feed->post($feedid, $time_now, $current_slot['end_time'], $new_kwh);
+
+        $this->log->info("power_to_kwh_15m() feedid=$feedid start=". $current_slot['start_time']." end=". $current_slot['end_time']." new_kwh=$new_kwh value=$value ");
+
+        return $value;
+    }
+    
+    public function power_to_kwh_custom($argsmulti, $time_now, $value)
+    {
+        $feedid = intval($argsmulti['feed']);
+        $mins = intval($argsmulti['interval']);
+
+        $new_kwh = 0;
+
+        // Get last value
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last===null) return $value; // feed does not exist
+        $last_kwh = $last['value']*1; // will convert null to 0, required for first reading starting from 0
+        $last_time = $last['time']*1; // will convert null to 0
+        if (!$last_time) $last_time = $time_now;
+
+        // Define stop interval in minutes
+        $slot_interval_m = $mins;
+        $current_slot = $this->get_time_slot($time_now, $slot_interval_m);
+        $last_slot = $this->get_time_slot($last_time, $slot_interval_m);
+
+        $time_elapsed = ($time_now - $last_time);
+        if ($time_elapsed>0 && $time_elapsed <= $slot_interval_m*60) { 
+            // kWh calculation
+            $kwh_inc = ($time_elapsed * $value) / 3600000.0;
+        } else {
+            // in the event that redis is flushed the last time will
+            // likely be > slot interal ago and so kwh inc is not calculated
+            // rather than enter 0 we dont increase it
+            $kwh_inc = 0;
+        }
+
+        if($last_slot['start_time'] == $current_slot['start_time']) {
+            $new_kwh = $last_kwh + $kwh_inc;
+        } else {
+            # We are working in a new 15min slot so don't increment it with the data from last slot
+            $new_kwh = $kwh_inc;
+        }
+        $this->feed->post($feedid, $time_now, $current_slot['end_time'], $new_kwh);
+
+        $this->log->info("power_to_kwh_custom() feedid=$feedid start=". $current_slot['start_time']." end=". $current_slot['end_time']." new_kwh=$new_kwh value=$value ");
 
         return $value;
     }
@@ -1591,4 +1705,28 @@ class Process_ProcessList
         return $now->format("U");
     }
 
+    // Get the start and end time of the $slot_interval_m minutes slot starting 00:00
+    public function get_time_slot($time_now, $slot_interval_m)
+    {
+        $now = DateTime::createFromFormat("U", (int)$time_now);
+        $now->setTimezone(new DateTimeZone($this->timezone));
+        $start_of_day = clone $now;
+        $start_of_day->setTime(0, 0); // Today at 00:00
+
+        $seconds_since_start_of_day = $now->getTimestamp() - $start_of_day->getTimestamp();
+        $slot_index = intdiv($seconds_since_start_of_day, $slot_interval_m * 60); // Find the interval slot index
+
+        $slot_start_time = clone $start_of_day;
+        $slot_start_minutes = $slot_index * $slot_interval_m; // Slot start time in minutes from midnight
+        $slot_start_time->modify("+{$slot_start_minutes} minutes"); // Calculate the slot start time
+
+        $slot_end_time = clone $start_of_day;
+        $slot_end_minutes = ($slot_index + 1) * $slot_interval_m; // Slot end time in minutes from midnight
+        $slot_end_time->modify("+{$slot_end_minutes} minutes"); // Calculate the slot end time
+
+        return array(
+            'start_time' => $slot_start_time->format("U"),
+            'end_time' => $slot_end_time->format("U")
+        );
+    }
 }

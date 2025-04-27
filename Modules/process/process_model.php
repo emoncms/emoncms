@@ -110,7 +110,23 @@ class Process
                 return false;
             }
             $arg = 0;
-            if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
+            if (isset($inputprocess[1])) $arg = $inputprocess[1];    // Can be value or feed id
+            
+            // When process is MULTI, arg is a json base64 encoded of multiple args, decode and pass as array to processor function
+            if ($process_list[$processkey]["argtype"] == ProcessArg::MULTI) {
+                $jsonString = base64_decode($arg, true);
+                if ($jsonString === false) {
+                    $this->log->error("input() Invalid Base64 string for function '" . $process_list[$processkey]["function"] . "'");
+                } else {
+                    $argsarray = json_decode($jsonString, true);
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        $this->log->error("input() Invalid JSON format '" . $process_list[$processkey]["function"] . "' Error: " . json_last_error_msg());
+                    } else {
+                        $arg = $argsarray; // args array
+                        //$this->log->info("input() Multi arguments process function '" . $process_list[$processkey]["function"]. "' : " . print_r($arg, true));
+                    }
+                }
+            }
             
             $process_function = $processkey;                               // get process key 'module.function'
             if (strpos($processkey, '__') === FALSE) $process_function = $process_list[$processkey]["function"]; // Is this line needed??

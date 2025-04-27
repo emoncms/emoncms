@@ -1,10 +1,14 @@
+ //---------------------------------------------------------------------
+ // Version 11.8 - Nuno Chaveiro nchaveiro(at)gmail.com 04/2025
+ //---------------------------------------------------------------------
 var ProcessArg = {
   VALUE:0,
   INPUTID:1,
   FEEDID:2,
   NONE:3,
   TEXT:4,
-  SCHEDULEID:5
+  SCHEDULEID:5,
+  MULTI:6
 }
 
 var processlist_ui =
@@ -34,25 +38,18 @@ var processlist_ui =
     
     if (this.contextprocesslist.length==0) {
       $("#process-table").hide();
+      $("#select-all-lines").hide();
+      $(".process-cut, .process-copy, .process-delete").hide();
       $("#noprocess").show();
     } else {
       $("#process-table").show();
+      $("#select-all-lines").show();
+      $(".process-cut, .process-copy, .process-delete").show();
       $("#noprocess").hide();
       for (z in this.contextprocesslist) {
         out += '<tr>';
-        // Move process up or down
-        out += '<td>';
-        if (i > 0) {
-          out += '<a class="move-process" title="'+_Tr("Move up")+'" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
-        } else {
-          out += "<span style='display: inline-block; width:14px; ' />";
-        }
-
-        if (i < this.contextprocesslist.length-1) {
-          out += "<a class='move-process' title='"+_Tr("Move down")+"' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
-        }
-        out += '</td>';
-
+        out += '<td><div class="select text-center"><input class="process-select" type="checkbox" processid='+i+'></div></td>';
+        
         // Process name and argument
         var processkey = this.contextprocesslist[z][0];
         var arg = {};
@@ -75,6 +72,12 @@ var processlist_ui =
           else {
             // Check ProcessArg Type
             switch(this.processlist[processkey].argtype) {
+              case ProcessArg.MULTI:
+                arg.text = this.convertb64args(this.contextprocesslist[z][1])
+                arg.title = _Tr("Arguments")
+                arg.icon = 'icon-cog'
+              break;
+
               case ProcessArg.VALUE:
                 arg.text = this.contextprocesslist[z][1]
                 arg.title = _Tr("Value")
@@ -163,8 +166,20 @@ var processlist_ui =
         }
         
 
-        out += '<td>'+(i+1)+'</td><td>'+processname+'</td><td style="text-align:right">'+tag+'</td><td>'+label+'</td><td>'+latest+'</td>';
+        out += '<td style="text-align:right;">'+(i+1)+'</td><td>'+processname+'</td><td style="text-align:right">'+tag+'</td><td>'+label+'</td><td>'+latest+'</td>';
      
+        out += '<td style="white-space:nowrap;">';
+        // Move process up or down
+        if (i < this.contextprocesslist.length-1) {
+          out += "<a class='move-process' title='"+_Tr("Move down")+"' processid="+i+" moveby=1 ><i class='icon-arrow-down' style='cursor:pointer'></i></a>";
+        } else {
+          out += "<span style='display: inline-block; width:14px; ' />";
+        }
+        if (i > 0) {
+          out += '<a class="move-process" title="'+_Tr("Move up")+'" processid='+i+' moveby=-1 ><i class="icon-arrow-up" style="cursor:pointer"></i></a>';
+        }
+        out += '</td>';
+        
         // Delete process button (icon)
         out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
         out += '<td><a class="delete-process" title="'+_Tr("Delete")+'" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
@@ -174,6 +189,24 @@ var processlist_ui =
       }
     }
     $('#process-table-elements').html(out);
+
+    $("#select-all-lines").data("state", false).trigger("click");
+    $(".process-cut, .process-copy, .process-past, .process-delete").prop("disabled", true);
+  },
+  
+  'convertb64args':function(inbase64){
+    mout = ""
+    try {
+        mjsonStr = atob(inbase64);
+        mjson = JSON.parse(mjsonStr);
+        mout = Object.entries(mjson)
+            .map(([key, val]) => `${key}=${val}`)
+            .join(', ');
+    } catch (error) {
+        mout = _Tr("Invalid base64 or JSON format")
+        console.error(mout);
+    }
+    return mout
   },
 
   'drawpreview':function(processlist,input){
@@ -195,6 +228,7 @@ var processlist_ui =
       return out.join('');
     }
   },
+
   /**
    * return array of objects with id,id_num properties
    */
@@ -207,6 +241,7 @@ var processlist_ui =
     });
     return ids
   },
+
   /**
    * return process "name" when given a valid id (if id not number original input returned)
    */
@@ -221,14 +256,17 @@ var processlist_ui =
       }
     }
   },
+
   'argtypes': {
       0: {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
       1: {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
       2: {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
       3: {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
       4: {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'}
+      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'},
+      6: {cssClass: 'label-important',  title: 'Multi arguments: {longText} - {value}'},
   },
+
   'getBadges': function (processlist,input) {
     if (!processlist) return ""
     var processPairs = processlist.split(",")
@@ -242,9 +280,13 @@ var processlist_ui =
       var key = parseInt(keyvalue[0])
       key = isNaN(key) ? keyvalue[0]: this.getProcessKeyById(key);
       badge.value = keyvalue[1]
+
       badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
 
       if(this.init_done === 0 && badge.process!==false){
+        if (badge.process.argtype == ProcessArg.MULTI) {
+          badge.value = this.convertb64args(keyvalue[1])
+        }
         // set badge properties
         badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
@@ -262,15 +304,15 @@ var processlist_ui =
         badge.title = badge.type.title.format(badge);
         // pass the collected badge object as values for the title string template
         badges.push(badge);
-      } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
-        // no reids
+      } else if(this.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
+        // no redis
         badges.push({
           text: badge.process['internalerror_reason'],
           title: badge.process['internalerror_desc'],
           cssClass: 'badge-important',
           href: false
         })
-      } else if(!badge.value){
+      } else if(this.init_done === 0 && !badge.value){
         // input,feed or schedule doesnt exist
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -278,7 +320,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if(!badge.process){
+      } else if(this.init_done === 0 && !badge.process){
         // process not available
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -289,7 +331,7 @@ var processlist_ui =
       } else {
         // default else
         badges.push({
-          text: ' 🕒… ',
+          text: ' ⌛ ',
           title: '',
           cssClass: 'muted',
           href: false
@@ -324,20 +366,20 @@ var processlist_ui =
               // Check ProcessArg Type
               value = localprocesslist[z][1];
               switch(this.processlist[processkey].argtype) {
-                case ProcessArg.INPUTID: //INPUTID
+                case ProcessArg.INPUTID:
                 var inpid = localprocesslist[z][1];
                 if (this.inputlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case ProcessArg.FEEDID: //FEEDID
+                case ProcessArg.FEEDID:
                 if (this.feedlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case ProcessArg.SCHEDULEID: // SCHEDULEID
+                case ProcessArg.SCHEDULEID:
                 if (this.schedulelist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
                 }
@@ -358,13 +400,13 @@ var processlist_ui =
     $("#processlist-ui #feed-engine").change(function(){
       var engine = $(this).val();
       if (engine==6 || engine==5 || engine==4 || engine==1) {
-    	  $("#feed-interval").show();
+          $("#feed-interval").show();
       }
       else {
           $("#feed-interval").hide();
       }
       if (engine==8 || engine==0) {
-    	  $("#feed-table").empty().show();
+          $("#feed-table").empty().show();
       }
       else {
           $("#feed-table").hide();
@@ -378,7 +420,7 @@ var processlist_ui =
 
       // Check ProcessArg Type
       switch(process.argtype) {
-        case ProcessArg.VALUE: // VALUE (scale, offset)
+        case ProcessArg.VALUE:
           arg = $("#value-input").val();
           arg = parseFloat(arg.replace(",", "."));
           if (isNaN(arg)) {
@@ -387,11 +429,11 @@ var processlist_ui =
           }
           break;
 
-        case ProcessArg.INPUTID: //INPUTID (* / + - by input)
+        case ProcessArg.INPUTID:
           arg = $("#input-select").val();
           break;
 
-        case ProcessArg.FEEDID: //FEEDID
+        case ProcessArg.FEEDID:
           var feedid = $("#feed-select").val();
 
           if (feedid==-1) {
@@ -434,17 +476,60 @@ var processlist_ui =
           arg = feedid;
           break;
 
-        case "none": // NONE
+        case ProcessArg.NONE:
           arg = 0;
           break;
 
-        case ProcessArg.TEXT: // TEXT
+        case ProcessArg.TEXT:
           arg = $("#text-input").val();
           break;
 
-        case ProcessArg.SCHEDULEID: // SCHEDULEID
+        case ProcessArg.SCHEDULEID:
           arg = $("#schedule-select").val();
           break;
+          
+        case ProcessArg.MULTI:
+            if (Array.isArray(processlist_ui.processlist[processid]['argmulti'])) {
+                const $multiArgs = $('.argmulti');
+                if ($multiArgs.length === 0) {
+                    alert('ERROR: Multi process but no argmulti elements found');
+                    break;
+                }
+
+                processlist_ui.processlist[processid]['argmulti'].forEach((marg) => {
+                    let found = false;
+                    $multiArgs.each(function() {
+                        const key = $(this).data('key');
+                        value = $(this).val();
+                        if (key === marg.key) {
+                            found = true;
+                            if (marg.argmtype === ProcessArg.VALUE) { 
+                                value = parseFloat(value.replace(",", "."));
+                                if (isNaN(value)) { 
+                                    alert(`ERROR: Value for key ${key} must be a valid number`);
+                                    return false;
+                                }
+                                $(this).val(value);; // fixed value to form
+                            }
+                            return false; // break each
+                        }
+                    });
+                    if (!found) {
+                        alert(`ERROR: Key ${marg.key} not found in argmulti elements`);
+                    }
+                });
+
+                let args = {};
+                $multiArgs.each(function() {
+                    const key = $(this).data('key');
+                    const value = $(this).val();
+                    args[key] = value;
+                });
+
+                const json = JSON.stringify(args);
+                arg = btoa(json); // Encode to Base64 to avoid character conflicts
+            }
+            break;
       }
 
       if ($(this).attr("id") == "process-edit") {
@@ -471,33 +556,58 @@ var processlist_ui =
       $("#type-input").hide();
       $("#type-feed").hide();
       $("#type-schedule").hide();
+      $("#type-multi").hide();
+      $("#type-multi-args").html("");
 
       // Check ProcessArg Type
       if (processid) {
         switch(processlist_ui.processlist[processid].argtype) {
-          case ProcessArg.VALUE: // VALUE
+          case ProcessArg.VALUE:
             $("#type-value").show();
             break;
-          case ProcessArg.INPUTID: //INPUTID
+          case ProcessArg.INPUTID:
             $("#type-input").show();
             break;
-          case ProcessArg.FEEDID: //FEEDID
+          case ProcessArg.FEEDID:
             $("#type-feed").show();
             processlist_ui.showfeedoptions(processid);
             break;
-          case ProcessArg.TEXT: // TEXT
+          case ProcessArg.TEXT:
             $("#type-text").show();
             break;
-          case ProcessArg.SCHEDULEID: // SCHEDULEID
+          case ProcessArg.SCHEDULEID:
             $("#type-schedule").show();
             break;
+          case ProcessArg.MULTI:
+              if (Array.isArray(processlist_ui.processlist[processid]['argmulti'])) {
+                  processlist_ui.processlist[processid]['argmulti'].forEach((arg) => {
+                      $('#type-multi-args').append(processlist_ui.createMultiArgInput(arg));
+                  });
+              }
+              $("#type-multi").show();
+              break;
         }
 
-        if (processlist_ui.processlist[processid]['description'] === undefined || processlist_ui.processlist[processid]['description'] =="") {
-          $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
-        } else {
-          $("#description").html(processlist_ui.processlist[processid]['description']);
+        $("#description").html("<p><strong>" + processlist_ui.processlist[processid]['name'] + "</strong></p>");
 
+        if (processlist_ui.processlist[processid]['description'] === undefined || processlist_ui.processlist[processid]['description'] == "") {
+          $("#description").append("<p><b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b></p>");
+        } else {
+          $("#description").append("<p>" + processlist_ui.processlist[processid]['description'] + "</p>");
+          if (processlist_ui.processlist[processid].argtype == ProcessArg.MULTI) {
+              if (Array.isArray(processlist_ui.processlist[processid]['argmulti']) && processlist_ui.processlist[processid]['argmulti'].length > 0) {
+                  $("#description").append("<p><b>" + _Tr("Process arguments:") + "</b></p>");
+                  $("#description").append("<ul id='desc-multi-args'></ul>");
+                  processlist_ui.processlist[processid]['argmulti'].forEach((arg) => {
+                      $("#desc-multi-args").append(
+                          '<li>' +
+                              '<span style="font-weight: bold; display: inline-block; min-width: 100px;">' + arg.name + '&nbsp</span>' +
+                              '<span style="display: inline-block;">' + (arg.desc ? arg.desc : '') + (arg.default ? ' (Default: ' + arg.default + ')' : '') + '</span>' +
+                          '</li>'
+                      );
+                  });
+              }
+          }
           var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
           var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
           var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
@@ -596,21 +706,45 @@ var processlist_ui =
         $("#processlist-ui #process-select").change(); // Force a refresh
         // Check ProcessArg Type
         switch(processlist_ui.processlist[processid].argtype) {
-          case ProcessArg.VALUE: // VALUE
+          case ProcessArg.VALUE:
             $("#value-input").val(processval);
             break;
-          case ProcessArg.INPUTID: //INPUTID
+          case ProcessArg.INPUTID:
             $("#input-select").val(processval);
             break;
-          case ProcessArg.FEEDID: //FEEDID
+          case ProcessArg.FEEDID:
             $("#feed-select").val(processval);
             $('#processlist-ui #feed-select').change();  // refresh feed select
             break;
-          case ProcessArg.TEXT: // TEXT
+          case ProcessArg.TEXT:
             $("#text-input").val(processval);
             break;
-          case ProcessArg.SCHEDULEID: // SCHEDULEID
+          case ProcessArg.SCHEDULEID:
             $("#schedule-select").val(processval);
+            break;
+          case ProcessArg.MULTI:
+            mjson = [];
+            try {
+                const mjsonStr = atob(processval);
+                mjson = JSON.parse(mjsonStr);
+            } catch (error) {
+                alert("Invalid base64 or JSON format")
+            }
+            const $multiArgs = $('.argmulti');
+            if ($multiArgs.length === 0) {
+                alert('ERROR: Multi process but no argmulti elements found');
+            } else {
+                $multiArgs.each(function() {
+                    const key = $(this).data('key');
+                    for (const arg in mjson) {
+                        const value = mjson[arg];
+                        if (key === arg) {
+                            $(this).val(value);
+                            break;
+                        }
+                    }
+                });
+            }
             break;
         }
       }
@@ -629,6 +763,191 @@ var processlist_ui =
       $("#processlistModal").modal('hide');
     });
 
+    $("#select-all-lines").on("click", function () {
+        const $this = $(this);
+        const checkboxes = $("#process-table-elements").find(".process-select");
+        if (!$this.data("originalTitle")) {
+            $this.data("originalTitle", $this.attr("title"));
+        }
+        const state = $this.data('state') !== false;
+        checkboxes.prop("checked", state);
+        checkboxes.trigger("change");
+        $this.find('.icon').toggleClass('icon-ban-circle', state);
+        $this.find('.icon').toggleClass('icon-check', !state);
+        const title = state ? $this.data('alt-title') : $this.data('originalTitle');
+        $this.attr('title', title);
+        $this.data('state', !state);
+    });
+
+    // Support keyboard shortcuts
+    $(document).on("keydown", function (e) {
+        if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
+            if (e.ctrlKey) { 
+                switch (e.key) {
+                    case "c":
+                        $(".process-copy").trigger("click");
+                        e.preventDefault();
+                        break;
+                    case "v":
+                        $(".process-paste").trigger("click");
+                        e.preventDefault();
+                        break;
+                    case "x":
+                        $(".process-cut").trigger("click");
+                        e.preventDefault();
+                        break;
+                }
+            } else if (e.key === "Delete") {
+                $(".process-delete").trigger("click");
+                e.preventDefault();
+            }
+        }
+    });
+
+    $(".process-copy").on("click", function () {
+        const copiedProcessIds = $(".process-select:checked").map(function () {
+            return $(this).attr("processid");
+        }).get();
+
+        if (copiedProcessIds.length > 0) {
+           let contextprocesslist = JSON.parse(JSON.stringify(processlist_ui.contextprocesslist)); // clone
+
+           const clipboardText = JSON.stringify(
+                copiedProcessIds.map(processId => {
+                    let process = contextprocesslist[processId];
+                    let process_name = processlist_ui.getProcessKeyById(process[0]);
+
+                    // Handle Base64 decoding if argtype is MULTI
+                    if (processlist_ui.processlist[process_name].argtype === ProcessArg.MULTI) {
+                        try {
+                            process[1] = JSON.parse(atob(process[1]));
+                        } catch (error) {
+                            console.error("Failed to decode and parse Base64 data:", error);
+                        }
+                    }
+                    return process;
+                })
+            );
+
+            // Copy to external clipboard
+            navigator.clipboard.writeText(clipboardText).then(() => {
+                //alert("Copied processes to clipboard:\n" + clipboardText);
+            }).catch((error) => {
+                console.error("Failed to copy to clipboard:", error);
+                alert("Failed to copy processes to clipboard." + error);
+            });
+        } else {
+            alert("No processes selected to copy.");
+        }
+    });
+
+    $(".process-paste").on("click", function () {
+        navigator.clipboard.readText().then((clipboardText) => {
+            try {
+                const pastedProcesses = JSON.parse(clipboardText);
+                if (!Array.isArray(pastedProcesses)) {
+                    throw new Error("Clipboard data is not a valid array");
+                }
+
+                pastedProcesses.forEach(process => {
+                    let process_name = processlist_ui.getProcessKeyById(process[0]);
+
+                    // Handle Base64 encoding for MULTI argtype
+                    if (processlist_ui.processlist[process_name].argtype === ProcessArg.MULTI) {
+                        try {
+                            process[1] = btoa(JSON.stringify(process[1])); // Convert back to Base64
+                        } catch (error) {
+                            console.error("Failed to encode data to Base64:", error);
+                        }
+                    }
+
+                    // Add the processed entry back to contextprocesslist
+                    processlist_ui.contextprocesslist.push(process);
+                });
+
+                processlist_ui.draw();
+                processlist_ui.modified();
+            } catch (error) {
+                alert("Failed to paste processes. The clipboard data is not in the correct format.");
+                console.error("Error parsing clipboard data:", error);
+            }
+        }).catch((error) => {
+            console.error("Failed to read data from the clipboard:", error);
+            alert("Failed to read data from the clipboard." + error);
+        });
+    });
+
+    $(".process-cut").on("click", function () {
+        $(".process-copy").trigger("click"); 
+        $(".process-delete").trigger("click");
+    });
+    
+    $(".process-delete").on("click", function () {
+        const deletedProcessIds = $(".process-select:checked").map(function () {
+            return $(this).attr("processid");
+        }).get();
+        let changesMade = false;
+
+        deletedProcessIds.forEach((processId) => {
+            if (processId in processlist_ui.contextprocesslist) {
+                delete processlist_ui.contextprocesslist[processId];
+                changesMade = true;
+            }
+        });
+
+        if (changesMade) {
+            processlist_ui.contextprocesslist = Object.values(processlist_ui.contextprocesslist); // reindex list due to removal of indexs
+            processlist_ui.draw();
+            processlist_ui.modified();
+        }
+    });
+
+    $('#processlist-ui .table').on("change", ".process-select", function () {
+        const anyChecked = $(".process-select:checked").length > 0;
+
+        if (!anyChecked) {
+            $(".process-cut, .process-copy, .process-delete").prop("disabled", true);
+        } else {
+            $(".process-cut, .process-copy, .process-delete").prop("disabled", false);
+        }
+    });
+
+  },
+
+  'createMultiArgInput':function(arg) {
+    let $input;
+    switch (arg.argmtype) {
+        case ProcessArg.VALUE:
+            $input = $('<input type="text">').addClass('argmulti').attr('data-key', arg.key);
+            if (arg.default !== undefined) {
+                arg.default = parseFloat((""+arg.default).replace(",", "."));
+                if (isNaN(arg.default)) {
+                    alert("ERROR: Default value for '" + arg.key + "' is not a valid number.");
+                    break;
+                }
+              $input.val(arg.default); // Set the default value
+            }
+            break;
+        case ProcessArg.INPUTID:
+            $input = $('<select>').attr('id', 'input-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillinput);
+            break;
+        case ProcessArg.FEEDID:
+            $input = $('<select>').attr('id', 'input-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillfeed);
+            break;
+        case ProcessArg.SCHEDULEID:
+            $input = $('<select>').attr('id', 'schedule-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillschedule);
+            break;
+        case ProcessArg.TEXT:
+            $input = $('<input type="text">').addClass('argmulti').attr('data-key', arg.key);
+            if (arg.default !== undefined) $input.val(arg.default); // Set the default value
+            break;
+        default:
+            console.log('Unsupported arg type: ' + argmtype);
+            return;
+    }
+    const desc = (arg.desc ? arg.desc.replace(/<(?:.|\n)*?>/gm, '') : '') + (arg.default ? ' (Default: ' + arg.default + ')' : '');
+    $field = $('<div class="form-element">').append($('<label>').text(arg.name).attr('for', arg.key).attr('title', desc).attr('style', 'cursor:help')).append($input);
+    return $field
   },
 
   'showfeedoptions':function(processid){
@@ -638,26 +957,10 @@ var processlist_ui =
     var prc = this.processlist[processid].function;     // process function
     var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
     var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
-    
-    var feedgroups = [];
-    for (z in this.feedlist) {
-        if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
-            continue; // Dont list virtual feed
-        }
-        var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
-        if (group!="Deleted") {
-            if (!feedgroups[group]) feedgroups[group] = []
-            feedgroups[group].push(this.feedlist[z]);
-        }
-    }
-    var out = "<option value=-1>CREATE NEW:</option>";
-    for (z in feedgroups) {
-      out += "<optgroup label='"+z+"'>";
-      for (p in feedgroups[z]) {
-          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
-      }
-      out += "</optgroup>";
-    }
+
+    out = this.fillfeed();
+    out = "<option value=-1>CREATE NEW:</option>" + out;
+
     // overwrite feed list
     var lastval = $feedSelect.val();
     if (lastval==null) lastval = -1;
@@ -859,8 +1162,24 @@ var processlist_ui =
     $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
       var schedules = {};
       for (z in result) schedules[result[z].id] = result[z];
-
       processlist_ui.schedulelist = schedules;
+      $("#schedule-select").html(processlist_ui.fillschedule());
+      processlist_ui.initprogress();
+    }});
+
+    // Input Select List  
+    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(result) {
+      var inputs = {};
+      for (z in result) inputs[result[z].id] = result[z];
+      processlist_ui.inputlist = inputs;
+      $('#input-select').html(processlist_ui.fillinput());
+      processlist_ui.initprogress();
+    }});
+
+    processlist_ui.events();
+  },
+
+  'fillschedule':function(){
       var groupname = {0:'Public',1:'Mine'};
       var groups = [];
       //for (z in result) schedules[result[z].id] = result[z];
@@ -882,16 +1201,10 @@ var processlist_ui =
         }
         out += "</optgroup>";
       }
-      $("#schedule-select").html(out);
-      processlist_ui.initprogress();
-    }});
-
-    // Input Select List  
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(result) {
-      var inputs = {};
-      for (z in result) inputs[result[z].id] = result[z];
-      processlist_ui.inputlist = inputs;
-
+      return out;
+  },
+  
+  'fillinput':function(){
       var groups = [];
       for (z in processlist_ui.inputlist) {
         var group = processlist_ui.inputlist[z]['nodeid'];
@@ -909,11 +1222,30 @@ var processlist_ui =
         }
         out += "</optgroup>";
       }
-      $("#input-select").html(out);
-      processlist_ui.initprogress();
-    }});
+      return out;
+  },
 
-    processlist_ui.events();
+  'fillfeed':function(){
+    var feedgroups = [];
+    for (z in processlist_ui.feedlist) {
+        if (parseInt(processlist_ui.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
+            continue; // Dont list virtual feed
+        }
+        var group = (processlist_ui.feedlist[z].tag === null ? "NoGroup" : processlist_ui.feedlist[z].tag);
+        if (group!="Deleted") {
+            if (!feedgroups[group]) feedgroups[group] = []
+            feedgroups[group].push(processlist_ui.feedlist[z]);
+        }
+    }
+    var out = "";
+    for (z in feedgroups) {
+      out += "<optgroup label='"+z+"'>";
+      for (p in feedgroups[z]) {
+          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+      }
+      out += "</optgroup>";
+    }
+    return out;
   },
 
   'initprogress':function(){
@@ -941,11 +1273,12 @@ var processlist_ui =
     $("#process-header-edit").hide();
     $("#type-btn-add").show();
     $("#type-btn-edit").hide();
+
     processlist_ui.scrollto($('#processlist-ui'));
     this.draw();
     $("#save-processlist").attr('class','btn btn-success').text(_Tr("Not modified"));
     $("#processlist-ui #process-select").change(); // Force a refresh
-    $("#processlistModal").modal('show');          // Show
+    $("#processlistModal").modal('show');
     this.adjustmodal();
   },
 
