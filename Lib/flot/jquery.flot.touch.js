@@ -275,7 +275,7 @@ Use as follow:
                 // reset the tap counter
                 tapTimer = setTimeout(function() { tapNum = 0; }, options.touch.dbltapThreshold);  
                 // check if tap or dbltap
-                if (isPanning && touches.length === 1 && (tapTimestamp + options.touch.tapThreshold) - getTimestamp() <= 0 &&
+                if (isPanning && touches.length === 1 && (tapTimestamp + options.touch.tapThreshold) - getTimestamp() >= 0 &&
                     startTouchPosition.x >= lastTouchPosition.x - options.touch.tapPrecision &&
                     startTouchPosition.x <= lastTouchPosition.x + options.touch.tapPrecision &&
                     startTouchPosition.y >= lastTouchPosition.y - options.touch.tapPrecision &&
