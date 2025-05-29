@@ -5,6 +5,10 @@
 # Set the default handler.
 DirectoryIndex index.php
 
+<IfModule php_module>
+  php_value max_execution_time 300
+</IfModule>
+
 # Various rewrite rules.
 <IfModule mod_rewrite.c>
   RewriteEngine on
