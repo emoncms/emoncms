@@ -77,6 +77,8 @@
                                 $tagname = explode(":", $feedid);
                                 if (count($tagname) == 2) {
                                     $feedid = $feed->exists_tag_name($session['userid'], $tagname[0], $tagname[1]);
+                                } else {
+                                    $feedid = false;
                                 }
                             } else {
                                 $feedid = (int)$feedid;
