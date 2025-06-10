@@ -663,6 +663,13 @@ class Input
                         if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
                             return array('success'=>false, 'message'=>'Invalid characters in arg');
                         break;
+                        
+                    case ProcessArg::MULTI:
+                        $decoded = base64_decode($arg, true); 
+                        if ($decoded === false || json_decode($decoded, true) === null) {
+                            return array('success' => false, 'message' => 'Value is not valid base64-encoded JSON '.$arg);
+                        }
+                        break;
 
                     case ProcessArg::SCHEDULEID:
                         $scheduleid = (int) $arg;
