@@ -1,4 +1,4 @@
-<?php $v=14; ?>
+<?php $v=16; ?>
 
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>

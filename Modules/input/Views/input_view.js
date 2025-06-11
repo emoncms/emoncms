@@ -844,6 +844,7 @@ function update(){
         return def.promise()
     } else {
         // update_inputs returns jquery ajax promise
+        devices = {};
         return update_inputs()
     }
 }
@@ -862,6 +863,11 @@ function update_inputs() {
         inputs = {};
         for (var z in data) inputs[data[z].id] = data[z];
         
+        // Clear existing device inputs
+        for (var nodeid in devices) {
+            devices[nodeid].inputs = [];
+        }
+
         // Assign inputs to devices
         for (var z in inputs) {
             let nodeid = String(inputs[z].nodeid);
@@ -1007,7 +1013,7 @@ function draw_devices() {
     
     resize_view();
 
-    app.devices = devices
+    Vue.set(app, 'devices', clone(devices));
     app.loaded = true;
     app.devicesOriginal = clone(devices)
 }
