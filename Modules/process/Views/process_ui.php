@@ -156,29 +156,32 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                         <span v-if="arg.value == -1">
                                             <div class="autocomplete">
                                                 <!-- autocomplete uses jquery which is a bit of a hack here, but it works -->
-                                                <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" pattern="[a-zA-Z0-9-_: ]+" required style="width:4em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo dgettext('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Tag'); ?>" />
+                                                <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error --> 
+                                                <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" required style="width:4em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo dgettext('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Tag'); ?>" />
                                             </div>
-                                            <input v-model="arg.new_feed_name" id="new-feed-name" type="text" pattern="[a-zA-Z0-9-_: ]+" required style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Name'); ?>" />
+                                            <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error -->
+                                            <input v-model="arg.new_feed_name" id="new-feed-name" type="text" required style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Name'); ?>" />
                                         </span>
                                     </div>
                                 </div>
-
                                 <div class="input-prepend" v-if="arg.value == -1">
                                     <span class="add-on feed-engine-label"><?php echo dgettext('process_messages', 'Engine'); ?></span>
                                     <div class="btn-group">
-                                        <select class="input-medium" v-model="arg.new_feed_engine">
+                                        <select class="input-medium" v-model.number="arg.new_feed_engine">
                                             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
                                                 <option value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
                                             <?php } ?>
                                         </select>
-                                        <select class="input-mini" v-model="arg.new_feed_interval">
+                                        
+                                        <select class="input-mini" v-model.number="arg.new_feed_interval" v-if="[1,5,6].includes(Number(arg.new_feed_engine))">
                                             <option value=""><?php echo dgettext('process_messages', 'Select interval'); ?></option>
                                             <?php foreach (Engine::available_intervals() as $i) { ?>
                                                 <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages', $i["description"]); ?></option>
                                             <?php } ?>
                                         </select>
                                         <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
-                                            <input v-model="arg.new_feed_table_name" type="text" pattern="[a-zA-Z0-9_]+" style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages', 'Table'); ?>" />
+                                            <!-- remove pattern="[a-zA-Z0-9_]+" giving error -->
+                                            <input v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages', 'Table'); ?>" />
                                         <?php } ?>
                                     </div>
                                 </div>

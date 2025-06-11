@@ -24,6 +24,9 @@ var processlist_ui =
   inputlist:[],
   schedulelist:[],
 
+  newfeedname: "",
+  newfeedtag: "",
+
   init_done: -1, // when 0 all lists are loaded
   
   engines_hidden:[],
@@ -478,9 +481,12 @@ var processlist_ui =
 
         let process = processlist_ui.processlist[processid];
 
+
+        let args = {};
         // Set the Vue args data
         if (process.args != undefined && Array.isArray(process.args)) {
-          vue_args.args = JSON.parse(JSON.stringify(process.args));
+          args = JSON.parse(JSON.stringify(process.args));
+          
         } else if (process.argtype != undefined) {
 
           // Base type
@@ -496,12 +502,13 @@ var processlist_ui =
             singular_arg.unit = process.unit;
           }
           
-          vue_args.args = [singular_arg];
+          args = [singular_arg];
         }
 
         // Set default values for Vue args
-        for (let i = 0; i < vue_args.args.length; i++) {
-          let arg = vue_args.args[i];
+        
+        for (let i = 0; i < args.length; i++) {
+          let arg = args[i];
           switch (arg.type) {
             case ProcessArg.VALUE:
               arg.value = 0; // Default value for VALUE type
@@ -517,16 +524,15 @@ var processlist_ui =
               break;
             case ProcessArg.FEEDID:
               arg.value = -1; // Default value for FEEDID type (create new feed)
-              arg.new_feed_tag = ''; // Default feed tag
-              arg.new_feed_name = ''; // Default feed name
+              arg.new_feed_tag = processlist_ui.newfeedtag; // Default feed tag
+              arg.new_feed_name = processlist_ui.newfeedname; // Default feed name
               arg.new_feed_engine = 5; // Default feed engine
               arg.new_feed_interval = 10; // Default feed interval
               arg.new_feed_table_name = ''; // Default feed table name
 
               if (arg.engines !== undefined && Array.isArray(arg.engines)) {
-                arg.new_feed_engine = arg.engines[0]; // Default to first engine in the list
+                arg.new_feed_engine = parseInt(arg.engines[0]); // Default to first engine in the list
               }
-
               break;
             case ProcessArg.TEXT:
               arg.value = ''; // Default value for TEXT type
@@ -542,6 +548,9 @@ var processlist_ui =
               break;
           }
         }
+        
+        // Set the Vue args data
+        Vue.set(vue_args, 'args', args);
 
         $("#description").html("<p><strong>" + processlist_ui.processlist[processid]['name'] + "</strong></p>");
 
@@ -1032,8 +1041,8 @@ var processlist_ui =
     this.contextid = contextid;
     this.contextprocesslist = contextprocesslist;
     $("#contextname").html(contextname);
-    $("#new-feed-name").val(newfeedname);
-    $("#new-feed-tag").val(newfeedtag);
+    this.newfeedname = newfeedname;
+    this.newfeedtag = newfeedtag;
     $("#process-header-add").show();
     $("#process-header-edit").hide();
     $("#type-btn-add").show();
