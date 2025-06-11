@@ -480,9 +480,48 @@ var processlist_ui =
 
         // Set the Vue args data
         if (process.args != undefined && Array.isArray(process.args)) {
-          vue_args.args = process.args;
+          vue_args.args = JSON.parse(JSON.stringify(process.args));
         } else if (process.argtype != undefined) {
           vue_args.args = [{"type": process.argtype}];
+        }
+
+        // Set default values for Vue args
+        for (let i = 0; i < vue_args.args.length; i++) {
+          let arg = vue_args.args[i];
+          switch (arg.type) {
+            case ProcessArg.VALUE:
+              arg.value = 0; // Default value for VALUE type
+              if (arg.default !== undefined) {
+                arg.value = arg.default; // Use default value if available
+              }
+              break;
+            case ProcessArg.INPUTID:
+              arg.value = 0; // Default value for INPUTID type
+              if (processlist_ui.inputlist.length > 0) {
+                arg.value = processlist_ui.inputlist[0].id; // Default to first input
+              }
+              break;
+            case ProcessArg.FEEDID:
+              arg.value = -1; // Default value for FEEDID type (create new feed)
+              arg.new_feed_tag = ''; // Default feed tag
+              arg.new_feed_name = ''; // Default feed name
+              arg.new_feed_engine = 5; // Default feed engine
+              arg.new_feed_interval = 10; // Default feed interval
+              arg.new_feed_table_name = ''; // Default feed table name
+              break;
+            case ProcessArg.TEXT:
+              arg.value = ''; // Default value for TEXT type
+              break;
+            case ProcessArg.SCHEDULEID:
+              arg.value = 0; // Default value for SCHEDULEID type
+              if (processlist_ui.schedulelist.length > 0) {
+                arg.value = processlist_ui.schedulelist[0].id; // Default to first schedule
+              }
+              break;
+            case ProcessArg.NONE:
+              arg.value = 0; // Default value for NONE type
+              break;
+          }
         }
 
         $("#description").html("<p><strong>" + processlist_ui.processlist[processid]['name'] + "</strong></p>");
