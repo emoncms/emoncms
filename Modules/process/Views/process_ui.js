@@ -1,14 +1,16 @@
  //---------------------------------------------------------------------
  // Version 11.8 - Nuno Chaveiro nchaveiro(at)gmail.com 04/2025
  //---------------------------------------------------------------------
+
+var vue_args = false; // Vue.js args, used in processlist_ui.vue.js
+
 var ProcessArg = {
   VALUE:0,
   INPUTID:1,
   FEEDID:2,
   NONE:3,
   TEXT:4,
-  SCHEDULEID:5,
-  MULTI:6
+  SCHEDULEID:5
 }
 
 var processlist_ui =
@@ -72,11 +74,6 @@ var processlist_ui =
           else {
             // Check ProcessArg Type
             switch(this.processlist[processkey].argtype) {
-              case ProcessArg.MULTI:
-                arg.text = this.convertb64args(this.contextprocesslist[z][1])
-                arg.title = _Tr("Arguments")
-                arg.icon = 'icon-cog'
-              break;
 
               case ProcessArg.VALUE:
                 arg.text = this.contextprocesslist[z][1]
@@ -193,21 +190,6 @@ var processlist_ui =
     $("#select-all-lines").data("state", false).trigger("click");
     $(".process-cut, .process-copy, .process-past, .process-delete").prop("disabled", true);
   },
-  
-  'convertb64args':function(inbase64){
-    mout = ""
-    try {
-        mjsonStr = atob(inbase64);
-        mjson = JSON.parse(mjsonStr);
-        mout = Object.entries(mjson)
-            .map(([key, val]) => `${key}=${val}`)
-            .join(', ');
-    } catch (error) {
-        mout = _Tr("Invalid base64 or JSON format")
-        console.error(mout);
-    }
-    return mout
-  },
 
   'drawpreview':function(processlist,input){
     if (!processlist) return "";
@@ -263,8 +245,7 @@ var processlist_ui =
       2: {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
       3: {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
       4: {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'},
-      6: {cssClass: 'label-important',  title: 'Multi arguments: {longText} - {value}'},
+      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'}
   },
 
   'getBadges': function (processlist,input) {
@@ -284,9 +265,7 @@ var processlist_ui =
       badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
 
       if(this.init_done === 0 && badge.process!==false){
-        if (badge.process.argtype == ProcessArg.MULTI) {
-          badge.value = this.convertb64args(keyvalue[1])
-        }
+
         // set badge properties
         badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
@@ -342,60 +321,6 @@ var processlist_ui =
     return badges;
   },
 
-  'group_drawerror':function(processlist){
-    if (!processlist) return "";
-    var localprocesslist = processlist_ui.decode(processlist);
-    if (localprocesslist.length==0) {
-      return ""
-    } else {
-      var out = "";
-      if (this.init_done === 0)
-      {
-        for (z in localprocesslist) {
-          // Process name and argument
-          var processkey = parseInt(localprocesslist[z][0]);
-          processkey = isNaN(processkey) ? localprocesslist[z][0]: this.getProcessKeyById(processkey);
-          if (this.processlist[processkey] != undefined) {
-            var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-            if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-                out += "<span class='badge badge-important' title='" + this.processlist[processkey]['internalerror_desc'] + "'>"+ this.processlist[processkey]['internalerror_reason'] + "</span> "
-            }  
-            else if (procneedredis) {
-                out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
-            } else {
-              // Check ProcessArg Type
-              value = localprocesslist[z][1];
-              switch(this.processlist[processkey].argtype) {
-                case ProcessArg.INPUTID:
-                var inpid = localprocesslist[z][1];
-                if (this.inputlist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
-                }
-                break;
-
-                case ProcessArg.FEEDID:
-                if (this.feedlist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
-                }
-                break;
-
-                case ProcessArg.SCHEDULEID:
-                if (this.schedulelist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
-                }
-                break;
-              }
-            }
-          } else {
-              out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Module missing?'>UNSUPPORTED</span> "
-          }
-          if (out != "") return out; // return first error
-        }
-      }
-      return out;
-    }
-  },
-
   'events':function(){
     $("#processlist-ui #feed-engine").change(function(){
       var engine = $(this).val();
@@ -416,122 +341,114 @@ var processlist_ui =
     $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
       var processid = $('#process-select').val();
       var process = processlist_ui.processlist[processid];
-      var arg = '';
 
-      // Check ProcessArg Type
-      switch(process.argtype) {
-        case ProcessArg.VALUE:
-          arg = $("#value-input").val();
-          arg = parseFloat(arg.replace(",", "."));
-          if (isNaN(arg)) {
-            alert('ERROR: Value must be a valid number');
-            return false;
-          }
-          break;
+      let new_process = [];
+      new_process.push(processid); // process id
 
-        case ProcessArg.INPUTID:
-          arg = $("#input-select").val();
-          break;
+      if (vue_args.args != undefined && Array.isArray(vue_args.args)) {
+        // Loop through the Vue args and get the values
+        for (let i = 0; i < vue_args.args.length; i++) {
+          let arg_type = vue_args.args[i].type;
+          let arg_value = vue_args.args[i].value;
+          switch (arg_type) {
 
-        case ProcessArg.FEEDID:
-          var feedid = $("#feed-select").val();
-
-          if (feedid==-1) {
-            var feedname = $('#new-feed-name').val();
-            var feedtag = $('#new-feed-tag').val();
-            var engine = $('#feed-engine').val();
-            
-            var options = {};
-            if (engine==6 || engine==5 || engine==4 || engine==1) {
-              let interval = $('#feed-interval').val();
-              if (interval=="") {
-                alert('ERROR: Please select a feed interval');
+            // Value
+            // Check if the value is a valid number
+            case ProcessArg.VALUE:
+              if (arg_value === undefined || arg_value === null || arg_value === "" || isNaN(arg_value)) {
+                alert('ERROR: Value must be a valid number');
                 return false;
               }
-              options = {"interval":interval};
-            }
-            else if (engine==8 || engine==0) {
-              options = {"name":$('#feed-table').val()};
-            }
-            
-            if (feedname == '') {
-              alert('ERROR: Please enter a feed name');
-              return false;
-            }
-            
-            var unit = '';
-            if (process.unit!=undefined) unit = process.unit;
-            
-            var result = feed.create(feedtag,feedname,engine,options,unit);
-            feedid = result.feedid;
+              new_process.push(parseFloat(arg_value));
+              break;
 
-            if (!result.success || feedid<1) {
-              alert('ERROR: Feed could not be created, '+result.message);
-              return false;
-            }
+            // Input ID
+            // Input id is from input select so no need to check if it's a valid input
+            case ProcessArg.INPUTID:
+              new_process.push(parseInt(arg_value));
+              break;
 
-            processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
-            processlist_ui.showfeedoptions(processid);  // Refresh Feedlist
-          }
-          arg = feedid;
-          break;
+            // Feed ID
+            // Feed id is from feed select so no need to check if it's a valid feed
+            // Create new feed if feed id is -1
+            case ProcessArg.FEEDID:
+              let feedid = parseInt(arg_value);
+              if (feedid == -1) {
+                let feedtag = vue_args.args[i].new_feed_tag;
+                let feedname = vue_args.args[i].new_feed_name;
+                let engine = vue_args.args[i].new_feed_engine;
 
-        case ProcessArg.NONE:
-          arg = 0;
-          break;
+                var options = {};
+                if (engine==6 || engine==5 || engine==4 || engine==1) {
+                  let interval = vue_args.args[i].new_feed_interval;
+                  if (interval=="") {
+                    alert('ERROR: Please select a feed interval');
+                    return false;
+                  }
+                  options = {"interval":interval};
+                }
+                else if (engine==8 || engine==0) {
+                  options = {"name":vue_args.args[i].new_feed_table_name};
+                }
+                
+                if (feedname == '') {
+                  alert('ERROR: Please enter a feed name');
+                  return false;
+                }
+                
+                var unit = '';
+                if (process.unit!=undefined) unit = process.unit;
+                
+                var result = feed.create(feedtag,feedname,engine,options,unit);
+                feedid = result.feedid;
 
-        case ProcessArg.TEXT:
-          arg = $("#text-input").val();
-          break;
-
-        case ProcessArg.SCHEDULEID:
-          arg = $("#schedule-select").val();
-          break;
-          
-        case ProcessArg.MULTI:
-            if (Array.isArray(processlist_ui.processlist[processid]['argmulti'])) {
-                const $multiArgs = $('.argmulti');
-                if ($multiArgs.length === 0) {
-                    alert('ERROR: Multi process but no argmulti elements found');
-                    break;
+                if (!result.success || feedid<1) {
+                  alert('ERROR: Feed could not be created, '+result.message);
+                  return false;
                 }
 
-                processlist_ui.processlist[processid]['argmulti'].forEach((marg) => {
-                    let found = false;
-                    $multiArgs.each(function() {
-                        const key = $(this).data('key');
-                        value = $(this).val();
-                        if (key === marg.key) {
-                            found = true;
-                            if (marg.argmtype === ProcessArg.VALUE) { 
-                                value = parseFloat(value.replace(",", "."));
-                                if (isNaN(value)) { 
-                                    alert(`ERROR: Value for key ${key} must be a valid number`);
-                                    return false;
-                                }
-                                $(this).val(value);; // fixed value to form
-                            }
-                            return false; // break each
-                        }
-                    });
-                    if (!found) {
-                        alert(`ERROR: Key ${marg.key} not found in argmulti elements`);
-                    }
-                });
+                processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
+                new_process.push(feedid);
+              } else {
+                new_process.push(feedid);
+              }
+              break;
 
-                let args = {};
-                $multiArgs.each(function() {
-                    const key = $(this).data('key');
-                    const value = $(this).val();
-                    args[key] = value;
-                });
+            // Text
+            // Text must not be empty and must not contain commas or colons
+            case ProcessArg.TEXT:
+              // Text must not contain commas and semi-colons
+              if (arg_value === undefined || arg_value === null || arg_value === "") {
+                alert('ERROR: Text must not be empty');
+                return false;
+              }
+              if (arg_value.includes(',') || arg_value.includes(':')) {
+                alert('ERROR: Text must not contain commas or colons');
+                return false;
+              }
+              new_process.push(arg_value);
+              break;
 
-                const json = JSON.stringify(args);
-                arg = btoa(json); // Encode to Base64 to avoid character conflicts
-            }
-            break;
+            // Schedule ID
+            // Schedule id is from schedule select so no need to check if it's a valid schedule
+            case ProcessArg.SCHEDULEID:
+              new_process.push(parseInt(arg_value));
+              break;
+
+            // None
+            case ProcessArg.NONE:
+              new_process.push(0);
+              break;
+          }
+        }
       }
 
+      console.log("Adding process:", new_process);
+
+      processlist_ui.contextprocesslist.push(new_process); 
+
+
+      /*
       if ($(this).attr("id") == "process-edit") {
         processlist_ui.contextprocesslist[$("#type-btn-edit").attr('curpos')] = ([processid,""+arg]);
         $("#process-header-add").show();
@@ -542,50 +459,30 @@ var processlist_ui =
       } else {
         processlist_ui.contextprocesslist.push([processid,""+arg]);  
       }
+      */
 
+
+       
       processlist_ui.draw();
       processlist_ui.modified();
+
     });
 
     $('#processlist-ui #process-select').change(function(){
       var processid = $(this).val();
 
       $("#description").html("");
-      $("#type-value").hide();
-      $("#type-text").hide();
-      $("#type-input").hide();
-      $("#type-feed").hide();
-      $("#type-schedule").hide();
-      $("#type-multi").hide();
-      $("#type-multi-args").html("");
 
       // Check ProcessArg Type
       if (processid) {
-        switch(processlist_ui.processlist[processid].argtype) {
-          case ProcessArg.VALUE:
-            $("#type-value").show();
-            break;
-          case ProcessArg.INPUTID:
-            $("#type-input").show();
-            break;
-          case ProcessArg.FEEDID:
-            $("#type-feed").show();
-            processlist_ui.showfeedoptions(processid);
-            break;
-          case ProcessArg.TEXT:
-            $("#type-text").show();
-            break;
-          case ProcessArg.SCHEDULEID:
-            $("#type-schedule").show();
-            break;
-          case ProcessArg.MULTI:
-              if (Array.isArray(processlist_ui.processlist[processid]['argmulti'])) {
-                  processlist_ui.processlist[processid]['argmulti'].forEach((arg) => {
-                      $('#type-multi-args').append(processlist_ui.createMultiArgInput(arg));
-                  });
-              }
-              $("#type-multi").show();
-              break;
+
+        let process = processlist_ui.processlist[processid];
+
+        // Set the Vue args data
+        if (process.args != undefined && Array.isArray(process.args)) {
+          vue_args.args = process.args;
+        } else if (process.argtype != undefined) {
+          vue_args.args = [{"type": process.argtype}];
         }
 
         $("#description").html("<p><strong>" + processlist_ui.processlist[processid]['name'] + "</strong></p>");
@@ -594,20 +491,7 @@ var processlist_ui =
           $("#description").append("<p><b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b></p>");
         } else {
           $("#description").append("<p>" + processlist_ui.processlist[processid]['description'] + "</p>");
-          if (processlist_ui.processlist[processid].argtype == ProcessArg.MULTI) {
-              if (Array.isArray(processlist_ui.processlist[processid]['argmulti']) && processlist_ui.processlist[processid]['argmulti'].length > 0) {
-                  $("#description").append("<p><b>" + _Tr("Process arguments:") + "</b></p>");
-                  $("#description").append("<ul id='desc-multi-args'></ul>");
-                  processlist_ui.processlist[processid]['argmulti'].forEach((arg) => {
-                      $("#desc-multi-args").append(
-                          '<li>' +
-                              '<span style="font-weight: bold; display: inline-block; min-width: 100px;">' + arg.name + '&nbsp</span>' +
-                              '<span style="display: inline-block;">' + (arg.desc ? arg.desc : '') + (arg.default ? ' (Default: ' + arg.default + ')' : '') + '</span>' +
-                          '</li>'
-                      );
-                  });
-              }
-          }
+       
           var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
           var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
           var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
@@ -633,34 +517,6 @@ var processlist_ui =
         }//end of if proccessid
       }
       
-    });
-
-    $('#processlist-ui #feed-select').change(function(){
-      var feedid = $("#feed-select").val();
-
-      if (feedid == -1) {
-        $("#new-feed-name").show();
-        $("#new-feed-tag").show();
-        $('#feed-select').css({'border-radius': 0, 'border-right': 0})
-        
-        $("#processlist-ui #feed-engine").change(); // select available interval for engine
-        // If there's only one feed engine to choose from then dont show feed engine selector
-        // CHAVEIRO: Commented for now so user can see what processor it's using.
-        //var processid = $('#process-select').val();
-        //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA
-        //if (engines.length > 1) 
-        $("#feed-engine, .feed-engine-label").show();
-    } else {
-        $("#new-feed-name").hide();
-        $("#new-feed-tag").hide();
-        $('#feed-select').css({'border-radius': 4, 'border-right': 4})
-        $("#feed-interval").hide();
-        $("#feed-table").hide();
-        $("#feed-engine, .feed-engine-label").hide(); 
-      }
-      if (typeof nodes_display !== 'undefined') {
-          autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
-      }
     });
 
     $('#processlist-ui .table').on('click', '.delete-process', function(){
@@ -721,30 +577,6 @@ var processlist_ui =
             break;
           case ProcessArg.SCHEDULEID:
             $("#schedule-select").val(processval);
-            break;
-          case ProcessArg.MULTI:
-            mjson = [];
-            try {
-                const mjsonStr = atob(processval);
-                mjson = JSON.parse(mjsonStr);
-            } catch (error) {
-                alert("Invalid base64 or JSON format")
-            }
-            const $multiArgs = $('.argmulti');
-            if ($multiArgs.length === 0) {
-                alert('ERROR: Multi process but no argmulti elements found');
-            } else {
-                $multiArgs.each(function() {
-                    const key = $(this).data('key');
-                    for (const arg in mjson) {
-                        const value = mjson[arg];
-                        if (key === arg) {
-                            $(this).val(value);
-                            break;
-                        }
-                    }
-                });
-            }
             break;
         }
       }
@@ -814,18 +646,7 @@ var processlist_ui =
 
            const clipboardText = JSON.stringify(
                 copiedProcessIds.map(processId => {
-                    let process = contextprocesslist[processId];
-                    let process_name = processlist_ui.getProcessKeyById(process[0]);
-
-                    // Handle Base64 decoding if argtype is MULTI
-                    if (processlist_ui.processlist[process_name].argtype === ProcessArg.MULTI) {
-                        try {
-                            process[1] = JSON.parse(atob(process[1]));
-                        } catch (error) {
-                            console.error("Failed to decode and parse Base64 data:", error);
-                        }
-                    }
-                    return process;
+                    return contextprocesslist[processId];
                 })
             );
 
@@ -850,17 +671,6 @@ var processlist_ui =
                 }
 
                 pastedProcesses.forEach(process => {
-                    let process_name = processlist_ui.getProcessKeyById(process[0]);
-
-                    // Handle Base64 encoding for MULTI argtype
-                    if (processlist_ui.processlist[process_name].argtype === ProcessArg.MULTI) {
-                        try {
-                            process[1] = btoa(JSON.stringify(process[1])); // Convert back to Base64
-                        } catch (error) {
-                            console.error("Failed to encode data to Base64:", error);
-                        }
-                    }
-
                     // Add the processed entry back to contextprocesslist
                     processlist_ui.contextprocesslist.push(process);
                 });
@@ -914,42 +724,6 @@ var processlist_ui =
 
   },
 
-  'createMultiArgInput':function(arg) {
-    let $input;
-    switch (arg.argmtype) {
-        case ProcessArg.VALUE:
-            $input = $('<input type="text">').addClass('argmulti').attr('data-key', arg.key);
-            if (arg.default !== undefined) {
-                arg.default = parseFloat((""+arg.default).replace(",", "."));
-                if (isNaN(arg.default)) {
-                    alert("ERROR: Default value for '" + arg.key + "' is not a valid number.");
-                    break;
-                }
-              $input.val(arg.default); // Set the default value
-            }
-            break;
-        case ProcessArg.INPUTID:
-            $input = $('<select>').attr('id', 'input-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillinput);
-            break;
-        case ProcessArg.FEEDID:
-            $input = $('<select>').attr('id', 'input-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillfeed);
-            break;
-        case ProcessArg.SCHEDULEID:
-            $input = $('<select>').attr('id', 'schedule-select-'+arg.key).addClass('argmulti').attr('data-key', arg.key).html(processlist_ui.fillschedule);
-            break;
-        case ProcessArg.TEXT:
-            $input = $('<input type="text">').addClass('argmulti').attr('data-key', arg.key);
-            if (arg.default !== undefined) $input.val(arg.default); // Set the default value
-            break;
-        default:
-            console.log('Unsupported arg type: ' + argmtype);
-            return;
-    }
-    const desc = (arg.desc ? arg.desc.replace(/<(?:.|\n)*?>/gm, '') : '') + (arg.default ? ' (Default: ' + arg.default + ')' : '');
-    $field = $('<div class="form-element">').append($('<label>').text(arg.name).attr('for', arg.key).attr('title', desc).attr('style', 'cursor:help')).append($input);
-    return $field
-  },
-
   'showfeedoptions':function(processid){
     $feedSelect = $('#feed-select');
     $feedEngineSelect = $('#feed-engine');
@@ -958,8 +732,7 @@ var processlist_ui =
     var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
     var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
 
-    out = this.fillfeed();
-    out = "<option value=-1>CREATE NEW:</option>" + out;
+    out = "";
 
     // overwrite feed list
     var lastval = $feedSelect.val();
@@ -1074,6 +847,23 @@ var processlist_ui =
     this.contexttype = contexttype;
     this.init_done = 4; // going to load 4 lists
 
+    vue_args = new Vue({
+      el: '#vue_args',
+      data: {
+        args: [],
+        inputs_by_node: {},
+        feeds_by_tag: {}
+      },
+      methods: {
+        feedSelectChange: function() {
+          if (typeof nodes_display !== 'undefined') {
+              autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
+          }
+        }
+      }
+    });
+
+
     // Processors Select List
     $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
 
@@ -1156,6 +946,16 @@ var processlist_ui =
       }
       processlist_ui.feedlist = feeds;
       processlist_ui.initprogress();
+
+
+      var feeds_by_tag = {};
+      for (let z in feeds) {
+        let tag = feeds[z].tag;
+        if (!feeds_by_tag[tag]) feeds_by_tag[tag] = [];
+        feeds_by_tag[tag].push(feeds[z]);
+      }
+
+      vue_args.$set(vue_args, 'feeds_by_tag', feeds_by_tag);
     }});
 
     // Schedule Select List
@@ -1169,14 +969,24 @@ var processlist_ui =
 
     // Input Select List  
     $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(result) {
-      var inputs = {};
-      for (z in result) inputs[result[z].id] = result[z];
-      processlist_ui.inputlist = inputs;
-      $('#input-select').html(processlist_ui.fillinput());
+      let inputs = result;
+      // set vue inputs
+      let inputs_by_node = {};
+      for (let z in inputs) {
+        let node = inputs[z].nodeid;
+        if (!inputs_by_node[node]) inputs_by_node[node] = [];
+        inputs_by_node[node].push(inputs[z]);
+      }
+      vue_args.$set(vue_args, 'inputs_by_node', inputs_by_node);
       processlist_ui.initprogress();
+
     }});
 
     processlist_ui.events();
+
+
+
+
   },
 
   'fillschedule':function(){
@@ -1202,50 +1012,6 @@ var processlist_ui =
         out += "</optgroup>";
       }
       return out;
-  },
-  
-  'fillinput':function(){
-      var groups = [];
-      for (z in processlist_ui.inputlist) {
-        var group = processlist_ui.inputlist[z]['nodeid'];
-        group = 'Node ' + group;
-        if (!groups[group]) groups[group]=[];
-        groups[group].push(processlist_ui.inputlist[z]);
-      }
-
-      var out = "";
-      for (z in groups) {
-        out += "<optgroup label='"+z+"'>";
-        for (p in groups[z])
-        {
-          out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+ ": " + groups[z][p]['description'] + "</option>";
-        }
-        out += "</optgroup>";
-      }
-      return out;
-  },
-
-  'fillfeed':function(){
-    var feedgroups = [];
-    for (z in processlist_ui.feedlist) {
-        if (parseInt(processlist_ui.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
-            continue; // Dont list virtual feed
-        }
-        var group = (processlist_ui.feedlist[z].tag === null ? "NoGroup" : processlist_ui.feedlist[z].tag);
-        if (group!="Deleted") {
-            if (!feedgroups[group]) feedgroups[group] = []
-            feedgroups[group].push(processlist_ui.feedlist[z]);
-        }
-    }
-    var out = "";
-    for (z in feedgroups) {
-      out += "<optgroup label='"+z+"'>";
-      for (p in feedgroups[z]) {
-          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
-      }
-      out += "</optgroup>";
-    }
-    return out;
   },
 
   'initprogress':function(){
