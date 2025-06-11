@@ -173,7 +173,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                             <?php } ?>
                                         </select>
                                         
-                                        <select class="input-mini" v-model.number="arg.new_feed_interval" v-if="[1,5,6].includes(Number(arg.new_feed_engine))">
+                                        <select class="input-mini" v-model.number="arg.new_feed_interval" v-if="[1,4,5,6].includes(Number(arg.new_feed_engine))">
                                             <option value=""><?php echo dgettext('process_messages', 'Select interval'); ?></option>
                                             <?php foreach (Engine::available_intervals() as $i) { ?>
                                                 <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages', $i["description"]); ?></option>
@@ -181,7 +181,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                         </select>
                                         <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
                                             <!-- remove pattern="[a-zA-Z0-9_]+" giving error -->
-                                            <input v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages', 'Table'); ?>" />
+                                            <input v-if="[0,8].includes(Number(arg.new_feed_engine)) v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages', 'Table'); ?>" />
                                         <?php } ?>
                                     </div>
                                 </div>

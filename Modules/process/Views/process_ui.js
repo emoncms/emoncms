@@ -374,26 +374,10 @@ var processlist_ui =
         })
       }
     }
-    // console.log(badges)
     return badges;
   },
 
   'events':function(){
-    $("#processlist-ui #feed-engine").change(function(){
-      var engine = $(this).val();
-      if (engine==6 || engine==5 || engine==4 || engine==1) {
-          $("#feed-interval").show();
-      }
-      else {
-          $("#feed-interval").hide();
-      }
-      if (engine==8 || engine==0) {
-          $("#feed-table").empty().show();
-      }
-      else {
-          $("#feed-table").hide();
-      }
-    });
 
     $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
       var processid = $('#process-select').val();
@@ -929,6 +913,7 @@ var processlist_ui =
     // Processors Select List
     $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
 
+      // This removes hidden engines from available engines of applicable processors
       for (p in result)  // for each processor
       {
         result[p]['feedwrite']=false;
