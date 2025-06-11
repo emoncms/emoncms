@@ -782,65 +782,6 @@ var processlist_ui =
 
   },
 
-  'showfeedoptions':function(processid){
-    $feedSelect = $('#feed-select');
-    $feedEngineSelect = $('#feed-engine');
-    $feedTypeSelect = $('#feed-data-type');
-    var prc = this.processlist[processid].function;     // process function
-    var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
-    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
-
-    out = "";
-
-    // overwrite feed list
-    var lastval = $feedSelect.val();
-    if (lastval==null) lastval = -1;
-    $feedSelect.data('value',lastval);// store previous value before <select> changes
-    $feedSelect.html(out);
-    // recall the old value if available
-    if($feedSelect.data('value')!=""){
-      $feedSelect.val($feedSelect.data('value'));
-      $feedSelect.data('value','');    
-    }
-    $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
-    $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
-
-    $feedEngineSelect.find("option").hide();  // Start by hiding all feed engine options
-    $feedEngineSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
-    for (e in engines) { 
-      $feedEngineSelect.find("option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
-      $feedEngineSelect.find("option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
-    }
-
-    $feedEngineSelect.hide();
-    $(".feed-engine-label").hide(); 
-    if (typeof(engines) != "undefined") {
-      $feedEngineSelect.val(engines[0]);     // Select the first feed engine in the engines array by default
-      $feedSelect.find("option[value=-1]").show(); // enable create new feed
-      $feedSelect.find("option[value=-1]").prop('disabled', false);  //for IE show
-    } else {
-      $feedSelect.find("option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-      $feedSelect.find("option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
-      for (f in this.feedlist) {
-        var exists = false;
-        $feedSelect.find('option').each(function(){
-          if (this.value == $feedSelect.val()) {
-            exists = true;
-            return false;
-          }
-        });
-        if (!exists) {
-          if($feedSelect.val()!=this.feedlist[f].id){
-            $feedSelect.val(this.feedlist[f].id); // select first feed
-          }
-        }
-        break;
-      }
-    }
-
-    $('#processlist-ui #feed-select').change();  // refresh feed select
-  },
-
   'modified':function(){
     $("#save-processlist").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
     $(".feedaccesslabel").attr("href","#"); // disable access to feeds
