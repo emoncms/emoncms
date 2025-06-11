@@ -836,10 +836,9 @@ class Process_ProcessList
            array(
               "name"=>_("Power to kWh / custom minutes"),
               "short"=>"kwhslot",
-              "argtype" => ProcessArg::MULTI,
-              "argmulti" => array(
-                array("key" => "interval", "argmtype" => ProcessArg::VALUE,  "name" => "Minutes", "desc" => _("Slot in minutes slot to accumulate"), "default" => "15"),
-                array("key" => "feed",     "argmtype" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => _("Output feed"))
+              "args" => array(
+                array("key" => "interval", "type" => ProcessArg::VALUE,  "name" => "Minutes", "desc" => _("Slot in minutes slot to accumulate"), "default" => "15"),
+                array("key" => "feed",     "type" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => _("Output feed"))
               ),
               "function"=>"power_to_kwh_custom",
               "datafields"=>1,
@@ -1129,10 +1128,10 @@ class Process_ProcessList
         return $value;
     }
     
-    public function power_to_kwh_custom($argsmulti, $time_now, $value)
+    public function power_to_kwh_custom($args, $time_now, $value)
     {
-        $feedid = intval($argsmulti['feed']);
-        $mins = intval($argsmulti['interval']);
+        $mins = intval($args[0]);
+        $feedid = intval($args[1]);
 
         $new_kwh = 0;
 

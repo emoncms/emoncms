@@ -100,6 +100,11 @@ class Process
         for ($this->proc_goto=0; $this->proc_goto<$total; $this->proc_goto++) {
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
+
+            $id_and_arg_count = count($inputprocess);
+            // if less than 1, skip this process
+            if ($id_and_arg_count < 1) continue;
+
             $processkey = $inputprocess[0];                          // Process id
             
             // Map ids to process key names
@@ -109,23 +114,17 @@ class Process
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
             }
-            $arg = 0;
-            if (isset($inputprocess[1])) $arg = $inputprocess[1];    // Can be value or feed id
-            
-            // When process is MULTI, arg is a json base64 encoded of multiple args, decode and pass as array to processor function
-            if ($process_list[$processkey]["argtype"] == ProcessArg::MULTI) {
-                $jsonString = base64_decode($arg, true);
-                if ($jsonString === false) {
-                    $this->log->error("input() Invalid Base64 string for function '" . $process_list[$processkey]["function"] . "'");
-                } else {
-                    $argsarray = json_decode($jsonString, true);
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        $this->log->error("input() Invalid JSON format '" . $process_list[$processkey]["function"] . "' Error: " . json_last_error_msg());
-                    } else {
-                        $arg = $argsarray; // args array
-                        //$this->log->info("input() Multi arguments process function '" . $process_list[$processkey]["function"]. "' : " . print_r($arg, true));
-                    }
-                }
+
+            $arg_count = $id_and_arg_count - 1;
+
+            if ($arg_count == 1) {
+                // Singular arg, just the value
+                $args = $inputprocess[1];
+            } else if ($arg_count > 1) {
+                // Multiple args (remove the process id)
+                $args = array_slice($inputprocess, 1);
+            } else {
+                $args = null;
             }
             
             $process_function = $processkey;                               // get process key 'module.function'
@@ -135,7 +134,7 @@ class Process
             if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
                 $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
             } else {
-                $value = $this->$process_function($arg,$time,$value,$options); // execute process function
+                $value = $this->$process_function($args,$time,$value,$options); // execute process function
             }
             
             if ($this->proc_skip_next) {
