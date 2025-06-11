@@ -57,7 +57,7 @@ var processlist_ui =
         
         // Process name and argument
         var processkey = this.contextprocesslist[z][0];
-        var arg = {};
+        var args = [];
         var lastvalue = "";
         var processname = "";
         processkey = this.getProcessKeyById(processkey); // convert id numbers to key names (backward compatible)
@@ -65,72 +65,102 @@ var processlist_ui =
         if (this.processlist[processkey] != undefined) {
           var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
           if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-            arg.text = this.processlist[processkey]['internalerror_desc']
+            args.push({text:this.processlist[processkey]['internalerror_desc']});
             // arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
             processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
           }  
           else if (procneedredis) {
             // arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
-            arg.text = "Process '"+processkey+"' not available. Redis not installed."
+            args.push({text:"Process '"+processkey+"' not available. Redis not installed."});
             processname = this.processlist[processkey].name;
           }
           else {
-            // Check ProcessArg Type
-            switch(this.processlist[processkey].argtype) {
 
-              case ProcessArg.VALUE:
-                arg.text = this.contextprocesslist[z][1]
-                arg.title = _Tr("Value")
-                arg.icon = 'icon-edit'
-              break;
-              
-              case ProcessArg.INPUTID:
-              var inpid = this.contextprocesslist[z][1];
-              if (this.inputlist[inpid]!=undefined) {
-                arg.text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
-                arg.title = _Tr("Input")+" "+inpid
-                arg.icon = 'icon-signal'
-
-                lastvalue = (this.inputlist[inpid].value*1).toFixed(2);
-              } else {
-                arg.text = 'Input "+schid+" does not exists or was deleted'
+            if (this.processlist[processkey].args !== undefined && Array.isArray(this.processlist[processkey].args)) {
+              for (let i = 0; i < this.processlist[processkey].args.length; i++) {
+                args.push({
+                  type: this.processlist[processkey].args[i].type
+                })
               }
-              break;
-              
-              case ProcessArg.FEEDID:
-              var feedid = this.contextprocesslist[z][1];
-              if (this.feedlist[feedid]!=undefined) {
-                arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
-                arg.title = _Tr("Feed")+" "+feedid
-                arg.icon = 'icon-list-alt'
-                var feedviewpath = "graph/";
-                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
-                    var feedviewpath = _SETTINGS.feedviewpath;
+            } else if (this.processlist[processkey].argtype !== undefined) {
+              // If argtype is defined, create a single argument object
+              args.push({
+                type: this.processlist[processkey].argtype,
+              });
+            }
+
+            for (let i = 0; i < args.length; i++) {
+              let argtype = args[i].type;
+
+              let text = "";
+              let title = "";
+              let icon = "";
+              let href = "";
+
+              // Check ProcessArg Type
+              switch(argtype) {
+                
+                case ProcessArg.VALUE:
+                  text = this.contextprocesslist[z][i+1]
+                  title = _Tr("Value")
+                  icon = 'icon-edit'
+                break;
+                
+                case ProcessArg.INPUTID:
+                var inpid = this.contextprocesslist[z][i+1];
+                if (this.inputlist[inpid]!=undefined) {
+                  text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
+                  title = _Tr("Input")+" "+inpid
+                  icon = 'icon-signal'
+
+                  lastvalue = (this.inputlist[inpid].value*1).toFixed(2);
+                } else {
+                  text = 'Input "+schid+" does not exists or was deleted'
                 }
-                arg.href = [path, feedviewpath, feedid].join("");
-                lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
-              } else {
-                arg.text = 'Feedid "+feedid+" does not exists or was deleted'
-              }
-              break;
+                break;
+                
+                case ProcessArg.FEEDID:
+                var feedid = this.contextprocesslist[z][i+1];
+                if (this.feedlist[feedid]!=undefined) {
+                  text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
+                  title = _Tr("Feed")+" "+feedid
+                  icon = 'icon-list-alt'
+                  var feedviewpath = "graph/";
+                  if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+                      var feedviewpath = _SETTINGS.feedviewpath;
+                  }
+                  href = [path, feedviewpath, feedid].join("");
+                  lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
+                } else {
+                  text = 'Feedid "+feedid+" does not exists or was deleted'
+                }
+                break;
 
-              case ProcessArg.TEXT:
-                arg.title = _Tr("Text")
-                arg.text = this.contextprocesslist[z][1]
-                arg.icon = 'icon-edit'
-              break;
-              
-              case ProcessArg.SCHEDULEID:
-              var schid = this.contextprocesslist[z][1];
-              if (this.schedulelist[schid]!=undefined) {
-                arg.title = _Tr("Schedule")+" "+schid
-                arg.text = this.schedulelist[schid].name
-                arg.icon = 'icon-time'
+                case ProcessArg.TEXT:
+                  title = _Tr("Text")
+                  text = this.contextprocesslist[z][i+1]
+                  icon = 'icon-edit'
+                break;
+                
+                case ProcessArg.SCHEDULEID:
+                var schid = this.contextprocesslist[z][i+1];
+                if (this.schedulelist[schid]!=undefined) {
+                  title = _Tr("Schedule")+" "+schid
+                  text = this.schedulelist[schid].name
+                  icon = 'icon-time'
 
-              } else {
-                arg.text = "Schedule "+schid+" does not exists or was deleted"
+                } else {
+                  text = "Schedule "+schid+" does not exists or was deleted"
+                }
+                break;
               }
-              break;
+
+              args[i] = {
+                text: text,
+                title: title,
+                icon: icon,
+                href: href
+              };
             }
             processname = this.processlist[processkey].name;
           }
@@ -142,19 +172,33 @@ var processlist_ui =
 
         // create the badge markup to display the process argument detail
         label = ""
-        if(arg.text){
-          label += arg.href ? '<a href="'+arg.href+'" class="text-info"' : '<span class="muted"'
-          label += ' title="'+arg.title+'"'
-          label += ">"
-          label += arg.icon ? '<i class="'+arg.icon+'"></i> ' : ''
-          label += arg.text || arg.title
-          label += arg.href ? '</a>':'</span>'
+        for (let i=0; i<args.length; i++) {
+          let arg = args[i];
+          if(arg.text){
+            label += arg.href ? '<a href="'+arg.href+'" class="text-info"' : '<span class="muted"'
+            label += ' title="'+arg.title+'"'
+            label += ">"
+            label += arg.icon ? '<i class="'+arg.icon+'"></i> ' : ''
+            label += arg.text || arg.title
+            label += arg.href ? '</a>':'</span>'
+          }
+          if (i < args.length - 1) {
+            label += ', ';
+          }
         }
 
         try {
+
+            let cssClass = "";
+            if (this.processlist[processkey].argtype !== undefined) {
+              cssClass = this.argtypes[this.processlist[processkey].argtype].cssClass;
+            } else {
+              cssClass = 'label-warning'; // Default class if no argtype is defined
+            }
+
             tag = `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
             style="cursor:help" 
-            class="fw-label overflow-hidden label ${this.argtypes[this.processlist[processkey].argtype].cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
+            class="fw-label overflow-hidden label ${cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
         } catch (e) {
             tag = ""
         }
@@ -260,17 +304,27 @@ var processlist_ui =
     {
       // add badge to list or add a blank one if there are any issues.
       let badge = {}
-      var keyvalue = processPairs[z].split(":")
-      var key = parseInt(keyvalue[0])
-      key = isNaN(key) ? keyvalue[0]: this.getProcessKeyById(key);
-      badge.value = keyvalue[1]
+      let id_and_args = processPairs[z].split(":")
+      var process_id = parseInt(id_and_args[0])
+      process_id = isNaN(process_id) ? id_and_args[0]: this.getProcessKeyById(process_id);
 
-      badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
+      badge.value = id_and_args[1]
+
+      badge.process = this.processlist.hasOwnProperty(process_id) ? this.processlist[process_id] : false
 
       if(this.init_done === 0 && badge.process!==false){
 
         // set badge properties
-        badge.type = this.argtypes[badge.process.argtype]
+        let argtype = ProcessArg.NONE;
+        if (badge.process.argtype !== undefined) {
+          argtype = badge.process.argtype;
+        } else if (badge.process.args !== undefined && Array.isArray(badge.process.args) && badge.process.args.length > 0) {
+          // If args is an array, use the first argument's type
+          // Review this!!
+          argtype = badge.process.args[0].type;
+        }
+
+        badge.type = this.argtypes[argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
         var feedviewpath = "graph/";
@@ -548,7 +602,7 @@ var processlist_ui =
               break;
           }
         }
-        
+
         // Set the Vue args data
         Vue.set(vue_args, 'args', args);
 
@@ -828,7 +882,7 @@ var processlist_ui =
   'encode':function(array){
     var parts = [];
     for (z in array) {
-      parts.push(array[z][0]+":"+array[z][1]);
+      parts.push(array[z].join(":"));
     }
     return parts.join(",");
   },
