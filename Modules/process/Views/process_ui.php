@@ -169,7 +169,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <div class="btn-group">
                                         <select class="input-medium" v-model.number="arg.new_feed_engine">
                                             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
-                                                <option value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+                                                <option v-if="arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
                                             <?php } ?>
                                         </select>
                                         
