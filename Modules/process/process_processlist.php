@@ -838,13 +838,12 @@ class Process_ProcessList
               "short"=>"kwhslot",
               "args" => array(
                 array("key" => "interval", "type" => ProcessArg::VALUE,  "name" => "Minutes", "desc" => _("Slot in minutes slot to accumulate"), "default" => "15"),
-                array("key" => "feed",     "type" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => _("Output feed"))
+                array("key" => "feed",     "type" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => _("Output feed"), "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY))
               ),
               "function"=>"power_to_kwh_custom",
               "datafields"=>1,
               "unit"=>"kWh/slot",
               "group"=>_("Power & Energy"),
-              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every selected minutes (starting mid night) (kWh/x min)</p>")
            )

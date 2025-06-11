@@ -482,7 +482,21 @@ var processlist_ui =
         if (process.args != undefined && Array.isArray(process.args)) {
           vue_args.args = JSON.parse(JSON.stringify(process.args));
         } else if (process.argtype != undefined) {
-          vue_args.args = [{"type": process.argtype}];
+
+          // Base type
+          let singular_arg = {"type": process.argtype};
+
+          // Copy over egines if available
+          if (process.engines !== undefined && Array.isArray(process.engines)) {
+            singular_arg.engines = process.engines;
+          }
+
+          // Copy over unit if available
+          if (process.unit !== undefined) {
+            singular_arg.unit = process.unit;
+          }
+          
+          vue_args.args = [singular_arg];
         }
 
         // Set default values for Vue args
@@ -508,6 +522,11 @@ var processlist_ui =
               arg.new_feed_engine = 5; // Default feed engine
               arg.new_feed_interval = 10; // Default feed interval
               arg.new_feed_table_name = ''; // Default feed table name
+
+              if (arg.engines !== undefined && Array.isArray(arg.engines)) {
+                arg.new_feed_engine = arg.engines[0]; // Default to first engine in the list
+              }
+
               break;
             case ProcessArg.TEXT:
               arg.value = ''; // Default value for TEXT type
