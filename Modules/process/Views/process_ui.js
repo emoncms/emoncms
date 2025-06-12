@@ -170,121 +170,6 @@ var processlist_ui =
     return badges;
   },
 
-  'events': function () {
-
-    $("#select-all-lines").on("click", function () {
-      const $this = $(this);
-      const checkboxes = $("#process-table-elements").find(".process-select");
-      if (!$this.data("originalTitle")) {
-        $this.data("originalTitle", $this.attr("title"));
-      }
-      const state = $this.data('state') !== false;
-      checkboxes.prop("checked", state);
-      checkboxes.trigger("change");
-      $this.find('.icon').toggleClass('icon-ban-circle', state);
-      $this.find('.icon').toggleClass('icon-check', !state);
-      const title = state ? $this.data('alt-title') : $this.data('originalTitle');
-      $this.attr('title', title);
-      $this.data('state', !state);
-    });
-
-    // Support keyboard shortcuts
-    $(document).on("keydown", function (e) {
-      if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
-        if (e.ctrlKey) {
-          switch (e.key) {
-            case "c":
-              $(".process-copy").trigger("click");
-              e.preventDefault();
-              break;
-            case "v":
-              $(".process-paste").trigger("click");
-              e.preventDefault();
-              break;
-            case "x":
-              $(".process-cut").trigger("click");
-              e.preventDefault();
-              break;
-          }
-        } else if (e.key === "Delete") {
-          $(".process-delete").trigger("click");
-          e.preventDefault();
-        }
-      }
-    });
-
-    $(".process-copy").on("click", function () {
-      const copiedProcessIds = $(".process-select:checked").map(function () {
-        return $(this).attr("processid");
-      }).get();
-
-      if (copiedProcessIds.length > 0) {
-        let contextprocesslist = JSON.parse(JSON.stringify(processlist_ui.contextprocesslist)); // clone
-
-        const clipboardText = JSON.stringify(
-          copiedProcessIds.map(processId => {
-            return contextprocesslist[processId];
-          })
-        );
-
-        // Copy to external clipboard
-        navigator.clipboard.writeText(clipboardText).then(() => {
-          //alert("Copied processes to clipboard:\n" + clipboardText);
-        }).catch((error) => {
-          console.error("Failed to copy to clipboard:", error);
-          alert("Failed to copy processes to clipboard." + error);
-        });
-      } else {
-        alert("No processes selected to copy.");
-      }
-    });
-
-    $(".process-paste").on("click", function () {
-      navigator.clipboard.readText().then((clipboardText) => {
-        try {
-          const pastedProcesses = JSON.parse(clipboardText);
-          if (!Array.isArray(pastedProcesses)) {
-            throw new Error("Clipboard data is not a valid array");
-          }
-
-          pastedProcesses.forEach(process => {
-            // Add the processed entry back to contextprocesslist
-            processlist_ui.contextprocesslist.push(process);
-          });
-
-          processlist_ui.modified();
-        } catch (error) {
-          alert("Failed to paste processes. The clipboard data is not in the correct format.");
-          console.error("Error parsing clipboard data:", error);
-        }
-      }).catch((error) => {
-        console.error("Failed to read data from the clipboard:", error);
-        alert("Failed to read data from the clipboard." + error);
-      });
-    });
-
-    $(".process-cut").on("click", function () {
-      $(".process-copy").trigger("click");
-      $(".process-delete").trigger("click");
-    });
-
-    $('#processlist-ui .table').on("change", ".process-select", function () {
-      const anyChecked = $(".process-select:checked").length > 0;
-
-      if (!anyChecked) {
-        $(".process-cut, .process-copy, .process-delete").prop("disabled", true);
-      } else {
-        $(".process-cut, .process-copy, .process-delete").prop("disabled", false);
-      }
-    });
-
-  },
-
-  'modified': function () {
-    $("#save-processlist").attr('class', 'btn btn-warning').text(_Tr("Changed, press to save"));
-    $(".feedaccesslabel").attr("href", "#"); // disable access to feeds
-  },
-
   'decode': function (str) {
     var processlist = [];
     if (str != null && str != "") {
@@ -317,60 +202,6 @@ var processlist_ui =
     this.init_done = 4; // going to load 4 lists
 
     init_vue();
-
-    // Schedule Select List
-    $.ajax({
-      url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
-        var schedules = {};
-        for (z in result) schedules[result[z].id] = result[z];
-        processlist_ui.schedulelist = schedules;
-        $("#schedule-select").html(processlist_ui.fillschedule());
-        processlist_ui.initprogress();
-      }
-    });
-
-    // Input Select List  
-    $.ajax({
-      url: path + "input/list.json", dataType: 'json', async: true, success: function (result) {
-        let inputs = result;
-        // set vue inputs
-        let inputs_by_node = {};
-        for (let z in inputs) {
-          let node = inputs[z].nodeid;
-          if (!inputs_by_node[node]) inputs_by_node[node] = [];
-          inputs_by_node[node].push(inputs[z]);
-        }
-        Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
-        processlist_ui.initprogress();
-
-      }
-    });
-
-    processlist_ui.events();
-  },
-
-  'fillschedule': function () {
-    var groupname = { 0: 'Public', 1: 'Mine' };
-    var groups = [];
-    //for (z in result) schedules[result[z].id] = result[z];
-
-    for (z in processlist_ui.schedulelist) {
-      var group = processlist_ui.schedulelist[z].own;
-      group = groupname[group];
-      if (!groups[group]) groups[group] = [];
-      processlist_ui.schedulelist[z]['_index'] = z;
-      groups[group].push(processlist_ui.schedulelist[z]);
-    }
-
-    var out = "";
-    for (z in groups) {
-      out += "<optgroup label='" + z + "'>";
-      for (p in groups[z]) {
-        out += "<option value=" + groups[z][p]['id'] + ">" + groups[z][p]['name'] + (z != groupname[1] ? " [" + groups[z][p]['id'] + "]" : "") + "</option>";
-      }
-      out += "</optgroup>";
-    }
-    return out;
   },
 
   'initprogress': function () {
@@ -451,6 +282,9 @@ function init_vue() {
       // This array is used to keep track of selected processes in the UI
       // It is used for bulk actions like cut, copy, paste, and delete
       selected_processes: [],
+
+      // Holds copied processes for cut/copy/paste functionality
+      copied_processes: [],
 
       state: 'not_modified', // State of the process list (not_modified, modified, saved)
 
@@ -748,7 +582,111 @@ function init_vue() {
         }
         if (typeof update == 'function') update()
         */
+      },
+
+      // ---------------------------------------------------------------------------------------------
+      // Bulk actions for process list
+      // These methods allow users to select, cut, copy, paste, and remove processes in bulk
+      // ---------------------------------------------------------------------------------------------
+
+      // Select or unselect all processes in the process list
+      select_all: function() {
+          // If all processes are selected, unselect them
+          // Otherwise, select all processes
+          if (this.selected_processes.length === this.process_list.length) {
+              this.selected_processes = [];
+          } else {
+              this.selected_processes = this.process_list.map((_, index) => index);
+          }
+      },
+
+      // Cuts the selected processes from the process list
+      cut: function() {
+          if (this.selected_processes.length > 0) {
+              this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
+              this.selected_processes.forEach(index => this.remove(index));
+              this.selected_processes = [];
+          }
+
+          // $(".process-copy").trigger("click");
+          // $(".process-delete").trigger("click");
+      },
+
+      // Copies the selected processes from the process list
+      copy: function() {
+          if (this.selected_processes.length > 0) {
+              this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
+          }
+          /*
+          const copiedProcessIds = $(".process-select:checked").map(function () {
+            return $(this).attr("processid");
+          }).get();
+
+          if (copiedProcessIds.length > 0) {
+            let contextprocesslist = JSON.parse(JSON.stringify(processlist_ui.contextprocesslist)); // clone
+
+            const clipboardText = JSON.stringify(
+              copiedProcessIds.map(processId => {
+                return contextprocesslist[processId];
+              })
+            );
+
+            // Copy to external clipboard
+            navigator.clipboard.writeText(clipboardText).then(() => {
+              //alert("Copied processes to clipboard:\n" + clipboardText);
+            }).catch((error) => {
+              console.error("Failed to copy to clipboard:", error);
+              alert("Failed to copy processes to clipboard." + error);
+            });
+          } else {
+            alert("No processes selected to copy.");
+          }
+          */
+      },
+
+      // Pastes the copied processes into the process list
+      paste: function() {
+          if (this.copied_processes && this.copied_processes.length > 0) {
+              // Insert copied processes at the end of the process list
+              this.process_list.push(...this.copied_processes);
+              this.selected_processes = []; // Clear selected processes after pasting
+          }
+
+          /*
+          navigator.clipboard.readText().then((clipboardText) => {
+            try {
+              const pastedProcesses = JSON.parse(clipboardText);
+              if (!Array.isArray(pastedProcesses)) {
+                throw new Error("Clipboard data is not a valid array");
+              }
+
+              pastedProcesses.forEach(process => {
+                // Add the processed entry back to contextprocesslist
+                processlist_ui.contextprocesslist.push(process);
+              });
+
+              processlist_ui.modified();
+            } catch (error) {
+              alert("Failed to paste processes. The clipboard data is not in the correct format.");
+              console.error("Error parsing clipboard data:", error);
+            }
+          }).catch((error) => {
+            console.error("Failed to read data from the clipboard:", error);
+            alert("Failed to read data from the clipboard." + error);
+          });
+          */
+      },
+
+      // Removes the selected processes from the process list
+      remove_selected: function() {
+          if (this.selected_processes.length > 0) {
+              // Remove selected processes from the process list
+              this.selected_processes.sort((a, b) => b - a); // Sort in descending order to avoid index issues
+              this.selected_processes.forEach(index => this.remove(index));
+              this.selected_processes = []; // Clear selected processes after removal
+          }
       }
+
 
     }
   });
@@ -777,4 +715,84 @@ function init_vue() {
     processlist_ui.initprogress();
   });
 
+  // Schedule Select List
+  $.ajax({
+    url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
+      var schedules = {};
+      for (z in result) schedules[result[z].id] = result[z];
+      // processlist_ui.schedulelist = schedules;
+      // $("#schedule-select").html(processlist_ui.fillschedule());
+      processlist_ui.initprogress();
+    }
+  });
+
+  // Input Select List  
+  $.ajax({
+    url: path + "input/list.json", dataType: 'json', async: true, success: function (result) {
+      let inputs = result;
+      // set vue inputs
+      let inputs_by_node = {};
+      for (let z in inputs) {
+        let node = inputs[z].nodeid;
+        if (!inputs_by_node[node]) inputs_by_node[node] = [];
+        inputs_by_node[node].push(inputs[z]);
+      }
+      Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
+      processlist_ui.initprogress();
+
+    }
+  });
+
+
+  /*
+      // Support keyboard shortcuts
+    $(document).on("keydown", function (e) {
+      if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
+        if (e.ctrlKey) {
+          switch (e.key) {
+            case "c":
+              $(".process-copy").trigger("click");
+              e.preventDefault();
+              break;
+            case "v":
+              $(".process-paste").trigger("click");
+              e.preventDefault();
+              break;
+            case "x":
+              $(".process-cut").trigger("click");
+              e.preventDefault();
+              break;
+          }
+        } else if (e.key === "Delete") {
+          $(".process-delete").trigger("click");
+          e.preventDefault();
+        }
+      }
+    });
+
+    'fillschedule': function () {
+      var groupname = { 0: 'Public', 1: 'Mine' };
+      var groups = [];
+      //for (z in result) schedules[result[z].id] = result[z];
+
+      for (z in processlist_ui.schedulelist) {
+        var group = processlist_ui.schedulelist[z].own;
+        group = groupname[group];
+        if (!groups[group]) groups[group] = [];
+        processlist_ui.schedulelist[z]['_index'] = z;
+        groups[group].push(processlist_ui.schedulelist[z]);
+      }
+
+      var out = "";
+      for (z in groups) {
+        out += "<optgroup label='" + z + "'>";
+        for (p in groups[z]) {
+          out += "<option value=" + groups[z][p]['id'] + ">" + groups[z][p]['name'] + (z != groupname[1] ? " [" + groups[z][p]['id'] + "]" : "") + "</option>";
+        }
+        out += "</optgroup>";
+      }
+      return out;
+    },
+
+    */
 }

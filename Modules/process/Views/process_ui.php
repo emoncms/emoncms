@@ -65,19 +65,25 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
         </div>
         <div class="modal-body" id="processlist-ui">
 
-
-
             <p><?php echo dgettext('process_messages', 'Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
 
-            <div id="noprocess" class="alert"><?php echo dgettext('process_messages', 'You have no processes defined'); ?></div>
-
-            <div id="process-controls" class="controls">
-                <button id="select-all-lines" class="btn" title="<?php echo _('Select All') ?>" data-alt-title="<?php echo _('Unselect All') ?>"><i class="icon icon-check"></i></button>
-                <button class="btn process-cut hide" title="<?php echo _('Cut') ?>" style="display: inline-block;"><span class="icon">&#9986;</span></button>
-                <button class="btn process-copy hide" title="<?php echo _('Copy') ?>" style="display: inline-block;"><span class="icon">&#9112;</span></button>
-                <button class="btn process-paste hide" title="<?php echo _('Paste') ?>" style="display: inline-block;"><i class="icon icon-briefcase"></i></button>
-                <button class="btn process-delete hide" title="<?php echo _('Delete') ?>" style="display: inline-block;"><i class="icon icon-trash"></i></button>
+            <!-- Process list controls -->
+            <div class="btn-group" style="margin-bottom: 10px;">
+                <button 
+                    class="btn" 
+                    :title="selected_processes.length == process_list.length ? 'Unselect all' : 'Select all'"
+                    @click="select_all"
+                >
+                <i :class="selected_processes.length == process_list.length ? 'icon icon-ban-circle' : 'icon icon-check'"></i>
+                </button>
+                <button class="btn" title="<?php echo _('Cut') ?>" :disabled="!selected_processes.length" @click="cut"><span class="icon">&#9986;</span></button>
+                <button class="btn" title="<?php echo _('Copy') ?>" :disabled="!selected_processes.length" @click="copy"><span class="icon">&#9112;</span></button>
+                <button class="btn" title="<?php echo _('Paste') ?>" :disabled="!copied_processes.length" @click="paste"><i class="icon icon-briefcase"></i></button>
+                <button class="btn" title="<?php echo _('Delete') ?>" :disabled="!selected_processes.length" @click="remove_selected"><i class="icon icon-trash"></i></button>
             </div>
+
+            <!-- No processes message -->
+            <div class="alert" v-if="process_list.length==0"><?php echo dgettext('process_messages', 'You have no processes defined'); ?></div>
 
             <!-- Process table -->
             <table class="table table-hover" v-if="process_list.length > 0">
