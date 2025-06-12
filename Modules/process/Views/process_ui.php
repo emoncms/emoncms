@@ -46,7 +46,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=5"></script>
+<script src="<?php echo $path; ?>Modules/process/process.js?v=6"></script>
 
 <script>
     processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;

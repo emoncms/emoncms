@@ -44,6 +44,8 @@ var process_api = {
         return processes_by_group;
     },
 
+    // Populate the id_num_map from processes
+    // This is used to map id_num to process key
     populate_id_num_map: function() {
         // Create a map of id_num to process key
         let id_num_map = {};
@@ -60,8 +62,10 @@ var process_api = {
     },
 
     // Decode input/feed process list
+    // Example input: "process__log_to_feed_join:2095,4:2096,29:1564,47:10,24:,schedule__if_not_schedule_zero:3"
+    // Returns an array of process items with fn, label, and args
+    // **This may be moved to the server side in the future**
     decode: function(process_list) {
-        // process__log_to_feed_join:2095,4:2096,29:1564,47:10,24:,schedule__if_not_schedule_zero:3
         let decoded_process_list = [];
 
         // 1. Split the process list by commas
@@ -111,12 +115,22 @@ var process_api = {
         return decoded_process_list;
     },
 
+    // Encode a process list to a string
+    // Example input: [{fn: 'process__log_to_feed_join', args: ['2095', '4']}, {fn: 'schedule__if_not_schedule_zero', args: ['3']}]
+    // Returns a string like "process__log_to_feed_join:2095,4:schedule__if_not_schedule_zero:3"
+    // **This may be moved to the server side in the future**
     encode: function(process_list) {
         // Encode a process list to a string
         let encoded_process_list = [];
         for (let i = 0; i < process_list.length; i++) {
             let process_item = process_list[i];
             let process_key = process_item.fn;
+
+            // Get id_num if it exists
+            if (this.processes[process_key] && this.processes[process_key].id_num !== undefined) {
+                process_key = this.processes[process_key].id_num;
+            }
+            
             let args = process_item.args.join(':');
             encoded_process_list.push(process_key + ':' + args);
         }
