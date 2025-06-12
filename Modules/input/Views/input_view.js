@@ -970,7 +970,7 @@ function draw_devices() {
                 device_oldest_input = input;
             }
             
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
+            var processlistHtml = process_vue ? process_vue.drawPreview(input.processList, input) : '';
             input.processlistHtml = processlistHtml;
             
             var fv = list_format_updated_obj(input.time);

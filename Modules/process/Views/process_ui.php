@@ -293,8 +293,8 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
 
 <script>
-    processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
-    <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
+    // processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
+    <?php if ($settings["redis"]["enabled"]) echo "// processlist_ui.has_redis = 1;"; ?>
 
     $(window).resize(function() {
         process_vue.adjustModal()

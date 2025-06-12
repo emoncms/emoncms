@@ -16,184 +16,16 @@ var ProcessArg = {
     SCHEDULEID: 5
 }
 
-var processlist_ui =
-{
-    processlist: [], // Cache this lists
-    feedlist: [],
-    inputlist: [],
-    schedulelist: [],
-    has_redis: 0,
-    table: typeof table !== "undefined" ? table : null,
+var argtypes = {
+    0: { cssClass: 'label-important', title: '{longText}: {value}' },
+    1: { cssClass: 'label-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
+    2: { cssClass: 'label-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
+    3: { cssClass: 'label-important', title: '{longText}: {value}' },
+    4: { cssClass: 'label-info', title: 'Topic: {longText}: {value}' },
+    5: { cssClass: 'label-warning', title: 'Schedule: {longText}: {schedule.name}' }
+};
 
-    'drawpreview': function (processlist, input) {
-        if (!processlist) return "";
-        var localprocesslist = processlist_ui.decode(processlist);
-        if (localprocesslist.length == 0) {
-            return ""
-        } else {
-            var out = [];
-            // create coloured link or span for each process 
-            for (b of this.getBadges(processlist, input)) {
-                let markup = []
-                markup.push(b.href ? '<a target="_blank" href="' + b.href + '"' : '<span')
-                markup.push(' class="label ' + b.cssClass + '" title="' + b.title + '">')
-                markup.push((b.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
-                markup.push(b.href ? '</a> ' : '</span> ')
-                out.push(markup.join(''));
-            }
-            return out.join('');
-        }
-    },
-
-    /**
-     * return array of objects with id,id_num properties
-     */
-    'backward_compatible_list': function () {
-        if (!process_vue.processes_by_key) return
-        let pl = process_vue.processes_by_key
-        let ids = [];
-        Object.keys(pl).forEach(function (key) {
-            ids.push({ id: key, id_num: pl[key].id_num })
-        });
-        return ids
-    },
-
-    /**
-     * return process "name" when given a valid id (if id not number original input returned)
-     */
-    'getProcessKeyById': function (id) {
-        id_int = parseInt(id)
-        if (isNaN(id_int)) return id
-        old_ids = this.backward_compatible_list()
-        // add numeric and textual ids (backward compatible)
-        for (id2 in old_ids) {
-            if (old_ids[id2].id_num === id_int) {
-                return old_ids[id2].id
-            }
-        }
-    },
-
-    'argtypes': {
-        0: { cssClass: 'label-important', title: 'Value: {longText} - {value}' },
-        1: { cssClass: 'label-warning', title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}' },
-        2: { cssClass: 'label-info', title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]' },
-        3: { cssClass: 'label-important', title: 'Text: {longText} - {value}' },
-        4: { cssClass: 'label-info', title: 'Topic: {longText} - {value}' },
-        5: { cssClass: 'label-warning', title: 'Schedule: {longText} - {schedule.name}' }
-    },
-
-    'getBadges': function (processlist, input) {
-        if (!processlist) return ""
-        var processPairs = processlist.split(",")
-        // create empty list of badges
-        let badges = []
-        for (z in processPairs) {
-            // add badge to list or add a blank one if there are any issues.
-            let badge = {}
-            let id_and_args = processPairs[z].split(":")
-            var process_id = parseInt(id_and_args[0])
-            process_id = isNaN(process_id) ? id_and_args[0] : this.getProcessKeyById(process_id);
-
-            badge.value = id_and_args[1]
-
-            badge.process = process_vue.processes_by_key.hasOwnProperty(process_id) ? process_vue.processes_by_key[process_id] : false
-
-            if (process_vue.init_done === 0 && badge.process !== false) {
-
-                // set badge properties
-                let argtype = ProcessArg.NONE;
-                if (badge.process.argtype !== undefined) {
-                    argtype = badge.process.argtype;
-                } else if (badge.process.args !== undefined && Array.isArray(badge.process.args) && badge.process.args.length > 0) {
-                    // If args is an array, use the first argument's type
-                    // Review this!!
-                    argtype = badge.process.args[0].type;
-                }
-
-                badge.type = this.argtypes[argtype]
-                badge.typeName = badge.type.name
-                badge.cssClass = badge.type.cssClass
-                var feedviewpath = "graph/";
-                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
-                    var feedviewpath = _SETTINGS.feedviewpath;
-                }
-                badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
-                badge.text = badge.process.short || ''
-                badge.longText = badge.process.name
-                badge.input = input
-                badge.feed = this.feedlist[badge.value] || {}
-                badge.schedule = this.schedulelist[badge.value] || {}
-                badge.title = badge.type.title.format(badge);
-                // pass the collected badge object as values for the title string template
-                badges.push(badge);
-            } else if (process_vue.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0) {
-                // no redis
-                badges.push({
-                    text: badge.process['internalerror_reason'],
-                    title: badge.process['internalerror_desc'],
-                    cssClass: 'badge-important',
-                    href: false
-                })
-            } else if (process_vue.init_done === 0 && !badge.value) {
-                // input,feed or schedule doesnt exist
-                badges.push({
-                    title: '{typeName} {value} does not exist or was deleted'.format(badge),
-                    text: 'ERROR',
-                    cssClass: 'badge-important',
-                    href: false
-                })
-            } else if (process_vue.init_done === 0 && !badge.process) {
-                // process not available
-                badges.push({
-                    title: '{typeName} {value} does not exist or was deleted'.format(badge),
-                    text: 'UNSUPPORTED',
-                    cssClass: 'badge-important',
-                    href: false
-                })
-            } else {
-                // default else
-                badges.push({
-                    text: ' ⌛ ',
-                    title: '',
-                    cssClass: 'muted',
-                    href: false
-                })
-            }
-        }
-        return badges;
-    },
-
-    'decode': function (str) {
-        var processlist = [];
-        if (str != null && str != "") {
-            var tmp = str.split(",");
-            for (n in tmp) {
-                var process = tmp[n].split(":");
-                processlist.push(process);
-            }
-        }
-        return processlist;
-    }
-}
-
-// takes plain object with key / value pairs. 
-// if found swaps placeholder for variable
-// can handle 2 deep nested objects
-if (!String.prototype.format) {
-    String.prototype.format = function (data) {
-        return this.replace(/{([\w\.-]+)}/g, function (match, placeholder) {
-            if (placeholder.indexOf('.') > -1) {
-                p = placeholder.split('.')
-                return typeof data[p[0]] != 'undefined' ? data[p[0]][p[1]] : match
-            } else {
-                return typeof data[placeholder] != 'undefined' ? data[placeholder] : match
-            }
-        });
-    };
-}
-
-
-process_vue = new Vue({
+var process_vue = new Vue({
     el: '#process_vue',
     data: {
 
@@ -206,6 +38,7 @@ process_vue = new Vue({
 
         args: [],
         inputs_by_node: {},
+        schedules: {},
 
         selected_process: 'process__log_to_feed',
 
@@ -387,8 +220,13 @@ process_vue = new Vue({
                         break;
                     case ProcessArg.INPUTID:
                         arg.value = 0; // Default value for INPUTID type
-                        if (processlist_ui.inputlist.length > 0) {
-                            arg.value = processlist_ui.inputlist[0].id; // Default to first input
+
+                        if (this.inputs_by_node && Object.keys(this.inputs_by_node).length > 0) {
+                            // Default to first input in the first node
+                            let first_node = Object.keys(this.inputs_by_node)[0];
+                            if (this.inputs_by_node[first_node] && this.inputs_by_node[first_node].length > 0) {
+                                arg.value = this.inputs_by_node[first_node][0].id; // Default to first input
+                            }
                         }
                         break;
                     case ProcessArg.FEEDID:
@@ -408,8 +246,8 @@ process_vue = new Vue({
                         break;
                     case ProcessArg.SCHEDULEID:
                         arg.value = 0; // Default value for SCHEDULEID type
-                        if (processlist_ui.schedulelist.length > 0) {
-                            arg.value = processlist_ui.schedulelist[0].id; // Default to first schedule
+                        if (this.schedules.length > 0) {
+                            arg.value = this.schedules[0].id; // Default to first schedule
                         }
                         break;
                     case ProcessArg.NONE:
@@ -675,9 +513,108 @@ process_vue = new Vue({
                 this.selected_processes.forEach(index => this.remove(index));
                 this.selected_processes = []; // Clear selected processes after removal
             }
+        },
+
+        // ---------------------------------------------------------------------------------------------
+        // Draws a preview of the process list
+        // This function generates HTML for the process list based on the provided raw process list
+        // It creates colored badges for each process with links and titles
+        // ---------------------------------------------------------------------------------------------
+        drawPreview: function (raw_process_list, input) {
+            if (!raw_process_list) return "";
+
+            var decoded_process_list = process_api.decode(raw_process_list);
+            if (decoded_process_list.length == 0) return "";
+
+            var out = [];
+            // create coloured link or span for each process 
+            for (let b of this.getBadges(decoded_process_list, input)) {
+                let markup = []
+                markup.push(b.href ? '<a target="_blank" href="' + b.href + '"' : '<span')
+                markup.push(' class="label ' + b.cssClass + '" title="' + b.title + '">')
+                markup.push((b.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+                markup.push(b.href ? '</a> ' : '</span> ')
+                out.push(markup.join(''));
+            }
+            return out.join('');
+        },
+
+        getBadges: function (process_list, input) {
+
+            // create empty list of badges
+            let badges = []
+            for (let z in process_list) {
+
+                // add badge to list
+                let badge = {
+                    process: process_api.processes[process_list[z].fn],
+                    value:  process_list[z].args[0] || ''
+                }
+
+                if (process_vue.init_done === 0 && badge.process !== false) {
+
+                    // set badge properties
+                    let argtype = ProcessArg.NONE;
+                    if (badge.process.argtype !== undefined) {
+                        argtype = badge.process.argtype;
+                    } else if (badge.process.args !== undefined && Array.isArray(badge.process.args) && badge.process.args.length > 0) {
+                        // If args is an array, use the first argument's type
+                        // Review this!!
+                        argtype = badge.process.args[0].type;
+                    }
+
+                    badge.type = argtypes[argtype]
+                    badge.typeName = badge.type.name
+                    badge.cssClass = badge.type.cssClass
+                    var feedviewpath = "graph/";
+                    if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
+                        var feedviewpath = _SETTINGS.feedviewpath;
+                    }
+                    badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
+                    badge.text = badge.process.short || ''
+                    badge.longText = badge.process.name
+                    badge.input = input
+                    badge.feed = this.feeds_by_id[badge.value] || {}
+                    badge.schedule = this.schedules[badge.value] || {}
+                    badge.title = badge.type.title.format(badge);
+                    // pass the collected badge object as values for the title string template
+                    badges.push(badge);
+                } else if (process_vue.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0) {
+                    // no redis
+                    badges.push({
+                        text: badge.process['internalerror_reason'],
+                        title: badge.process['internalerror_desc'],
+                        cssClass: 'badge-important',
+                        href: false
+                    })
+                } else if (process_vue.init_done === 0 && !badge.value) {
+                    // input,feed or schedule doesnt exist
+                    badges.push({
+                        title: '{typeName} {value} does not exist or was deleted'.format(badge),
+                        text: 'ERROR',
+                        cssClass: 'badge-important',
+                        href: false
+                    })
+                } else if (process_vue.init_done === 0 && !badge.process) {
+                    // process not available
+                    badges.push({
+                        title: '{typeName} {value} does not exist or was deleted'.format(badge),
+                        text: 'UNSUPPORTED',
+                        cssClass: 'badge-important',
+                        href: false
+                    })
+                } else {
+                    // default else
+                    badges.push({
+                        text: ' ⌛ ',
+                        title: '',
+                        cssClass: 'muted',
+                        href: false
+                    })
+                }
+            }
+            return badges;
         }
-
-
     }
 });
 
@@ -710,8 +647,8 @@ $.ajax({
     url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
         var schedules = {};
         for (z in result) schedules[result[z].id] = result[z];
-        // processlist_ui.schedulelist = schedules;
-        // $("#schedule-select").html(processlist_ui.fillschedule());
+
+        Vue.set(process_vue, 'schedules', schedules);
         process_vue.initprogress();
     }
 });
@@ -732,6 +669,22 @@ $.ajax({
 
     }
 });
+
+// takes plain object with key / value pairs. 
+// if found swaps placeholder for variable
+// can handle 2 deep nested objects
+if (!String.prototype.format) {
+    String.prototype.format = function (data) {
+        return this.replace(/{([\w\.-]+)}/g, function (match, placeholder) {
+            if (placeholder.indexOf('.') > -1) {
+                p = placeholder.split('.')
+                return typeof data[p[0]] != 'undefined' ? data[p[0]][p[1]] : match
+            } else {
+                return typeof data[placeholder] != 'undefined' ? data[placeholder] : match
+            }
+        });
+    };
+}
 
 
 /*
