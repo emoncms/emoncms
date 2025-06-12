@@ -110,7 +110,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i> {{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span>
+                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i><span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
                                 </span>
                             </span>
                         </span>
@@ -284,7 +284,8 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
 <script>
     // processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
-    <?php if ($settings["redis"]["enabled"]) echo "// processlist_ui.has_redis = 1;"; ?>
+
+    process_vue.has_redis = <?php echo ($settings["redis"]["enabled"] ? '1' : '0'); ?>;
 
     $(window).resize(function() {
         process_vue.adjustModal()

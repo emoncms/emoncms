@@ -17,12 +17,12 @@ var ProcessArg = {
 }
 
 var argtypes = {
-    0: { cssClass: 'label-important', title: '{longText}: {value}' },
-    1: { cssClass: 'label-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
-    2: { cssClass: 'label-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
-    3: { cssClass: 'label-important', title: '{longText}: {value}' },
-    4: { cssClass: 'label-info', title: 'Topic: {longText}: {value}' },
-    5: { cssClass: 'label-warning', title: 'Schedule: {longText}: {schedule.name}' }
+    0: { name: "Value", cssClass: 'label-important', title: '{longText}: {value}' },
+    1: { name: "Input", cssClass: 'label-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
+    2: { name: "Feed", cssClass: 'label-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
+    3: { name: "None", cssClass: 'label-important', title: '{longText}: {value}' },
+    4: { name: "Text", cssClass: 'label-info', title: '{longText}: {value}' },
+    5: { name: "Schedule", cssClass: 'label-warning', title: '{longText}: {schedule.name}' }
 };
 
 var process_vue = new Vue({
@@ -30,6 +30,7 @@ var process_vue = new Vue({
     data: {
 
         context_type: 0,
+        has_redis: 0, // Flag to indicate if Redis is available (1) or not (0)
 
         input_or_virtual_feed_id: '', // ID of the input or virtual feed
         input_or_virtual_feed_name: '', // Name of the input or virtual feed (used for modal title)
@@ -523,75 +524,66 @@ var process_vue = new Vue({
 
         getBadges: function (process_list, input) {
 
-            // create empty list of badges
-            let badges = []
-            for (let z in process_list) {
+            if (this.init_done !== 0) {
+                // Show loading badge for all processes if not initialized
+                return process_list.map(() => ({
+                    text: ' ⌛ ',
+                    title: '',
+                    cssClass: 'muted',
+                    href: false
+                }));
+            }
 
-                // add badge to list
+            let badges = [];
+            for (const process of process_list) {
+                const process_info = process_api.processes[process.fn];
+                if (!process_info) continue;
+
+                // Use the first argument's type, default to NONE
+                const argtype = (process_info.args.length > 0) ? process_info.args[0].type : ProcessArg.NONE;
+                const argtypeInfo = argtypes[argtype] 
+
                 let badge = {
-                    process: process_api.processes[process_list[z].fn],
-                    value: process_list[z].args[0] || ''
+                    typeName: argtypeInfo.name,
+                    cssClass: argtypeInfo.cssClass,
+                    text: process_info.short || '',
+                    longText: process_info.name,
+                    href: false,
+                    value: process.args[0] || ''
                 }
 
-                if (process_vue.init_done === 0 && badge.process !== false) {
+                let missing_input_feed_schedule = false;
 
-                    // set badge properties
-                    let argtype = ProcessArg.NONE;
+                if (argtype === ProcessArg.INPUTID) {
+                    badge.input = input;
+                } else if (argtype === ProcessArg.FEEDID) {
+                    if (this.feeds_by_id[badge.value] !== undefined) {
+                        badge.href = [path, "feed/", badge.value].join("");
+                        badge.feed = this.feeds_by_id[badge.value]
+                    } else {
+                        missing_input_feed_schedule = true;
+                    }
+                } else if (argtype === ProcessArg.SCHEDULEID) {
+                    if (this.schedules[badge.value] !== undefined) {
+                        badge.schedule = this.schedules[badge.value]
+                    } else {
+                        missing_input_feed_schedule = true;
+                    }
+                }
                     
-                    // Use the first argument's type
-                    if (badge.process.args.length > 0) {
-                        argtype = badge.process.args[0].type;
-                    }
-
-                    badge.type = argtypes[argtype]
-                    badge.typeName = badge.type.name
-                    badge.cssClass = badge.type.cssClass
-                    var feedviewpath = "graph/";
-                    if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
-                        var feedviewpath = _SETTINGS.feedviewpath;
-                    }
-                    badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
-                    badge.text = badge.process.short || ''
-                    badge.longText = badge.process.name
-                    badge.input = input
-                    badge.feed = this.feeds_by_id[badge.value] || {}
-                    badge.schedule = this.schedules[badge.value] || {}
-                    badge.title = badge.type.title.format(badge);
-                    // pass the collected badge object as values for the title string template
-                    badges.push(badge);
-                } else if (process_vue.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0) {
-                    // no redis
-                    badges.push({
-                        text: badge.process['internalerror_reason'],
-                        title: badge.process['internalerror_desc'],
-                        cssClass: 'badge-important',
-                        href: false
-                    })
-                } else if (process_vue.init_done === 0 && !badge.value) {
-                    // input,feed or schedule doesnt exist
-                    badges.push({
-                        title: '{typeName} {value} does not exist or was deleted'.format(badge),
-                        text: 'ERROR',
-                        cssClass: 'badge-important',
-                        href: false
-                    })
-                } else if (process_vue.init_done === 0 && !badge.process) {
-                    // process not available
-                    badges.push({
-                        title: '{typeName} {value} does not exist or was deleted'.format(badge),
-                        text: 'UNSUPPORTED',
-                        cssClass: 'badge-important',
-                        href: false
-                    })
+                if (!missing_input_feed_schedule) {
+                    badge.title = argtypeInfo.title.format(badge);
                 } else {
-                    // default else
-                    badges.push({
-                        text: ' ⌛ ',
-                        title: '',
-                        cssClass: 'muted',
-                        href: false
-                    })
+                    badge.title = '{typeName} {value} does not exist or was deleted'.format(badge);
+                    badge.text = 'ERROR';
+                    badge.cssClass = 'badge-muted';
                 }
+
+                if (!this.has_redis && process_info.requireredis) {
+                    badge.cssClass = 'badge-muted';
+                }
+
+                badges.push(badge);
             }
             return badges;
         }
@@ -690,9 +682,6 @@ $(document).on("keydown", function (e) {
         }
     }
 });
-
-
-
 
 /*
 
