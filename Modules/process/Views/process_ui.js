@@ -558,7 +558,7 @@ var process_vue = new Vue({
                     badge.input = input;
                 } else if (argtype === ProcessArg.FEEDID) {
                     if (this.feeds_by_id[badge.value] !== undefined) {
-                        badge.href = [path, "feed/", badge.value].join("");
+                        badge.href = [path, "graph/", badge.value].join("");
                         badge.feed = this.feeds_by_id[badge.value]
                     } else {
                         missing_input_feed_schedule = true;
