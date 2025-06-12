@@ -173,26 +173,6 @@ var processlist_ui =
       }
     }
     return processlist;
-  },
-
-  'init': function (contexttype) {
-    init_vue(contexttype);
-  },
-
-  'load': function (
-    input_or_virtual_feed_id, 
-    input_or_virtual_feed_process_list, 
-    input_or_virtual_feed_name, 
-    new_feed_name, 
-    new_feed_tag
-  ){
-    process_vue.load(
-      input_or_virtual_feed_id,
-      input_or_virtual_feed_process_list,
-      input_or_virtual_feed_name,
-      new_feed_name,
-      new_feed_tag
-    );
   }
 }
 
@@ -212,13 +192,12 @@ if (!String.prototype.format) {
   };
 }
 
-function init_vue(contexttype) {
 
   process_vue = new Vue({
     el: '#process_vue',
     data: {
 
-      contexttype: contexttype, // 0: input, 1: feed/virtual
+      contexttype: 0,
 
       input_or_virtual_feed_id: '', // ID of the input or virtual feed
       input_or_virtual_feed_name: '', // Name of the input or virtual feed (used for modal title)
@@ -260,12 +239,14 @@ function init_vue(contexttype) {
       },
 
       load: function (
+        context_type,
         input_or_virtual_feed_id,
         input_or_virtual_feed_process_list,
         input_or_virtual_feed_name,
         new_feed_name = "",
         new_feed_tag = ""
       ) {
+        this.contexttype = context_type; // Set the context type (input or feed)
         this.input_or_virtual_feed_id = input_or_virtual_feed_id; // Set the ID of the input or virtual feed
         this.input_or_virtual_feed_name = input_or_virtual_feed_name; // Set the name for the modal title
         this.new_feed_name = new_feed_name; // Set the new feed name
@@ -274,6 +255,13 @@ function init_vue(contexttype) {
         this.state = 'not_modified'; // Reset the state to not_modified
         this.process_list = process_api.decode(input_or_virtual_feed_process_list);
         console.log("Process Vue initialized with process list:", this.process_list);
+
+        if (this.contexttype == ContextType.INPUT) {
+          this.selected_process = "process__log_to_feed"; // default process for input context
+        } else if (this.contexttype == ContextType.VIRTUALFEED) {
+          this.selected_process = "process__source_feed_data_time"; // default process for feed context
+        }
+
         this.processSelectChange(); // Trigger the process select change to update the UI
         // processlist_ui.scrollto($('#processlist-ui'));
 
@@ -303,12 +291,6 @@ function init_vue(contexttype) {
           // Which table draw is this? input and feed list perhaps/
           if (window.table != undefined && window.table.draw != undefined) table.draw();
           console.log("Process Vue initialized successfully.");
-
-          if (this.contexttype == ContextType.INPUT) {
-            this.selected_process = "process__log_to_feed"; // default process for input context
-          } else if (this.contexttype == ContextType.VIRTUALFEED) {
-            this.selected_process = "process__source_feed_data_time"; // default process for feed context
-          }
         }
       },
 
@@ -810,4 +792,3 @@ function init_vue(contexttype) {
   },
 
     */
-}

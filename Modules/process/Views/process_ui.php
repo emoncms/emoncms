@@ -43,19 +43,9 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 <script type="text/javascript">
     <?php require "Modules/process/process_langjs.php"; ?>
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 <script src="<?php echo $path; ?>Modules/process/process.js?v=6"></script>
-
-<script>
-    processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
-    <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
-
-    $(window).resize(function() {
-        process_vue.adjustModal()
-    });
-</script>
 
 <div id="process_vue">
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
@@ -299,3 +289,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
         </div>
     </div>
 </div>
+
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
+
+<script>
+    processlist_ui.engines_hidden = <?php echo $engine_hidden; ?>;
+    <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
+
+    $(window).resize(function() {
+        process_vue.adjustModal()
+    });
+</script>

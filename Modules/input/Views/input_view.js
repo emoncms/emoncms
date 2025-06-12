@@ -1298,9 +1298,6 @@ function submitAllInputForms(e){
 //     update();
 //     $('#inputDeleteModal').modal('hide');
 // });
- 
-// Process list UI js
-processlist_ui.init(0); // Set input context
 
 function showInputConfigure(input) {
     var i = input
@@ -1317,7 +1314,7 @@ function showInputConfigure(input) {
         contextname = i.nodeid;
     }
     var newfeedtag = i.nodeid;
-    processlist_ui.load(contextid,i.processList,contextname,newfeedname,newfeedtag); // load configs
+    process_vue.load(0, contextid, i.processList, contextname, newfeedname, newfeedtag); // load configs
 }
 
 function save_processlist(input_id, encoded_process_list) {
