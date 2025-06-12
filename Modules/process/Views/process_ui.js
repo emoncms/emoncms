@@ -426,79 +426,65 @@ var process_vue = new Vue({
 
         // Cuts the selected processes from the process list
         cut: function () {
+            /*
             if (this.selected_processes.length > 0) {
                 this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
                 this.selected_processes.forEach(index => this.remove(index));
                 this.selected_processes = [];
-            }
-
-            // $(".process-copy").trigger("click");
-            // $(".process-delete").trigger("click");
+            }*/
+            this.copy(); // Call copy to put the cut processes on the clipboard
+            this.remove_selected(); // Remove selected processes from the list
         },
 
-        // Copies the selected processes from the process list
+        // Copies the selected processes from the process list and puts them on the clipboard
         copy: function () {
             if (this.selected_processes.length > 0) {
-                this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
-            }
-            /*
-            const copiedProcessIds = $(".process-select:checked").map(function () {
-              return $(this).attr("processid");
-            }).get();
-  
-            if (copiedProcessIds.length > 0) {
-              let contextprocesslist = JSON.parse(JSON.stringify(processlist_ui.contextprocesslist)); // clone
-  
-              const clipboardText = JSON.stringify(
-                copiedProcessIds.map(processId => {
-                  return contextprocesslist[processId];
-                })
-              );
-  
-              // Copy to external clipboard
-              navigator.clipboard.writeText(clipboardText).then(() => {
-                //alert("Copied processes to clipboard:\n" + clipboardText);
-              }).catch((error) => {
-                console.error("Failed to copy to clipboard:", error);
-                alert("Failed to copy processes to clipboard." + error);
-              });
+                // Get the selected process objects
+                const copiedProcesses = this.selected_processes.map(index => this.process_list[index]);
+                this.copied_processes = copiedProcesses;
+
+                // Serialize and copy to clipboard
+                const clipboardText = JSON.stringify(copiedProcesses);
+                navigator.clipboard.writeText(clipboardText).then(() => {
+                    // Optionally notify the user
+                    // alert("Copied processes to clipboard.");
+                }).catch((error) => {
+                    console.error("Failed to copy to clipboard:", error);
+                    alert("Failed to copy processes to clipboard. " + error);
+                });
             } else {
-              alert("No processes selected to copy.");
+                alert("No processes selected to copy.");
             }
-            */
         },
 
         // Pastes the copied processes into the process list
         paste: function () {
-            if (this.copied_processes && this.copied_processes.length > 0) {
-                // Insert copied processes at the end of the process list
-                this.process_list.push(...this.copied_processes);
-                this.selected_processes = []; // Clear selected processes after pasting
-            }
-
-            /*
+            // Try to read from the clipboard first
             navigator.clipboard.readText().then((clipboardText) => {
-              try {
-                const pastedProcesses = JSON.parse(clipboardText);
-                if (!Array.isArray(pastedProcesses)) {
-                  throw new Error("Clipboard data is not a valid array");
+                try {
+                    const pastedProcesses = JSON.parse(clipboardText);
+                    if (!Array.isArray(pastedProcesses)) {
+                        throw new Error("Clipboard data is not a valid array");
+                    }
+                    // Insert pasted processes at the end of the process list
+                    this.process_list.push(...pastedProcesses);
+                    this.selected_processes = []; // Clear selected processes after pasting
+                    this.modified();
+                } catch (error) {
+                    alert("Failed to paste processes. The clipboard data is not in the correct format.");
+                    console.error("Error parsing clipboard data:", error);
                 }
-  
-                pastedProcesses.forEach(process => {
-                  // Add the processed entry back to contextprocesslist
-                  processlist_ui.contextprocesslist.push(process);
-                });
-  
-                processlist_ui.modified();
-              } catch (error) {
-                alert("Failed to paste processes. The clipboard data is not in the correct format.");
-                console.error("Error parsing clipboard data:", error);
-              }
             }).catch((error) => {
-              console.error("Failed to read data from the clipboard:", error);
-              alert("Failed to read data from the clipboard." + error);
+                // If clipboard read fails, fallback to internal copied_processes
+                if (this.copied_processes && this.copied_processes.length > 0) {
+                    this.process_list.push(...this.copied_processes);
+                    this.selected_processes = [];
+                    this.modified();
+                } else {
+                    alert("Failed to read data from the clipboard." + error);
+                    console.error("Failed to read data from the clipboard:", error);
+                }
             });
-            */
         },
 
         // Removes the selected processes from the process list

@@ -58,7 +58,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
             <p><?php echo dgettext('process_messages', 'Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
 
             <!-- Process list controls -->
-            <div class="btn-group" style="margin-bottom: 10px;">
+            <div style="margin-bottom: 10px;">
                 <button 
                     class="btn" 
                     :title="selected_processes.length == process_list.length ? 'Unselect all' : 'Select all'"
