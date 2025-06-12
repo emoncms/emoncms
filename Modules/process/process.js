@@ -14,10 +14,12 @@ var process_api = {
             async: (typeof callback !== "function"),
             success: function(result)
             {
-                let processes = result;
+                let processes = self.convert_arg_structure(result);
+                console.log("Processes loaded:", processes);
+                self.processes = processes; // Store processes
+                self.populate_id_num_map(); // Populate id_num map
+
                 if (typeof callback === "function") {
-                    self.processes = processes; // Store processes
-                    self.populate_id_num_map(); // Populate id_num map
                     callback(processes);
                 } else {
                     // Perhaps synchronous result should not be available..
@@ -26,6 +28,40 @@ var process_api = {
             }
         });
         return false;
+    },
+
+    // Convert singular arguments to args array
+    convert_arg_structure: function(processes) {
+        // Convert singular arguments to args array
+        for (let key in processes) {
+            let process = processes[key];
+
+            // If process.args does not exist or is not an array, create it from process.argtype
+            if (!process.args || !Array.isArray(process.args)) {
+                // Does singular definition exist?
+                if (process.argtype !== undefined) {
+
+                    // Base type
+                    let singular_arg = { "type": process.argtype };
+
+                    // Copy over egines if available
+                    if (process.engines !== undefined && Array.isArray(process.engines)) {
+                        singular_arg.engines = process.engines;
+                    }
+
+                    // Copy over unit if available
+                    if (process.unit !== undefined) {
+                        singular_arg.unit = process.unit;
+                    }
+
+                    process.args = [singular_arg];
+                } else {
+                    // If no argtype, initialize args as an empty array
+                    process.args = [];
+                }
+            }
+        }
+        return processes;
     },
 
     // Processes by Group

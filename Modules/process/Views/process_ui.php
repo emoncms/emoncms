@@ -45,7 +45,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=6"></script>
+<script src="<?php echo $path; ?>Modules/process/process.js?v=8"></script>
 
 <div id="process_vue">
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
@@ -101,17 +101,6 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                     </td>
                     <!-- Process arguments -->
                     <td>
-                        <span v-if="processes_by_key[process.fn].argtype !== undefined">
-                            <span v-if="processes_by_key[process.fn].argtype == ProcessArg.VALUE">
-                                <span class="muted" title="Value"><i class="icon-edit"></i> {{ process.args[0] }}</span>
-                            </span>
-                            <span v-if="processes_by_key[process.fn].argtype == ProcessArg.TEXT">
-                                <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[0] }}</span>
-                            </span>
-                            <span v-if="processes_by_key[process.fn].argtype == ProcessArg.FEEDID">
-                                <span class="muted" title="Feed"><i class="icon-list-alt"></i> {{ feeds_by_id[process.args[0]].tag }}: {{ feeds_by_id[process.args[0]].name }}</span>
-                            </span>
-                        </span>
                         <span v-if="processes_by_key[process.fn].args">
                             <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
                                 <span v-if="arg.type == ProcessArg.VALUE">
@@ -240,7 +229,6 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     </div>
                                 </div>
                             </span>
-
                         </span>
 
                         <span id="type-btn-add">

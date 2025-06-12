@@ -91,18 +91,14 @@ var process_vue = new Vue({
             for (let i = 0; i < process_list.length; i++) {
                 let process = process_list[i];
                 let argtype = ProcessArg.NONE; // Default argument type
-                
+
                 // Get arg type
                 if (process.fn && process.fn in this.processes_by_key) {
                     let process_info = this.processes_by_key[process.fn];
-                    if (process_info.argtype !== undefined) {
-                        argtype = process_info.argtype; // Set argtype from process info
-                    } else if (process_info.args !== undefined && Array.isArray(process_info.args) && process_info.args.length > 0) {
-                        // If args is an array, use the first argument's type
+                    // use the first argument's type
+                    if (process_info.args.length > 0) {
                         argtype = process_info.args[0].type;
                     }
-                } else {
-                    console.warn("Process not found in processes_by_key:", process.fn);
                 }
 
                 // Set the label for the process according to its argtype
@@ -205,29 +201,7 @@ var process_vue = new Vue({
 
             // Get the selected process
             let process = this.processes_by_key[this.selected_process];
-
-            let args = {};
-            // Set the Vue args data
-            if (process.args != undefined && Array.isArray(process.args)) {
-                args = JSON.parse(JSON.stringify(process.args));
-
-            } else if (process.argtype != undefined) {
-
-                // Base type
-                let singular_arg = { "type": process.argtype };
-
-                // Copy over egines if available
-                if (process.engines !== undefined && Array.isArray(process.engines)) {
-                    singular_arg.engines = process.engines;
-                }
-
-                // Copy over unit if available
-                if (process.unit !== undefined) {
-                    singular_arg.unit = process.unit;
-                }
-
-                args = [singular_arg];
-            }
+            let args = JSON.parse(JSON.stringify(process.args));
 
             // Set default values for Vue args
 
@@ -577,11 +551,9 @@ var process_vue = new Vue({
 
                     // set badge properties
                     let argtype = ProcessArg.NONE;
-                    if (badge.process.argtype !== undefined) {
-                        argtype = badge.process.argtype;
-                    } else if (badge.process.args !== undefined && Array.isArray(badge.process.args) && badge.process.args.length > 0) {
-                        // If args is an array, use the first argument's type
-                        // Review this!!
+                    
+                    // Use the first argument's type
+                    if (badge.process.args.length > 0) {
                         argtype = badge.process.args[0].type;
                     }
 
