@@ -53,7 +53,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
 
     $(window).resize(function() {
-        processlist_ui.adjustmodal()
+        process_vue.adjustModal()
     });
 </script>
 
@@ -61,7 +61,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" @click="close">×</button>
-            <h3><b><span id="contextname"></span></b> <?php echo dgettext('process_messages', 'process list setup'); ?></h3>
+            <h3><b>{{ input_or_virtual_feed_name }}</b> <?php echo dgettext('process_messages', 'process list setup'); ?></h3>
         </div>
         <div class="modal-body" id="processlist-ui">
 
@@ -231,7 +231,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <div class="btn-group">
                                         <select class="input-medium" v-model.number="arg.new_feed_engine">
                                             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
-                                                <option v-if="arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+                                                <option v-if="arg.engines && arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
                                             <?php } ?>
                                         </select>
 

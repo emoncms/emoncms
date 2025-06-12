@@ -2,6 +2,11 @@
 // Version 11.8 - Nuno Chaveiro nchaveiro(at)gmail.com 04/2025
 //---------------------------------------------------------------------
 
+var ContextType = {
+  INPUT: 0, // Input context
+  VIRTUALFEED: 1, // Feed context
+};
+
 var ProcessArg = {
   VALUE: 0,
   INPUTID: 1,
@@ -13,23 +18,11 @@ var ProcessArg = {
 
 var processlist_ui =
 {
-  contexttype: 0,         // Editor type (0:input, 1:feed/virtual)
-  contextid: 0,           // The current inputid or virtual feed id being edited
-  contextprocesslist: [], // The current process list being edited
-
   processlist: [], // Cache this lists
   feedlist: [],
   inputlist: [],
   schedulelist: [],
-
-  newfeedname: "",
-  newfeedtag: "",
-
-  init_done: -1, // when 0 all lists are loaded
-
-  engines_hidden: [],
   has_redis: 0,
-
   table: typeof table !== "undefined" ? table : null,
 
   'drawpreview': function (processlist, input) {
@@ -105,7 +98,7 @@ var processlist_ui =
 
       badge.process = process_vue.processes_by_key.hasOwnProperty(process_id) ? process_vue.processes_by_key[process_id] : false
 
-      if (this.init_done === 0 && badge.process !== false) {
+      if (process_vue.init_done === 0 && badge.process !== false) {
 
         // set badge properties
         let argtype = ProcessArg.NONE;
@@ -133,7 +126,7 @@ var processlist_ui =
         badge.title = badge.type.title.format(badge);
         // pass the collected badge object as values for the title string template
         badges.push(badge);
-      } else if (this.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0) {
+      } else if (process_vue.init_done === 0 && this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0) {
         // no redis
         badges.push({
           text: badge.process['internalerror_reason'],
@@ -141,7 +134,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if (this.init_done === 0 && !badge.value) {
+      } else if (process_vue.init_done === 0 && !badge.value) {
         // input,feed or schedule doesnt exist
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -149,7 +142,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if (this.init_done === 0 && !badge.process) {
+      } else if (process_vue.init_done === 0 && !badge.process) {
         // process not available
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -182,65 +175,24 @@ var processlist_ui =
     return processlist;
   },
 
-  'encode': function (array) {
-    var parts = [];
-    for (z in array) {
-      parts.push(array[z].join(":"));
-    }
-    return parts.join(",");
-  },
-
-  'scrollto': function (scrollTo) {
-    var container = $('#processlist-ui');
-    container.animate({
-      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
-    });
-  },
-
   'init': function (contexttype) {
-    this.contexttype = contexttype;
-    this.init_done = 4; // going to load 4 lists
-
-    init_vue();
+    init_vue(contexttype);
   },
 
-  'initprogress': function () {
-    processlist_ui.init_done--;
-    if (processlist_ui.init_done == 0) {
-      if (window.table != undefined && window.table.draw != undefined) table.draw();
-
-      if (processlist_ui.contexttype == 0) {
-        $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
-      } else {
-        $("#process-select").val(this.getProcessKeyById(53)); // default process for feed context
-      }
-      $("#processlist-ui #process-select").change();  // Force a refresh
-    }
-  },
-
-  'load': function (contextid, contextprocesslist, contextname, newfeedname, newfeedtag) {
-    this.contextid = contextid;
-    this.contextprocesslist = contextprocesslist;
-    $("#contextname").html(contextname);
-    this.newfeedname = newfeedname;
-    this.newfeedtag = newfeedtag;
-    $("#process-header-add").show();
-    $("#process-header-edit").hide();
-    $("#type-btn-add").show();
-    $("#type-btn-edit").hide();
-
-    processlist_ui.scrollto($('#processlist-ui'));
-    $("#processlistModal").modal('show');
-    this.adjustmodal();
-
-    process_vue.init(contextprocesslist);
-  },
-
-  'adjustmodal': function () {
-    if ($("#processlistModal").length) {
-      var h = $(window).height() - $("#processlistModal").position().top - 180;
-      $("#processlist-ui").height(h);
-    }
+  'load': function (
+    input_or_virtual_feed_id, 
+    input_or_virtual_feed_process_list, 
+    input_or_virtual_feed_name, 
+    new_feed_name, 
+    new_feed_tag
+  ){
+    process_vue.load(
+      input_or_virtual_feed_id,
+      input_or_virtual_feed_process_list,
+      input_or_virtual_feed_name,
+      new_feed_name,
+      new_feed_tag
+    );
   }
 }
 
@@ -260,11 +212,18 @@ if (!String.prototype.format) {
   };
 }
 
-function init_vue() {
+function init_vue(contexttype) {
 
   process_vue = new Vue({
     el: '#process_vue',
     data: {
+
+      contexttype: contexttype, // 0: input, 1: feed/virtual
+
+      input_or_virtual_feed_id: '', // ID of the input or virtual feed
+      input_or_virtual_feed_name: '', // Name of the input or virtual feed (used for modal title)
+      new_feed_name: '', // Name for the new feed (if creating a new feed)
+      new_feed_tag: '', // Tag for the new feed (if creating a new feed)
 
       args: [],
       inputs_by_node: {},
@@ -288,6 +247,8 @@ function init_vue() {
 
       state: 'not_modified', // State of the process list (not_modified, modified, saved)
 
+      init_done: 4, // Counter for initialization progress
+
     },
 
     methods: {
@@ -298,10 +259,57 @@ function init_vue() {
         }
       },
 
-      init: function (process_list) {
+      load: function (
+        input_or_virtual_feed_id,
+        input_or_virtual_feed_process_list,
+        input_or_virtual_feed_name,
+        new_feed_name = "",
+        new_feed_tag = ""
+      ) {
+        this.input_or_virtual_feed_id = input_or_virtual_feed_id; // Set the ID of the input or virtual feed
+        this.input_or_virtual_feed_name = input_or_virtual_feed_name; // Set the name for the modal title
+        this.new_feed_name = new_feed_name; // Set the new feed name
+        this.new_feed_tag = new_feed_tag; // Set the new feed tag
+
         this.state = 'not_modified'; // Reset the state to not_modified
-        this.process_list = process_api.decode(process_list);
+        this.process_list = process_api.decode(input_or_virtual_feed_process_list);
+        console.log("Process Vue initialized with process list:", this.process_list);
         this.processSelectChange(); // Trigger the process select change to update the UI
+        // processlist_ui.scrollto($('#processlist-ui'));
+
+
+        // Show the process list modal
+        $("#processlistModal").modal('show');
+        this.adjustModal(); // Adjust the modal height
+        $("#process-header-add").show();
+        $("#process-header-edit").hide();
+        $("#type-btn-add").show();
+        $("#type-btn-edit").hide();
+
+      },
+
+      adjustModal: function () {
+        // Adjust the height of the process list UI
+        if ($("#processlistModal").length) {
+            var h = $(window).height() - $("#processlistModal").position().top - 180;
+            $("#processlist-ui").height(h);
+        }
+      },
+
+      initprogress: function () {
+        this.init_done--;
+        console.log("Process Vue init progress: " + this.init_done);
+        if (this.init_done == 0) {
+          // Which table draw is this? input and feed list perhaps/
+          if (window.table != undefined && window.table.draw != undefined) table.draw();
+          console.log("Process Vue initialized successfully.");
+
+          if (this.contexttype == ContextType.INPUT) {
+            this.selected_process = "process__log_to_feed"; // default process for input context
+          } else if (this.contexttype == ContextType.VIRTUALFEED) {
+            this.selected_process = "process__source_feed_data_time"; // default process for feed context
+          }
+        }
       },
 
       save: function () {
@@ -309,7 +317,7 @@ function init_vue() {
 
         // if global function exists save_processlist
         if (typeof save_processlist === 'function') {
-          if (save_processlist(encoded_process_list)) {
+          if (save_processlist(this.input_or_virtual_feed_id, encoded_process_list)) {
             this.saved(); // Update the state to saved
           }
         } else {
@@ -403,8 +411,8 @@ function init_vue() {
               break;
             case ProcessArg.FEEDID:
               arg.value = -1; // Default value for FEEDID type (create new feed)
-              arg.new_feed_tag = processlist_ui.newfeedtag; // Default feed tag
-              arg.new_feed_name = processlist_ui.newfeedname; // Default feed name
+              arg.new_feed_tag = this.new_feed_tag; // Default feed tag
+              arg.new_feed_name = this.new_feed_name; // Default feed name
               arg.new_feed_engine = 5; // Default feed engine
               arg.new_feed_interval = 10; // Default feed interval
               arg.new_feed_table_name = ''; // Default feed table name
@@ -573,7 +581,7 @@ function init_vue() {
         if (feeds.data != undefined) feeds = feeds.data;
 
         for (z in feeds) {
-          if (feeds.hasOwnProperty(z) && (feeds[z].id == processlist_ui.contextid)) {
+          if (feeds.hasOwnProperty(z) && (feeds[z].id == this.input_or_virtual_feed_id)) {
             feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
           }
         }
@@ -704,7 +712,7 @@ function init_vue() {
     Vue.set(process_vue, 'processes_by_key', processes);
     Vue.set(process_vue, 'processes_by_group', process_api.by_group(processes));
 
-    processlist_ui.initprogress();
+    process_vue.initprogress();
   });
 
   // Fetch the feeds from the server and organize them by tag and ID
@@ -712,7 +720,7 @@ function init_vue() {
     Vue.set(process_vue, 'feeds_by_tag', feed.by_tag(feeds));
     Vue.set(process_vue, 'feeds_by_id', feed.by_id(feeds));
 
-    processlist_ui.initprogress();
+    process_vue.initprogress();
   });
 
   // Schedule Select List
@@ -722,7 +730,7 @@ function init_vue() {
       for (z in result) schedules[result[z].id] = result[z];
       // processlist_ui.schedulelist = schedules;
       // $("#schedule-select").html(processlist_ui.fillschedule());
-      processlist_ui.initprogress();
+      process_vue.initprogress();
     }
   });
 
@@ -738,7 +746,7 @@ function init_vue() {
         inputs_by_node[node].push(inputs[z]);
       }
       Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
-      processlist_ui.initprogress();
+      process_vue.initprogress();
 
     }
   });
@@ -793,6 +801,13 @@ function init_vue() {
       }
       return out;
     },
+
+  'scrollto': function (scrollTo) {
+    var container = $('#processlist-ui');
+    container.animate({
+      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+    });
+  },
 
     */
 }

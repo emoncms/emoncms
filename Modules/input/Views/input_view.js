@@ -1320,8 +1320,8 @@ function showInputConfigure(input) {
     processlist_ui.load(contextid,i.processList,contextname,newfeedname,newfeedtag); // load configs
 }
 
-function save_processlist(encoded_process_list) {
-    var result = input.set_process(processlist_ui.contextid,encoded_process_list);
+function save_processlist(input_id, encoded_process_list) {
+    var result = input.set_process(input_id, encoded_process_list);
     if (!result.success) {
         alert('ERROR: Could not save processlist. '+result.message); 
         return false;
