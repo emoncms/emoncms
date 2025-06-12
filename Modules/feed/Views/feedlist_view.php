@@ -447,7 +447,7 @@ function update_feed_list() {
                 }
                 var processListHTML = '';
                 if(feed.processList!=undefined && feed.processList.length > 0){
-                    processListHTML = processlist_ui ? processlist_ui.drawpreview(feed.processList, feed) : '';
+                    processListHTML = process_vue ? process_vue.drawPreview(feed.processList, feed) : '';
                 }
 
                 // show the start time if available
@@ -1330,9 +1330,6 @@ $('#newfeed-engine').change(function(){
     }
 });
 
-// Process list UI js
-processlist_ui.init(1); // is virtual feed
-
 $(".feed-process").click(function() {
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
@@ -1340,14 +1337,21 @@ $(".feed-process").click(function() {
     var contextname = "";
     if (feeds[feedid].name != "") contextname = feeds[feedid].tag + " : " + feeds[feedid].name;
     else contextname = feeds[feedid].tag + " : " + feeds[feedid].id;    
-    var processlist = processlist_ui.decode(feeds[feedid].processList); // Feed process list
-    processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
+    process_vue.load(1, contextid, feeds[feedid].processList, contextname, null, null); // load configs
 });
 
-$("#save-processlist").click(function (){
-    var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-}); 
+function save_processlist(feed_id, encoded_process_list) {
+    var result = feed.set_process(feed_id, encoded_process_list);
+    if (!result.success) {
+        alert('ERROR: Could not save processlist. '+result.message); 
+        return false;
+    } else {
+        // This may get called twice
+        if (typeof update === 'function') update();
+        // may need to pass table back here??
+        return true;
+    }
+}
 
 // Translations
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
