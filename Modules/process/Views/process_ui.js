@@ -666,32 +666,35 @@ if (!String.prototype.format) {
     };
 }
 
+// Support keyboard shortcuts
+$(document).on("keydown", function (e) {
+    if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
+        if (e.ctrlKey) {
+            switch (e.key) {
+                case "c":
+                    e.preventDefault();
+                    process_vue.copy(); // Call copy method
+                    break;
+                case "v":
+                    e.preventDefault();
+                    process_vue.paste(); // Call paste method
+                    break;
+                case "x":
+                    e.preventDefault();
+                    process_vue.cut(); // Call cut method
+                    break;
+            }
+        } else if (e.key === "Delete") {
+            e.preventDefault();
+            process_vue.remove_selected(); // Call remove_selected method
+        }
+    }
+});
+
+
+
 
 /*
-    // Support keyboard shortcuts
-  $(document).on("keydown", function (e) {
-    if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
-      if (e.ctrlKey) {
-        switch (e.key) {
-          case "c":
-            $(".process-copy").trigger("click");
-            e.preventDefault();
-            break;
-          case "v":
-            $(".process-paste").trigger("click");
-            e.preventDefault();
-            break;
-          case "x":
-            $(".process-cut").trigger("click");
-            e.preventDefault();
-            break;
-        }
-      } else if (e.key === "Delete") {
-        $(".process-delete").trigger("click");
-        e.preventDefault();
-      }
-    }
-  });
 
   'fillschedule': function () {
     var groupname = { 0: 'Public', 1: 'Mine' };
