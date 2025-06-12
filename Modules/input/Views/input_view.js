@@ -1317,22 +1317,20 @@ function showInputConfigure(input) {
         contextname = i.nodeid;
     }
     var newfeedtag = i.nodeid;
-    var processlist = processlist_ui.decode(i.processList); // Input process list
-    processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
+    processlist_ui.load(contextid,i.processList,contextname,newfeedname,newfeedtag); // load configs
 }
 
-$("#save-processlist").click(function (){
-    var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+function save_processlist(encoded_process_list) {
+    var result = input.set_process(processlist_ui.contextid,encoded_process_list);
     if (!result.success) {
         alert('ERROR: Could not save processlist. '+result.message); 
+        return false;
     } else {
-        this.classList.replace('btn-warning', 'btn-success')
-        this.innerText = _('Saved')
-        if (typeof update === 'function') {
-            update();
-        }
+        // This may get called twice
+        if (typeof update === 'function') update();
+        return true;
     }
-});
+}
 
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
