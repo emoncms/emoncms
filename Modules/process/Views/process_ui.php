@@ -88,16 +88,18 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 </tr>
 
                 <tr v-for="(process, index) in process_list" :key="index" v-if="processes_by_key[process.fn]">
-                    <td>
-                        <div class="select text-center"><input type="checkbox" :value="index" v-model="selected_processes"></div>
-                    </td>
+                    <!-- Checkbox for selecting processes -->
+                    <td><div class="select text-center"><input type="checkbox" :value="index" v-model="selected_processes"></div></td>
+                    <!-- Process index -->
                     <td style="text-align:right;">{{ index + 1 }}</td>
+                    <!-- Process name -->
                     <td>{{ processes_by_key[process.fn].name }}</td>
+                    <!-- Process badge -->
                     <td style="text-align:right">
-                        <span v-if="processes_by_key[process.fn].description" :title="strip_html(processes_by_key[process.fn].description)" class="fw-label overflow-hidden label" :class="'label-' + process.label" style="cursor:help">{{ processes_by_key[process.fn].short }}</span>
+                        <span v-if="processes_by_key[process.fn].description" :title="strip_html(processes_by_key[process.fn].description)" class="fw-label overflow-hidden label" :class="process.label" style="cursor:help">{{ processes_by_key[process.fn].short }}</span>
                         <span v-else class="fw-label overflow-hidden label label-default">{{ processes_by_key[process.fn].short }}</span>
                     </td>
-
+                    <!-- Process arguments -->
                     <td>
                         <span v-if="processes_by_key[process.fn].argtype !== undefined">
                             <span v-if="processes_by_key[process.fn].argtype == ProcessArg.VALUE">

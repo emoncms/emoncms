@@ -29,7 +29,7 @@ var process_vue = new Vue({
     el: '#process_vue',
     data: {
 
-        contexttype: 0,
+        context_type: 0,
 
         input_or_virtual_feed_id: '', // ID of the input or virtual feed
         input_or_virtual_feed_name: '', // Name of the input or virtual feed (used for modal title)
@@ -79,19 +79,41 @@ var process_vue = new Vue({
             new_feed_name = "",
             new_feed_tag = ""
         ) {
-            this.contexttype = context_type; // Set the context type (input or feed)
+            this.context_type = context_type; // Set the context type (input or feed)
             this.input_or_virtual_feed_id = input_or_virtual_feed_id; // Set the ID of the input or virtual feed
             this.input_or_virtual_feed_name = input_or_virtual_feed_name; // Set the name for the modal title
             this.new_feed_name = new_feed_name; // Set the new feed name
             this.new_feed_tag = new_feed_tag; // Set the new feed tag
 
             this.state = 'not_modified'; // Reset the state to not_modified
-            this.process_list = process_api.decode(input_or_virtual_feed_process_list);
-            console.log("Process Vue initialized with process list:", this.process_list);
+            let process_list = process_api.decode(input_or_virtual_feed_process_list);
 
-            if (this.contexttype == ContextType.INPUT) {
+            for (let i = 0; i < process_list.length; i++) {
+                let process = process_list[i];
+                let argtype = ProcessArg.NONE; // Default argument type
+                
+                // Get arg type
+                if (process.fn && process.fn in this.processes_by_key) {
+                    let process_info = this.processes_by_key[process.fn];
+                    if (process_info.argtype !== undefined) {
+                        argtype = process_info.argtype; // Set argtype from process info
+                    } else if (process_info.args !== undefined && Array.isArray(process_info.args) && process_info.args.length > 0) {
+                        // If args is an array, use the first argument's type
+                        argtype = process_info.args[0].type;
+                    }
+                } else {
+                    console.warn("Process not found in processes_by_key:", process.fn);
+                }
+
+                // Set the label for the process according to its argtype
+                process.label = argtypes[argtype].cssClass || 'label-default'; // Default to 'label-default' if not found
+            }
+
+            this.process_list = process_list;
+
+            if (this.context_type == ContextType.INPUT) {
                 this.selected_process = "process__log_to_feed"; // default process for input context
-            } else if (this.contexttype == ContextType.VIRTUALFEED) {
+            } else if (this.context_type == ContextType.VIRTUALFEED) {
                 this.selected_process = "process__source_feed_data_time"; // default process for feed context
             }
 
@@ -548,7 +570,7 @@ var process_vue = new Vue({
                 // add badge to list
                 let badge = {
                     process: process_api.processes[process_list[z].fn],
-                    value:  process_list[z].args[0] || ''
+                    value: process_list[z].args[0] || ''
                 }
 
                 if (process_vue.init_done === 0 && badge.process !== false) {

@@ -105,7 +105,6 @@ var process_api = {
 
             let process_item = {
                 fn: process_key,
-                label: "info",
                 args: args
             }
 
