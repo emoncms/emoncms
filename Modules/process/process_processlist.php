@@ -177,7 +177,7 @@ class Process_ProcessList
               "function"=>"kwh_to_kwhd_old",
               "datafields"=>1,
               "unit"=>"kWhd",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "description"=>""
            ),
@@ -224,7 +224,7 @@ class Process_ProcessList
               "function"=>"phaseshift",
               "datafields"=>0,
               "unit"=>"",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "description"=>""
            ),
            array(
@@ -260,7 +260,7 @@ class Process_ProcessList
               "function"=>"histogram",
               "datafields"=>2,
               "unit"=>"",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
               "description"=>""
            ),
@@ -272,7 +272,7 @@ class Process_ProcessList
               "function"=>"average",
               "datafields"=>2,
               "unit"=>"",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "engines"=>array(Engine::PHPTIMESERIES),
               "description"=>""
            ),
@@ -284,7 +284,7 @@ class Process_ProcessList
               "function"=>"heat_flux",
               "datafields"=>1,
               "unit"=>"",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "description"=>""
            ),
@@ -296,7 +296,7 @@ class Process_ProcessList
               "function"=>"power_acc_to_kwhd",
               "datafields"=>1,
               "unit"=>"kWhd",
-              "group"=>_("Deleted"),
+              "group"=>"Deleted",
               "engines"=>array(Engine::PHPTIMESERIES),
               "description"=>""
            ),
