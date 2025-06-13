@@ -110,7 +110,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i><span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
+                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
                                 </span>
                             </span>
                         </span>
@@ -121,7 +121,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                         <a title="Move down" @click="moveby(index,1)"><i class="icon-arrow-down" style="cursor:pointer"></i></a>
                         <a title="Move up" @click="moveby(index,-1)"><i class="icon-arrow-up" style="cursor:pointer"></i></a>
                     </td>
-                    <td><a class="edit-process" title="Edit"><i class="icon-pencil" style="cursor:pointer"></i></a></td>
+                    <td><a title="Edit" @click="edit(index)"><i class="icon-pencil" style="cursor:pointer"></i></a></td>
                     <td><a title="Delete" @click="remove(index)"><i class="icon-trash" style="cursor:pointer"></i></a></td>
                 </tr>
             </table>
@@ -130,16 +130,16 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <tr>
                     <td>
                         <p>
-                            <span id="process-header-add"><?php echo dgettext('process_messages', 'Add process'); ?>:
-                                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__log_to_feed">log</a>
-                                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__power_to_kwh">kwh</a>
-                                <a href="#" onclick="selectProcess(event)" class="label label-warning" data-processid="process__add_input">+inp</a>
+                            <span v-if="mode=='add'"><?php echo dgettext('process_messages', 'Add process'); ?>:
+                                <a href="#" @click="processSelectChange('process__log_to_feed')" class="label label-info" v-if="context_type==0">log</a>
+                                <a href="#" @click="processSelectChange('process__power_to_kwh')" class="label label-info" v-if="context_type==0">kwh</a>
+                                <a href="#" @click="processSelectChange('process__add_input')" class="label label-warning" v-if="context_type==0">+inp</a>
                             </span>
-                            <span id="process-header-edit"><?php echo dgettext('process_messages', 'Edit process'); ?>:</span>
+                            <span v-if="mode=='edit'"><?php echo dgettext('process_messages', 'Edit process'); ?>:</span>
                         </p>
 
                         <!-- Process select dropdown -->
-                        <select id="select-process" class="input-large" v-model="selected_process" @change="processSelectChange">
+                        <select id="select-process" class="input-large" v-model="selected_process" @change="processSelectChange(false)">
                             <optgroup v-for="(processes, group) in context_only_processes_by_group" :label="group">
                                 <option v-for="(process, process_key) in processes" :value="process_key">{{ process.name }}</option>
                             </optgroup>
@@ -231,17 +231,17 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                             </span>
                         </span>
 
-                        <span id="type-btn-add">
+                        <span id="type-btn-add" v-if="mode=='add'">
                             <div class="input-prepend">
                                 <button id="process-add" @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Add'); ?></button>
                             </div>
                         </span>
-                        <span id="type-btn-edit" style="display:none">
+                        <span id="type-btn-edit" v-if="mode=='edit'">
                             <div class="input-prepend">
-                                <button id="process-edit" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Edit'); ?></button>
+                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Edit'); ?></button>
                             </div>
                             <div class="input-prepend">
-                                <button id="process-cancel" class="btn" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Cancel'); ?></button>
+                                <button @click="cancel_edit" class="btn" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Cancel'); ?></button>
                             </div>
                         </span>
                     </td>

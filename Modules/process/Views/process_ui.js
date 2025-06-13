@@ -1,8 +1,7 @@
 // TODO: Remove hidden engines!
-// TODO: Filter processes for context type (input/virtual feed)
-// TODO: Filter out deleted processes
-
 // TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
+// TODO: Badge colours not set when adding a process
+// TODO: Edit process
 
 var ContextType = {
     INPUT: 0, // Input context
@@ -68,6 +67,9 @@ var process_vue = new Vue({
 
         init_done: 4, // Counter for initialization progress
 
+        mode: 'add', // Mode of the process list (add or edit)
+        edit_index: -1, // Index of the process being edited (if any)
+
     },
 
     methods: {
@@ -92,6 +94,8 @@ var process_vue = new Vue({
             this.new_feed_name = new_feed_name; // Set the new feed name
             this.new_feed_tag = new_feed_tag; // Set the new feed tag
 
+            this.mode = 'add'; // Set the mode to add
+            this.edit_index = -1; // Reset the edit index
             this.state = 'not_modified'; // Reset the state to not_modified
             let process_list = process_api.decode(input_or_virtual_feed_process_list);
 
@@ -207,18 +211,50 @@ var process_vue = new Vue({
             }
         },
 
+        // Handles switch to edit mode:
+        edit: function (index) {
+            this.mode = 'edit'; // Set the mode to edit
+            this.edit_index = index; // Set the index of the process being edited
+            this.selected_process = this.process_list[index].fn; // Set the selected process to the one being edited
+            this.processSelectChange();
+        },
+
+        cancel_edit: function () {
+            this.mode = 'add'; // Switch back to add mode
+        },
+
         // Handles process selection change
         // This function is called when the process select dropdown changes
         // It updates the args data based on the selected process
         // It also sets default values for the args based on their type
-        processSelectChange: function () {
+        processSelectChange: function (set_selected_process = false) {
+
+            // Option to set the selected process (used by quick link badges)
+            if (set_selected_process) {
+                this.selected_process = set_selected_process; // Update the selected process
+            }
 
             // Get the selected process
             let process = this.processes_by_key[this.selected_process];
             let args = JSON.parse(JSON.stringify(process.args));
 
             // Set default values for Vue args
+            if (this.mode === 'edit') {
+                for (let i = 0; i < args.length; i++) {
+                    args[i].value = this.process_list[this.edit_index].args[i];
+                    if (args[i].type === ProcessArg.FEEDID) {
+                        args[i].new_feed_tag = '';
+                        args[i].new_feed_name = '';
+                        args[i].new_feed_engine = 5; // Default feed engine
+                        args[i].new_feed_interval = 10; // Default feed interval
+                        args[i].new_feed_table_name = ''; // Default feed table name
+                    }
+                }
+                Vue.set(process_vue, 'args', args);
+                return;
+            }
 
+            // ELSE: Set default values for new process
             for (let i = 0; i < args.length; i++) {
                 let arg = args[i];
                 switch (arg.type) {
@@ -393,7 +429,15 @@ var process_vue = new Vue({
                 args: output_args
             };
 
-            this.process_list.push(new_process);
+            if (this.mode === 'edit') {
+                // If in edit mode, replace the process at the edit index
+                this.process_list[this.edit_index].fn = new_process.fn; // Update the function name
+                this.process_list[this.edit_index].args = new_process.args; // Update the arguments
+            } else {
+                // If in add mode, push the new process to the process list
+                this.process_list.push(new_process);
+            }
+
             // this.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
             this.modified();
         },
