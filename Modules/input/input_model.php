@@ -599,6 +599,8 @@ class Input
 
         // Validate processlist
         $pairs = explode(",",$processlist);
+        if ($processlist == "") $pairs = array();
+
         $pairs_out = array();
 
         // Build map of processids where set
