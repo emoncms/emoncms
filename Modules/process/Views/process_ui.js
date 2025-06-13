@@ -268,13 +268,14 @@ var process_vue = new Vue({
                         }
                         break;
                     case ProcessArg.FEEDID:
-                        if (this.context_type === ContextType.INPUT) {
+                        if (this.context_type === ContextType.INPUT && process.writes_to_feed) {
                             arg.value = -1; // Default value for FEEDID type (create new feed)
                             arg.new_feed_tag = this.new_feed_tag; // Default feed tag
                             arg.new_feed_name = this.new_feed_name; // Default feed name
                             arg.new_feed_engine = 5; // Default feed engine
                             arg.new_feed_interval = 10; // Default feed interval
                             arg.new_feed_table_name = ''; // Default feed table name
+                            arg.writes_to_feed = true; // Indicate that this process writes to a feed
 
                             if (arg.engines !== undefined && Array.isArray(arg.engines)) {
                                 arg.new_feed_engine = parseInt(arg.engines[0]); // Default to first engine in the list
