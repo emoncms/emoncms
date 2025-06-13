@@ -37,7 +37,23 @@ function process_controller()
 
     elseif ($route->format == 'json')
     {
-        if ($route->action == "list") $result = $process->get_process_list();
+        if ($route->action == "list") {
+
+            $processes = $process->get_process_list();
+
+            // if a context type is specified, filter the processes
+            if (isset($_GET['context'])) {
+                $context_type = (int) $_GET['context'];
+                // can be 0 for input or 1 for virtual feed
+                if ($context_type < 0 || $context_type > 1) {
+                    return array('content'=>false, 'error'=>'Invalid context type');
+                }
+                // filter the processes based on the context type
+                return $process->filter_valid($processes, $context_type);
+            } else {
+                return $processes;
+            }
+        }
     }
 
     return array('content'=>$result);
