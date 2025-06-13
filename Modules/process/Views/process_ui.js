@@ -1,4 +1,3 @@
-// TODO: Remove hidden engines!
 // TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
 // TODO: Latest value
 
@@ -39,6 +38,7 @@ var process_vue = new Vue({
 
         args: [],
         inputs: [], // List of inputs
+        inputs_by_id: {},
         inputs_by_node: {},
         schedules: {},
 
@@ -665,6 +665,25 @@ var process_vue = new Vue({
             }
             return badges;
         }
+    },
+    filters: {
+        lastValueFormat: function (value) {
+            if (value === undefined || value === null || value === '') return '-';
+
+            // if not a number, return as is
+            if (isNaN(value)) return value;
+
+            // if less than 30 return 2 dp
+            // if less than 1000 return 1 dp
+            // if greater than 1000 return 0 dp
+            if (value < 30) {
+                return parseFloat(value).toFixed(2);
+            } else if (value < 1000) {
+                return parseFloat(value).toFixed(1);
+            } else {
+                return parseFloat(value).toFixed(0);
+            }
+        }
     }
 });
 
@@ -701,6 +720,14 @@ $.ajax({
 $.ajax({
     url: path + "input/list.json", dataType: 'json', async: true, success: function (result) {
         let inputs = result;
+
+        // Input list by ID
+        let inputs_by_id = {};
+        inputs.forEach(input => {
+            inputs_by_id[input.id] = input;
+        });
+        Vue.set(process_vue, 'inputs_by_id', inputs_by_id);
+
         // Input list by node
         let inputs_by_node = {};
         inputs.forEach(input => {

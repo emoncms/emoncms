@@ -83,7 +83,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                     <th style="width:40%;"><?php echo dgettext('process_messages', 'Process'); ?></th>
                     <th style="text-align:right;opacity:.8" title="<?php echo dgettext('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-question-sign"></i></th>
                     <th style="width:40%;"><?php echo dgettext('process_messages', 'Arguments'); ?></th>
-                    <th><span class="hidden-md"><?php echo dgettext('process_messages', 'Latest'); ?></span></th>
+                    <th style="width:20%; text-align:right;"><span class="hidden-md"><?php echo dgettext('process_messages', 'Latest'); ?></span></th>
                     <th colspan='3'><?php echo dgettext('process_messages', 'Actions'); ?></th>
                 </tr>
 
@@ -109,14 +109,40 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                 <span v-if="arg.type == ProcessArg.TEXT">
                                     <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
                                 </span>
+                                <span v-if="arg.type == ProcessArg.INPUTID">
+                                    <span class="muted" title="Input">
+                                        <i class="icon-edit"></i> 
+                                        <span v-if="inputs_by_id[process.args[arg_index]]">
+                                            {{ inputs_by_id[process.args[arg_index]].nodeid }}: {{ inputs_by_id[process.args[arg_index]].name }} 
+                                            <span v-if="inputs_by_id[process.args[arg_index]].description">({{ inputs_by_id[process.args[arg_index]].description }})</span>
+                                        </span>
+                                    </span>
+                                </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
                                     <span class="muted" title="Feed"><i class="icon-list-alt"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
+                                </span>
+                                <span v-if="arg.type == ProcessArg.SCHEDULEID">
+                                    <span class="muted" title="Schedule"><i class="icon-calendar"></i> <span v-if="schedules[process.args[arg_index]]">{{ schedules[process.args[arg_index]].name }}</span></span>
+                                </span>
+                            </span>
+                        </span>
+                    </td>
+                    <!-- Last recorded value -->
+                    <td>
+                        <span v-if="processes_by_key[process.fn].args">
+                            <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
+
+                                <span v-if="arg.type == ProcessArg.INPUTID">
+                                    <small title="Last recorded value" class="muted"><span v-if="inputs_by_id[process.args[arg_index]]">{{ inputs_by_id[process.args[arg_index]].value | lastValueFormat }} {{ inputs_by_id[process.args[arg_index]].unit }}</span></small>
+                                </span>
+                                <span v-if="arg.type == ProcessArg.FEEDID">
+                                    <small title="Last recorded value" class="muted"><span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].value | lastValueFormat }} {{ feeds_by_id[process.args[arg_index]].unit }}</span></small>
                                 </span>
                             </span>
                         </span>
                     </td>
 
-                    <td><small title="Last recorded 2 value" class="muted">(0.00)</small></td>
+                    <!-- Process actions -->
                     <td style="white-space:nowrap;">
                         <a title="Move down" @click="moveby(index,1)"><i class="icon-arrow-down" style="cursor:pointer"></i></a>
                         <a title="Move up" @click="moveby(index,-1)"><i class="icon-arrow-up" style="cursor:pointer"></i></a>
