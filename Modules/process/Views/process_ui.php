@@ -191,7 +191,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <div class="btn-group">
                                         <select class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;" v-model="arg.value">
                                             <!-- feeds by tag -->
-                                            <option value="-1">CREATE NEW:</option>
+                                            <option v-if="context_type==0" value="-1">CREATE NEW:</option>
                                             <optgroup v-for="(feeds, tag) in feeds_by_tag" :label="tag">
                                                 <option v-for="feed in feeds" :value="feed.id" v-if="feed.engine!=7">{{ feed.name }}</option>
                                             </optgroup>
@@ -212,7 +212,9 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <div class="btn-group">
                                         <select class="input-medium" v-model.number="arg.new_feed_engine">
                                             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
-                                                <option v-if="arg.engines && arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+                                                <?php if (isset($settings["feed"]["engines_hidden"]) && !in_array($engine["id"], $settings["feed"]["engines_hidden"])) { ?>
+                                                    <option v-if="arg.engines && arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
+                                                <?php } ?>
                                             <?php } ?>
                                         </select>
 

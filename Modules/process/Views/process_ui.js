@@ -1,6 +1,6 @@
 // TODO: Remove hidden engines!
 // TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
-// TODO: Badge colours not set when adding a process
+// TODO: Latest value
 
 var ContextType = {
     INPUT: 0, // Input context
@@ -66,9 +66,8 @@ var process_vue = new Vue({
 
         init_done: 4, // Counter for initialization progress
 
-        mode: 'add', // Mode of the process list (add or edit)
+        add_edit_mode: 'add', // Mode of the process list (add or edit)
         edit_index: -1, // Index of the process being edited (if any)
-
     },
 
     methods: {
@@ -127,7 +126,7 @@ var process_vue = new Vue({
             Vue.set(process_vue, 'context_only_processes_by_group', process_api.by_group(process_api.filter_for_context(this.processes_by_key, this.context_type)));
 
             this.processSelectChange(); // Trigger the process select change to update the UI
-            this.scrollto($('#processlist-ui'));
+            // this.scrollto($('#processlist-ui'));
 
             // Show the process list modal
             $("#processlistModal").modal('show');
@@ -270,15 +269,24 @@ var process_vue = new Vue({
                         }
                         break;
                     case ProcessArg.FEEDID:
-                        arg.value = -1; // Default value for FEEDID type (create new feed)
-                        arg.new_feed_tag = this.new_feed_tag; // Default feed tag
-                        arg.new_feed_name = this.new_feed_name; // Default feed name
-                        arg.new_feed_engine = 5; // Default feed engine
-                        arg.new_feed_interval = 10; // Default feed interval
-                        arg.new_feed_table_name = ''; // Default feed table name
+                        if (this.context_type === ContextType.INPUT) {
+                            arg.value = -1; // Default value for FEEDID type (create new feed)
+                            arg.new_feed_tag = this.new_feed_tag; // Default feed tag
+                            arg.new_feed_name = this.new_feed_name; // Default feed name
+                            arg.new_feed_engine = 5; // Default feed engine
+                            arg.new_feed_interval = 10; // Default feed interval
+                            arg.new_feed_table_name = ''; // Default feed table name
 
-                        if (arg.engines !== undefined && Array.isArray(arg.engines)) {
-                            arg.new_feed_engine = parseInt(arg.engines[0]); // Default to first engine in the list
+                            if (arg.engines !== undefined && Array.isArray(arg.engines)) {
+                                arg.new_feed_engine = parseInt(arg.engines[0]); // Default to first engine in the list
+                            }
+                        } else {
+                            // Select first feed by default if in feed context
+                            arg.value = 0; // Default value for FEEDID type
+                            if (Object.keys(this.feeds_by_id).length > 0) {
+                                // Default to first feed in the list
+                                arg.value = Object.keys(this.feeds_by_id)[0];
+                            }
                         }
                         break;
                     case ProcessArg.TEXT:
@@ -308,12 +316,14 @@ var process_vue = new Vue({
             var process = this.processes_by_key[this.selected_process];
 
             let output_args = [];
+            let label = 'label-muted'; // Default label for the process
 
             if (this.args != undefined && Array.isArray(this.args)) {
                 // Loop through the Vue args and get the values
                 for (let i = 0; i < this.args.length; i++) {
                     let arg_type = this.args[i].type;
                     let arg_value = this.args[i].value;
+                    label = argtypes[arg_type].cssClass;
                     switch (arg_type) {
 
                         // Value
@@ -419,7 +429,7 @@ var process_vue = new Vue({
 
             let new_process = {
                 fn: this.selected_process,
-                label: "info",
+                label: label, // Set the label for the process
                 args: output_args
             };
 
