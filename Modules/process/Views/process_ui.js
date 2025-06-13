@@ -46,7 +46,10 @@ var process_vue = new Vue({
         selected_process: 'process__log_to_feed',
 
         processes_by_key: {},
-        processes_by_group: {},
+        // Non input or virtual feed processes are filtered out
+        // This is used for populating the process select dropdown
+        context_only_processes_by_group: {}, 
+
         feeds_by_id: {},
         feeds_by_tag: {},
 
@@ -82,7 +85,7 @@ var process_vue = new Vue({
             new_feed_name = "",
             new_feed_tag = ""
         ) {
-            this.context_type = context_type; // Set the context type (input or feed)
+            this.context_type = context_type; // Set the context type (input:0 or feed:1)
             this.input_or_virtual_feed_id = input_or_virtual_feed_id; // Set the ID of the input or virtual feed
             this.input_or_virtual_feed_name = input_or_virtual_feed_name; // Set the name for the modal title
             this.new_feed_name = new_feed_name; // Set the new feed name
@@ -115,6 +118,9 @@ var process_vue = new Vue({
             } else if (this.context_type == ContextType.VIRTUALFEED) {
                 this.selected_process = "process__source_feed_data_time"; // default process for feed context
             }
+
+            // Fetch the processes that are relevant to the context type
+            Vue.set(process_vue, 'context_only_processes_by_group', process_api.by_group(process_api.filter_for_context(this.processes_by_key, this.context_type)));
 
             this.processSelectChange(); // Trigger the process select change to update the UI
             this.scrollto($('#processlist-ui'));
@@ -617,8 +623,6 @@ var process_vue = new Vue({
 process_api.list(function (processes) {
     // Store the processes in the Vue instance
     Vue.set(process_vue, 'processes_by_key', processes);
-    Vue.set(process_vue, 'processes_by_group', process_api.by_group(processes));
-
     process_vue.initprogress();
 });
 

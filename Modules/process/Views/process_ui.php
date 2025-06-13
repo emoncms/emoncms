@@ -140,7 +140,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                         <!-- Process select dropdown -->
                         <select id="select-process" class="input-large" v-model="selected_process" @change="processSelectChange">
-                            <optgroup v-for="(processes, group) in processes_by_group" :label="group">
+                            <optgroup v-for="(processes, group) in context_only_processes_by_group" :label="group">
                                 <option v-for="(process, process_key) in processes" :value="process_key">{{ process.name }}</option>
                             </optgroup>
                         </select>

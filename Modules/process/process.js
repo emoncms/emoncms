@@ -79,6 +79,47 @@ var process_api = {
         return processes_by_group;
     },
 
+    // Filter processes for a specific context
+    // - processes: Object containing all processes
+    // - context: Input context (0) or Virtual feed context (1)
+    filter_for_context: function(processes, context) {
+        const filtered_processes = {};
+
+        for (const key in processes) {
+            const process = processes[key];
+
+            // Skip deleted processes
+            if (process.group === 'Deleted') continue;
+
+            // In input context, skip virtual processes
+            if (context === 0 && process.group === 'Virtual') continue;
+
+            // In virtual feed context, skip certain process types/groups
+            if (context === 1) {
+
+                // If process has engines, assume these write to feeds and should be skipped
+                if (process.engines && process.engines.length > 0) continue;
+                if (process.args) {
+                    let has_engines = false;
+                    for (let i = 0; i < process.args.length; i++) {
+                        if (process.args[i].engines && process.args[i].engines.length > 0) has_engines = true;
+                    }
+                    if (has_engines) continue; // Skip if any argument has engines
+                }
+
+                if (process.function === 'sendEmail') continue;
+                if (process.function === 'publish_to_mqtt') continue;
+                if (process.group === 'Feed') continue;
+                if (process.group === 'Input') continue;
+                if (process.group === 'Hidden') continue;
+            }
+
+            filtered_processes[key] = process;
+        }
+
+        return filtered_processes;
+    },
+
     // Populate the id_num_map from processes
     // This is used to map id_num to process key
     populate_id_num_map: function() {
