@@ -138,7 +138,8 @@ class Process
             }
             
             if ($this->proc_skip_next) {
-                $this->proc_skip_next = false; $this->proc_goto++;
+                $this->proc_skip_next = false; 
+                $this->proc_goto++;
             }
 
             if ($steps > $total*2) {
@@ -148,23 +149,27 @@ class Process
                 $this->log->error("input() DEACTIVATED processList due to too many steps. steps=$steps proc_goto=".$this->proc_goto." processkey=$processkey sourcetype=" . $options['sourcetype'] . " sourceid=" . $options['sourceid'] );
                 switch ($options['sourcetype']) {
                     case ProcessOriginType::INPUT:
-                         $this->input->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
+                         $this->input->set_processlist_error_found($options['sourceid']);
                          break;
-                         
                     case ProcessOriginType::VIRTUALFEED:
-                         $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
+                         $this->feed->set_processlist_error_found($options['sourceid']);
                          break;
+                    /*
+                    // Task module is deprecated, code reflects a much earlier version of emoncms, commented out for now
                     case ProcessOriginType::TASK:
                         if (file_exists("Modules/task/task_model.php")) {
                             global $session, $redis;
                             require_once "Modules/task/task_model.php";
                             $this->task = new Task($this->mysqli, $redis, null);
                             $this->task->set_processlist($session['userid'], $options['sourceid'], "process__error_found:0," . $processList);
+                            
                         }
+                    */
                 }
                 return false;
             }
         }
+
         return $value;
     }
 

@@ -44,9 +44,14 @@ var process_api = {
                     // Base type
                     let singular_arg = { "type": process.argtype };
 
-                    // Copy over egines if available
+                    // Copy over engines if available
                     if (process.engines !== undefined && Array.isArray(process.engines)) {
                         singular_arg.engines = process.engines;
+                    }
+
+                    // Copy over default if available
+                    if (process.default !== undefined) {
+                        singular_arg.default = process.default;
                     }
 
                     // Copy over unit if available

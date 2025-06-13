@@ -639,6 +639,7 @@ class Process_ProcessList
               "argtype"=>ProcessArg::VALUE,
               "function"=>"goto_process",
               "datafields"=>0,
+              "default"=>1,
               "unit"=>"",
               "group"=>_("Misc"),
               "nochange"=>true,
@@ -1570,6 +1571,9 @@ class Process_ProcessList
 
     public function goto_process($proc_no, $time, $value){
         $this->proc_goto = $proc_no - 2;
+        if ($this->proc_goto < 0) {
+            $this->proc_goto = 0; // Ensure we don't go to a negative process number
+        }
         return $value;
     }
 

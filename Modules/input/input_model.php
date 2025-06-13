@@ -744,6 +744,27 @@ class Input
         return array('success' => true, 'message' => 'Arg is valid');
     }
 
+    // Set the processlist with an error found process at the start
+    // This is used to indicate that an error has been found in the process list
+    // At present only triggered if max steps is exceeded
+    public function set_processlist_error_found($input_id) {
+        $input_id = (int) $input_id;
+
+        // 1. Get the current process list
+        $processlist = $this->get_processlist($input_id);
+        if ($processlist != "") {
+            $processlist_out = "process__error_found:0," . $processlist;
+
+            // 2. Set the new process list with the error found process at the start
+            $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
+            $stmt->bind_param("si", $processlist_out, $input_id);
+            $stmt->execute();
+            if ($this->mysqli->affected_rows>0 && $this->redis) {
+                $this->redis->hset("input:$input_id",'processList',$processlist_out);
+            }
+        }
+    }
+
     public function reset_processlist($id)
     {
         $id = (int) $id;
