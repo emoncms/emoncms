@@ -458,18 +458,29 @@ class Feed
 
         $feeds = array();
         $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
-        while ($row = (array)$result->fetch_object())
+        while ($f = (array)$result->fetch_object())
         {
-            if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
-                $this->log->info("mysql_get_user_feeds() calling VIRTUAL lastvalue " . $row['id']);
-                $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
-                $row['time'] = $lastvirtual['time'];
-                $row['value'] = $lastvirtual['value'];
-                $meta = $this->get_meta($row['id']);
-                $row['start_time'] = $meta->start_time;
-                $row['interval'] = $meta->interval;
+            if ($f['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
+                $timevalue = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($f['id']);
+                $f['time'] = $timevalue['time'];
+                $f['value'] = $timevalue['value'];
+            } elseif (!isset($f['time'])) {
+                if ($timevalue = $this->EngineClass($f['engine'])->lastvalue($f['id'])) {
+                    $this->set_timevalue($f['id'], $timevalue['value'], $timevalue['time']);
+                    $f['time'] = $timevalue['time'];
+                    $f['value'] = $timevalue['value'];
+                }
             }
-            $feeds[] = $row;
+            $row = $this->validate_timevalue($f);
+
+            if ($getmeta) {
+                $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
+                if (isset($meta->start_time)) $f['start_time'] = $meta->start_time;
+                if (isset($meta->end_time)) $f['end_time'] = $meta->end_time;
+                if (isset($meta->interval)) $f['interval'] = $meta->interval;
+                if (isset($meta->npoints)) $f['npoints'] = $meta->npoints;
+            }
+            $feeds[] = $f;
         }
         return $feeds;
     }
@@ -1248,13 +1259,6 @@ class Feed
                     case ProcessArg::TEXT:
                         if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
                             return array('success'=>false, 'message'=>'Invalid characters in argx');
-                        break;
-
-                    case ProcessArg::MULTI:
-                        $decoded = base64_decode($arg, true); 
-                        if ($decoded === false || json_decode($decoded, true) === null) {
-                            return array('success' => false, 'message' => 'Value is not valid base64-encoded JSON '.$arg);
-                        }
                         break;
 
                     case ProcessArg::SCHEDULEID:
