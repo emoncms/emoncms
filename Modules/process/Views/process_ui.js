@@ -1,7 +1,6 @@
 // TODO: Remove hidden engines!
 // TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
 // TODO: Badge colours not set when adding a process
-// TODO: Edit process
 
 var ContextType = {
     INPUT: 0, // Input context
@@ -94,7 +93,7 @@ var process_vue = new Vue({
             this.new_feed_name = new_feed_name; // Set the new feed name
             this.new_feed_tag = new_feed_tag; // Set the new feed tag
 
-            this.mode = 'add'; // Set the mode to add
+            this.add_edit_mode = 'add'; // Set the mode to add
             this.edit_index = -1; // Reset the edit index
             this.state = 'not_modified'; // Reset the state to not_modified
             let process_list = process_api.decode(input_or_virtual_feed_process_list);
@@ -133,11 +132,6 @@ var process_vue = new Vue({
             // Show the process list modal
             $("#processlistModal").modal('show');
             this.adjustModal(); // Adjust the modal height
-            $("#process-header-add").show();
-            $("#process-header-edit").hide();
-            $("#type-btn-add").show();
-            $("#type-btn-edit").hide();
-
         },
 
         adjustModal: function () {
@@ -213,14 +207,14 @@ var process_vue = new Vue({
 
         // Handles switch to edit mode:
         edit: function (index) {
-            this.mode = 'edit'; // Set the mode to edit
+            this.add_edit_mode = 'edit'; // Set the mode to edit
             this.edit_index = index; // Set the index of the process being edited
             this.selected_process = this.process_list[index].fn; // Set the selected process to the one being edited
             this.processSelectChange();
         },
 
         cancel_edit: function () {
-            this.mode = 'add'; // Switch back to add mode
+            this.add_edit_mode = 'add'; // Switch back to add mode
         },
 
         // Handles process selection change
@@ -239,7 +233,7 @@ var process_vue = new Vue({
             let args = JSON.parse(JSON.stringify(process.args));
 
             // Set default values for Vue args
-            if (this.mode === 'edit') {
+            if (this.add_edit_mode === 'edit') {
                 for (let i = 0; i < args.length; i++) {
                     args[i].value = this.process_list[this.edit_index].args[i];
                     if (args[i].type === ProcessArg.FEEDID) {
@@ -429,7 +423,7 @@ var process_vue = new Vue({
                 args: output_args
             };
 
-            if (this.mode === 'edit') {
+            if (this.add_edit_mode === 'edit') {
                 // If in edit mode, replace the process at the edit index
                 this.process_list[this.edit_index].fn = new_process.fn; // Update the function name
                 this.process_list[this.edit_index].args = new_process.args; // Update the arguments

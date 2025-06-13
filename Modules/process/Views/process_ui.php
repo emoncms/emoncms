@@ -130,12 +130,12 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <tr>
                     <td>
                         <p>
-                            <span v-if="mode=='add'"><?php echo dgettext('process_messages', 'Add process'); ?>:
+                            <span v-if="add_edit_mode=='add'"><?php echo dgettext('process_messages', 'Add process'); ?>:
                                 <a href="#" @click="processSelectChange('process__log_to_feed')" class="label label-info" v-if="context_type==0">log</a>
                                 <a href="#" @click="processSelectChange('process__power_to_kwh')" class="label label-info" v-if="context_type==0">kwh</a>
                                 <a href="#" @click="processSelectChange('process__add_input')" class="label label-warning" v-if="context_type==0">+inp</a>
                             </span>
-                            <span v-if="mode=='edit'"><?php echo dgettext('process_messages', 'Edit process'); ?>:</span>
+                            <span v-if="add_edit_mode=='edit'"><?php echo dgettext('process_messages', 'Edit process'); ?>:</span>
                         </p>
 
                         <!-- Process select dropdown -->
@@ -231,12 +231,12 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                             </span>
                         </span>
 
-                        <span id="type-btn-add" v-if="mode=='add'">
+                        <span v-if="add_edit_mode=='add'">
                             <div class="input-prepend">
-                                <button id="process-add" @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Add'); ?></button>
+                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Add'); ?></button>
                             </div>
                         </span>
-                        <span id="type-btn-edit" v-if="mode=='edit'">
+                        <span v-if="add_edit_mode=='edit'">
                             <div class="input-prepend">
                                 <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Edit'); ?></button>
                             </div>
