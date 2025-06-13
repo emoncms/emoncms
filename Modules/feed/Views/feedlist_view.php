@@ -722,50 +722,57 @@ $(".feed-edit-save").click(function() {
  *
  * @return object
  */
+
+// THIS NEEDS MORE WORK, notice in delete modal could be more useful and also needs to highlight inputs that use a feed e.g x / + - feed..
 function getFeedProcess(){
     let inputs = {}, // list of inputs and their processes
         feedProcesses = {}, // list of process that write to feeds
         let_feeds = {}; // list of feeds and their accociated processes
 
     // create a list of all inputs that have processes
-    for (inputid in processlist_ui.inputlist) {
-        let input = processlist_ui.inputlist[inputid];
+    for (let i in process_vue.inputs) {
+        let input = process_vue.inputs[i];
         if (input.processList.length>0) {
-            inputs[inputid] = {
-                processList: processlist_ui.decode(input.processList),
+            inputs[input.id] = {
+                processList: process_api.decode(input.processList),
                 nodeid: input.nodeid,
                 name: input.name,
-                inputid: inputid
+                inputid: input.id
             };
         }
     }
+
     // get all the processes that write to a feed - list them by numeric key (if available)
-    for (processid in processlist_ui.processlist) {
-        let process = processlist_ui.processlist[processid];
-        if (process.feedwrite) {
-            key = process.hasOwnProperty('id_num') ? process.id_num : processid;
-            feedProcesses[key] = processid;
+    for (let key in process_vue.processes_by_key) {
+        let process = process_vue.processes_by_key[key];
+        if (process.writes_to_feed) {
+            feedProcesses[key] = process;
         }
     }
 
     // go through all the input processes and get all the feeds they output to
-    for (inputid in inputs) {
+    for (let inputid in inputs) {
         let input = inputs[inputid];
         // loop through the key / value pairs of each input processlist
-        for (item in input.processList) {
-            let processid = input.processList[item][0];
-            let processval = input.processList[item][1] || null;
-            if(feedProcesses[processid]){
-                //this process writes to feed
-                let_feeds[processval] = let_feeds[processval] || [];
-                let_feeds[processval].push({
-                    process: processlist_ui.processlist[feedProcesses[processid]],
-                    input: input,
-                    feedid: processval
-                });
+        for (let i in input.processList) {
+            console.log(input.processList[i]);
+
+            let process = input.processList[i];
+            if (feedProcesses[process.fn]) {
+                for (let a in feedProcesses[process.fn].args) {
+                    if (feedProcesses[process.fn].args[a].type == 2) {
+                        let feedid = input.processList[i].args[a];
+                        let_feeds[feedid] = {
+                            input: input,
+                            process: feedProcesses[process.fn],
+                            feedid: feedid
+                        }
+                    }
+                }
             }
         }
     }
+
     return let_feeds;
 }
 

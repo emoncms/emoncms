@@ -40,6 +40,7 @@ var process_vue = new Vue({
         new_feed_tag: '', // Tag for the new feed (if creating a new feed)
 
         args: [],
+        inputs: [], // List of inputs
         inputs_by_node: {},
         schedules: {},
 
@@ -659,6 +660,7 @@ $.ajax({
             if (!inputs_by_node[node]) inputs_by_node[node] = [];
             inputs_by_node[node].push(input);
         });
+        Vue.set(process_vue, 'inputs', inputs);
         Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
         process_vue.initprogress();
     }

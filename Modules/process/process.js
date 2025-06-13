@@ -15,6 +15,7 @@ var process_api = {
             success: function(result)
             {
                 let processes = self.convert_arg_structure(result);
+                processes = self.populate_feed_write(processes);
                 self.processes = processes; // Store processes
                 self.populate_id_num_map(); // Populate id_num map
 
@@ -63,6 +64,34 @@ var process_api = {
         return processes;
     },
 
+    // Populate feed write information for processes
+    populate_feed_write: function(processes) {
+
+        // For each process, check if it has engines
+        for (let key in processes) {
+            let process = processes[key];
+            process.writes_to_feed = false; // Default to false
+
+            // If process has engines, assume these write to feeds
+            if (process.engines && process.engines.length > 0) {
+                process.writes_to_feed = true;
+            } else {
+                // Check if any argument has engines
+                let has_engines = false;
+                if (process.args) {
+                    for (let i = 0; i < process.args.length; i++) {
+                        if (process.args[i].engines && process.args[i].engines.length > 0) {
+                            has_engines = true;
+                            break;
+                        }
+                    }
+                }
+                if (has_engines) process.writes_to_feed = true;
+            }
+        }
+        return processes;
+    },
+
     // Processes by Group
     // Returns an associative array of processes by group
     by_group: function(processes) {
@@ -96,17 +125,8 @@ var process_api = {
 
             // In virtual feed context, skip certain process types/groups
             if (context === 1) {
-
                 // If process has engines, assume these write to feeds and should be skipped
-                if (process.engines && process.engines.length > 0) continue;
-                if (process.args) {
-                    let has_engines = false;
-                    for (let i = 0; i < process.args.length; i++) {
-                        if (process.args[i].engines && process.args[i].engines.length > 0) has_engines = true;
-                    }
-                    if (has_engines) continue; // Skip if any argument has engines
-                }
-
+                if (process.writes_to_feed) continue;
                 if (process.function === 'sendEmail') continue;
                 if (process.function === 'publish_to_mqtt') continue;
                 if (process.group === 'Feed') continue;
