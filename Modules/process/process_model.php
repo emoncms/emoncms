@@ -86,8 +86,6 @@ class Process
 
     public function input($time, $value, $processList, $options = null)
     {
-        //$this->log->info("input() received time=$time\tvalue=$value");
-
         $this->proc_initialvalue = $value; // save the input value at beginning of the processes list execution
         $this->proc_skip_next = false;     // skip execution of next process in process list
 
@@ -95,7 +93,6 @@ class Process
         $pairs = explode(",",$processList);
         $total = count($pairs);
         $steps=0;
-        // if ($total>50) return false;
 
         for ($this->proc_goto=0; $this->proc_goto<$total; $this->proc_goto++) {
             $steps++;
@@ -105,11 +102,13 @@ class Process
             // if less than 1, skip this process
             if ($id_and_arg_count < 1) continue;
 
-            $processkey = $inputprocess[0];                          // Process id
+            // processkey may be an id or a module function name
+            $processkey = $inputprocess[0];
             
             // Map ids to process key names
             if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
             
+            // Check if processkey exists in the process list
             if (!isset($process_list[$processkey])) {
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
@@ -127,9 +126,10 @@ class Process
                 $args = null;
             }
             
-            $process_function = $processkey;                               // get process key 'module.function'
-            if (strpos($processkey, '__') === FALSE) $process_function = $process_list[$processkey]["function"]; // Is this line needed??
-                
+            $process_function = $processkey;
+            
+            // Perhaps a more comprehensive check for valid process functions required here
+            // or rely on validation when setting up the process list?
             $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
             if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
                 $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
