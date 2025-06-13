@@ -393,7 +393,7 @@ var process_vue = new Vue({
             };
 
             this.process_list.push(new_process);
-            this.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
+            // this.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
             this.modified();
         },
 

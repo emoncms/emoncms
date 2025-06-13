@@ -144,6 +144,11 @@ var process_api = {
     decode: function(process_list) {
         let decoded_process_list = [];
 
+        if (process_list === undefined || process_list === null || process_list === '') {
+            // If process_list is empty, return an empty array
+            return decoded_process_list;
+        }
+
         // 1. Split the process list by commas
         let segments = process_list.split(',');
         for (let i = 0; i < segments.length; i++) {

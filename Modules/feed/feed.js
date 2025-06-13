@@ -63,7 +63,7 @@ var feed = {
 
     // Returns an object with feeds grouped by tag
     by_tag: function(feeds) {
-        if (!Array.isArray(feeds) || feeds.length === 0) return null;
+        if (!Array.isArray(feeds) || feeds.length === 0) return {};
         const bytag = {};
         for (const feed of feeds) {
             if (!feed || !feed.tag) continue;
@@ -78,7 +78,7 @@ var feed = {
 
     // Returns an object with feeds grouped by group
     by_id: function(feeds) {
-        if (!Array.isArray(feeds) || feeds.length === 0) return null;
+        if (!Array.isArray(feeds) || feeds.length === 0) return {};
         const byid = {};
         for (const feed of feeds) {
             if (!feed || feed.id == null) continue;
