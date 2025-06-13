@@ -15,7 +15,6 @@ var process_api = {
             success: function(result)
             {
                 let processes = self.convert_arg_structure(result);
-                console.log("Processes loaded:", processes);
                 self.processes = processes; // Store processes
                 self.populate_id_num_map(); // Populate id_num map
 

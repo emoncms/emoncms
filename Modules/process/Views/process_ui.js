@@ -1,6 +1,8 @@
-//---------------------------------------------------------------------
-// Version 11.8 - Nuno Chaveiro nchaveiro(at)gmail.com 04/2025
-//---------------------------------------------------------------------
+// TODO: Remove hidden engines!
+// TODO: Filter processes for context type (input/virtual feed)
+// TODO: Filter out deleted processes
+
+// TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
 
 var ContextType = {
     INPUT: 0, // Input context
@@ -115,8 +117,7 @@ var process_vue = new Vue({
             }
 
             this.processSelectChange(); // Trigger the process select change to update the UI
-            // processlist_ui.scrollto($('#processlist-ui'));
-
+            this.scrollto($('#processlist-ui'));
 
             // Show the process list modal
             $("#processlistModal").modal('show');
@@ -136,13 +137,18 @@ var process_vue = new Vue({
             }
         },
 
+        scrollto: function (scrollTo) {
+            let container = $('#processlist-ui');
+            container.animate({
+                scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+            });
+        },
+
         initprogress: function () {
             this.init_done--;
-            console.log("Process Vue init progress: " + this.init_done);
             if (this.init_done == 0) {
                 // Which table draw is this? input and feed list perhaps/
                 if (window.table != undefined && window.table.draw != undefined) table.draw();
-                console.log("Process Vue initialized successfully.");
             }
         },
 
@@ -242,9 +248,10 @@ var process_vue = new Vue({
                         arg.value = ''; // Default value for TEXT type
                         break;
                     case ProcessArg.SCHEDULEID:
-                        arg.value = 0; // Default value for SCHEDULEID type
-                        if (this.schedules.length > 0) {
-                            arg.value = this.schedules[0].id; // Default to first schedule
+                        arg.value = 0;
+                        // Default to first schedule in the list
+                        if (Object.keys(this.schedules).length > 0) {
+                            arg.value = Object.keys(this.schedules)[0];
                         }
                         break;
                     case ProcessArg.NONE:
@@ -379,9 +386,8 @@ var process_vue = new Vue({
                 args: output_args
             };
 
-            console.log("Adding new process:", new_process);
             this.process_list.push(new_process);
-            // processlist_ui.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
+            this.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
             this.modified();
         },
 
@@ -459,6 +465,8 @@ var process_vue = new Vue({
         },
 
         // Pastes the copied processes into the process list
+        // This is currently a bit sticky for some reason? 
+        // You have to click away from the paste button to see the changes
         paste: function () {
             // Try to read from the clipboard first
             navigator.clipboard.readText().then((clipboardText) => {
@@ -467,6 +475,16 @@ var process_vue = new Vue({
                     if (!Array.isArray(pastedProcesses)) {
                         throw new Error("Clipboard data is not a valid array");
                     }
+                    // Validate each pasted process
+                    pastedProcesses.forEach(process => {
+                        if (!process.fn || !Array.isArray(process.args)) {
+                            throw new Error("Invalid process format in clipboard data");
+                        }
+                        // Ensure the process function exists in the known processes
+                        if (!this.processes_by_key[process.fn]) {
+                            throw new Error(`Process function ${process.fn} not found`);
+                        }
+                    });
                     // Insert pasted processes at the end of the process list
                     this.process_list.push(...pastedProcesses);
                     this.selected_processes = []; // Clear selected processes after pasting
@@ -543,6 +561,7 @@ var process_vue = new Vue({
                 const argtype = (process_info.args.length > 0) ? process_info.args[0].type : ProcessArg.NONE;
                 const argtypeInfo = argtypes[argtype] 
 
+                // Common badge properties
                 let badge = {
                     typeName: argtypeInfo.name,
                     cssClass: argtypeInfo.cssClass,
@@ -554,6 +573,8 @@ var process_vue = new Vue({
 
                 let missing_input_feed_schedule = false;
 
+                // Handle feed, input, and schedule arguments
+                // Load contextual information such as feed tag and name etc.
                 if (argtype === ProcessArg.INPUTID) {
                     badge.input = input;
                 } else if (argtype === ProcessArg.FEEDID) {
@@ -570,15 +591,17 @@ var process_vue = new Vue({
                         missing_input_feed_schedule = true;
                     }
                 }
-                    
+                
                 if (!missing_input_feed_schedule) {
                     badge.title = argtypeInfo.title.format(badge);
                 } else {
+                    // If feed, input, or schedule is missing, set error badge
                     badge.title = '{typeName} {value} does not exist or was deleted'.format(badge);
                     badge.text = 'ERROR';
                     badge.cssClass = 'badge-muted';
                 }
 
+                // Highlight processes that require Redis if Redis is not available
                 if (!this.has_redis && process_info.requireredis) {
                     badge.cssClass = 'badge-muted';
                 }
@@ -589,13 +612,6 @@ var process_vue = new Vue({
         }
     }
 });
-
-
-// TODO: Remove hidden engines!
-// TODO: Filter processes for context type (input/virtual feed)
-// TODO: Note redis required processes
-// TODO: Filter out deleted processes
-// search for internalerror, requireredis ??
 
 // Fetch the process list from the server
 process_api.list(function (processes) {
@@ -617,8 +633,11 @@ feed.list(function (feeds) {
 // Schedule Select List
 $.ajax({
     url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
+        // Schedule list by ID
         var schedules = {};
-        for (z in result) schedules[result[z].id] = result[z];
+        for (z in result) {
+            schedules[result[z].id] = result[z];
+        }
 
         Vue.set(process_vue, 'schedules', schedules);
         process_vue.initprogress();
@@ -629,16 +648,15 @@ $.ajax({
 $.ajax({
     url: path + "input/list.json", dataType: 'json', async: true, success: function (result) {
         let inputs = result;
-        // set vue inputs
+        // Input list by node
         let inputs_by_node = {};
-        for (let z in inputs) {
-            let node = inputs[z].nodeid;
+        inputs.forEach(input => {
+            let node = input.nodeid;
             if (!inputs_by_node[node]) inputs_by_node[node] = [];
-            inputs_by_node[node].push(inputs[z]);
-        }
+            inputs_by_node[node].push(input);
+        });
         Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
         process_vue.initprogress();
-
     }
 });
 
@@ -682,38 +700,3 @@ $(document).on("keydown", function (e) {
         }
     }
 });
-
-/*
-
-  'fillschedule': function () {
-    var groupname = { 0: 'Public', 1: 'Mine' };
-    var groups = [];
-    //for (z in result) schedules[result[z].id] = result[z];
-
-    for (z in processlist_ui.schedulelist) {
-      var group = processlist_ui.schedulelist[z].own;
-      group = groupname[group];
-      if (!groups[group]) groups[group] = [];
-      processlist_ui.schedulelist[z]['_index'] = z;
-      groups[group].push(processlist_ui.schedulelist[z]);
-    }
-
-    var out = "";
-    for (z in groups) {
-      out += "<optgroup label='" + z + "'>";
-      for (p in groups[z]) {
-        out += "<option value=" + groups[z][p]['id'] + ">" + groups[z][p]['name'] + (z != groupname[1] ? " [" + groups[z][p]['id'] + "]" : "") + "</option>";
-      }
-      out += "</optgroup>";
-    }
-    return out;
-  },
-
-'scrollto': function (scrollTo) {
-  var container = $('#processlist-ui');
-  container.animate({
-    scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
-  });
-},
-
-  */

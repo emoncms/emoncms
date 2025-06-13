@@ -45,7 +45,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=8"></script>
+<script src="<?php echo $path; ?>Modules/process/process.js?v=9"></script>
 
 <div id="process_vue">
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
@@ -139,7 +139,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                         </p>
 
                         <!-- Process select dropdown -->
-                        <select class="input-large" v-model="selected_process" @change="processSelectChange">
+                        <select id="select-process" class="input-large" v-model="selected_process" @change="processSelectChange">
                             <optgroup v-for="(processes, group) in processes_by_group" :label="group">
                                 <option v-for="(process, process_key) in processes" :value="process_key">{{ process.name }}</option>
                             </optgroup>
@@ -179,7 +179,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <span class="add-on schedule-select-label"><?php echo dgettext('process_messages', 'Schedule'); ?></span>
                                     <div class="btn-group">
                                         <select class="input-large" v-model="arg.value">
-                                            <option v-for="schedule in schedules" :value="schedule.id">{{ schedule.name }}</option>
+                                            <option v-for="schedule in schedules" :value="schedule.id">{{ schedule.id }}: {{ schedule.name }}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -248,7 +248,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 </tr>
                 <tr>
                     <td>
-                        <div class="alert alert-info">
+                        <div class="alert alert-info" v-if="processes_by_key[selected_process]">
                             <p><b>{{ processes_by_key[selected_process].name }}</b></p>
                             <span v-if="processes_by_key[selected_process].description" v-html="processes_by_key[selected_process].description"></span>
                             <p v-else><b>No process description available for process {{ processes_by_key[selected_process].name }}</b></p>
