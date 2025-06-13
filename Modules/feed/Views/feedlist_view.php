@@ -1329,9 +1329,7 @@ function save_processlist(feed_id, encoded_process_list) {
         alert('ERROR: Could not save processlist. '+result.message); 
         return false;
     } else {
-        // This may get called twice
-        if (typeof update === 'function') update();
-        // may need to pass table back here??
+        update_feed_list();
         return true;
     }
 }

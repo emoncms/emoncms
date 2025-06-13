@@ -1,5 +1,3 @@
-// TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
-
 var ContextType = {
     INPUT: 0, // Input context
     VIRTUALFEED: 1, // Feed context
@@ -453,21 +451,6 @@ var process_vue = new Vue({
 
         saved: function () {
             this.state = 'saved'; // Update the state to saved
-
-            // compatibility input vs device view transpose
-            /*
-            if (feeds.data != undefined) feeds = feeds.data;
-    
-            for (z in feeds) {
-              if (feeds.hasOwnProperty(z) && (feeds[z].id == this.input_or_virtual_feed_id)) {
-                feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
-              }
-            }
-            if (window.table != undefined && window.table.draw != undefined) {
-              table.draw();
-            }
-            if (typeof update == 'function') update()
-            */
         },
 
         // ---------------------------------------------------------------------------------------------

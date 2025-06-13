@@ -1322,8 +1322,7 @@ function save_processlist(input_id, encoded_process_list) {
         alert('ERROR: Could not save processlist. '+result.message); 
         return false;
     } else {
-        // This may get called twice
-        if (typeof update === 'function') update();
+        update();
         return true;
     }
 }
