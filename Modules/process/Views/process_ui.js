@@ -1,5 +1,4 @@
 // TODO: internalerror, this is the exit error_found process added to process lists if recursion is detected (process_model.php)
-// TODO: Latest value
 
 var ContextType = {
     INPUT: 0, // Input context

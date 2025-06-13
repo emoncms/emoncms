@@ -156,7 +156,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <tr>
                     <td>
                         <p>
-                            <span v-if="add_edit_mode=='add'"><?php echo dgettext('process_messages', 'Add process'); ?>:
+                            <span v-if="add_edit_mode=='add'"><b><?php echo dgettext('process_messages', 'Add process'); ?>:</b>
                                 <a href="#" @click="processSelectChange('process__log_to_feed')" class="label label-info" v-if="context_type==0">log</a>
                                 <a href="#" @click="processSelectChange('process__power_to_kwh')" class="label label-info" v-if="context_type==0">kwh</a>
                                 <a href="#" @click="processSelectChange('process__add_input')" class="label label-warning" v-if="context_type==0">+inp</a>
