@@ -227,4 +227,77 @@ class Process
         return $module_class;
     }
 
+
+    /**
+     * Filter the process list to only include processes that are valid for the given context type.
+     * 
+     * @param array $process_list The list of processes to filter.
+     * @param int $context_type The context type (0 for input, 1 for virtual feed).
+     * @return array The filtered list of valid processes.
+     */
+    public function filter_valid($process_list, $context_type = 0)
+    {
+        // Populate 'writes_to_feed' property
+        if ($context_type === 1) {
+            $process_list = $this->populate_feed_write($process_list); 
+        }
+
+        // Filter the process list to only include processes that are valid for the given source type
+        $valid_processes = array();
+        foreach ($process_list as $key => $process) {
+
+            if ($process["group"] == "Deleted") continue;
+
+            // In input context, skip virtual processes
+            if ($context_type == 0 && $process["group"] == "Virtual") continue;
+
+            // In virtual feed context, skip certain process types/groups
+            if ($context_type == 1) {
+                // If process has engines, assume these write to feeds and should be skipped
+                if (isset($process['writes_to_feed']) && $process['writes_to_feed']) continue;
+                if ($process["function"] == "sendEmail") continue;
+                if ($process["function"] == "publish_to_mqtt") continue;
+                if ($process["group"] == "Feed") continue;
+                if ($process["group"] == "Input") continue;
+                if ($process["group"] == "Hidden") continue;
+            }
+
+            $valid_processes[$key] = $process; // Add valid process to the list
+        }
+        return $valid_processes;
+    }
+
+    /**
+     * Populate the 'writes_to_feed' property for each process in the list.
+     * This is used to determine if a process writes to a feed
+     *
+     * @param array $processes The list of processes to populate.
+     * @return array The updated list of processes with 'writes_to_feed' property set.
+     */
+    private function populate_feed_write($processes) {
+        // For each process, check if it has engines
+        foreach ($processes as $key => $process) {
+            $process['writes_to_feed'] = false; // Default to false
+
+            // If process has engines, assume these write to feeds
+            if (isset($process['engines']) && is_array($process['engines']) && count($process['engines']) > 0) {
+                $process['writes_to_feed'] = true;
+            } else {
+                // Check if any argument has engines
+                $has_engines = false;
+                if (isset($process['args']) && is_array($process['args'])) {
+                    foreach ($process['args'] as $arg) {
+                        if (isset($arg['engines']) && is_array($arg['engines']) && count($arg['engines']) > 0) {
+                            $has_engines = true;
+                            break;
+                        }
+                    }
+                }
+                if ($has_engines) $process['writes_to_feed'] = true;
+            }
+            $processes[$key] = $process; // Update the process in the list
+        }
+        return $processes;
+    }
+
 }

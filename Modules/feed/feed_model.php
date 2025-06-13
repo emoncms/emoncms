@@ -1185,9 +1185,14 @@ class Feed
     public function set_processlist($userid, $id, $processlist, $process_list)
     {
         $userid = (int) $userid;
+        $id = (int) $id;
+
+        // Feed has already been checked for existence, access and if a virtual feed in the controller
 
         // Validate processlist
         $pairs = explode(",",$processlist);
+        if ($processlist == "") $pairs = array();
+
         $pairs_out = array();
 
         // Build map of processids where set
@@ -1195,11 +1200,14 @@ class Feed
         foreach ($process_list as $key=>$process) {
             if (isset($process['id_num'])) $map[$process['id_num']] = $key;
         }
-
+        
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
-            if (count($inputprocess)==2) {
+
+            $id_and_arg_count = count($inputprocess);
+
+            if ($id_and_arg_count>0) {
 
                 // Verify process id
                 $processkey = $inputprocess[0];
@@ -1208,8 +1216,10 @@ class Feed
 
                 // Load process
                 if (isset($process_list[$processkey])) {
-                    $processarg = $process_list[$processkey]['argtype'];
-                    $proccess_name = $process_list[$processkey]['function'];
+
+                    if ($process_list[$processkey]['group']=="Deleted") {
+                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
+                    }
 
                     // remap process back to use map id if available
                     if (isset($process_list[$processkey]['id_num']))
@@ -1219,62 +1229,47 @@ class Feed
                     return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
                 }
 
-                // Verify argument
-                $arg = $inputprocess[1];
+                $arg_count = $id_and_arg_count - 1;
 
-                // Stop virtual feeds from adding email and mqtt processes.
-                $isVirtual = $this->get_engine($id)===7;
-                $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
-                if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
-                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
-                    return array('success'=>false, 'message'=>_("Invalid proccess for Virtual Feed, try another."));
+                if ($arg_count == 1) {
+                    // Singular arg, just the value
+                    $args = array($inputprocess[1]);
+                } else if ($arg_count > 1) {
+                    // Multiple args (remove the process id)
+                    $args = array_slice($inputprocess, 1);
+                } else {
+                    $args = array("");
                 }
 
-                // Check argument against process arg type
-                switch($processarg){
-
-                    case ProcessArg::FEEDID:
-                        $feedid = (int) $arg;
-                        $isVirtual = $this->get_engine($id)===7;
-                        if (!$this->access($userid,$feedid)) {
-                            return array('success'=>false, 'message'=>_("Invalid feed"));
-                        } elseif ($isVirtual) {
-                            return array('success'=>false, 'message'=>_("Cannot use virtual feed as source"));
-                        }
-                        break;
-
-                    case ProcessArg::INPUTID:
-                        $inputid = (int) $arg;
-                        if (!$this->input_access($userid,$inputid)) {
-                            return array('success'=>false, 'message'=>_("Invalid input"));
-                        }
-                        break;
-
-                    case ProcessArg::VALUE:
-                        if (!is_numeric($arg)) {
-                            return array('success'=>false, 'message'=>'Value is not numeric');
-                        }
-                        break;
-
-                    case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
-                            return array('success'=>false, 'message'=>'Invalid characters in argx');
-                        break;
-
-                    case ProcessArg::SCHEDULEID:
-                        $scheduleid = (int) $arg;
-                        if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
-                            return array('success'=>false, 'message'=>'Invalid schedule');
-                        }
-                        break;
-
-                    case ProcessArg::NONE:
-                    default:
-                        $arg = false;
-                        break;
+                // Process arguments can be defined with an args array or a singular argtype
+                // 1. Check if args array has been defined (this over-rides argtype if also present).
+                // 2. If no args array and argtype is defined, convert argtype to an array with a single value.
+                if (isset($process_list[$processkey]['args']) && is_array($process_list[$processkey]['args'])) {
+                    $arg_types = $process_list[$processkey]['args'];
+                } elseif (isset($process_list[$processkey]['argtype'])) {
+                    $arg_types = array(array("type"=>$process_list[$processkey]['argtype']));
+                } else {
+                    $arg_types = array(array("type"=>ProcessArg::NONE));
+                }
+                
+                // Validate number of args against arg_types
+                if (count($args) != count($arg_types)) {
+                    return array('success'=>false, 'message'=>_("Invalid number of arguments for process: $processkey"));
                 }
 
-                $pairs_out[] = implode(":",array($processkey,$arg));
+                // Validate each arg against its type
+                for ($i=0; $i<count($arg_types); $i++) {
+                    $arg_validate_result = $this->validate_arg($userid, $args[$i], $arg_types[$i]['type']);
+                    if (!$arg_validate_result['success']) {
+                        return $arg_validate_result;
+                    }
+                }
+
+                $validated_inputprocess = array($processkey);
+                foreach ($args as $arg) {
+                    $validated_inputprocess[] = $arg;
+                }
+                $pairs_out[] = implode(":", $validated_inputprocess);
             }
         }
 
@@ -1293,6 +1288,52 @@ class Feed
         } else {
             return array('success'=>false, 'message'=>'Feed processlist was not updated');
         }
+    }
+
+    private function validate_arg($userid, $arg, $arg_type)
+    {
+        // Check argument against process arg type
+        switch ($arg_type) {
+
+            case ProcessArg::FEEDID:
+                $feedid = (int) $arg;
+                if (!$this->access($userid, $feedid)) {
+                    return array('success' => false, 'message' => _("Invalid feed"));
+                }
+                break;
+
+            case ProcessArg::INPUTID:
+                $inputid = (int) $arg;
+                if (!$this->input_access($userid,$inputid)) {
+                    return array('success'=>false, 'message'=>_("Invalid input"));
+                }
+                break;
+
+            case ProcessArg::VALUE:
+                if (!is_numeric($arg)) {
+                    return array('success' => false, 'message' => 'Value is not numeric');
+                }
+                break;
+
+            case ProcessArg::TEXT:
+                if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u', '', $arg) != $arg)
+                    return array('success' => false, 'message' => 'Invalid characters in arg');
+                break;
+
+            case ProcessArg::SCHEDULEID:
+                $scheduleid = (int) $arg;
+                if (!$this->schedule_access($userid, $scheduleid)) { // This should really be in the schedule model
+                    return array('success' => false, 'message' => 'Invalid schedule');
+                }
+                break;
+
+            case ProcessArg::NONE:
+            default:
+                $arg = false;
+                break;
+        }
+
+        return array('success' => true, 'message' => 'Arg is valid');
     }
 
     // Set the processlist with an error found process at the start
