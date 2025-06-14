@@ -157,7 +157,17 @@ var process_vue = new Vue({
 
             // if global function exists save_processlist
             if (typeof save_processlist === 'function') {
-                if (save_processlist(this.input_or_virtual_feed_id, this.process_list)) {
+
+                // Remove extra fields (perhaps refactor this out)
+                let output_process_list = [];
+                for (let i in this.process_list) {
+                    output_process_list.push({
+                        fn: this.process_list[i].fn,
+                        args: this.process_list[i].args
+                    });
+                }
+
+                if (save_processlist(this.input_or_virtual_feed_id, output_process_list)) {
                     this.saved(); // Update the state to saved
                 }
             } else {
