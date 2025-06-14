@@ -301,6 +301,15 @@ class Process
         return $processes;
     }
 
+    /**
+     * Validate a process list for a given user and context type.
+     * 
+     * @param int $userid The user ID.
+     * @param int $id The ID of the input or feed.
+     * @param string $processlist The process list to validate.
+     * @param int $context_type The context type (0 for input, 1 for feed).
+     * @return array An array containing 'success' status and either 'processlist' or 'message'.
+     */
     public function validate_processlist($userid, $id, $processlist, $context_type = 0)
     {
         $userid = (int) $userid;
@@ -393,6 +402,14 @@ class Process
         return array('success'=>true, 'processlist'=>$processlist_out);
     }
 
+    /**
+     * Helper method for validate_processlist: Validate an argument against its type.
+     * 
+     * @param int $userid The user ID.
+     * @param mixed $arg The argument to validate.
+     * @param int $arg_type The type of the argument (ProcessArg constants).
+     * @return array An array containing 'success' status and either 'message' or 'arg'.
+     */
     private function validate_arg($userid, $arg, $arg_type)
     {
         // Check argument against process arg type
@@ -439,6 +456,14 @@ class Process
         return array('success' => true, 'message' => 'Arg is valid');
     }
 
+    /**
+     * Helper method for validate_arg: Check if the user has access to the specified table and id.
+     * 
+     * @param string $table_name The name of the table (feeds, input, schedule).
+     * @param int $userid The user ID.
+     * @param int $id The ID to check.
+     * @return bool True if access is granted, false otherwise.
+     */
     private function arg_access($table_name, $userid, $id)
     {
         $userid = (int) $userid;
