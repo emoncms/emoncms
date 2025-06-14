@@ -14,87 +14,18 @@ var process_api = {
             async: (typeof callback !== "function"),
             success: function(result)
             {
-                let processes = self.convert_arg_structure(result);
-                processes = self.populate_feed_write(processes);
-                self.processes = processes; // Store processes
+                self.processes = result;   // Store processes
                 self.populate_id_num_map(); // Populate id_num map
 
                 if (typeof callback === "function") {
-                    callback(processes);
+                    callback(self.processes);
                 } else {
                     // Perhaps synchronous result should not be available..
-                    return processes;
+                    return self.processes;
                 }
             }
         });
         return false;
-    },
-
-    // Convert singular arguments to args array
-    convert_arg_structure: function(processes) {
-        // Convert singular arguments to args array
-        for (let key in processes) {
-            let process = processes[key];
-
-            // If process.args does not exist or is not an array, create it from process.argtype
-            if (!process.args || !Array.isArray(process.args)) {
-                // Does singular definition exist?
-                if (process.argtype !== undefined) {
-
-                    // Base type
-                    let singular_arg = { "type": process.argtype };
-
-                    // Copy over engines if available
-                    if (process.engines !== undefined && Array.isArray(process.engines)) {
-                        singular_arg.engines = process.engines;
-                    }
-
-                    // Copy over default if available
-                    if (process.default !== undefined) {
-                        singular_arg.default = process.default;
-                    }
-
-                    // Copy over unit if available
-                    if (process.unit !== undefined) {
-                        singular_arg.unit = process.unit;
-                    }
-
-                    process.args = [singular_arg];
-                } else {
-                    // If no argtype, initialize args as an empty array
-                    process.args = [];
-                }
-            }
-        }
-        return processes;
-    },
-
-    // Populate feed write information for processes
-    populate_feed_write: function(processes) {
-
-        // For each process, check if it has engines
-        for (let key in processes) {
-            let process = processes[key];
-            process.writes_to_feed = false; // Default to false
-
-            // If process has engines, assume these write to feeds
-            if (process.engines && process.engines.length > 0) {
-                process.writes_to_feed = true;
-            } else {
-                // Check if any argument has engines
-                let has_engines = false;
-                if (process.args) {
-                    for (let i = 0; i < process.args.length; i++) {
-                        if (process.args[i].engines && process.args[i].engines.length > 0) {
-                            has_engines = true;
-                            break;
-                        }
-                    }
-                }
-                if (has_engines) process.writes_to_feed = true;
-            }
-        }
-        return processes;
     },
 
     // Processes by Group

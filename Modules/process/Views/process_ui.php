@@ -45,7 +45,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=13"></script>
+<script src="<?php echo $path; ?>Modules/process/process.js?v=16"></script>
 
 <div id="process_vue">
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">

@@ -50,7 +50,7 @@ class Process
         $this->log = new EmonLogger(__FILE__);
         
         $this->process_list = $this->get_process_list(); // Load modules modules
-        
+    
         // Build map of processids where set
         $this->process_map = array();
         foreach ($this->process_list as $k=>$v) {
@@ -79,8 +79,15 @@ class Process
     public function get_process_list()
     {
         static $list = array(); // Array to hold the cache
+
         if (empty($list) || empty($this->modules_functions)) {     // Cache it now
             $list=$this->load_modules();  
+
+            // Convert singular arg definitions to args array (this could be removed by hard-coding this in the process list)
+            $list = $this->convert_arg_structure($list); 
+
+            // Populate 'writes_to_feed' property (this could be removed by hard-coding this in the process list)
+            $list = $this->populate_feed_write($list);
         }
         return $list;
     }
@@ -228,48 +235,54 @@ class Process
         return $module_class;
     }
 
-
     /**
-     * Filter the process list to only include processes that are valid for the given context type.
-     * 
-     * @param array $process_list The list of processes to filter.
-     * @param int $context_type The context type (0 for input, 1 for virtual feed).
-     * @return array The filtered list of valid processes.
+     * 1. Convert singular argument definitions to an args array for each process.
+     * Ensures each process has an 'args' array, converting from 'argtype' if needed.
+     *
+     * @param array $processes The array of processes to convert.
+     * @return array The updated array of processes.
      */
-    public function filter_valid($process_list, $context_type = 0)
-    {
-        // Populate 'writes_to_feed' property
-        if ($context_type === 1) {
-            $process_list = $this->populate_feed_write($process_list); 
-        }
+    private function convert_arg_structure($processes) {
+        foreach ($processes as $key => $process) {
+            // If 'args' does not exist or is not an array, create it from 'argtype'
+            if (!isset($process['args']) || !is_array($process['args'])) {
+                if (isset($process['argtype'])) {
+                    // Base type
+                    $singular_arg = array("type" => $process['argtype']);
+                    // Remove 'argtype' as it is no longer needed
+                    unset($process['argtype']);
 
-        // Filter the process list to only include processes that are valid for the given source type
-        $valid_processes = array();
-        foreach ($process_list as $key => $process) {
+                    // Copy over 'engines' if available
+                    if (isset($process['engines']) && is_array($process['engines'])) {
+                        $singular_arg['engines'] = $process['engines'];
+                        // remove 'engines' from process as it is now in the singular arg
+                        unset($process['engines']);
+                    }
 
-            if ($process["group"] == "Deleted") continue;
+                    // Copy over 'default' if available
+                    if (isset($process['default'])) {
+                        $singular_arg['default'] = $process['default'];
+                    }
 
-            // In input context, skip virtual processes
-            if ($context_type == 0 && $process["group"] == "Virtual") continue;
+                    // Copy over 'unit' if available
+                    if (isset($process['unit']) && $process['unit'] != "") {
+                        $singular_arg['unit'] = $process['unit'];
+                    }
 
-            // In virtual feed context, skip certain process types/groups
-            if ($context_type == 1) {
-                // If process has engines, assume these write to feeds and should be skipped
-                if (isset($process['writes_to_feed']) && $process['writes_to_feed']) continue;
-                if ($process["function"] == "sendEmail") continue;
-                if ($process["function"] == "publish_to_mqtt") continue;
-                if ($process["group"] == "Feed") continue;
-                if ($process["group"] == "Input") continue;
-                if ($process["group"] == "Hidden") continue;
+                    $process['args'] = array($singular_arg);
+                    
+                } else {
+                    // If no 'argtype', initialize 'args' as an empty array
+                    $process['args'] = array();
+                }
             }
-
-            $valid_processes[$key] = $process; // Add valid process to the list
+            $processes[$key] = $process;
         }
-        return $valid_processes;
+        return $processes;
     }
 
     /**
-     * Populate the 'writes_to_feed' property for each process in the list.
+     * 2. Populate the 'writes_to_feed' property for each process in the list.
      * This is used to determine if a process writes to a feed
      *
      * @param array $processes The list of processes to populate.
@@ -299,6 +312,43 @@ class Process
             $processes[$key] = $process; // Update the process in the list
         }
         return $processes;
+    }
+
+    /**
+     * 3. Filter the process list to only include processes that are valid for the given context type.
+     * 
+     * @param array $process_list The list of processes to filter.
+     * @param int $context_type The context type (0 for input, 1 for virtual feed).
+     * @return array The filtered list of valid processes.
+     */
+    public function filter_valid($process_list, $context_type = 0)
+    {
+        // Filter the process list to only include processes that are valid for the given source type
+        $valid_processes = array();
+        foreach ($process_list as $key => $process) {
+
+            // Not translation safe!?
+            if ($process["group"] == "Deleted") continue;
+
+            // In input context, skip virtual processes
+            if ($context_type == 0 && $process["group"] == "Virtual") continue;
+
+            // In virtual feed context, skip certain process types/groups
+            if ($context_type == 1) {
+                // If process has engines, assume these write to feeds and should be skipped
+                if (isset($process['writes_to_feed']) && $process['writes_to_feed']) continue;
+                if ($process["function"] == "sendEmail") continue;
+                if ($process["function"] == "publish_to_mqtt") continue;
+
+                // Not translation safe!?
+                if ($process["group"] == "Feed") continue;
+                if ($process["group"] == "Input") continue;
+                if ($process["group"] == "Hidden") continue;
+            }
+
+            $valid_processes[$key] = $process; // Add valid process to the list
+        }
+        return $valid_processes;
     }
 
     // ---------------- Input and Feed Process List Methods ----------------
