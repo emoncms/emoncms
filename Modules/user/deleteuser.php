@@ -4,6 +4,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function delete_user($userid,$mode) {
 
+    $dryrun = true;
+    if ($mode=="permanentdelete") {
+        $dryrun = false;
+    }
+
     global $mysqli,$redis,$user,$settings;
 
     $result1 = $mysqli->query("SELECT id,apikey_read,apikey_write FROM users WHERE id=$userid");
@@ -51,6 +56,16 @@ function delete_user($userid,$mode) {
         foreach ($schema as $tablename=>$columns) {
             if (isset($columns['userid'])) {
                 $result .= delete_entry_in_table($tablename,$userid,$mode);
+            }
+        }
+        
+        // It would be better to implement some kind of standard interface for this
+        if (file_exists("Modules/account/account_model.php")) {
+            require_once("Modules/account/account_model.php");
+            $account_class = new Accounts($mysqli, $redis, $user);
+            $account_result = $account_class->delete_user($userid, $dryrun);
+            if ($account_result['success']) {
+                $result .= "- ".$account_result['message']."\n";
             }
         }
         
