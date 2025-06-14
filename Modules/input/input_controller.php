@@ -102,8 +102,7 @@ function input_controller()
                 if ($route->subaction == "get") {
                     return $input->get_processlist(get("inputid"));
                 } elseif ($route->subaction == "set") {
-                    $processes = $process->filter_valid($process->get_process_list(),0); // Only return input compatible processes
-                    return $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$processes);
+                    return $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$process);
                 } elseif ($route->subaction == "reset") {
                     return $input->reset_processlist(get("inputid"));
                 }

@@ -330,8 +330,7 @@ function feed_controller()
                         } elseif ($route->subaction == "get") {
                             return $feed->get_processlist($feedid);
                         } elseif ($route->subaction == "set") {
-                            $processes = $process->filter_valid($process->get_process_list(),1); // Only return Virtual feed compatible processes
-                            return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$processes);
+                            return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process);
                         } elseif ($route->subaction == "reset") {
                             return $feed->reset_processlist($feedid);
                         }

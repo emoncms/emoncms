@@ -52,6 +52,7 @@ class Process
         $this->process_list = $this->get_process_list(); // Load modules modules
         
         // Build map of processids where set
+        $this->process_map = array();
         foreach ($this->process_list as $k=>$v) {
             if (isset($v['id_num'])) $this->process_map[$v['id_num']] = $k;
         }
@@ -300,4 +301,161 @@ class Process
         return $processes;
     }
 
+    public function validate_processlist($userid, $id, $processlist, $context_type = 0)
+    {
+        $userid = (int) $userid;
+        $id = (int) $id;
+
+        $processes = $this->process_list; // Get the process list
+        $processes = $this->filter_valid($processes, $context_type); // Filter the process list based on context type
+
+        // Validate processlist
+        $pairs = explode(",",$processlist);
+        if ($processlist == "") $pairs = array();
+
+        $pairs_out = array();
+
+        foreach ($pairs as $pair)
+        {
+            $inputprocess = explode(":", $pair);
+
+            $id_and_arg_count = count($inputprocess);
+
+            if ($id_and_arg_count>0) {
+
+                // Verify process id
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+
+                // Load process
+                if (isset($processes[$processkey])) {
+
+                    if ($processes[$processkey]['group']=="Deleted") {
+                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
+                    }
+
+                    // remap process back to use map id if available
+                    if (isset($processes[$processkey]['id_num']))
+                        $processkey = $processes[$processkey]['id_num'];
+
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
+
+                $arg_count = $id_and_arg_count - 1;
+
+                if ($arg_count == 1) {
+                    // Singular arg, just the value
+                    $args = array($inputprocess[1]);
+                } else if ($arg_count > 1) {
+                    // Multiple args (remove the process id)
+                    $args = array_slice($inputprocess, 1);
+                } else {
+                    $args = array("");
+                }
+
+                // Process arguments can be defined with an args array or a singular argtype
+                // 1. Check if args array has been defined (this over-rides argtype if also present).
+                // 2. If no args array and argtype is defined, convert argtype to an array with a single value.
+                if (isset($processes[$processkey]['args']) && is_array($processes[$processkey]['args'])) {
+                    $arg_types = $processes[$processkey]['args'];
+                } elseif (isset($processes[$processkey]['argtype'])) {
+                    $arg_types = array(array("type"=>$processes[$processkey]['argtype']));
+                } else {
+                    $arg_types = array(array("type"=>ProcessArg::NONE));
+                }
+                
+                // Validate number of args against arg_types
+                if (count($args) != count($arg_types)) {
+                    return array('success'=>false, 'message'=>_("Invalid number of arguments for process: $processkey"));
+                }
+
+                // Validate each arg against its type
+                for ($i=0; $i<count($arg_types); $i++) {
+                    $arg_validate_result = $this->validate_arg($userid, $args[$i], $arg_types[$i]['type']);
+                    if (!$arg_validate_result['success']) {
+                        return $arg_validate_result;
+                    }
+                }
+
+                $validated_process_list = array($processkey);
+                foreach ($args as $arg) {
+                    $validated_process_list[] = $arg;
+                }
+                $pairs_out[] = implode(":", $validated_process_list);
+            }
+        }
+
+        // rebuild processlist from verified content
+        $processlist_out = implode(",",$pairs_out);
+
+        return array('success'=>true, 'processlist'=>$processlist_out);
+    }
+
+    private function validate_arg($userid, $arg, $arg_type)
+    {
+        // Check argument against process arg type
+        switch ($arg_type) {
+
+            case ProcessArg::FEEDID:
+                $feedid = (int) $arg;
+                if (!$this->arg_access("feeds", $userid, $feedid)) {
+                    return array('success' => false, 'message' => _("Invalid feed"));
+                }
+                break;
+
+            case ProcessArg::INPUTID:
+                $inputid = (int) $arg;
+                if (!$this->arg_access("input", $userid, $inputid)) {
+                    return array('success' => false, 'message' => _("Invalid input"));
+                }
+                break;
+
+            case ProcessArg::VALUE:
+                if (!is_numeric($arg)) {
+                    return array('success' => false, 'message' => 'Value is not numeric');
+                }
+                break;
+
+            case ProcessArg::TEXT:
+                if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u', '', $arg) != $arg)
+                    return array('success' => false, 'message' => 'Invalid characters in arg');
+                break;
+
+            case ProcessArg::SCHEDULEID:
+                $scheduleid = (int) $arg;
+                if (!$this->arg_access("schedule", $userid, $scheduleid)) {
+                    return array('success' => false, 'message' => 'Invalid schedule');
+                }
+                break;
+
+            case ProcessArg::NONE:
+            default:
+                $arg = false;
+                break;
+        }
+
+        return array('success' => true, 'message' => 'Arg is valid');
+    }
+
+    private function arg_access($table_name, $userid, $id)
+    {
+        $userid = (int) $userid;
+        $id = (int) $id;
+
+        // Table name can be 'feed', 'input', or 'schedule'
+        $table_name = strtolower($table_name);
+        if (!in_array($table_name, array('feeds', 'input', 'schedule'))) {
+            return false;
+        }
+
+        $stmt = $this->mysqli->prepare("SELECT id FROM $table_name WHERE userid=? AND id=?");
+        $stmt->bind_param("ii",$userid,$id);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
+        if ($result && $id>0) return true; else return false;
+    }
 }
