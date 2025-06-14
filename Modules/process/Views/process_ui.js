@@ -154,11 +154,10 @@ var process_vue = new Vue({
         },
 
         save: function () {
-            let encoded_process_list = process_api.encode(this.process_list);
 
             // if global function exists save_processlist
             if (typeof save_processlist === 'function') {
-                if (save_processlist(this.input_or_virtual_feed_id, encoded_process_list)) {
+                if (save_processlist(this.input_or_virtual_feed_id, this.process_list)) {
                     this.saved(); // Update the state to saved
                 }
             } else {

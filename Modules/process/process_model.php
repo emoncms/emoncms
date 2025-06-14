@@ -301,6 +301,8 @@ class Process
         return $processes;
     }
 
+    // ---------------- Input and Feed Process List Methods ----------------
+
     /**
      * Validate a process list for a given user and context type.
      * 
@@ -318,88 +320,60 @@ class Process
         $processes = $this->process_list; // Get the process list
         $processes = $this->filter_valid($processes, $context_type); // Filter the process list based on context type
 
-        // Validate processlist
-        $pairs = explode(",",$processlist);
-        if ($processlist == "") $pairs = array();
+        // Process list expected in new JSON format
+        $processlist = json_decode($processlist, true);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            return array('success' => false, 'message' => _("Invalid process list format: "));
+        }
+        if (!is_array($processlist)) {
+            return array('success' => false, 'message' => _("Process list must be an array"));
+        }
 
-        $pairs_out = array();
+        foreach ($processlist as $index => $inputprocess) {
+            if (!isset($inputprocess['fn'])) {
+                return array('success' => false, 'message' => _("Missing process key in process list at index $index"));
+            }
 
-        foreach ($pairs as $pair)
-        {
-            $inputprocess = explode(":", $pair);
+            if (!isset($inputprocess['args']) || !is_array($inputprocess['args'])) {
+                return array('success' => false, 'message' => _("Invalid or missing args in process list at index $index"));
+            }
 
-            $id_and_arg_count = count($inputprocess);
+            // Verify process key
+            $process_key = $inputprocess['fn'];
+            if (!isset($processes[$process_key])) {
+                return array('success' => false, 'message' => _("Invalid process process key:$process_key"));
+            }
 
-            if ($id_and_arg_count>0) {
+            // Process arguments can be defined with an args array or a singular argtype
+            // 1. Check if args array has been defined (this over-rides argtype if also present).
+            // 2. If no args array and argtype is defined, convert argtype to an array with a single value.
+            if (isset($processes[$process_key]['args']) && is_array($processes[$process_key]['args'])) {
+                $arg_types = $processes[$process_key]['args'];
+            } elseif (isset($processes[$process_key]['argtype'])) {
+                $arg_types = array(array("type" => $processes[$process_key]['argtype']));
+            } else {
+                $arg_types = array(array("type" => ProcessArg::NONE));
+            }
 
-                // Verify process id
-                $processkey = $inputprocess[0];
-                // If key is in the map, switch to associated full process key
-                if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+            $args = $inputprocess['args']; // Get the args from the input process
 
-                // Load process
-                if (isset($processes[$processkey])) {
+            // Validate number of args against arg_types
+            if (count($args) != count($arg_types)) {
+                return array('success' => false, 'message' => _("Invalid number of arguments for process: $processkey"));
+            }
 
-                    if ($processes[$processkey]['group']=="Deleted") {
-                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
-                    }
-
-                    // remap process back to use map id if available
-                    if (isset($processes[$processkey]['id_num']))
-                        $processkey = $processes[$processkey]['id_num'];
-
-                } else {
-                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+            // Validate each arg against its type
+            for ($i = 0; $i < count($arg_types); $i++) {
+                $arg_validate_result = $this->validate_arg($userid, $args[$i], $arg_types[$i]['type']);
+                if (!$arg_validate_result['success']) {
+                    return $arg_validate_result;
                 }
-
-                $arg_count = $id_and_arg_count - 1;
-
-                if ($arg_count == 1) {
-                    // Singular arg, just the value
-                    $args = array($inputprocess[1]);
-                } else if ($arg_count > 1) {
-                    // Multiple args (remove the process id)
-                    $args = array_slice($inputprocess, 1);
-                } else {
-                    $args = array("");
-                }
-
-                // Process arguments can be defined with an args array or a singular argtype
-                // 1. Check if args array has been defined (this over-rides argtype if also present).
-                // 2. If no args array and argtype is defined, convert argtype to an array with a single value.
-                if (isset($processes[$processkey]['args']) && is_array($processes[$processkey]['args'])) {
-                    $arg_types = $processes[$processkey]['args'];
-                } elseif (isset($processes[$processkey]['argtype'])) {
-                    $arg_types = array(array("type"=>$processes[$processkey]['argtype']));
-                } else {
-                    $arg_types = array(array("type"=>ProcessArg::NONE));
-                }
-                
-                // Validate number of args against arg_types
-                if (count($args) != count($arg_types)) {
-                    return array('success'=>false, 'message'=>_("Invalid number of arguments for process: $processkey"));
-                }
-
-                // Validate each arg against its type
-                for ($i=0; $i<count($arg_types); $i++) {
-                    $arg_validate_result = $this->validate_arg($userid, $args[$i], $arg_types[$i]['type']);
-                    if (!$arg_validate_result['success']) {
-                        return $arg_validate_result;
-                    }
-                }
-
-                $validated_process_list = array($processkey);
-                foreach ($args as $arg) {
-                    $validated_process_list[] = $arg;
-                }
-                $pairs_out[] = implode(":", $validated_process_list);
             }
         }
 
-        // rebuild processlist from verified content
-        $processlist_out = implode(",",$pairs_out);
+        $processlist_out = $this->encode_processlist($processlist); // Encode the process list to a string
 
-        return array('success'=>true, 'processlist'=>$processlist_out);
+        return array('success' => true, 'processlist' => $processlist_out);
     }
 
     /**
@@ -483,4 +457,30 @@ class Process
         $stmt->close();
         if ($result && $id>0) return true; else return false;
     }
+
+    /**
+     * Encode a process list to a string.
+     * Example input: [{fn: 'process__log_to_feed_join', args: ['2095', '4']}, {fn: 'schedule__if_not_schedule_zero', args: ['3']}]
+     * Returns a string like "process__log_to_feed_join:2095,4:schedule__if_not_schedule_zero:3".
+     * 
+     * @param array $process_list The list of processes to encode.
+     * @return string The encoded process list as a string.
+     */
+    public function encode_processlist($process_list) {
+        // Encode a process list to a string
+        $encoded_process_list = array();
+        foreach ($process_list as $process_item) {
+            $process_key = $process_item['fn'];
+
+            // Get id_num if it exists
+            if (isset($this->process_map[$process_key])) {
+                $process_key = $this->process_map[$process_key];
+            }
+
+            $args = implode(':', $process_item['args']);
+            $encoded_process_list[] = $process_key . ':' . $args;
+        }
+        return implode(',', $encoded_process_list);
+    }
+
 }

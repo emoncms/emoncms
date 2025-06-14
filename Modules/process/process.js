@@ -218,27 +218,5 @@ var process_api = {
         }
 
         return decoded_process_list;
-    },
-
-    // Encode a process list to a string
-    // Example input: [{fn: 'process__log_to_feed_join', args: ['2095', '4']}, {fn: 'schedule__if_not_schedule_zero', args: ['3']}]
-    // Returns a string like "process__log_to_feed_join:2095,4:schedule__if_not_schedule_zero:3"
-    // **This may be moved to the server side in the future**
-    encode: function(process_list) {
-        // Encode a process list to a string
-        let encoded_process_list = [];
-        for (let i = 0; i < process_list.length; i++) {
-            let process_item = process_list[i];
-            let process_key = process_item.fn;
-
-            // Get id_num if it exists
-            if (this.processes[process_key] && this.processes[process_key].id_num !== undefined) {
-                process_key = this.processes[process_key].id_num;
-            }
-            
-            let args = process_item.args.join(':');
-            encoded_process_list.push(process_key + ':' + args);
-        }
-        return encoded_process_list.join(',');
     }
 }

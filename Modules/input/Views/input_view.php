@@ -1,12 +1,12 @@
 <?php $v=24; ?>
 
 <?php if ($device_module) { ?>
-<script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/device/Views/device.js?v=25"></script>
 <?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=25"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=25"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=25"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <script>

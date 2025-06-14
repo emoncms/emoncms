@@ -76,7 +76,7 @@ function translate(property) {
 </script>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=8"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
@@ -1323,8 +1323,8 @@ $(".feed-process").click(function() {
     process_vue.load(1, contextid, feeds[feedid].processList, contextname, null, null); // load configs
 });
 
-function save_processlist(feed_id, encoded_process_list) {
-    var result = feed.set_process(feed_id, encoded_process_list);
+function save_processlist(feed_id, process_list) {
+    var result = feed.set_process(feed_id, process_list);
     if (!result.success) {
         alert('ERROR: Could not save processlist. '+result.message); 
         return false;

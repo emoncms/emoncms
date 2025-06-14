@@ -290,8 +290,9 @@ var feed = {
 
     // Virtual feed process
     set_process: function(feedid,processlist){
+        let json_processlist = JSON.stringify(processlist);
         var result = {};
-        $.ajax({ url: path+"feed/process/set.json?id="+feedid, method: "POST", data: "processlist="+processlist, async: false, success: function(data){result = data;} });
+        $.ajax({ url: path+"feed/process/set.json?id="+feedid, method: "POST", data: "processlist="+json_processlist, async: false, success: function(data){result = data;} });
         return result;
     },
 
