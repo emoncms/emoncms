@@ -80,6 +80,8 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>Emoncms Fixed Interval TimeSeries (PHPFina)</b> is the recommended feed engine, it is a fixed interval timeseries engine.</li><li><b>Emoncms Variable Interval TimeSeries (PHPTimeseries)</b> is for data posted at a non regular interval.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
             ),
             array(
@@ -89,6 +91,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "scale",
                 "group" => _("Calibration"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Multiplies current value by given constant. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
             ),
             array(
@@ -98,6 +102,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "offset",
                 "group" => _("Calibration"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Offset current value by given value. This can again be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
             ),
             array(
@@ -110,6 +116,8 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
@@ -122,6 +130,8 @@ class Process_ProcessList
                 "group" => _("Power & Energy"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh/d)</p>")
             ),
             array(
@@ -131,6 +141,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "times_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Multiplies the current value with the last value from other input as selected from the input list.</p>")
             ),
             array(
@@ -142,6 +154,8 @@ class Process_ProcessList
                 "group" => _("Input"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Counts the amount of time that an input is high in each day and logs the result to a feed. Created for counting the number of hours a solar hot water pump is on each day</p>")
             ),
             array(
@@ -154,6 +168,8 @@ class Process_ProcessList
                 "group" => _("Power & Energy"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Accumulate Wh measurements into kWh/d.<p><b>Input</b>: energy increments in Wh.</p>")
             ),
             array(
@@ -166,6 +182,8 @@ class Process_ProcessList
                 "group" => _("Deleted"),
                 "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => ""
             ),
             array(
@@ -177,6 +195,8 @@ class Process_ProcessList
                 "group" => _("Input"),
                 "engines" => array(Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Updates or inserts daily value on the specified time (given by the JSON time parameter from the API) of the specified feed</p>")
             ),
             array(
@@ -186,6 +206,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "add_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Adds the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -195,6 +217,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "divide_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Divides the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -205,6 +229,8 @@ class Process_ProcessList
                 "function" => "phaseshift",
                 "group" => _("Deleted"),
                 "deleted" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => ""
             ),
             array(
@@ -215,6 +241,8 @@ class Process_ProcessList
                 "function" => "accumulator",
                 "group" => _("Misc"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Output feed accumulates by input value</p>")
             ),
             array(
@@ -226,6 +254,8 @@ class Process_ProcessList
                 "group" => _("Misc"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
                 "requireredis" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Output feed is the difference between the current value and the last</p>")
             ),
             array(
@@ -237,6 +267,8 @@ class Process_ProcessList
                 "group" => _("Deleted"),
                 "deleted" => true,
                 "engines" => array(Engine::MYSQL, Engine::MYSQLMEMORY),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => ""
             ),
             array(
@@ -248,6 +280,8 @@ class Process_ProcessList
                 "group" => _("Deleted"),
                 "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => ""
             ),
             array(
@@ -259,6 +293,8 @@ class Process_ProcessList
                 "group" => _("Deleted"),
                 "deleted" => true,
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => ""
             ),
             array(
@@ -271,6 +307,8 @@ class Process_ProcessList
                 "group" => _("Deleted"),
                 "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => ""
             ),
             array(
@@ -281,6 +319,8 @@ class Process_ProcessList
                 "function" => "pulse_diff",
                 "group" => _("Pulse"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Returns the number of pulses incremented since the last update for a input that is a cumulative pulse count. i.e If the input updates from 23400 to 23410 the result will be an incremenet of 10.</p>")
             ),
             array(
@@ -293,6 +333,8 @@ class Process_ProcessList
                 "group" => _("Power & Energy"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
                 "requireredis" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Convert accumulating kWh to instantaneous power</p>")
             ),
             array(
@@ -302,6 +344,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "subtract_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Subtracts from the current value the last value from other input as selected from the input list.</p>")
             ),
             array(
@@ -315,6 +359,8 @@ class Process_ProcessList
                 "engines" => array(Engine::PHPTIMESERIES),
                 "requireredis" => true,
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Upsert kWh to a daily value.</p>")
             ),
             array(
@@ -324,6 +370,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "allowpositive",
                 "group" => _("Limits"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Negative values are zeroed for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -333,6 +381,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "allownegative",
                 "group" => _("Limits"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Positive values are zeroed for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -343,6 +393,8 @@ class Process_ProcessList
                 "function" => "signed2unsigned",
                 "unit" => "unsign",
                 "group" => _("Misc"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Convert a number that was interpreted as a 16 bit signed number to an unsigned number.</p>")
             ),
             array(
@@ -354,6 +406,8 @@ class Process_ProcessList
                 "group" => _("Misc"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Maximal daily value. Upserts on the selected daily feed the highest value reached each day.</p>")
             ),
             array(
@@ -365,6 +419,8 @@ class Process_ProcessList
                 "group" => _("Misc"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Minimal daily value. Upserts on the selected daily feed the lowest value reached each day.</p>")
             ),
             array(
@@ -374,6 +430,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "add_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Adds the current value with the last value from a feed as selected from the feed list.</p>")
             ),
             array(
@@ -383,6 +441,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "sub_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Subtracts from the current value the last value from a feed as selected from the feed list.</p>")
             ),
             array(
@@ -392,6 +452,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "multiply_by_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Multiplies the current value with the last value from a feed as selected from the feed list.</p>")
             ),
             array(
@@ -401,6 +463,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "divide_by_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Divides the current value by the last value from a feed as selected from the feed list.</p>")
             ),
             array(
@@ -410,6 +474,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "reset2zero",
                 "group" => _("Misc"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>The value \"0\" is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -422,6 +488,8 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
                 "requireredis" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
@@ -433,6 +501,8 @@ class Process_ProcessList
                 "group" => _("Misc"),
                 "nochange" => true,
                 "requireredis" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Publishes value to REDIS for phpmqtt_input.php to publish the values to MQTT topic e.g. 'home/power/kitchen'</p>")
             ),
             array(
@@ -442,6 +512,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "reset2null",
                 "group" => _("Misc"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Value is set to NULL.</p><p>Useful for conditional process to work on.</p>")
             ),
             array(
@@ -451,6 +523,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "reset2original",
                 "group" => _("Misc"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>The value is set to the original value at the start of the process list.</p>")
             ),
             array(
@@ -461,6 +535,8 @@ class Process_ProcessList
                 "function" => "if_zero_skip",
                 "group" => _("Conditional"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is ZERO, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -471,6 +547,8 @@ class Process_ProcessList
                 "function" => "if_not_zero_skip",
                 "group" => _("Conditional"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is NOT ZERO, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -481,6 +559,8 @@ class Process_ProcessList
                 "function" => "if_null_skip",
                 "group" => _("Conditional"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is NULL, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -491,6 +571,8 @@ class Process_ProcessList
                 "function" => "if_not_null_skip",
                 "group" => _("Conditional"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is NOT NULL, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -501,6 +583,8 @@ class Process_ProcessList
                 "function" => "if_gt_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is greater than the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -511,6 +595,8 @@ class Process_ProcessList
                 "function" => "if_gt_equal_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is greater or equal to the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -521,6 +607,8 @@ class Process_ProcessList
                 "function" => "if_lt_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is lower than the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -531,6 +619,8 @@ class Process_ProcessList
                 "function" => "if_lt_equal_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is lower or equal to the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -541,6 +631,8 @@ class Process_ProcessList
                 "function" => "if_equal_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is equal to the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -551,6 +643,8 @@ class Process_ProcessList
                 "function" => "if_not_equal_skip",
                 "group" => _("Conditional - User value"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value from last process is NOT equal to the specified value, process execution will skip execution of next process in list.</p>")
             ),
             array(
@@ -562,6 +656,8 @@ class Process_ProcessList
                 "default" => 1,
                 "group" => _("Misc"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Jumps the process execution to the specified position.</p><p><b>Warning</b><br>If you're not careful you can create a goto loop on the process list.<br>When a loop occurs, the API will appear to lock until the server php times out with an error.</p>")
             ),
             array(
@@ -571,6 +667,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "source_feed_data_time",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.</p>")
             ),
             array(
@@ -580,6 +678,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "add_source_feed",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Add the specified feed.</p>")
             ),
             array(
@@ -589,6 +689,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "sub_source_feed",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Subtract the specified feed.</p>")
             ),
             array(
@@ -598,6 +700,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "multiply_by_source_feed",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Multiply by specified feed.</p>")
             ),
             array(
@@ -607,6 +711,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "divide_by_source_feed",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Divide by specified feed. Returns NULL for zero values.</p>")
             ),
             array(
@@ -616,6 +722,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "reciprocal_by_source_feed",
                 "group" => _("Virtual"),
+                "input_context" => false,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Return the reciprical of the specified feed. Returns NULL for zero values.</p>")
             ),
             array(
@@ -624,6 +732,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::NONE,
                 "function" => "error_found",
                 "group" => _("Hidden"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>This was automaticaly added when a loop error was discovered on the processList or execution took too many steps to process.  Review the usage of GOTOs or decrease the number of items and delete this entry to resume execution.</p>"),
                 "internalerror" => true,
                 "internalerror_reason" => "HAS ERRORS",
@@ -635,6 +745,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "max_value_allowed",
                 "group" => _("Limits"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value is greater than <i>max value allowed</i> then the value passed to following process will be the <i>max value allowed</i></p>"),
                 "requireredis" => false,
                 "nochange" => false
@@ -645,6 +757,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "min_value_allowed",
                 "group" => _("Limits"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>If value is lower than <i>min value allowed</i> then the value passed to following process will be the <i>min value allowed</i></p>"),
                 "requireredis" => false,
                 "nochange" => false
@@ -655,6 +769,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "abs_value",
                 "group" => _("Calibration"),
+                "input_context" => true,
+                "virtual_feed_context" => true,
                 "description" => _("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
             ),
             array(
@@ -666,6 +782,8 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
                 "requireredis" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
@@ -676,6 +794,8 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
@@ -684,6 +804,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "max_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -692,6 +814,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::INPUTID,
                 "function" => "min_input",
                 "group" => _("Input"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -700,6 +824,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "max_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -708,6 +834,8 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "min_feed",
                 "group" => _("Feed"),
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
@@ -719,6 +847,8 @@ class Process_ProcessList
                 "group" => _("Power & Energy"),
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every 15 min (starting mid night) (kWh/15min)</p>")
             ),
             array(
@@ -732,12 +862,12 @@ class Process_ProcessList
                 "unit" => "kWh/slot",
                 "group" => _("Power & Energy"),
                 "nochange" => true,
+                "input_context" => true,
+                "virtual_feed_context" => false,
                 "description" => _("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every selected minutes (starting mid night) (kWh/x min)</p>")
             )
         );
     }
-
-
 
     // / Below are functions of this module processlist
     public function scale($arg, $time, $value)
