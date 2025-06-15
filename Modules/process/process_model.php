@@ -327,24 +327,22 @@ class Process
         $valid_processes = array();
         foreach ($process_list as $key => $process) {
 
-            // Not translation safe!?
-            if ($process["group"] == "Deleted") continue;
-
-            // In input context, skip virtual processes
-            if ($context_type == 0 && $process["group"] == "Virtual") continue;
-
-            // In virtual feed context, skip certain process types/groups
-            if ($context_type == 1) {
-                // If process has engines, assume these write to feeds and should be skipped
-                if (isset($process['writes_to_feed']) && $process['writes_to_feed']) continue;
-                if ($process["function"] == "sendEmail") continue;
-                if ($process["function"] == "publish_to_mqtt") continue;
-
-                // Not translation safe!?
-                if ($process["group"] == "Feed") continue;
-                if ($process["group"] == "Input") continue;
-                if ($process["group"] == "Hidden") continue;
+            if (isset($process['deleted']) && $process['deleted'] === true) {
+                // Skip deleted processes
+                continue;
             }
+
+            if (!isset($process['input_context'])) $process['input_context'] = true; // Default to true if not set
+            if (!isset($process['virtual_feed_context'])) $process['virtual_feed_context'] = true; // Default to true if not set
+
+            if ($context_type == 0 && !$process['input_context']) {
+                // If context type is input and process is not valid for input context, skip it
+                continue;
+            } elseif ($context_type == 1 && !$process['virtual_feed_context']) {
+                // If context type is virtual feed and process is not valid for virtual feed context, skip it
+                continue;
+            }
+            // If no context type is specified, include all processes
 
             $valid_processes[$key] = $process; // Add valid process to the list
         }

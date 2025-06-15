@@ -53,21 +53,18 @@ var process_api = {
         for (const key in processes) {
             const process = processes[key];
 
-            // Skip deleted processes
-            if (process.group === 'Deleted') continue;
+            if (process.deleted === true) {
+                // Skip deleted processes
+                continue;
+            }
 
-            // In input context, skip virtual processes
-            if (context === 0 && process.group === 'Virtual') continue;
+            if (context === 0 && !process.input_context) {
+                // If context type is input and process is not valid for input context, skip it
+                continue;
 
-            // In virtual feed context, skip certain process types/groups
-            if (context === 1) {
-                // If process has engines, assume these write to feeds and should be skipped
-                if (process.writes_to_feed) continue;
-                if (process.function === 'sendEmail') continue;
-                if (process.function === 'publish_to_mqtt') continue;
-                if (process.group === 'Feed') continue;
-                if (process.group === 'Input') continue;
-                if (process.group === 'Hidden') continue;
+            } else if (context === 1 && !process.virtual_feed_context) {
+                // If context type is virtual feed and process is not valid for virtual feed context, skip it
+                continue;
             }
 
             filtered_processes[key] = process;
