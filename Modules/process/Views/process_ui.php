@@ -217,7 +217,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     <div class="btn-group">
                                         <select class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;" v-model="arg.value">
                                             <!-- feeds by tag -->
-                                            <option v-if="context_type==0 && arg.writes_to_feed" value="-1">CREATE NEW:</option>
+                                            <option v-if="context_type==0 && Array.isArray(arg.engines) && arg.engines.length > 0" value="-1">CREATE NEW:</option>
                                             <optgroup v-for="(feeds, tag) in feeds_by_tag" :label="tag">
                                                 <option v-for="feed in feeds" :value="feed.id" v-if="feed.engine!=7">{{ feed.name }}</option>
                                             </optgroup>
@@ -308,7 +308,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     </div>
 </div>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=29"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=30"></script>
 
 <script>
     process_vue.has_redis = <?php echo ($settings["redis"]["enabled"] ? '1' : '0'); ?>;

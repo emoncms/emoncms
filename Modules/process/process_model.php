@@ -84,10 +84,7 @@ class Process
             $list=$this->load_modules();  
 
             // Convert singular arg definitions to args array (this could be removed by hard-coding this in the process list)
-            $list = $this->convert_arg_structure($list); 
-
-            // Populate 'writes_to_feed' property (this could be removed by hard-coding this in the process list)
-            $list = $this->populate_feed_write($list);
+            $list = $this->convert_arg_structure($list);
         }
         return $list;
     }
@@ -282,40 +279,7 @@ class Process
     }
 
     /**
-     * 2. Populate the 'writes_to_feed' property for each process in the list.
-     * This is used to determine if a process writes to a feed
-     *
-     * @param array $processes The list of processes to populate.
-     * @return array The updated list of processes with 'writes_to_feed' property set.
-     */
-    private function populate_feed_write($processes) {
-        // For each process, check if it has engines
-        foreach ($processes as $key => $process) {
-            $process['writes_to_feed'] = false; // Default to false
-
-            // If process has engines, assume these write to feeds
-            if (isset($process['engines']) && is_array($process['engines']) && count($process['engines']) > 0) {
-                $process['writes_to_feed'] = true;
-            } else {
-                // Check if any argument has engines
-                $has_engines = false;
-                if (isset($process['args']) && is_array($process['args'])) {
-                    foreach ($process['args'] as $arg) {
-                        if (isset($arg['engines']) && is_array($arg['engines']) && count($arg['engines']) > 0) {
-                            $has_engines = true;
-                            break;
-                        }
-                    }
-                }
-                if ($has_engines) $process['writes_to_feed'] = true;
-            }
-            $processes[$key] = $process; // Update the process in the list
-        }
-        return $processes;
-    }
-
-    /**
-     * 3. Filter the process list to only include processes that are valid for the given context type.
+     * 2. Filter the process list to only include processes that are valid for the given context type.
      * 
      * @param array $process_list The list of processes to filter.
      * @param int $context_type The context type (0 for input, 1 for virtual feed).

@@ -714,25 +714,34 @@ $(".feed-edit-save").click(function() {
 // ---------------------------------------------------------------------------------------------
 
 /**
- * find which inputs and processess write to a feed
+ * getFeedProcess
+ * 
+ * Scans all input processes and identifies which processes are linked to feeds.
+ * Returns an object mapping feed IDs to their associated input, process definition, and feed ID.
+ * Used to determine which feeds are referenced by input process lists for safe deletion and management.
  *
- * the returned object is a list of arrays that store the process/input pairs that make up the specific output to feed
- *   obj[feedid][0].input.nodeid --- will get the nodeid for the first input that outputs to the given feed
- *   obj[feedid][0].process.short --- will get the short name for the first process that outputs to the given feed
- *
- * @return object
+ * @returns {Object} feedInputs - Map of feed IDs to input/process details.
  */
 function getFeedProcess() {
     const feedInputs = {};
 
-    // 1. Build a map of processes that write to feeds
+    // 1. Build a map of processes that are linked to feeds
     const feedProcesses = {};
     for (const key in process_vue.processes_by_key) {
         const proc = process_vue.processes_by_key[key];
-        if (proc.writes_to_feed) feedProcesses[key] = proc;
+
+        // Cycle through args, check for feed args
+        for (let i = 0; i < proc.args.length; i++) {
+            const arg = proc.args[i];
+            if (arg.type === 2) {
+                // Could filter for set engines field here but think it's useful to flag all feed linked processes
+                feedProcesses[key] = proc;
+                break; // No need to check further args
+            }
+        }
     }
 
-    // 2. For each input, decode its processList and check for feed-writing processes
+    // 2. For each input, decode its processList and check for feed linked processes
     for (const input of Object.values(process_vue.inputs)) {
         if (!input.processList.length) continue;
         const decodedList = process_api.decode(input.processList);
