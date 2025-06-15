@@ -80,7 +80,6 @@ class Process_ProcessList
                 "group" => _("Main"),
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA),
                 "nochange" => true,
-                "writes_to_feed" => true,
                 "description" => _("<p>This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>Emoncms Fixed Interval TimeSeries (PHPFina)</b> is the recommended feed engine, it is a fixed interval timeseries engine.</li><li><b>Emoncms Variable Interval TimeSeries (PHPTimeseries)</b> is for data posted at a non regular interval.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
             ),
             array(
@@ -165,6 +164,7 @@ class Process_ProcessList
                 "function" => "kwh_to_kwhd_old",
                 "unit" => "kWhd",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "description" => ""
             ),
@@ -204,6 +204,7 @@ class Process_ProcessList
                 "argtype" => ProcessArg::VALUE,
                 "function" => "phaseshift",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "description" => ""
             ),
             array(
@@ -234,6 +235,7 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "histogram",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "engines" => array(Engine::MYSQL, Engine::MYSQLMEMORY),
                 "description" => ""
             ),
@@ -244,6 +246,7 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "average",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES),
                 "description" => ""
             ),
@@ -254,6 +257,7 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "heat_flux",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES),
                 "description" => ""
             ),
@@ -265,6 +269,7 @@ class Process_ProcessList
                 "function" => "power_acc_to_kwhd",
                 "unit" => "kWhd",
                 "group" => _("Deleted"),
+                "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES),
                 "description" => ""
             ),
