@@ -347,6 +347,13 @@ var controls = new Vue({
         },
         open_edit: function(event) {
             edit_input.openModal(event)
+        },
+        showInputConfigure: function(inputid) {
+            if (inputs[inputid] !== undefined) {
+                showInputConfigure(inputs[inputid]);
+            } else {
+                alert(_("Input not found"));
+            }
         }
     },
     watch: {
@@ -1302,15 +1309,11 @@ function showInputConfigure(input) {
     var i = input
     var contextid = i.id; // Current Input ID
     // Input name
-    var newfeedname = "";
-    var contextname = "";
+    var newfeedname = i.name;
+    var contextname = i.nodeid + ": " + i.name;
     if (i.description != "") { 
         newfeedname = i.description;
-        contextname = "Node " + i.nodeid + " : " + newfeedname;
-    }
-    else { 
-        newfeedname = i.name;
-        contextname = i.nodeid;
+        contextname += " (" + i.description + ")";
     }
     var newfeedtag = i.nodeid;
     process_vue.load(0, contextid, i.processList, contextname, newfeedname, newfeedtag); // load configs

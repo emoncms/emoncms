@@ -39,6 +39,13 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
         font-weight: bold;
         font-size: 16px;
     }
+
+    .process-header-title {
+        font-size: 22px;
+        margin-bottom: 5px;
+        margin-top: 5px;
+    }
+
 </style>
 <script type="text/javascript">
     <?php require "Modules/process/process_langjs.php"; ?>
@@ -51,7 +58,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" @click="close">×</button>
-            <h3><b>{{ input_or_virtual_feed_name }}</b> <?php echo dgettext('process_messages', 'process list setup'); ?></h3>
+            <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo dgettext('process_messages', 'process list setup'); ?></div>
         </div>
         <div class="modal-body" id="processlist-ui">
 

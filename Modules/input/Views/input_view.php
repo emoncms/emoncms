@@ -1,4 +1,4 @@
-<?php $v = 24; ?>
+<?php $v = 26; ?>
 
 <!-- Load dependencies -->
 <?php if ($device_module) { ?>
@@ -63,6 +63,14 @@
         </button>
         <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="<?php echo _('Delete'); ?>"><i class="icon-trash"></i></button>
         <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="<?php echo _('Edit'); ?>"><i class="icon-pencil"></i></button>
+        <!-- input processing configure only show if one input selected -->
+        <button
+            v-if="selectMode && selected.length === 1"
+            @click="showInputConfigure(selected[0])"
+            class="btn input-configure"
+            :title="'<?php echo addslashes(_('Configure Input processing')); ?>'">
+            <i class="icon-wrench"></i>
+        </button>
     </div>
 
     <div id="noprocesses clearfix"></div>
