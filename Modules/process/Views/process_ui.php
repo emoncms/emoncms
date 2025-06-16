@@ -143,14 +143,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                             <span v-if="arg.type == ProcessArg.VALUE">
                                 <div class="input-prepend">
-                                    <span class="add-on value-select-label">{{ arg.name }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
+                                    <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-question-sign" :title="arg.desc" v-if="arg.desc"></i></span>
                                     <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo dgettext('process_messages', 'Type value...'); ?>" />
                                 </div>
                             </span>
 
                             <span v-if="arg.type == ProcessArg.TEXT">
                                 <div class="input-prepend">
-                                    <span class="add-on text-select-label">{{ arg.name }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
+                                    <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
                                     <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo dgettext('process_messages', 'Type text...'); ?>" />
                                 </div>
                             </span>

@@ -75,10 +75,14 @@ class Process_ProcessList
                 "id_num" => 1,
                 "name" => _("Log to feed"),
                 "short" => "log",
-                "argtype" => ProcessArg::FEEDID,
                 "function" => "log_to_feed",
+                "args" => array(
+                    array(
+                        "type" => ProcessArg::FEEDID,
+                        "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA)
+                    ),
+                ),
                 "group" => _("Main"),
-                "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA),
                 "nochange" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
@@ -88,8 +92,13 @@ class Process_ProcessList
                 "id_num" => 2,
                 "name" => _("x"),
                 "short" => "x",
-                "argtype" => ProcessArg::VALUE,
                 "function" => "scale",
+                "args" => array(
+                    array(
+                        "type" => ProcessArg::VALUE,
+                        "default" => 1
+                    ),
+                ),
                 "group" => _("Calibration"),
                 "input_context" => true,
                 "virtual_feed_context" => true,
@@ -99,8 +108,13 @@ class Process_ProcessList
                 "id_num" => 3,
                 "name" => _("+"),
                 "short" => "+",
-                "argtype" => ProcessArg::VALUE,
                 "function" => "offset",
+                "args" => array(
+                    array(
+                        "type" => ProcessArg::VALUE,
+                        "default" => 0
+                    ),
+                ),                
                 "group" => _("Calibration"),
                 "input_context" => true,
                 "virtual_feed_context" => true,
@@ -110,11 +124,15 @@ class Process_ProcessList
                 "id_num" => 4,
                 "name" => _("Power to kWh"),
                 "short" => "kwh",
-                "argtype" => ProcessArg::FEEDID,
                 "function" => "power_to_kwh",
+                "args" => array(
+                    array(
+                        "type" => ProcessArg::FEEDID,
+                        "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY)
+                    ),
+                ),              
                 "unit" => "kWh",
                 "group" => _("Main"),
-                "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
