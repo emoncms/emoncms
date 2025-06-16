@@ -10,9 +10,6 @@ load_language_files(dirname(__DIR__) . '/locale', "process_messages");
 $engine_hidden = $settings["feed"]['engines_hidden'];
 if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 ?>
-<script type="text/javascript">
-    <?php require "Modules/process/process_langjs.php"; ?>
-</script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/process/Views/process_ui.css?v=<?php echo $v; ?>">
