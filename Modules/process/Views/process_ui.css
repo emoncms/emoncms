@@ -1,0 +1,34 @@
+.modal-processlist {
+    width: 94%;
+    left: 3%;
+    /* (100%-width)/2 */
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: hidden;
+}
+
+.modal-processlist .modal-body {
+    max-height: none;
+    overflow-y: auto;
+}
+
+#process-table th:nth-of-type(6),
+td:nth-of-type(6) {
+    text-align: right;
+}
+
+#new-feed-tag_autocomplete-list {
+    width: 120px
+}
+
+#process-header-add,
+#process-header-edit {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.process-header-title {
+    font-size: 22px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}

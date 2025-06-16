@@ -10,48 +10,12 @@ load_language_files(dirname(__DIR__) . '/locale', "process_messages");
 $engine_hidden = $settings["feed"]['engines_hidden'];
 if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 ?>
-<style>
-    .modal-processlist {
-        width: 94%;
-        left: 3%;
-        /* (100%-width)/2 */
-        margin-left: auto;
-        margin-right: auto;
-        overflow-y: hidden;
-    }
-
-    .modal-processlist .modal-body {
-        max-height: none;
-        overflow-y: auto;
-    }
-
-    #process-table th:nth-of-type(6),
-    td:nth-of-type(6) {
-        text-align: right;
-    }
-
-    #new-feed-tag_autocomplete-list {
-        width: 120px
-    }
-
-    #process-header-add,
-    #process-header-edit {
-        font-weight: bold;
-        font-size: 16px;
-    }
-
-    .process-header-title {
-        font-size: 22px;
-        margin-bottom: 5px;
-        margin-top: 5px;
-    }
-
-</style>
 <script type="text/javascript">
     <?php require "Modules/process/process_langjs.php"; ?>
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
+<link rel="stylesheet" href="<?php echo $path; ?>Modules/process/Views/process_ui.css?v=<?php echo $v; ?>">
 <script src="<?php echo $path; ?>Modules/process/process.js?v=17"></script>
 
 <div id="process_vue">
