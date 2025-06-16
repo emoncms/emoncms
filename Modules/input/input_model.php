@@ -519,48 +519,46 @@ class Input
 
     public function clean_processlist_feeds($process_class,$userid)
     {
-        $processes = $process_class->get_process_list();
-        $out = "";
         $userid = (int) $userid;
+        $out = "";
+        $processes = $process_class->get_process_list();
         $result = $this->mysqli->query("SELECT id, processList FROM input WHERE `userid`='$userid'");
         while ($row = $result->fetch_object())
         {
             $inputid = $row->id;
-            $processlist = $row->processList;
-            $pairs = explode(",",$processlist);
 
-            $pairsout = array();
-            for ($i=0; $i<count($pairs); $i++)
-            {
+            // Decode into process list array, each with fn, args
+            $current_processlist = $row->processList;
+            $input_process_list = $process_class->decode_processlist($current_processlist);
+
+            $cleaned_input_process_list = array();
+            foreach ($input_process_list as $input_process) {
                 $valid = true;
-                $keyarg = explode(":",$pairs[$i]);
-                if (count($keyarg)==2) {
-                    $key = $keyarg[0];
-                    $arg = $keyarg[1];
 
-                    // Map ids to process key names
-                    if (isset($process_class->process_map[$key])) $key = $process_class->process_map[$key];
+                $process_info = $processes[$input_process['fn']];
 
-                    if (!isset($processes[$key])) {
-                        $this->log->error("clean_processlist_feeds() Processor '".$processkey."' does not exists. Module missing?");
-                        return false;
+                foreach ($process_info['args'] as $index => $arg) {
+                    if ($arg['type'] == ProcessArg::FEEDID) {
+                        $feedid = $input_process['args'][$index];
+                        if (!$this->feed->exist($feedid)) {
+                            $valid = false;
+                        }
                     }
-
-                    if ($processes[$key]["argtype"] == ProcessArg::FEEDID) {
-                        if (!$this->feed->exist($arg)) $valid = false;
-                    }
-                } else {
-                    $valid = false;
                 }
-                if ($valid) $pairsout[] = $pairs[$i];
-            }
-            $processlist_after = implode(",",$pairsout);
 
-            if ($processlist_after!=$processlist) {
-                if ($this->redis)
+                if ($valid) {
+                    $cleaned_input_process_list[] = $input_process;
+                }
+            }
+
+            $processlist_after = $process_class->encode_processlist($cleaned_input_process_list);
+
+            if ($processlist_after!=$current_processlist) {
+                if ($this->redis) {
                     $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                }
                 $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
-                $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
+                $out .= "processlist for input $inputid changed from $current_processlist to $processlist_after\n";
             }
         }
         return $out;

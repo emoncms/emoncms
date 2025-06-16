@@ -471,6 +471,69 @@ class Process
     }
 
     /**
+     * Decode a process list string into an array of process items.
+     * Example input: "process__log_to_feed_join:2095,4:2096,29:1564,47:10,24:,schedule__if_not_schedule_zero:3"
+     * Returns: [ ['fn' => 'process__log_to_feed_join', 'args' => ['2095', '4']], ... ]
+     *
+     * @param string $process_list
+     * @return array
+     */
+    public function decode_processlist($process_list) {
+        $decoded_process_list = array();
+
+        if ($process_list === null || $process_list === '' || !is_string($process_list)) {
+            // If process_list is empty, return an empty array
+            return $decoded_process_list;
+        }
+
+        // 1. Split the process list by commas
+        $segments = explode(',', $process_list);
+        foreach ($segments as $segment) {
+            // 2. Split each segment by colon
+            $parts = explode(':', $segment);
+            $id_and_arg_count = count($parts);
+            // skip if no parts
+            if ($id_and_arg_count < 1) {
+                continue;
+            }
+
+            // 3. Get the process id
+            $process_id = $parts[0];
+            // The process_id could be the module__function name or an id_num
+            // Check if it is an id_num
+
+            $process_key = null;
+            // Check if process_id is in process_map first (id_num)
+            if (isset($this->process_map[$process_id])) {
+                $process_key = $this->process_map[$process_id];
+            } else {
+                // If not, check if it is a process key
+                if (isset($this->process_list[$process_id])) {
+                    $process_key = $process_id;
+                }
+            }
+
+            if (!$process_key) {
+                // Optionally log a warning here
+                // $this->log->warn("Process not found for id: $process_id");
+                continue; // Skip if process not found
+            }
+
+            // 4. Get the arguments
+            $args = array_slice($parts, 1);
+
+            $process_item = array(
+                'fn' => $process_key,
+                'args' => $args
+            );
+
+            $decoded_process_list[] = $process_item;
+        }
+
+        return $decoded_process_list;
+    }
+
+    /**
      * Encode a process list to a string.
      * Example input: [{fn: 'process__log_to_feed_join', args: ['2095', '4']}, {fn: 'schedule__if_not_schedule_zero', args: ['3']}]
      * Returns a string like "process__log_to_feed_join:2095,4:schedule__if_not_schedule_zero:3".
