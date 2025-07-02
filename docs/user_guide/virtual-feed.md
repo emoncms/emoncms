@@ -29,7 +29,7 @@ This example will create a Virtual Feed to convert °C to °F.
 
 On the Feeds page, scroll to the bottom and click “New feed”
 
-![|vg1](img/vg1.png)
+![|vf1](img/vf1.png)
 
 In the box, give the new feed a suitable name and ensure the Feed engine is “VIRTUAL feed”. (Optionally, you can add a “Tag” – an extension to the feed name.) Click Save.
 
@@ -37,7 +37,7 @@ You will be returned to the Feeds page. Click the box in front of your new Virtu
 
 To add the processes, choose the spanner icon.
 
-![|690x68](upload://AuuPpt0JdNDaKaWmuGcIXfiwICZ.png)
+![|vf2](img/vf2.png)
 
 You will be taken to the Process List Setup page, which is almost the same as the Inputs process list page.
 
@@ -51,7 +51,7 @@ We shall add steps to convert the numbers in the existing Feed, “emonth5: Gara
 
 It should look like this
 
-![|690x419](upload://eJdUWPbo0c4W2fJed9OsHaNdBzY.png)
+![|vf3](img/vf3.png)
 
 Click “Changed, press to save” and close the box. The Virtual Feed is ready for use.
 
@@ -59,11 +59,11 @@ Click “Changed, press to save” and close the box. The Virtual Feed is ready 
 
 Here is a graph showing, on the left-hand y-axis and in yellow, the temperature converted to degrees Fahrenheit, and on the right-hand y-axis and in blue, the temperature from the original Feed in degrees Celsius. The Virtual Feed is selected in exactly the same way as the other.
 
-![|690x339](upload://oh9fGsN7C3WxDzcwdE7idPrCyrZ.png)
+![|vf4](img/vf4.png)
 
 A widget on a Dashboard is configured by selecting the Virtual Feed in exactly the same way:
 
-![|669x500](upload://catRXQFnv4CEwlpLgAG6FLEYXtD.png)
+![|vf5](img/vf5.png)
 
 Each data point in degrees Fahrenheit exists only for as long as it takes to plot the point on the graph or change the dial. It is never stored on the SSD/HDD/SD card.
 
@@ -73,23 +73,23 @@ Here is an example of how to use a virtual feed to obtain the instantaneous CoP 
 
 On the emonCMS feeds page, scroll to the bottom and click on New feed. In the dialogue that opens, select the VIRTUAL Feed engine, enter a Feed Name and (optionally) a Feed Tag, e.g:
 
-![|540x336](upload://15YuhECxFrlA7FXx2gRqicE089E.png)
+![|vf6](img/vf6.png)
 
 Save, and you should now see the new Virtual Feed in your feed list.
 
 Click the box in front of your new Virtual Feed and the menu at the top of the page will expand. To add the processes, choose the spanner icon. The feed process list configuration dialogue appears:
 
-![|690x463](upload://nVGceej5isVujcJx1bIoDkOJ7uF.png)
+![|vf7](img/vf7.png)
 
 Select the Source Feed process and select the “heatpump_heat” feed from the drop-down list, and Add.
 
 Then select the ‘/ source feed’ process (divide by specified feed) and select the “heatpump_elec” feed and Add:
 
-![|690x469](upload://7pI82alZFaYvhFyP6SP6tGamoPO.png)
+![|vf8](img/vf8.png)
 
 Click ‘Changed, press to save’ and then open the Virtual Feed in the graph view. If you are calculating CoP you may want to set minimum and maximum limits on the y-axis as the calculation can momentarily go off the scale when the compressor starts and stops:
 
-![|690x356](upload://uoSUuklcbwGqcZZDO9PVP4RSbv.png)
+![|vf9](img/vf9.png)
 
 The CoP calculation here is done on the fly from the underlying heat output and electricity consumption feeds. The Virtual Feed does not use any additional disk space, and because of this, Virtual feeds created on emoncms.org are free, they are not included in the pay-per-feed billing.
 
@@ -99,21 +99,21 @@ Here is an example of how to use a virtual feed and Multigraph to highlight ener
 
 Create a virtual feed for each rate schedule, to receive data when the schedule is true, all using the same source feed data (measured power). The schedules should together exactly cover the time period (day, week etc) and not overlap:
 
-![|690x130](upload://y8VIAvGyGPeWBr54SlZQWQahzVx.webp)
+![|vf10](img/vf10.webp)
 
 And the resulting Multigraph shows the measured power for each schedule in a different colour :
 
-![|690x326](upload://tEsgKlpvuxoAc7K0weiKlRMORX5.webp)
+![|vf11](img/vf11.webp)
 
 The above example came from Chaveiro’s original post announcing Virtual Feeds, unfortunately without the Multigraph settings.
 
 Here is another example, this time using a single schedule to indicate from 8 am until 5 pm is ‘daytime’ and everything else is ‘night time’. Take care with the negative logic. The Virtual Feeds look like this:
 
-![|690x70](upload://zODWDc9qYqLwQmpo6Z8avAkDJiE.png)
+![|vf12](img/vf12.png)
 
 and the Multigraph visualisation settings and the graph they produce:
 
-![|690x489](upload://qnUwwiR47mgE7TJGHSkSuLlD92O.png)
+![|vf13](img/vf13.png)
 
 &nbsp;
 
