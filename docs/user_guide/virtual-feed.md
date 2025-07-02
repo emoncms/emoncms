@@ -29,7 +29,7 @@ This example will create a Virtual Feed to convert °C to °F.
 
 On the Feeds page, scroll to the bottom and click “New feed”
 
-![|690x124](upload://6po51ibAAkj4v0FjCqD5xkKpwMx.png)
+![|vg1](img/vg1.png)
 
 In the box, give the new feed a suitable name and ensure the Feed engine is “VIRTUAL feed”. (Optionally, you can add a “Tag” – an extension to the feed name.) Click Save.
 
