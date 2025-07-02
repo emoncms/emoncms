@@ -1,10 +1,5 @@
 ### The Virtual Feed - Post-processing data on the fly
 
-Virtual Feeds were created by @nchaveiro  in a forum post in July, 2015. Over the years, many contributors have used and commented on virtual feeds, and more recently @TrystanLea has made them available at emoncms.org, described in a forum post in October 2022.
-
-I recently noticed that the forum search facility was no longer able to find Chaveiro’s original post, so I have collected together all the relevant information and edited it so that it is for the first time all in one place.
-*Robert Wall*
-
 #### *Introduction*
 
 Although it is called a ‘Virtual’ feed, it should be thought of as an arithmetic plug-in for a feed, which enables the feed data to be processed as it is extracted from the feed. In many ways, it is more closely related to the Input process list. Unlike the Input process list, data from a Virtual Feed cannot be stored, it must be used – displayed – immediately.
