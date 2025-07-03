@@ -641,7 +641,17 @@ class Admin {
      * @return bool
      */
     public function is_Pi() {
-        return !empty($this->exec('ip addr | grep -i "2c:cf:67:\|b8:27:eb:\|dc:a6:32:\|28:cd:c1:\|d8:3a:dd:\|e4:5f:01:"'));
+        // Check for Raspberry Pi by reading /proc/device-tree/model or /proc/cpuinfo
+        if (@file_exists('/proc/device-tree/model')) {
+            $model = @file_get_contents('/proc/device-tree/model');
+            if (stripos($model, 'Raspberry Pi') !== false) return true;
+        }
+        if (@is_readable('/proc/cpuinfo')) {
+            $cpuinfo = @file_get_contents('/proc/cpuinfo');
+            if (preg_match('/^Hardware\s*:\s*BCM\d+/mi', $cpuinfo)) return true;
+            if (preg_match('/^Model\s*:\s*Raspberry Pi/mi', $cpuinfo)) return true;
+        }
+        return false;
     }
 
     /**
