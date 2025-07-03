@@ -19,6 +19,7 @@ emonCMS user guide
    export-csv.md
    histograms.md
    postprocess.md
+   virtual-feeds.md
    demandshaper.md
    import.md
    update.md
