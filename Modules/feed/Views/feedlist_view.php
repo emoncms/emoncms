@@ -15,6 +15,7 @@
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
+<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js?v=1"></script>
 <script>
@@ -75,7 +76,7 @@ function translate(property) {
 </script>
 
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=8"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
@@ -446,7 +447,7 @@ function update_feed_list() {
                 }
                 var processListHTML = '';
                 if(feed.processList!=undefined && feed.processList.length > 0){
-                    processListHTML = processlist_ui ? processlist_ui.drawpreview(feed.processList, feed) : '';
+                    processListHTML = process_vue ? process_vue.drawPreview(feed.processList, feed) : '';
                 }
 
                 // show the start time if available
@@ -713,59 +714,60 @@ $(".feed-edit-save").click(function() {
 // ---------------------------------------------------------------------------------------------
 
 /**
- * find which inputs and processess write to a feed
+ * getFeedProcess
+ * 
+ * Scans all input processes and identifies which processes are linked to feeds.
+ * Returns an object mapping feed IDs to their associated input, process definition, and feed ID.
+ * Used to determine which feeds are referenced by input process lists for safe deletion and management.
  *
- * the returned object is a list of arrays that store the process/input pairs that make up the specific output to feed
- *   obj[feedid][0].input.nodeid --- will get the nodeid for the first input that outputs to the given feed
- *   obj[feedid][0].process.short --- will get the short name for the first process that outputs to the given feed
- *
- * @return object
+ * @returns {Object} feedInputs - Map of feed IDs to input/process details.
  */
-function getFeedProcess(){
-    let inputs = {}, // list of inputs and their processes
-        feedProcesses = {}, // list of process that write to feeds
-        let_feeds = {}; // list of feeds and their accociated processes
+function getFeedProcess() {
+    const feedInputs = {};
 
-    // create a list of all inputs that have processes
-    for (inputid in processlist_ui.inputlist) {
-        let input = processlist_ui.inputlist[inputid];
-        if (input.processList.length>0) {
-            inputs[inputid] = {
-                processList: processlist_ui.decode(input.processList),
-                nodeid: input.nodeid,
-                name: input.name,
-                inputid: inputid
-            };
-        }
-    }
-    // get all the processes that write to a feed - list them by numeric key (if available)
-    for (processid in processlist_ui.processlist) {
-        let process = processlist_ui.processlist[processid];
-        if (process.feedwrite) {
-            key = process.hasOwnProperty('id_num') ? process.id_num : processid;
-            feedProcesses[key] = processid;
-        }
-    }
+    // 1. Build a map of processes that are linked to feeds
+    const feedProcesses = {};
+    for (const key in process_vue.processes_by_key) {
+        const proc = process_vue.processes_by_key[key];
 
-    // go through all the input processes and get all the feeds they output to
-    for (inputid in inputs) {
-        let input = inputs[inputid];
-        // loop through the key / value pairs of each input processlist
-        for (item in input.processList) {
-            let processid = input.processList[item][0];
-            let processval = input.processList[item][1] || null;
-            if(feedProcesses[processid]){
-                //this process writes to feed
-                let_feeds[processval] = let_feeds[processval] || [];
-                let_feeds[processval].push({
-                    process: processlist_ui.processlist[feedProcesses[processid]],
-                    input: input,
-                    feedid: processval
-                });
+        // Cycle through args, check for feed args
+        for (let i = 0; i < proc.args.length; i++) {
+            const arg = proc.args[i];
+            if (arg.type === 2) {
+                // Could filter for set engines field here but think it's useful to flag all feed linked processes
+                feedProcesses[key] = proc;
+                break; // No need to check further args
             }
         }
     }
-    return let_feeds;
+
+    // 2. For each input, decode its processList and check for feed linked processes
+    for (const input of Object.values(process_vue.inputs)) {
+        if (!input.processList.length) continue;
+        const decodedList = process_api.decode(input.processList);
+
+        decodedList.forEach(procItem => {
+            const procDef = feedProcesses[procItem.fn];
+            if (!procDef) return;
+            procDef.args.forEach((arg, idx) => {
+                if (arg.type === 2) {
+                    const feedid = procItem.args[idx];
+                    feedInputs[feedid] = {
+                        input: {
+                            nodeid: input.nodeid,
+                            name: input.name,
+                            inputid: input.id,
+                            // processList: decodedList (Not currently used)
+                        },
+                        process: procDef,
+                        feedid: feedid
+                    };
+                }
+            });
+        });
+    }
+
+    return feedInputs;
 }
 
 /**
@@ -774,74 +776,65 @@ function getFeedProcess(){
  * @return void
  */
 function showSelectedFeeds(feed_inputs) {
-    // loop through selection 
-    let selected = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid] == true) {
-            selected[feedid] = feeds[feedid];
-            if (feed_inputs[feedid]) {
-                if (Array.isArray(feed_inputs[feedid])) {
-                    selected[feedid].input = [];
-                    selected[feedid].process = [];
-                    for (f in feed_inputs[feedid]) {
-                        selected[feedid].input.push(feed_inputs[feedid][f].input);
-                        selected[feedid].process.push(feed_inputs[feedid][f].process);
-                    }
-                } else {
-                    selected[feedid].input = [feed_inputs[feedid].input];
-                    selected[feedid].process = [feed_inputs[feedid].process];
-                }
-            }
-        }
-    }
-
-    // count the number of processess associated with the selected feeds
-    let list='',titles={},linked=[],total_linked = 0;
-    for(s in selected) {
-        titles[s] = selected[s].tag+":"+selected[s].name;
-        // virtual feed processes
-        if ( selected[s].hasOwnProperty('processList') && selected[s].processList && selected[s].processList.length > 0 ) {
-            linked.push(selected[s]);
-            let virtualProcesses = processlist_ui.decode(selected[s].processList);
-            for(p in virtualProcesses) {
-                total_linked++;
-            }
-        }
-        // feed's linked/parent process
-        if ( selected[s].hasOwnProperty('process') && selected[s].process && selected[s].process.length > 0 ) {
-            linked.push(selected[s]);
-            for(i=0;i<selected[s].process.length;i++) {
-                total_linked++;
-            }
-        }
-    }
-    // create html to display the results
-    // notify user that feed is associated to processList
-    
-    // create a simple list of feed ids and names to display to the user
+    let total_selected = 0;
+    let total_input_processes_linked = 0;
+    let total_virtual_feed_processes_linked = 0;
     let feedListShort = '';
-    for(id in titles){
-        feedListShort += '['+id+'] '+titles[id]+', ';
-    }
-    // remove the last comma
-    feedListShort = feedListShort.slice(0, -2);
 
-    // create a container to store the result that is displayed to the user
-    total_summary = '<div id="deleteFeedModalSelectedItems">';
-    total_selected = Object.keys(titles).length;
-    if (total_selected == 1) {
-    // if only one is selected display it's id & name
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> <?php echo _('1 Input process associated with this feed') ?>':'';
-        total_summary += '<h5>'+feedListShort+'</h5>';
+    for (const feedid in selected_feeds) {
+        if (!selected_feeds[feedid]) continue;
+        total_selected++;
+        const feed = feeds[feedid];
+        feedListShort += `[${feedid}] ${feed.tag}:${feed.name}, `;
+
+        // Virtual feed: count its processList items
+        if (parseInt(feed.engine) === 7 && feed.processList != "") {
+            total_virtual_feed_processes_linked += process_api.decode(feed.processList).length;
+        }
+        // Non-virtual: count input processes referencing this feed
+        else if (feed_inputs[feedid]) {
+            if (Array.isArray(feed_inputs[feedid])) {
+                total_input_processes_linked += feed_inputs[feedid].length;
+            } else {
+                total_input_processes_linked += 1;
+            }
+        }
+    }
+
+    // Remove trailing comma
+    if (feedListShort.endsWith(', ')) feedListShort = feedListShort.slice(0, -2);
+
+    // Build summary
+    let total_summary = '<div id="deleteFeedModalSelectedItems">';
+    let feedProcessList = '';
+
+    if (total_selected === 1) {
+        total_summary += `<h5>${feedListShort}</h5>`;
     } else {
-    // show a summary total if more than one are selected
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' <?php echo _('%s Input processes associated with these feeds') ?>'.replace('%s',total_linked))+'</span>' : '';
-        total_summary += '<h5 title="'+feedListShort+'"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected);
+        total_summary += `<h5 title="${feedListShort}"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>`.replace('%s', total_selected);
     }
-    total_summary += '</div>';
-    $("#feeds-to-delete").html(total_summary); // show how many feeds have been selected
-    $("#feedProcessList").html(feedProcessList); // show how many processes are associated with the selected feeds
 
+    // Compose the combined message
+    if (total_input_processes_linked > 0 || total_virtual_feed_processes_linked > 0) {
+        let msg = '';
+        if (total_input_processes_linked > 0) {
+            msg += total_input_processes_linked + ' <?php echo _("input processes") ?>';
+        }
+        if (total_virtual_feed_processes_linked > 0) {
+            if (msg.length > 0) msg += ' and ';
+            msg += total_virtual_feed_processes_linked + ' <?php echo _("virtual feed processes") ?>';
+        }
+        msg += total_selected === 1
+            ? ' <?php echo _("associated with this feed") ?>'
+            : ' <?php echo _("associated with these feeds") ?>';
+
+        feedProcessList = `<span class="badge badge-default" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
+    }
+
+    total_summary += '</div>';
+
+    $("#feeds-to-delete").html(total_summary);
+    $("#feedProcessList").html(feedProcessList);
 }
 
 /**
@@ -1329,9 +1322,6 @@ $('#newfeed-engine').change(function(){
     }
 });
 
-// Process list UI js
-processlist_ui.init(1); // is virtual feed
-
 $(".feed-process").click(function() {
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
@@ -1339,14 +1329,19 @@ $(".feed-process").click(function() {
     var contextname = "";
     if (feeds[feedid].name != "") contextname = feeds[feedid].tag + " : " + feeds[feedid].name;
     else contextname = feeds[feedid].tag + " : " + feeds[feedid].id;    
-    var processlist = processlist_ui.decode(feeds[feedid].processList); // Feed process list
-    processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
+    process_vue.load(1, contextid, feeds[feedid].processList, contextname, null, null); // load configs
 });
 
-$("#save-processlist").click(function (){
-    var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-}); 
+function save_processlist(feed_id, process_list) {
+    var result = feed.set_process(feed_id, process_list);
+    if (!result.success) {
+        alert('ERROR: Could not save processlist. '+result.message); 
+        return false;
+    } else {
+        update_feed_list();
+        return true;
+    }
+}
 
 // Translations
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;

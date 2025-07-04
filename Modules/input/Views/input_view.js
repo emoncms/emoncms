@@ -347,6 +347,13 @@ var controls = new Vue({
         },
         open_edit: function(event) {
             edit_input.openModal(event)
+        },
+        showInputConfigure: function(inputid) {
+            if (inputs[inputid] !== undefined) {
+                showInputConfigure(inputs[inputid]);
+            } else {
+                alert(_("Input not found"));
+            }
         }
     },
     watch: {
@@ -820,7 +827,6 @@ function getInput(devices, inputid, returnIndex) {
 // ---------------------------------------------------------------------------------------------
 var firstLoad = true;
 function update(){
-    devices = {};
     // Join and include device data
     if (DEVICE_MODULE) {
         var def = $.Deferred()
@@ -830,8 +836,9 @@ function update(){
                 window.location.href = "/";
                 return false;
             }
-        
+
             // Associative array of devices by nodeid
+            devices = {};
             for (var z in result) {
                 devices[String(result[z].nodeid)] = result[z]
                 devices[String(result[z].nodeid)].inputs = []
@@ -844,6 +851,7 @@ function update(){
         return def.promise()
     } else {
         // update_inputs returns jquery ajax promise
+        devices = {};
         return update_inputs()
     }
 }
@@ -862,6 +870,11 @@ function update_inputs() {
         inputs = {};
         for (var z in data) inputs[data[z].id] = data[z];
         
+        // Clear existing device inputs
+        for (var nodeid in devices) {
+            devices[nodeid].inputs = [];
+        }
+
         // Assign inputs to devices
         for (var z in inputs) {
             let nodeid = String(inputs[z].nodeid);
@@ -886,7 +899,8 @@ function update_inputs() {
                     // Device creation
                     $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(result) {
                         if (result.success!=undefined) {
-                            alert("There was an error creating device: nodeid="+nodeid+" message="+result.message); 
+                            //alert("There was an error creating device: nodeid="+nodeid+" message="+result.message); 
+                            console.error("There was an error creating device: nodeid="+nodeid+" message="+result.message);
                         } else {
                             devices[nodeid].id = result;
                             devices[nodeid].devicekey = "";
@@ -963,8 +977,7 @@ function draw_devices() {
                 device_oldest_input = input;
             }
             
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-            input.processlistHtml = processlistHtml;
+            input.processlistHtml = process_vue ? process_vue.drawPreview(input.processList, input) : '';
             
             var fv = list_format_updated_obj(input.time);
             input.time_color = fv.color
@@ -1006,7 +1019,7 @@ function draw_devices() {
     
     resize_view();
 
-    app.devices = devices
+    Vue.set(app, 'devices', clone(devices));
     app.loaded = true;
     app.devicesOriginal = clone(devices)
 }
@@ -1291,41 +1304,31 @@ function submitAllInputForms(e){
 //     update();
 //     $('#inputDeleteModal').modal('hide');
 // });
- 
-// Process list UI js
-processlist_ui.init(0); // Set input context
 
 function showInputConfigure(input) {
     var i = input
     var contextid = i.id; // Current Input ID
     // Input name
-    var newfeedname = "";
-    var contextname = "";
+    var newfeedname = i.name;
+    var contextname = i.nodeid + ": " + i.name;
     if (i.description != "") { 
         newfeedname = i.description;
-        contextname = "Node " + i.nodeid + " : " + newfeedname;
-    }
-    else { 
-        newfeedname = i.name;
-        contextname = i.nodeid;
+        contextname += " (" + i.description + ")";
     }
     var newfeedtag = i.nodeid;
-    var processlist = processlist_ui.decode(i.processList); // Input process list
-    processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
+    process_vue.load(0, contextid, i.processList, contextname, newfeedname, newfeedtag); // load configs
 }
 
-$("#save-processlist").click(function (){
-    var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+function save_processlist(input_id, encoded_process_list) {
+    var result = input.set_process(input_id, encoded_process_list);
     if (!result.success) {
         alert('ERROR: Could not save processlist. '+result.message); 
+        return false;
     } else {
-        this.classList.replace('btn-warning', 'btn-success')
-        this.innerText = _('Saved')
-        if (typeof update === 'function') {
-            update();
-        }
+        update();
+        return true;
     }
-});
+}
 
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive

@@ -519,48 +519,46 @@ class Input
 
     public function clean_processlist_feeds($process_class,$userid)
     {
-        $processes = $process_class->get_process_list();
-        $out = "";
         $userid = (int) $userid;
+        $out = "";
+        $processes = $process_class->get_process_list();
         $result = $this->mysqli->query("SELECT id, processList FROM input WHERE `userid`='$userid'");
         while ($row = $result->fetch_object())
         {
             $inputid = $row->id;
-            $processlist = $row->processList;
-            $pairs = explode(",",$processlist);
 
-            $pairsout = array();
-            for ($i=0; $i<count($pairs); $i++)
-            {
+            // Decode into process list array, each with fn, args
+            $current_processlist = $row->processList;
+            $input_process_list = $process_class->decode_processlist($current_processlist);
+
+            $cleaned_input_process_list = array();
+            foreach ($input_process_list as $input_process) {
                 $valid = true;
-                $keyarg = explode(":",$pairs[$i]);
-                if (count($keyarg)==2) {
-                    $key = $keyarg[0];
-                    $arg = $keyarg[1];
 
-                    // Map ids to process key names
-                    if (isset($process_class->process_map[$key])) $key = $process_class->process_map[$key];
+                $process_info = $processes[$input_process['fn']];
 
-                    if (!isset($processes[$key])) {
-                        $this->log->error("clean_processlist_feeds() Processor '".$processkey."' does not exists. Module missing?");
-                        return false;
+                foreach ($process_info['args'] as $index => $arg) {
+                    if ($arg['type'] == ProcessArg::FEEDID) {
+                        $feedid = $input_process['args'][$index];
+                        if (!$this->feed->exist($feedid)) {
+                            $valid = false;
+                        }
                     }
-
-                    if ($processes[$key]["argtype"] == ProcessArg::FEEDID) {
-                        if (!$this->feed->exist($arg)) $valid = false;
-                    }
-                } else {
-                    $valid = false;
                 }
-                if ($valid) $pairsout[] = $pairs[$i];
-            }
-            $processlist_after = implode(",",$pairsout);
 
-            if ($processlist_after!=$processlist) {
-                if ($this->redis)
+                if ($valid) {
+                    $cleaned_input_process_list[] = $input_process;
+                }
+            }
+
+            $processlist_after = $process_class->encode_processlist($cleaned_input_process_list);
+
+            if ($processlist_after!=$current_processlist) {
+                if ($this->redis) {
                     $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                }
                 $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
-                $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
+                $out .= "processlist for input $inputid changed from $current_processlist to $processlist_after\n";
             }
         }
         return $out;
@@ -592,97 +590,14 @@ class Input
     // are only available via the text based function reference.
     // $process_list is a list of processes
 
-    public function set_processlist($userid, $id, $processlist, $process_list)
+    public function set_processlist($userid, $id, $processlist, $process_class)
     {
         $userid = (int) $userid;
         $id = (int) $id;
 
-        // Validate processlist
-        $pairs = explode(",",$processlist);
-        $pairs_out = array();
-
-        // Build map of processids where set
-        $map = array();
-        foreach ($process_list as $key=>$process) {
-            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
-        }
-
-        foreach ($pairs as $pair)
-        {
-            $inputprocess = explode(":", $pair);
-            if (count($inputprocess)==2) {
-
-                // Verify process id
-                $processkey = $inputprocess[0];
-                // If key is in the map, switch to associated full process key
-                if (isset($map[$processkey])) $processkey = $map[$processkey];
-
-                // Load process
-                if (isset($process_list[$processkey])) {
-                    $processarg = $process_list[$processkey]['argtype'];
-
-                    if ($process_list[$processkey]['group']=="Deleted") {
-                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
-                    }
-
-                    // remap process back to use map id if available
-                    if (isset($process_list[$processkey]['id_num']))
-                        $processkey = $process_list[$processkey]['id_num'];
-
-                } else {
-                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
-                }
-
-                // Verify argument
-                $arg = $inputprocess[1];
-
-                // Check argument against process arg type
-                switch($processarg){
-
-                    case ProcessArg::FEEDID:
-                        $feedid = (int) $arg;
-                        if (!$this->feed->access($userid,$feedid)) {
-                            return array('success'=>false, 'message'=>_("Invalid feed"));
-                        }
-                        break;
-
-                    case ProcessArg::INPUTID:
-                        $inputid = (int) $arg;
-                        if (!$this->access($userid,$inputid)) {
-                            return array('success'=>false, 'message'=>_("Invalid input"));
-                        }
-                        break;
-
-                    case ProcessArg::VALUE:
-                        if (!is_numeric($arg)) {
-                            return array('success'=>false, 'message'=>'Value is not numeric');
-                        }
-                        break;
-
-                    case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
-                            return array('success'=>false, 'message'=>'Invalid characters in arg');
-                        break;
-
-                    case ProcessArg::SCHEDULEID:
-                        $scheduleid = (int) $arg;
-                        if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
-                            return array('success'=>false, 'message'=>'Invalid schedule');
-                        }
-                        break;
-
-                    case ProcessArg::NONE:
-                    default:
-                        $arg = false;
-                        break;
-                }
-
-                $pairs_out[] = implode(":",array($processkey,$arg));
-            }
-        }
-
-        // rebuild processlist from verified content
-        $processlist_out = implode(",",$pairs_out);
+        $result = $process_class->validate_processlist($userid, $id, $processlist, 0); // 0 = input context
+        if (!$result['success']) return $result;
+        $processlist_out = $result['processlist'];
 
         $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
         $stmt->bind_param("si", $processlist_out, $id);
@@ -691,10 +606,41 @@ class Input
         }
 
         if ($this->mysqli->affected_rows>0){
-            if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist_out);
-            return array('success'=>true, 'message'=>'Input processlist updated');
+            if ($this->redis) {
+                $this->redis->hset("input:$id",'processList',$processlist_out);
+            }
+            return array(
+                'success'=>true, 
+                'message'=>'Input processlist updated',
+                'encoded_processlist'=>$processlist_out
+            );
         } else {
-            return array('success'=>false, 'message'=>'Input processlist was not updated');
+            return array(
+                'success'=>false, 
+                'message'=>'Input processlist was not updated',
+                'encoded_processlist'=>$processlist_out
+            );
+        }
+    }
+
+    // Set the processlist with an error found process at the start
+    // This is used to indicate that an error has been found in the process list
+    // At present only triggered if max steps is exceeded
+    public function set_processlist_error_found($input_id) {
+        $input_id = (int) $input_id;
+
+        // 1. Get the current process list
+        $processlist = $this->get_processlist($input_id);
+        if ($processlist != "") {
+            $processlist_out = "process__error_found:0," . $processlist;
+
+            // 2. Set the new process list with the error found process at the start
+            $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
+            $stmt->bind_param("si", $processlist_out, $input_id);
+            $stmt->execute();
+            if ($this->mysqli->affected_rows>0 && $this->redis) {
+                $this->redis->hset("input:$input_id",'processList',$processlist_out);
+            }
         }
     }
 
@@ -741,18 +687,5 @@ class Input
                 'processList'=>$row->processList
             ));
         }
-    }
-
-    private function schedule_access($userid,$scheduleid)
-    {
-        $userid = (int) $userid;
-        $scheduleid = (int) $scheduleid;
-        $stmt = $this->mysqli->prepare("SELECT id FROM schedule WHERE userid=? AND id=?");
-        $stmt->bind_param("ii",$userid,$scheduleid);
-        $stmt->execute();
-        $stmt->bind_result($id);
-        $result = $stmt->fetch();
-        $stmt->close();
-        if ($result && $id>0) return true; else return false;
     }
 }

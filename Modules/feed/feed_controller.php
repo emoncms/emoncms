@@ -330,7 +330,7 @@ function feed_controller()
                         } elseif ($route->subaction == "get") {
                             return $feed->get_processlist($feedid);
                         } elseif ($route->subaction == "set") {
-                            return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process->get_process_list());
+                            return $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process);
                         } elseif ($route->subaction == "reset") {
                             return $feed->reset_processlist($feedid);
                         }

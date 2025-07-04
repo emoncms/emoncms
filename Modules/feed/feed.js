@@ -34,26 +34,60 @@ var feed = {
         return result;
     },
 
-    list: function()
+    // Returns a list of feeds
+    // If callback is provided, it will be called with the feeds data
+    // If no callback is provided, it will return the feeds data synchronously
+    list: function(callback=null)
     {   
         var feeds = null;
         $.ajax({                                      
             url: path+this.public_username_str()+"feed/list.json"+this.apikeystr(),
             dataType: 'json',
             cache: false,
-            async: false,                      
+            async: (typeof callback === "function"),                      
             success: function(result) {
                 feeds = result; 
                 if (!result || result===null || result==="" || result.constructor!=Array) {
                     console.log("ERROR","feed.list invalid response: "+result);
                     feeds = null;
                 }
-            } 
+
+                if (typeof callback === "function") {
+                    callback(feeds);
+                }
+            }
         });
         
         return feeds;
     },
+
+    // Returns an object with feeds grouped by tag
+    by_tag: function(feeds) {
+        if (!Array.isArray(feeds) || feeds.length === 0) return {};
+        const bytag = {};
+        for (const feed of feeds) {
+            if (!feed || !feed.tag) continue;
+            if (bytag[feed.tag]) {
+                bytag[feed.tag].push(feed);
+            } else {
+                bytag[feed.tag] = [feed];
+            }
+        }
+        return bytag;
+    },
+
+    // Returns an object with feeds grouped by group
+    by_id: function(feeds) {
+        if (!Array.isArray(feeds) || feeds.length === 0) return {};
+        const byid = {};
+        for (const feed of feeds) {
+            if (!feed || feed.id == null) continue;
+            byid[String(feed.id)] = feed;
+        }
+        return byid;
+    },
     
+    // Alternative method to get feeds by ID (backward compatibility)
     listbyid: function() {
         var feeds = feed.list();
         if (feeds === null) { return null; }
@@ -62,6 +96,7 @@ var feed = {
         return byid;
     },
 
+    // Asynchronous version of listbyid (backward compatibility)
     listbyidasync: function(f)
     {   
         var feeds = null;
@@ -255,8 +290,9 @@ var feed = {
 
     // Virtual feed process
     set_process: function(feedid,processlist){
+        let json_processlist = JSON.stringify(processlist);
         var result = {};
-        $.ajax({ url: path+"feed/process/set.json?id="+feedid, method: "POST", data: "processlist="+processlist, async: false, success: function(data){result = data;} });
+        $.ajax({ url: path+"feed/process/set.json?id="+feedid, method: "POST", data: "processlist="+json_processlist, async: false, success: function(data){result = data;} });
         return result;
     },
 

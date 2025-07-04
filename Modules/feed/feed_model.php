@@ -458,18 +458,29 @@ class Feed
 
         $feeds = array();
         $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
-        while ($row = (array)$result->fetch_object())
+        while ($f = (array)$result->fetch_object())
         {
-            if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
-                $this->log->info("mysql_get_user_feeds() calling VIRTUAL lastvalue " . $row['id']);
-                $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
-                $row['time'] = $lastvirtual['time'];
-                $row['value'] = $lastvirtual['value'];
-                $meta = $this->get_meta($row['id']);
-                $row['start_time'] = $meta->start_time;
-                $row['interval'] = $meta->interval;
+            if ($f['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
+                $timevalue = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($f['id']);
+                $f['time'] = $timevalue['time'];
+                $f['value'] = $timevalue['value'];
+            } elseif (!isset($f['time'])) {
+                if ($timevalue = $this->EngineClass($f['engine'])->lastvalue($f['id'])) {
+                    $this->set_timevalue($f['id'], $timevalue['value'], $timevalue['time']);
+                    $f['time'] = $timevalue['time'];
+                    $f['value'] = $timevalue['value'];
+                }
             }
-            $feeds[] = $row;
+            $row = $this->validate_timevalue($f);
+
+            if ($getmeta) {
+                $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
+                if (isset($meta->start_time)) $f['start_time'] = $meta->start_time;
+                if (isset($meta->end_time)) $f['end_time'] = $meta->end_time;
+                if (isset($meta->interval)) $f['interval'] = $meta->interval;
+                if (isset($meta->npoints)) $f['npoints'] = $meta->npoints;
+            }
+            $feeds[] = $f;
         }
         return $feeds;
     }
@@ -1171,104 +1182,14 @@ class Feed
         }
     }
 
-    public function set_processlist($userid, $id, $processlist, $process_list)
+    public function set_processlist($userid, $id, $processlist, $process_class)
     {
         $userid = (int) $userid;
+        $id = (int) $id;
 
-        // Validate processlist
-        $pairs = explode(",",$processlist);
-        $pairs_out = array();
-
-        // Build map of processids where set
-        $map = array();
-        foreach ($process_list as $key=>$process) {
-            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
-        }
-
-        foreach ($pairs as $pair)
-        {
-            $inputprocess = explode(":", $pair);
-            if (count($inputprocess)==2) {
-
-                // Verify process id
-                $processkey = $inputprocess[0];
-                // If key is in the map, switch to associated full process key
-                if (isset($map[$processkey])) $processkey = $map[$processkey];
-
-                // Load process
-                if (isset($process_list[$processkey])) {
-                    $processarg = $process_list[$processkey]['argtype'];
-                    $proccess_name = $process_list[$processkey]['function'];
-
-                    // remap process back to use map id if available
-                    if (isset($process_list[$processkey]['id_num']))
-                        $processkey = $process_list[$processkey]['id_num'];
-
-                } else {
-                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
-                }
-
-                // Verify argument
-                $arg = $inputprocess[1];
-
-                // Stop virtual feeds from adding email and mqtt processes.
-                $isVirtual = $this->get_engine($id)===7;
-                $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
-                if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
-                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
-                    return array('success'=>false, 'message'=>_("Invalid proccess for Virtual Feed, try another."));
-                }
-
-                // Check argument against process arg type
-                switch($processarg){
-
-                    case ProcessArg::FEEDID:
-                        $feedid = (int) $arg;
-                        $isVirtual = $this->get_engine($id)===7;
-                        if (!$this->access($userid,$feedid)) {
-                            return array('success'=>false, 'message'=>_("Invalid feed"));
-                        } elseif ($isVirtual) {
-                            return array('success'=>false, 'message'=>_("Cannot use virtual feed as source"));
-                        }
-                        break;
-
-                    case ProcessArg::INPUTID:
-                        $inputid = (int) $arg;
-                        if (!$this->input_access($userid,$inputid)) {
-                            return array('success'=>false, 'message'=>_("Invalid input"));
-                        }
-                        break;
-
-                    case ProcessArg::VALUE:
-                        if (!is_numeric($arg)) {
-                            return array('success'=>false, 'message'=>'Value is not numeric');
-                        }
-                        break;
-
-                    case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg)
-                            return array('success'=>false, 'message'=>'Invalid characters in argx');
-                        break;
-
-                    case ProcessArg::SCHEDULEID:
-                        $scheduleid = (int) $arg;
-                        if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
-                            return array('success'=>false, 'message'=>'Invalid schedule');
-                        }
-                        break;
-
-                    case ProcessArg::NONE:
-                    default:
-                        $arg = false;
-                        break;
-                }
-
-                $pairs_out[] = implode(":",array($processkey,$arg));
-            }
-        }
-
-        // rebuild processlist from verified content
-        $processlist_out = implode(",",$pairs_out);
+        $result = $process_class->validate_processlist($userid, $id, $processlist, 1); // 1 = feed context
+        if (!$result['success']) return $result;
+        $processlist_out = $result['processlist'];
 
         $stmt = $this->mysqli->prepare("UPDATE feeds SET processList=? WHERE id=?");
         $stmt->bind_param("si", $processlist_out, $id);
@@ -1281,6 +1202,27 @@ class Feed
             return array('success'=>true, 'message'=>'Feed processlist updated');
         } else {
             return array('success'=>false, 'message'=>'Feed processlist was not updated');
+        }
+    }
+
+    // Set the processlist with an error found process at the start
+    // This is used to indicate that an error has been found in the process list
+    // At present only triggered if max steps is exceeded
+    public function set_processlist_error_found($feed_id) {
+        $feed_id = (int) $feed_id;
+
+        // 1. Get the current process list
+        $processlist = $this->get_processlist($feed_id);
+        if ($processlist != "") {
+            $processlist_out = "process__error_found:0," . $processlist;
+
+            // 2. Set the new process list with the error found process at the start
+            $stmt = $this->mysqli->prepare("UPDATE feeds SET processList=? WHERE id=?");
+            $stmt->bind_param("si", $processlist_out, $feed_id);
+            $stmt->execute();
+            if ($this->mysqli->affected_rows>0 && $this->redis) {
+                $this->redis->hset("feed:$feed_id",'processList',$processlist_out);
+            }
         }
     }
 
@@ -1398,32 +1340,6 @@ class Feed
     }
 
     // ------------------------------------------
-
-    private function input_access($userid,$inputid)
-    {
-        $userid = (int) $userid;
-        $inputid = (int) $inputid;
-        $stmt = $this->mysqli->prepare("SELECT id FROM input WHERE userid=? AND id=?");
-        $stmt->bind_param("ii",$userid,$inputid);
-        $stmt->execute();
-        $stmt->bind_result($id);
-        $result = $stmt->fetch();
-        $stmt->close();
-        if ($result && $id>0) return true; else return false;
-    }
-
-    private function schedule_access($userid,$scheduleid)
-    {
-        $userid = (int) $userid;
-        $scheduleid = (int) $scheduleid;
-        $stmt = $this->mysqli->prepare("SELECT id FROM schedule WHERE userid=? AND id=?");
-        $stmt->bind_param("ii",$userid,$scheduleid);
-        $stmt->execute();
-        $stmt->bind_result($id);
-        $result = $stmt->fetch();
-        $stmt->close();
-        if ($result && $id>0) return true; else return false;
-    }
     
     private function validate_checksum($data)
     {

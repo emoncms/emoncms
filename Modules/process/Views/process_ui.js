@@ -1,988 +1,771 @@
+var ContextType = {
+    INPUT: 0, // Input context
+    VIRTUALFEED: 1, // Feed context
+};
+
 var ProcessArg = {
-  VALUE:0,
-  INPUTID:1,
-  FEEDID:2,
-  NONE:3,
-  TEXT:4,
-  SCHEDULEID:5
+    VALUE: 0,
+    INPUTID: 1,
+    FEEDID: 2,
+    NONE: 3,
+    TEXT: 4,
+    SCHEDULEID: 5
 }
 
-var processlist_ui =
-{
-  contexttype: 0,         // Editor type (0:input, 1:feed/virtual)
-  contextid: 0,           // The current inputid or virtual feed id being edited
-  contextprocesslist: [], // The current process list being edited
+var argtypes = {
+    0: { name: "Value", cssClass: 'label-important', title: '{longText}: {value}' },
+    1: { name: "Input", cssClass: 'label-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
+    2: { name: "Feed", cssClass: 'label-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
+    3: { name: "None", cssClass: 'label-important', title: '{longText}: {value}' },
+    4: { name: "Text", cssClass: 'label-info', title: '{longText}: {value}' },
+    5: { name: "Schedule", cssClass: 'label-warning', title: '{longText}: {schedule.name}' }
+};
 
-  processlist: [], // Cache this lists
-  feedlist:[],
-  inputlist:[],
-  schedulelist:[],
+var process_vue = new Vue({
+    el: '#process_vue',
+    data: {
 
-  init_done: -1, // when 0 all lists are loaded
-  
-  engines_hidden:[],
-  has_redis: 0,
-  
-  table: typeof table !== "undefined" ? table : null,
+        context_type: 0,
+        has_redis: 0, // Flag to indicate if Redis is available (1) or not (0)
 
-  'draw':function(){
-    var i = 0;
-    var out="";
-    
-    // console.log("contextid=" + this.contextid);
-    // console.log("contextprocesslist=" + this.contextprocesslist);
-    
-    if (this.contextprocesslist.length==0) {
-      $("#process-table").hide();
-      $("#noprocess").show();
-    } else {
-      $("#process-table").show();
-      $("#noprocess").hide();
-      for (z in this.contextprocesslist) {
-        out += '<tr>';
-        // Move process up or down
-        out += '<td>';
-        if (i > 0) {
-          out += '<a class="move-process" title="'+_Tr("Move up")+'" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
-        } else {
-          out += "<span style='display: inline-block; width:14px; ' />";
-        }
+        input_or_virtual_feed_id: '', // ID of the input or virtual feed
+        input_or_virtual_feed_name: '', // Name of the input or virtual feed (used for modal title)
+        new_feed_name: '', // Name for the new feed (if creating a new feed)
+        new_feed_tag: '', // Tag for the new feed (if creating a new feed)
 
-        if (i < this.contextprocesslist.length-1) {
-          out += "<a class='move-process' title='"+_Tr("Move down")+"' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
-        }
-        out += '</td>';
+        args: [],
+        inputs: [], // List of inputs
+        inputs_by_id: {},
+        inputs_by_node: {},
+        schedules: {},
 
-        // Process name and argument
-        var processkey = this.contextprocesslist[z][0];
-        var arg = {};
-        var lastvalue = "";
-        var processname = "";
-        processkey = this.getProcessKeyById(processkey); // convert id numbers to key names (backward compatible)
-        
-        if (this.processlist[processkey] != undefined) {
-          var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-          if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-            arg.text = this.processlist[processkey]['internalerror_desc']
-            // arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
-            processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
-          }  
-          else if (procneedredis) {
-            // arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
-            arg.text = "Process '"+processkey+"' not available. Redis not installed."
-            processname = this.processlist[processkey].name;
-          }
-          else {
-            // Check ProcessArg Type
-            switch(this.processlist[processkey].argtype) {
-              case ProcessArg.VALUE:
-                arg.text = this.contextprocesslist[z][1]
-                arg.title = _Tr("Value")
-                arg.icon = 'icon-edit'
-              break;
-              
-              case ProcessArg.INPUTID:
-              var inpid = this.contextprocesslist[z][1];
-              if (this.inputlist[inpid]!=undefined) {
-                arg.text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
-                arg.title = _Tr("Input")+" "+inpid
-                arg.icon = 'icon-signal'
+        selected_process: 'process__log_to_feed',
 
-                lastvalue = (this.inputlist[inpid].value*1).toFixed(2);
-              } else {
-                arg.text = 'Input "+schid+" does not exists or was deleted'
-              }
-              break;
-              
-              case ProcessArg.FEEDID:
-              var feedid = this.contextprocesslist[z][1];
-              if (this.feedlist[feedid]!=undefined) {
-                arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
-                arg.title = _Tr("Feed")+" "+feedid
-                arg.icon = 'icon-list-alt'
-                var feedviewpath = "graph/";
-                if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
-                    var feedviewpath = _SETTINGS.feedviewpath;
-                }
-                arg.href = [path, feedviewpath, feedid].join("");
-                lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
-              } else {
-                arg.text = 'Feedid "+feedid+" does not exists or was deleted'
-              }
-              break;
+        processes_by_key: {},
+        // Non input or virtual feed processes are filtered out
+        // This is used for populating the process select dropdown
+        context_only_processes_by_group: {}, 
 
-              case ProcessArg.TEXT:
-                arg.title = _Tr("Text")
-                arg.text = this.contextprocesslist[z][1]
-                arg.icon = 'icon-edit'
-              break;
-              
-              case ProcessArg.SCHEDULEID:
-              var schid = this.contextprocesslist[z][1];
-              if (this.schedulelist[schid]!=undefined) {
-                arg.title = _Tr("Schedule")+" "+schid
-                arg.text = this.schedulelist[schid].name
-                arg.icon = 'icon-time'
+        feeds_by_id: {},
+        feeds_by_tag: {},
 
-              } else {
-                arg.text = "Schedule "+schid+" does not exists or was deleted"
-              }
-              break;
+        // Holds process list for current input or feed
+        process_list: [],
+
+        // This array is used to keep track of selected processes in the UI
+        // It is used for bulk actions like cut, copy, paste, and delete
+        selected_processes: [],
+
+        // Holds copied processes for cut/copy/paste functionality
+        copied_processes: [],
+
+        state: 'not_modified', // State of the process list (not_modified, modified, saved)
+
+        init_done: 4, // Counter for initialization progress
+
+        add_edit_mode: 'add', // Mode of the process list (add or edit)
+        edit_index: -1, // Index of the process being edited (if any)
+    },
+
+    methods: {
+
+        feedSelectChange: function () {
+            if (typeof nodes_display !== 'undefined') {
+                autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
             }
-            processname = this.processlist[processkey].name;
-          }
-        }
-        else {
-          processname = "UNSUPPORTED";
-          arg.text = "Process ´"+processkey+"´ not available. Module missing?"
-        }
+        },
 
-        // create the badge markup to display the process argument detail
-        label = ""
-        if(arg.text){
-          label += arg.href ? '<a href="'+arg.href+'" class="text-info"' : '<span class="muted"'
-          label += ' title="'+arg.title+'"'
-          label += ">"
-          label += arg.icon ? '<i class="'+arg.icon+'"></i> ' : ''
-          label += arg.text || arg.title
-          label += arg.href ? '</a>':'</span>'
-        }
+        load: function (
+            context_type,
+            input_or_virtual_feed_id,
+            input_or_virtual_feed_process_list,
+            input_or_virtual_feed_name,
+            new_feed_name = "",
+            new_feed_tag = ""
+        ) {
+            this.context_type = context_type; // Set the context type (input:0 or feed:1)
+            this.input_or_virtual_feed_id = input_or_virtual_feed_id; // Set the ID of the input or virtual feed
+            this.input_or_virtual_feed_name = input_or_virtual_feed_name; // Set the name for the modal title
+            this.new_feed_name = new_feed_name; // Set the new feed name
+            this.new_feed_tag = new_feed_tag; // Set the new feed tag
 
-        try {
-            tag = `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
-            style="cursor:help" 
-            class="fw-label overflow-hidden label ${this.argtypes[this.processlist[processkey].argtype].cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
-        } catch (e) {
-            tag = ""
-        }
+            this.add_edit_mode = 'add'; // Set the mode to add
+            this.edit_index = -1; // Reset the edit index
+            this.state = 'not_modified'; // Reset the state to not_modified
+            let process_list = process_api.decode(input_or_virtual_feed_process_list);
 
-        try {
-            latest = lastvalue ? `<small title="Last recorded ${this.processlist[processkey].argtype} value" class="muted">(${lastvalue})</small>` : ''
-        } catch (e) {
-            latest = ""
-        }
-        
+            for (let i = 0; i < process_list.length; i++) {
+                let process = process_list[i];
+                let argtype = ProcessArg.NONE; // Default argument type
 
-        out += '<td>'+(i+1)+'</td><td>'+processname+'</td><td style="text-align:right">'+tag+'</td><td>'+label+'</td><td>'+latest+'</td>';
-     
-        // Delete process button (icon)
-        out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
-        out += '<td><a class="delete-process" title="'+_Tr("Delete")+'" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
-        out += '</tr>';
-        
-        i++; // process id
-      }
-    }
-    $('#process-table-elements').html(out);
-  },
+                // Get arg type
+                if (process.fn && process.fn in this.processes_by_key) {
+                    let process_info = this.processes_by_key[process.fn];
+                    // use the first argument's type
+                    if (process_info.args.length > 0) {
+                        argtype = process_info.args[0].type;
+                    }
+                }
 
-  'drawpreview':function(processlist,input){
-    if (!processlist) return "";
-    var localprocesslist = processlist_ui.decode(processlist);
-    if (localprocesslist.length==0) {
-      return ""
-    } else {
-      var out = [];
-      // create coloured link or span for each process 
-      for(b of this.getBadges(processlist,input)){
-        let markup = []
-        markup.push(b.href ? '<a target="_blank" href="'+b.href+'"' : '<span')
-        markup.push(' class="label '+b.cssClass+'" title="'+b.title+'">')
-        markup.push((b.text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))
-        markup.push(b.href ? '</a> ' : '</span> ')
-        out.push(markup.join(''));
-      }
-      return out.join('');
-    }
-  },
-  /**
-   * return array of objects with id,id_num properties
-   */
-  'backward_compatible_list': function(){
-    if(!this.processlist) return
-    let pl = this.processlist
-    let ids = [];
-    Object.keys(pl).forEach(function(key) {
-      ids.push({id:key,id_num: pl[key].id_num})
-    });
-    return ids
-  },
-  /**
-   * return process "name" when given a valid id (if id not number original input returned)
-   */
-  'getProcessKeyById': function(id){
-    id_int = parseInt(id)
-    if (isNaN(id_int)) return id
-    old_ids = this.backward_compatible_list()
-    // add numeric and textual ids (backward compatible)
-    for (id2 in old_ids) {
-      if (old_ids[id2].id_num === id_int){
-        return old_ids[id2].id
-      }
-    }
-  },
-  'argtypes': {
-      0: {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
-      1: {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
-      2: {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
-      3: {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
-      4: {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'}
-  },
-  'getBadges': function (processlist,input) {
-    if (!processlist) return ""
-    var processPairs = processlist.split(",")
-    // create empty list of badges
-    let badges = []
-    for (z in processPairs)
-    {
-      // add badge to list or add a blank one if there are any issues.
-      let badge = {}
-      var keyvalue = processPairs[z].split(":")
-      var key = parseInt(keyvalue[0])
-      key = isNaN(key) ? keyvalue[0]: this.getProcessKeyById(key);
-      badge.value = keyvalue[1]
-      badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
+                // Set the label for the process according to its argtype
+                process.label = argtypes[argtype].cssClass || 'label-default'; // Default to 'label-default' if not found
+            }
 
-      if(this.init_done === 0 && badge.process!==false){
-        // set badge properties
-        badge.type = this.argtypes[badge.process.argtype]
-        badge.typeName = badge.type.name
-        badge.cssClass = badge.type.cssClass
-        var feedviewpath = "graph/";
-        if (_SETTINGS && _SETTINGS.hasOwnProperty('feedviewpath') && _SETTINGS.feedviewpath !== "") {
-            var feedviewpath = _SETTINGS.feedviewpath;
-        }
-        badge.href = badge.process.argtype == ProcessArg.FEEDID ? [path, feedviewpath, badge.value].join("") : false;
-        badge.text = badge.process.short || ''
-        badge.longText = badge.process.name
-        badge.input = input
-        badge.feed =  this.feedlist[badge.value] || {}
-        badge.schedule = this.schedulelist[badge.value] || {}
-        badge.title = badge.type.title.format(badge);
-        // pass the collected badge object as values for the title string template
-        badges.push(badge);
-      } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
-        // no reids
-        badges.push({
-          text: badge.process['internalerror_reason'],
-          title: badge.process['internalerror_desc'],
-          cssClass: 'badge-important',
-          href: false
-        })
-      } else if(!badge.value){
-        // input,feed or schedule doesnt exist
-        badges.push({
-          title: '{typeName} {value} does not exist or was deleted'.format(badge),
-          text: 'ERROR',
-          cssClass: 'badge-important',
-          href: false
-        })
-      } else if(!badge.process){
-        // process not available
-        badges.push({
-          title: '{typeName} {value} does not exist or was deleted'.format(badge),
-          text: 'UNSUPPORTED',
-          cssClass: 'badge-important',
-          href: false
-        })
-      } else {
-        // default else
-        badges.push({
-          text: ' 🕒… ',
-          title: '',
-          cssClass: 'muted',
-          href: false
-        })
-      }
-    }
-    // console.log(badges)
-    return badges;
-  },
+            this.process_list = process_list;
 
-  'group_drawerror':function(processlist){
-    if (!processlist) return "";
-    var localprocesslist = processlist_ui.decode(processlist);
-    if (localprocesslist.length==0) {
-      return ""
-    } else {
-      var out = "";
-      if (this.init_done === 0)
-      {
-        for (z in localprocesslist) {
-          // Process name and argument
-          var processkey = parseInt(localprocesslist[z][0]);
-          processkey = isNaN(processkey) ? localprocesslist[z][0]: this.getProcessKeyById(processkey);
-          if (this.processlist[processkey] != undefined) {
-            var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-            if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-                out += "<span class='badge badge-important' title='" + this.processlist[processkey]['internalerror_desc'] + "'>"+ this.processlist[processkey]['internalerror_reason'] + "</span> "
-            }  
-            else if (procneedredis) {
-                out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
+            if (this.context_type == ContextType.INPUT) {
+                this.selected_process = "process__log_to_feed"; // default process for input context
+            } else if (this.context_type == ContextType.VIRTUALFEED) {
+                this.selected_process = "process__source_feed_data_time"; // default process for feed context
+            }
+
+            // Fetch the processes that are relevant to the context type
+            Vue.set(process_vue, 'context_only_processes_by_group', process_api.by_group(process_api.filter_for_context(this.processes_by_key, this.context_type)));
+
+            this.processSelectChange(); // Trigger the process select change to update the UI
+            // this.scrollto($('#processlist-ui'));
+
+            // Show the process list modal
+            $("#processlistModal").modal('show');
+            this.adjustModal(); // Adjust the modal height
+        },
+
+        adjustModal: function () {
+            // Adjust the height of the process list UI
+            if ($("#processlistModal").length) {
+                var h = $(window).height() - $("#processlistModal").position().top - 180;
+                $("#processlist-ui").height(h);
+            }
+        },
+
+        scrollto: function (scrollTo) {
+            let container = $('#processlist-ui');
+            container.animate({
+                scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+            });
+        },
+
+        initprogress: function () {
+            this.init_done--;
+            if (this.init_done == 0) {
+                // Which table draw is this? input and feed list perhaps/
+                if (window.table != undefined && window.table.draw != undefined) table.draw();
+            }
+        },
+
+        save: function () {
+
+            // if global function exists save_processlist
+            if (typeof save_processlist === 'function') {
+
+                // Remove extra fields (perhaps refactor this out)
+                let output_process_list = [];
+                for (let i in this.process_list) {
+                    output_process_list.push({
+                        fn: this.process_list[i].fn,
+                        args: this.process_list[i].args
+                    });
+                }
+
+                if (save_processlist(this.input_or_virtual_feed_id, output_process_list)) {
+                    this.saved(); // Update the state to saved
+                }
             } else {
-              // Check ProcessArg Type
-              value = localprocesslist[z][1];
-              switch(this.processlist[processkey].argtype) {
-                case ProcessArg.INPUTID: //INPUTID
-                var inpid = localprocesslist[z][1];
-                if (this.inputlist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
+                alert('ERROR: save_processlist function not defined. Please implement it to save the process list.');
+            }
+        },
+        // Strips HTML tags from a string
+        // Used to display process descriptions without HTML formatting
+        strip_html: function (html) {
+            return html.replace(/<(?:.|\n)*?>/gm, '');
+        },
+
+        // Closes the process list modal
+        // This function is called when the close button is clicked
+        close: function () {
+            $("#processlistModal").modal('hide');
+        },
+
+        // Moves a process in the list up or down
+        // index: the index of the process in the process_list array
+        // direction: -1 for up, 1 for down
+        moveby: function (index, direction) {
+            if (index >= 0 && index < this.process_list.length) {
+                var process = this.process_list[index];
+                var newIndex = index + direction;
+                if (newIndex >= 0 && newIndex < this.process_list.length) {
+                    this.process_list.splice(index, 1);
+                    this.process_list.splice(newIndex, 0, process);
+                    this.modified();
                 }
-                break;
+            }
+        },
 
-                case ProcessArg.FEEDID: //FEEDID
-                if (this.feedlist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
+        // Removes a process from the list
+        // index: the index of the process in the process_list array
+        remove: function (index) {
+            if (index >= 0 && index < this.process_list.length) {
+                this.process_list.splice(index, 1);
+                this.modified();
+            }
+        },
+
+        // Handles switch to edit mode:
+        edit: function (index) {
+            this.add_edit_mode = 'edit'; // Set the mode to edit
+            this.edit_index = index; // Set the index of the process being edited
+            this.selected_process = this.process_list[index].fn; // Set the selected process to the one being edited
+            this.processSelectChange();
+        },
+
+        cancel_edit: function () {
+            this.add_edit_mode = 'add'; // Switch back to add mode
+        },
+
+        // Handles process selection change
+        // This function is called when the process select dropdown changes
+        // It updates the args data based on the selected process
+        // It also sets default values for the args based on their type
+        processSelectChange: function (set_selected_process = false) {
+
+            // Option to set the selected process (used by quick link badges)
+            if (set_selected_process) {
+                this.selected_process = set_selected_process; // Update the selected process
+            }
+
+            // Get the selected process
+            let process = this.processes_by_key[this.selected_process];
+            let args = JSON.parse(JSON.stringify(process.args));
+
+            // Set default values for Vue args
+            if (this.add_edit_mode === 'edit') {
+                for (let i = 0; i < args.length; i++) {
+                    args[i].value = this.process_list[this.edit_index].args[i];
+                    if (args[i].type === ProcessArg.FEEDID) {
+                        args[i].new_feed_tag = '';
+                        args[i].new_feed_name = '';
+                        args[i].new_feed_engine = 5; // Default feed engine
+                        args[i].new_feed_interval = 10; // Default feed interval
+                        args[i].new_feed_table_name = ''; // Default feed table name
+                    }
                 }
-                break;
+                Vue.set(process_vue, 'args', args);
+                return;
+            }
 
-                case ProcessArg.SCHEDULEID: // SCHEDULEID
-                if (this.schedulelist[value]==undefined) {
-                  out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
+            // ELSE: Set default values for new process
+            for (let i = 0; i < args.length; i++) {
+                let arg = args[i];
+                switch (arg.type) {
+                    case ProcessArg.VALUE:
+                        arg.value = 0; // Default value for VALUE type
+                        if (arg.default !== undefined) {
+                            arg.value = arg.default; // Use default value if available
+                        }
+                        break;
+                    case ProcessArg.INPUTID:
+                        arg.value = 0; // Default value for INPUTID type
+
+                        if (this.inputs_by_node && Object.keys(this.inputs_by_node).length > 0) {
+                            // Default to first input in the first node
+                            let first_node = Object.keys(this.inputs_by_node)[0];
+                            if (this.inputs_by_node[first_node] && this.inputs_by_node[first_node].length > 0) {
+                                arg.value = this.inputs_by_node[first_node][0].id; // Default to first input
+                            }
+                        }
+                        break;
+                    case ProcessArg.FEEDID:
+                        if (this.context_type === ContextType.INPUT && Array.isArray(arg.engines) && arg.engines.length > 0) {
+                            arg.value = -1; // Default value for FEEDID type (create new feed)
+                            arg.new_feed_tag = this.new_feed_tag; // Default feed tag
+                            arg.new_feed_name = this.new_feed_name; // Default feed name
+                            arg.new_feed_engine = 5; // Default feed engine
+                            arg.new_feed_interval = 10; // Default feed interval
+                            arg.new_feed_table_name = ''; // Default feed table name
+                            arg.new_feed_engine = parseInt(arg.engines[0]); // Default to first engine in the list
+                        } else {
+                            // Select first feed by default if in feed context
+                            arg.value = 0; // Default value for FEEDID type
+                            if (Object.keys(this.feeds_by_id).length > 0) {
+                                // Default to first feed in the list
+                                arg.value = Object.keys(this.feeds_by_id)[0];
+                            }
+                        }
+                        break;
+                    case ProcessArg.TEXT:
+                        arg.value = ''; // Default value for TEXT type
+                        break;
+                    case ProcessArg.SCHEDULEID:
+                        arg.value = 0;
+                        // Default to first schedule in the list
+                        if (Object.keys(this.schedules).length > 0) {
+                            arg.value = Object.keys(this.schedules)[0];
+                        }
+                        break;
+                    case ProcessArg.NONE:
+                        arg.value = 0; // Default value for NONE type
+                        break;
                 }
-                break;
-              }
-            }
-          } else {
-              out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Module missing?'>UNSUPPORTED</span> "
-          }
-          if (out != "") return out; // return first error
-        }
-      }
-      return out;
-    }
-  },
-
-  'events':function(){
-    $("#processlist-ui #feed-engine").change(function(){
-      var engine = $(this).val();
-      if (engine==6 || engine==5 || engine==4 || engine==1) {
-    	  $("#feed-interval").show();
-      }
-      else {
-          $("#feed-interval").hide();
-      }
-      if (engine==8 || engine==0) {
-    	  $("#feed-table").empty().show();
-      }
-      else {
-          $("#feed-table").hide();
-      }
-    });
-
-    $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
-      var processid = $('#process-select').val();
-      var process = processlist_ui.processlist[processid];
-      var arg = '';
-
-      // Check ProcessArg Type
-      switch(process.argtype) {
-        case ProcessArg.VALUE: // VALUE (scale, offset)
-          arg = $("#value-input").val();
-          arg = parseFloat(arg.replace(",", "."));
-          if (isNaN(arg)) {
-            alert('ERROR: Value must be a valid number');
-            return false;
-          }
-          break;
-
-        case ProcessArg.INPUTID: //INPUTID (* / + - by input)
-          arg = $("#input-select").val();
-          break;
-
-        case ProcessArg.FEEDID: //FEEDID
-          var feedid = $("#feed-select").val();
-
-          if (feedid==-1) {
-            var feedname = $('#new-feed-name').val();
-            var feedtag = $('#new-feed-tag').val();
-            var engine = $('#feed-engine').val();
-            
-            var options = {};
-            if (engine==6 || engine==5 || engine==4 || engine==1) {
-              let interval = $('#feed-interval').val();
-              if (interval=="") {
-                alert('ERROR: Please select a feed interval');
-                return false;
-              }
-              options = {"interval":interval};
-            }
-            else if (engine==8 || engine==0) {
-              options = {"name":$('#feed-table').val()};
-            }
-            
-            if (feedname == '') {
-              alert('ERROR: Please enter a feed name');
-              return false;
-            }
-            
-            var unit = '';
-            if (process.unit!=undefined) unit = process.unit;
-            
-            var result = feed.create(feedtag,feedname,engine,options,unit);
-            feedid = result.feedid;
-
-            if (!result.success || feedid<1) {
-              alert('ERROR: Feed could not be created, '+result.message);
-              return false;
             }
 
-            processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
-            processlist_ui.showfeedoptions(processid);  // Refresh Feedlist
-          }
-          arg = feedid;
-          break;
+            // Set the Vue args data
+            Vue.set(process_vue, 'args', args);
+        },
 
-        case "none": // NONE
-          arg = 0;
-          break;
+        // Handles the process add action
+        // This function is called when the user clicks the "Add" button
+        // It validates the input values and creates a new process entry
+        processAdd: function () {
+            var process = this.processes_by_key[this.selected_process];
 
-        case ProcessArg.TEXT: // TEXT
-          arg = $("#text-input").val();
-          break;
+            let output_args = [];
+            let label = 'label-muted'; // Default label for the process
 
-        case ProcessArg.SCHEDULEID: // SCHEDULEID
-          arg = $("#schedule-select").val();
-          break;
-      }
+            if (this.args != undefined && Array.isArray(this.args)) {
+                // Loop through the Vue args and get the values
+                for (let i = 0; i < this.args.length; i++) {
+                    let arg_type = this.args[i].type;
+                    let arg_value = this.args[i].value;
+                    label = argtypes[arg_type].cssClass;
+                    switch (arg_type) {
 
-      if ($(this).attr("id") == "process-edit") {
-        processlist_ui.contextprocesslist[$("#type-btn-edit").attr('curpos')] = ([processid,""+arg]);
-        $("#process-header-add").show();
-        $("#process-header-edit").hide();
-        $("#type-btn-add").show();
-        $("#type-btn-edit").hide();
-        processlist_ui.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
-      } else {
-        processlist_ui.contextprocesslist.push([processid,""+arg]);  
-      }
+                        // Value
+                        // Check if the value is a valid number
+                        case ProcessArg.VALUE:
+                            if (arg_value === undefined || arg_value === null || arg_value === "" || isNaN(arg_value)) {
+                                alert('ERROR: Value must be a valid number');
+                                return false;
+                            }
+                            output_args.push(parseFloat(arg_value));
+                            break;
 
-      processlist_ui.draw();
-      processlist_ui.modified();
-    });
+                        // Input ID
+                        // Input id is from input select so no need to check if it's a valid input
+                        case ProcessArg.INPUTID:
+                            output_args.push(parseInt(arg_value));
+                            break;
 
-    $('#processlist-ui #process-select').change(function(){
-      var processid = $(this).val();
+                        // Feed ID
+                        // Feed id is from feed select so no need to check if it's a valid feed
+                        // Create new feed if feed id is -1
+                        case ProcessArg.FEEDID:
+                            let feedid = parseInt(arg_value);
+                            if (feedid == -1) {
+                                let feedtag = this.args[i].new_feed_tag;
+                                let feedname = this.args[i].new_feed_name;
+                                let engine = this.args[i].new_feed_engine;
 
-      $("#description").html("");
-      $("#type-value").hide();
-      $("#type-text").hide();
-      $("#type-input").hide();
-      $("#type-feed").hide();
-      $("#type-schedule").hide();
+                                var options = {};
+                                if (engine == 6 || engine == 5 || engine == 4 || engine == 1) {
+                                    let interval = this.args[i].new_feed_interval;
+                                    if (interval == "") {
+                                        alert('ERROR: Please select a feed interval');
+                                        return false;
+                                    }
+                                    options = { "interval": interval };
+                                }
+                                else if (engine == 8 || engine == 0) {
+                                    options = { "name": this.args[i].new_feed_table_name };
+                                }
 
-      // Check ProcessArg Type
-      if (processid) {
-        switch(processlist_ui.processlist[processid].argtype) {
-          case ProcessArg.VALUE: // VALUE
-            $("#type-value").show();
-            break;
-          case ProcessArg.INPUTID: //INPUTID
-            $("#type-input").show();
-            break;
-          case ProcessArg.FEEDID: //FEEDID
-            $("#type-feed").show();
-            processlist_ui.showfeedoptions(processid);
-            break;
-          case ProcessArg.TEXT: // TEXT
-            $("#type-text").show();
-            break;
-          case ProcessArg.SCHEDULEID: // SCHEDULEID
-            $("#type-schedule").show();
-            break;
+                                if (feedname == '') {
+                                    alert('ERROR: Please enter a feed name');
+                                    return false;
+                                }
+
+                                var unit = '';
+                                if (process.unit != undefined) unit = process.unit;
+
+                                var result = feed.create(feedtag, feedname, engine, options, unit);
+                                feedid = result.feedid;
+
+                                if (!result.success || feedid < 1) {
+                                    alert('ERROR: Feed could not be created, ' + result.message);
+                                    return false;
+                                } else {
+                                    // Add feed to the feeds_by_id
+                                    if (!process_vue.feeds_by_id.hasOwnProperty(feedid)) {
+                                        process_vue.feeds_by_id[feedid] = {
+                                            id: feedid,
+                                            tag: feedtag,
+                                            name: feedname,
+                                            engine: engine,
+                                            options: options
+                                        };
+                                    }
+                                }
+
+                                output_args.push(feedid);
+                            } else {
+                                output_args.push(feedid);
+                            }
+                            break;
+
+                        // Text
+                        // Text must not be empty and must not contain commas or colons
+                        case ProcessArg.TEXT:
+                            // Text must not contain commas and semi-colons
+                            if (arg_value === undefined || arg_value === null || arg_value === "") {
+                                alert('ERROR: Text must not be empty');
+                                return false;
+                            }
+                            if (arg_value.includes(',') || arg_value.includes(':')) {
+                                alert('ERROR: Text must not contain commas or colons');
+                                return false;
+                            }
+                            output_args.push(arg_value);
+                            break;
+
+                        // Schedule ID
+                        // Schedule id is from schedule select so no need to check if it's a valid schedule
+                        case ProcessArg.SCHEDULEID:
+                            output_args.push(parseInt(arg_value));
+                            break;
+
+                        // None
+                        case ProcessArg.NONE:
+                            output_args.push(0);
+                            break;
+                    }
+                }
+            }
+
+            let new_process = {
+                fn: this.selected_process,
+                label: label, // Set the label for the process
+                args: output_args
+            };
+
+            if (this.add_edit_mode === 'edit') {
+                // If in edit mode, replace the process at the edit index
+                this.process_list[this.edit_index].fn = new_process.fn; // Update the function name
+                this.process_list[this.edit_index].args = new_process.args; // Update the arguments
+            } else {
+                // If in add mode, push the new process to the process list
+                this.process_list.push(new_process);
+            }
+
+            // this.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
+            this.modified();
+        },
+
+        modified: function () {
+            this.state = 'modified'; // Update the state to modified
+            // $(".feedaccesslabel").attr("href", "#"); // Disable access to feeds
+        },
+
+        saved: function () {
+            this.state = 'saved'; // Update the state to saved
+        },
+
+        // ---------------------------------------------------------------------------------------------
+        // Bulk actions for process list
+        // These methods allow users to select, cut, copy, paste, and remove processes in bulk
+        // ---------------------------------------------------------------------------------------------
+
+        // Select or unselect all processes in the process list
+        select_all: function () {
+            // If all processes are selected, unselect them
+            // Otherwise, select all processes
+            if (this.selected_processes.length === this.process_list.length) {
+                this.selected_processes = [];
+            } else {
+                this.selected_processes = this.process_list.map((_, index) => index);
+            }
+        },
+
+        // Cuts the selected processes from the process list
+        cut: function () {
+            /*
+            if (this.selected_processes.length > 0) {
+                this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
+                this.selected_processes.forEach(index => this.remove(index));
+                this.selected_processes = [];
+            }*/
+            this.copy(); // Call copy to put the cut processes on the clipboard
+            this.remove_selected(); // Remove selected processes from the list
+        },
+
+        // Copies the selected processes from the process list and puts them on the clipboard
+        copy: function () {
+            if (this.selected_processes.length > 0) {
+                // Get the selected process objects
+                const copiedProcesses = this.selected_processes.map(index => this.process_list[index]);
+                this.copied_processes = copiedProcesses;
+
+                // Serialize and copy to clipboard
+                const clipboardText = JSON.stringify(copiedProcesses);
+                navigator.clipboard.writeText(clipboardText).then(() => {
+                    // Optionally notify the user
+                    // alert("Copied processes to clipboard.");
+                }).catch((error) => {
+                    console.error("Failed to copy to clipboard:", error);
+                    alert("Failed to copy processes to clipboard. " + error);
+                });
+            } else {
+                alert("No processes selected to copy.");
+            }
+        },
+
+        // Pastes the copied processes into the process list
+        // This is currently a bit sticky for some reason? 
+        // You have to click away from the paste button to see the changes
+        paste: function () {
+            // Try to read from the clipboard first
+            navigator.clipboard.readText().then((clipboardText) => {
+                try {
+                    const pastedProcesses = JSON.parse(clipboardText);
+                    if (!Array.isArray(pastedProcesses)) {
+                        throw new Error("Clipboard data is not a valid array");
+                    }
+                    // Validate each pasted process
+                    pastedProcesses.forEach(process => {
+                        if (!process.fn || !Array.isArray(process.args)) {
+                            throw new Error("Invalid process format in clipboard data");
+                        }
+                        // Ensure the process function exists in the known processes
+                        if (!this.processes_by_key[process.fn]) {
+                            throw new Error(`Process function ${process.fn} not found`);
+                        }
+                    });
+                    // Insert pasted processes at the end of the process list
+                    this.process_list.push(...pastedProcesses);
+                    this.selected_processes = []; // Clear selected processes after pasting
+                    this.modified();
+                } catch (error) {
+                    alert("Failed to paste processes. The clipboard data is not in the correct format.");
+                    console.error("Error parsing clipboard data:", error);
+                }
+            }).catch((error) => {
+                // If clipboard read fails, fallback to internal copied_processes
+                if (this.copied_processes && this.copied_processes.length > 0) {
+                    this.process_list.push(...this.copied_processes);
+                    this.selected_processes = [];
+                    this.modified();
+                } else {
+                    alert("Failed to read data from the clipboard." + error);
+                    console.error("Failed to read data from the clipboard:", error);
+                }
+            });
+        },
+
+        // Removes the selected processes from the process list
+        remove_selected: function () {
+            if (this.selected_processes.length > 0) {
+                // Remove selected processes from the process list
+                this.selected_processes.sort((a, b) => b - a); // Sort in descending order to avoid index issues
+                this.selected_processes.forEach(index => this.remove(index));
+                this.selected_processes = []; // Clear selected processes after removal
+            }
+        },
+
+        // ---------------------------------------------------------------------------------------------
+        // Draws a preview of the process list
+        // This function generates HTML for the process list based on the provided raw process list
+        // It creates colored badges for each process with links and titles
+        // ---------------------------------------------------------------------------------------------
+        drawPreview: function (raw_process_list, input) {
+            if (!raw_process_list) return "";
+
+            var decoded_process_list = process_api.decode(raw_process_list);
+            if (decoded_process_list.length == 0) return "";
+
+            var out = [];
+            // create coloured link or span for each process 
+            for (let b of this.getBadges(decoded_process_list, input)) {
+                let markup = []
+                markup.push(b.href ? '<a target="_blank" href="' + b.href + '"' : '<span')
+                markup.push(' class="label ' + b.cssClass + '" title="' + b.title + '">')
+                markup.push((b.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+                markup.push(b.href ? '</a> ' : '</span> ')
+                out.push(markup.join(''));
+            }
+            return out.join('');
+        },
+
+        getBadges: function (process_list, input) {
+
+            if (this.init_done !== 0) {
+                // Show loading badge for all processes if not initialized
+                return process_list.map(() => ({
+                    text: ' ⌛ ',
+                    title: '',
+                    cssClass: 'muted',
+                    href: false
+                }));
+            }
+
+            let badges = [];
+            for (const process of process_list) {
+                const process_info = process_api.processes[process.fn];
+                if (!process_info) continue;
+
+                // Use the first argument's type, default to NONE
+                const argtype = (process_info.args.length > 0) ? process_info.args[0].type : ProcessArg.NONE;
+                const argtypeInfo = argtypes[argtype] 
+
+                // Common badge properties
+                let badge = {
+                    typeName: argtypeInfo.name,
+                    cssClass: argtypeInfo.cssClass,
+                    text: process_info.short || '',
+                    longText: process_info.name,
+                    href: false,
+                    value: process.args[0] || ''
+                }
+
+                let missing_input_feed_schedule = false;
+
+                // Handle feed, input, and schedule arguments
+                // Load contextual information such as feed tag and name etc.
+                if (argtype === ProcessArg.INPUTID) {
+                    badge.input = input;
+                } else if (argtype === ProcessArg.FEEDID) {
+                    if (this.feeds_by_id[badge.value] !== undefined) {
+                        badge.href = [path, "graph/", badge.value].join("");
+                        badge.feed = this.feeds_by_id[badge.value]
+                    } else {
+                        missing_input_feed_schedule = true;
+                    }
+                } else if (argtype === ProcessArg.SCHEDULEID) {
+                    if (this.schedules[badge.value] !== undefined) {
+                        badge.schedule = this.schedules[badge.value]
+                    } else {
+                        missing_input_feed_schedule = true;
+                    }
+                }
+                
+                if (!missing_input_feed_schedule) {
+                    badge.title = argtypeInfo.title.format(badge);
+                } else {
+                    // If feed, input, or schedule is missing, set error badge
+                    badge.title = '{typeName} {value} does not exist or was deleted'.format(badge);
+                    badge.text = 'ERROR';
+                    badge.cssClass = 'badge-muted';
+                }
+
+                // Highlight processes that require Redis if Redis is not available
+                if (!this.has_redis && process_info.requireredis) {
+                    badge.cssClass = 'badge-muted';
+                }
+
+                badges.push(badge);
+            }
+            return badges;
         }
+    },
+    filters: {
+        lastValueFormat: function (value) {
+            if (value === undefined || value === null || value === '') return '-';
 
-        if (processlist_ui.processlist[processid]['description'] === undefined || processlist_ui.processlist[processid]['description'] =="") {
-          $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
-        } else {
-          $("#description").html(processlist_ui.processlist[processid]['description']);
+            // if not a number, return as is
+            if (isNaN(value)) return value;
 
-          var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
-          var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
-          var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
-          var help = _Tr("Click here for additional information about this process.");
-
-          if ('helpurl' in processlist_ui.processlist[processid] &&
-              typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
-            $("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
-          }
-
-          if ('nochange' in processlist_ui.processlist[processid] &&
-              processlist_ui.processlist[processid]['nochange'] == true) {
-            $("#description").append(does_not_modify);
-          } else {
-            $("#description").append(does_modify);
-          }
-
-          if ('requireredis' in processlist_ui.processlist[processid] &&
-              processlist_ui.processlist[processid]['requireredis'] == true) {
-            $("#description").append(redis_required);
-
-          }
-        }//end of if proccessid
-      }
-      
-    });
-
-    $('#processlist-ui #feed-select').change(function(){
-      var feedid = $("#feed-select").val();
-
-      if (feedid == -1) {
-        $("#new-feed-name").show();
-        $("#new-feed-tag").show();
-        $('#feed-select').css({'border-radius': 0, 'border-right': 0})
-        
-        $("#processlist-ui #feed-engine").change(); // select available interval for engine
-        // If there's only one feed engine to choose from then dont show feed engine selector
-        // CHAVEIRO: Commented for now so user can see what processor it's using.
-        //var processid = $('#process-select').val();
-        //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA
-        //if (engines.length > 1) 
-        $("#feed-engine, .feed-engine-label").show();
-    } else {
-        $("#new-feed-name").hide();
-        $("#new-feed-tag").hide();
-        $('#feed-select').css({'border-radius': 4, 'border-right': 4})
-        $("#feed-interval").hide();
-        $("#feed-table").hide();
-        $("#feed-engine, .feed-engine-label").hide(); 
-      }
-      if (typeof nodes_display !== 'undefined') {
-          autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
-      }
-    });
-
-    $('#processlist-ui .table').on('click', '.delete-process', function(){
-      processlist_ui.contextprocesslist.splice($(this).attr('processid'),1);
-      var processid = $(this).attr('processid')*1;
-      processlist_ui.draw();
-      processlist_ui.modified();
-    });
-
-    $('#processlist-ui .table').on('click', '.move-process', function(){
-      var processid = $(this).attr('processid')*1;
-      var curpos = parseInt(processid);
-      var moveby = parseInt($(this).attr('moveby'));
-      var newpos = curpos + moveby;
-      if (newpos>=0 && newpos<processlist_ui.contextprocesslist.length){ 
-        processlist_ui.contextprocesslist = processlist_ui.array_move(processlist_ui.contextprocesslist,curpos,newpos);
-        processlist_ui.draw();
-        processlist_ui.modified();
-      }
-    });
-
-    $('#processlist-ui .table').on('click', '.edit-process', function(){
-      var process = processlist_ui.contextprocesslist[$(this).attr('processid')];
-      var processid = processlist_ui.getProcessKeyById(process[0]); // get process id name (backward compatible)
-      var processval = process[1];
-      var curpos = parseInt($(this).attr('processid'));
-      
-      $("#process-header-add").hide();
-      $("#process-header-edit").show();
-      $("#type-btn-add").hide();
-      $("#type-btn-edit").show();
-      $("#type-btn-edit").attr('curpos', curpos);
-
-      if (processlist_ui.processlist[processid] == undefined) {
-        if (processlist_ui.contexttype == 0) {
-          $("#process-select").val($("#process-select option").first().val()); // default process for input context
-        } else {
-          $("#process-select").val('process__source_feed_data_time'); // default process for feed context
-        }
-        $("#processlist-ui #process-select").change();  // Force a refresh
-      } else {
-        $("#process-select").val( processlist_ui.processlist[processid]['id']);
-        $("#processlist-ui #process-select").change(); // Force a refresh
-        // Check ProcessArg Type
-        switch(processlist_ui.processlist[processid].argtype) {
-          case ProcessArg.VALUE: // VALUE
-            $("#value-input").val(processval);
-            break;
-          case ProcessArg.INPUTID: //INPUTID
-            $("#input-select").val(processval);
-            break;
-          case ProcessArg.FEEDID: //FEEDID
-            $("#feed-select").val(processval);
-            $('#processlist-ui #feed-select').change();  // refresh feed select
-            break;
-          case ProcessArg.TEXT: // TEXT
-            $("#text-input").val(processval);
-            break;
-          case ProcessArg.SCHEDULEID: // SCHEDULEID
-            $("#schedule-select").val(processval);
-            break;
-        }
-      }
-      processlist_ui.scrollto($('#process-header-edit'));
-    });
-
-    $('#processlist-ui #process-cancel').click(function(){
-      $("#process-header-add").show();
-      $("#process-header-edit").hide();
-      $("#type-btn-add").show();
-      $("#type-btn-edit").hide();
-      processlist_ui.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
-    });
-
-    $("#processlistModal").on('click', '#close', function(){
-      $("#processlistModal").modal('hide');
-    });
-
-  },
-
-  'showfeedoptions':function(processid){
-    $feedSelect = $('#feed-select');
-    $feedEngineSelect = $('#feed-engine');
-    $feedTypeSelect = $('#feed-data-type');
-    var prc = this.processlist[processid].function;     // process function
-    var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
-    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA
-    
-    var feedgroups = [];
-    for (z in this.feedlist) {
-        if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
-            continue; // Dont list virtual feed
-        }
-        var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
-        if (group!="Deleted") {
-            if (!feedgroups[group]) feedgroups[group] = []
-            feedgroups[group].push(this.feedlist[z]);
+            // if less than 30 return 2 dp
+            // if less than 1000 return 1 dp
+            // if greater than 1000 return 0 dp
+            if (value < 30) {
+                return parseFloat(value).toFixed(2);
+            } else if (value < 1000) {
+                return parseFloat(value).toFixed(1);
+            } else {
+                return parseFloat(value).toFixed(0);
+            }
         }
     }
-    var out = "<option value=-1>CREATE NEW:</option>";
-    for (z in feedgroups) {
-      out += "<optgroup label='"+z+"'>";
-      for (p in feedgroups[z]) {
-          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
-      }
-      out += "</optgroup>";
-    }
-    // overwrite feed list
-    var lastval = $feedSelect.val();
-    if (lastval==null) lastval = -1;
-    $feedSelect.data('value',lastval);// store previous value before <select> changes
-    $feedSelect.html(out);
-    // recall the old value if available
-    if($feedSelect.data('value')!=""){
-      $feedSelect.val($feedSelect.data('value'));
-      $feedSelect.data('value','');    
-    }
-    $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
-    $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
+});
 
-    $feedEngineSelect.find("option").hide();  // Start by hiding all feed engine options
-    $feedEngineSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
-    for (e in engines) { 
-      $feedEngineSelect.find("option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
-      $feedEngineSelect.find("option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
-    }
+// Fetch the process list from the server
+process_api.list(function (processes) {
+    // Store the processes in the Vue instance
+    Vue.set(process_vue, 'processes_by_key', processes);
+    process_vue.initprogress();
+});
 
-    $feedEngineSelect.hide();
-    $(".feed-engine-label").hide(); 
-    if (typeof(engines) != "undefined") {
-      $feedEngineSelect.val(engines[0]);     // Select the first feed engine in the engines array by default
-      $feedSelect.find("option[value=-1]").show(); // enable create new feed
-      $feedSelect.find("option[value=-1]").prop('disabled', false);  //for IE show
-    } else {
-      $feedSelect.find("option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-      $feedSelect.find("option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
-      for (f in this.feedlist) {
-        var exists = false;
-        $feedSelect.find('option').each(function(){
-          if (this.value == $feedSelect.val()) {
-            exists = true;
-            return false;
-          }
+// Fetch the feeds from the server and organize them by tag and ID
+feed.list(function (feeds) {
+    Vue.set(process_vue, 'feeds_by_tag', feed.by_tag(feeds));
+    Vue.set(process_vue, 'feeds_by_id', feed.by_id(feeds));
+
+    process_vue.initprogress();
+});
+
+// Schedule Select List
+$.ajax({
+    url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
+        // Schedule list by ID
+        var schedules = {};
+        for (z in result) {
+            schedules[result[z].id] = result[z];
+        }
+
+        Vue.set(process_vue, 'schedules', schedules);
+        process_vue.initprogress();
+    }
+});
+
+// Input Select List  
+$.ajax({
+    url: path + "input/list.json", dataType: 'json', async: true, success: function (result) {
+        let inputs = result;
+
+        // Input list by ID
+        let inputs_by_id = {};
+        inputs.forEach(input => {
+            inputs_by_id[input.id] = input;
         });
-        if (!exists) {
-          if($feedSelect.val()!=this.feedlist[f].id){
-            $feedSelect.val(this.feedlist[f].id); // select first feed
-          }
-        }
-        break;
-      }
+        Vue.set(process_vue, 'inputs_by_id', inputs_by_id);
+
+        // Input list by node
+        let inputs_by_node = {};
+        inputs.forEach(input => {
+            let node = input.nodeid;
+            if (!inputs_by_node[node]) inputs_by_node[node] = [];
+            inputs_by_node[node].push(input);
+        });
+        Vue.set(process_vue, 'inputs', inputs);
+        Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
+        process_vue.initprogress();
     }
-
-    $('#processlist-ui #feed-select').change();  // refresh feed select
-  },
-
-  'modified':function(){
-    $("#save-processlist").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
-    $(".feedaccesslabel").attr("href","#"); // disable access to feeds
-  },
-
-  'saved':function(feeds){
-    $("#save-processlist").attr('class','btn btn-success').text("Saved");
-
-    // compatibility input vs device view transpose
-    if (feeds.data!=undefined) feeds = feeds.data;
-
-    for (z in feeds) {
-      if (feeds.hasOwnProperty(z) && (feeds[z].id == processlist_ui.contextid)) {
-        feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
-      }
-    }
-    if (window.table!=undefined && window.table.draw!=undefined) {
-        table.draw();
-    }
-    if (typeof update == 'function') update()
-  },
-
-  'decode':function(str){
-    var processlist = [];
-    if (str != null && str != "") {
-      var tmp = str.split(",");
-      for (n in tmp) {
-        var process = tmp[n].split(":"); 
-        processlist.push(process);
-      }
-    }
-    return processlist;
-  },
-
-  'encode':function(array){
-    var parts = [];
-    for (z in array) {
-      parts.push(array[z][0]+":"+array[z][1]);
-    }
-    return parts.join(",");
-  },
-
-  'array_move':function(array,old_index, new_index){
-    if (new_index >= array.length) {
-      var k = new_index - array.length;
-      while ((k--) + 1) {
-        array.push(undefined);
-      }
-    }
-    array.splice(new_index, 0, array.splice(old_index, 1)[0]);
-    return array; 
-  },
-
-  'scrollto':function(scrollTo){
-    var container = $('#processlist-ui');
-    container.animate({
-      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
-    });
-  },
-
-  'init':function(contexttype){
-    this.contexttype = contexttype;
-    this.init_done = 4; // going to load 4 lists
-
-    // Processors Select List
-    $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
-
-      for (p in result)  // for each processor
-      {
-        result[p]['feedwrite']=false;
-        if (result[p]['engines']!=undefined) { // processor has supported engines?
-          result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
-          if (processlist_ui.engines_hidden.length > 0) {
-            for (var e=result[p]['engines'].length-1; e > -1; e--) {  // for each processor engine
-              for (h in processlist_ui.engines_hidden) {
-                if (result[p]['engines'][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
-                  result[p]['engines'].splice(e, 1);     // remove engine from processor
-                }
-              }
-            }
-          }
-          if (result[p]['engines'].length == 0) {
-            result[p]['engines'] = undefined;  // if processor now has no engines, undefine its array
-          }
-        }
-      }
-
-      processlist_ui.processlist = result;
-      var processgroups = [];
-      for (z in processlist_ui.processlist) {
-        var group = processlist_ui.processlist[z]['group'];
-        
-        // hide the following from virtual feeds
-        if (processlist_ui.contexttype == 1) {
-          if (processlist_ui.processlist[z]['feedwrite'] == true) continue;
-          if (processlist_ui.processlist[z]['function'] == "sendEmail") continue;
-          if (processlist_ui.processlist[z]['function'] == "publish_to_mqtt") continue;
-          if (group=="Feed" || group=="Input") continue;
-        }
-
-        if (processlist_ui.contexttype == 0 && group=="Virtual") { 
-          continue;  // in input context and group name is virtual? dont show on input processlist selector
-        }
-        if (group!="Deleted") {
-          if (!processgroups[group]) processgroups[group] = []
-          processlist_ui.processlist[z]['id'] = z;
-          processgroups[group].push(processlist_ui.processlist[z]);
-        }
-      }
-
-      var out = "";
-      for (pg in processgroups) {
-        out += "<optgroup " + (pg == "Hidden" ? "hidden " : "") + "label='"+pg+"'>";
-        for (p in processgroups[pg])
-        {
-          var procdisabled = "";
-          var procneedredis = "";
-          if ((pg == "Hidden") || 
-              (processgroups[pg][p]['internalerror'] != undefined && processgroups[pg][p]['internalerror'] == true)
-              )
-          {
-            procdisabled = 'hidden';
-            procneedredis = "";
-          }
-          else  if (processlist_ui.has_redis == 0 && processgroups[pg][p]['requireredis'] != undefined && processgroups[pg][p]['requireredis'] == true) { 
-            procdisabled = 'disabled=""';
-            procneedredis = " (needs REDIS)";
-          }
-          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p].name+procneedredis+"</option>";
-        }
-        out += "</optgroup>";
-      }
-      $("#process-select").html(out);
-      processlist_ui.initprogress();
-      // Automatic call of feed table update
-      if (typeof window.update_feed_list == 'function') update_feed_list();
-    }});
-
-    // Feeds Select List
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
-      var feeds = {};
-      for (z in result) {
-        feeds[result[z].id] = result[z]; 
-      }
-      processlist_ui.feedlist = feeds;
-      processlist_ui.initprogress();
-    }});
-
-    // Schedule Select List
-    $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
-      var schedules = {};
-      for (z in result) schedules[result[z].id] = result[z];
-
-      processlist_ui.schedulelist = schedules;
-      var groupname = {0:'Public',1:'Mine'};
-      var groups = [];
-      //for (z in result) schedules[result[z].id] = result[z];
-
-      for (z in processlist_ui.schedulelist) {
-        var group = processlist_ui.schedulelist[z].own;
-        group = groupname[group];
-        if (!groups[group]) groups[group] = [];
-        processlist_ui.schedulelist[z]['_index'] = z;
-        groups[group].push(processlist_ui.schedulelist[z]);
-      }
-
-      var out = "";
-      for (z in groups) {
-        out += "<optgroup label='"+z+"'>";
-        for (p in groups[z])
-        {
-          out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+(z!=groupname[1]?" ["+groups[z][p]['id']+"]":"")+"</option>";
-        }
-        out += "</optgroup>";
-      }
-      $("#schedule-select").html(out);
-      processlist_ui.initprogress();
-    }});
-
-    // Input Select List  
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(result) {
-      var inputs = {};
-      for (z in result) inputs[result[z].id] = result[z];
-      processlist_ui.inputlist = inputs;
-
-      var groups = [];
-      for (z in processlist_ui.inputlist) {
-        var group = processlist_ui.inputlist[z]['nodeid'];
-        group = 'Node ' + group;
-        if (!groups[group]) groups[group]=[];
-        groups[group].push(processlist_ui.inputlist[z]);
-      }
-
-      var out = "";
-      for (z in groups) {
-        out += "<optgroup label='"+z+"'>";
-        for (p in groups[z])
-        {
-          out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+ ": " + groups[z][p]['description'] + "</option>";
-        }
-        out += "</optgroup>";
-      }
-      $("#input-select").html(out);
-      processlist_ui.initprogress();
-    }});
-
-    processlist_ui.events();
-  },
-
-  'initprogress':function(){
-    processlist_ui.init_done--;
-    if (processlist_ui.init_done == 0) {
-      processlist_ui.draw();
-      if (window.table!=undefined && window.table.draw!=undefined) table.draw();
-
-      if (processlist_ui.contexttype == 0) {
-        $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
-      } else {
-        $("#process-select").val(this.getProcessKeyById(53)); // default process for feed context
-      }
-      $("#processlist-ui #process-select").change();  // Force a refresh
-    }
-  },
-
-  'load': function(contextid,contextprocesslist,contextname,newfeedname,newfeedtag){
-    this.contextid = contextid;
-    this.contextprocesslist = contextprocesslist;
-    $("#contextname").html(contextname);
-    $("#new-feed-name").val(newfeedname);
-    $("#new-feed-tag").val(newfeedtag);
-    $("#process-header-add").show();
-    $("#process-header-edit").hide();
-    $("#type-btn-add").show();
-    $("#type-btn-edit").hide();
-    processlist_ui.scrollto($('#processlist-ui'));
-    this.draw();
-    $("#save-processlist").attr('class','btn btn-success').text(_Tr("Not modified"));
-    $("#processlist-ui #process-select").change(); // Force a refresh
-    $("#processlistModal").modal('show');          // Show
-    this.adjustmodal();
-  },
-
-  'adjustmodal':function() {
-    if ($("#processlistModal").length) {
-      var h = $(window).height() - $("#processlistModal").position().top - 180;
-      $("#processlist-ui").height(h);
-    }
-  }
-}
+});
 
 // takes plain object with key / value pairs. 
 // if found swaps placeholder for variable
 // can handle 2 deep nested objects
 if (!String.prototype.format) {
-  String.prototype.format = function(data) {
-    return this.replace(/{([\w\.-]+)}/g, function(match, placeholder) {
-      if (placeholder.indexOf('.') > -1){
-        p = placeholder.split('.')
-        return typeof data[p[0]] != 'undefined' ? data[p[0]][p[1]] : match
-      } else {
-        return typeof data[placeholder] != 'undefined' ? data[placeholder] : match
-      }
-    });
-  };
+    String.prototype.format = function (data) {
+        return this.replace(/{([\w\.-]+)}/g, function (match, placeholder) {
+            if (placeholder.indexOf('.') > -1) {
+                p = placeholder.split('.')
+                return typeof data[p[0]] != 'undefined' ? data[p[0]][p[1]] : match
+            } else {
+                return typeof data[placeholder] != 'undefined' ? data[placeholder] : match
+            }
+        });
+    };
 }
 
-/**
- * pre select processes dropdown
- * @param {ClickEvent} event 
- */
-function selectProcess(event){
-  event.preventDefault();
-  processid = event.target.dataset.processid
-  select = document.getElementById('process-select')
-  select.focus()
-  select.value = processid
-  select.blur()
-  $(select).trigger('change');// trigger jquery event
-}
+// Support keyboard shortcuts
+$(document).on("keydown", function (e) {
+    if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
+        if (e.ctrlKey) {
+            switch (e.key) {
+                case "c":
+                    e.preventDefault();
+                    process_vue.copy(); // Call copy method
+                    break;
+                case "v":
+                    e.preventDefault();
+                    process_vue.paste(); // Call paste method
+                    break;
+                case "x":
+                    e.preventDefault();
+                    process_vue.cut(); // Call cut method
+                    break;
+            }
+        } else if (e.key === "Delete") {
+            e.preventDefault();
+            process_vue.remove_selected(); // Call remove_selected method
+        }
+    }
+});

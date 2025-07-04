@@ -36,11 +36,11 @@ class Eventp_ProcessList
               "short"=>"?rate>=",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateGtEqualSkip",
-              "datafields"=>0,
-              "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
+              "input_context" => true,
+              "virtual_feed_context" => true,
               "description"=>_("<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.</p>")
            ),
            array(
@@ -48,11 +48,11 @@ class Eventp_ProcessList
               "short"=>"?rate<",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateLtSkip",
-              "datafields"=>0,
-              "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
+              "input_context" => true,
+              "virtual_feed_context" => true,     
               "description"=>_("<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.</p>")
            ),
            array(
@@ -60,11 +60,11 @@ class Eventp_ProcessList
               "short"=>"?mute",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifMuteSkip",
-              "datafields"=>0,
-              "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
+              "input_context" => true,
+              "virtual_feed_context" => true,    
               "description"=>_("<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.</p>")
            ),
            array(
@@ -72,11 +72,11 @@ class Eventp_ProcessList
               "short"=>"?!mute",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifNotMuteSkip",
-              "datafields"=>0,
-              "unit"=>"",
               "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
+              "input_context" => true,
+              "virtual_feed_context" => true,    
               "description"=>_("<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.</p>")
            ),
            array(
@@ -84,10 +84,10 @@ class Eventp_ProcessList
               "short"=>"email",
               "argtype"=>ProcessArg::TEXT,
               "function"=>"sendEmail",
-              "datafields"=>0,
-              "unit"=>"",
               "group"=>_("Event"),
               "nochange"=>true,
+              "input_context" => true,
+              "virtual_feed_context" => false,
               "description"=>_("<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.</p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.</p>")
            )
         );

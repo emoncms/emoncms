@@ -102,7 +102,7 @@ function input_controller()
                 if ($route->subaction == "get") {
                     return $input->get_processlist(get("inputid"));
                 } elseif ($route->subaction == "set") {
-                    return $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$process->get_process_list());
+                    return $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$process);
                 } elseif ($route->subaction == "reset") {
                     return $input->reset_processlist(get("inputid"));
                 }
