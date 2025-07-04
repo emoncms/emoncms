@@ -24,6 +24,8 @@ global $path, $settings;
   .content-container { max-width:340px; }
   
   .container-fluid { padding:0px !important; }
+
+  #login-form { margin:0;}
   
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
