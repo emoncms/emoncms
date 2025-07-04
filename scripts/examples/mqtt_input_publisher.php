@@ -38,10 +38,14 @@ $mqtt->onConnect(function() use ($mqtt, $qos, $basetopic) {
     $mqtt->publish("$basetopic/mqtt_test_json_key_val", json_encode(['power1'=>100, 'vrms'=>230.1]), $qos);
 
     // 4. JSON object with time (as number)
-    $mqtt->publish("$basetopic/mqtt_test_json_with_time", json_encode(['power1'=>100, 'vrms'=>230.1, 'time'=>time()]), $qos);
+    $mqtt->publish("$basetopic/mqtt_test_json_with_time", json_encode(['power1'=>100, 'vrms'=>230.1, 'time'=>time()+300]), $qos);
 
     // 5. JSON object with time (as string)
-    $mqtt->publish("$basetopic/mqtt_test_json_with_date", json_encode(['power1'=>100, 'time'=>date('c')]), $qos);
+    // create a date string in ISO 8601 format add 10 mins
+    $date = new DateTime();
+    $date->modify('+10 minutes');
+    $inputtime = $date->format('c'); // ISO 8601 format
+    $mqtt->publish("$basetopic/mqtt_test_json_with_date", json_encode(['power1'=>100, 'time'=>$inputtime]), $qos);
 
     // 6. JSON object with nested {name, value} objects
     $mqtt->publish("$basetopic/mqtt_test_nested", json_encode([
