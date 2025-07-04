@@ -1,8 +1,8 @@
 <?php
 
 $schema['schedule'] = array(
-    'id' => array('type' => 'int(11)', 'Null'=>'NO', 'Key'=>'PRI', 'Extra'=>'auto_increment'),
-    'userid' => array('type' => 'int(11)'),
+    'id' => array('type' => 'int', 'Null'=>'NO', 'Key'=>'PRI', 'Extra'=>'auto_increment'),
+    'userid' => array('type' => 'int'),
     'name' => array('type' => 'varchar(30)'),
     'expression' => array('type' => 'text'),
     'timezone' => array('type'=>'varchar(64)', 'default'=>'UTC'),
