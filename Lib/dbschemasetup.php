@@ -27,6 +27,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 //
 
 
+// Normalize int types for comparison (treats int, int(11), int(4) as "int")
+function normalize_type($type) {
+    $type = strtolower($type);
+    if (strpos($type, 'int') === 0) {
+        return 'int';
+    }
+    return $type;
+}
+
 //
 // Takes a field specification and the result of a DESCRIBE query
 // and works out if the field needs to be altered
@@ -48,8 +57,8 @@ function db_schema_diff_datatype($spec, $current)
     if ($spec_default != $current['Default']) {
         $changed = true;
     }
-    // check if field Type changed
-    if ($spec['type'] !== $current['Type']) {
+    // Use normalized types for comparison
+    if (normalize_type($spec['type']) !== normalize_type($current['Type'])) {
         $changed = true;
     }
     // Null handling is a little involved
