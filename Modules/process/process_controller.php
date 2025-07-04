@@ -53,6 +53,26 @@ function process_controller()
             } else {
                 return $processes;
             }
+        } else if ($route->action == "map") {
+            // Return id_num to process function name map
+            $processes = $process->get_process_list(); // Load modules modules
+        
+            // Build map of processids where set
+            $process_map = array();
+            foreach ($processes as $k=>$v) {
+                if (isset($v['id_num'])) {
+                    if (isset($process_map[$v['id_num']])) {
+                        return array(
+                            'success'=>false, 
+                            'error'=>'Duplicate process id_num found: '.$v['id_num'],
+                            'process'=>$k,
+                            'existing_process'=>$process_map[$v['id_num']]
+                        );
+                    }
+                    $process_map[$v['id_num']] = $k;
+                }
+            }
+            return $process_map;
         }
     }
 

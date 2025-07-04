@@ -745,6 +745,7 @@ class Process_ProcessList
                 "description" => _("<p>Return the reciprical of the specified feed. Returns NULL for zero values.</p>")
             ),
             array(
+                // "id_num" => 60,
                 "name" => _("EXIT"),
                 "short" => "EXIT",
                 "argtype" => ProcessArg::NONE,
@@ -758,6 +759,7 @@ class Process_ProcessList
                 "internalerror_desc" => "Processlist disabled due to errors found during execution."
             ),
             array(
+                "id_num" => 61,
                 "name" => _("Max value allowed"),
                 "short" => "<max",
                 "argtype" => ProcessArg::VALUE,
@@ -770,6 +772,7 @@ class Process_ProcessList
                 "nochange" => false
             ),
             array(
+                "id_num" => 62,
                 "name" => _("Min value allowed"),
                 "short" => ">min",
                 "argtype" => ProcessArg::VALUE,
@@ -782,6 +785,7 @@ class Process_ProcessList
                 "nochange" => false
             ),
             array(
+                "id_num" => 63,
                 "name" => _("Absolute value"),
                 "short" => "abs",
                 "argtype" => ProcessArg::VALUE,
@@ -792,6 +796,7 @@ class Process_ProcessList
                 "description" => _("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
             ),
             array(
+                "id_num" => 64,
                 "name" => _("kWh Accumulator"),
                 "short" => "kwhacc",
                 "argtype" => ProcessArg::FEEDID,
@@ -805,6 +810,7 @@ class Process_ProcessList
                 "description" => _("This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
+                "id_num" => 65,
                 "name" => _("Log to feed (Join)"),
                 "short" => "log_join",
                 "argtype" => ProcessArg::FEEDID,
@@ -817,6 +823,7 @@ class Process_ProcessList
                 "description" => _("<p>In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
             ),
             array(
+                "id_num" => 66,
                 "name" => _("max by input"),
                 "short" => "max_inp",
                 "argtype" => ProcessArg::INPUTID,
@@ -827,6 +834,7 @@ class Process_ProcessList
                 "description" => _("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
+                "id_num" => 67,
                 "name" => _("min by input"),
                 "short" => "min_inp",
                 "argtype" => ProcessArg::INPUTID,
@@ -837,6 +845,7 @@ class Process_ProcessList
                 "description" => _("<p>Limits the current value by the last value from an input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
+                "id_num" => 68,
                 "name" => _("max by feed"),
                 "short" => "max_feed",
                 "argtype" => ProcessArg::FEEDID,
@@ -847,6 +856,7 @@ class Process_ProcessList
                 "description" => _("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
             array(
+                "id_num" => 69,
                 "name" => _("min by feed"),
                 "short" => "min_feed",
                 "argtype" => ProcessArg::FEEDID,
@@ -858,6 +868,7 @@ class Process_ProcessList
             ),
             /*
             array(
+                "id_num" => 70,
                 "name" => _("Power to kWh/15min"),
                 "short" => "kwh15m",
                 "argtype" => ProcessArg::FEEDID,
@@ -872,6 +883,7 @@ class Process_ProcessList
             ),
             */
             array(
+                "id_num" => 71,
                 "name" => _("Power to kWh / custom minutes"),
                 "short" => "kwhslot",
                 "args" => array(
