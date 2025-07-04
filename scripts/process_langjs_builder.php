@@ -1,4 +1,11 @@
 <?php
+
+// CLI only
+if (php_sapi_name() !== 'cli') {
+  echo "This script is for CLI use only.\n";
+  die;
+}
+
 echo  "//START";
 $dir='../Modules/process';
 

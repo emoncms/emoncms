@@ -856,6 +856,7 @@ class Process_ProcessList
                 "virtual_feed_context" => false,
                 "description" => _("<p>Limits the current value by the last value from an feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.</p>")
             ),
+            /*
             array(
                 "name" => _("Power to kWh/15min"),
                 "short" => "kwh15m",
@@ -869,6 +870,7 @@ class Process_ProcessList
                 "virtual_feed_context" => false,
                 "description" => _("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every 15 min (starting mid night) (kWh/15min)</p>")
             ),
+            */
             array(
                 "name" => _("Power to kWh / custom minutes"),
                 "short" => "kwhslot",

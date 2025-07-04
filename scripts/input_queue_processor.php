@@ -7,6 +7,12 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     */
 
+	// CLI only
+	if (php_sapi_name() !== 'cli') {
+		echo "This script is for CLI use only.\n";
+		die;
+	}
+
     define('EMONCMS_EXEC', 1);
 
     $fp = fopen("/var/lock/input_queue_processor.lock", "w");

@@ -10,6 +10,12 @@
     http://openenergymonitor.org
 
 */
+// CLI only
+if (php_sapi_name() !== 'cli') {
+    echo "This script is for CLI use only.\n";
+    die;
+}
+
 /***
  * Example of how to publish to mqtt topic using the Mosquitto Client
  */
