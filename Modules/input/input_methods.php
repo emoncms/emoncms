@@ -336,8 +336,10 @@ class InputMethods
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array(
                     'value'=>$value,
                     'processList'=>$dbinputs[$nodeid][$name]['processList'],
-                    'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
-                    'sourceid'=>$dbinputs[$nodeid][$name]['id'])
+                    'opt'=>array(
+                        'sourcetype' => ProcessOriginType::INPUT,
+                        'sourceid'=>$dbinputs[$nodeid][$name]['id']
+                    )
                 );
 
                 if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
