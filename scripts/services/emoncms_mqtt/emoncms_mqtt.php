@@ -197,13 +197,14 @@
         }
         $pub_count++;
 
-        if ((time()-$last_heartbeat)>300) {
+        if ((time() - $last_heartbeat) > 300) {
             $last_heartbeat = time();
-	    $log->warn("$count Messages processed in last 5 minutes");
-            $topic = $settings['mqtt']['basetopic']. "/emoncms/mqtt_msg_five_mins";
-            $mqtt_client->publish($topic, $count);
+            $log->info("$count Messages processed in last 5 minutes");
+            if (isset($settings['mqtt']['pub_count']) && $settings['mqtt']['pub_count']) {
+                $topic = $settings['mqtt']['basetopic'] . "/emoncms/mqtt_msg_count_5min";
+                $mqtt_client->publish($topic, $count);
+            }
             $count = 0;
-
             // Keep mysql connection open with periodic ping
             if (!$mysqli->ping()) {
                 $log->warn("mysql ping false");
