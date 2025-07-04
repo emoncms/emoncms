@@ -606,10 +606,20 @@ class Input
         }
 
         if ($this->mysqli->affected_rows>0){
-            if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist_out);
-            return array('success'=>true, 'message'=>'Input processlist updated');
+            if ($this->redis) {
+                $this->redis->hset("input:$id",'processList',$processlist_out);
+            }
+            return array(
+                'success'=>true, 
+                'message'=>'Input processlist updated',
+                'encoded_processlist'=>$processlist_out
+            );
         } else {
-            return array('success'=>false, 'message'=>'Input processlist was not updated');
+            return array(
+                'success'=>false, 
+                'message'=>'Input processlist was not updated',
+                'encoded_processlist'=>$processlist_out
+            );
         }
     }
 

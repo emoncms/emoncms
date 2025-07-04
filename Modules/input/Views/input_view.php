@@ -2,7 +2,7 @@
 
 <!-- Load dependencies -->
 <?php if ($device_module) { ?>
-    <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=25"></script>
+    <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=27"></script>
 <?php } ?>
 
 <script src="<?php echo $path; ?>Modules/input/Views/input.js?v=25"></script>

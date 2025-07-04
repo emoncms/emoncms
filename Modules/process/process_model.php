@@ -40,6 +40,7 @@ class Process
     
     private $process_list = array();
     public $process_map = array();
+    public $process_map_reverse = array(); // Reverse map for process ids to process keys
     
     public function __construct($mysqli,$input,$feed,$timezone)
     {
@@ -55,6 +56,12 @@ class Process
         $this->process_map = array();
         foreach ($this->process_list as $k=>$v) {
             if (isset($v['id_num'])) $this->process_map[$v['id_num']] = $k;
+        }
+
+        // Build reverse map of process keys to process ids
+        $this->process_map_reverse = array();
+        foreach ($this->process_map as $id_num => $process_key) {
+            $this->process_map_reverse[$process_key] = $id_num;
         }
     }
 
@@ -87,6 +94,16 @@ class Process
             $list = $this->convert_arg_structure($list);
         }
         return $list;
+    }
+
+    public function get_info($processkey)
+    {
+        if (isset($this->process_list[$processkey])) {
+            return $this->process_list[$processkey];
+        } else {
+            $this->log->error("get_process_info() Process key '$processkey' does not exist in process list.");
+            return null;
+        }
     }
 
     public function input($time, $value, $processList, $options = null)
@@ -548,8 +565,8 @@ class Process
             $process_key = $process_item['fn'];
 
             // Get id_num if it exists
-            if (isset($this->process_map[$process_key])) {
-                $process_key = $this->process_map[$process_key];
+            if (isset($this->process_map_reverse[$process_key])) {
+                $process_key = $this->process_map_reverse[$process_key];
             }
 
             $args = implode(':', $process_item['args']);
