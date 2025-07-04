@@ -8,6 +8,7 @@
 
     EXAMPLES:
 
+    // Existing examples:
     create an input from emonTx node called power with value 10:
         [basetopic]/emontx/power 10
 
@@ -21,6 +22,21 @@
         [basetopic]/emontx 10,11,12
 
     * [basetopic] and user ID of target Emoncms account can be set in settings.php
+
+    // Additional supported formats:
+
+    // 1. JSON object with key-value pairs:
+        [basetopic]/emontx {"power":10,"vrms":230.1}
+
+    // 2. JSON object with time (as number or string):
+        [basetopic]/emontx {"power":10,"vrms":230.1,"time":1720080000}
+        [basetopic]/emontx {"power":10,"time":"2025-07-04T12:00:00Z"}
+
+    // 3. JSON object with nested {name, value} objects:
+        [basetopic]/emontx {"power":{"name":"ct1","value":10},"vrms":{"value":230.1}}
+
+    // 4. Device auto-configuration (if 'describe' key is present):
+        [basetopic]/emontx {"describe":"..."}
 
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
@@ -268,7 +284,7 @@
             $topic = str_replace(":","",$topic);
 
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
-            $jsondata = json_decode($value,true,2);
+            $jsondata = json_decode($value,true,3);
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
                 // JSON is valid - is it an array
                 $jsoninput = true;
@@ -295,7 +311,7 @@
                             $time = $timestamp;
                         }
                     } else {
-                        $log->warn("Time value not valid ".$inputtime);
+                        $log->warn("Time value not valid ".json_encode($inputtime));
                         $time = time();
                     }
                 } else {
@@ -307,7 +323,7 @@
                 $time = time();
             }
 
-            $log->info($topic." ".$value);
+            $log->info($topic." ".($jsoninput ? json_encode($jsondata) : $value));
             $count ++;
 
             $inputs = array();
@@ -350,7 +366,19 @@
                         $input_name = implode("_",$input_name_parts)."_";
                     }
                     foreach ($jsondata as $key=>$value) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
+                        // Unbox { name: xxx, value: xxx }
+                        if (is_array($value) && array_key_exists("value", $value)) {
+                            if (array_key_exists("name", $value) && $value["name"])
+                                $key .= '_'.$value["name"];
+                            $value = $value["value"];
+                        }
+
+                        if (is_scalar($value)) {
+                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$input_name.$key, "value"=>$value);
+                        } else {
+                            $log->warn("Unable to unpack JSON, not recording ".$key." : ".json_encode($value));
+                            continue;
+                        }
                     }
                 } elseif ($route_len>=$min_route_len) {
                     // Input name is all the remaining parts connected together
