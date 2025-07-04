@@ -309,10 +309,12 @@
                         } else {
                             $log->info("Valid time string used ".$inputtime);
                             $time = $timestamp;
+                            unset($jsondata["time"]);
                         }
                     } else {
                         $log->warn("Time value not valid ".json_encode($inputtime));
                         $time = time();
+                        unset($jsondata["time"]);
                     }
                 } else {
                     $log->info("No time element found in JSON - System time used");

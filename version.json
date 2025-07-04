@@ -1,6 +1,6 @@
 {
     "name"         : "Emoncms Core",
-    "version"      : "11.8.1",
+    "version"      : "11.8.2",
     "location"     : "/var/www",
     "branches_available": ["stable","master"]
 }
