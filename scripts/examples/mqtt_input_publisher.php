@@ -50,14 +50,18 @@ $mqtt->onConnect(function() use ($mqtt, $qos, $basetopic) {
     ]), $qos);
 
     // 7. Device auto-configuration (if 'describe' key is present)
-    $mqtt->publish("$basetopic/emontx", json_encode(['describe'=>'example device']), $qos);
+    $mqtt->publish("$basetopic/mqtt_test_describe", json_encode(['describe'=>'example device']), $qos);
 
-    // Disconnect after publishing all messages
-    $mqtt->disconnect();
 });
 
 $mqtt->onPublish(function($message_id){
     printf("published %s\n", $message_id);
+
+    // Disconnect after publishing all messages
+    global $mqtt;
+    if ($message_id === 7) { // Assuming the last message is the one with ID 7
+        $mqtt->disconnect();
+    }
 });
 $mqtt->onDisconnect(function() { echo "Disconnected cleanly\n"; });
 
