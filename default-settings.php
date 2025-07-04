@@ -52,7 +52,8 @@ $_settings = array(
     'basetopic' => 'emon',
     'client_id' => 'emoncms',
     'userid'    => 1,
-    'multiuser' => false
+    'multiuser' => false,
+    'pub_count' => false, // Publish message count to MQTT every 5 minutes
 ),
 
 // Input
