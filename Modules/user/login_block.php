@@ -37,30 +37,30 @@ global $path, $settings;
     <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
-        <div id="login-form">
+        <form id="login-form" autocomplete="on" onsubmit="return false;">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
-                        <input type="text" name="email" tabindex="1"/>
+                        <input type="text" name="email" tabindex="1" autocomplete="email"/>
                     </label>
                 </div>
 
                 <div class="form-group">
                     <label><?php echo _('Username'); ?>
-                        <input type="text" tabindex="2" autocomplete="on" name="username"  />
+                        <input type="text" tabindex="2" autocomplete="username" name="username"  />
                     </label>
                 </div>
 
                 <div class="form-group">
                     <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
                     <label><?php echo _('Password'); ?>
-                        <input type="password" tabindex="3" autocomplete="on" name="password" />
+                        <input type="password" tabindex="3" autocomplete="current-password" name="password" />
                     </label>
                 </div>
 
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Confirm password'); ?>
-                        <input id="confirm-password" type="password" name="confirm-password" tabindex="4"/>
+                        <input id="confirm-password" type="password" name="confirm-password" tabindex="4" autocomplete="new-password"/>
                     </label>
                 </div>
 
@@ -70,7 +70,7 @@ global $path, $settings;
                     <?php if ($settings["interface"]["enable_rememberme"]) { ?>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?>
+                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off"><?php echo '&nbsp;'._('Remember me'); ?>
                             </label>
                         </div>
                     <?php } ?>
@@ -91,12 +91,12 @@ global $path, $settings;
             <div id="passwordresetblock" class="collapse">
                 <div class="form-group">
                     <label>Existing account name
-                        <input id="passwordreset-username" type="text" />
+                        <input id="passwordreset-username" type="text" autocomplete="username"/>
                     </label>
                 </div>
                 <div class="form-group">
                     <label>Account email address
-                        <input id="passwordreset-email" type="text" />
+                        <input id="passwordreset-email" type="text" autocomplete="email"/>
                     </label>
                 </div>
                 <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
@@ -106,7 +106,7 @@ global $path, $settings;
             <div id="passwordresetmessage"></div>
             <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
             <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
-        </div>
+        </form>
     </div>
   </div>
 </div>
