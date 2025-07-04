@@ -8,6 +8,7 @@
 
     EXAMPLES:
 
+    // Existing examples:
     create an input from emonTx node called power with value 10:
         [basetopic]/emontx/power 10
 
@@ -21,6 +22,21 @@
         [basetopic]/emontx 10,11,12
 
     * [basetopic] and user ID of target Emoncms account can be set in settings.php
+
+    // Additional supported formats:
+
+    // 1. JSON object with key-value pairs:
+        [basetopic]/emontx {"power":10,"vrms":230.1}
+
+    // 2. JSON object with time (as number or string):
+        [basetopic]/emontx {"power":10,"vrms":230.1,"time":1720080000}
+        [basetopic]/emontx {"power":10,"time":"2025-07-04T12:00:00Z"}
+
+    // 3. JSON object with nested {name, value} objects:
+        [basetopic]/emontx {"power":{"name":"ct1","value":10},"vrms":{"value":230.1}}
+
+    // 4. Device auto-configuration (if 'describe' key is present):
+        [basetopic]/emontx {"describe":"..."}
 
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
