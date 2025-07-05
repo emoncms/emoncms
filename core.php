@@ -279,7 +279,7 @@ function load_language_files($path, $domain = 'messages')
     }
 }
 
-function tr($text) {
+function tr($text, $context = null) {
     return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
         ? $GLOBALS['translations'][$text]
         : $text;
