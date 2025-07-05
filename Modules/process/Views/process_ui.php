@@ -19,11 +19,11 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" @click="close">×</button>
-            <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo dgettext('process_messages', 'process list setup'); ?></div>
+            <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo ctx_tr('process_messages', 'process list setup'); ?></div>
         </div>
         <div class="modal-body" id="processlist-ui">
 
-            <p><?php echo dgettext('process_messages', 'Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
+            <p><?php echo ctx_tr('process_messages', 'Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
 
             <!-- Process list controls -->
             <div style="margin-bottom: 10px;">
@@ -41,18 +41,18 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
             </div>
 
             <!-- No processes message -->
-            <div class="alert" v-if="process_list.length==0"><?php echo dgettext('process_messages', 'You have no processes defined'); ?></div>
+            <div class="alert" v-if="process_list.length==0"><?php echo ctx_tr('process_messages', 'You have no processes defined'); ?></div>
 
             <!-- Process table -->
             <table class="table table-hover" v-if="process_list.length > 0">
                 <tr>
                     <th></th>
-                    <th><?php echo dgettext('process_messages', 'Order'); ?></th>
-                    <th style="width:40%;"><?php echo dgettext('process_messages', 'Process'); ?></th>
-                    <th style="text-align:right;opacity:.8" title="<?php echo dgettext('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-question-sign"></i></th>
-                    <th style="width:40%;"><?php echo dgettext('process_messages', 'Arguments'); ?></th>
-                    <th style="width:20%; text-align:right;"><span class="hidden-md"><?php echo dgettext('process_messages', 'Latest'); ?></span></th>
-                    <th colspan='3'><?php echo dgettext('process_messages', 'Actions'); ?></th>
+                    <th><?php echo ctx_tr('process_messages', 'Order'); ?></th>
+                    <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Process'); ?></th>
+                    <th style="text-align:right;opacity:.8" title="<?php echo ctx_tr('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-question-sign"></i></th>
+                    <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Arguments'); ?></th>
+                    <th style="width:20%; text-align:right;"><span class="hidden-md"><?php echo ctx_tr('process_messages', 'Latest'); ?></span></th>
+                    <th colspan='3'><?php echo ctx_tr('process_messages', 'Actions'); ?></th>
                 </tr>
 
                 <tr v-for="(process, index) in process_list" :key="index" v-if="processes_by_key[process.fn]">
@@ -124,12 +124,12 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <tr>
                     <td>
                         <p>
-                            <span v-if="add_edit_mode=='add'"><b><?php echo dgettext('process_messages', 'Add process'); ?>:</b>
+                            <span v-if="add_edit_mode=='add'"><b><?php echo ctx_tr('process_messages', 'Add process'); ?>:</b>
                                 <a href="#" @click="processSelectChange('process__log_to_feed')" class="label label-info" v-if="context_type==0">log</a>
                                 <a href="#" @click="processSelectChange('process__power_to_kwh')" class="label label-info" v-if="context_type==0">kwh</a>
                                 <a href="#" @click="processSelectChange('process__add_input')" class="label label-warning" v-if="context_type==0">+inp</a>
                             </span>
-                            <span v-if="add_edit_mode=='edit'"><?php echo dgettext('process_messages', 'Edit process'); ?>:</span>
+                            <span v-if="add_edit_mode=='edit'"><?php echo ctx_tr('process_messages', 'Edit process'); ?>:</span>
                         </p>
 
                         <!-- Process select dropdown -->
@@ -144,20 +144,20 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                             <span v-if="arg.type == ProcessArg.VALUE">
                                 <div class="input-prepend">
                                     <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-question-sign" :title="arg.desc" v-if="arg.desc"></i></span>
-                                    <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo dgettext('process_messages', 'Type value...'); ?>" />
+                                    <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo ctx_tr('process_messages', 'Type value...'); ?>" />
                                 </div>
                             </span>
 
                             <span v-if="arg.type == ProcessArg.TEXT">
                                 <div class="input-prepend">
                                     <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
-                                    <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo dgettext('process_messages', 'Type text...'); ?>" />
+                                    <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo ctx_tr('process_messages', 'Type text...'); ?>" />
                                 </div>
                             </span>
 
                             <span v-if="arg.type == ProcessArg.INPUTID">
                                 <div class="input-prepend">
-                                    <span class="add-on input-select-label"><?php echo dgettext('process_messages', 'Input'); ?></span>
+                                    <span class="add-on input-select-label"><?php echo ctx_tr('process_messages', 'Input'); ?></span>
                                     <div class="btn-group">
                                         <select class="input-medium" v-model="arg.value">
                                             <optgroup v-for="(inputs,node_name) in inputs_by_node" :label="'Node '+node_name">
@@ -170,7 +170,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                             <span v-if="arg.type == ProcessArg.SCHEDULEID">
                                 <div class="input-prepend">
-                                    <span class="add-on schedule-select-label"><?php echo dgettext('process_messages', 'Schedule'); ?></span>
+                                    <span class="add-on schedule-select-label"><?php echo ctx_tr('process_messages', 'Schedule'); ?></span>
                                     <div class="btn-group">
                                         <select class="input-large" v-model="arg.value">
                                             <option v-for="schedule in schedules" :value="schedule.id">{{ schedule.id }}: {{ schedule.name }}</option>
@@ -181,7 +181,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                             <span v-if="arg.type == ProcessArg.FEEDID">
                                 <div class="input-prepend">
-                                    <span class="add-on feed-select-label"><?php echo dgettext('process_messages', 'Feed'); ?></span>
+                                    <span class="add-on feed-select-label"><?php echo ctx_tr('process_messages', 'Feed'); ?></span>
                                     <div class="btn-group">
                                         <select class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;" v-model="arg.value">
                                             <!-- feeds by tag -->
@@ -194,15 +194,15 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                             <div class="autocomplete">
                                                 <!-- autocomplete uses jquery which is a bit of a hack here, but it works -->
                                                 <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error -->
-                                                <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" required style="width:4em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo dgettext('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Tag'); ?>" />
+                                                <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" required style="width:4em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo ctx_tr('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Tag'); ?>" />
                                             </div>
                                             <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error -->
-                                            <input v-model="arg.new_feed_name" id="new-feed-name" type="text" required style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo dgettext('process_messages', 'Name'); ?>" />
+                                            <input v-model="arg.new_feed_name" id="new-feed-name" type="text" required style="width:6em" title="<?php echo ctx_tr('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Name'); ?>" />
                                         </span>
                                     </div>
                                 </div>
                                 <div class="input-prepend" v-if="arg.value == -1">
-                                    <span class="add-on feed-engine-label"><?php echo dgettext('process_messages', 'Engine'); ?></span>
+                                    <span class="add-on feed-engine-label"><?php echo ctx_tr('process_messages', 'Engine'); ?></span>
                                     <div class="btn-group">
                                         <select class="input-medium" v-model.number="arg.new_feed_engine">
                                             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
@@ -213,14 +213,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                         </select>
 
                                         <select class="input-mini" v-model.number="arg.new_feed_interval" v-if="[1,4,5,6].includes(Number(arg.new_feed_engine))">
-                                            <option value=""><?php echo dgettext('process_messages', 'Select interval'); ?></option>
+                                            <option value=""><?php echo ctx_tr('process_messages', 'Select interval'); ?></option>
                                             <?php foreach (Engine::available_intervals() as $i) { ?>
-                                                <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages', $i["description"]); ?></option>
+                                                <option value="<?php echo $i["interval"]; ?>"><?php echo ctx_tr('process_messages', $i["description"]); ?></option>
                                             <?php } ?>
                                         </select>
                                         <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
                                             <!-- remove pattern="[a-zA-Z0-9_]+" giving error -->
-                                            <input v-if="[0,8].includes(Number(arg.new_feed_engine))" v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo dgettext('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages', 'Table'); ?>" />
+                                            <input v-if="[0,8].includes(Number(arg.new_feed_engine))" v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo ctx_tr('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Table'); ?>" />
                                         <?php } ?>
                                     </div>
                                 </div>
@@ -229,15 +229,15 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                         <span v-if="add_edit_mode=='add'">
                             <div class="input-prepend">
-                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Add'); ?></button>
+                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo ctx_tr('process_messages', 'Add'); ?></button>
                             </div>
                         </span>
                         <span v-if="add_edit_mode=='edit'">
                             <div class="input-prepend">
-                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Edit'); ?></button>
+                                <button @click="processAdd" class="btn btn-info" style="border-radius: 4px;"><?php echo ctx_tr('process_messages', 'Edit'); ?></button>
                             </div>
                             <div class="input-prepend">
-                                <button @click="cancel_edit" class="btn" style="border-radius: 4px;"><?php echo dgettext('process_messages', 'Cancel'); ?></button>
+                                <button @click="cancel_edit" class="btn" style="border-radius: 4px;"><?php echo ctx_tr('process_messages', 'Cancel'); ?></button>
                             </div>
                         </span>
                     </td>
@@ -249,28 +249,28 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                             <span v-if="processes_by_key[selected_process].description" v-html="processes_by_key[selected_process].description"></span>
                             <p v-else><b>No process description available for process {{ processes_by_key[selected_process].name }}</b></p>
 
-                            <p v-if="processes_by_key[selected_process].help_url"><a :href="processes_by_key[selected_process].help_url" target="_blank"><?php echo dgettext('process_messages', 'Click here for additional information about this process'); ?></a></p>
-                            <p v-if="processes_by_key[selected_process].nochange"><b><?php echo dgettext('process_messages', 'Output:'); ?></b> <?php echo dgettext('process_messages', 'Does NOT modify value passed onto next process step.'); ?></p>
-                            <p v-else><b><?php echo dgettext('process_messages', 'Output:'); ?></b> <?php echo dgettext('process_messages', 'Modified value passed onto next process step.'); ?></p>
-                            <p v-if="processes_by_key[selected_process].requireredis"><b><?php echo dgettext('process_messages', 'REDIS:'); ?></b> <?php echo dgettext('process_messages', 'Requires REDIS.'); ?></p>
+                            <p v-if="processes_by_key[selected_process].help_url"><a :href="processes_by_key[selected_process].help_url" target="_blank"><?php echo ctx_tr('process_messages', 'Click here for additional information about this process'); ?></a></p>
+                            <p v-if="processes_by_key[selected_process].nochange"><b><?php echo ctx_tr('process_messages', 'Output:'); ?></b> <?php echo ctx_tr('process_messages', 'Does NOT modify value passed onto next process step.'); ?></p>
+                            <p v-else><b><?php echo ctx_tr('process_messages', 'Output:'); ?></b> <?php echo ctx_tr('process_messages', 'Modified value passed onto next process step.'); ?></p>
+                            <p v-if="processes_by_key[selected_process].requireredis"><b><?php echo ctx_tr('process_messages', 'REDIS:'); ?></b> <?php echo ctx_tr('process_messages', 'Requires REDIS.'); ?></p>
                         </div>
                     </td>
                 </tr>
             </table>
         </div>
         <div class="modal-footer">
-            <button class="btn" @click="close"><?php echo dgettext('process_messages', 'Close'); ?></button>
+            <button class="btn" @click="close"><?php echo ctx_tr('process_messages', 'Close'); ?></button>
 
             <button class="btn btn-success" style="float:right" v-if="state == 'not_modified'">
-                <span><?php echo dgettext('process_messages', 'Not modified'); ?></span>
+                <span><?php echo ctx_tr('process_messages', 'Not modified'); ?></span>
             </button>
 
             <button @click="save" class="btn btn-warning" style="float:right" v-if="state == 'modified'">
-                <span><?php echo dgettext('process_messages', 'Changed, press to save'); ?></span>
+                <span><?php echo ctx_tr('process_messages', 'Changed, press to save'); ?></span>
             </button>
 
             <button class="btn btn-success" style="float:right" v-if="state == 'saved'" disabled>
-                <span><?php echo dgettext('process_messages', 'Saved'); ?></span>
+                <span><?php echo ctx_tr('process_messages', 'Saved'); ?></span>
             </button>
         </div>
     </div>

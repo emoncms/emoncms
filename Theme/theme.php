@@ -108,7 +108,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         </main>
     </div><!-- eof #wrap -->
     <div id="footer">
-        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="https://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <?php echo ctx_tr('theme_messages','Powered by'); ?>&nbsp;<a href="https://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 

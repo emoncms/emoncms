@@ -29,7 +29,7 @@
             <label><?php echo tr('New interval: '); ?></label>
             <select id="downsample-interval" style="width:350px">
                 <?php foreach (Engine::available_intervals() as $i) { ?>
-                <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages',$i["description"]); ?></option>
+                <option value="<?php echo $i["interval"]; ?>"><?php echo ctx_tr('process_messages',$i["description"]); ?></option>
                 <?php } ?>
             </select>
             <p><b>Note:</b> This uses averaging based downsampling, suitable for feeds such as power and temperature feeds. It is not suitable for cumulative feeds such as cumulative kWh data.</p>

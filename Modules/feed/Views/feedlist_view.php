@@ -315,7 +315,7 @@ body{padding:0!important}
         </select>      
         <select id="newfeed-interval" class="input-mini hide">
             <?php foreach (Engine::available_intervals() as $i) { ?>
-            <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages',$i["description"]); ?></option>
+            <option value="<?php echo $i["interval"]; ?>"><?php echo ctx_tr('process_messages',$i["description"]); ?></option>
             <?php } ?>
         </select>
     </div>
