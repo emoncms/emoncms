@@ -2,6 +2,8 @@
 
 function extractTranslationKeys($directory) {
     $keys = [];
+    $ctx_keys = [];
+
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($directory)
     );
@@ -25,15 +27,22 @@ function extractTranslationKeys($directory) {
                 $context = trim($ctxMatches[1][$i]);
                 $text = trim($ctxMatches[2][$i]);
 
-                $keys[] = trim($text);
-                echo "Contextual translation found: $context $text\n";
+                if (!isset($ctx_keys[$context])) {
+                    $ctx_keys[$context] = [];
+                }
+                $ctx_keys[$context][] = $text;
             }
             
             echo "Processed: " . $file->getPathname() . "\n";
         }
     }
     
-    return array_unique($keys);
+    // return array_unique($keys);
+
+    return array(
+        'tr_keys' => array_unique($keys),
+        'ctx_keys' => array_map('array_unique', $ctx_keys)
+    );
 }
 
 function generateLanguageFile($keys, $outputFile) {
@@ -48,12 +57,23 @@ function generateLanguageFile($keys, $outputFile) {
 
 // Usage
 $viewsDirectory = '/var/www/emoncms/Theme'; // Change this to your views directory
-$keys = extractTranslationKeys($viewsDirectory);
+$result = extractTranslationKeys($viewsDirectory);
 
-//echo "Found " . count($keys) . " translation keys:\n";
-//foreach ($keys as $key) {
-//    echo "- $key\n";
-//}
+$keys = $result['tr_keys'];
+$ctx_keys = $result['ctx_keys'];
+
+echo "Found " . count($keys) . " translation keys:\n";
+foreach ($keys as $key) {
+    echo "- $key\n";
+}
+
+echo "Found " . count($ctx_keys) . " context translation keys:\n";
+foreach ($ctx_keys as $context => $texts) {
+    echo "- Context '$context':\n";
+    foreach ($texts as $text) {
+        echo "  - $text\n";
+    }
+}
 
 die;
 
