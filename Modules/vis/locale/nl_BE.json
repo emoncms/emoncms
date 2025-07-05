@@ -1,0 +1,22 @@
+{
+    "Read only access: ": "Alleen lezen rechten:",
+    "new": "nieuw",
+    "Write only access: ": "Alleen schrijfrechten:",
+    "Keep secret. Write mode access": "Beperkte toegang",
+    "try me": "probeer mij",
+    "Visualisation API": "Weergave API",
+    "Name": "Naam",
+    "URL": "Adres",
+    "View": "Toon",
+    "Real-time graph": "Actuele weergave",
+    "Raw data graph": "Raw data grafiek",
+    "Bar graph": "Staaf diagram",
+    "Smoothie": "Overgang",
+    "All time histogram": "Historisch histogram",
+    "Daily histogram": "Dagelijks histogram",
+    "kWh\/d Comparison": "Kwh\/d Inzoom",
+    "Stacked": "KWh\/d Gestapeld",
+    "Multigraph": "Multigrafiek",
+    "Reset Multigraph": "Multigrafiek",
+    "Restricted access": "Beperkte toegang"
+}

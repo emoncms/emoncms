@@ -52,16 +52,16 @@ function admin_controller()
     if (!$session['admin']) {
         $route->format = 'html';
         // user not admin level display login
-        $log->error(sprintf('%s|%s',_('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
-        $message = urlencode(_('Admin Authentication Required'));
+        $log->error(sprintf('%s|%s',tr('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
+        $message = urlencode(tr('Admin Authentication Required'));
 
         $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
         return sprintf(
             '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>',
-            _('Admin Authentication Required'),
-            _('Session timed out or user not Admin'),
+            tr('Admin Authentication Required'),
+            tr('Session timed out or user not Admin'),
             sprintf("%suser/logout?msg=%s&ref=%s",$path, $message, $referrer),
-            _('Re-authenticate to see this page')
+            tr('Re-authenticate to see this page')
         );
     }
 

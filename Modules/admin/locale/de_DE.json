@@ -1,0 +1,18 @@
+{
+    "Id": "Id",
+    "Username": "Benutzername",
+    "Email": "Email",
+    "Admin": "Admin",
+    "Users": "Benutzer",
+    "Administer user accounts": "Benutzerkonten verwalten",
+    "Update database": "Datenbankupdate",
+    "Update & check": "Update & prüfen",
+    "Database setup, update and status check": "Datenbanksetup, Update und Status prüfen",
+    "Schema item": "Schema item",
+    "Name": "Name",
+    "Status": "Status",
+    "Apply changes": "Änderungen zuweisen",
+    "Check for further updates": "Auf weitere Updates prüfen",
+    "Database is up to date ": "Datenbank ist aktuell",
+    "Nothing to do": "Nichts zu tun"
+}

@@ -145,10 +145,7 @@ function set_lang($language)
 
 function set_lang_by_user($lang)
 {
-    $locale = $lang.'.UTF8';
-    define(LC_MESSAGES, $locale);
-    putenv("LC_ALL=$locale");
-    setlocale(LC_ALL, $locale);
+    $GLOBALS['language'] = $lang; // set the global language variable
 }
 
 function set_emoncms_lang($lang)
@@ -160,5 +157,4 @@ function set_emoncms_lang($lang)
     } else {
         set_lang_by_user($lang);
     }
-    global $session;
 }

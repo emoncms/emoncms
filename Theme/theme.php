@@ -68,15 +68,15 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo _("My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo _("My Account"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo _("Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo _("Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
             <li>
-              <a href="<?php echo $path; ?>" title="<?php echo _("Login"); ?>">
+              <a href="<?php echo $path; ?>" title="<?php echo ctx_tr("theme_messages","Login"); ?>">
                 <div class="tr-login"><svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
               </a>
             </li>
@@ -108,7 +108,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         </main>
     </div><!-- eof #wrap -->
     <div id="footer">
-        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="https://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <?php echo ctx_tr('theme_messages','Powered by'); ?>&nbsp;<a href="https://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 

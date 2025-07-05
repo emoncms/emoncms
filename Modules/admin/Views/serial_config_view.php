@@ -12,7 +12,7 @@
 <div id="app">
 
     <div class="input-prepend input-append start-options" style="float:right; margin-top:4px" v-if="!connected">
-        <button class="btn btn-success" @click="start"><?php echo _('Start'); ?></button>
+        <button class="btn btn-success" @click="start"><?php echo tr('Start'); ?></button>
         <select v-model="serialport">
             <?php foreach ($serial_ports as $port) { ?>
                 <option><?php echo $port; ?></option>
@@ -25,18 +25,18 @@
         </select>
     </div>
 
-    <button class="btn btn-danger" style="float:right; margin-top:4px" @click="stop" v-if="connected"><?php echo _('Stop Serial'); ?></button>
+    <button class="btn btn-danger" style="float:right; margin-top:4px" @click="stop" v-if="connected"><?php echo tr('Stop Serial'); ?></button>
 
     <h3 style="color:#333">Serial Config Tool</h3>
 
     <div id="emonhub-running-notice" class="alert hide">
-        <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently running and may conflict with serial monitor'); ?>
-        <button id="stopEmonHub" class="btn" style="float:right"><?php echo _('Stop EmonHub'); ?></button>
+        <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently running and may conflict with serial monitor'); ?>
+        <button id="stopEmonHub" class="btn" style="float:right"><?php echo tr('Stop EmonHub'); ?></button>
     </div>
 
     <div id="emonhub-stopped-notice" class="alert alert-success hide">
-        <b><?php echo _('Note:'); ?></b> <?php echo _('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
-        <button id="startEmonHub" class="btn" style="float:right"><?php echo _('Start EmonHub'); ?></button>
+        <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
+        <button id="startEmonHub" class="btn" style="float:right"><?php echo tr('Start EmonHub'); ?></button>
     </div>
 
     <div v-if="new_config_format">

@@ -1,0 +1,9 @@
+{
+    "If rate >=, skip next": "Se rate > , salta il prossimo",
+    "Conditional - Event": "Condizionato - Evento",
+    "If rate <, skip next": "Se rate <, salta il prossimo",
+    "If Mute, skip next": "Se Vuoto, salta il prossimo",
+    "If !Mute, skip next": "Se !Vuoto, salta il prossimo",
+    "Send Email": "Invia Email",
+    "Event": "Evento"
+}

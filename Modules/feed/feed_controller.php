@@ -55,7 +55,7 @@ function feed_controller()
                 return "";
             }
             require "Modules/feed/feed_api_obj.php";
-            return view("Lib/api_tool_view.php",array("title"=>_("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
+            return view("Lib/api_tool_view.php",array("title"=>tr("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
         } elseif (!$session['read']) {
             return ''; // empty strings force user back to login
         }
