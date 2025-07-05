@@ -47,11 +47,24 @@ function extractTranslationKeys($directory) {
 
 function generateLanguageFile($keys, $outputFile) {
     $langArray = [];
-    foreach ($keys as $key) {
-        $langArray[$key] = $key;
+
+    // Load existing translations if the file exists
+    $existing = [];
+    if (file_exists($outputFile)) {
+        $json = file_get_contents($outputFile);
+        $existing = json_decode($json, true);
+        if (!is_array($existing)) $existing = [];
     }
+
+    foreach ($keys as $key) {
+        if (isset($existing[$key]) && $existing[$key] !== '') {
+            $langArray[$key] = $existing[$key];
+        } else {
+            $langArray[$key] = $key;
+        }
+    }
+
     $content = json_encode($langArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    
     file_put_contents($outputFile, $content);
 }
 
