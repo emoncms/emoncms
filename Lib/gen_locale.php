@@ -56,7 +56,7 @@ function generateLanguageFile($keys, $outputFile) {
 }
 
 // Usage
-$viewsDirectory = '/var/www/emoncms/Theme'; // Change this to your views directory
+$viewsDirectory = 'Modules/process'; // Change this to your views directory
 $result = extractTranslationKeys($viewsDirectory);
 
 $keys = $result['tr_keys'];
@@ -66,10 +66,10 @@ echo "Found " . count($keys) . " translation keys:\n";
 foreach ($keys as $key) {
     echo "- $key\n";
 }
+echo "\n\n";
 
-echo "Found " . count($ctx_keys) . " context translation keys:\n";
 foreach ($ctx_keys as $context => $texts) {
-    echo "- Context '$context':\n";
+    echo "- Context '$context' has " . count($texts) . " texts:\n";
     foreach ($texts as $text) {
         echo "  - $text\n";
     }
