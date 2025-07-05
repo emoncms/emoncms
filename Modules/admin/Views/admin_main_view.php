@@ -8,13 +8,13 @@
      * Shutdown button
      */
     function ShutdownBtn(){
-        return '<button id="haltPi" class="btn btn-danger btn-small">'._('Shutdown').'</button>';
+        return '<button id="haltPi" class="btn btn-danger btn-small">'.tr('Shutdown').'</button>';
     }
     /**
      * Reboot button
      */
     function RebootBtn(){
-        return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'._('Reboot').'</button>';
+        return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'.tr('Reboot').'</button>';
     }
 
     /**
@@ -69,18 +69,18 @@ listItem;
     ?>
     <div class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 pb-2 text-right px-1">
         <div class="text-left">
-            <h3 class="mt-1 mb-0"><?php echo _('System Information'); ?></h3>
+            <h3 class="mt-1 mb-0"><?php echo tr('System Information'); ?></h3>
         </div>
         <div>
-            <button class="btn btn-info mr-1" id="copyserverinfo_md" type="button" title="<?php echo _('**Recommended** when pasting into forum')?>" data-success="<?php echo _('Server info copied to clipboard as Markdown [text/markdown]')?>"><?php echo _('Copy as Markdown'); ?></button>
-            <button class="btn btn-info" id="copyserverinfo_txt" type="button" title="<?php echo _('Formatted as plain text')?>" data-success="<?php echo _('Server info copied to clipboard as Text [text/plain]')?>"><?php echo _('Copy as Text'); ?></button>
+            <button class="btn btn-info mr-1" id="copyserverinfo_md" type="button" title="<?php echo tr('**Recommended** when pasting into forum')?>" data-success="<?php echo tr('Server info copied to clipboard as Markdown [text/markdown]')?>"><?php echo tr('Copy as Markdown'); ?></button>
+            <button class="btn btn-info" id="copyserverinfo_txt" type="button" title="<?php echo tr('Formatted as plain text')?>" data-success="<?php echo tr('Server info copied to clipboard as Text [text/plain]')?>"><?php echo tr('Copy as Text'); ?></button>
         </div>
     </div>
 
 
 
     <div id="serverinfo-container">
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Services'); ?></h4>
         <dl class="row">
             <?php foreach ($services as $key=>$value) { ?>
                 <dt class="col-sm-2 col-4 text-truncate"><span class="badge-<?php echo $value['cssClass']; ?> badge"></span> <?php echo $key; ?></dt>
@@ -114,41 +114,41 @@ listItem;
             <?php } ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Emoncms'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'),$emoncms_version); ?>
+            <?php echo row(tr('Version'),$emoncms_version); ?>
             <?php
             $git_parts = array(
-                row(_('URL'), $system['git_URL'],'','overflow-hidden'),
-                row(_('Branch'), $system['git_branch']),
-                row(_('Describe'), $system['git_describe'])
+                row(tr('URL'), $system['git_URL'],'','overflow-hidden'),
+                row(tr('Branch'), $system['git_branch']),
+                row(tr('Describe'), $system['git_describe'])
             );
             $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
         ?>
-            <?php echo row(_('Git'), $git_details); ?>
-            <?php echo row(_('Components'), $component_summary); ?>
+            <?php echo row(tr('Git'), $git_details); ?>
+            <?php echo row(tr('Components'), $component_summary); ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Server'); ?></h4>
         <dl class="row">
-            <?php if ($system['machine']) echo row(_('Machine'),  $system['machine']); ?>
-            <?php if ($system['cpu_info']) echo row(_('CPU'), $system['cpu_info']); ?>
-            <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
-            <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
-            <?php echo row(_('Date'), $system['date']); ?>
-            <?php echo row(_('Uptime'), $system['uptime']); ?>
+            <?php if ($system['machine']) echo row(tr('Machine'),  $system['machine']); ?>
+            <?php if ($system['cpu_info']) echo row(tr('CPU'), $system['cpu_info']); ?>
+            <?php echo row(tr('OS'), $system['system'] . ' ' . $system['kernel']); ?>
+            <?php echo row(tr('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
+            <?php echo row(tr('Date'), $system['date']); ?>
+            <?php echo row(tr('Uptime'), $system['uptime']); ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Memory'); ?></h4>
         <dl class="row">
             <?php
-            echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), array(
+            echo row(tr('RAM'), bar($ram_info['table'], sprintf(tr('Used: %s%%'), $ram_info['percent']), array(
                 'Total'=>$ram_info['total'],
                 'Used'=>$ram_info['used'],
                 'Free'=>$ram_info['free']
             )));
             if (!empty($ram_info['swap'])) {
-                echo row(_('Swap'), bar($ram_info['swap']['table'], sprintf(_('Used: %s%%'), $ram_info['swap']['percent']), array(
+                echo row(tr('Swap'), bar($ram_info['swap']['table'], sprintf(tr('Used: %s%%'), $ram_info['swap']['percent']), array(
                     'Total'=>$ram_info['swap']['total'],
                     'Used'=>$ram_info['swap']['used'],
                     'Free'=>$ram_info['swap']['free']
@@ -157,16 +157,16 @@ listItem;
             ?>
 
         </dl>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Disk'); ?></h4>
         <dl class="row">
             <?php
             if ($redis_enabled) {
-                $reset_write_load_btn = sprintf('<button id="resetdiskstats" class="btn btn-info btn-small pull-right">%s</button>',_('Reset Disk Stats'));
+                $reset_write_load_btn = sprintf('<button id="resetdiskstats" class="btn btn-info btn-small pull-right">%s</button>',tr('Reset Disk Stats'));
                 echo row('', sprintf('<span id="add-on"></span>%s',$reset_write_load_btn),'d-flex','d-flex align-items-center justify-content-between');
             }
             foreach($disk_info as $mount_info) {
                 echo row($mount_info['mountpoint'],
-                    bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
+                    bar($mount_info['table'], sprintf(tr('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
                         'Free'=>$mount_info['free'],
@@ -179,85 +179,85 @@ listItem;
             ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('HTTP'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
+            <?php echo row(tr('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
         </dl>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MySQL'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('MySQL'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'), $system['db_version']); ?>
-            <?php echo row(_('Host'), $system['db_server'] . ' (' . $system['db_ip'] . ')'); ?>
-            <?php echo row(_('Date'), $system['db_date']); ?>
-            <?php echo row(_('Stats'), $system['db_stat']); ?>
+            <?php echo row(tr('Version'), $system['db_version']); ?>
+            <?php echo row(tr('Host'), $system['db_server'] . ' (' . $system['db_ip'] . ')'); ?>
+            <?php echo row(tr('Date'), $system['db_date']); ?>
+            <?php echo row(tr('Stats'), $system['db_stat']); ?>
         </dl>
 
         <?php if ($redis_enabled) : ?>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Redis'); ?></h4>
         <dl class="row">
             <?php
-            $redis_version_lines[] = row(_('Redis Server'), $redis_info['redis_version']);
+            $redis_version_lines[] = row(tr('Redis Server'), $redis_info['redis_version']);
             if(!empty($redis_info['pipRedis'])) {
-                $redis_version_lines[] = row(_('Python Redis'), $redis_info['pipRedis']);
+                $redis_version_lines[] = row(tr('Python Redis'), $redis_info['pipRedis']);
             }
             if(!empty($redis_info['phpRedis'])) {
-                $redis_version_lines[] = row(_('PHP Redis'), $redis_info['phpRedis']);
+                $redis_version_lines[] = row(tr('PHP Redis'), $redis_info['phpRedis']);
             }
-            echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
-            <?php echo row(_('Host'), $system['redis_server']); ?>
+            echo row(tr('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
+            <?php echo row(tr('Host'), $system['redis_server']); ?>
             <?php
-            $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
+            $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',tr('Flush'));
             $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
             $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
-            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
+            echo row(sprintf('<span class="align-self-center">%s</span>',tr('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
             ?>
-            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
+            <?php echo row(tr('Uptime'), sprintf(tr("%s days"), $redis_info['uptime_in_days'])); ?>
         </dl>
         <?php endif; ?>
 
         <?php if ($mqtt_enabled) : ?>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MQTT Server'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('MQTT Server'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'), sprintf(_('Mosquitto %s'), $mqtt_version)) ?>
-            <?php echo row(_('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
+            <?php echo row(tr('Version'), sprintf(tr('Mosquitto %s'), $mqtt_version)) ?>
+            <?php echo row(tr('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
         </dl>
         <?php endif; ?>
 
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('PHP'); ?></h4>
         <dl class="row">
-        <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
-        <?php echo row(_('Run user'), _('User') . ": " . $system['run_user'] . " " . _('Group') . ": " .  $system['run_group'] . " " . _('Script Owner') . ": " . $system['script_owner'] ); ?>
-        <?php echo row(_('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
+        <?php echo row(tr('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+        <?php echo row(tr('Run user'), tr('User') . ": " . $system['run_user'] . " " . tr('Group') . ": " .  $system['run_group'] . " " . tr('Script Owner') . ": " . $system['script_owner'] ); ?>
+        <?php echo row(tr('Modules'), "<ul id=\"php-modules\"><li>".str_replace("v".$system['php'],"", implode('</li><li>', $php_modules)).'</li></ul>', '', 'overflow-hidden'); ?>
         </dl>
 
         <?php if (!empty(implode('',$rpi_info))) : ?>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Pi'); ?></h4>
         <dl class="row">
-            <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
-            <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
-            <?php echo row(_('CPU Temperature'), $rpi_info['cputemp']) ?>
-            <?php echo row(_('GPU Temperature'), $rpi_info['gputemp']) ?>
-            <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
-            <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
+            <?php echo row(sprintf('<span class="align-self-center">%s</span>',tr('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
+            <?php echo row(tr('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
+            <?php echo row(tr('CPU Temperature'), $rpi_info['cputemp']) ?>
+            <?php echo row(tr('GPU Temperature'), $rpi_info['gputemp']) ?>
+            <?php echo row(tr('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
+            <?php echo row(tr('File-system'), $rpi_info['currentfs']) ?>
         </dl>
         <?php endif; ?>
 
     </div>
 
-    <h3 class="mt-1 mb-0"><?php echo _('Client Information'); ?></h3>
+    <h3 class="mt-1 mb-0"><?php echo tr('Client Information'); ?></h3>
     <div id="clientinfo-container">
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('HTTP'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Browser'), $_SERVER['HTTP_USER_AGENT']); ?>
-            <?php echo row(_('Language'), $_SERVER['HTTP_ACCEPT_LANGUAGE']); ?>
+            <?php echo row(tr('Browser'), $_SERVER['HTTP_USER_AGENT']); ?>
+            <?php echo row(tr('Language'), $_SERVER['HTTP_ACCEPT_LANGUAGE']); ?>
         </dl>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Window'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Window'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Size'), '<span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span>'); ?>
+            <?php echo row(tr('Size'), '<span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span>'); ?>
         </dl>
-        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Screen'); ?></h4>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo tr('Screen'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Resolution'), '<span id="screensize"><script>document.write(window.screen.width + " x " + window.screen.height);</script></span>'); ?>
+            <?php echo row(tr('Resolution'), '<span id="screensize"><script>document.write(window.screen.width + " x " + window.screen.height);</script></span>'); ?>
         </dl>
     </div>
 
@@ -274,13 +274,13 @@ listItem;
  */
 function getTranslations(){
     return {
-        'Copied to clipboard': "<?php echo _('Copied to clipboard') ?>",
-        'successful': "<?php echo _('successful') ?>",
-        'unsuccessful': "<?php echo _('unsuccessful') ?>",
-        'Copy to clipboard: Ctrl+C, Enter': "<?php echo _('Copy to clipboard: Ctrl+C, Enter') ?>",
-        'Server Information': "<?php echo _('Server Information') ?>",
-        'Client Information': "<?php echo _('Client Information') ?>",
-        'Log level: %s': "<?php echo _('Log level: %s') ?>"
+        'Copied to clipboard': "<?php echo tr('Copied to clipboard') ?>",
+        'successful': "<?php echo tr('successful') ?>",
+        'unsuccessful': "<?php echo tr('unsuccessful') ?>",
+        'Copy to clipboard: Ctrl+C, Enter': "<?php echo tr('Copy to clipboard: Ctrl+C, Enter') ?>",
+        'Server Information': "<?php echo tr('Server Information') ?>",
+        'Client Information': "<?php echo tr('Client Information') ?>",
+        'Log level: %s': "<?php echo tr('Log level: %s') ?>"
     }
 }
 </script>
@@ -310,7 +310,7 @@ function copyTextToClipboard(text, message) {
     snackbar(message || 'Copied to clipboard');
   }
   catch(err) {
-    window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
+    window.prompt("<?php echo tr('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
   document.body.removeChild(textArea);
 }
@@ -477,7 +477,7 @@ $(".row dd").on('click', function(event) {
 
     copyTextToClipboard(
         [title, value].join(': '),
-        _('Copied to clipboard')
+        tr('Copied to clipboard')
     );
 });
 // copy title (and value) to clipboard when clicked
@@ -489,13 +489,13 @@ $(".row dt").on('click', function(event) {
 
     copyTextToClipboard(
         [title, value].join(': '),
-        _('Copied to clipboard')
+        tr('Copied to clipboard')
     );
 });
 /**
  * wrapper for gettext like string replace function
  */
-function _(str) {
+function tr(str) {
     return translate(str);
 }
 /**

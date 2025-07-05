@@ -14,9 +14,9 @@ global $path;
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 
 <div class="admin-container">
-    <h2><?php echo _("Users"); ?></h2>
+    <h2><?php echo tr("Users"); ?></h2>
 
-    <p><?php echo _("Number of users:"); ?> <span id="numberofusers"></span></p>
+    <p><?php echo tr("Number of users:"); ?> <span id="numberofusers"></span></p>
 
     <div class="pagination">
         <ul>
@@ -24,37 +24,37 @@ global $path;
     </div>
 
     <div class="input-prepend">
-        <span class="add-on"><?php echo _("Order by"); ?></span>
+        <span class="add-on"><?php echo tr("Order by"); ?></span>
         <select id="orderby" style="width:150px">
-            <option value="id" selected><?php echo _("Id"); ?></option>
-            <option value="username"><?php echo _("Username"); ?></option>
-            <option value="email"><?php echo _("Email"); ?></option>
-            <option value="email_verified"><?php echo _("Email Verified"); ?></option>
+            <option value="id" selected><?php echo tr("Id"); ?></option>
+            <option value="username"><?php echo tr("Username"); ?></option>
+            <option value="email"><?php echo tr("Email"); ?></option>
+            <option value="email_verified"><?php echo tr("Email Verified"); ?></option>
         </select>
 
         <select id="order" style="width:120px">
-            <option value="ascending" selected><?php echo _("Ascending"); ?></option>
-            <option value="decending"><?php echo _("Descending"); ?></option>
+            <option value="ascending" selected><?php echo tr("Ascending"); ?></option>
+            <option value="decending"><?php echo tr("Descending"); ?></option>
         </select>
     </div>
 
     <div class="input-prepend input-append" style="padding-left:20px">
-        <span class="add-on"><?php echo _("User search"); ?></span>
+        <span class="add-on"><?php echo tr("User search"); ?></span>
         <input id="user-search-key" type="text" />
-        <button class="btn" id="user-search"><?php echo _("Search"); ?></button>
+        <button class="btn" id="user-search"><?php echo tr("Search"); ?></button>
     </div>
 
     <div class="input-prepend input-append" style="float:right">
-        <button class="btn" id="open-add-user-modal"><i class="icon icon-plus"></i> <?php echo _("Add new user"); ?></button>
+        <button class="btn" id="open-add-user-modal"><i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?></button>
     </div>
 
     <table class="table">
         <tr>
-            <th><?php echo _("Edit"); ?></th>
-            <th><?php echo _("Id"); ?></th>
-            <th><?php echo _("Username"); ?></th>
-            <th><?php echo _("Email"); ?></th>
-            <th><?php echo _("Feeds"); ?></th>
+            <th><?php echo tr("Edit"); ?></th>
+            <th><?php echo tr("Id"); ?></th>
+            <th><?php echo tr("Username"); ?></th>
+            <th><?php echo tr("Email"); ?></th>
+            <th><?php echo tr("Feeds"); ?></th>
         </tr>
         <tbody id="users"></tbody>
     </table>
@@ -91,8 +91,8 @@ global $path;
 
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
-            <button class="btn btn-info" id="add-user"><?php echo _('Add user'); ?></button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
+            <button class="btn btn-info" id="add-user"><?php echo tr('Add user'); ?></button>
         </div>
     </div>
 
@@ -188,7 +188,7 @@ global $path;
             } else {
                 out += "<tr>";
             }
-            out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id=" + users[z].id + "'><?php echo _('view'); ?></a></td>";
+            out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id=" + users[z].id + "'><?php echo tr('view'); ?></a></td>";
             out += "<td>" + users[z].id + "</td>";
             out += "<td>" + users[z].username + "</td>";
             out += "<td>" + users[z].email + "</td>";

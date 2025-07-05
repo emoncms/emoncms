@@ -18,7 +18,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("kWh/d Zoomer"); ?></h2>
+<h2><?php echo tr("kWh/d Zoomer"); ?></h2>
 <?php } ?>
 
 <div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
@@ -111,7 +111,7 @@ function vis_feed_kwh_data_callback(data) {
         ndays++;
     }
 
-    bot_kwhd_text = "<?php echo _("Total:"); ?> "+(total).toFixed(0)+" <?php echo _("kWh"); ?> : "+add_currency((total*price), 0)+" | <?php echo _("Average:"); ?> "+(total/ndays).toFixed(1)+" <?php echo _("kWh"); ?> : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" <?php echo _("a week"); ?>, "+add_currency((total/ndays)*price*365, 0)+" <?php echo _("a year"); ?> | <?php echo _("Unit price:"); ?> "+add_currency(price, 2);
+    bot_kwhd_text = "<?php echo tr("Total:"); ?> "+(total).toFixed(0)+" <?php echo tr("kWh"); ?> : "+add_currency((total*price), 0)+" | <?php echo tr("Average:"); ?> "+(total/ndays).toFixed(1)+" <?php echo tr("kWh"); ?> : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" <?php echo tr("a week"); ?>, "+add_currency((total/ndays)*price*365, 0)+" <?php echo tr("a year"); ?> | <?php echo tr("Unit price:"); ?> "+add_currency(price, 2);
 
     years = get_years(kwh_data);
     //set_annual_view();
@@ -161,7 +161,7 @@ function vis_feed_data_callback(data){
 
     var datetext = "";
     if ((view.end-view.start)<3600000*25) { var mdate = new Date(view.start); datetext = mdate.format("dd mmm yyyy") + ": "; }
-    $("#bot_out").html(datetext+"<?php echo _("Average:"); ?> "+st['mean'].toFixed(0)+"W | "+st['kwh'].toFixed(2)+" <?php echo _("kWh"); ?> | "+add_currency(st['kwh']*price, 2));
+    $("#bot_out").html(datetext+"<?php echo tr("Average:"); ?> "+st['mean'].toFixed(0)+"W | "+st['kwh'].toFixed(2)+" <?php echo tr("kWh"); ?> | "+add_currency(st['kwh']*price, 2));
 }
 
 // Zoom in on bar click

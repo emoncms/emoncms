@@ -18,24 +18,24 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("Feed calibration and comparison tool"); ?></h2>
-<p><?php echo _("Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for comparison below. If there is a difference between feed values adjust the calibration to see if the difference can be removed."); ?></p>
+<h2><?php echo tr("Feed calibration and comparison tool"); ?></h2>
+<p><?php echo tr("Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for comparison below. If there is a difference between feed values adjust the calibration to see if the difference can be removed."); ?></p>
 
 <div class="input-prepend">
-    <span class="add-on"><?php echo _("Feed A ID"); ?></span>
+    <span class="add-on"><?php echo tr("Feed A ID"); ?></span>
     <input id="feedA" type="text"  style="width:100px">
 </div><br>
 
 <div class="input-prepend input-append">
-    <span class="add-on"><?php echo _("Feed B ID"); ?></span>
+    <span class="add-on"><?php echo tr("Feed B ID"); ?></span>
     <input id="feedB" type="text"  style="width:100px">
-    <button id="load" class="btn btn-info"><?php echo _("Load"); ?></button>
+    <button id="load" class="btn btn-info"><?php echo tr("Load"); ?></button>
 </div><br>
 
 <div class="input-prepend input-append">
-    <span class="add-on"><?php echo _("Feed B Calibration"); ?></span>
+    <span class="add-on"><?php echo tr("Feed B Calibration"); ?></span>
     <input id="calibration" type="text"  style="width:100px" value="1.0">
-    <button id="update" class="btn btn-info"><?php echo _("Update"); ?></button>
+    <button id="update" class="btn btn-info"><?php echo tr("Update"); ?></button>
 </div>
 
 <?php } ?>
@@ -61,11 +61,11 @@
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
 
-<h3><?php echo _("Difference between feeds (FeedB calibration applied - FeedA)"); ?></h3>
+<h3><?php echo tr("Difference between feeds (FeedB calibration applied - FeedA)"); ?></h3>
 <div id="diff" style="width:100%; height:400px; "></div>
 
-<h3><?php echo _("FeedA vs FeedB"); ?></h3>
-<p><?php echo _("Relationship should be linear if measurements are the same"); ?></p>
+<h3><?php echo tr("FeedA vs FeedB"); ?></h3>
+<p><?php echo tr("Relationship should be linear if measurements are the same"); ?></p>
 <div id="line" style="width:100%; height:400px; "></div>
 
 <script id="source" language="javascript" type="text/javascript">

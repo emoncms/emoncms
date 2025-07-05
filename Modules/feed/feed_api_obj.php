@@ -15,7 +15,7 @@ function feed_api_obj() {
   return array(
     // Read feed actions
     array(
-      "description" => _("List feeds"),
+      "description" => tr("List feeds"),
       "path" =>  $public_username_str."feed/list.json",
       "parameters" => array(
         "meta" => array( "default" => 1 )
@@ -23,7 +23,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Get feed field"),
+      "description" => tr("Get feed field"),
       "path" => "feed/get.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -32,7 +32,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Get all feed fields"),
+      "description" => tr("Get all feed fields"),
       "path" => "feed/aget.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -40,7 +40,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Get feed meta"),
+      "description" => tr("Get feed meta"),
       "path" => "feed/getmeta.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -49,7 +49,7 @@ function feed_api_obj() {
     ),
     // Read feed data actions
     array(
-      "description" => _("Last updated time and value for feed"),
+      "description" => tr("Last updated time and value for feed"),
       "path" => "feed/timevalue.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -57,7 +57,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Last value of a given feed"),
+      "description" => tr("Last value of a given feed"),
       "path" => "feed/value.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -65,7 +65,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Fetch a value at a given time"),
+      "description" => tr("Fetch a value at a given time"),
       "path" => "feed/value.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -74,7 +74,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Last value for multiple feeds"),
+      "description" => tr("Last value for multiple feeds"),
       "path" => "feed/fetch.json",
       "parameters" => array(
         "ids" => array( "default" => "1,2,3" )
@@ -82,7 +82,7 @@ function feed_api_obj() {
       "mode"=>"read"
     ),
     array(
-      "description" => _("Fetch data from a feed"),
+      "description" => tr("Fetch data from a feed"),
       "path" => "feed/data.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -99,7 +99,7 @@ function feed_api_obj() {
     ),
     // Write feed data actions
     array(
-      "description" => _("Insert or update data point"),
+      "description" => tr("Insert or update data point"),
       "path" => "feed/post.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -109,7 +109,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Insert or update multiple data points"),
+      "description" => tr("Insert or update multiple data points"),
       "path" => "feed/post.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -118,7 +118,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Delete data point"),
+      "description" => tr("Delete data point"),
       "path" => "feed/deletedatapoint.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -128,7 +128,7 @@ function feed_api_obj() {
     ),
     // Feed setup actions
     array(
-      "description" => _("Create new feed"),
+      "description" => tr("Create new feed"),
       "path" => "feed/create.json",
       "parameters" => array(
         "tag" => array( "default" => "Test" ),
@@ -139,7 +139,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Delete existent feed"),
+      "description" => tr("Delete existent feed"),
       "path" => "feed/delete.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -147,7 +147,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Update feed field"),
+      "description" => tr("Update feed field"),
       "path" => "feed/set.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -156,14 +156,14 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Refresh feed disk use"),
+      "description" => tr("Refresh feed disk use"),
       "path" => "feed/updatesize.json",
       "parameters" => array(
       ),
       "mode"=>"write"
     ),
     array(
-      "description" => _("Return buffer points pending write"),
+      "description" => tr("Return buffer points pending write"),
       "path" => "feed/buffersize.json",
       "parameters" => array(
       ),
@@ -171,7 +171,7 @@ function feed_api_obj() {
     ),
     // Virtual feed process actions
     array(
-      "description" => _("Get feed process list"),
+      "description" => tr("Get feed process list"),
       "path" => "feed/process/get.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )
@@ -179,7 +179,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Set feed process list"),
+      "description" => tr("Set feed process list"),
       "path" => "feed/process/set.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
@@ -188,7 +188,7 @@ function feed_api_obj() {
       "mode"=>"write"
     ),
     array(
-      "description" => _("Reset feed process list"),
+      "description" => tr("Reset feed process list"),
       "path" => "feed/process/reset.json",
       "parameters" => array(
         "id" => array( "type" => "feed" )  

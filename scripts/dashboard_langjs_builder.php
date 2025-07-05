@@ -54,7 +54,7 @@ get_js_file($dir);
  foreach ($translation as $file=>$tr){
   echo "\n// ".$file."\n";
    foreach ($tr as $t){
-     echo "LANG_JS[\"$t\"] = '<?php echo addslashes(_(\"$t\")); ?>';\n";
+     echo "LANG_JS[\"$t\"] = '<?php echo addslashes(tr(\"$t\")); ?>';\n";
    }
  }
 ?>

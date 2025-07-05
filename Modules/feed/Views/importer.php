@@ -4,7 +4,7 @@
 <div id="importDataModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="importDataModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="importDataModalLabel"><?php echo _('Import Data'); ?></h3>
+        <h3 id="importDataModalLabel"><?php echo tr('Import Data'); ?></h3>
     </div>
     <div class="modal-body">
     
@@ -40,7 +40,7 @@
     
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="importData" class="btn btn-primary"><?php echo _('Import'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button id="importData" class="btn btn-primary"><?php echo tr('Import'); ?></button>
     </div>
 </div>

@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 <div class="admin-container">
-    <h3><?php echo _('Update'); ?></h3>
+    <h3><?php echo tr('Update'); ?></h3>
 
 <?php if (PHP_VERSION_ID<70300) { ?>
 <div class="alert alert-error"><b>Important:</b> PHP version <?php echo PHP_VERSION; ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
@@ -12,12 +12,12 @@
     ?>
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
         <div class="text-left">
-            <h4 class="text-info text-uppercase mb-2"><?php echo _('Full Update'); ?></h4>
-            <p><?php echo _('OS, Packages, EmonHub, Emoncms (Does not include firmware update)'); ?></p>
+            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Full Update'); ?></h4>
+            <p><?php echo tr('OS, Packages, EmonHub, Emoncms (Does not include firmware update)'); ?></p>
         </div>
         <div class="btn-group">
-        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms'); ?>">
-            <?php echo _('Full Update'); ?>
+        <button class="update btn btn-info" type="all" title="<?php echo tr('Update All'); ?> - <?php echo tr('OS, Packages, EmonHub, Emoncms'); ?>">
+            <?php echo tr('Full Update'); ?>
         </button>
         </div>
     </section>
@@ -28,11 +28,11 @@
     ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1">
         <div class="text-left">
-            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Emoncms Only'); ?></h4>
-            <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
+            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Emoncms Only'); ?></h4>
+            <p><?php echo tr('Emoncms, Emoncms Modules and Services'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
         </div>
-        <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
+        <a class="update btn btn-info" type="emoncms"><?php echo tr('Update Emoncms'); ?></a>
     </aside>
 
     <?php
@@ -41,8 +41,8 @@
     ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1">
         <div class="text-left" style="margin-bottom:10px">
-            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Firmware Only'); ?></h4>
-            <p><?php echo _('Select your hardware type and firmware version'); ?></p>
+            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Firmware Only'); ?></h4>
+            <p><?php echo tr('Select your hardware type and firmware version'); ?></p>
 
             <div class="input-prepend" style="margin-bottom:0px">
                 <span class="add-on">Select port:</span>
@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        <button id="update-firmware" class="btn btn-info"><?php echo _('Update Firmware'); ?></button>
+        <button id="update-firmware" class="btn btn-info"><?php echo tr('Update Firmware'); ?></button>
     </aside>
 
     <?php
@@ -103,10 +103,10 @@
     ?>
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1">
         <div class="text-left span6 ml-0">
-            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Database Only'); ?></h4>
-            <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
+            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Database Only'); ?></h4>
+            <p><?php echo tr('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
         </div>
-        <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
+        <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo tr('Update Database'); ?></a>
     </aside>
 
     <?php
@@ -116,10 +116,10 @@
     <div id="update-logfile-view" class="hide">
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 text-right px-1 border-top">
         <div class="text-left">
-            <h3 class="mt-1 mb-0"><?php echo _('Update Log'); ?></h3>
+            <h3 class="mt-1 mb-0"><?php echo tr('Update Log'); ?></h3>
             <p><?php
             // if(is_readable($update_log_filename)) {
-                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'), $update_log_filename);
+                echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'), $update_log_filename);
             // } else {
                 //echo '<div class="alert alert-warn">';
                 //echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
@@ -129,10 +129,10 @@
         <div>
             <?php // if(is_readable($update_log_filename)) { ?>
                 <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
-                    <?php echo _('Auto refresh'); ?>
+                    <?php echo tr('Auto refresh'); ?>
                 </button>
-                <a href="<?php echo $path; ?>admin/update-log-download" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
-                <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+                <a href="<?php echo $path; ?>admin/update-log-download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
+                <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
             <?php // } ?>
         </div>
     </section>
@@ -387,7 +387,7 @@ function copyTextToClipboard(text, message) {
     snackbar(message || 'Copied to clipboard');
   }
   catch(err) {
-    window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
+    window.prompt("<?php echo tr('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
   document.body.removeChild(textArea);
 }

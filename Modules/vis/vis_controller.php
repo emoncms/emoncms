@@ -8,7 +8,7 @@
   */
 
   // no direct access
-  defined('EMONCMS_EXEC') or die(_('Restricted access'));
+  defined('EMONCMS_EXEC') or die(tr('Restricted access'));
 
   function vis_controller()
   {

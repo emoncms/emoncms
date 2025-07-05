@@ -34,10 +34,10 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 >
                 <i :class="selected_processes.length == process_list.length ? 'icon icon-ban-circle' : 'icon icon-check'"></i>
                 </button>
-                <button class="btn" title="<?php echo _('Cut') ?>" :disabled="!selected_processes.length" @click="cut"><span class="icon">&#9986;</span></button>
-                <button class="btn" title="<?php echo _('Copy') ?>" :disabled="!selected_processes.length" @click="copy"><span class="icon">&#9112;</span></button>
-                <button class="btn" title="<?php echo _('Paste') ?>" :disabled="!copied_processes.length" @click="paste"><i class="icon icon-briefcase"></i></button>
-                <button class="btn" title="<?php echo _('Delete') ?>" :disabled="!selected_processes.length" @click="remove_selected"><i class="icon icon-trash"></i></button>
+                <button class="btn" title="<?php echo tr('Cut') ?>" :disabled="!selected_processes.length" @click="cut"><span class="icon">&#9986;</span></button>
+                <button class="btn" title="<?php echo tr('Copy') ?>" :disabled="!selected_processes.length" @click="copy"><span class="icon">&#9112;</span></button>
+                <button class="btn" title="<?php echo tr('Paste') ?>" :disabled="!copied_processes.length" @click="paste"><i class="icon icon-briefcase"></i></button>
+                <button class="btn" title="<?php echo tr('Delete') ?>" :disabled="!selected_processes.length" @click="remove_selected"><i class="icon icon-trash"></i></button>
             </div>
 
             <!-- No processes message -->
