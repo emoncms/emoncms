@@ -265,7 +265,7 @@ function load_language_files($path, $context = false)
     $lang = isset($session['lang']) ? $session['lang'] : 'en_GB';
     if ($lang == 'en') $lang = 'en_GB';
 
-    // echo "Loading language files for $lang in $path with domain $domain<br>";
+    //echo "Loading language files for $lang in $path with domain $context<br>";
 
     // Build path to JSON translation file
     $json_file = rtrim($path, '/')."/$lang.json";
@@ -286,26 +286,20 @@ function load_language_files($path, $context = false)
     }
 }
 
-function tr($a, $b = null)
+function tr($text)
 {
-    if ($b === null) {
-        // Only one argument: tr('Text')
-        $text = $a;
-        $context = false;
-    } else {
-        // Two arguments: tr('context', 'Text')
-        $context = $a;
-        $text = $b;
-    }
+    return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
+        ? $GLOBALS['translations'][$text]
+        : $text;
+}
 
+function ctx_tr($context, $text)
+{
     if ($context && isset($GLOBALS['context_translations'][$context]) && isset($GLOBALS['context_translations'][$context][$text])) {
         // If context is set and translation exists in context, return it
         return $GLOBALS['context_translations'][$context][$text];
     }
-
-    return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
-        ? $GLOBALS['translations'][$text]
-        : $text;
+    return $text;
 }
 
 function load_menu()
@@ -318,11 +312,9 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                //if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
-                //    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
-                //} else {
-                //    load_language_files("Modules/".$dir[$i]."/locale");
-                //}
+                // Language file gets loaded here but immediately over-written by the next
+                // Perhaps consider some form of caching or a different loading strategy
+                load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
