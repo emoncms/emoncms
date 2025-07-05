@@ -33,7 +33,7 @@ function extractTranslationKeys($directory) {
                 $ctx_keys[$context][] = $text;
             }
             
-            echo "Processed: " . $file->getPathname() . "\n";
+            //echo "Processed: " . $file->getPathname() . "\n";
         }
     }
     
@@ -55,29 +55,70 @@ function generateLanguageFile($keys, $outputFile) {
     file_put_contents($outputFile, $content);
 }
 
-// Usage
-$viewsDirectory = 'Modules/process'; // Change this to your views directory
-$result = extractTranslationKeys($viewsDirectory);
+// get lang from first arg, default to 'en_GB'
+$lang = isset($argv[1]) ? $argv[1] : 'en_GB';
+if ($lang == 'en') $lang = 'en_GB'; // Default to en_GB if 'en' is provided
 
-$keys = $result['tr_keys'];
-$ctx_keys = $result['ctx_keys'];
+$modulesDir = 'Modules';
+$modules = scandir($modulesDir);
 
-echo "Found " . count($keys) . " translation keys:\n";
-foreach ($keys as $key) {
-    echo "- $key\n";
-}
-echo "\n\n";
+foreach ($modules as $module) {
+    if ($module === '.' || $module === '..') continue;
+    $modulePath = $modulesDir . DIRECTORY_SEPARATOR . $module;
+    $localePath = $modulePath . DIRECTORY_SEPARATOR . 'locale';
+    $viewsPath = $modulePath; // Adjust if you want a subdirectory like 'views'
 
-foreach ($ctx_keys as $context => $texts) {
-    echo "- Context '$context' has " . count($texts) . " texts:\n";
-    foreach ($texts as $text) {
-        echo "  - $text\n";
+    if (is_dir($modulePath) && is_dir($localePath)) {
+        echo "Processing module: $module\n";
+        $result = extractTranslationKeys($viewsPath);
+
+        $keys = $result['tr_keys'];
+        $ctx_keys = $result['ctx_keys'];
+
+        $messages_context = $module . "_messages";
+        if (isset($ctx_keys[$messages_context])) {
+            foreach ($ctx_keys[$messages_context] as $msgKey) {
+                if (!in_array($msgKey, $keys)) {
+                    $keys[] = $msgKey;
+                }
+            }
+        }
+        // Make sure the keys are unique
+        $keys = array_unique($keys);
+
+        // If we find another context that does not match the module name, exit with error
+        // Not sure if this will ever happen?
+        foreach ($ctx_keys as $context => $texts) {
+            if ($context !== $messages_context && $context !== $module) {
+                echo "Error: Found context '$context' in module '$module' that does not match the module name or messages context.\n";
+                die;
+            }
+        }
+
+        
+        echo "Found " . count($keys) . " translation keys in $module:\n";
+        foreach ($keys as $key) {
+            //echo "- $key\n";
+        }
+
+        // Create target file names
+        $outputFile = $localePath . DIRECTORY_SEPARATOR . $lang . '.json';
+        echo "Generating language file: $outputFile\n";
+
+        generateLanguageFile($keys, $outputFile);
+
+
+        /*
+
+        foreach ($ctx_keys as $context => $texts) {
+            echo "- Context '$context' has " . count($texts) . " texts:\n";
+            foreach ($texts as $text) {
+                //echo "  - $text\n";
+            }
+        }*/
+
+        // Generate language files in the module's locale directory
+        //generateLanguageFile($keys, $localePath . '/en.json');
+        //echo "Language file generated at $localePath/en.json\n\n";
     }
 }
-
-die;
-
-// Generate language files
-generateLanguageFile($keys, 'lang/en.json');
-
-echo "\nLanguage files generated!\n";
