@@ -68,10 +68,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo tr("My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo tr("My Account"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo tr("Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo tr("Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
