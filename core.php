@@ -260,10 +260,29 @@ function load_db_schema()
  */
 function load_language_files($path, $domain = 'messages')
 {
-    // Load language files for module
-    bind_textdomain_codeset($domain, 'UTF-8');
-    bindtextdomain($domain, $path);
-    textdomain($domain);
+    // Determine current language
+    global $session;
+    $lang = isset($session['lang']) ? $session['lang'] : 'en_GB';
+    if ($lang == 'en') $lang = 'en_GB';
+
+    // echo "Loading language files for $lang in $path with domain $domain<br>";
+
+    // Build path to JSON translation file
+    $json_file = rtrim($path, '/')."/$lang.json";
+    if (file_exists($json_file)) {
+        $translations = json_decode(file_get_contents($json_file), true);
+        if (is_array($translations)) {
+            // Merge with global translations if needed
+            if (!isset($GLOBALS['translations'])) $GLOBALS['translations'] = [];
+            $GLOBALS['translations'] = array_merge($GLOBALS['translations'], $translations);
+        }
+    }
+}
+
+function tr($text) {
+    return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
+        ? $GLOBALS['translations'][$text]
+        : $text;
 }
 
 function load_menu()
@@ -276,11 +295,11 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
-                    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
-                } else {
-                    load_language_files("Modules/".$dir[$i]."/locale");
-                }
+                //if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
+                //    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
+                //} else {
+                //    load_language_files("Modules/".$dir[$i]."/locale");
+                //}
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
