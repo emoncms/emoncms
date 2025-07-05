@@ -55,13 +55,13 @@ global $path; $v=3;
     <tr>
       <td class="muted"><?php echo tr('Read & Write API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
-      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo tr("Write API Key copied to clipboard"); ?>')"></i></td>
+      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo addslashes(tr("Write API Key copied to clipboard")); ?>')"></i></td>
       <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
       <td class="muted"><?php echo tr('Read Only API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
-      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo tr("Read API Key copied to clipboard"); ?>')"></i></td>
+      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo addslashes(tr("Read API Key copied to clipboard")); ?>')"></i></td>
       <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
