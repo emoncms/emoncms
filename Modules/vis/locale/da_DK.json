@@ -1,0 +1,22 @@
+{
+    "Visualisations": "Visualiseringer",
+    "Select visualisation:": "Vælg visualisering:",
+    "Set options:": "Angiv indstillinger:",
+    "Note:": "Note:",
+    "If a feed does not appear in the selection box, check that the type has been set on the feeds page.": "Hvis et feed ikke vises i dialogboksen, så tjek venligst om feedtypen er korrekt indstillet på siden for feeds.",
+    "View": "Vis",
+    "Full screen": "Fuld skærm",
+    "Embed in your website:": "Indlejring på hjemmeside:",
+    "Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.": "Nogle af de valgte feeds er ikke offentlige. For at indlejre disse på din hjemmeside skal derfor enten gøre dem offentlige eller tilføj din APIKEY til URL'en.",
+    "To embed privately:": "For privat indlejring:",
+    "Vis": "Visualiser",
+    "Restricted access": "Adgangskodebeskyttet område",
+    "hour": "time",
+    "min": "minut",
+    "Save": "Gem",
+    "Delete data in window": "Slet data der vises i vinduet",
+    "WARNING deleting feed data is permanent": "ADVARSEL: Sletning af datapunkter er permanent",
+    "Are you sure you want to delete the data in this window?": "Er du sikker på at du vil slette datapunkterne der vises i vinduet?",
+    "Cancel": "Annullér",
+    "Delete permanently": "Slet permanent"
+}

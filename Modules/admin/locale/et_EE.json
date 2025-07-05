@@ -1,0 +1,22 @@
+{
+    "Database setup, update and status check": "Andmebaasi haldus, uuenda ja kontrolli staatust",
+    "Schema item": "Andmebaasi osa",
+    "Name": "Nimi",
+    "Status": "Seisund",
+    "version": "versioon",
+    "Users": "Kasutajad",
+    "Administer user accounts": "Halda kasutajakontosid",
+    "Update database": "Uuenda andmebaas",
+    "Update & check": "Uuenda ja kontrolli",
+    "INSTALLED": "PAIGALDATUD",
+    "yes": "jah",
+    "no": "ei",
+    "Admin": "Administraator",
+    "Apply changes": "Rakenda muudatused",
+    "Check for further updates": "Kontrolli teisi uuendusi",
+    "Database is up to date ": "Andmebaas on ajakohane",
+    "Nothing to do": "Ei ole vaja midagi teha",
+    "Id": "Id",
+    "Username": "Kasutajanimi",
+    "Email": "E-post"
+}
