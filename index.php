@@ -375,7 +375,7 @@ if ($route->format == 'json') {
         // Menu
         $menu = array();
         // Create initial entry for setup menu
-        $menu["setup"] = array("name"=>"Setup", "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
+        $menu["setup"] = array("name"=>tr("Setup"), "order"=>1, "icon"=>"menu", "default"=>"feed/view", "l2"=>array());
         if ($session["public_userid"]) {
             $menu["setup"]["name"] = ucfirst($session["public_username"]);
         }

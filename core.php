@@ -261,9 +261,7 @@ function load_db_schema()
 function load_language_files($path, $context = false)
 {
     // Determine current language
-    global $session;
-    $lang = isset($session['lang']) ? $session['lang'] : 'en_GB';
-    if ($lang == 'en') $lang = 'en_GB';
+    $lang = isset($GLOBALS['language']) ? $GLOBALS['language'] : 'en_GB'; // Default to English if not set
 
     //echo "Loading language files for $lang in $path with domain $context<br>";
 
