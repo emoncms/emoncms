@@ -258,7 +258,7 @@ function load_db_schema()
  * @param [string] $domain
  * @return void
  */
-function load_language_files($path, $domain = 'messages')
+function load_language_files($path, $context = false)
 {
     // Determine current language
     global $session;
@@ -272,14 +272,37 @@ function load_language_files($path, $domain = 'messages')
     if (file_exists($json_file)) {
         $translations = json_decode(file_get_contents($json_file), true);
         if (is_array($translations)) {
-            // Merge with global translations if needed
-            if (!isset($GLOBALS['translations'])) $GLOBALS['translations'] = [];
-            $GLOBALS['translations'] = array_merge($GLOBALS['translations'], $translations);
+            if (!$context) {
+                // If domain is messages, we can use the translations directly
+                $GLOBALS['translations'] = $translations;
+            } else {
+                // For other context specific translations:
+                if (!isset($GLOBALS['context_translations'])) {
+                    $GLOBALS['context_translations'] = array();
+                }
+                $GLOBALS['context_translations'][$context] = $translations;
+            }
         }
     }
 }
 
-function tr($text, $context = null) {
+function tr($a, $b = null)
+{
+    if ($b === null) {
+        // Only one argument: tr('Text')
+        $text = $a;
+        $context = false;
+    } else {
+        // Two arguments: tr('context', 'Text')
+        $context = $a;
+        $text = $b;
+    }
+
+    if ($context && isset($GLOBALS['context_translations'][$context]) && isset($GLOBALS['context_translations'][$context][$text])) {
+        // If context is set and translation exists in context, return it
+        return $GLOBALS['context_translations'][$context][$text];
+    }
+
     return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
         ? $GLOBALS['translations'][$text]
         : $text;
