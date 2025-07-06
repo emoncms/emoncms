@@ -52,13 +52,32 @@ function generateLanguageFile($keys, $outputFile) {
     }
 
     $langArray = [];
+
+    // First, add existing keys in their original order
+    foreach ($existing as $key => $value) {
+        if (in_array($key, $keys)) {
+            $langArray[$key] = $value;
+        }
+    }
+    
+    // Then, add new keys that weren't in the existing file
+    foreach ($keys as $key) {
+        if (!isset($langArray[$key])) {
+            $langArray[$key] = $key;
+        }
+    }
+
+    /*
+    // Alternative approach: order by keys as they appear in the file
     foreach ($keys as $key) {
         if (isset($existing[$key]) && $existing[$key] !== '') {
             $langArray[$key] = $existing[$key];
         } else {
             $langArray[$key] = $key;
         }
-    }
+    }*/
+
+    
 
     // Convert empty array to associative array (consistent with po2json)
     if (empty($langArray)) {
