@@ -25,7 +25,7 @@ if ($session['write']) {
     $apikey_write = $user->get_apikey_write($session['userid']);
 }
 
-bindtextdomain("lib_messages",__DIR__."/locale");
+load_language_files("Lib/locale","lib_messages");
 ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <style>[v-cloak] { display: none; }</style>
