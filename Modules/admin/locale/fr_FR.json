@@ -3,6 +3,7 @@
     "Reboot": "Redémarrer",
     "System Information": "Informations système",
     "**Recommended** when pasting into forum": "**Recommandé** lorsque collé dans un forum",
+    "Server info copied to clipboard as Markdown [text\/markdown]": "Infos serveur copiées dans le presse-papiers en Markdown [text\/markdown]",
     "Copy as Markdown": "Copier en Markdown",
     "Formatted as plain text": "Formaté en texte brut",
     "Server info copied to clipboard as Text [text\/plain]": "Infos serveur copiées dans le presse-papiers en Texte [text\/plain]",
@@ -21,6 +22,7 @@
     "Copy to clipboard: Ctrl+C, Enter": "Copier dans le presse-papier : Ctrl+C, Entrée",
     "Server Information": "Informations Serveur",
     "Log level: %s": "Niveau log: %s",
+    "Selectively update system components or switch between branches": "Mettre à jour sélectivement les composants du système ou basculer entre les branches",
     "Update or switch all components to": "Mettre à jour ou basculer tous les composants vers",
     "Component name": "Nom du composant",
     "Local changes": "Modifications locales",
@@ -43,7 +45,9 @@
     "Nothing to do": "Aucune mise à jour nécessaire",
     "Return to Update Page": "Retour à la page de mise à jour",
     "Note:": "Remarque : ",
+    "EmonHub is currently running and may conflict with serial monitor": "EmonHub est en cours d'exécution et peut entrer en conflit avec serial monitor",
     "Stop EmonHub": "Arrêter EmonHub",
+    "EmonHub is currently stopped and will not interfere with serial monitor": "EmonHub est actuellement arrêté et n'interférera pas avec serial monitor",
     "Start EmonHub": "Démarrer EmonHub",
     "Start": "Démarrer",
     "Stop": "Arrêter",
@@ -59,6 +63,7 @@
     "Select your hardware type and firmware version": "Sélectionner votre type de matériel et la version du firmware",
     "Update Firmware": "Mettre à jour Firmware",
     "Update Database Only": "Mettre à jour la BDD seulement",
+    "Run this after a manual emoncms update, after installing a new module or to check emoncms database status.": "Lancez cette commande après une mise à jour de Emoncms, après l'installation d'un nouveau module ou pour vérifier le statut de la base de données.",
     "Update Database": "Mettre à jour de la base de données",
     "Update Log": "Journal mises à jour",
     "Users": "Utilisateurs",
@@ -80,5 +85,6 @@
     "Session timed out or user not Admin": "Session expirée ou utilisateur non admin",
     "Re-authenticate to see this page": "Réauthentification pour voir cette page",
     "Admin": "Administration",
-    "System Info": "Infos système"
+    "System Info": "Infos système",
+    " (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )": " (pour afficher la température GPU exécuter cette commande depuis la console \"sudo usermod -G video www-data\" )"
 }

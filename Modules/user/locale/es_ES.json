@@ -37,10 +37,15 @@
     "Password length error": "Error en la longitud de la contraseña",
     "Error creating user": "Error creando usuario",
     "Username or password empty": "Usuario o contraseña vacios",
+    "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page.": "El usuario debe contener caracteres a-z y 0-9, guiones o barrabajas exclusivamente, si creo una cuenta antes de que esta norma se estableciese introduzca su usuario sin los caracteres no permitidos para hacer login y cambie, si lo desea, su usuario en la página de perfil.",
     "Username does not exist": "Usuario no existente",
+    "Incorrect password, if your sure its correct try clearing your browser cache": "Contraseña incorrecta, si está seguro de que es correcta intente ahora limpiar la caché de su navegador",
     "Login successful": "Login correcto",
+    "Username must only contain a-z 0-9 dash and underscore": "El usuario debe contener caracteres a-z y 0-9, guiones o barrabajas exclusivamente",
     "Incorrect authentication": "Auntentificación incorrecta",
     "Old password incorect": "Contraseña antigua incorrecta",
+    "As you are using a cookie based remember me login, please logout and log back in to change username": "Como está usando un login basado en cookies, por favor desconéctese y entre de nuevo para cambiar el nombre de usuario",
     "Username updated": "Nombre de usuario actualizado",
+    "As you are using a cookie based remember me login, please logout and log back in to change email": "Como está usando un login basado en cookies, por favor desconéctese y entre de nuevo para cambiar el email",
     "Email updated": "Dirección de email actualizada"
 }

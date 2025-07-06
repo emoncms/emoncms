@@ -47,10 +47,15 @@
     "Password length error": "Viga parooli pikkuses",
     "Error creating user": "Viga kasutaja loomisel",
     "Username or password empty": "Kasutajanimi või parool on tühi",
+    "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page.": "Kasutajanimi tohib sisaldada ainult a-z ja 0-9 sümboleid, side- ja alakriipsu, kui te lõite konto ennem, kui see reegel oli rakendatud, siis palun muutke oma kasutajanimi profiili muutmise leheküljelt.",
     "Username does not exist": "Kasutajanime ei eksisteeri",
+    "Incorrect password, if your sure its correct try clearing your browser cache": "Vale parool, kui oled kindel, et sisestasid parooli õigesti, proovi tühjendada sirviku vahemälu",
     "Login successful": "Sisenemine õnnestus",
+    "Username must only contain a-z 0-9 dash and underscore": "Kasutajanimi tohib sisaldada ainult a-z ja 0-9 sümboleid ning side- ja alakriipsu",
     "Incorrect authentication": "Vale kasutajainfo",
     "Old password incorect": "Vana parool ei ole õige",
+    "As your using a cookie based remember me login, please logout and log back in to change username": "Kuna kasutate küpsise põhist kasutajakonto meeldejätmist, palun logige välja ja sisenege uuesti, et muuta kasutajanimi.",
     "Username updated": "Kasutajanimi uuendatud",
+    "As your using a cookie based remember me login, please logout and log back in to change email": "Kuna kasutate küpsise põhist kasutajakonto meeldejätmist, palun logige välja ja sisenege uuesti, et muuta E-posti aadress.",
     "Email updated": "E-post uuendatud"
 }

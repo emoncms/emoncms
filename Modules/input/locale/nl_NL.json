@@ -28,6 +28,7 @@
     "Autoconfigure inputs": "Automatisch invoer berichten maken",
     "New dashboard": "Wijzig dashboard",
     "Input configuration:   ": "Configuratie invoer:",
+    "Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.": "Invoer processen worden achter elkaar uitgevoerd en het resultaat wordt terug gegeven alvorens het volgende invoer proces uit de lijst van start gaat.",
     "New": "Nieuw",
     "add": "toevoegen",
     "Reset process list?": "Herstel proceslijst?",
