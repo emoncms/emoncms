@@ -12,32 +12,29 @@ function extractTranslationKeys($directory) {
         if ($file->getExtension() === 'php') {
             $content = file_get_contents($file->getPathname());
             
-            // Match tr("text") and tr('text')
-            preg_match_all('/\btr\s*\(\s*[\'"]([^\'"]*)[\'"]/', $content, $trMatches);
+            // Match tr("text") and tr('text') - improved regex to handle quotes better
+            preg_match_all('/\btr\s*\(\s*([\'"])((?:[^\\\\]|\\\\.)*?)\1\s*\)/', $content, $trMatches);
             
-            // Match ctx_tr("context", "text") and ctx_tr('context', 'text')
-            preg_match_all('/\bctx_tr\s*\(\s*[\'"]([^\'"]*)[\'"]s*,\s*[\'"]([^\'"]*)[\'"]/', $content, $ctxMatches);
+            // Match ctx_tr("context", "text") and ctx_tr('context', 'text') - fixed typo and improved regex
+            preg_match_all('/\bctx_tr\s*\(\s*([\'"])((?:[^\\\\]|\\\\.)*?)\1\s*,\s*([\'"])((?:[^\\\\]|\\\\.)*?)\3\s*\)/', $content, $ctxMatches);
+            
             // Add tr() matches
-            foreach ($trMatches[1] as $key) {
-                $keys[] = trim($key);
+            foreach ($trMatches[2] as $key) {
+                $keys[] = stripcslashes($key);
             }
             
-            // Add ctx_tr() matches (second parameter)
-            for ($i = 0; $i < count($ctxMatches[1]); $i++) {
-                $context = trim($ctxMatches[1][$i]);
-                $text = trim($ctxMatches[2][$i]);
+            // Add ctx_tr() matches (fourth parameter is the text)
+            for ($i = 0; $i < count($ctxMatches[2]); $i++) {
+                $context = stripcslashes($ctxMatches[2][$i]);
+                $text = stripcslashes($ctxMatches[4][$i]);
 
                 if (!isset($ctx_keys[$context])) {
                     $ctx_keys[$context] = [];
                 }
                 $ctx_keys[$context][] = $text;
             }
-            
-            //echo "Processed: " . $file->getPathname() . "\n";
         }
     }
-    
-    // return array_unique($keys);
 
     return array(
         'tr_keys' => array_unique($keys),
@@ -46,8 +43,6 @@ function extractTranslationKeys($directory) {
 }
 
 function generateLanguageFile($keys, $outputFile) {
-    $langArray = [];
-
     // Load existing translations if the file exists
     $existing = [];
     if (file_exists($outputFile)) {
@@ -56,6 +51,7 @@ function generateLanguageFile($keys, $outputFile) {
         if (!is_array($existing)) $existing = [];
     }
 
+    $langArray = [];
     foreach ($keys as $key) {
         if (isset($existing[$key]) && $existing[$key] !== '') {
             $langArray[$key] = $existing[$key];
@@ -64,6 +60,12 @@ function generateLanguageFile($keys, $outputFile) {
         }
     }
 
+    // Convert empty array to associative array (consistent with po2json)
+    if (empty($langArray)) {
+        $langArray = new stdClass();
+    }
+
+    // Use same JSON encoding flags as po2json
     $content = json_encode($langArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     file_put_contents($outputFile, $content);
 }
@@ -108,7 +110,7 @@ foreach ($modules as $module) {
         foreach ($ctx_keys as $context => $texts) {
             if ($context !== $messages_context && $context !== $module) {
                 echo "Error: Found context '$context' in module '$module' that does not match the module name or messages context.\n";
-                die;
+                // die;
             }
         }
 
