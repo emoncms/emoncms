@@ -71,6 +71,10 @@ function generateLanguageFile($keys, $outputFile) {
 // get lang from first arg, default to 'en_GB'
 $lang = isset($argv[1]) ? $argv[1] : 'en_GB';
 if ($lang == 'en') $lang = 'en_GB'; // Default to en_GB if 'en' is provided
+if ($lang == 'en_GB') {
+    echo "No need to generate en_GB language file, it is the default.\n";
+    exit(0);
+}
 
 $modulesDir = 'Modules';
 $modules = scandir($modulesDir);
