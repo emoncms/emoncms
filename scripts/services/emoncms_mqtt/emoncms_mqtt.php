@@ -54,6 +54,7 @@
 
     chdir(dirname(__FILE__)."/../../../");
     require "Lib/EmonLogger.php";
+    require "core.php";
     require "process_settings.php";
 
     set_error_handler('exceptions_error_handler');
