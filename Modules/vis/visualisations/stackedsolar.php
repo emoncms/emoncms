@@ -11,6 +11,7 @@
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
@@ -35,7 +36,7 @@ feed.apikey = apikey;
 
 var timeWindow = (3600000*24.0*365*5); //Initial time window
 var start = +new Date - timeWindow;    //Get start time
-var end = +new Date; 
+var end = +new Date;
 
 var d = new Date()
 var n = d.getTimezoneOffset();
@@ -54,17 +55,17 @@ var export_data = []
 for (var z in solar_data) {
     if (solar_data[z][1]==null) solar_data[z][1] = 0;
     if (use_data[z][1]==null) use_data[z][1] = 0;
-    
+
     let balance = use_data[z][1] - solar_data[z][1];
     let import_val = 0;
     let export_val = 0;
-    
+
     if (balance>0) {
         import_val = balance;
     } else {
         export_val = balance*-1;
     }
-    
+
     let time = solar_data[z][0];
     import_data.push([time,import_val])
     export_data.push([time,export_val])
@@ -124,10 +125,10 @@ $("#graph").bind("plothover", function (event, pos, item){
         var d = new Date();
         d.setTime(item.datapoint[0]);
         var mdate = new Date(item.datapoint[0]);
-        
+
         if (item.series.data[item.dataIndex]!=undefined) {
             var value = item.series.data[item.dataIndex][1];
-            
+
             var type = "";
             if (item.seriesIndex == 0) type = "Solar";
             if (item.seriesIndex == 1) type = "Import"

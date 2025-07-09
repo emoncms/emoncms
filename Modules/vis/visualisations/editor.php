@@ -14,6 +14,7 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/date.format.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
@@ -42,12 +43,12 @@
 
 <div class="alert alert-info" id="alert"></span> seconds</div>
 
-<div class="input-prepend" style="margin-right:10px"> 
+<div class="input-prepend" style="margin-right:10px">
     <span class="add-on"><?php echo _("Select feed"); ?></span>
     <select id="feedselector"></select>
 </div>
 
-<div id="dp-edit" class="input-prepend input-append" style="margin-right:10px"> 
+<div id="dp-edit" class="input-prepend input-append" style="margin-right:10px">
     <span class="add-on"><?php echo _("Edit feed @ time"); ?></span>
     <input type="text" id="time" style="width:100px;" value="" />
     <span class="add-on"><?php echo _("new value"); ?></span>
@@ -99,7 +100,7 @@ for (var z in feeds) {
     var tag = feeds[z].tag;
     if (!feeds_by_tag[tag]) feeds_by_tag[tag] = [];
     // check that engine is not virtual
-    if (feeds[z].engine != 7) { 
+    if (feeds[z].engine != 7) {
         feeds_by_tag[tag].push(feeds[z]);
     }
     feeds_by_id[feeds[z].id] = feeds[z];
@@ -291,16 +292,16 @@ $("#save-csv").click(function() {
         }
     }
 
-    $.ajax({ 
-        type: 'POST', 
+    $.ajax({
+        type: 'POST',
         url: path+"feed/post.json?id="+feedid,
         data: "data="+JSON.stringify(import_data),
-        async: true, 
+        async: true,
         dataType: 'json',
         success: function(result) {
             if (result.success!=undefined) {
                 if (result.success) {
-                    vis_feed_data();    
+                    vis_feed_data();
                 } else {
                     alert('ERROR: '+result.message);
                 }
@@ -393,7 +394,7 @@ $("#graph").bind("touchended", function(event, ranges) {
     view.start = ranges.xaxis.from;
     view.end = ranges.xaxis.to;
     vis_feed_data();
-});  
+});
 
 // on window resize, redraw graph
 $(window).resize(function() {

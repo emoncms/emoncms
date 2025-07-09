@@ -18,24 +18,27 @@ var srcIeScript = path+"Lib/flot/excanvas.min.js";
 document.write('<!--[if IE]><script language="javascript" type="text/javascript" src="'+srcIeScript+'"><\/script><![endif]-->');
 
 //srcScripts includes all the needed js libraries
-var srcScripts = [];
-srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
-srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
-srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
-srcScripts.push(path+"Modules/feed/feed.js?v=10");
-srcScripts.push(path+"Lib/vis.helper.js?v=10");
-srcScripts.push(path+"Modules/vis/visualisations/multigraph/multigraph.js?v=10");
-srcScripts.push(path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
-srcScripts.push(path+"Lib/bootstrap/js/bootstrap.js");
+var srcScripts = [
+  path+"Lib/flot/jquery.flot.merged.js",
+  path+"Lib/date.format.min.js",
+  path+"Lib/flot/jquery.flot.togglelegend.min.js",
+  path+"Lib/flot/jquery.flot.stack.min.js",
+  path+"Modules/feed/feed.js?v=10",
+  path+"Lib/vis.helper.js?v=10",
+  path+"Modules/vis/visualisations/multigraph/multigraph.js?v=10",
+  path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js",
+  path+"Lib/bootstrap/js/bootstrap.js",
+];
 srcScripts.forEach(function(srcScript){
   document.write('<script language="javascript" type="text/javascript" src="'+srcScript+'"><\/script>');
 });
 
 //srcLinks includes all the needed css
-var srcLinks = [];
-srcLinks.push(path+"Lib/bootstrap/css/bootstrap.min.css");
-srcLinks.push(path+"Lib/bootstrap/css/bootstrap-responsive.min.css");
-srcLinks.push(path+"Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css");
+var srcLinks = [
+  path+"Lib/bootstrap/css/bootstrap.min.css",
+  path+"Lib/bootstrap/css/bootstrap-responsive.min.css",
+  path+"Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css",
+];
 srcLinks.forEach(function(srcLink){
   document.write('<link href="'+srcLink+'" rel="stylesheet">');
 });
