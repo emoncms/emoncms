@@ -103,6 +103,9 @@ $modules = scandir($modulesDir);
 foreach ($modules as $module) {
     if ($module === '.' || $module === '..') continue;
     $modulePath = $modulesDir . DIRECTORY_SEPARATOR . $module;
+    $modulePath = realpath($modulePath);
+
+
     $localePath = $modulePath . DIRECTORY_SEPARATOR . 'locale';
     $viewsPath = $modulePath; // Adjust if you want a subdirectory like 'views'
 
