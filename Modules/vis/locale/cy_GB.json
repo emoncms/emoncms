@@ -42,7 +42,6 @@
     "Difference between feeds (FeedB calibration applied - FeedA)": "Difference between feeds (FeedB calibration applied - FeedA)",
     "FeedA vs FeedB": "FeedA vs FeedB",
     "Relationship should be linear if measurements are the same": "Relationship should be linear if measurements are the same",
-    "Time Compare:": "Time Compare:",
     "RealTime": "RealTime",
     "feed": "feed",
     "colour": "colour",
@@ -164,7 +163,6 @@
     "Fill value": "Fill value",
     "Hours": "Hours",
     "Interval": "Interval",
-    "Interval (seconds)-you can set \\": "Interval (seconds)-you can set \\",
     "kwhd source": "kwhd source",
     "Kwh price": "Kwh price",
     "Line colour in hex. Blank is use default.": "Line colour in hex. Blank is use default.",
@@ -172,7 +170,6 @@
     "minute": "minute",
     "minutes": "minutes",
     "mode": "mode",
-    "Mode set to": "Mode set to",
     "Month": "Month",
     "Multigraph": "Multigraph",
     "Number of lines": "Number of lines",
@@ -196,5 +193,8 @@
     "Units to show": "Units to show",
     "view givoni graph": "view givoni graph",
     "Week": "Week",
-    "Year": "Year"
+    "Year": "Year",
+    "Time Compare: ": "Time Compare: ",
+    "Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year": "Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year",
+    "Mode set to 'daily' can be used instead of interval for timezone based daily data": "Mode set to 'daily' can be used instead of interval for timezone based daily data"
 }
