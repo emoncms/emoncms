@@ -263,6 +263,12 @@ function load_language_files($path, $context = false)
     // Determine current language
     $lang = isset($GLOBALS['language']) ? $GLOBALS['language'] : 'en_GB'; // Default to English if not set
 
+    // Skip if $lang is en_GB
+    if ($lang == 'en_GB') {
+        // No need to load English translations, they are the default
+        return;
+    }
+
     //echo "Loading language files for $lang in $path with domain $context<br>";
 
     // Build path to JSON translation file
