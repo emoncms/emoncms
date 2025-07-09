@@ -75,7 +75,6 @@
     "Inputs": "Sources",
     "Cancel": "Annuler",
     "Edit Input": "Modifier la source",
-    "Edit the input's name and description.": "Modifier le nom et la description de la source.",
     "Name": "Nom",
     "Save": "Enregistrer",
     "Close": "Fermer",
@@ -84,14 +83,9 @@
     "name": "nom",
     "description": "description",
     "Please install the device module to enable this feature": "Installer SVP le module device pour activer cette fonctionnalité",
-    "No device key created": "Aucune clé device créée",
     "Collapse": "Replier",
     "Expand": "Étendre",
     "Delete": "Supprimer",
-    "Deleted": "Supprimé",
-    "Error": "Erreur",
-    "Saved": "Enregistré",
-    "Nothing changed": "Aucune modification",
     "Configure your device here": "Configurer votre appareil ici",
     "Saving": "Enregistrement",
     "ID": "Identifiant",
@@ -110,7 +104,6 @@
     "Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href=\"api\">Input API helper<\/a> as a guide for generating your request.": "Les sources sont le point d'entrée pour vos appareils de surveillance. Vos appareils doivent être configurés pour envoyer leurs données ici, veuillez consulter l'<a href=\"api\">Aide de l'API Source<\/a> afin de générer votre requête.",
     "New device": "Nouvel appareil",
     "Loading": "Chargement",
-    "Invalid feed": "Champ non valide",
-    "Invalid input": "Source non valide",
-    "Error setting processlist": "Erreur lors du paramétrage de la liste des traitements"
+    "Error setting processlist": "Erreur lors du paramétrage de la liste des traitements",
+    "Edit the input's description.": "Edit the input's description."
 }

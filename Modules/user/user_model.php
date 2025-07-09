@@ -311,7 +311,7 @@ class User
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
             $stmt->close();
-            return array('success'=>false, 'message'=>tr("Error creating user, mysql error: ".$error));
+            return array('success'=>false, 'message'=>tr("Error creating user, mysql error: ").$error);
         }
 
         // Make the first user an admin
