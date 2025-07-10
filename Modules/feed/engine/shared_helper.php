@@ -111,7 +111,7 @@ class SharedHelper
  * custom engine methods can be added by extending a new interface with this one.
  * use the newly extended interface to implement the custom engine class
  */
-interface engine_methods{
+interface engine_methods {
 
     /**
      * Create feed
