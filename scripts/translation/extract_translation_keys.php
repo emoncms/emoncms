@@ -23,6 +23,9 @@ if (php_sapi_name() !== 'cli') {
     die;
 }
 
+// Change to PWD and then back two directories up
+chdir(dirname(__DIR__, 2));
+
 /**
  * Extracts translation keys from PHP files in a directory
  * 

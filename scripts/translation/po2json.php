@@ -20,6 +20,9 @@ if (php_sapi_name() !== 'cli') {
     die;
 }
 
+// Change to PWD and then back two directories up
+chdir(dirname(__DIR__, 2));
+
 /**
  * Convert a PO file to JSON format
  * 
