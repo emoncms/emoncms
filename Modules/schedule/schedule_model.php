@@ -254,10 +254,10 @@ class Schedule
                             list($start, $end) = explode('-', $day, 2);
                             list($m, $d) = explode('/', $start, 2);
                             $start = clone $timeDay;
-                            $start->setDate($start->format('Y') , $m , $d); // set the wanted day and month for 00:00 of input year
+                            $start->setDate($start->format('Y'), $m, $d); // set the wanted day and month for 00:00 of input year
                             list($m, $d) = explode('/', $end, 2);
                             $end = clone $timeDay;
-                            $end->setDate($end->format('Y') , $m , $d);  // set the wanted day and month for 00:00 of input year
+                            $end->setDate($end->format('Y'), $m, $d);  // set the wanted day and month for 00:00 of input year
                             if ($debug) {
                                 $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " - " . $end->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
                             }
@@ -267,7 +267,7 @@ class Schedule
                         } else {                            // Is just one day
                             list($m, $d) = explode('/', $day, 2);
                             $start = clone $timeDay;
-                            $start->setDate($start->format('Y') , $m , $d); // set the wanted day and month for 00:00 of input year
+                            $start->setDate($start->format('Y'), $m, $d); // set the wanted day and month for 00:00 of input year
                             if ($debug) {
                                 $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
                             }

@@ -560,7 +560,7 @@ class MysqlTimeSeries implements engine_methods
                 }
                 elseif($time >= $range[1]['time']) {
                     // return latest feed value
-                    $value =  (float) $range[1]['data'];
+                    $value = (float) $range[1]['data'];
                     break;
                 }
                 else {

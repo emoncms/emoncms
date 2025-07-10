@@ -55,7 +55,7 @@ function admin_controller()
         $log->error(sprintf('%s|%s',tr('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
         $message = urlencode(tr('Admin Authentication Required'));
 
-        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL)));
         return sprintf(
             '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>',
             tr('Admin Authentication Required'),
@@ -467,9 +467,9 @@ function admin_controller()
                         break;
                     }
                     if(!empty($handle)) $t = fgetc($handle);
-                    $pos --;
+                    $pos--;
                 }
-                $linecounter --;
+                $linecounter--;
                 if ($beginning) {
                      rewind($handle);
                 }
