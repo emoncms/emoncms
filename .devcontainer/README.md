@@ -39,6 +39,7 @@ To commit your changes:
 ```
 git add .
 git commit -m "Add some feature"
+git push
 ```
 
 To submit a work on a specific module, just `cd` into the module directory and use the same technique.
