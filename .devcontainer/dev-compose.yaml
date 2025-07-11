@@ -1,0 +1,32 @@
+services:
+  devcontainer:
+    image: alexjunk/emoncms
+    environment:
+      - TZ=Europe/Paris
+      - EMONCMS_DATADIR=/data/emoncms
+      - REDIS_BUFFER=1
+      - EMONCMS_LOG_LEVEL=2
+      - MYSQL_DATABASE=emoncms
+      - MYSQL_USER=emoncms
+      - MYSQL_PASSWORD=emonpiemoncmsmysql2016
+      - MQTT_USER=emonpi
+      - MQTT_PASSWORD=emonpimqtt2016
+      - MQTT_HOST=localhost
+      - MQTT_BASETOPIC=emon
+      - MQTT_CLIENT_ID=emoncms
+      - MQTT_LOG_LEVEL=error
+      - HTTP_CONF=/etc/apache2/httpd.conf
+      - CRT_FILE=/etc/ssl/apache2/server.pem
+      - KEY_FILE=/etc/ssl/apache2/server.key
+      - CUSTOM_APACHE_CONF=0
+      - USE_HOSTNAME_FOR_MQTT_TOPIC_CLIENTID=0
+      - CNAME=localhost
+    volumes:
+      - data:/data
+      - ../:/var/www/emoncms
+    ports:
+      - 8088:80
+      - 8883:1883
+    restart: always
+volumes:
+  data:

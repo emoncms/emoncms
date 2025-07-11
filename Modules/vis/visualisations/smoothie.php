@@ -12,7 +12,7 @@
 <script type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/smoothie/smoothie.js"></script>
 
 <?php if (!$embed) { ?>
-<h2 style="color:#888" ><?php echo _("Smoothie"); ?></h2>
+<h2 style="color:#888" ><?php echo tr("Smoothie"); ?></h2>
 <div style="width:100%; height:400px;">
 <?php } ?>
 

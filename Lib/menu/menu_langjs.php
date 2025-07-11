@@ -3,8 +3,8 @@
 <script type="text/javascript">
 // Create a Javascript associative array who contain sentences from menu
 var LANG_JS_MENU = new Array();
-LANG_JS_MENU["Expand sidebar"] = '<?php echo addslashes(dgettext('lib_messages','Expand sidebar')); ?>';
-LANG_JS_MENU["Minimise sidebar"] = '<?php echo addslashes(dgettext('lib_messages','Minimise sidebar')); ?>';
+LANG_JS_MENU["Expand sidebar"] = '<?php echo addslashes(ctx_tr('lib_messages','Expand sidebar')); ?>';
+LANG_JS_MENU["Minimise sidebar"] = '<?php echo addslashes(ctx_tr('lib_messages','Minimise sidebar')); ?>';
 function _Tr_Menu(key)
 {
 <?php // will return the default value if LANG_JS[key] is not defined. ?>

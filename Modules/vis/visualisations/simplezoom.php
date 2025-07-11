@@ -17,7 +17,7 @@ global $path, $embed, $vis_version;
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("Simpler kWh/d zoomer"); ?></h2>
+<h2><?php echo tr("Simpler kWh/d zoomer"); ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="height:400px; width:100%; position:relative; ">

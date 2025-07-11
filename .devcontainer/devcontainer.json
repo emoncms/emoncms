@@ -1,0 +1,15 @@
+{
+  "name": "emoncms_core_dev",
+  "dockerComposeFile": "dev-compose.yaml",
+  "workspaceFolder": "/var/www/emoncms",
+  "shutdownAction": "stopCompose",
+  "service": "devcontainer",
+  "postCreateCommand": ["/bin/sh", "-c", "/bin/sh .devcontainer/setup.sh"],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "devsense.phptools-vscode"
+      ]
+    }
+  }
+}

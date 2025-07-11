@@ -352,25 +352,25 @@ class Process
         // Process list expected in new JSON format
         $processlist = json_decode($processlist, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
-            return array('success' => false, 'message' => _("Invalid process list format: "));
+            return array('success' => false, 'message' => tr("Invalid process list format: "));
         }
         if (!is_array($processlist)) {
-            return array('success' => false, 'message' => _("Process list must be an array"));
+            return array('success' => false, 'message' => tr("Process list must be an array"));
         }
 
         foreach ($processlist as $index => $inputprocess) {
             if (!isset($inputprocess['fn'])) {
-                return array('success' => false, 'message' => _("Missing process key in process list at index $index"));
+                return array('success' => false, 'message' => tr("Missing process key in process list at index $index"));
             }
 
             if (!isset($inputprocess['args']) || !is_array($inputprocess['args'])) {
-                return array('success' => false, 'message' => _("Invalid or missing args in process list at index $index"));
+                return array('success' => false, 'message' => tr("Invalid or missing args in process list at index $index"));
             }
 
             // Verify process key
             $process_key = $inputprocess['fn'];
             if (!isset($processes[$process_key])) {
-                return array('success' => false, 'message' => _("Invalid process process key:$process_key"));
+                return array('success' => false, 'message' => tr("Invalid process process key:$process_key"));
             }
 
             // Process arguments can be defined with an args array or a singular argtype
@@ -388,7 +388,7 @@ class Process
 
             // Validate number of args against arg_types
             if (count($args) != count($arg_types)) {
-                return array('success' => false, 'message' => _("Invalid number of arguments for process: $processkey"));
+                return array('success' => false, 'message' => tr("Invalid number of arguments for process: $processkey"));
             }
 
             // Validate each arg against its type
@@ -421,14 +421,14 @@ class Process
             case ProcessArg::FEEDID:
                 $feedid = (int) $arg;
                 if (!$this->arg_access("feeds", $userid, $feedid)) {
-                    return array('success' => false, 'message' => _("Invalid feed"));
+                    return array('success' => false, 'message' => tr("Invalid feed"));
                 }
                 break;
 
             case ProcessArg::INPUTID:
                 $inputid = (int) $arg;
                 if (!$this->arg_access("input", $userid, $inputid)) {
-                    return array('success' => false, 'message' => _("Invalid input"));
+                    return array('success' => false, 'message' => tr("Invalid input"));
                 }
                 break;
 

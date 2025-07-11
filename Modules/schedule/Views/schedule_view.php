@@ -15,14 +15,14 @@
 </style>
 
 <div>
-    <div id="apihelphead" style="float:right;"><a href="api"><?php echo dgettext('schedule_messages','Schedule Help'); ?></a></div>
-    <div id="localheading"><h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2></div>
+    <div id="apihelphead" style="float:right;"><a href="api"><?php echo ctx_tr('schedule_messages','Schedule Help'); ?></a></div>
+    <div id="localheading"><h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2></div>
 
     <div id="noschedules" class= "hide">
-        <h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2>
+        <h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2>
         <div id="noschedules" class= "alert alert-block">
-            <h4 class="alert-heading"><?php echo dgettext('schedule_messages','No schedules'); ?></h4><br>
-            <p><?php echo dgettext('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
+            <h4 class="alert-heading"><?php echo ctx_tr('schedule_messages','No schedules'); ?></h4><br>
+            <p><?php echo ctx_tr('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
         </div>
     </div>
 
@@ -31,26 +31,26 @@
     <div id="schedule-loader" class="ajax-loader"></div>
 
     <div id="bottomtoolbar"><hr>
-        <button id="addnewschedule" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo dgettext('schedule_messages','New schedule'); ?></button>
+        <button id="addnewschedule" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
     </div>
 </div>
 
 <div id="scheduleDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="scheduleDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="scheduleDeleteModalLabel"><?php echo dgettext('schedule_messages','Delete schedule'); ?></h3>
+        <h3 id="scheduleDeleteModalLabel"><?php echo ctx_tr('schedule_messages','Delete schedule'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo dgettext('schedule_messages','Deleting a schedule is permanent.'); ?>
+        <p><?php echo ctx_tr('schedule_messages','Deleting a schedule is permanent.'); ?>
            <br><br>
-           <?php echo dgettext('schedule_messages','If you have an Input or Feed Processlist that use this schedule, after deleting it, review that process list or it will be in error freezing other process lists.'); ?>
+           <?php echo ctx_tr('schedule_messages','If you have an Input or Feed Processlist that use this schedule, after deleting it, review that process list or it will be in error freezing other process lists.'); ?>
            <br><br>
-           <?php echo dgettext('schedule_messages','Are you sure you want to delete?'); ?>
+           <?php echo ctx_tr('schedule_messages','Are you sure you want to delete?'); ?>
         </p>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo dgettext('schedule_messages','Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo dgettext('schedule_messages','Delete permanently'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo ctx_tr('schedule_messages','Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo ctx_tr('schedule_messages','Delete permanently'); ?></button>
     </div>
 </div>
 
@@ -63,9 +63,9 @@
   table.deletedata = false;
   table.fields = {
     'id':{'type':"fixed"},
-    'name':{'title':'<?php echo dgettext('schedule_messages',"Name"); ?>','type':"text"},
-    'expression':{'title':'<?php echo dgettext('schedule_messages','Expression'); ?>','type':"text"},
-    'public':{'title':"<?php echo dgettext('schedule_messages','Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    'name':{'title':'<?php echo ctx_tr('schedule_messages',"Name"); ?>','type':"text"},
+    'expression':{'title':'<?php echo ctx_tr('schedule_messages','Expression'); ?>','type':"text"},
+    'public':{'title':"<?php echo ctx_tr('schedule_messages','Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},

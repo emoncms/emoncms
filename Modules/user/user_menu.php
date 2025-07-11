@@ -1,13 +1,13 @@
 <?php
 global $session;
 if ($session["write"]) {
-    $menu["setup"]["l2"]['user'] = array("name"=>_('My Account'),"href"=>"user/view", "order"=>12, "icon"=>"user");
+    $menu["setup"]["l2"]['user'] = array("name"=>tr('My Account'),"href"=>"user/view", "order"=>12, "icon"=>"user");
 }
 /*
 global $session;
 
 $menu['user'][] = array(
-    'text' => _("My Account"),
+    'text' => tr("My Account"),
     'icon' => 'user',
     'path' => 'user/view',
     'order' => 1
@@ -18,7 +18,7 @@ $menu['user'][] = array(
     'order' => 3
 );
 $menu['user'][] = array(
-    'text' => _("Logout"),
+    'text' => tr("Logout"),
     'icon' => 'logout',
     'path' => 'user/logout',
     'order' => 4,
@@ -26,8 +26,8 @@ $menu['user'][] = array(
 );
 
 $menu['user'][] = array(
-    'title' => _("Login"),
-    // 'text' => _("Login"),
+    'title' => tr("Login"),
+    // 'text' => tr("Login"),
     'icon' => 'enter',
     'path' => '/',
     'public' => true,

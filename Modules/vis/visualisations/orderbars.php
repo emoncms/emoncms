@@ -15,7 +15,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("Bar graph (ordered by height):"); ?> <?php echo $feedidname; ?></h2>
+<h2><?php echo tr("Bar graph (ordered by height):"); ?> <?php echo $feedidname; ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
