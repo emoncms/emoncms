@@ -23,8 +23,39 @@ function getTranslationPaths() {
         }
     }
 
-    $paths["theme"] = 'Theme';
-    $paths["lib"] = 'Lib';
+    $paths["theme"] = realpath('Theme');
+    $paths["lib"] = realpath('Lib');
 
     return $paths;
 }
+
+// Get available languages
+function getAvailableLanguages($translationPaths) {
+    $languages = [];
+    
+    foreach ($translationPaths as $pathName => $path) {
+        if ($path === false) continue; // Skip if realpath failed
+        
+        $localePath = $path . DIRECTORY_SEPARATOR . 'locale';
+        if (!is_dir($localePath)) continue;
+        
+        $files = scandir($localePath);
+        foreach ($files as $file) {
+            if ($file === '.' || $file === '..') continue;
+            
+            // Match locale files like fr_FR.json or fr_FR_removed.json
+            if (preg_match('/^([a-z]{2}_[A-Z]{2})(?:_removed)?\.json$/', $file, $matches)) {
+                $localeCode = $matches[1];
+                if (!in_array($localeCode, $languages)) {
+                    $languages[] = $localeCode;
+                }
+            }
+        }
+    }
+    
+    // Sort the languages alphabetically
+    sort($languages);
+    
+    return $languages;
+}
+
