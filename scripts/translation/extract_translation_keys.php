@@ -26,6 +26,8 @@ if (php_sapi_name() !== 'cli') {
 // Change to PWD and then back two directories up
 chdir(dirname(__DIR__, 2));
 
+require 'scripts/translation/common.php';
+
 /**
  * Extracts translation keys from PHP files in a directory
  * 
@@ -158,36 +160,6 @@ function generateLanguageFile($keys, $outputFile) {
         file_put_contents($deletedFile, $deletedContent);
     }
 }
-
-// Function to fetch translation paths: Modules/module/locale, Theme/locale, Lib/locale
-function getTranslationPaths() {
-    $paths = [];
-    
-    // Modules: Modules/module/locale
-    $modulesDir = 'Modules';
-    if (is_dir($modulesDir)) {
-        $modules = scandir($modulesDir);
-        foreach ($modules as $module) {
-            if ($module !== '.' && $module !== '..') {
-                $modulePath = $modulesDir . DIRECTORY_SEPARATOR . $module;
-                $modulePath = realpath($modulePath); // Resolve symlinks
-                
-                if ($modulePath !== false) { // Check if realpath succeeded
-                    $localePath = $modulePath . DIRECTORY_SEPARATOR . 'locale';
-                    if (is_dir($localePath)) {
-                        $paths[$module] = $modulePath;
-                    }
-                }
-            }
-        }
-    }
-
-    $paths["theme"] = 'Theme';
-    $paths["lib"] = 'Lib';
-
-    return $paths;
-}
-
 
 // Parse command line arguments
 // Get language code from first argument, default to 'en_GB'
