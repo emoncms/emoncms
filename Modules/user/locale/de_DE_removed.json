@@ -6,7 +6,6 @@
     "As your using a cookie based remember me login, please logout and log back in to change email": "Wenn du ein \"erinnere dich an mich\" Cookie verwendest, bitte logge dich aus und wieder ein um die Emailadresse zu ändern",
     "Account": "Konto",
     "Username:": "Benutzername:",
-    "Email:": "Email:",
     "Password:": "Passwort:",
     "Confirm password:": "Passwort bestätigen:",
     "cancel": "abbrechen",
@@ -15,8 +14,6 @@
     "My account": "Mein Konto",
     "Edit": "Bearbeiten",
     "Change Password": "Passwort ändern",
-    "Write API Key": "Write API Key",
     "Read API Key": "Read Api Key",
-    "My Profile": "Mein Profil",
-    "Bio": "Bio"
+    "My Profile": "Mein Profil"
 }

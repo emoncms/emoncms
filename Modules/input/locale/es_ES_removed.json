@@ -9,7 +9,6 @@
     "To use the json api the request url needs to include <b>.json<\/b>": "Para usar la api json la URL de la request debe incluir <b>.json<\/b>",
     "Post data": "Subir datos",
     "Assign inputs to a node group": "Asigne entradas a un grupo de nodos",
-    "APIKEY": "APIKEY",
     "Bulk data": "Cúmulo de datos",
     "You can provide data using bulk mode": "Puedes proporcionar los datos usando un modo masivo",
     "The second number is the node id, this is the unique identifer for the wireless node.": "El segundo número es el id del nodo, es decir, su identificador unívoco.",

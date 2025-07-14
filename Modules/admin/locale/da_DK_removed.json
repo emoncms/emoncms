@@ -4,7 +4,6 @@
     "If all the item statuses below show ok that means your database is setup correctly.": "Hvis alle elemnt-statuser herunder returnerer \"ok\" betyder det at databasen er opsat korrekt.",
     "Schema item": "Skemaelement",
     "Name": "Navn",
-    "Status": "Status",
     "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Kør denne efter opdatering af emoncms, efter installering af nye moduler eller for at tjekke status for emoncms-databasen.",
     "Update & check": "Opdater og tjek"
 }

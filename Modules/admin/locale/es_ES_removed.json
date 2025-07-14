@@ -9,7 +9,6 @@
     "Administer user accounts": "Administrar cuentas de usuarios",
     "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Ejecuta esto tras actualizar emoncms, tras instalar un nuevo módulo o para comprobar el estado de la base de datos.",
     "Update & check": "Comprobar y actualizar",
-    "Logger": "Logger",
     "Last Log": "Último registro",
     "Update emonPi": "Actualizar emonPi",
     "Update Now": "Actualizar Ahora",
