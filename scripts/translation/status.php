@@ -20,7 +20,8 @@ foreach ($availableLanguages as $lang) {
     $langProgressCount[$lang] = array(
         'total' => 0,
         'translated' => 0,
-        'removed' => 0
+        'removed' => 0,
+        'modules' => []
     );
 }
 
@@ -61,7 +62,20 @@ foreach ($translationPaths as $module=>$modulePath) {
             $langProgressCount[$lang]['removed'] += $removedCount;
         }
 
+
+        // Store module information
+        $langProgressCount[$lang]['modules'][$module] = array(
+            'total' => count($translations),
+            'translated' => $translatedCount,
+            'removed' => $removedCount
+        );
     }
+}
+
+
+$show_detailed = false;
+if (isset($argv[1]) && $argv[1] === '--detailed') {
+    $show_detailed = true;
 }
 
 // Order by translated count descending
@@ -84,6 +98,24 @@ foreach ($langProgressCount as $lang => $progress) {
         $total, 
         $removed
     );
+
+    if ($show_detailed && !empty($progress['modules'])) {
+
+        // Sort modules by translated count descending
+        uasort($progress['modules'], function($a, $b) {
+            return $b['translated'] <=> $a['translated'];
+        });
+
+        foreach ($progress['modules'] as $module => $moduleProgress) {
+            printf("    - %-20s %3d%% (%4d/%-4d) Removed: %3d\n", 
+                $module, 
+                $moduleProgress['total'] > 0 ? round(($moduleProgress['translated'] / $moduleProgress['total']) * 100, 0) : 0,
+                $moduleProgress['translated'], 
+                $moduleProgress['total'], 
+                $moduleProgress['removed']
+            );
+        }
+    }
 }
 
 
