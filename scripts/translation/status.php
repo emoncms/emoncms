@@ -78,8 +78,15 @@ foreach ($translationPaths as $module=>$modulePath) {
 
 
 $show_detailed = false;
-if (isset($argv[1]) && $argv[1] === '--detailed') {
-    $show_detailed = true;
+$selected_language = null;
+
+// Parse command line arguments
+for ($i = 1; $i < count($argv); $i++) {
+    if ($argv[$i] === '--detailed') {
+        $show_detailed = true;
+    } elseif (preg_match('/^[a-z]{2}_[A-Z]{2}$/', $argv[$i])) {
+        $selected_language = $argv[$i];
+    }
 }
 
 // Order by translated count descending
@@ -89,6 +96,12 @@ uasort($langProgressCount, function($a, $b) {
 
 echo "Translation progress:\n";
 foreach ($langProgressCount as $lang => $progress) {
+
+    // If a specific language is selected, skip others
+    if ($selected_language && $lang !== $selected_language) {
+        continue;
+    }
+
     $total = $progress['total'];
     $translated = $progress['translated'];
     $removed = $progress['removed'];
