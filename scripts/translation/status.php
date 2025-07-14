@@ -14,6 +14,10 @@ require 'scripts/translation/common.php';
 $translationPaths = getTranslationPaths();
 
 $availableLanguages = getAvailableLanguages($translationPaths);
+// remove 'en_GB' from the list of available languages
+$availableLanguages = array_filter($availableLanguages, function($lang) {
+    return $lang !== 'en_GB';
+});
 
 $langProgressCount = [];
 foreach ($availableLanguages as $lang) {
