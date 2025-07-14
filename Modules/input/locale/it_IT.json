@@ -75,7 +75,6 @@
     "Inputs": "Inputs",
     "Cancel": "Annulla",
     "Edit Input": "Modifica ingresso",
-    "Edit the input's name and description.": "Modificare il nome e la descrizione dell'input.",
     "Name": "Nome",
     "Save": "Salva",
     "Close": "Chiudi",
@@ -104,13 +103,7 @@
     "Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href=\"api\">Input API helper<\/a> as a guide for generating your request.": "Gli ingressi sono il punto di ingresso principale per il dispositivo di monitoraggio. Configura il tuo dispositivo per pubblicare i valori qui, puoi seguire <a href=\"api\">l'helper dell'API<\/a> di input come guida per generare la tua richiesta.",
     "New device": "Nuovo dispositivo",
     "Loading": "Caricamento",
-    "Invalid feed": "Alimentazione non valida",
-    "Invalid input": "Valore non valido",
     "Error setting processlist": "Elenco processi per l'impostazione degli errori",
     "Please install the device module to enable this feature": "Si prega di installare il modulo del dispositivo per abilitare questa funzione",
-    "No device key created": "Nessuna chiave del dispositivo creata",
-    "Deleted": "Eliminato",
-    "Error": "Errore",
-    "Saved": "Salvato",
-    "Nothing changed": "Nulla è cambiato"
+    "Edit the input's description.": "Edit the input's description."
 }

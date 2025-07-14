@@ -1,0 +1,12 @@
+{
+    "My account": "Mi cuenta",
+    "Edit": "Editar",
+    "Change Password": "Cambiar contraseña",
+    "Write API Key": "Clave API para la escritura",
+    "Read API Key": "Clave API para la lectura",
+    "My Profile": "Perfil",
+    "Bio": "Sobre mí",
+    "Error creating user": "Error creando usuario",
+    "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page.": "El usuario debe contener caracteres a-z y 0-9, guiones o barrabajas exclusivamente, si creo una cuenta antes de que esta norma se estableciese introduzca su usuario sin los caracteres no permitidos para hacer login y cambie, si lo desea, su usuario en la página de perfil.",
+    "Incorrect password, if your sure its correct try clearing your browser cache": "Contraseña incorrecta, si está seguro de que es correcta intente ahora limpiar la caché de su navegador"
+}

@@ -1,0 +1,21 @@
+{
+    "Username:": "Brugernavn:",
+    "Email:": "E-mail:",
+    "Password:": "Adgangskode:",
+    "Confirm password:": "Bekræft adgangskode:",
+    "cancel": "annullér",
+    "Missing username, password or email paramater": "Manglende brugernavn, adgangskode eller e-mail",
+    "Error creating user": "Fejl ved oprettelse af bruger",
+    "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page.": "Brugernavnet må kun bestå af karaktererne a-z, 0-9, \"_\" og \"-\". Hvis du har oprettet en konto før denne regel tiltrådte skal du indtaste dit brugernavn og udelade karaktererne der ikke længere er tilladte. Efter login bedes du ændre dit brugernavn på din profilside.",
+    "Incorrect password, if your sure its correct try clearing your browser cache": "Forkert adgangskode. Hvis du er sikker på at adgangskoden er indtastet korrekt, kan du evt. prøve at slette din browsers cache",
+    "As your using a cookie based remember me login, please logout and log back in to change username": "Da din browser husker dit login, bedes du logge ud og efterfølgende logge ind igen for at ændre dit brugernavn",
+    "As your using a cookie based remember me login, please logout and log back in to change email": "Da din browser husker dit login, bedes du logge ud og efterfølgende logge ind igen for at ændre din e-mail",
+    "Account": "Konto",
+    "es_ES": "Spansk",
+    "fr_FR": "Fransk",
+    "My account": "Min konto",
+    "Edit": "Redigér",
+    "Change Password": "Skift adgangskode",
+    "My Profile": "Min profil",
+    "Bio": "Om mig"
+}

@@ -175,50 +175,59 @@ if ($lang == 'en_GB') {
 
 $translationPaths = getTranslationPaths();
 
-foreach ($translationPaths as $module=>$modulePath) {
 
-    echo "Processing: $modulePath\n";
+if ($lang == "all") {
+    $availableLanguages = getAvailableLanguages($translationPaths);
+} else {
+    $availableLanguages = [$lang]; // Only generate for specified language
+}
 
-    $result = extractTranslationKeys($modulePath);
+foreach ($availableLanguages as $lang) {
+    foreach ($translationPaths as $module=>$modulePath) {
 
-    $keys = $result['tr_keys'];
-    $ctx_keys = $result['ctx_keys'];
+        echo "Processing: $modulePath\n";
 
-    // Handle contextual translations
-    // Convention: context should be "{module_name}_messages" for module-specific messages
-    $messages_context = $module . "_messages";
-    if (isset($ctx_keys[$messages_context])) {
-        // Merge contextual translations into main keys array
-        foreach ($ctx_keys[$messages_context] as $msgKey) {
-            if (!in_array($msgKey, $keys)) {
-                $keys[] = $msgKey;
+        $result = extractTranslationKeys($modulePath);
+
+        $keys = $result['tr_keys'];
+        $ctx_keys = $result['ctx_keys'];
+
+        // Handle contextual translations
+        // Convention: context should be "{module_name}_messages" for module-specific messages
+        $messages_context = $module . "_messages";
+        if (isset($ctx_keys[$messages_context])) {
+            // Merge contextual translations into main keys array
+            foreach ($ctx_keys[$messages_context] as $msgKey) {
+                if (!in_array($msgKey, $keys)) {
+                    $keys[] = $msgKey;
+                }
             }
         }
-    }
-    
-    // Ensure all keys are unique after merging
-    $keys = array_unique($keys);
+        
+        // Ensure all keys are unique after merging
+        $keys = array_unique($keys);
 
-    // Validation: Check for unexpected contexts
-    // All contexts should either match the module name or follow the "{module}_messages" pattern
-    foreach ($ctx_keys as $context => $texts) {
-        if ($context !== $messages_context && $context !== $module) {
-            echo "Warning: Found context '$context' in module '$module' that does not match expected patterns.\n";
-            echo "Expected: '$module' or '$messages_context'\n";
-            // Note: This is a warning, not a fatal error, in case there are legitimate edge cases
+        // Validation: Check for unexpected contexts
+        // All contexts should either match the module name or follow the "{module}_messages" pattern
+        foreach ($ctx_keys as $context => $texts) {
+            if ($context !== $messages_context && $context !== $module) {
+                echo "Warning: Found context '$context' in module '$module' that does not match expected patterns.\n";
+                echo "Expected: '$module' or '$messages_context'\n";
+                // Note: This is a warning, not a fatal error, in case there are legitimate edge cases
+            }
         }
+        
+        echo "Found " . count($keys) . " translation keys in $module\n";
+        
+        // Debug: Uncomment to see all extracted keys
+        // foreach ($keys as $key) {
+        //     echo "- $key\n";
+        // }
+
+        // Generate the language file for this module
+        $outputFile = $modulePath . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . $lang . '.json';
+        echo "Generating language file: $outputFile\n";
+
+        generateLanguageFile($keys, $outputFile);
     }
-    
-    echo "Found " . count($keys) . " translation keys in $module\n";
-    
-    // Debug: Uncomment to see all extracted keys
-    // foreach ($keys as $key) {
-    //     echo "- $key\n";
-    // }
-
-    // Generate the language file for this module
-    $outputFile = $modulePath . DIRECTORY_SEPARATOR . "locale" . DIRECTORY_SEPARATOR . $lang . '.json';
-    echo "Generating language file: $outputFile\n";
-
-    generateLanguageFile($keys, $outputFile);
 }

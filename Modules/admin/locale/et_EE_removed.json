@@ -1,0 +1,15 @@
+{
+    "Database setup, update and status check": "Andmebaasi haldus, uuenda ja kontrolli staatust",
+    "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required.": "See lehekülg kuvab andmebaasi seadistust ja uuenduse protsessi väljundit, mis kontrollib andmebaasi tingimusi iga paigaldatud mooduli kohta ja sisestab uue tabeli või välja, kui see on vajalik.",
+    "If all the item statuses below show ok that means your database is setup correctly.": "Kui kõik elementide seisundid allpool on korras, siis on andmebaas seadistatud korrektselt.",
+    "Schema item": "Andmebaasi osa",
+    "Name": "Nimi",
+    "Status": "Seisund",
+    "version": "versioon",
+    "Administer user accounts": "Halda kasutajakontosid",
+    "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Käivita see peale emoncms uuendamist, peale uue mooduli paigaldamist või kontrollimaks andmebaasi seisukorda",
+    "Update & check": "Uuenda ja kontrolli",
+    "INSTALLED": "PAIGALDATUD",
+    "yes": "jah",
+    "no": "ei"
+}

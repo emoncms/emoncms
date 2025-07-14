@@ -21,8 +21,6 @@
     "Loading": "Chargement",
     "Saving": "Sauvegarde",
     "Label this dashboard with a name": "Étiqueter ce tableau avec un nom",
-    "Short title to use in URL.\\neg \\\"roof-solar\\\"": "Titre court à utiliser dans l'URL.\\neg \\\"roof-solar\\\"",
-    "Adds a \\\"Default Dashboard\\\" bookmark in the sidebar.\\nAlso visible at \\\"dashboard\/view\\\"": "Ajoute un signet \\\"Default Dashboard\\\" dans la barre latérale.\\nÉgalement visible dans \\\"dashboard\/view\\\"",
     "Allow this Dashboard to be viewed by anyone": "Autoriser ce tableau de bord à être consulté par n'importe qui",
     "Clone the layout of this dashboard to a new Dashboard": "Cloner la disposition de ce tableau de bord dans un nouveau tableau de bord",
     "Edit this dashboard layout": "Modifier cette disposition de tableau de bord",
@@ -30,5 +28,15 @@
     "View this dashboard": "Voir ce tableau de bord",
     "Edit Layout": "Éditer la disposition",
     "Expand sidebar": "Développer la barre latérale",
-    "Minimise sidebar": "Réduire la barre latérale"
+    "Minimise sidebar": "Réduire la barre latérale",
+    "Short title to use in URL.\neg \"roof-solar\"": "Short title to use in URL.\neg \"roof-solar\"",
+    "Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard\/view\"": "Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard\/view\"",
+    "default": "default",
+    "Error loading.": "Error loading.",
+    "Delete \"%s\"": "Delete \"%s\"",
+    "Deleting a dashboard is permanent": "Deleting a dashboard is permanent",
+    "Are you sure you want to delete ?": "Are you sure you want to delete ?",
+    "SUCCESS": "SUCCESS",
+    "Saved": "Saved",
+    "Hide": "Hide"
 }
