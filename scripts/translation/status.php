@@ -107,7 +107,9 @@ foreach ($langProgressCount as $lang => $progress) {
 
         // Sort modules by translated count descending
         uasort($progress['modules'], function($a, $b) {
-            return $b['translated'] <=> $a['translated'];
+            $percentageA = $a['total'] > 0 ? ($a['translated'] / $a['total']) * 100 : 0;
+            $percentageB = $b['total'] > 0 ? ($b['translated'] / $b['total']) * 100 : 0;
+            return $percentageB <=> $percentageA;
         });
 
         foreach ($progress['modules'] as $module => $moduleProgress) {
