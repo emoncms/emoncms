@@ -109,12 +109,16 @@ function generateLanguageFile($keys, $outputFile) {
     }
 
     $langArray = [];
+    $deletedKeys = []; // Track keys that are no longer in source code
 
     // Strategy 1: Preserve order of existing translations
     // First, add existing keys in their original order (only if they're still needed)
     foreach ($existing as $key => $value) {
         if (in_array($key, $keys)) {
             $langArray[$key] = $value; // Keep existing translation
+        } else {
+            // Key exists in translation file but not in source code anymore
+            $deletedKeys[$key] = $value;
         }
     }
     
@@ -146,6 +150,13 @@ function generateLanguageFile($keys, $outputFile) {
     // JSON_UNESCAPED_UNICODE: Keep Unicode characters unescaped
     $content = json_encode($langArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     file_put_contents($outputFile, $content);
+
+    // Write deleted keys to a separate file if any exist
+    if (!empty($deletedKeys)) {
+        $deletedFile = str_replace('.json', '_removed.json', $outputFile);
+        $deletedContent = json_encode($deletedKeys, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        file_put_contents($deletedFile, $deletedContent);
+    }
 }
 
 // Parse command line arguments
