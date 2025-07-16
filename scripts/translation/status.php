@@ -137,4 +137,14 @@ foreach ($langProgressCount as $lang => $progress) {
     }
 }
 
+// Create simple JSON output file
 
+// Remove module information for the JSON output
+foreach ($langProgressCount as $lang => $progress) {
+    unset($langProgressCount[$lang]['modules']);
+}
+
+$outputFile = 'Lib/translation_status.json';
+file_put_contents($outputFile, json_encode($langProgressCount, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+// Output the path to the JSON file
+echo "Translation progress saved to: $outputFile\n";

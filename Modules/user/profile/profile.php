@@ -10,7 +10,7 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=3;
+global $path; $v=4;
 ?>
 <link href="<?php echo $path; ?>Modules/user/profile/profile.css?v=<?php echo $v; ?>" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
@@ -142,10 +142,14 @@ global $path; $v=3;
     <tr>
       <td class="muted"><?php echo tr('Language'); ?></td>
       <td>
-        <span v-if="!edit.language">{{ languages[user.language] }}</span>
-        <div v-else class="input-append">
+        <span v-if="!edit.language">{{ languages[user.language] }}</span> 
+        <span class="muted" style="margin-left:20px" v-if="!edit.language && translation_status[user.language]!=undefined"><?php echo tr("Translation: "); ?>{{ translation_status[user.language].prc_complete }}% <?php echo tr("complete"); ?></span>
+
+        <div v-if="edit.language" class="input-append">
           <select v-model="user.language">
-            <option v-for="(name,code) in languages" :value="code">{{ name }}</option>
+            <!-- default en_GB at the top -->
+            <option value="en_GB" selected>English (United Kingdom)</option>
+            <option v-for="(name,code) in languages" :value="code" v-if="code!='en_GB'">{{ name }}</option>
           </select>
           <button class="btn" @click="save('language')"><i class="icon-ok"></i></button>
         </div>
@@ -254,6 +258,7 @@ global $path; $v=3;
 
 <script>
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
+var translation_status = <?php echo json_encode(get_translation_status()); ?>;
 var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>
