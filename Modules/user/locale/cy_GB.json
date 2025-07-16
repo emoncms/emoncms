@@ -71,6 +71,8 @@
     "Incorrect authentication": "Dilysu anghywir",
     "Password updated successfully": "Cyfrinair wedi'i ddiweddaru'n llwyddiannus",
     "As you are using a cookie based remember me login, please logout and log back in to change username": "Gan eich bod yn defnyddio mewngofnodiad cofio fi seiliedig ar gwci, allgofnodwch a mewngofnodwch eto i newid enw defnyddiwr",
-    "As you are using a cookie based remember me login, please logout and log back in to change email": "Gan eich bod yn defnyddio mewngofnodiad cofio fi seiliedig ar gwci, allgofnodwch a mewngofnodwch eto i newid e-bost",
-    "Error updating user info": "Gwall wrth ddiweddaru gwybodaeth defnyddiwr"
+    "As you are using a cookie based remember me login, please logout and log back in to change email": "Gan eich bod yn defnyddio mewngofnodiad cofio fi seiliedig ar gwci, allgofnodwch a mewngofnodiwch eto i newid e-bost",
+    "Error updating user info": "Gwall wrth ddiweddaru gwybodaeth defnyddiwr",
+    "Translation: ": "Cyfieithiad: ",
+    "complete": "cyflawn"
 }
