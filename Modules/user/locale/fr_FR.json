@@ -68,9 +68,11 @@
     "As you are using a cookie based remember me login, please logout and log back in to change email": "La connexion automatique est basée sur des cookies. Pour prendre en compte le changement d'adresse email il suffit de se déconnecter et reconnecter",
     "Email updated": "Email mis à jour",
     "Error updating user info": "Erreur lors de la mise à jour des infos de l'utilisateur",
-    "Read & Write API Key": "Read & Write API Key",
-    "Read Only API Key": "Read Only API Key",
-    "Database error": "Database error",
-    "Incorrect password": "Incorrect password",
-    "Error creating user, mysql error: ": "Error creating user, mysql error: "
+    "Read & Write API Key": "Clé API lecture et écriture",
+    "Read Only API Key": "Clé API lecture seule",
+    "Database error": "Erreur de base de données",
+    "Incorrect password": "Mot de passe incorrect",
+    "Error creating user, mysql error: ": "Erreur lors de la création de l'utilisateur, erreur mysql : ",
+    "Translation: ": "Traduction : ",
+    "complete": "terminé"
 }
