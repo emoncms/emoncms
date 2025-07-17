@@ -4,7 +4,7 @@ This directory contains utilities for managing internationalization (i18n) trans
 
 ## Helping with translation
 
-We very much welcome help with translation. Here's the translation work flow that we have found works quite well.
+We very much welcome help with translation. Here's the translation work flow that we have found works well.
 
 **Tip:** Select the language and translation that you would like to contribute to on the Emoncms, My Account page. Notice that it indicates the % completion of the translation for the selected language. In general a full translation reaches about 94%.
 
@@ -12,12 +12,16 @@ We very much welcome help with translation. Here's the translation work flow tha
 
 1\. Run the `extract_translation_keys.php` to extract any new translation keys for your chosen language:
 
-    php scripts/translation/extract_translation_keys.php es_ES
+```bash
+php scripts/translation/extract_translation_keys.php es_ES
+```
 
 2\. Run the translation status script via command line to see translation status in a bit more detail e.g:
 
-```
+```bash
 php scripts/translation/status.php es_ES --detailed
+```
+```
 Translation progress:
 - es_ES     19% ( 281/1464) Removed: 148
     - schedule              84% (  43/51  ) Removed:   0
@@ -41,11 +45,13 @@ Translation progress:
 
 3\. Each of the above module has it's own language file e.g:
 
-    Modules/user/locale/es_ES.json
+```
+Modules/user/locale/es_ES.json
+```
 
 Open this file in your favorite editor and apply translations, e.g:
 
-```
+```json
 {
     "Email": "Correo",
     "Username": "Nombre de usuario",
@@ -58,34 +64,43 @@ Open this file in your favorite editor and apply translations, e.g:
 
 **Removed translations:** When changes are made to the English source text this will often break existing translations as they source text which is used as a key no longer matches the corresponding key in the translation file. These keys and translations that no longer have a corresponding source text are saved to a separate file for reference e.g:
 
-    Modules/user/locale/es_ES_removed.json
+```
+Modules/user/locale/es_ES_removed.json
+```
 
 Use these removed translation's as a reference for either manual translation or attach as added context when using LLM's.
 
-4\. After completing translation work, run `php scripts/translation/status.php --detailed` again, this will update the translation progress status shown on the user account page.
+4\. After completing translation work, run the status script again to update the translation progress:
+
+```bash
+php scripts/translation/status.php --detailed
+```
+
+This will update the translation progress status shown on the user account page.
 
 5\. Commit your translation changes via a GitHub pull request for review and inclusion and thanks for your help!
 
-
 ## How Translation Works
 
-The application uses a JSON-based internationalization system with two main translation functions:
+The application uses a JSON-based internationalization system. Understanding this system will help you work more effectively with translations.
 
 ### Translation Functions
 
-**`tr("text")`** - Default context, e.g feeds module related text while in the feed module context.
+The system provides two main translation functions for use in PHP code:
+
+**`tr("text")`** - Default context translation (most common)
 ```php
 echo tr("Hello World");
 echo tr("Welcome to our application");
 ```
 
-**`ctx_tr("context", "text")`** - Contextual translation function, e.g process descriptions are loaded from the process module to "process_messages" and are used on the inputs and feeds pages.
+**`ctx_tr("context", "text")`** - Contextual translation for specific contexts
 ```php
 echo ctx_tr("user_messages", "Welcome");
 echo ctx_tr("error_messages", "User not found");
 ```
 
-### Translation Lookup
+### How Translation Lookup Works
 
 When these functions are called, the system:
 1. Determines the current language (e.g., `fr_FR`, `de_DE`)
@@ -97,9 +112,9 @@ For example, `tr("Hello World")` with French locale would:
 2. Return "Bonjour le monde" if the translation exists
 3. Return "Hello World" if no translation is found
 
-## File Structure
+### File Structure
 
-The translation system organizes files in a modular structure:
+Translation files are organized by module:
 
 ```
 Modules/
@@ -108,7 +123,6 @@ Modules/
 │   │   ├── fr_FR.json          # French translations
 │   │   ├── de_DE.json          # German translations
 │   │   └── es_ES.json          # Spanish translations
-│   ├── login_block.php         # PHP template with tr() calls
 │   └── ...
 Theme/
 ├── locale/
@@ -120,7 +134,7 @@ Lib/
 │   └── de_DE.json
 ```
 
-## JSON Translation Format
+### JSON Translation Format
 
 Translation files use a simple key-value structure:
 
@@ -143,9 +157,13 @@ For untranslated keys, the value defaults to the key itself:
 }
 ```
 
-## Script 1: extract_translation_keys.php - Translation Key Generator
+## Translation Scripts
 
-**Purpose**: The primary tool for ongoing translation maintenance. Scans PHP source code to extract translation function calls and generates/updates JSON language files.
+### extract_translation_keys.php - Main Translation Tool
+
+This is the primary script you'll use for translation work (referenced in step 1 above).
+
+**Purpose**: Scans PHP source code to extract translation function calls and generates/updates JSON language files.
 
 **Usage**:
 ```bash
@@ -161,9 +179,7 @@ php extract_translation_keys.php
 
 **What it does**:
 - Scans all PHP files in the `Modules/` directory
-- Extracts translation keys from:
-  - `tr("text")` - Default context translation function calls
-  - `ctx_tr("context", "text")` - Contextual translation function calls
+- Extracts translation keys from `tr()` and `ctx_tr()` function calls
 - Generates JSON files for each module: `Modules/{ModuleName}/locale/{lang}.json`
 - Preserves existing translations while adding new keys
 - Orders keys logically (existing translations first, then new keys)
@@ -175,35 +191,47 @@ php extract_translation_keys.php
 - **Context handling**: Groups contextual translations appropriately
 - **Duplicate detection**: Automatically removes duplicate keys
 
-**Example output**:
-```
-Processing module: UserManagement
-Found 25 translation keys in UserManagement
-Generating language file: Modules/UserManagement/locale/fr_FR.json
+### po2json.php - Migration Tool
 
-Processing module: ProductCatalog
-Found 18 translation keys in ProductCatalog
-Generating language file: Modules/ProductCatalog/locale/fr_FR.json
+**Purpose**: Converts existing GNU gettext PO files to JSON format. This is a migration tool maintained during the transition from gettext to JSON-based translations.
+
+**Usage**:
+```bash
+php po2json.php
 ```
 
-**When to use**:
-- After adding new translatable text to your PHP code
-- To initialize translation files for new languages
-- Regular maintenance to keep translation files up-to-date
-- As part of your development workflow
+**What it does**:
+- Automatically scans for PO files in module, theme, and library directories
+- Converts each PO file to a corresponding JSON file
+- Handles multi-line translations and escape sequences
+- Detects and reports duplicate translation keys
 
-## Translation Workflow
+**When to use**: 
+- During initial migration from PO to JSON format
+- When importing translations from external gettext tools
 
-### Ongoing Development
-1. Add translation calls in your PHP code using `tr()` or `ctx_tr()`
-2. Run `extract_translation_keys.php` for each target language
-3. Translate the new keys in the generated JSON files
-4. Commit the updated translation files
+## Developer Workflow
+
+### For Ongoing Development
+
+1. **Add translation calls** in your PHP code using `tr()` or `ctx_tr()`
+2. **Extract translation keys** by running `extract_translation_keys.php` for each target language
+3. **Translate the new keys** in the generated JSON files
+4. **Test your translations** in the application
+5. **Commit the updated translation files**
 
 ### Example Development Cycle
 ```bash
-# 1. Add translatable text to your PHP code
-echo 'echo tr("New feature message");' >> Modules/MyModule/controllers/MyController.php
+# 1. Convert existing text to use translation functions
+# Before:
+<h2>Hello World</h2>
+<p>Welcome to our application</p>
+<button>Save Changes</button>
+
+# After:
+<h2><?php echo tr("Hello World"); ?></h2>
+<p><?php echo tr("Welcome to our application"); ?></p>
+<button><?php echo tr("Save Changes"); ?></button>
 
 # 2. Extract keys for all supported languages
 php extract_translation_keys.php fr_FR
@@ -228,42 +256,7 @@ ctx_tr("process_messages", "Log to feed");
 ctx_tr("process_messages", "Power to kWh");
 ```
 
-## Script 2: po2json.php - PO to JSON Converter (Migration Tool)
-
-**Purpose**: Converts existing GNU gettext PO files to JSON format. This is a migration tool maintained during the transition from gettext to JSON-based translations.
-
-**Usage**:
-```bash
-php po2json.php
-```
-
-**What it does**:
-- Automatically scans for PO files in:
-  - `Modules/*/locale/*/LC_MESSAGES/*.po`
-  - `Theme/locale/*/LC_MESSAGES/*.po`
-  - `Lib/locale/*/LC_MESSAGES/*.po`
-- Converts each PO file to a corresponding JSON file
-- Handles multi-line translations and escape sequences
-- Detects and reports duplicate translation keys
-- Outputs JSON files in the same locale directory (e.g., `locale/fr_FR.json`)
-
-**Example output**:
-```
- - Modules/UserManagement/locale/fr_FR/LC_MESSAGES/messages.po -> Modules/UserManagement/locale/fr_FR.json
- - Theme/locale/en_US/LC_MESSAGES/theme.po -> Theme/locale/en_US.json
-```
-
-**When to use**: 
-- During initial migration from PO to JSON format
-- When importing translations from external gettext tools
-- Maintained for compatibility during transition period
-
-### Initial Migration (One-time)
-1. Run `po2json.php` to convert existing PO files to JSON format
-2. Verify the converted JSON files are correct
-3. Update your application to use JSON translations instead of gettext
-
-## Notes
+## Notes and Best Practices
 
 - **English (en_GB)**: Considered the source language; no JSON file is generated by extract_translation_keys.php
 - **Context naming**: Use `{module_name}_messages` for contextual translations
