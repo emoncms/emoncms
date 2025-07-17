@@ -72,5 +72,7 @@
     "Incorrect password": "Incorrect password",
     "Error creating rememberme cookie, try login without rememberme": "Error creating rememberme cookie, try login without rememberme",
     "Password updated successfully": "Password updated successfully",
-    "Error updating user info": "Error updating user info"
+    "Error updating user info": "Error updating user info",
+    "Translation: ": "Translation: ",
+    "complete": "complete"
 }
