@@ -1,0 +1,19 @@
+{
+    "Error creating user": "Fehler beim Anlegen des Benutzer",
+    "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page.": "Benutzername darf nur a-z, 0-9, - oder _ enthalten. Wenn du einen Account vor dieser Regel erstellt hast bitte den Benutzernamen ohne das ungültige Zeichen eingeben. Du kannst dann deinen Benutzernamen in den Accounteinstellungen ändern.",
+    "Incorrect password, if your sure its correct try clearing your browser cache": "Falsches Passwort, wenn du sicher bist dass es richtig ist bitte den Browsercache löschen",
+    "As your using a cookie based remember me login, please logout and log back in to change username": "Wenn du ein \"erinnere dich an mich\" Cookie verwendest, bitte logge dich aus und wieder ein um den Benutzernamen zu ändern",
+    "As your using a cookie based remember me login, please logout and log back in to change email": "Wenn du ein \"erinnere dich an mich\" Cookie verwendest, bitte logge dich aus und wieder ein um die Emailadresse zu ändern",
+    "Account": "Konto",
+    "Username:": "Benutzername:",
+    "Password:": "Passwort:",
+    "Confirm password:": "Passwort bestätigen:",
+    "cancel": "abbrechen",
+    "es_ES": "Spanish",
+    "fr_FR": "Französisch",
+    "My account": "Mein Konto",
+    "Edit": "Bearbeiten",
+    "Change Password": "Passwort ändern",
+    "Read API Key": "Read Api Key",
+    "My Profile": "Mein Profil"
+}

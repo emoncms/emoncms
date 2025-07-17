@@ -1,0 +1,12 @@
+{
+    "406: Route not found": "406: Percorso non trovato",
+    "Admin re-authentication required": "E' richiesta l'autenticazione come amministratore",
+    "Administration": "Amministrazione",
+    "See a list of registered users": "Vedi un elenco di utenti registrati",
+    "Updates": "Aggiornamenti",
+    "OS, Packages, EmonHub, Emoncms & Firmware (If new version)": "SO, Pacchetti, EmonHub, Emoncms & Firmware (Se nuova versione)",
+    "Update EmonHub Only": "Aggiorna solo EmonHub",
+    "Update EmonHub": "Aggiorna EmonHub",
+    "Temperature": "Temperatura",
+    "Return to Administration Page": "Torna alla pagina di amministrazione"
+}

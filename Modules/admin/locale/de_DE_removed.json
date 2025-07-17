@@ -1,0 +1,8 @@
+{
+    "Administer user accounts": "Benutzerkonten verwalten",
+    "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Bitte starten nach einem emoncms Update, nach Installation eines Moduls oder um den Datenbankstatus zu prüfen.",
+    "Update & check": "Update & prüfen",
+    "Database setup, update and status check": "Datenbanksetup, Update und Status prüfen",
+    "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required.": "Diese Seite zeigt die Ausgabe des Datenbanksetup und Updateprozess der die Datenbankanforderungen von jedem installieren Modul.",
+    "If all the item statuses below show ok that means your database is setup correctly.": "Wenn alle Statusanzeigen OK zeigen ist die Datenbank korrekt eingerichtet."
+}

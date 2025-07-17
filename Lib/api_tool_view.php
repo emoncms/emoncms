@@ -25,7 +25,7 @@ if ($session['write']) {
     $apikey_write = $user->get_apikey_write($session['userid']);
 }
 
-bindtextdomain("lib_messages",__DIR__."/locale");
+load_language_files("Lib/locale","lib_messages");
 ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <style>[v-cloak] { display: none; }</style>
@@ -40,15 +40,15 @@ bindtextdomain("lib_messages",__DIR__."/locale");
 
   <table class="table">
     <tr>
-      <td><b><?php echo dgettext('lib_messages','Description'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Description'); ?></b></td>
       <td>{{ api[selected_api].description }}</td>
     </tr>
     <tr>
-      <td><b><?php echo dgettext('lib_messages','Path'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Path'); ?></b></td>
       <td>{{ api[selected_api].path }}</td>
     </tr>
     <tr>
-      <td><b><?php echo dgettext('lib_messages','Parameters'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Parameters'); ?></b></td>
       <td>
         <div v-for="item, name in api[selected_api].parameters">
         <div class="input-prepend">
@@ -61,8 +61,8 @@ bindtextdomain("lib_messages",__DIR__."/locale");
           </select>     
           
           <select v-else-if="item.type=='bool'" v-model.value="item.default" @change="update">
-            <option value=0><?php echo dgettext('lib_messages','No'); ?></option>
-            <option value=1><?php echo dgettext('lib_messages','Yes'); ?></option>
+            <option value=0><?php echo ctx_tr('lib_messages','No'); ?></option>
+            <option value=1><?php echo ctx_tr('lib_messages','Yes'); ?></option>
           </select>
 
           <select v-else-if="item.type=='select'" v-model.value="item.default" @change="update">
@@ -77,24 +77,24 @@ bindtextdomain("lib_messages",__DIR__."/locale");
       </td>
     </tr>
     <tr v-if="!public_userid">
-      <td><b><?php echo dgettext('lib_messages','Authentication'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Authentication'); ?></b></td>
       <td>
-        <button v-if="!auth_visible" class="btn btn-small" @click="show_auth"><?php echo dgettext('lib_messages','Show'); ?>
-        <button v-if="auth_visible" class="btn btn-small" @click="hide_auth"><?php echo dgettext('lib_messages','Hide'); ?>
+        <button v-if="!auth_visible" class="btn btn-small" @click="show_auth"><?php echo ctx_tr('lib_messages','Show'); ?>
+        <button v-if="auth_visible" class="btn btn-small" @click="hide_auth"><?php echo ctx_tr('lib_messages','Hide'); ?>
     </tr>
     <tr>
-      <td><b><?php echo dgettext('lib_messages','Example URL'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Example URL'); ?></b></td>
       <td>
         <a :href="api[selected_api].url">{{ api[selected_api].url }}</a>
-        <button class="btn btn-small" style="float:right" @click="try_api"><?php echo dgettext('lib_messages','Try'); ?></button>
+        <button class="btn btn-small" style="float:right" @click="try_api"><?php echo ctx_tr('lib_messages','Try'); ?></button>
         <!--<button class="btn btn-small" style="float:right" @click="copy_api">Copy</button>-->
       </td>
     </tr>
     <tr>
-      <td><b><?php echo dgettext('lib_messages','Response'); ?></b></td>
+      <td><b><?php echo ctx_tr('lib_messages','Response'); ?></b></td>
       <td>
         <pre v-if="api[selected_api].response!=''">{{ api[selected_api].response }}</pre>
-        <div v-else-if="api[selected_api].mode=='write'"><?php dgettext('lib_messages','This API end point will write data, click Try to test'); ?></div>
+        <div v-else-if="api[selected_api].mode=='write'"><?php ctx_tr('lib_messages','This API end point will write data, click Try to test'); ?></div>
       </td>
     </tr>
   </table>

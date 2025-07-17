@@ -1,0 +1,17 @@
+{
+    "Read only access: ": "Alleen lezen rechten:",
+    "new": "nieuw",
+    "Write only access: ": "Alleen schrijfrechten:",
+    "Keep secret. Write mode access": "Beperkte toegang",
+    "Example: Click or copy this to your web browser or send from your monitoring hardware": "Voorbeeld: Kopiëer dit naar u web browser of stuur het vanaf een nanode:",
+    "try me": "probeer mij",
+    "Visualisation API": "Weergave API",
+    "URL": "Adres",
+    "Real-time graph": "Actuele weergave",
+    "Raw data graph": "Raw data grafiek",
+    "Bar graph": "Staaf diagram",
+    "All time histogram": "Historisch histogram",
+    "Daily histogram": "Dagelijks histogram",
+    "kWh\/d Comparison": "Kwh\/d Inzoom",
+    "Reset Multigraph": "Multigrafiek"
+}

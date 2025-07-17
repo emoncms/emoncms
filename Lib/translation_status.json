@@ -1,0 +1,47 @@
+{
+    "cy_GB": {
+        "total": 1462,
+        "translated": 1380,
+        "removed": 0
+    },
+    "fr_FR": {
+        "total": 1464,
+        "translated": 1185,
+        "removed": 2
+    },
+    "it_IT": {
+        "total": 1462,
+        "translated": 724,
+        "removed": 193
+    },
+    "es_ES": {
+        "total": 1462,
+        "translated": 281,
+        "removed": 148
+    },
+    "da_DK": {
+        "total": 1462,
+        "translated": 109,
+        "removed": 145
+    },
+    "et_EE": {
+        "total": 1462,
+        "translated": 96,
+        "removed": 151
+    },
+    "de_DE": {
+        "total": 1462,
+        "translated": 78,
+        "removed": 130
+    },
+    "nl_NL": {
+        "total": 1462,
+        "translated": 35,
+        "removed": 153
+    },
+    "nl_BE": {
+        "total": 1462,
+        "translated": 24,
+        "removed": 95
+    }
+}

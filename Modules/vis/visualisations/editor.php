@@ -18,8 +18,8 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/vis.helper.js?v=<?php echo $vis_version; ?>"></script>
 
 <?php if (!$embed) { ?>
-<h3><?php echo _("Datapoint editor:"); ?> <span id="feed_name"></span></h3>
-<p><?php echo _("Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint."); ?></p>
+<h3><?php echo tr("Datapoint editor:"); ?> <span id="feed_name"></span></h3>
+<p><?php echo tr("Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint."); ?></p>
 <?php } ?>
 
 <div id="graph_bound" style="width:100%; position:relative; margin-bottom:10px">
@@ -43,34 +43,34 @@
 <div class="alert alert-info" id="alert"></span> seconds</div>
 
 <div class="input-prepend" style="margin-right:10px"> 
-    <span class="add-on"><?php echo _("Select feed"); ?></span>
+    <span class="add-on"><?php echo tr("Select feed"); ?></span>
     <select id="feedselector"></select>
 </div>
 
 <div id="dp-edit" class="input-prepend input-append" style="margin-right:10px"> 
-    <span class="add-on"><?php echo _("Edit feed @ time"); ?></span>
+    <span class="add-on"><?php echo tr("Edit feed @ time"); ?></span>
     <input type="text" id="time" style="width:100px;" value="" />
-    <span class="add-on"><?php echo _("new value"); ?></span>
+    <span class="add-on"><?php echo tr("new value"); ?></span>
     <input type="text" id="newvalue" style="width:80px;" value="" />
-    <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
+    <button id="okb" class="btn btn-info"><?php echo tr('Save'); ?></button>
 </div>
 
 <div class="input-prepend input-append">
-    <span class="add-on"><?php echo _("Multiply data in the window by a float or a fraction"); ?>
-    <i class="icon icon-question-sign" style="cursor:pointer; margin-top:-1px" title="<?php echo _("To erase all the window with NAN > type NAN - To convert all the window to absolute values > type abs(x)"); ?>"></i></span>
+    <span class="add-on"><?php echo tr("Multiply data in the window by a float or a fraction"); ?>
+    <i class="icon icon-question-sign" style="cursor:pointer; margin-top:-1px" title="<?php echo tr("To erase all the window with NAN > type NAN - To convert all the window to absolute values > type abs(x)"); ?>"></i></span>
     <input type="text" id="multiplyvalue" style="width:150px;" value="" />
-    <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
+    <button id="multiply-submit" class="btn btn-info"><?php echo tr('Save'); ?></button>
 </div>
 <?php if (!$embed) { ?>
 <div class="input-prepend input-append">
-    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i> <?php echo _('Delete data in window'); ?></button>
+    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i> <?php echo tr('Delete data in window'); ?></button>
 </div>
 <?php } ?>
 
 <div style="margin-top:10px">
-    <button id="show-csv" class="btn btn-info"><i class="icon-download-alt icon-white"></i> <span id="show-csv-text"><?php echo _('Show CSV'); ?></span></button>
+    <button id="show-csv" class="btn btn-info"><i class="icon-download-alt icon-white"></i> <span id="show-csv-text"><?php echo tr('Show CSV'); ?></span></button>
     <!-- save csv -->
-    <a id="save-csv" class="btn btn-warning" style="display:none"><?php echo _('Import CSV'); ?></a>
+    <a id="save-csv" class="btn btn-warning" style="display:none"><?php echo tr('Import CSV'); ?></a>
 </div>
 
 <textarea id="csv" style="width:100%; height:200px; margin-top:10px; display:none"></textarea>

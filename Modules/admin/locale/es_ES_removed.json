@@ -1,0 +1,17 @@
+{
+    "Admin re-authentication required": "Necesaria re-autorización como administrador",
+    "Database setup, update and status check": "Configuración de la base de datos, actualización y chequeo de estado",
+    "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required.": "Esta página muestra el proceso de creacion y actualización de la base de datos donde se comprueban los requisitos de cada módulo instalado y se actualiza el esquema si es necesario.",
+    "If all the item statuses below show ok that means your database is setup correctly.": "Si el estado de todos los avisos están correctos significa que la base de datos está correcta.",
+    "Schema item": "Elemento del esquema de la base de datos",
+    "Name": "Nombre",
+    "Status": "Estado",
+    "Administer user accounts": "Administrar cuentas de usuarios",
+    "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Ejecuta esto tras actualizar emoncms, tras instalar un nuevo módulo o para comprobar el estado de la base de datos.",
+    "Update & check": "Comprobar y actualizar",
+    "Last Log": "Último registro",
+    "Update emonPi": "Actualizar emonPi",
+    "Update Now": "Actualizar Ahora",
+    "Show Log": "Mostrar Registro",
+    "Administration": "Administración"
+}

@@ -1,0 +1,14 @@
+{
+    "If rate >=, skip next": "Os cyfradd >=, sgipio nesaf",
+    "Conditional - Event": "Amodol - Digwyddiad",
+    "<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.<\/p>": "<p>Os yw gwerth o'r broses olaf â newid absoliwt o'r amser blaenorol pan gafodd ei gyfrifo yn uwch neu'n hafal i'r gwerth penodol, bydd gweithrediad y rhestr broses yn hepgor y broses nesaf.<\/p>",
+    "If rate <, skip next": "Os cyfradd <, sgipio nesaf",
+    "<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.<\/p>": "<p>Os yw gwerth o'r broses olaf â newid absoliwt o'r amser blaenorol pan gafodd ei gyfrifo yn is na'r gwerth penodol, bydd gweithrediad y rhestr broses yn hepgor y broses nesaf.<\/p>",
+    "If Mute, skip next": "Os Distaw, sgipio nesaf",
+    "<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.<\/p>": "<p>Amod sy'n dibynnu ar amser a aeth heibio, y tro cyntaf mae rhestr broses yn mynd heibio yma nid yw'r llif yn newid. Troeon nesaf mae'r un rhestr broses yn mynd heibio yma, os nad yw'r amser gwerth penodol (mewn eiliadau) wedi mynd heibio, bydd y llif yn hepgor y broses nesaf.<\/p>",
+    "If !Mute, skip next": "Os !Distaw, sgipio nesaf",
+    "<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.<\/p>": "<p>Amod sy'n dibynnu ar amser a aeth heibio, y tro cyntaf mae rhestr broses yn mynd heibio yma mae'r llif yn hepgor nesaf. Troeon nesaf mae'r un rhestr broses yn mynd heibio yma, os yw'r amser gwerth penodol (mewn eiliadau) wedi mynd heibio, bydd y llif yn hepgor y broses nesaf.<\/p>",
+    "Send Email": "Anfon E-bost",
+    "Event": "Digwyddiad",
+    "<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.<\/p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}<\/p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.<\/p>": "<p>Anfon e-bost at y defnyddiwr gyda'r corff penodol. E-bost wedi'i anfon at gyfeiriad e-bost y defnyddiwr neu'r rhagosodedig a osodwyd yn y ffurfweddiad.<\/p><p>Tagiau templed a gefnogir i addasu'r corff: {type}, {id}, {key}, {name}, {node}, {time}, {value}<\/p><p>Enghraifft testun corff: Am {time} roedd eich {type} o {node} gyda'r allwedd {key} o'r enw {name} â gwerth {value}.<\/p>"
+}

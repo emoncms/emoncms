@@ -44,6 +44,7 @@ _*Redis is recommended because it reduces the number of disk writes and therefor
 - [Input processing implementation](docs/design/input-processing.md)
 - [Developing a new Module](docs/design/developing-a-new-module.md)
 - [Global variables in Emoncms](docs/design/global-variables.md)
+- [Translation](scripts/translation/readme.md)
 
 **Emoncms timeseries database design (feed storage)**
 

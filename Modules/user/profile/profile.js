@@ -14,6 +14,7 @@ var app = new Vue({
         user: user_data,
         timezones: timezones,
         languages: languages,
+        translation_status: translation_status,
         edit: {
             username: false,
             email: false,

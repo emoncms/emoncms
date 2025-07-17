@@ -1,0 +1,20 @@
+{
+    "If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:": "Si quiere hacer peticiones a alguna de las siguientes acciones sin estar logueado, tienes estas opciones para autenticarte con la API key:",
+    "Use POST parameter: \"apikey=APIKEY\"": "Usa el parámetro POST: \"apikey=APIKEY\"",
+    "Available HTML URLs": "Direcciones HTML disponibles",
+    "The input list view": "La lista de entradas",
+    "This page": "Esta página",
+    "Input processing configuration page": "Página de configuración de los procesos sobre la entrada",
+    "Available JSON commands": "Comandos JSON disponibles",
+    "To use the json api the request url needs to include <b>.json<\/b>": "Para usar la api json la URL de la request debe incluir <b>.json<\/b>",
+    "Post data": "Subir datos",
+    "Assign inputs to a node group": "Asigne entradas a un grupo de nodos",
+    "Bulk data": "Cúmulo de datos",
+    "You can provide data using bulk mode": "Puedes proporcionar los datos usando un modo masivo",
+    "The second number is the node id, this is the unique identifer for the wireless node.": "El segundo número es el id del nodo, es decir, su identificador unívoco.",
+    "All the numbers after the first two are data values. The second node here (node 17) has two data values: 1437 and 3164.": "Todos los números después de los dos primeros son valores de los datos. El segundo nodo aquí (17) tiene dos valores de datos :1437 y 3164.",
+    "Get inputs configuration": "COnfiguración de las entradas",
+    "Node": "Nodo",
+    "Key": "Clave",
+    "Process list": "Lista de procesos"
+}

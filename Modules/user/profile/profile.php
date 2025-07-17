@@ -10,7 +10,7 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=3;
+global $path; $v=4;
 ?>
 <link href="<?php echo $path; ?>Modules/user/profile/profile.css?v=<?php echo $v; ?>" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
@@ -20,16 +20,16 @@ global $path; $v=3;
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div id="app" v-cloak>
-  <h3><?php echo _('My Account'); ?></h3>
+  <h3><?php echo tr('My Account'); ?></h3>
   <table class="table table-hover">
     <tr>
-      <td class="muted"><?php echo _('User ID'); ?></td>    
+      <td class="muted"><?php echo tr('User ID'); ?></td>    
       <td>{{ user.id }}</td>
       <td></td>
-      <td><button class="btn btn-small btn-danger" @click="delete_account()"><?php echo _('Delete account'); ?></button></td>
+      <td><button class="btn btn-small btn-danger" @click="delete_account()"><?php echo tr('Delete account'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Username'); ?></td>
+      <td class="muted"><?php echo tr('Username'); ?></td>
       <td>
         <span v-if="!edit.username">{{ user.username }}</span>
         <div v-else class="input-append">
@@ -41,7 +41,7 @@ global $path; $v=3;
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Email'); ?></td>
+      <td class="muted"><?php echo tr('Email'); ?></td>
       <td>
         <span v-if="!edit.email">{{ user.email }}</span>
         <div v-else class="input-append">
@@ -53,36 +53,36 @@ global $path; $v=3;
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Read & Write API Key'); ?></td>
+      <td class="muted"><?php echo tr('Read & Write API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
-      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo _("Write API Key copied to clipboard"); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo _('Generate New'); ?></button></td>
+      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo addslashes(tr("Write API Key copied to clipboard")); ?>')"></i></td>
+      <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Read Only API Key'); ?></td>
+      <td class="muted"><?php echo tr('Read Only API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
-      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo _("Read API Key copied to clipboard"); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo _('Generate New'); ?></button></td>
+      <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo addslashes(tr("Read API Key copied to clipboard")); ?>')"></i></td>
+      <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Password'); ?></td>    
+      <td class="muted"><?php echo tr('Password'); ?></td>    
       <td>
         <span v-if="!edit.password" class="muted">**********</span>
         <div v-else>
           <div class="account-item">
-              <span class="muted"><?php echo _('Current password'); ?></span>
+              <span class="muted"><?php echo tr('Current password'); ?></span>
               <br><input type="password" v-model="password.current" />
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo _('New password'); ?></span>
+              <span class="muted"><?php echo tr('New password'); ?></span>
               <br><input type="password" v-model="password.new" />
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo _('Repeat new password'); ?></span>
+              <span class="muted"><?php echo tr('Repeat new password'); ?></span>
               <br><input type="password" v-model="password.repeat" />
           </div>
-          <button class="btn btn-primary" @click="change_password()" /><?php echo _('Save'); ?></button>
-          <button class="btn" @click="edit.password=false" /><?php echo _('Cancel'); ?></button>
+          <button class="btn btn-primary" @click="change_password()" /><?php echo tr('Save'); ?></button>
+          <button class="btn" @click="edit.password=false" /><?php echo tr('Cancel'); ?></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.password" @click="show_edit('password')"></i></td>
@@ -90,11 +90,11 @@ global $path; $v=3;
     </tr>
   </table>
 
-  <h3><?php echo _('Profile'); ?></h3>
+  <h3><?php echo tr('Profile'); ?></h3>
 
   <table class="table table-hover">
     <tr>
-      <td class="muted"><?php echo _('Gravatar'); ?></td>
+      <td class="muted"><?php echo tr('Gravatar'); ?></td>
       <td>
         <img v-if="!edit.gravatar" style="border: 1px solid #ccc; padding:2px" :src="'https://www.gravatar.com/avatar/'+CryptoJS.MD5(user.gravatar)" />      
         <div v-else class="input-append">
@@ -105,7 +105,7 @@ global $path; $v=3;
       <td><i class="icon-pencil" v-if="!edit.gravatar" @click="show_edit('gravatar')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Name'); ?></td>
+      <td class="muted"><?php echo tr('Name'); ?></td>
       <td>
         <span v-if="!edit.name">{{ user.name }}</span>
         <div v-else class="input-append">
@@ -116,7 +116,7 @@ global $path; $v=3;
       <td><i class="icon-pencil" v-if="!edit.name" @click="show_edit('name')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Location'); ?></td>
+      <td class="muted"><?php echo tr('Location'); ?></td>
       <td>
         <span v-if="!edit.location">{{ user.location }}</span>
         <div v-else class="input-append">
@@ -127,7 +127,7 @@ global $path; $v=3;
       <td><i class="icon-pencil" v-if="!edit.location" @click="show_edit('location')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Timezone'); ?></td>
+      <td class="muted"><?php echo tr('Timezone'); ?></td>
       <td>
         <span v-if="!edit.timezone">{{ user.timezone }}</span>
         <div v-else class="input-append">
@@ -140,12 +140,16 @@ global $path; $v=3;
       <td><i class="icon-pencil" v-if="!edit.timezone" @click="show_edit('timezone')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Language'); ?></td>
+      <td class="muted"><?php echo tr('Language'); ?></td>
       <td>
-        <span v-if="!edit.language">{{ languages[user.language] }}</span>
-        <div v-else class="input-append">
+        <span v-if="!edit.language">{{ languages[user.language] }}</span> 
+        <span class="muted" style="margin-left:20px" v-if="!edit.language && translation_status[user.language]!=undefined"><?php echo tr("Translation: "); ?>{{ translation_status[user.language].prc_complete }}% <?php echo tr("complete"); ?></span>
+
+        <div v-if="edit.language" class="input-append">
           <select v-model="user.language">
-            <option v-for="(name,code) in languages" :value="code">{{ name }}</option>
+            <!-- default en_GB at the top -->
+            <option value="en_GB" selected>English (United Kingdom)</option>
+            <option v-for="(name,code) in languages" :value="code" v-if="code!='en_GB'">{{ name }}</option>
           </select>
           <button class="btn" @click="save('language')"><i class="icon-ok"></i></button>
         </div>
@@ -153,7 +157,7 @@ global $path; $v=3;
       <td><i class="icon-pencil" v-if="!edit.language" @click="show_edit('language')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo _('Starting page'); ?></td>
+      <td class="muted"><?php echo tr('Starting page'); ?></td>
       <td>
         <span v-if="!edit.startingpage">{{ user.startingpage }}</span>
         <div v-else class="input-append">
@@ -168,7 +172,7 @@ global $path; $v=3;
 
 <table class="table table-hover">
   <tr>
-    <td class="muted"><?php echo _('Theme colour'); ?></td>
+    <td class="muted"><?php echo tr('Theme colour'); ?></td>
     <td>
       <div class="color-box themecolor" name="blue" style="background-color:#44b3e2"></div>
       <div class="color-box themecolor" name="black" style="background-color:#555"></div>
@@ -179,7 +183,7 @@ global $path; $v=3;
     </td>
   </tr>
   <tr>
-    <td class="muted"><?php echo _('Sidebar colour'); ?></td>
+    <td class="muted"><?php echo tr('Sidebar colour'); ?></td>
     <td>
       <div class="color-box sidebarcolor" name="dark" style="background-color:#333"></div>
       <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
@@ -191,9 +195,9 @@ global $path; $v=3;
 
   <div style="width:49.9%; float:left">
     <div style="margin-right:20px">
-    <h3 style="margin:0px"><?php echo _('Mobile app'); ?></h3>
-    <p><?php echo _('Scan QR code from the iOS or Android app to connect.');?></p>
-    <p style="padding-top:10px"><?php echo _('Or scan to view MyElectric web app.');?></p> 
+    <h3 style="margin:0px"><?php echo tr('Mobile app'); ?></h3>
+    <p><?php echo tr('Scan QR code from the iOS or Android app to connect.');?></p>
+    <p style="padding-top:10px"><?php echo tr('Or scan to view MyElectric web app.');?></p> 
     </div>
   </div>
   <div style="width:49.9%; float:left">
@@ -212,48 +216,49 @@ global $path; $v=3;
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting an account is permanent'); ?></h3>
+        <h3 id="myModalLabel"><?php echo tr('WARNING deleting an account is permanent'); ?></h3>
     </div>
     <div class="modal-body">
         <div class="delete-account-s1">
-        <p><?php echo _('Are you sure you want to delete your account?'); ?></p>
+        <p><?php echo tr('Are you sure you want to delete your account?'); ?></p>
         </div>
 
         <div class="delete-account-s2" style="display:none">
-        <p><b><?php echo _('Your account has been successfully deleted.'); ?></b></p>
+        <p><b><?php echo tr('Your account has been successfully deleted.'); ?></b></p>
         </div>
         
         <pre id="deleteall-output"></pre>
         
         <div class="delete-account-s1">
-            <p><?php echo _('Confirm password to delete:'); ?><br>
+            <p><?php echo tr('Confirm password to delete:'); ?><br>
             <input id="delete-account-password" type="password" /></p>
         </div>
     </div>
     <div class="modal-footer">
-        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo _('Logout'); ?></button>
+        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo tr('Delete permanently'); ?></button>
+        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo tr('Logout'); ?></button>
     </div>
 </div>
 
 <div id="modalNewApikey" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="modalNewApikeyLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="modalNewApikeyLabel"><?php echo _('Generate a new API key'); ?> - <span id="apikey_type"></span></h3>
+        <h3 id="modalNewApikeyLabel"><?php echo tr('Generate a new API key'); ?> - <span id="apikey_type"></span></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Are you sure you want to generate a new apikey?'); ?></p>
-        <p><?php echo _("All devices using the current key will need to be updated with the new key."); ?></p>
+        <p><?php echo tr('Are you sure you want to generate a new apikey?'); ?></p>
+        <p><?php echo tr("All devices using the current key will need to be updated with the new key."); ?></p>
     </div>
     <div class="modal-footer">
-        <button id="cancel_generate_apikey" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirm_generate_apikey" class="btn btn-primary"><?php echo _('Generate'); ?></button>
+        <button id="cancel_generate_apikey" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button id="confirm_generate_apikey" class="btn btn-primary"><?php echo tr('Generate'); ?></button>
     </div>
 </div>
 
 <script>
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
-var str_passwords_do_not_match = "<?php echo _('Passwords do not match'); ?>";
+var translation_status = <?php echo json_encode(get_translation_status()); ?>;
+var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>

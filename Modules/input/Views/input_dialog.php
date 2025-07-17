@@ -61,15 +61,15 @@
     <div class="modal" :class="{'hide': hidden}" tabindex="-1" role="dialog" aria-labelledby="inputDeleteModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button @click="closeModal" type="button" class="close" aria-hidden="true">×</button>
-            <h3 id="inputDeleteModalLabel"><?php echo _('Delete Input'); ?></h3>
+            <h3 id="inputDeleteModalLabel"><?php echo tr('Delete Input'); ?></h3>
         </div>
         <div class="modal-body">
             <div class="alert alert-danger d-inline-block">
-            <?php echo _('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>
+            <?php echo tr('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>
             </div>
             <h4>
-                <?php echo _('Are you sure you want to delete?'); ?>
-                <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
+                <?php echo tr('Are you sure you want to delete?'); ?>
+                <em class="text-muted muted">({{selected.length}} <?php echo tr('Inputs') ?>)</em>
             </h4>
             <div class="card well well-small bg-light">
                 <dl class="dl-horizontal row m-0">
@@ -84,7 +84,7 @@
             <div id="inputDelete-loader" class="ajax-loader" style="display:none;"></div>
         </div>
         <div class="modal-footer">
-            <button @click="closeModal" class="btn"><?php echo _('Cancel'); ?></button>
+            <button @click="closeModal" class="btn"><?php echo tr('Cancel'); ?></button>
             <button @click="confirm" class="btn" :class="buttonClass">{{buttonLabel}}</button>
         </div>
     </div>
@@ -96,24 +96,24 @@
     <div :class="{hide: hidden}" class="modal modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button @click="closeModal" type="button" class="close" aria-hidden="true">×</button>
-            <h3 id="inputEditModalLabel"><?php echo _('Edit Input'); ?></h3>
+            <h3 id="inputEditModalLabel"><?php echo tr('Edit Input'); ?></h3>
         </div>
         <div class="modal-body">
-            <p><?php echo _("Edit the input's description."); ?>
-            <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
+            <p><?php echo tr("Edit the input's description."); ?>
+            <em class="text-muted muted">({{selected.length}} <?php echo tr('Inputs') ?>)</em>
             </p>
             <form class="d-flex align-items-center" v-for="input in inputs" :key="input.id" v-if="selected.indexOf(input.id)>-1" @submit.prevent="save">
                 <div class="input-prepend form-group mb-0">
                     <span class="add-on">{{input.nodeid}}:</span>
-                    <input :id="'name_' + input.id" type="text" class="input-small" placeholder="<?php echo _('Name') ?>" v-model="input.name" name="name" disabled>
-                    <label :for="'name_' + input.id" :class="{away: input.name.length > 0}" class="text-muted muted"><?php echo _('Name') ?></label>
+                    <input :id="'name_' + input.id" type="text" class="input-small" placeholder="<?php echo tr('Name') ?>" v-model="input.name" name="name" disabled>
+                    <label :for="'name_' + input.id" :class="{away: input.name.length > 0}" class="text-muted muted"><?php echo tr('Name') ?></label>
                 </div>
                 <div class="form-group mx-2">
                     <input type="hidden" :value="input.id" name="id">
-                    <input :id="'description_' + input.id" type="text" placeholder="<?php echo _('Description') ?>"  v-model="input.description" name="description">
-                    <label :for="'description_' + input.id" :class="{away: input.description.length > 0}" class="text-muted muted"><?php echo _('Description') ?></label>
+                    <input :id="'description_' + input.id" type="text" placeholder="<?php echo tr('Description') ?>"  v-model="input.description" name="description">
+                    <label :for="'description_' + input.id" :class="{away: input.description.length > 0}" class="text-muted muted"><?php echo tr('Description') ?></label>
                 </div>
-                <button type="submit" class="btn"><?php echo _('Save') ?></button>
+                <button type="submit" class="btn"><?php echo tr('Save') ?></button>
                 <transition name="fade">
                     <p class="pl-3 mb-0 text-muted muted" v-if="errors[input.id]"><small>{{ errors[input.id] }}</small></p>
                 </transition>
@@ -130,8 +130,8 @@
                 </h5>
             </div>
             <div>
-                <button @click="closeModal" class="btn" aria-hidden="true" type="button"><?php echo _('Close'); ?></button>
-                <button class="multiple btn btn-primary" type="button" @click="saveAll"><?php echo _('Save All'); ?></button>
+                <button @click="closeModal" class="btn" aria-hidden="true" type="button"><?php echo tr('Close'); ?></button>
+                <button class="multiple btn btn-primary" type="button" @click="saveAll"><?php echo tr('Save All'); ?></button>
             </div>
         </div>
     </div>
@@ -142,8 +142,8 @@
 <template id="edit-input-form" v-cloak>
     <form class="form-inline" style="margin-bottom:.5em">
         <input name="inputid" type="hidden">
-        <input name="name" required pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo _('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo _('name') ?>" data-lpignore="true">
-        <input name="description" pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo _('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo _('description') ?>" data-lpignore="true">
-        <button class="button-small"><?php echo _('Save') ?> <span class="input_id"></span></button>
+        <input name="name" required pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo tr('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo tr('name') ?>" data-lpignore="true">
+        <input name="description" pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo tr('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo tr('description') ?>" data-lpignore="true">
+        <button class="button-small"><?php echo tr('Save') ?> <span class="input_id"></span></button>
     </form>
 </template>

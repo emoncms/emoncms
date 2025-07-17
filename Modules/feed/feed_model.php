@@ -1194,7 +1194,7 @@ class Feed
         $stmt = $this->mysqli->prepare("UPDATE feeds SET processList=? WHERE id=?");
         $stmt->bind_param("si", $processlist_out, $id);
         if (!$stmt->execute()) {
-            return array('success'=>false, 'message'=>_("Error setting processlist"));
+            return array('success'=>false, 'message'=>tr("Error setting processlist"));
         }
 
         if ($this->mysqli->affected_rows>0){

@@ -48,18 +48,18 @@ function format_time(time,format){
  */
 function getTranslations(){
     return {
-        'Tag': "<?php echo _('Tag') ?>",
-        'Feed ID': "<?php echo _('Feed ID') ?>",
-        'Feed Interval': "<?php echo _('Feed Interval') ?>",
-        'Feed Start Time': "<?php echo _('Feed Start Time') ?>",
-        'Realtime': "<?php echo _('Realtime') ?>",
-        'Daily': "<?php echo _('Daily') ?>"
+        'Tag': "<?php echo tr('Tag') ?>",
+        'Feed ID': "<?php echo tr('Feed ID') ?>",
+        'Feed Interval': "<?php echo tr('Feed Interval') ?>",
+        'Feed Start Time': "<?php echo tr('Feed Start Time') ?>",
+        'Realtime': "<?php echo tr('Realtime') ?>",
+        'Daily': "<?php echo tr('Daily') ?>"
     }
 }
 /**
  * wrapper for gettext like string replace function
  */
-function _(str) {
+function tr(str) {
     return translate(str);
 }
 /**
@@ -141,40 +141,40 @@ body{padding:0!important}
 
 </style>
 <div id="feed-header">
-    <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
-    <h3 id="feeds-title"><?php echo _('Feeds'); ?></h3>
-    <h3 id="public-feeds-title" class="hide"><?php echo _('Public Feeds'); ?></h3>
+    <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a></span>
+    <h3 id="feeds-title"><?php echo tr('Feeds'); ?></h3>
+    <h3 id="public-feeds-title" class="hide"><?php echo tr('Public Feeds'); ?></h3>
 </div>
 
 <input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
 
 <div class="controls" data-spy="affix" data-offset-top="100">
-    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-    <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
-    <button class="btn feed-delete hide" title="<?php echo _('Delete') ?>"><i class="icon-trash" ></i></button>
-    <button class="btn feed-downsample hide" title="<?php echo _('Downsample') ?>"><i class="icon-repeat"></i></button>
-    <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
-    <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
-    <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
+    <button id="expand-collapse-all" class="btn" title="<?php echo tr('Collapse') ?>" data-alt-title="<?php echo tr('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo tr('Select all') ?>" data-alt-title="<?php echo tr('Unselect all') ?>"><i class="icon icon-check"></i></button>
+    <button class="btn feed-edit hide" title="<?php echo tr('Edit') ?>"><i class="icon-pencil"></i></button>
+    <button class="btn feed-delete hide" title="<?php echo tr('Delete') ?>"><i class="icon-trash" ></i></button>
+    <button class="btn feed-downsample hide" title="<?php echo tr('Downsample') ?>"><i class="icon-repeat"></i></button>
+    <button class="btn feed-download hide" title="<?php echo tr('Download') ?>"><i class="icon-download"></i></button>
+    <button class="btn feed-graph hide" title="<?php echo tr('Graph view') ?>"><i class="icon-eye-open"></i></button>
+    <button class="btn feed-process hide" title="<?php echo tr('Process config') ?>"><i class="icon-wrench"></i></button>
 
 </div>
 
 <div id="table" class="feed-list"></div>
 
 <div id="feed-none" class="alert alert-block hide">
-    <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
-    <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
+    <h4 class="alert-heading"><?php echo tr('No feeds created'); ?></h4>
+    <p><?php echo tr('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Feed API helper'); ?></a></p>
 </div>
 
 <div id="public-feeds-none" class="alert alert-block hide">
-    <h4 class="alert-heading"><?php echo _('No public feeds available'); ?></h4>
+    <h4 class="alert-heading"><?php echo tr('No public feeds available'); ?></h4>
 </div>
 
 <div id="feed-footer">
-    <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
-    <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New feed'); ?></button>
-    <button id="importdata" class="btn btn-small" data-toggle="modal" data-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo _('Import data'); ?></button>
+    <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo tr('Refresh feed size'); ?></button>
+    <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New feed'); ?></button>
+    <button id="importdata" class="btn btn-small" data-toggle="modal" data-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 
@@ -185,18 +185,18 @@ body{padding:0!important}
 <div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedEditModalLabel"><?php echo _('Edit feed'); ?></h3>
+        <h3 id="feedEditModalLabel"><?php echo tr('Edit feed'); ?></h3>
     </div>
     <div class="modal-body">
 
         <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo _('Name'); ?></span>
+          <span class="add-on" style="width:100px"><?php echo tr('Name'); ?></span>
           <input id="feed-name" type="text" style="width:250px">
           <button class="btn btn-primary feed-edit-save" field="name">Save</button>
         </div>
     
         <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo _('Node'); ?></span>
+          <span class="add-on" style="width:100px"><?php echo tr('Node'); ?></span>
           <div class="autocomplete">
               <input id="feed-node" type="text" style="width:250px">
           </div>
@@ -204,13 +204,13 @@ body{padding:0!important}
         </div>
 
         <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo _('Make public'); ?></span>
+          <span class="add-on" style="width:100px"><?php echo tr('Make public'); ?></span>
           <span class="add-on" style="width:255px"><input id="feed-public" type="checkbox"></span>
           <button class="btn btn-primary feed-edit-save" field="public">Save</button>
         </div>
 
         <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo _('Unit'); ?></span>
+          <span class="add-on" style="width:100px"><?php echo tr('Unit'); ?></span>
           <select id="feed_unit_dropdown" style="width:auto">
               <option value=""></option>
               <?php
@@ -222,7 +222,7 @@ body{padding:0!important}
                   }
               }
               ?>
-              <option value="_other"><?php echo _('Other'); ?></option>
+              <option value="_other"><?php echo tr('Other'); ?></option>
           </select>
           <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>       
           <button class="btn btn-primary feed-edit-save" field="unit">Save</button>
@@ -230,7 +230,7 @@ body{padding:0!important}
     </div>
     <div class="modal-footer">
         <div id="feed-edit-save-message" style="position:absolute"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
     </div>
 </div>
 
@@ -242,24 +242,24 @@ body{padding:0!important}
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?> 
-        <span id="feedDelete-message" class="label label-warning" data-default="<?php echo _('Deleting a feed is permanent.'); ?>"><?php echo _('Deleting a feed is permanent.'); ?></span>
+        <h3 id="feedDeleteModalLabel"><?php echo tr('Delete feed'); ?> 
+        <span id="feedDelete-message" class="label label-warning" data-default="<?php echo tr('Deleting a feed is permanent.'); ?>"><?php echo tr('Deleting a feed is permanent.'); ?></span>
         </h3>
     </div>
     <div class="modal-body">
         <div class="clearfix d-flex row">
             <div id="clearContainer" class="span6">
                 <div style="min-height:12.1em; position:relative" class="well well-small">
-                    <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
-                    <p><?php echo _('Empty feed of all data') ?></p>
-                    <button id="feedClear-confirm" class="btn btn-inverse" style="position:absolute;bottom:.8em"><?php echo _('Clear Data'); ?>&hellip;</button>
+                    <h4 class="text-info"><?php echo tr('Clear') ?>:</h4>
+                    <p><?php echo tr('Empty feed of all data') ?></p>
+                    <button id="feedClear-confirm" class="btn btn-inverse" style="position:absolute;bottom:.8em"><?php echo tr('Clear Data'); ?>&hellip;</button>
                 </div>
             </div>
 
             <div id="trimContainer" class="span6">
                 <div class="well well-small">
-                    <h4 class="text-info"><?php echo _('Trim') ?>:</h4>
-                    <p><?php echo _('Empty feed data up to') ?>:</p>
+                    <h4 class="text-info"><?php echo tr('Trim') ?>:</h4>
+                    <p><?php echo tr('Empty feed data up to') ?>:</p>
                     <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
                         <div class="controls">
                             <div id="feed_trim_datetimepicker" class="input-append date" style="margin-bottom:0">
@@ -267,29 +267,29 @@ body{padding:0!important}
                                 <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
                             </div>
                             <div class="btn-group" style="margin-bottom:-4px">
-                                <button class="btn btn-mini active" title="<?php echo _('Set to the start date') ?>" data-relative_time="start"><?php echo _('Start') ?></button>
-                                <button class="btn btn-mini" title="<?php echo _('One year ago') ?>" data-relative_time="-1y"><?php echo _('- 1 year') ?></button>
-                                <button class="btn btn-mini" title="<?php echo _('Two years ago') ?>" data-relative_time="-2y"><?php echo _('- 2 year') ?></button>
-                                <button class="btn btn-mini" title="<?php echo _('Set to the current date/time') ?>" data-relative_time="now"><?php echo _('Now') ?></button>
+                                <button class="btn btn-mini active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
+                                <button class="btn btn-mini" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>
+                                <button class="btn btn-mini" title="<?php echo tr('Two years ago') ?>" data-relative_time="-2y"><?php echo tr('- 2 year') ?></button>
+                                <button class="btn btn-mini" title="<?php echo tr('Set to the current date/time') ?>" data-relative_time="now"><?php echo tr('Now') ?></button>
                             </div>
                         </div>
                     </div>
-                    <button id="feedTrim-confirm" class="btn btn-inverse"><?php echo _('Trim Data'); ?>&hellip;</button>
+                    <button id="feedTrim-confirm" class="btn btn-inverse"><?php echo tr('Trim Data'); ?>&hellip;</button>
                 </div>
             </div>
         </div>
         
         <div class="well well-small" style="margin-bottom:0">
-            <h4 class="text-info"><?php echo _('Delete')?>: <span id="feedProcessList"></span></h4>
-            <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
-            <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
-            <button id="feedDelete-confirm" class="btn btn-danger"><?php echo _('Delete feed permanently'); ?></button>
+            <h4 class="text-info"><?php echo tr('Delete')?>: <span id="feedProcessList"></span></h4>
+            <p id="deleteFeedText"><?php echo tr('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
+            <p id="deleteVirtualFeedText"><?php echo tr('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
+            <button id="feedDelete-confirm" class="btn btn-danger"><?php echo tr('Delete feed permanently'); ?></button>
         </div>
     </div>
     <div class="modal-footer">
         <div id="feeds-to-delete" class="pull-left"></div>
         <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
     </div>
 </div>
 
@@ -299,14 +299,14 @@ body{padding:0!important}
 <div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="newFeedNameModalLabel"><?php echo _('New Feed'); ?></h3>
+        <h3 id="newFeedNameModalLabel"><?php echo tr('New Feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <label><?php echo _('Feed Name: '); ?></label>
+        <label><?php echo tr('Feed Name: '); ?></label>
         <input type="text" value="New Feed" id="newfeed-name">
-        <label><?php echo _('Feed Tag: '); ?></label>
+        <label><?php echo tr('Feed Tag: '); ?></label>
         <input type="text" value="" id="newfeed-tag">
-        <label><?php echo _('Feed Engine: '); ?></label>
+        <label><?php echo tr('Feed Engine: '); ?></label>
         <select id="newfeed-engine" style="width:350px">
             <option value="7" selected>VIRTUAL Feed</option>
             <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
@@ -315,13 +315,13 @@ body{padding:0!important}
         </select>      
         <select id="newfeed-interval" class="input-mini hide">
             <?php foreach (Engine::available_intervals() as $i) { ?>
-            <option value="<?php echo $i["interval"]; ?>"><?php echo dgettext('process_messages',$i["description"]); ?></option>
+            <option value="<?php echo $i["interval"]; ?>"><?php echo $i["description"]; ?></option>
             <?php } ?>
         </select>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="newfeed-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button id="newfeed-save" class="btn btn-primary"><?php echo tr('Save'); ?></button>
     </div>
 </div>
 
@@ -436,14 +436,14 @@ function update_feed_list() {
 
                 var title_lines = [feed.name,
                                   '-----------------------',
-                                  _('Tag') + ': ' + feed.tag,
-                                  _('Feed ID') + ': ' + feedid,
-                                  _('Feed Engine') + ': ' + feed_engines[feed.engine]]
+                                  tr('Tag') + ': ' + feed.tag,
+                                  tr('Feed ID') + ': ' + feedid,
+                                  tr('Feed Engine') + ': ' + feed_engines[feed.engine]]
                 
                 if(feed.engine == 5) {
-                    title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
+                    title_lines.push(tr('Feed Interval')+": "+(feed.interval||'')+'s')
                 } else {
-                    title_lines.push(_('Feed Interval (approx)')+": "+(feed.interval||'')+'s')
+                    title_lines.push(tr('Feed Interval (approx)')+": "+(feed.interval||'')+'s')
                 }
                 var processListHTML = '';
                 if(feed.processList!=undefined && feed.processList.length > 0){
@@ -452,12 +452,12 @@ function update_feed_list() {
 
                 // show the start time if available
                 if(feed.start_time > 0) {
-                    title_lines.push(_('Feed Start Time')+": "+feed.start_time);
+                    title_lines.push(tr('Feed Start Time')+": "+feed.start_time);
                     title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
                 }
 
                 if(feed.end_time > 0) {
-                    title_lines.push(_('Feed End Time')+": "+feed.end_time);
+                    title_lines.push(tr('Feed End Time')+": "+feed.end_time);
                     title_lines.push(format_time(feed.end_time,'LL LTS')+" UTC");
                 }
 
@@ -811,22 +811,22 @@ function showSelectedFeeds(feed_inputs) {
     if (total_selected === 1) {
         total_summary += `<h5>${feedListShort}</h5>`;
     } else {
-        total_summary += `<h5 title="${feedListShort}"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>`.replace('%s', total_selected);
+        total_summary += `<h5 title="${feedListShort}"><?php echo tr('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>`.replace('%s', total_selected);
     }
 
     // Compose the combined message
     if (total_input_processes_linked > 0 || total_virtual_feed_processes_linked > 0) {
         let msg = '';
         if (total_input_processes_linked > 0) {
-            msg += total_input_processes_linked + ' <?php echo _("input processes") ?>';
+            msg += total_input_processes_linked + ' <?php echo tr("input processes") ?>';
         }
         if (total_virtual_feed_processes_linked > 0) {
             if (msg.length > 0) msg += ' and ';
-            msg += total_virtual_feed_processes_linked + ' <?php echo _("virtual feed processes") ?>';
+            msg += total_virtual_feed_processes_linked + ' <?php echo tr("virtual feed processes") ?>';
         }
         msg += total_selected === 1
-            ? ' <?php echo _("associated with this feed") ?>'
-            : ' <?php echo _("associated with these feeds") ?>';
+            ? ' <?php echo tr("associated with this feed") ?>'
+            : ' <?php echo tr("associated with these feeds") ?>';
 
         feedProcessList = `<span class="badge badge-default" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
     }
@@ -899,7 +899,7 @@ function initRelativeStartDateButtons(start_time){
         if (relativeTime < startDate) {
             $btn.hide() // hide button date is beyond start date
             $btn.css({'font-style':'italic', color:'#9a9eaa'});
-            $btn.attr('title',$btn.attr('title')+' - [<?php echo _('Out of range')?>]');
+            $btn.attr('title',$btn.attr('title')+' - [<?php echo tr('Out of range')?>]');
         }
     })
     // open date picker on input focus
@@ -1071,7 +1071,7 @@ function enableTrim(start_time){
                 $input.focus();
                 return false;
             }else{
-                if(confirm("<?php echo _('This is a new feature. Consider backing up your data before you continue. OK to continue?') ?>") == true) {
+                if(confirm("<?php echo tr('This is a new feature. Consider backing up your data before you continue. OK to continue?') ?>") == true) {
                     $('#trim_start_time_container').removeClass('error');
                     // set to seconds from milliseconds
                     let start_time = start_date.getTime()/1000;
@@ -1100,7 +1100,7 @@ function enableTrim(start_time){
  * @return void
  */
 function disableTrim(){
-    $('#trimContainer').attr('title','<?php echo _('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#trimContainer').attr('title','<?php echo tr('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button,input').addClass('disabled')
         .find('input').val('');
@@ -1177,7 +1177,7 @@ function enableClear(){
     $("#feedClear-confirm")
         .unbind('click')
         .click(function(){
-            if( confirm("<?php echo _('Are you sure you want to delete all the feeds data?') ?>") == true ){
+            if( confirm("<?php echo tr('Are you sure you want to delete all the feeds data?') ?>") == true ){
                 $modal = $('#feedDeleteModal');
                 $("#feedDelete-loader").fadeIn();
 
@@ -1200,17 +1200,17 @@ function enableClear(){
 function disableClear(){
     $("#feedClear-confirm").unbind();
 
-    $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#clearContainer').attr('title','<?php echo tr('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button').addClass('disabled');
 }
 
 $("#feedDelete-confirm").click(function(){
-    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
+    if( confirm("<?php echo tr('Are you sure you want to delete?') ?>") == true) {
         for (let feedid in selected_feeds) {
             if (selected_feeds[feedid]) {
                 let response = feed.remove(feedid);
-                response = response ? response : {success:true, message: '<?php echo _("Feeds Deleted") ?>'};
+                response = response ? response : {success:true, message: '<?php echo tr("Feeds Deleted") ?>'};
                 updateFeedDeleteModalMessage(response);
             }
         }
@@ -1225,7 +1225,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update_feed_list(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update_feed_list(); alert('<?php echo addslashes(tr("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -1345,11 +1345,11 @@ function save_processlist(feed_id, process_list) {
 
 // Translations
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
-var str_enter_valid_start_date = "<?php echo _('Please enter a valid start date.'); ?>";
-var str_enter_valid_end_date = "<?php echo _('Please enter a valid end date.'); ?>";
-var str_start_before_end = "<?php echo _('Start date must be further back in time than end date.'); ?>";
-var str_interval_for_download = "<?php echo _('Please select interval to download.'); ?>";
-var str_large_download = "<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>";
+var str_enter_valid_start_date = "<?php echo tr('Please enter a valid start date.'); ?>";
+var str_enter_valid_end_date = "<?php echo tr('Please enter a valid end date.'); ?>";
+var str_start_before_end = "<?php echo tr('Start date must be further back in time than end date.'); ?>";
+var str_interval_for_download = "<?php echo tr('Please select interval to download.'); ?>";
+var str_large_download = "<?php echo tr('Estimated download file size is large.'); ?>\n<?php echo tr('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo tr('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo tr('Try exporting anyway?'); ?>";
 </script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>

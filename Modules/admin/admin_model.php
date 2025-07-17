@@ -729,7 +729,7 @@ class Admin {
                 $rpi_info['gputemp'] = str_replace("'C","°C", $rpi_info['gputemp']);
             }else{
                 $rpi_info['gputemp'] = "N/A";
-                $rpi_info['gputemp'] .= _(" (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )");
+                $rpi_info['gputemp'] .= tr(" (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )");
             }
             // release
             if (glob('/boot/emonSD-*')) {

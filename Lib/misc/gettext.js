@@ -9,6 +9,10 @@
 function _(str) {
     return translate(str);
 }
+
+function tr(str) {
+    return translate(str);
+}
 /**
  * emulate the php gettext function for replacing php strings in js
  */

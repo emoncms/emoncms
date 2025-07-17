@@ -77,16 +77,16 @@
                 {{ status.message }}
             </div>
             <div class="d-flex justify-content-between">
-                <h2><?php echo _('Dashboards') ?> <svg class="icon text-info"><use xlink:href="#icon-dashboard"></use></svg> <small v-if="gridData.length === 0">
-                    <a href="<?php echo $path ?>" class="btn btn-success" :title="_('Reload') + '&hellip;'">
+                <h2><?php echo tr('Dashboards') ?> <svg class="icon text-info"><use xlink:href="#icon-dashboard"></use></svg> <small v-if="gridData.length === 0">
+                    <a href="<?php echo $path ?>" class="btn btn-success" :title="tr('Reload') + '&hellip;'">
                     <svg class="icon"><use xlink:href="#icon-spinner11"></use></svg>
                     </a>
                 </small></h2>
                 <form id="search" class="form-inline position-relative">
                     <div class="form-group">
-                        <input id="search-box" name="query" v-model="searchQuery" type="search" class="form-control mb-0" aria-describedby="searchHelp" placeholder="<?php echo _('Search') ?>" title="<?php echo _('Search the data by any column') ?>">
+                        <input id="search-box" name="query" v-model="searchQuery" type="search" class="form-control mb-0" aria-describedby="searchHelp" placeholder="<?php echo tr('Search') ?>" title="<?php echo tr('Search the data by any column') ?>">
                         <button id="searchclear" @click.prevent="searchQuery = ''"style="right:0" class="btn btn-link position-absolute" :class="{'d-none':searchQuery.length===0}"><svg class="icon"><use xlink:href="#icon-close"></use></svg></button>
-                        <small id="searchHelp" class="form-text text-muted sr-only"><?php echo _('Search the data by any column') ?>.</small>
+                        <small id="searchHelp" class="form-text text-muted sr-only"><?php echo tr('Search the data by any column') ?>.</small>
                     </div>
                 </form>
             </div>
@@ -119,22 +119,22 @@
          */
         function getTranslations(){
             return {
-                'Error': "<?php echo _('Error') ?>",
-                'Error loading': "<?php echo _('Error loading') ?>",
-                'Found %s entries': "<?php echo _('Found %s entries') ?>",
-                'JS Error': "<?php echo _('JS Error') ?>",
-                'Reload': "<?php echo _('Reload') ?>",
-                'Loading': "<?php echo _('Loading') ?>…",
-                'Saving': "<?php echo _('Saving') ?>…",
-                'Label this dashboard with a name': "<?php echo _('Label this dashboard with a name') ?>",
-                'Short title to use in URL.\neg \"roof-solar\"': "<?php echo _('Short title to use in URL.\neg \"roof-solar\"') ?>",
-                'Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"': "<?php echo _('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"') ?>",
-                'Allow this Dashboard to be viewed by anyone': "<?php echo _('Allow this Dashboard to be viewed by anyone') ?>",
-                'Clone the layout of this dashboard to a new Dashboard': "<?php echo _('Clone the layout of this dashboard to a new Dashboard') ?>",
-                'Edit this dashboard layout': "<?php echo _('Edit this dashboard layout') ?>",
-                'Delete this dashboard': "<?php echo _('Delete this dashboard') ?>…",
-                'View this dashboard': "<?php echo _('View this dashboard') ?>…",
-                'Edit Layout': "<?php echo _('Edit Layout') ?>"
+                'Error': "<?php echo tr('Error') ?>",
+                'Error loading': "<?php echo tr('Error loading') ?>",
+                'Found %s entries': "<?php echo tr('Found %s entries') ?>",
+                'JS Error': "<?php echo tr('JS Error') ?>",
+                'Reload': "<?php echo tr('Reload') ?>",
+                'Loading': "<?php echo tr('Loading') ?>…",
+                'Saving': "<?php echo tr('Saving') ?>…",
+                'Label this dashboard with a name': "<?php echo tr('Label this dashboard with a name') ?>",
+                'Short title to use in URL.\neg \"roof-solar\"': "<?php echo tr('Short title to use in URL.\neg \"roof-solar\"') ?>",
+                'Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"': "<?php echo tr('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"') ?>",
+                'Allow this Dashboard to be viewed by anyone': "<?php echo tr('Allow this Dashboard to be viewed by anyone') ?>",
+                'Clone the layout of this dashboard to a new Dashboard': "<?php echo tr('Clone the layout of this dashboard to a new Dashboard') ?>",
+                'Edit this dashboard layout': "<?php echo tr('Edit this dashboard layout') ?>",
+                'Delete this dashboard': "<?php echo tr('Delete this dashboard') ?>…",
+                'View this dashboard': "<?php echo tr('View this dashboard') ?>…",
+                'Edit Layout': "<?php echo tr('Edit Layout') ?>"
             }
         }
     </script>
@@ -186,46 +186,46 @@
                 name: {
                     sort: true,
                     input: true,
-                    title: _('Label this dashboard with a name')
+                    title: tr('Label this dashboard with a name')
                 },
                 alias: {
                     sort: true,
                     input: true,
-                    title: _('Short title to use in URL.\neg \"roof-solar\"')
+                    title: tr('Short title to use in URL.\neg \"roof-solar\"')
                 },
                 main: {
                     sort: true,
                     icon: '#icon-star_border',
-                    label: _('default'),
-                    title: _('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"')
+                    label: tr('default'),
+                    title: tr('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"')
                 },
                 public: {
                     sort: true,
                     icon: '#icon-earth',
-                    title: _('Allow this Dashboard to be viewed by anyone')
+                    title: tr('Allow this Dashboard to be viewed by anyone')
                 },
                 clone: {
                     icon: '#icon-content_copy',
                     noHeader: true,
-                    title: _('Clone the layout of this dashboard to a new Dashboard')
+                    title: tr('Clone the layout of this dashboard to a new Dashboard')
                 },
                 edit: {
                     icon: '#icon-cog',
                     noHeader: true,
                     link: true,
-                    label: _('Edit Layout'),
-                    title: _('Edit this dashboard layout')
+                    label: tr('Edit Layout'),
+                    title: tr('Edit this dashboard layout')
                 },
                 delete: {
                     icon: '#icon-bin',
                     noHeader: true,
-                    title: _('Delete this dashboard')
+                    title: tr('Delete this dashboard')
                 },
                 view: {
                     icon: '#icon-arrow_forward',
                     noHeader: true,
                     link: true,
-                    title: _('View this dashboard')
+                    title: tr('View this dashboard')
                 }
             }
 
@@ -255,7 +255,7 @@
                             break;
                         case 'number':
                             this.statusData.total = value
-                            this.statusData.title =  _('Found %s entries').replace('%s', value)
+                            this.statusData.title =  tr('Found %s entries').replace('%s', value)
                             break;
                         case 'string':
                             this.statusData.title = value
@@ -267,7 +267,7 @@
         mounted: function () {
             // on load request server data
             let vm = this;
-            vm.Notify(_('Loading'), true)
+            vm.Notify(tr('Loading'), true)
             dashboard_v2.list().then(function(data){
                 // handle success - populate gridData[] array
                 // add urls for edit and view
@@ -281,7 +281,7 @@
             }, function(xhr,message){
                 vm.Notify = ({
                     success: false,
-                    title: _('Error loading.'),
+                    title: tr('Error loading.'),
                     message: message,
                     total: 0,
                     url: this.url
@@ -331,14 +331,14 @@
                 try {
                     this.Set_field_delayed(event, item, property, value, success, error)
                 } catch (error) {
-                    _debug.error (_('JS Error'), field, error, arguments);
+                    _debug.error (tr('JS Error'), field, error, arguments);
                 }
             },
             alias: function(event, item, property, value, success, error){
                 try {
                     this.Set_field_delayed(event, item, property, value, success, error)
                 } catch (error) {
-                    _debug.error (_('JS Error'), field, error, arguments);
+                    _debug.error (tr('JS Error'), field, error, arguments);
                 }
             },
             main: function(event, item){
@@ -360,7 +360,7 @@
                     });
 
                 } catch (error) {
-                    _debug.error (_('JS Error'), field, error, arguments);
+                    _debug.error (tr('JS Error'), field, error, arguments);
                 }
             },
             public: function(event, item){
@@ -373,7 +373,7 @@
                         item[field] = value;
                     });
                 } catch (error) {
-                    _debug.error (_('JS Error'), field, error, arguments);
+                    _debug.error (tr('JS Error'), field, error, arguments);
                 }
             },
             clone: function(event, item){
@@ -393,18 +393,18 @@
                         // @todo: handle error
                     })
                 } catch (error) {
-                    _debug.error (_('JS Error'), field, error, arguments);
+                    _debug.error (tr('JS Error'), field, error, arguments);
                 }
             },
             delete: function(event, item){
                 // delete item
                 try {
-                    let title = _('Delete "%s"').replace('%s',item.name);
+                    let title = tr('Delete "%s"').replace('%s',item.name);
                     let question = [
                         title,
-                        _("Deleting a dashboard is permanent"),
+                        tr("Deleting a dashboard is permanent"),
                         "\n",
-                        _("Are you sure you want to delete ?")
+                        tr("Are you sure you want to delete ?")
                     ]
                     let max = 0;
                     question.forEach(function(item){
@@ -422,7 +422,7 @@
                         })
                     }
                 } catch (error) {
-                    _debug.error (_('JS Error'), error, arguments);
+                    _debug.error (tr('JS Error'), error, arguments);
                 }
             },
             // ----------
@@ -486,7 +486,7 @@
                     // for fast servers you dont need this, as the save happens before you see it
                     saving = window.setTimeout(function(){
                         vm.Notify({
-                            'title': _('Saving')
+                            'title': tr('Saving')
                         }, true)
                     }, vm.wait)
 
@@ -496,8 +496,8 @@
                             // on succesful save ...
                             window.clearTimeout(saving)
                             // display success message to user
-                            _debug.log (_('SUCCESS'), message, arguments);
-                            vm.Notify(_('Saved'))
+                            _debug.log (tr('SUCCESS'), message, arguments);
+                            vm.Notify(tr('Saved'))
                             if (typeof success == 'function') {
                                 success(event)
                             }

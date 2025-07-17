@@ -1,0 +1,9 @@
+{
+    "Database setup, update and status check": "Databaseopsætning, -opdatering og -statuscheck",
+    "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required.": "Denne side viser output fra databaseopsætningen og opdateringsprocessen hvilken tjekker databasekrav for hvert enkelt modul der er installeret og tilføjer nye tabeller og felter hvis nødvendigt.",
+    "If all the item statuses below show ok that means your database is setup correctly.": "Hvis alle elemnt-statuser herunder returnerer \"ok\" betyder det at databasen er opsat korrekt.",
+    "Schema item": "Skemaelement",
+    "Name": "Navn",
+    "Run this after updating emoncms, after installing a new module or to check emoncms database status.": "Kør denne efter opdatering af emoncms, efter installering af nye moduler eller for at tjekke status for emoncms-databasen.",
+    "Update & check": "Opdater og tjek"
+}

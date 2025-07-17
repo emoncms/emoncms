@@ -258,12 +258,52 @@ function load_db_schema()
  * @param [string] $domain
  * @return void
  */
-function load_language_files($path, $domain = 'messages')
+function load_language_files($path, $context = false)
 {
-    // Load language files for module
-    bind_textdomain_codeset($domain, 'UTF-8');
-    bindtextdomain($domain, $path);
-    textdomain($domain);
+    // Determine current language
+    $lang = isset($GLOBALS['language']) ? $GLOBALS['language'] : 'en_GB'; // Default to English if not set
+
+    // Skip if $lang is en_GB
+    if ($lang == 'en_GB') {
+        // No need to load English translations, they are the default
+        return;
+    }
+
+    //echo "Loading language files for $lang in $path with domain $context<br>";
+
+    // Build path to JSON translation file
+    $json_file = rtrim($path, '/')."/$lang.json";
+    if (file_exists($json_file)) {
+        $translations = json_decode(file_get_contents($json_file), true);
+        if (is_array($translations)) {
+            if (!$context) {
+                // If domain is messages, we can use the translations directly
+                $GLOBALS['translations'] = $translations;
+            } else {
+                // For other context specific translations:
+                if (!isset($GLOBALS['context_translations'])) {
+                    $GLOBALS['context_translations'] = array();
+                }
+                $GLOBALS['context_translations'][$context] = $translations;
+            }
+        }
+    }
+}
+
+function tr($text)
+{
+    return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''
+        ? $GLOBALS['translations'][$text]
+        : $text;
+}
+
+function ctx_tr($context, $text)
+{
+    if ($context && isset($GLOBALS['context_translations'][$context]) && isset($GLOBALS['context_translations'][$context][$text])) {
+        // If context is set and translation exists in context, return it
+        return $GLOBALS['context_translations'][$context][$text];
+    }
+    return $text;
 }
 
 function load_menu()
@@ -276,11 +316,9 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
-                if (is_file("Modules/".$dir[$i]."/locale/".$dir[$i]."_messages.pot")) {
-                    load_language_files("Modules/".$dir[$i]."/locale",$dir[$i]."_messages"); // management of domains beginning with the name of the module
-                } else {
-                    load_language_files("Modules/".$dir[$i]."/locale");
-                }
+                // Language file gets loaded here but immediately over-written by the next
+                // Perhaps consider some form of caching or a different loading strategy
+                load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
