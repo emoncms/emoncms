@@ -202,10 +202,12 @@ class Admin
                         "SubState" => "running",
                         "UnitFileState" => "container",
                     ];
-                } else
+                } else {
                     return [];
-            } else
+                }
+            } else {
                 return [];
+            }
         }
         if (!in_array($service_name, $this->get_services_list())) {
             return array();
@@ -297,18 +299,24 @@ class Admin
                     list($key, $val) = explode(":", $line);
                     $key = trim($key);
                     $val = trim($val);
-                    if ($key == "Socket(s)")
+                    if ($key == "Socket(s)") {
                         $cpuinfo .= $val . ' Sockets(s) | ';
-                    if ($key == "Core(s) per socket")
+                    }
+                    if ($key == "Core(s) per socket") {
                         $cpuinfo .= $val . ' Core(s) | ';
-                    if ($key == "Thread(s) per core")
+                    }
+                    if ($key == "Thread(s) per core") {
                         $cpuinfo .= $val . ' Threads(s) | ';
-                    if ($key == "Model name")
+                    }
+                    if ($key == "Model name") {
                         $cpuinfo .= $val . ' | ';
-                    if ($key == "CPU MHz")
+                    }
+                    if ($key == "CPU MHz") {
                         $cpuinfo .= $val . 'MHz | ';
-                    if ($key == "BogoMIPS")
+                    }
+                    if ($key == "BogoMIPS") {
                         $cpuinfo .= $val . 'MIPS | ';
+                    }
                 }
             }
         }
@@ -447,13 +455,10 @@ class Admin
         }
 
         foreach (array("$emoncms_path/Modules", $this->settings['emoncms_dir'] . "/modules", $this->settings['openenergymonitor_dir']) as $path) {
-
             $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
 
             foreach ($directories as $module_fullpath) {                                           // loop through the folders
-
                 if (!is_link($module_fullpath)) {
-
                     $fullpath_parts = explode("/", $module_fullpath);
                     $name = $fullpath_parts[count($fullpath_parts) - 1];
 
@@ -517,8 +522,9 @@ class Admin
             $columns = array();
             foreach (explode(' ', $line) as $column) {
                 $column = trim($column);
-                if ($column != '')
+                if ($column != '') {
                     $columns[] = $column;
+                }
             }
 
             // Only process 6 column rows
@@ -674,15 +680,18 @@ class Admin
         // Check for Raspberry Pi by reading /proc/device-tree/model or /proc/cpuinfo
         if (@file_exists('/proc/device-tree/model')) {
             $model = @file_get_contents('/proc/device-tree/model');
-            if (stripos($model, 'Raspberry Pi') !== false)
+            if (stripos($model, 'Raspberry Pi') !== false) {
                 return true;
+            }
         }
         if (@is_readable('/proc/cpuinfo')) {
             $cpuinfo = @file_get_contents('/proc/cpuinfo');
-            if (preg_match('/^Hardware\s*:\s*BCM\d+/mi', $cpuinfo))
+            if (preg_match('/^Hardware\s*:\s*BCM\d+/mi', $cpuinfo)) {
                 return true;
-            if (preg_match('/^Model\s*:\s*Raspberry Pi/mi', $cpuinfo))
+            }
+            if (preg_match('/^Model\s*:\s*Raspberry Pi/mi', $cpuinfo)) {
                 return true;
+            }
         }
         return false;
     }
@@ -697,10 +706,12 @@ class Admin
     {
         // create empty array with all the required keys
         $rpi_info = array_map(function ($n) {
-            return ''; }, array_flip(explode(',', 'rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
+            return '';
+        }, array_flip(explode(',', 'rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
         // exit with empty array if not a raspberry pi
-        if (!$this->is_Pi())
+        if (!$this->is_Pi()) {
             return $rpi_info;
+        }
         // add the rpi details
         $rpi_info['model'] = "Unknown";
         if (@is_readable('/proc/cpuinfo') || true) {
@@ -709,8 +720,9 @@ class Admin
             if (@is_readable(__DIR__ . "/pi-model.json")) {
                 $rpi_revision = json_decode(file_get_contents(__DIR__ . "/pi-model.json"), true);
                 foreach ($rpi_revision as $k => $rev) {
-                    if (empty($rev['Code']))
+                    if (empty($rev['Code'])) {
                         continue;
+                    }
                     $rpi_revision[$rev['Code']] = $rev;
                     unset($rpi_revision[$k]);
                 }
@@ -740,7 +752,8 @@ class Admin
             //build model string
             if (!empty($rpi_revision[$rpi_info['rev']]) || 1) {
                 $empty_model = array_map(function ($n) {
-                    return ''; }, array_flip(explode(',', 'Model,Revision,RAM,Manufacturer,currentfs')));
+                    return '';
+                }, array_flip(explode(',', 'Model,Revision,RAM,Manufacturer,currentfs')));
                 $model_info = !empty($rpi_revision[$rpi_info['rev']]) ? $rpi_revision[$rpi_info['rev']] : $empty_model;
                 $rpi_info['model'] = "Raspberry Pi ";
                 $model = !empty($model_info['Model']) ? $model_info['Model'] : 'N/A';
@@ -812,7 +825,8 @@ class Admin
     {
         // Ram information
         $sysRam = array_map(function ($n) {
-            return ''; }, array_flip(explode(',', 'used,raw,percent,table,swap')));
+            return '';
+        }, array_flip(explode(',', 'used,raw,percent,table,swap')));
 
         if ($mem_info) {
             $sysTotal = $mem_info['MemTotal'];
@@ -830,7 +844,6 @@ class Admin
                 $sysSwap['raw'] = (($mem_info['SwapTotal'] - $mem_info['SwapFree']) / $mem_info['SwapTotal']) * 100;
                 $sysSwap['percent'] = sprintf('%.2f', $sysSwap['raw']);
                 $sysSwap['table'] = number_format(round($sysSwap['raw'], 2), 2, '.', '');
-
             }
             $sysRam = array(
                 'total' => $this->formatSize($sysTotal),
@@ -888,10 +901,12 @@ class Admin
                         $hours = floor(($loadTime - ($days * 86400)) / 3600);
                         $mins = floor(($loadTime - ($days * 86400) - ($hours * 3600)) / 60);
                         $loadstr = "";
-                        if ($days)
+                        if ($days) {
                             $loadstr .= $days . " days ";
-                        if ($hours)
+                        }
+                        if ($hours) {
                             $loadstr .= $hours . " hours ";
+                        }
                         $loadstr .= $mins . " mins";
                     }
 
@@ -930,8 +945,9 @@ class Admin
         if (!empty($matches)) {
             $currentfs = "read-write";
         }
-        if (!$this->is_Pi())
+        if (!$this->is_Pi()) {
             $currentfs = '?';
+        }
         return $currentfs;
     }
 
@@ -969,7 +985,7 @@ class Admin
 
     /**
      * Check if a system command is available
-     * 
+     *
      * @param string $command
      * @return bool
      */
@@ -978,6 +994,4 @@ class Admin
         $result = $this->exec("which $command 2>/dev/null");
         return !empty(trim($result));
     }
-
 }
-
