@@ -68,27 +68,9 @@
         die;
     }
 
-    $retry = 0;
-    $mysqli_connected = false;
-    while(!$mysqli_connected) {
-        // Try to connect to mysql
-        $mysqli = @new mysqli(
-            $settings["sql"]["server"],
-            $settings["sql"]["username"],
-            $settings["sql"]["password"],
-            $settings["sql"]["database"],
-            $settings["sql"]["port"]
-        );
-
-        if ($mysqli->connect_error) {
-            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);
-            $retry ++;
-            if ($retry>3) die;
-            sleep(5.0);
-        } else {
-            $mysqli_connected = true;
-            break;
-        }
+    $mysqli = mysqli_connect();
+    if (!$mysqli) {
+        die;
     }
 
     // Enable for testing
@@ -222,10 +204,21 @@
                 $mqtt_client->publish($topic, $count);
             }
             $count = 0;
-            // Keep mysql connection open with periodic ping
-            if (!$mysqli->ping()) {
-                $log->warn("mysql ping false");
-                die;
+            // Keep mysql connection open with periodic test
+            try {
+                $result = $mysqli->query("SELECT 1");
+                if (!$result) {
+                    throw new Exception("Connection test failed");
+                }
+            } catch (Exception $e) {
+                $log->warn("MySQL connection lost, attempting to reconnect");
+                $mysqli->close();
+                
+                $mysqli = mysqli_connect();
+                if (!$mysqli) {
+                    $log->error("Failed to reconnect to MySQL");
+                    die;
+                }
             }
         }
 
@@ -466,6 +459,39 @@
         }
     }
 
+
+    function mysqli_connect() {
+        global $settings, $log;
+        
+        $retry = 0;
+        $mysqli_connected = false;
+        
+        while(!$mysqli_connected && $retry < 3) {
+            // Try to connect to mysql
+            $mysqli = @new mysqli(
+                $settings["sql"]["server"],
+                $settings["sql"]["username"],
+                $settings["sql"]["password"],
+                $settings["sql"]["database"],
+                $settings["sql"]["port"]
+            );
+
+            if ($mysqli->connect_error) {
+                $log->error("Cannot connect to MYSQL database: ". $mysqli->connect_error);
+                $retry++;
+                if ($retry < 3) {
+                    sleep(5.0);
+                }
+            } else {
+                $mysqli_connected = true;
+                $log->info("MySQL connection established");
+                return $mysqli;
+            }
+        }
+        
+        $log->error("Failed to connect to MySQL after 3 attempts");
+        return false;
+    }
 
     function exceptions_error_handler($severity, $message, $filename, $lineno) {
         if (error_reporting() == 0) {
