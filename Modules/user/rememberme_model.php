@@ -382,6 +382,9 @@ class Rememberme {
     {
         $date = date("Y-m-d H:i:s", time());
 
+        // Add 5-minute grace period for clock skew
+        $grace_period = 300; // 5 minutes
+
         $stmt = $this->mysqli->prepare("SELECT expire FROM rememberme WHERE userid=?");
         $stmt->bind_param("i",$userid);
         $stmt->execute();
@@ -395,7 +398,7 @@ class Rememberme {
         foreach ($expire_list as $expire)
         {
             $seconds_overdue = time() - strtotime($expire);
-            if ($seconds_overdue>0) {
+            if ($seconds_overdue>$grace_period) {
                 $overdue_count++;
                 $stmt = $this->mysqli->prepare("DELETE FROM rememberme WHERE userid=? AND expire=?");
                 $stmt->bind_param("is",$userid,$expire);
