@@ -152,6 +152,6 @@ td:nth-of-type(2) { width:4%;}
 <p><b><?php echo tr('Input process actions'); ?></b></p>
 <table class="table">
     <tr><td><?php echo tr('Get input process list'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/process/get?inputid=1"><?php echo $path; ?>input/process/get?inputid=1</a></td></tr>
-    <tr><td><?php echo tr('Set input process list'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/process/set?inputid=0&processlist=0:0"><?php echo $path; ?>input/process/set?inputid=0&processlist=0:0</a></td></tr>
+    <tr><td><?php echo tr('Set input process list'); ?></td><td>POST</td><td><a href="<?php echo $path; ?>input/process/set?inputid=0"><?php echo $path; ?>input/process/set?inputid=0</a> POST body: processlist=[{"fn":"process__log_to_feed","args":[1]}]</td></tr>
     <tr><td><?php echo tr('Reset input process list'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/process/reset?inputid=0"><?php echo $path; ?>input/process/reset?inputid=0</a></td></tr>
 </table>
