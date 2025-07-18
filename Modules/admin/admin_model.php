@@ -350,27 +350,27 @@ class Admin {
         $board = "";
         $bios = "";
 
-        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_vendor');
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_vendor 2>/dev/null');
         if (trim($res) != "") {
             $machine_string = trim($res);
         }
 
-        $res = $this->exec('cat /sys/devices/virtual/dmi/id/product_name');
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null');
         if (trim($res) != "") {
             $product = trim($res);
         }
 
-        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_name');
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null');
         if (trim($res) != "") {
             $board = trim($res);
         }
 
-        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_version');
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_version 2>/dev/null');
         if (trim($res) != "") {
             $bios = trim($res);
         }
 
-        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_date');
+        $res = $this->exec('cat /sys/devices/virtual/dmi/id/bios_date 2>/dev/null');
         if (trim($res) != "") {
             $bios = trim($bios." ".trim($res));
         }
