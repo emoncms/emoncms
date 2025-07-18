@@ -723,11 +723,15 @@ class Admin {
                 $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
             }
             $rpi_info['cputemp'] = number_format((int)$this->exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
-            $rpi_info['gputemp'] = $this->exec('/opt/vc/bin/vcgencmd measure_temp');
-            if(strpos($rpi_info['gputemp'], 'temp=' ) !== false ){
-                $rpi_info['gputemp'] = str_replace("temp=","", $rpi_info['gputemp']);
-                $rpi_info['gputemp'] = str_replace("'C","°C", $rpi_info['gputemp']);
-            }else{
+
+            // Use 'which' to find vcgencmd location, fallback to default path
+            $vcgencmd_path = $this->exec('which vcgencmd 2>/dev/null') ?: '/opt/vc/bin/vcgencmd';
+            $rpi_info['gputemp'] = $this->exec($vcgencmd_path . ' measure_temp');
+
+            if (strpos($rpi_info['gputemp'], 'temp=') !== false) {
+                $rpi_info['gputemp'] = str_replace("temp=", "", $rpi_info['gputemp']);
+                $rpi_info['gputemp'] = str_replace("'C", "°C", $rpi_info['gputemp']);
+            } else {
                 $rpi_info['gputemp'] = "N/A";
                 $rpi_info['gputemp'] .= tr(" (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )");
             }
