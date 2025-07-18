@@ -68,7 +68,7 @@
         die;
     }
 
-    $mysqli = mysqli_connect();
+    $mysqli = emoncms_mysqli_connect();
     if (!$mysqli) {
         die;
     }
@@ -214,7 +214,7 @@
                 $log->warn("MySQL connection lost, attempting to reconnect");
                 $mysqli->close();
                 
-                $mysqli = mysqli_connect();
+                $mysqli = emoncms_mysqli_connect();
                 if (!$mysqli) {
                     $log->error("Failed to reconnect to MySQL");
                     die;
@@ -460,7 +460,7 @@
     }
 
 
-    function mysqli_connect() {
+    function emoncms_mysqli_connect() {
         global $settings, $log;
         
         $retry = 0;
