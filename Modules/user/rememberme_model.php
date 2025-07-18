@@ -13,7 +13,7 @@ class Rememberme {
     private $path = '/';
     private $domain = "";
     private $secure = false;
-    private $httpOnly = false;
+    private $httpOnly = true;
 
     // Number of seconds in the future the cookie and storage will expire
     private $expireTime = 7776000; // 90 days
@@ -53,6 +53,9 @@ class Rememberme {
             $this->secure = true;
         }
 
+        // Set httpOnly to true for security
+        $this->httpOnly = true;
+
         // May be limited to PHP7.3
         if (PHP_VERSION_ID>=70300) {
             setcookie($this->cookieName,$content, [
@@ -65,12 +68,6 @@ class Rememberme {
             ]);
         } else {
             setcookie($this->cookieName,$content,$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
-        }
-
-        // Double check cookie saved correctly
-        if (isset($_COOKIE[$this->cookieName]) && $_COOKIE[$this->cookieName]!=$content) {
-            // $this->log->warn("setCookie error cookie=".$_COOKIE[$this->cookieName]." content=".$content);
-            // return false;
         }
 
         return true;
@@ -251,12 +248,15 @@ class Rememberme {
             $this->log->warn("getCookieValues: userid is not an integer");
             return false;
         }
-        if (preg_replace('/[^\w\s]/','',$cookieValueArray[1])!=$cookieValueArray[1]) {
-            $this->log->warn("getCookieValues: token is not alphanumeric");
+
+        // Validate token format (32-character hex string)
+        if (!preg_match('/^[a-f0-9]{32}$/', $cookieValueArray[1])) {
+            $this->log->warn("getCookieValues: token is not a valid 32-character hex string");
             return false;
         }
-        if (preg_replace('/[^\w\s]/','',$cookieValueArray[2])!=$cookieValueArray[2]) {
-            $this->log->warn("getCookieValues: token is not alphanumeric");
+        // Validate persistentToken format (32-character hex string)
+        if (!preg_match('/^[a-f0-9]{32}$/', $cookieValueArray[2])) {
+            $this->log->warn("getCookieValues: persistentToken is not a valid 32-character hex string");
             return false;
         }
 
@@ -322,12 +322,13 @@ class Rememberme {
 
         $stmt->bind_param("isss",$cookieValues->userid,$sha1_token,$sha1_persistentToken,$date);
         if ($stmt->execute()) {
+            $stmt->close();
             return true;
         } else {
             $this->log->warn("storeTriplet sql fail");
+            $stmt->close();
             return false;
         }
-        $stmt->close();
     }
 
     // ---------------------------------------------------------------------------------------------------------
