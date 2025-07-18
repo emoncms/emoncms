@@ -16,8 +16,8 @@ class SharedHelper
 {
     private $export_fh;
     private $csv_field_separator;
-    private $csv_decimal_places;
-    private $csv_decimal_place_separator;
+    private $csv_dp;
+    private $csv_dp_separator;
     private $timezone;
     private $timeformat;
     private $date;
