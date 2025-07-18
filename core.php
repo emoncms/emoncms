@@ -15,7 +15,8 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function is_https() {
+function is_https()
+{
     // Detect if we are running HTTPS or proxied HTTPS
     if (server('HTTPS') == 'on') {
         // Web server is running native HTTPS
@@ -32,7 +33,7 @@ function is_https() {
     return false;
 }
 
-function get_application_path($manual_domain=false)
+function get_application_path($manual_domain = false)
 {
     if (is_https()) {
         $proto = "https";
@@ -108,7 +109,7 @@ function view($filepath, array $args = array())
  * @param string $index name of $_GET item
  *
  **/
-function get($index,$error_if_missing=false,$default=null)
+function get($index, $error_if_missing = false, $default = null)
 {
     $val = $default;
     if (isset($_GET[$index])) {
@@ -128,7 +129,7 @@ function get($index,$error_if_missing=false,$default=null)
  * @param string $index name of $_POST item
  *
  **/
-function post($index,$error_if_missing=false,$default=null)
+function post($index, $error_if_missing = false, $default = null)
 {
     $val = $default;
     if (isset($_POST[$index])) {
@@ -158,7 +159,7 @@ function post($index,$error_if_missing=false,$default=null)
  * @param string $index name of $_POST or $_GET item
  *
  **/
-function prop($index,$error_if_missing=false,$default=null)
+function prop($index, $error_if_missing = false, $default = null)
 {
     $val = $default;
     if (isset($_GET[$index])) {
@@ -170,7 +171,7 @@ function prop($index,$error_if_missing=false,$default=null)
         die("missing $index parameter");
     }
 
-    if(!is_null($val)) {
+    if (!is_null($val)) {
         if (is_array($val)) {
             $val = array_map("stripslashes", $val);
         } else {
@@ -182,12 +183,12 @@ function prop($index,$error_if_missing=false,$default=null)
 
 function request_header($index)
 {
-   $val = null;
-   $headers = apache_request_headers();
-   if (isset($headers[$index])) {
+    $val = null;
+    $headers = apache_request_headers();
+    if (isset($headers[$index])) {
         $val = $headers[$index];
-  }
-  return $val;
+    }
+    return $val;
 }
 
 
@@ -310,12 +311,9 @@ function load_menu()
 {
     global $menu;
     $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++)
-    {
-        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link')
-        {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-            {
+    for ($i=2; $i<count($dir); $i++) {
+        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
+            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php")) {
                 // Language file gets loaded here but immediately over-written by the next
                 // Perhaps consider some form of caching or a different loading strategy
                 load_language_files("Modules/".$dir[$i]."/locale");
@@ -393,7 +391,8 @@ function get_client_ip_env()
 // ---------------------------------------------------------------------------------------------------------
 // Generate secure key
 // ---------------------------------------------------------------------------------------------------------
-function generate_secure_key($length) {
+function generate_secure_key($length)
+{
     if (function_exists('random_bytes')) {
         return bin2hex(random_bytes($length));
     } else {
@@ -404,7 +403,8 @@ function generate_secure_key($length) {
 // ---------------------------------------------------------------------------------------------------------
 // Generate a 16 bytes (128 bits) UUID - RFC 4122 compliant Version 4
 // ---------------------------------------------------------------------------------------------------------
-function guidv4() {
+function guidv4()
+{
     if (function_exists('random_bytes')) {
         $data = random_bytes(16);
     } else {
@@ -418,4 +418,3 @@ function guidv4() {
     // Output the 36 character UUID.
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
-
