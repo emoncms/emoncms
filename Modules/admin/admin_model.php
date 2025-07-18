@@ -528,12 +528,19 @@ class Admin {
                 $readload = 0;
                 $writeload = 0;
                 $loadtime = 0;
+                $stats = null;
+                
                 if (!file_exists("/.dockerenv")) {
-                    ob_start();
-                    @passthru("iostat -o JSON -k $filesystem");
-                    $output = trim(ob_get_clean());
-                    $stats = json_decode($output, true);
+                    if ($this->is_command_available('iostat')) {
+                        ob_start();
+                        @passthru("iostat -o JSON -k $filesystem 2>/dev/null");
+                        $output = trim(ob_get_clean());
+                        if (!empty($output)) {
+                            $stats = json_decode($output, true);
+                        }
+                    }
                 }
+                
                 if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
                     $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
                     $partition_name = $disk["disk_device"];
@@ -918,5 +925,17 @@ class Admin {
         }
         return $output;
     }
+
+    /**
+     * Check if a system command is available
+     * 
+     * @param string $command
+     * @return bool
+     */
+    private function is_command_available($command) {
+        $result = $this->exec("which $command 2>/dev/null");
+        return !empty(trim($result));
+    }
+
 }
 
