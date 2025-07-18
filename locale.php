@@ -19,7 +19,6 @@ function directoryLocaleScan($dir)
     $directoryList = array();
 
     if (isset($dir) && is_readable($dir)) {
-
         $dir = realpath($dir);
 
         $directoryList = glob($dir."/Modules/*/locale/*", GLOB_ONLYDIR);
@@ -54,14 +53,14 @@ function get_available_languages_with_names()
     
     $available_languages_with_names = array();
     
-    foreach ($available_languages as $code){
-        
+    foreach ($available_languages as $code) {
         $available_languages_with_names[$code] = $language_names[$code];
     }
     return $available_languages_with_names;
 }
 
-function get_translation_status() {
+function get_translation_status()
+{
     // Load translation status if it exists
     if (file_exists(__DIR__ . '/Lib/translation_status.json')) {
         $status = json_decode(file_get_contents(__DIR__ . '/Lib/translation_status.json'), true);
@@ -78,17 +77,18 @@ function get_translation_status() {
     return [];
 }
 
-function languagecode_to_name($langs) {
+function languagecode_to_name($langs)
+{
     static $lang_names = null;
     if ($lang_names === null) {
         $json_data = file_get_contents(__DIR__.'/Lib/language_country.json');
         $lang_names = json_decode($json_data, true);
     }
-    foreach ($langs as $key=>$val){
-      $lang[$key]=$lang_names[$val];
+    foreach ($langs as $key => $val) {
+        $lang[$key]=$lang_names[$val];
     }
-   asort($lang);
-   return $lang;
+    asort($lang);
+    return $lang;
 }
 
 
@@ -100,7 +100,7 @@ function lang_http_accept()
         return $langs;
     }
     
-    foreach (explode(',',$http_accept_language) as $lang) {
+    foreach (explode(',', $http_accept_language) as $lang) {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
