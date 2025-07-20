@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-dev_branch=json_i18n
+dev_branch=master
 cd "$WWW/emoncms"
 git pull
 git checkout $dev_branch
