@@ -133,7 +133,7 @@ The **MySQL** database can be accessed with the global variable `$mysqli`. It is
 In order to use this database, REDIS must be installed inn the server. For Linux users go to your terminal:
 ```
 sudo apt-get install redis-server
-sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
+sudo pecl install channel://pecl.php.net/dio-0.0.6 redis
 sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
 sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
 ```
