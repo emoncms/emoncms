@@ -318,6 +318,14 @@ class InputMethods
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
 
+        if ($this->device) {
+            $deviceid = $this->device->exists_nodeid($userid,$nodeid);
+            if ($deviceid) {
+                $ip_address = get_client_ip_env();
+                $this->device->set_fields($deviceid,json_encode(array("ip"=>$ip_address)));
+            }
+        }
+
         $tmp = array();
         foreach ($inputs as $name => $value)
         {
