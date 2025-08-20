@@ -230,6 +230,8 @@ function feed_controller()
                         return $feed->get($feedid);
                     } elseif ($route->action == "getmeta") {
                         return $feed->get_meta($feedid);
+                    } elseif ($route->action == "sha256sum") {
+                        return $feed->get_sha256sum($feedid, get('npoints', false, 0));
                     } elseif ($route->action == "getfeedsize") {
                         return $feed->get_feed_size($feedid);
                     } elseif ($route->action == "export") {

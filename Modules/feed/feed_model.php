@@ -216,6 +216,9 @@ class Feed
         // Call to engine trim method
         $response = $this->EngineClass($engine)->trim($feedid, $start_time);
 
+        // Update feed size:
+        $this->update_feed_size($feedid);
+
         $this->log->info("feed model: trim() feedid=$feedid");
         return $response;
     }
@@ -234,6 +237,9 @@ class Feed
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
+
+        // Update feed size:
+        $this->update_feed_size($feedid);
 
         // Clear feed last value (set to zero)
         if ($this->redis) {
@@ -334,21 +340,20 @@ class Feed
     {
         $userid = (int) $userid;
         $total = 0;
-        $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE `userid` = '$userid'");
-        while ($row = $result->fetch_array())
-        {
-            $size = 0;
-            $feedid = $row['id'];
-            $engine = $row['engine'];
-
-            // Call to engine get_feed_size method
-            $size = $this->EngineClass($engine)->get_feed_size($feedid);
-
-            $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
-            if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
-            $total += $size;
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid'");
+        while ($row = $result->fetch_array()) {
+            $total += $this->update_feed_size($row['id']);
         }
         return $total;
+    }
+
+    // Update single feed size
+    public function update_feed_size($feedid) {
+        $feedid = (int) $feedid;
+        $size = $this->get_feed_size($feedid);
+        $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
+        if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
+        return $size;
     }
 
     public function get_feed_size($feedid) {
@@ -379,6 +384,17 @@ class Feed
         return $this->EngineClass($engine)->get_meta($feedid);
     }
 
+    public function get_sha256sum($feedid, $npoints = 0) {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) {
+            return array('success'=>false, 'message'=>'SHA256SUM is only supported by PHPFina and PHPTimeSeries');
+        }
+
+        return $this->EngineClass($engine)->get_sha256sum($feedid, $npoints);
+    }
 
     /*
     Get operations by user
