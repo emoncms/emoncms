@@ -1,4 +1,5 @@
 <?php
+
 /*
  All Emoncms code is released under the GNU Affero General Public License.
  See COPYRIGHT.txt and LICENSE.txt.
@@ -57,7 +58,9 @@ class Process_ProcessList
                 $mqtt_client = new Mosquitto\Client(null, true);
 
                 $mqtt_client->onDisconnect(function ($responseCode) use ($log) {
-                    if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
+                    if ($responseCode > 0) {
+                        $log->info('unexpected disconnect from mqtt server');
+                    }
                 });
 
                 $this->mqtt = $mqtt_client;
@@ -114,7 +117,7 @@ class Process_ProcessList
                         "type" => ProcessArg::VALUE,
                         "default" => 0
                     ),
-                ),                
+                ),
                 "group" => tr("Calibration"),
                 "input_context" => true,
                 "virtual_feed_context" => true,
@@ -130,7 +133,7 @@ class Process_ProcessList
                         "type" => ProcessArg::FEEDID,
                         "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY)
                     ),
-                ),              
+                ),
                 "unit" => "kWh",
                 "group" => tr("Main"),
                 "nochange" => true,
@@ -887,8 +890,8 @@ class Process_ProcessList
                 "name" => tr("Power to kWh / custom minutes"),
                 "short" => "kwhslot",
                 "args" => array(
-                    array("key" => "interval", "type" => ProcessArg::VALUE,  "name" => "Minutes", "desc" => tr("Slot in minutes slot to accumulate"), "default" => "15"),
-                    array("key" => "feed",     "type" => ProcessArg::FEEDID, "name" => "Feed",    "desc" => tr("Output feed"), "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY))
+                    array("key" => "interval", "type" => ProcessArg::VALUE, "name" => "Minutes", "desc" => tr("Slot in minutes slot to accumulate"), "default" => "15"),
+                    array("key" => "feed", "type" => ProcessArg::FEEDID, "name" => "Feed", "desc" => tr("Output feed"), "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY))
                 ),
                 "function" => "power_to_kwh_custom",
                 "unit" => "kWh/slot",
@@ -904,7 +907,9 @@ class Process_ProcessList
     // / Below are functions of this module processlist
     public function scale($arg, $time, $value)
     {
-        if ($value === null) return $value;
+        if ($value === null) {
+            return $value;
+        }
         return $value * $arg;
     }
 
@@ -919,31 +924,41 @@ class Process_ProcessList
 
     public function offset($arg, $time, $value)
     {
-        if ($value === null) return $value;
+        if ($value === null) {
+            return $value;
+        }
         return $value + $arg;
     }
 
     public function allowpositive($arg, $time, $value)
     {
-        if ($value < 0) $value = 0;
+        if ($value < 0) {
+            $value = 0;
+        }
         return $value;
     }
 
     public function allownegative($arg, $time, $value)
     {
-        if ($value > 0) $value = 0;
+        if ($value > 0) {
+            $value = 0;
+        }
         return $value;
     }
 
     public function max_value_allowed($arg, $time, $value)
     {
-        if ($value > $arg) $value = $arg;
+        if ($value > $arg) {
+            $value = $arg;
+        }
         return $value;
     }
 
     public function min_value_allowed($arg, $time, $value)
     {
-        if ($value < $arg) $value = $arg;
+        if ($value < $arg) {
+            $value = $arg;
+        }
         return $value;
     }
 
@@ -965,7 +980,9 @@ class Process_ProcessList
 
     public function signed2unsigned($arg, $time, $value)
     {
-        if ($value < 0) $value += 65536;
+        if ($value < 0) {
+            $value += 65536;
+        }
         return $value;
     }
 
@@ -1035,14 +1052,18 @@ class Process_ProcessList
     public function max_input($id, $time, $value)
     {
         $max_limit = $this->input->get_last_value($id);
-        if ($value > $max_limit) $value = $max_limit;
+        if ($value > $max_limit) {
+            $value = $max_limit;
+        }
         return $value;
     }
 
     public function min_input($id, $time, $value)
     {
         $min_limit = $this->input->get_last_value($id);
-        if ($value < $min_limit) $value = $min_limit;
+        if ($value < $min_limit) {
+            $value = $min_limit;
+        }
         return $value;
     }
 
@@ -1050,7 +1071,9 @@ class Process_ProcessList
     {
         $timevalue = $this->feed->get_timevalue($id);
         $max_limit = $timevalue['value'] * 1;
-        if ($value > $max_limit) $value = $max_limit;
+        if ($value > $max_limit) {
+            $value = $max_limit;
+        }
         return $value;
     }
 
@@ -1058,7 +1081,9 @@ class Process_ProcessList
     {
         $timevalue = $this->feed->get_timevalue($id);
         $min_limit = $timevalue['value'] * 1;
-        if ($value < $min_limit) $value = $min_limit;
+        if ($value < $min_limit) {
+            $value = $min_limit;
+        }
         return $value;
     }
 
@@ -1071,10 +1096,14 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
-        if (!$last_time) $last_time = $time_now;
+        if (!$last_time) {
+            $last_time = $time_now;
+        }
 
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
@@ -1103,10 +1132,14 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
-        if (!$last_time) $last_time = $time_now;
+        if (!$last_time) {
+            $last_time = $time_now;
+        }
 
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);
@@ -1139,10 +1172,14 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
-        if (!$last_time) $last_time = $time_now;
+        if (!$last_time) {
+            $last_time = $time_now;
+        }
 
         // Define stop interval in minutes
         $slot_interval_m = 15;
@@ -1182,10 +1219,14 @@ class Process_ProcessList
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
-        if (!$last_time) $last_time = $time_now;
+        if (!$last_time) {
+            $last_time = $time_now;
+        }
 
         // Define stop interval in minutes
         $slot_interval_m = $mins;
@@ -1219,10 +1260,14 @@ class Process_ProcessList
     public function kwh_to_kwhd($feedid, $time_now, $value)
     {
         global $redis;
-        if (!$redis) return $value; // return if redis is not available
+        if (!$redis) {
+            return $value; // return if redis is not available
+        }
 
         $currentkwhd = $this->feed->get_timevalue($feedid);
-        if ($currentkwhd === null) return $value; // feed does not exist
+        if ($currentkwhd === null) {
+            return $value; // feed does not exist
+        }
 
         $last_time = $currentkwhd['time'];
 
@@ -1263,7 +1308,9 @@ class Process_ProcessList
     {
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_time = $last['time'];
 
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1271,7 +1318,9 @@ class Process_ProcessList
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);
 
-        if (!isset($last['value'])) $last['value'] = 0;
+        if (!isset($last['value'])) {
+            $last['value'] = 0;
+        }
         $ontime = $last['value'];
         $time_elapsed = 0;
 
@@ -1280,7 +1329,9 @@ class Process_ProcessList
             $ontime += $time_elapsed;
         }
 
-        if ($last_slot != $current_slot) $ontime = $time_elapsed;
+        if ($last_slot != $current_slot) {
+            $ontime = $time_elapsed;
+        }
 
         $this->feed->post($feedid, $time_now, $current_slot, $ontime);
 
@@ -1293,7 +1344,9 @@ class Process_ProcessList
     public function ratechange($feedid, $time, $value)
     {
         global $redis;
-        if (!$redis) return $value; // return if redis is not available
+        if (!$redis) {
+            return $value; // return if redis is not available
+        }
 
         if ($redis->exists("process:ratechange:$feedid")) {
             $lastvalue = $redis->hmget("process:ratechange:$feedid", array('time', 'value'));
@@ -1314,7 +1367,9 @@ class Process_ProcessList
     public function whinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $last_time = $last['time'];
 
         //$current_slot = floor($time_now / 86400) * 86400;
@@ -1323,7 +1378,9 @@ class Process_ProcessList
         $last_slot = $this->getstartday($last_time);
 
         $new_kwh = $last['value'] + ($value / 1000.0);
-        if ($last_slot != $current_slot) $new_kwh = ($value / 1000.0);
+        if ($last_slot != $current_slot) {
+            $new_kwh = ($value / 1000.0);
+        }
 
         $this->feed->post($feedid, $time_now, $current_slot, $new_kwh);
 
@@ -1333,7 +1390,9 @@ class Process_ProcessList
     public function accumulator($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
         $value = $last['value'] + $value;
         $padding_mode = "join";
         $this->feed->post($feedid, $time, $time, $value, $padding_mode);
@@ -1363,7 +1422,9 @@ class Process_ProcessList
         if ($value > 0) {
             $pulse_diff = 0;
             $last = $this->feed->get_timevalue($feedid);
-            if ($last === null) return 0; // feed does not exist
+            if ($last === null) {
+                return 0; // feed does not exist
+            }
 
             if ($last['time']) {
                 // Need to handle resets of the pulse value (and negative 2**15?)
@@ -1384,7 +1445,9 @@ class Process_ProcessList
     public function kwh_to_power($feedid, $time, $value)
     {
         global $redis;
-        if (!$redis) return $value; // return if redis is not available
+        if (!$redis) {
+            return $value; // return if redis is not available
+        }
 
         $power = 0;
         if ($redis->exists("process:kwhtopower:$feedid")) {
@@ -1406,7 +1469,9 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $last_val = $last['value'];
         $last_time = $last['time'];
@@ -1424,7 +1489,9 @@ class Process_ProcessList
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $last_val = $last['value'];
         $last_time = $last['time'];
@@ -1441,7 +1508,9 @@ class Process_ProcessList
     public function add_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $value = $last['value'] + $value;
         return $value;
@@ -1449,8 +1518,10 @@ class Process_ProcessList
 
     public function sub_feed($feedid, $time, $value)
     {
-        $last  = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $myvar = $last['value'] * 1;
         return $value - $myvar;
@@ -1459,7 +1530,9 @@ class Process_ProcessList
     public function multiply_by_feed($feedid, $time, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $value = $last['value'] * $value;
         return $value;
@@ -1467,8 +1540,10 @@ class Process_ProcessList
 
     public function divide_by_feed($feedid, $time, $value)
     {
-        $last  = $this->feed->get_timevalue($feedid);
-        if ($last === null) return $value; // feed does not exist
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last === null) {
+            return $value; // feed does not exist
+        }
 
         $myvar = $last['value'] * 1;
 
@@ -1485,13 +1560,17 @@ class Process_ProcessList
         $totalwh = $value;
 
         global $redis;
-        if (!$redis) return $value; // return if redis is not available
+        if (!$redis) {
+            return $value; // return if redis is not available
+        }
 
         if ($redis->exists("process:whaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:whaccumulator:$feedid", array('time', 'value'));
 
             $last_feed = $this->feed->get_timevalue($feedid);
-            if ($last_feed === null) return $value; // feed does not exist
+            if ($last_feed === null) {
+                return $value; // feed does not exist
+            }
 
             $totalwh = $last_feed['value'];
 
@@ -1501,7 +1580,9 @@ class Process_ProcessList
             if ($time_diff > 0) {
                 $power = ($val_diff * 3600) / $time_diff;
 
-                if ($val_diff > 0 && $power < $max_power) $totalwh += $val_diff;
+                if ($val_diff > 0 && $power < $max_power) {
+                    $totalwh += $val_diff;
+                }
             }
 
             $padding_mode = "join";
@@ -1518,13 +1599,17 @@ class Process_ProcessList
         $totalkwh = $value;
 
         global $redis;
-        if (!$redis) return $value; // return if redis is not available
+        if (!$redis) {
+            return $value; // return if redis is not available
+        }
 
         if ($redis->exists("process:kwhaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:kwhaccumulator:$feedid", array('time', 'value'));
 
             $last_feed = $this->feed->get_timevalue($feedid);
-            if ($last_feed === null) return $value; // feed does not exist
+            if ($last_feed === null) {
+                return $value; // feed does not exist
+            }
 
             $totalkwh = $last_feed['value'];
 
@@ -1534,7 +1619,9 @@ class Process_ProcessList
             if ($time_diff > 0) {
                 $power = ($val_diff * 3600000) / $time_diff;
 
-                if ($val_diff > 0 && $power < $max_power) $totalkwh += $val_diff;
+                if ($val_diff > 0 && $power < $max_power) {
+                    $totalkwh += $val_diff;
+                }
             }
 
             $padding_mode = "join";
@@ -1562,64 +1649,74 @@ class Process_ProcessList
     // Conditional process list flow
     public function if_zero_skip($noarg, $time, $value)
     {
-        if ($value == 0)
+        if ($value == 0) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_not_zero_skip($noarg, $time, $value)
     {
-        if ($value != 0)
+        if ($value != 0) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_null_skip($noarg, $time, $value)
     {
-        if ($value === NULL)
+        if ($value === null) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_not_null_skip($noarg, $time, $value)
     {
-        if (!($value === NULL))
+        if (!($value === null)) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
 
     public function if_gt_skip($arg, $time, $value)
     {
-        if ($value > $arg)
+        if ($value > $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_gt_equal_skip($arg, $time, $value)
     {
-        if ($value >= $arg)
+        if ($value >= $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_lt_skip($arg, $time, $value)
     {
-        if ($value < $arg)
+        if ($value < $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_lt_equal_skip($arg, $time, $value)
     {
-        if ($value <= $arg)
+        if ($value <= $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
 
     public function if_equal_skip($arg, $time, $value)
     {
-        if ($value == $arg)
+        if ($value == $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
     public function if_not_equal_skip($arg, $time, $value)
     {
-        if ($value != $arg)
+        if ($value != $arg) {
             $this->proc_skip_next = true;
+        }
         return $value;
     }
 
@@ -1656,7 +1753,9 @@ class Process_ProcessList
         } else {
             // This is a request for the last value only
             $timevalue = $this->feed->get_timevalue($feedid);
-            if (is_null($timevalue)) return null;
+            if (is_null($timevalue)) {
+                return null;
+            }
             return $timevalue["value"];
         }
         return null;
@@ -1666,7 +1765,9 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value === null || $last === null) return null;
+        if ($value === null || $last === null) {
+            return null;
+        }
         $value = $last + $value;
         return $value;
     }
@@ -1675,7 +1776,9 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value === null || $last === null) return null;
+        if ($value === null || $last === null) {
+            return null;
+        }
         $myvar = $last * 1;
         return $value - $myvar;
     }
@@ -1684,7 +1787,9 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value === null || $last === null) return null;
+        if ($value === null || $last === null) {
+            return null;
+        }
         $value = $last * $value;
         return $value;
     }
@@ -1693,7 +1798,9 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value === null || $last === null) return null;
+        if ($value === null || $last === null) {
+            return null;
+        }
         $myvar = $last * 1;
 
         if ($myvar != 0) {
@@ -1707,7 +1814,9 @@ class Process_ProcessList
     {
         $last = $this->source_feed_data_time($feedid, $time, $value, $options);
 
-        if ($value == null || $last == null) return null;
+        if ($value == null || $last == null) {
+            return null;
+        }
         $myvar = $last * 1;
 
         if ($myvar != 0) {
@@ -1729,7 +1838,9 @@ class Process_ProcessList
 
         $feedname = "feed_" . trim($id) . "";
         $result = $this->mysqli->query("SELECT data FROM $feedname WHERE `time` = '$time'");
-        if ($result != null) $row = $result->fetch_array();
+        if ($result != null) {
+            $row = $result->fetch_array();
+        }
         if (isset($row)) {
             return $row['data'];
         } else {
@@ -1769,7 +1880,7 @@ class Process_ProcessList
     // Get the start of the day
     public function getstartday($time_now)
     {
-        $now = DateTime::createFromFormat("U", (int)$time_now);
+        $now = DateTime::createFromFormat("U", (int) $time_now);
         $now->setTimezone(new DateTimeZone($this->timezone));
         $now->setTime(0, 0);    // Today at 00:00
         return $now->format("U");
@@ -1778,7 +1889,7 @@ class Process_ProcessList
     // Get the start and end time of the $slot_interval_m minutes slot starting 00:00
     public function get_time_slot($time_now, $slot_interval_m)
     {
-        $now = DateTime::createFromFormat("U", (int)$time_now);
+        $now = DateTime::createFromFormat("U", (int) $time_now);
         $now->setTimezone(new DateTimeZone($this->timezone));
         $start_of_day = clone $now;
         $start_of_day->setTime(0, 0); // Today at 00:00
