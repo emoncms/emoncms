@@ -656,8 +656,11 @@ class User
     {
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return $row['username'];
+        if ($row = $result->fetch_array()) {
+            return $row['username'];
+        } else {
+            return false;
+        }
     }
 
     public function get_name($userid)
@@ -787,10 +790,15 @@ class User
     //---------------------------------------------------------------------------------------
     public function set_user_lang($userid, $lang)
     {   
+        $userid = (int) $userid;
+        $lang = preg_replace('/[^\w\s\-.]/','',$lang);
+
         $stmt = $this->mysqli->prepare("UPDATE users SET language = ? WHERE id = ?");
         $stmt->bind_param("si", $lang, $userid);
         $stmt->execute();
         $stmt->close();
+
+        return array('success'=>true, 'message'=>"Language updated");
     }
 
     public function set_timezone($userid,$timezone)
@@ -802,6 +810,8 @@ class User
         $stmt->bind_param("si", $timezone, $userid);
         $stmt->execute();
         $stmt->close();
+
+        return array('success'=>true, 'message'=>"Timezone updated");
     }
 
     //---------------------------------------------------------------------------------------
@@ -826,14 +836,14 @@ class User
         $userid = (int) $userid;
         if(!$data || $userid < 1) return array('success'=>false, 'message'=>tr("Error updating user info"));
 
-        $gravatar = preg_replace('/[^\w\s\-.@]/','',$data->gravatar);
-        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->name);
-        $location = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\w\-.\\/_]/','',$data->timezone);
-        $bio = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->bio);
-        $language = preg_replace('/[^\w\s\-.]/','',$data->language);
-        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s\-.]/','', $data->tags);
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s\-?#=\/]/u','',$data->startingpage);
+        $gravatar = isset($data->gravatar) && $data->gravatar !== null ? preg_replace('/[^\w\s\-.@]/','',$data->gravatar) : '';
+        $name = isset($data->name) && $data->name !== null ? preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->name) : '';
+        $location = isset($data->location) && $data->location !== null ? preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->location) : '';
+        $timezone = isset($data->timezone) && $data->timezone !== null ? preg_replace('/[^\w\-.\\/_]/','',$data->timezone) : '';
+        $bio = isset($data->bio) && $data->bio !== null ? preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->bio) : '';
+        $language = isset($data->language) && $data->language !== null ? preg_replace('/[^\w\s\-.]/','',$data->language) : '';
+        $tags = isset($data->tags) && $data->tags !== null ? preg_replace('/[^{}",:\w\s\-.]/','', $data->tags) : '';
+        $startingpage = isset($data->startingpage) && $data->startingpage !== null ? preg_replace('/[^\p{N}\p{L}_\s\-?#=\/]/u','',$data->startingpage) : '';
         
         $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
         $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
@@ -846,6 +856,8 @@ class User
             return array('success'=>false, 'message'=>tr("Error updating user info"));
         }
         $stmt->close();
+
+        return array('success'=>true, 'message'=>_("User info updated"));
     }
 
     // Generates a new random read apikey
@@ -859,7 +871,7 @@ class User
         $stmt->execute();
         $stmt->close();
         
-        return $apikey;
+        return array('success'=>true, 'read_apikey'=>$apikey);
     }
 
     // Generates a new random write apikey
@@ -872,8 +884,8 @@ class User
         $stmt->bind_param("si", $apikey, $userid);
         $stmt->execute();
         $stmt->close();
-        
-        return $apikey;
+
+        return array('success'=>true, 'write_apikey'=>$apikey);
     }
 
     public function get_number_of_users()

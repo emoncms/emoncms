@@ -1,3 +1,7 @@
+<?php
+defined('EMONCMS_EXEC') or die('Restricted access');
+?>
+
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 <div class="admin-container">
 

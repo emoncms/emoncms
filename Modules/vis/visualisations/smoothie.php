@@ -1,4 +1,5 @@
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
 // Thanks to Shervin for contributing this visualisation, see forum thread here: http://openenergymonitor.org/emon/node/600
     global $path, $embed;
     $feedid2 =null;

@@ -1,4 +1,6 @@
-<?php global $path, $session, $user; ?>
+<?php 
+defined('EMONCMS_EXEC') or die('Restricted access');
+global $path, $session, $user; ?>
 <?php
     load_language_files(dirname(__DIR__)."/locale", "process_messages");
 ?>

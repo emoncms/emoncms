@@ -53,7 +53,7 @@ class EmonLogger
     public function set($logfile, $log_level)
     {
         $this->logfile = $logfile;
-        $this->log_enabled = true;
+        $this->logenabled = true;
         $this->log_level = $log_level;
     }
 

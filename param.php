@@ -37,20 +37,21 @@ class Param
     {
         $this->params = array();
         
-        foreach ($_GET as $key => $val) {
-            if (is_array($val)) {
-                $val = array_map("stripslashes", $val);
-            } else {
-                $val = stripslashes($val);
+        array_walk_recursive($_GET, function(&$value, $key) {
+            if (is_string($value)) {
+                $value = stripslashes($value);
             }
+        });
+        foreach ($_GET as $key => $val) {
             $this->params[$key] = $val;
         }
-        foreach ($_POST as $key => $val) {
-            if (is_array($val)) {
-                $val = array_map("stripslashes", $val);
-            } else {
-                $val = stripslashes($val);
+        
+        array_walk_recursive($_POST, function(&$value, $key) {
+            if (is_string($value)) {
+                $value = stripslashes($value);
             }
+        });
+        foreach ($_POST as $key => $val) {
             $this->params[$key] = $val;
         }
         
@@ -109,6 +110,7 @@ class Param
             }
             
             global $session; // USE OF GLOBAL HERE!
+            if (!is_array($session)) $session = array();
             $session["write"] = true;
             $session["read"] = true;
             $session["userid"] = $userid;

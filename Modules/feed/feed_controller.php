@@ -30,6 +30,7 @@ function feed_controller()
     if (!$user_timezone = $user->get_timezone($session['userid'])) {
         $user_timezone = 'UTC';
     }
+    if (is_numeric($user_timezone)) $user_timezone = "UTC";
     $process = new Process($mysqli,$input,$feed,$user_timezone);
 
     // Specialised 2 way feed sync API

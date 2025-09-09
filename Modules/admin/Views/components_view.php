@@ -1,4 +1,7 @@
-<?php global $path; ?>
+<?php 
+defined('EMONCMS_EXEC') or die('Restricted access');
+global $path;
+?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <h3><?php echo tr('Components'); ?></h3>

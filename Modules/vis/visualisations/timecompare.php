@@ -7,6 +7,8 @@
 -->
 
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
+    
     global $path, $vis_version;
     $embed = intval(get("embed"));
     $feedid = intval(get("feedid"));

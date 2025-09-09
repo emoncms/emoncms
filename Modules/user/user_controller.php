@@ -47,7 +47,8 @@ function user_controller()
             }
             
             if(!is_null($ref)){
-                $referrer = htmlentities(filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL));
+                $decoded_ref = urldecode(base64_decode($ref));
+                $referrer = filter_var($decoded_ref, FILTER_VALIDATE_URL) ? htmlentities($decoded_ref) : '';
             } else {
                 $referrer="";
             }

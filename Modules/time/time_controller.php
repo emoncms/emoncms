@@ -26,6 +26,7 @@ function time_controller()
         
         $now = new DateTime();
         try {
+            if (!$row->timezone) $row->timezone = "UTC";
             $now->setTimezone(new DateTimeZone($row->timezone));
             $result = 't'.$now->format("H,i,s");
         } catch (Exception $e) {
