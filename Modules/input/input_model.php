@@ -144,6 +144,7 @@ class Input
         $fields = json_decode(stripslashes($fields));
 
         $success = false;
+        $fields_out = array();
 
         if (isset($fields->name)) {
             if (preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in input name');
@@ -153,6 +154,7 @@ class Input
             $stmt->close();
 
             if ($this->redis) $this->redis->hset("input:$id",'name',$fields->name);
+            $fields_out['name'] = $fields->name;
         }
 
         if (isset($fields->description)) {
@@ -163,10 +165,16 @@ class Input
             $stmt->close();
 
             if ($this->redis) $this->redis->hset("input:$id",'description',$fields->description);
+            $fields_out['description'] = $fields->description;
         }
 
         if ($success){
-            return array('success'=>true, 'message'=>'Field updated');
+            return array(
+                'success'=>true, 
+                'message'=>'Field updated',
+                'inputid'=>$id,
+                'fields'=>$fields_out
+            );
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
@@ -205,7 +213,14 @@ class Input
 
             if ($this->redis) $this->redis->hset("input:$id",'description',$description);
         }
-        return array('success'=>true, 'message'=>'input descriptions updated');
+
+        return array(
+            'success'=>true, 
+            'message'=>'input descriptions updated',
+            'userid'=>$userid,
+            'nodeid'=>$nodeid,
+            'names'=>$names
+        );
     }
 
 
@@ -482,9 +497,16 @@ class Input
 
         if ($this->redis) {
             $this->redis->del("input:$inputid");
+            $this->redis->del("input:lastvalue:$inputid");
             $this->redis->srem("user:inputs:$userid",$inputid);
         }
-        return "input deleted";
+
+        return array(
+            'success'=>true, 
+            'message'=>'Input deleted',
+            'userid'=>$userid,
+            'inputid'=>$inputid
+        );
     }
 
     // userid and inputids are checked in belongs_to_user and delete
@@ -492,7 +514,12 @@ class Input
         foreach ($inputids as $inputid) {
             if ($this->belongs_to_user($userid, $inputid)) $this->delete($userid, $inputid);
         }
-        return "inputs deleted";
+        return array(
+            'success'=>true, 
+            'message'=>'Inputs deleted',
+            'userid'=>$userid,
+            'inputids'=>$inputids
+        );
     }
 
     public function clean($userid)
@@ -505,12 +532,7 @@ class Input
             $inputid = $row['id'];
             if ($row['processList']==NULL || $row['processList']=='')
             {
-                $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-
-                if ($this->redis) {
-                    $this->redis->del("input:$inputid");
-                    $this->redis->srem("user:inputs:$userid",$inputid);
-                }
+                $this->delete($userid, $inputid);
                 $n++;
             }
         }

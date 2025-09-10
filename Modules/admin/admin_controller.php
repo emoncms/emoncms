@@ -49,7 +49,7 @@ function admin_controller()
     // --------------------------------------------------------------------------------------------
     // If not an admin session show notice
     // --------------------------------------------------------------------------------------------
-    if (!$session['admin']) {
+    if (!isset($session['admin']) || !$session['admin']) {
         $route->format = 'html';
         // user not admin level display login
         $log->error(sprintf('%s|%s',tr('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
@@ -494,6 +494,11 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     if ($route->action == 'setuser') {
         $_SESSION['userid'] = intval(get('id'));
+        
+        $u = $user->get($_SESSION['userid']);
+        $_SESSION['username'] = $u->username;
+        $_SESSION['gravatar'] = $u->gravatar;
+        
         header("Location: ../user/view");
         // stop any other code from running once http header sent
         exit();

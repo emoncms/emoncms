@@ -1,5 +1,6 @@
-<?php $v = 26; ?>
-
+<?php $v=26; 
+defined('EMONCMS_EXEC') or die('Restricted access');
+?>
 <!-- Load dependencies -->
 <?php if ($device_module) { ?>
     <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=27"></script>

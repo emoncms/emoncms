@@ -227,14 +227,19 @@ class InputMethods
         if ($param->exists('cb')) {
             // data is compressed binary format
             $data = file_get_contents('php://input');
-            $data = gzuncompress($data);
+            $data = @gzuncompress($data);
         } elseif ($param->exists('c')) {
             // data is compressed hex format
-            $data = gzuncompress(hex2bin($data));
+            $bindata = hex2bin($data);
+            if (!$bindata) {
+                return "Format error, compressed hex not valid";
+            }
+            $data = @gzuncompress($bindata);
         }
-
+        if ($data==null) return "Format error, json string supplied is not valid";
         $data = json_decode($data);
-
+        if ($data==null) return "Format error, json string supplied is not valid";
+        
         $len = count($data);
 
         if ($len==0) return "Format error, json string supplied is not valid";
