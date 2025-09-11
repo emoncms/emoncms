@@ -96,7 +96,11 @@ function refresh_log(result){
         if (data.reauth == true) { window.location.reload(true); }
         if (data.success != undefined)  { 
             clearInterval(emoncms_log_interval);
-            output_logfile("<text style='color:red;'>"+ data.message+"</text>", $("#logreply"));
+            $container = $("#logreply");
+            $container.text(data.message);
+            $container.css('color', 'red');
+            scrollable = $container.parent('pre')[0];
+            if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
         }
     } catch (e) {
         isjson = false;
@@ -108,7 +112,7 @@ function refresh_log(result){
 }
 // display content in container and scroll to the bottom
 function output_logfile(result, $container){
-    $container.html(result);
+    $container.text(result);
     scrollable = $container.parent('pre')[0];
     if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
 }
