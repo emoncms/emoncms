@@ -154,7 +154,7 @@ class InputMethods
                 }
 
             } else {
-                $log->error("Invalid JSON: $datain");
+                $log->error("Invalid JSON: " . htmlspecialchars($datain, ENT_QUOTES, 'UTF-8'));
                 return "Input in not a valid JSON object";
             }
         } else {
