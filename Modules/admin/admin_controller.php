@@ -218,7 +218,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }
-        return $admin->runService($update_script, "$type $firmware_key $serial_port>".$admin->update_logfile());
+        return $admin->runService($update_script, escapeshellarg($type) . " " . escapeshellarg($firmware_key) . " " . escapeshellarg($serial_port) . ">" . $admin->update_logfile());
     }
 
     if ($route->action == 'update-firmware') {
@@ -235,7 +235,7 @@ function admin_controller()
         if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
 
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        return $admin->runService($update_script, "$serial_port $firmware_key>".$admin->update_logfile());
+        return $admin->runService($update_script, escapeshellarg($serial_port) . " " . escapeshellarg($firmware_key) . ">" . $admin->update_logfile());
     }
 
 
@@ -257,9 +257,29 @@ function admin_controller()
 
         if (!in_array($port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
 
-        // Save file to /opt/openenergymonitor/data/firmware
-        $filename = $file['name'];
-        $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$filename;
+        // Validate baud_rate (must be numeric)
+        if (!is_numeric($baud_rate) || $baud_rate <= 0) return array('success'=>false, 'message'=>"Invalid baud rate");
+
+        // Validate core (alphanumeric with allowed special chars only)
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $core)) return array('success'=>false, 'message'=>"Invalid core");
+
+        // Validate autoreset (alphanumeric with allowed special chars only)
+        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $autoreset)) return array('success'=>false, 'message'=>"Invalid autoreset");
+
+        // Generate secure filename instead of using user-provided name
+        $original_filename = $file['name'];
+        // Extract only the last extension and validate against allowed extensions
+        // First sanitize the filename by removing potential shell metacharacters
+        $clean_filename = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($original_filename));
+        $filename_parts = explode('.', $clean_filename);
+        $file_extension = end($filename_parts);
+        // Only allow hex files
+        if (strtolower($file_extension) !== 'hex') return array('success'=>false, 'message'=>"Only .hex files are allowed");
+        
+        // Generate safe filename using timestamp and random string
+        $safe_filename = 'firmware_' . time() . '_' . bin2hex(random_bytes(8)) . '.hex';
+        $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$safe_filename;
+        
         // write uploaded file contents using fopen
         if (file_exists("/opt/openenergymonitor/data/firmware/upload")) {
             $fp = fopen($tmpfile, 'w');
@@ -268,8 +288,8 @@ function admin_controller()
         }
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        // provide port, custom, filename, baudrate, core, autoreset
-        return $admin->runService($update_script, "$port custom $filename $baud_rate $core $autoreset>".$admin->update_logfile());
+        // provide port, custom, filename, baudrate, core, autoreset - all parameters are escaped for shell safety
+        return $admin->runService($update_script, escapeshellarg($port) . " custom " . escapeshellarg($safe_filename) . " " . escapeshellarg($baud_rate) . " " . escapeshellarg($core) . " " . escapeshellarg($autoreset) . ">" . $admin->update_logfile());
     }
 
     if ($route->action == 'update-log') {
@@ -334,12 +354,12 @@ function admin_controller()
 
         // if branch is not in available branches, check that it is not the current branch
         if (!in_array($branch,$components[$module]["branches_available"])) {
-            $current_branch = @exec("git -C $module_path rev-parse --abbrev-ref HEAD");
+            $current_branch = @exec("git -C " . escapeshellarg($module_path) . " rev-parse --abbrev-ref HEAD");
             if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");
         }
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, "$module_path $branch>".$admin->update_logfile());
+        return $admin->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . $admin->update_logfile());
     }
 
     if ($route->action == 'components-update-all' && $session['write']) {
@@ -356,7 +376,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, "$branch>".$admin->update_logfile());
+        return $admin->runService($script, escapeshellarg($branch) . ">" . $admin->update_logfile());
     }
 
     // ----------------------------------------------------------------------------------------
@@ -382,7 +402,7 @@ function admin_controller()
             if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
 
             $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
-            return $admin->runService($script, "$baudrate /dev/$serialport");
+            return $admin->runService($script, escapeshellarg($baudrate) . " /dev/" . escapeshellarg($serialport));
         }
         if ($route->subaction == 'stop') {
             $route->format = "json";
