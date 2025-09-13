@@ -772,7 +772,7 @@ class Feed
             // align to day, month, year
             $date = new DateTime();
             $date->setTimezone(new DateTimeZone($timezone));
-            $date->setTimestamp($end);
+            $date->setTimestamp((int)$end);
             $date->modify("tomorrow midnight");
             if ($interval=="weekly") {
                 $date->modify("next monday");
@@ -849,6 +849,9 @@ class Feed
     }
 
     private function format_output_time($data,$timeformat,$timezone) {
+
+        if ($data===false || $data===null || count($data)==0) return $data;
+
         switch ($timeformat) {
             case "unixms":
                 for ($i=0; $i<count($data); $i++) {
@@ -909,6 +912,11 @@ class Feed
         foreach ($data as $key=>$f) $keys[] = $key;
         if ($num_of_feeds = count($keys)) {
             $k = $keys[0];
+            
+            if (isset($data[$k]['data']['success'])) {
+                return $data[$k]['data']['message'];
+            }
+            
             for ($i=0; $i<count($data[$k]['data']); $i++) {
                 // Time is index 0
                 $values = array($data[$k]['data'][$i][0]);
@@ -937,6 +945,7 @@ class Feed
         $fields = json_decode(stripslashes($fields));
 
         $success = false;
+        $fields_out = array();
 
         if (isset($fields->name)) {
             //remove illegal characters
@@ -951,6 +960,7 @@ class Feed
                 }
                 $stmt->close();
                 if ($this->redis) $this->redis->hset("feed:$id",'name',$fields->name);
+                $fields_out['name'] = $fields->name;
             } else {
                 return array('success'=>false, 'message'=>'error setting up database update');
             }
@@ -963,19 +973,22 @@ class Feed
                 if ($stmt->execute()) $success = true;
                 $stmt->close();
                 if ($this->redis) $this->redis->hset("feed:$id",'tag',$fields->tag);
+                $fields_out['tag'] = $fields->tag;
             }
         }
 
         if (isset($fields->unit)) {
-        if ($fields->unit !== filter_var($fields->unit, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_BACKTICK | FILTER_FLAG_NO_ENCODE_QUOTES | FILTER_FLAG_STRIP_LOW)) {
-            return array('success'=>false, 'message'=>'invalid characters in feed unit');
-        }
+            $sanitized_unit = trim(htmlspecialchars($fields->unit, ENT_QUOTES, 'UTF-8'));
+            if ($fields->unit !== $sanitized_unit) {
+                return array('success'=>false, 'message'=>'invalid characters in feed unit');
+            }
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);
                 if ($stmt->execute()) $success = true;
                 $stmt->close();
                 if ($this->redis) $this->redis->hset("feed:$id",'unit',$fields->unit);
+                $fields_out['unit'] = $fields->unit;
             }
         }
 
@@ -987,11 +1000,17 @@ class Feed
                 if ($stmt->execute()) $success = true;
                 $stmt->close();
                 if ($this->redis) $this->redis->hset("feed:$id",'public',$public);
+                $fields_out['public'] = $public;
             }
         }
 
         if ($success){
-            return array('success'=>true, 'message'=>'Field updated');
+            return array(
+                'success'=>true, 
+                'message'=>'Field updated',
+                'feedid'=>$id,
+                'fields'=>$fields_out
+            );
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
         }

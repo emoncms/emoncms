@@ -136,6 +136,14 @@ class Process
                 return false;
             }
 
+            // If we are in Virtual feed context, check and skip processes that are not supported
+            if (isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
+                if (isset($process_list[$processkey]['virtual_feed_context']) && $process_list[$processkey]['virtual_feed_context']==false) {
+                    $this->log->error($processkey.' is not supported in virtual feed context');
+                    return false;
+                }
+            }
+
             $arg_count = $id_and_arg_count - 1;
 
             if ($arg_count == 1) {
@@ -149,15 +157,7 @@ class Process
             }
             
             $process_function = $processkey;
-            
-            // Perhaps a more comprehensive check for valid process functions required here
-            // or rely on validation when setting up the process list?
-            $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
-            if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
-                $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
-            } else {
-                $value = $this->$process_function($args,$time,$value,$options); // execute process function
-            }
+            $value = $this->$process_function($args,$time,$value,$options); // execute process function
             
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; 

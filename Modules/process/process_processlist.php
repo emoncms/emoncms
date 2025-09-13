@@ -194,6 +194,7 @@ class Process_ProcessList
                 "description" => tr("<p>Accumulate Wh measurements into kWh/d.<p><b>Input</b>: energy increments in Wh.</p>")
             ),
             array(
+                "deleted" => true,
                 "id_num" => 9,
                 "name" => tr("kWh to kWh/d (OLD)"),
                 "short" => "kwhkwhdold",
@@ -201,7 +202,6 @@ class Process_ProcessList
                 "function" => "kwh_to_kwhd_old",
                 "unit" => "kWhd",
                 "group" => tr("Deleted"),
-                "deleted" => true,
                 "engines" => array(Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "input_context" => true,
                 "virtual_feed_context" => false,
