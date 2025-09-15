@@ -276,7 +276,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     </div>
 </div>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=30"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=31"></script>
 
 <script>
     process_vue.has_redis = <?php echo ($settings["redis"]["enabled"] ? '1' : '0'); ?>;

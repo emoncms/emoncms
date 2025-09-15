@@ -1009,15 +1009,35 @@ class Process_ProcessList
     // Times value by current value of another input
     //---------------------------------------------------------------------------------------
     public function times_input($id, $time, $value)
-    {
-        return $value * $this->input->get_last_value($id);
+    {   
+        $last_value = $this->input->get_last_value($id);
+        
+        // Handle null values and ensure numeric types
+        if ($value === null || $last_value === null) {
+            return null;
+        }
+
+        // Convert to numeric value - this is the key fix for PHP 8+
+        $value = (float)$value;
+        $last_value = (float)$last_value;
+
+        return $value * $last_value;
     }
 
     public function divide_input($id, $time, $value)
     {
-        $lastval = $this->input->get_last_value($id);
-        if ($lastval > 0) {
-            return $value / $lastval;
+        $last_value = $this->input->get_last_value($id);
+
+        // Handle null values and ensure numeric types
+        if ($value === null || $last_value === null) {
+            return null;
+        }
+        // Convert to numeric value - this is the key fix for PHP 8+
+        $value = (float)$value;
+        $last_value = (float)$last_value;
+
+        if ($last_value > 0) {
+            return $value / $last_value;
         } else {
             return null; // should this be null for a divide by zero?
         }
@@ -1041,12 +1061,34 @@ class Process_ProcessList
 
     public function add_input($id, $time, $value)
     {
-        return $value + $this->input->get_last_value($id);
+        $last_value = $this->input->get_last_value($id);
+        
+        // Handle null values and ensure numeric types
+        if ($value === null || $last_value === null) {
+            return null;
+        }
+        
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last_value;
+        
+        return $value + $last_value;
     }
 
     public function subtract_input($id, $time, $value)
     {
-        return $value - $this->input->get_last_value($id);
+        $last_value = $this->input->get_last_value($id);
+        
+        // Handle null values and ensure numeric types
+        if ($value === null || $last_value === null) {
+            return null;
+        }
+        
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last_value;
+
+        return $value - $last_value;
     }
 
     public function max_input($id, $time, $value)
@@ -1092,6 +1134,14 @@ class Process_ProcessList
     //---------------------------------------------------------------------------------------
     public function power_to_kwh($feedid, $time_now, $value)
     {
+        // Handle null values and ensure numeric types
+        if ($value === null) {
+            return null;
+        }
+        
+        // Convert to numeric value
+        $value = (float)$value;
+
         $new_kwh = 0;
 
         // Get last value
@@ -1128,6 +1178,14 @@ class Process_ProcessList
 
     public function power_to_kwhd($feedid, $time_now, $value)
     {
+        // Handle null values and ensure numeric types
+        if ($value === null) {
+            return null;
+        }
+        
+        // Convert to numeric value - this is the key fix for PHP 8+
+        $value = (float)$value;
+
         $new_kwh = 0;
 
         // Get last value
@@ -1389,6 +1447,14 @@ class Process_ProcessList
 
     public function accumulator($feedid, $time, $value)
     {
+        // Handle null values and ensure numeric types
+        if ($value === null) {
+            return null;
+        }
+        
+        // Convert to numeric value - this is the key fix for PHP 8+
+        $value = (float)$value;
+
         $last = $this->feed->get_timevalue($feedid);
         if ($last === null) {
             return $value; // feed does not exist
@@ -1512,8 +1578,16 @@ class Process_ProcessList
             return $value; // feed does not exist
         }
 
-        $value = $last['value'] + $value;
-        return $value;
+        // Handle null values and ensure numeric types
+        if ($value === null || $last['value'] === null) {
+            return null;
+        }
+        
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last['value'];
+
+        return $last_value + $value;
     }
 
     public function sub_feed($feedid, $time, $value)
@@ -1523,8 +1597,16 @@ class Process_ProcessList
             return $value; // feed does not exist
         }
 
-        $myvar = $last['value'] * 1;
-        return $value - $myvar;
+        // Handle null values and ensure numeric types
+        if ($value === null || $last['value'] === null) {
+            return null;
+        }
+        
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last['value'];
+
+        return $value - $last_value;
     }
 
     public function multiply_by_feed($feedid, $time, $value)
@@ -1534,8 +1616,16 @@ class Process_ProcessList
             return $value; // feed does not exist
         }
 
-        $value = $last['value'] * $value;
-        return $value;
+        // Handle null values and ensure numeric types
+        if ($value === null || $last['value'] === null) {
+            return null;
+        }
+
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last['value'];
+
+        return $value * $last_value;
     }
 
     public function divide_by_feed($feedid, $time, $value)
@@ -1545,10 +1635,17 @@ class Process_ProcessList
             return $value; // feed does not exist
         }
 
-        $myvar = $last['value'] * 1;
+        // Handle null values and ensure numeric types
+        if ($value === null || $last['value'] === null) {
+            return null;
+        }
 
-        if ($myvar != 0) {
-            return $value / $myvar;
+        // Convert to numeric values
+        $value = (float)$value;
+        $last_value = (float)$last['value'];
+
+        if ($last_value != 0) {
+            return $value / $last_value;
         } else {
             return null;
         }

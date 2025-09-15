@@ -1,14 +1,14 @@
-<?php $v=26; 
+<?php $v=27; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
 <?php if ($device_module) { ?>
-    <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=27"></script>
+    <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=28"></script>
 <?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=25"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=25"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=25"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=26"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=26"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
 
