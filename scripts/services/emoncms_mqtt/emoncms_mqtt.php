@@ -68,33 +68,25 @@
         die;
     }
 
-    $retry = 0;
-    $mysqli_connected = false;
-    while(!$mysqli_connected) {
-        // Try to connect to mysql
-        $mysqli = @new mysqli(
-            $settings["sql"]["server"],
-            $settings["sql"]["username"],
-            $settings["sql"]["password"],
-            $settings["sql"]["database"],
-            $settings["sql"]["port"]
-        );
+    require("Modules/user/user_model.php");
+    require_once "Modules/feed/feed_model.php";
+    require_once "Modules/input/input_model.php";
+    require_once "Modules/process/process_model.php";
 
-        if ($mysqli->connect_error) {
-            $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);
-            $retry ++;
-            if ($retry>3) die;
-            sleep(5.0);
-        } else {
-            $mysqli_connected = true;
-            break;
-        }
+    $device_module_exists = false;
+    if (file_exists("Modules/device/device_model.php")) {
+        require_once "Modules/device/device_model.php";
+        $device_module_exists = true;
     }
 
-    // Enable for testing
-    // $mysqli->query("SET interactive_timeout=60;");
-    // $mysqli->query("SET wait_timeout=60;");
+    $connected = false;
+    $subscribed = 0;
+    $last_retry = 0;
+    $last_heartbeat = time();
+    $count = 0;
+    $pub_count = 0; // used to reduce load relating to checking for messages to be published
 
+    // Connect to redis if enabled
     if ($settings['redis']['enabled']) {
         $redis = new Redis();
         if (!$redis->connect($settings['redis']['host'], $settings['redis']['port'])) {
@@ -110,49 +102,57 @@
         $redis = false;
     }
 
-    require("Modules/user/user_model.php");
-    $user = new User($mysqli,$redis,null);
-
-    require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$settings['feed']);
-
-    require_once "Modules/input/input_model.php";
-    $input = new Input($mysqli,$redis,$feed);
-
-    $timezone = 'UTC';
-    if (!$settings["mqtt"]["multiuser"]) {
-        $timezone = $user->get_timezone($settings["mqtt"]["userid"]);
-    }
-
-    require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$timezone);
-
-    $device = false;
-    if (file_exists("Modules/device/device_model.php")) {
-        require_once "Modules/device/device_model.php";
-        $device = new Device($mysqli,$redis);
-    }
     /*
         new Mosquitto\Client($id,$cleanSession)
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */
     $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
-
-    $connected = false;
-    $subscribed = 0;
-    $last_retry = 0;
-    $last_heartbeat = time();
-    $count = 0;
-    $pub_count = 0; // used to reduce load relating to checking for messages to be published
-
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
     $mqtt_client->onMessage('message');
 
+    $mysqli_connected = false;
+
     // Option 1: extend on this:
-    while(true){
+    while(true) {
+        // Ensure we are connected to mysql
+        if ($mysqli_connected === false) {
+            // Try to connect to mysql
+            $mysqli = @new mysqli(
+                $settings["sql"]["server"],
+                $settings["sql"]["username"],
+                $settings["sql"]["password"],
+                $settings["sql"]["database"],
+                $settings["sql"]["port"]
+            );
+
+            if ($mysqli->connect_error) {
+                $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);
+                sleep(5.0);
+                continue;
+            } else {
+                $mysqli_connected = true;
+            }
+
+            // Recreate all model objects with new mysqli connection
+            $user = new User($mysqli, $redis, null);
+            $feed = new Feed($mysqli, $redis, $settings['feed']);
+            $input = new Input($mysqli, $redis, $feed);
+
+            $timezone = 'UTC';
+            if (!$settings["mqtt"]["multiuser"]) {
+                $timezone = $user->get_timezone($settings["mqtt"]["userid"]);
+            }
+
+            $process = new Process($mysqli, $input, $feed, $timezone);
+            if ($device_module_exists !== false) {
+                $device = new Device($mysqli, $redis);
+            }
+            $log->info("Successfully reconnected to MySQL and reloaded all objects");
+        }
+        
         try {
             $mqtt_client->loop();
         } catch (Exception $e) {
@@ -222,10 +222,18 @@
                 $mqtt_client->publish($topic, $count);
             }
             $count = 0;
-            // Keep mysql connection open with periodic ping
-            if (!$mysqli->ping()) {
-                $log->warn("mysql ping false");
-                die;
+            
+            // Check mysql connection and recreate objects if needed
+            try {
+                $result = $mysqli->query("SELECT 1");
+                if (!$result) {
+                    throw new Exception("Connection lost");
+                }
+                $result->close();
+            } catch (Exception $e) {
+                $log->warn("MySQL connection lost, attempting to reconnect and reload objects");
+                $mysqli->close();
+                $mysqli_connected = false;
             }
         }
 
