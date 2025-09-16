@@ -1986,25 +1986,24 @@ class Process_ProcessList
     // Get the start and end time of the $slot_interval_m minutes slot starting 00:00
     public function get_time_slot($time_now, $slot_interval_m)
     {
-        $now = DateTime::createFromFormat("U", (int) $time_now);
-        $now->setTimezone(new DateTimeZone($this->timezone));
-        $start_of_day = clone $now;
-        $start_of_day->setTime(0, 0); // Today at 00:00
+        // Step 1: Use a DateTime object to find the start of the day (00:00)
+        // in the specified timezone. This correctly handles Daylight Saving Time (DST).
+        $now = (new DateTime('@' . (int) $time_now))->setTimezone(new DateTimeZone($this->timezone));
+        $start_of_day_ts = (clone $now)->setTime(0, 0)->getTimestamp();
 
-        $seconds_since_start_of_day = $now->getTimestamp() - $start_of_day->getTimestamp();
-        $slot_index = intdiv($seconds_since_start_of_day, $slot_interval_m * 60); // Find the interval slot index
+        // Step 2: Perform all further calculations using fast integer arithmetic.
+        $seconds_in_interval = $slot_interval_m * 60;
+        $seconds_since_start_of_day = (int) $time_now - $start_of_day_ts;
 
-        $slot_start_time = clone $start_of_day;
-        $slot_start_minutes = $slot_index * $slot_interval_m; // Slot start time in minutes from midnight
-        $slot_start_time->modify("+{$slot_start_minutes} minutes"); // Calculate the slot start time
+        // Use intdiv for faster and cleaner integer division.
+        $slot_index = intdiv($seconds_since_start_of_day, $seconds_in_interval);
 
-        $slot_end_time = clone $start_of_day;
-        $slot_end_minutes = ($slot_index + 1) * $slot_interval_m; // Slot end time in minutes from midnight
-        $slot_end_time->modify("+{$slot_end_minutes} minutes"); // Calculate the slot end time
+        $slot_start_time = $start_of_day_ts + ($slot_index * $seconds_in_interval);
+        $slot_end_time = $start_of_day_ts + (($slot_index + 1) * $seconds_in_interval);
 
-        return array(
-            'start_time' => $slot_start_time->format("U"),
-            'end_time' => $slot_end_time->format("U")
-        );
+        return [
+            'start_time' => (string) $slot_start_time,
+            'end_time' => (string) $slot_end_time,
+        ];
     }
 }
