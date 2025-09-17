@@ -353,7 +353,8 @@ var available_intervals = <?php echo json_encode(Engine::available_intervals());
 var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
 
 // auto refresh
-update_feed_list();
+// update_feed_list();
+setTimeout(update_feed_list,1);
 setInterval(update_feed_list,5000);
 filter.oninput = update_feed_list;
 

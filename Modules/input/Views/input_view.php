@@ -1,4 +1,4 @@
-<?php $v=27; 
+<?php $v=29; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -72,6 +72,10 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             :title="'<?php echo addslashes(tr('Configure Input processing')); ?>'">
             <i class="icon-wrench"></i>
         </button>
+        <button v-if="show_clean" @click="clean_unused" class="btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
+            <i class="icon-leaf"></i>
+        </button>
+
     </div>
 
     <div id="noprocesses clearfix"></div>

@@ -39,6 +39,7 @@ function translate(property) {
     }
 }
 
+var inactive_input_timeout = 3600; // seconds of inactivity before input is considered inactive
 var devices = {};
 var inputs = {};
 var nodes = {};
@@ -280,7 +281,13 @@ var controls = new Vue({
     el: '#input-controls',
     data: {
         timeout: null,
-        overlayControlsOveride: false
+        overlayControlsOveride: false,
+
+        // used for clean feature
+        show_clean: false,
+        inactive_unconfigured_inputs: 0,
+        inactive_unconfigured_devices: 0
+
     },
     computed: {
         total_inputs: function(){
@@ -354,6 +361,28 @@ var controls = new Vue({
             } else {
                 alert(_("Input not found"));
             }
+        },
+        clean_unused: function() {
+
+            const inputText = this.inactive_unconfigured_inputs === 1 ? "input" : "inputs";
+            const deviceText = this.inactive_unconfigured_devices === 1 ? "device" : "devices";
+            
+            let msg = `Are you sure you want to remove ${this.inactive_unconfigured_inputs} inactive and unconfigured ${inputText}`;
+            
+            if (this.inactive_unconfigured_devices > 0) {
+                msg += ` and ${this.inactive_unconfigured_devices} ${deviceText}?`;
+            } else {
+                msg += "?";
+            }
+
+            if (confirm(msg)) {
+                // call device/clean.json result is plain text
+                $.get(path+"device/clean.json?active="+inactive_input_timeout).done( function(response) {
+                    alert(response);
+                });
+
+            }
+
         }
     },
     watch: {
@@ -873,6 +902,7 @@ function update_inputs() {
         // Clear existing device inputs
         for (var nodeid in devices) {
             devices[nodeid].inputs = [];
+            devices[nodeid].active_or_configured = false;
         }
 
         // Assign inputs to devices
@@ -924,6 +954,7 @@ function update_inputs() {
         }
         if(firstLoad) {
             $('#input-loader').hide();
+            prepare_device_clean();
             firstLoad = false;
         }
         
@@ -972,9 +1003,11 @@ function draw_devices() {
             var input = devices[nodeid].inputs[z];
 
             var last_update = list_format_last_update(input.time);
-            if (input.time != null && last_update > oldest_time) {
-                oldest_time = last_update;
-                device_oldest_input = input;
+            if (input.time != null) {
+                if (last_update > oldest_time) {
+                    oldest_time = last_update;
+                    device_oldest_input = input;
+                }
             }
             
             input.processlistHtml = process_vue ? process_vue.drawPreview(input.processList, input) : '';
@@ -998,7 +1031,6 @@ function draw_devices() {
         }
         devices[nodeid].time_color = fv.color
         devices[nodeid].time_value = fv.value
-
     }
 
     // Conversion of string length to px width
@@ -1021,7 +1053,74 @@ function draw_devices() {
 
     Vue.set(app, 'devices', clone(devices));
     app.loaded = true;
-    app.devicesOriginal = clone(devices)
+    app.devicesOriginal = clone(devices);
+}
+
+/**
+ * Analyzes devices to identify inactive and unconfigured inputs for cleanup
+ * 
+ * This function determines which inputs can be safely removed by:
+ * 1. For devices with configured inputs: finds inputs that are unconfigured AND inactive
+ *    relative to the most recent configured input activity
+ * 2. For devices with NO configured inputs: finds inputs that are inactive relative to current time
+ * 
+ * Updates the controls UI to show cleanup options when inactive inputs are found.
+ * 
+ * @global {Object} devices - Global devices object containing all device data
+ * @global {number} inactive_input_timeout - Timeout threshold in seconds for considering inputs inactive
+ * @global {Object} controls - Vue component for UI controls
+ */
+function prepare_device_clean() {
+    let inactive_unconfigured_inputs = 0;
+    let inactive_unconfigured_devices = 0;
+    
+    // Convert current time to Unix timestamp (seconds)
+    const now = (new Date()).getTime() * 0.001;
+
+    // Iterate through each device to analyze its inputs
+    for (const nodeid in devices) {
+        const device = devices[nodeid];
+        
+        // Separate inputs into configured (has process list) and unconfigured
+        const configuredInputs = device.inputs.filter(input => input.processList.length > 0);
+        const unconfiguredInputs = device.inputs.filter(input => input.processList.length === 0);
+        const hasConfiguredInputs = configuredInputs.length > 0;
+        
+        let deviceInactiveInputs = 0;
+
+        if (hasConfiguredInputs) {
+            // Strategy for devices WITH configured inputs:
+            // Use the most recent configured input as the baseline for activity
+            const mostRecentTime = Math.max(...configuredInputs.map(input => input.time || 0));
+            
+            // Only count unconfigured inputs that are inactive relative to configured input activity
+            // This prevents removing inputs that might still be actively sending data
+            deviceInactiveInputs = unconfiguredInputs.filter(input => 
+                (mostRecentTime - input.time) > inactive_input_timeout
+            ).length;
+        } else {
+            // Strategy for devices with NO configured inputs:
+            // Use current time as baseline since there's no configured activity to reference
+            deviceInactiveInputs = device.inputs.filter(input => 
+                (now - input.time) > inactive_input_timeout
+            ).length;
+            
+            // If ALL inputs in the device are inactive, mark the entire device for cleanup
+            if (deviceInactiveInputs === device.inputs.length) {
+                inactive_unconfigured_devices++;
+            }
+        }
+
+        // Accumulate total count across all devices
+        inactive_unconfigured_inputs += deviceInactiveInputs;
+    }
+
+    // Show cleanup UI option if any inactive inputs were found
+    if (inactive_unconfigured_inputs > 0) {
+        controls.show_clean = true;
+        controls.inactive_unconfigured_inputs = inactive_unconfigured_inputs;
+        controls.inactive_unconfigured_devices = inactive_unconfigured_devices;
+    }
 }
 
 function resize_view() {
@@ -1381,4 +1480,3 @@ $(function(){
         console.log(event.target.dataset.node,nodes_display)
     })
 })
-
