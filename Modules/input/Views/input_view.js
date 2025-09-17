@@ -94,7 +94,8 @@ var app = new Vue({
         device_module: DEVICE_MODULE === true,
         scrolled: false,
         loaded: false,
-        local_cache_key: 'input_nodes_display'
+        local_cache_key: 'input_nodes_display',
+        input_creation_disabled: false // new property
     },
     computed: {
         total_inputs: function() {
@@ -254,6 +255,24 @@ var app = new Vue({
                         this.selected.push(inputid)
                     }
                 }
+            }
+        },
+        enableInputCreation: function() {
+            var self = this;
+            $.get(path + "input/enable.json").done(function(response) {
+                if (response === true || response.success === true) {
+                    self.input_creation_disabled = false;
+                }
+            });
+        },
+        disableInputCreation: function() {
+            var self = this;
+            if (confirm("Are you sure you want to disable further input creation? New inputs and devices will not appear automatically until re-enabled. This can be useful if spurious inputs are being created.")) {
+                $.get(path + "input/disable.json").done(function(response) {
+                    if (response === true || response.success === true) {
+                        self.input_creation_disabled = true;
+                    }
+                });
             }
         }
     },
@@ -1480,3 +1499,11 @@ $(function(){
         console.log(event.target.dataset.node,nodes_display)
     })
 })
+
+
+// Check if input creation is disabled for the user
+$.get(path + "input/isdisabled.json").done(function(response) {
+    if (typeof app !== 'undefined') {
+        app.input_creation_disabled = response === true || response.disabled === true;
+    }
+});

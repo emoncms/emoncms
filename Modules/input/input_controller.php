@@ -117,6 +117,14 @@ function input_controller()
                 }
             }
         }
+        // Enable and disable input creation for session user
+        elseif ($route->action == "disable") {
+            return $input->disable_input_creation($session['userid']);
+        } elseif ($route->action == "enable") {
+            return $input->enable_input_creation($session['userid']);
+        } elseif ($route->action == "isdisabled") {
+            return $input->is_creation_disabled($session['userid']);
+        }
 
         // -------------------------------------------------------------------------
         // HTML Web pages

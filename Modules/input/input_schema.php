@@ -10,3 +10,9 @@ $schema['input'] = array(
     'time' => array('type' => 'int'),
     'value' => array('type' => 'float')
 );
+
+// Table of users with input creation disabled
+$schema['input_disable'] = array(
+    'userid' => array('type' => 'int', 'Null'=>false, 'Key'=>'PRI'),
+    'time' => array('type' => 'int')
+);

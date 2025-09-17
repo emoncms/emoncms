@@ -1,4 +1,4 @@
-<?php $v=29; 
+<?php $v=31; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -81,6 +81,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <div id="noprocesses clearfix"></div>
 
     <div id="app" v-cloak>
+
+        <!-- alert danger if input creation is disabled for user, click enable button to enable -->
+        <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
+            <button @click="enableInputCreation" class="btn" style="float:right;">
+                <i class="icon icon-play" style="margin-top:2px"></i>
+                <?php echo tr('Enable Input Creation'); ?></button>
+            <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
+        </div>
+
         <template v-if="loaded">
             <template v-if="total_devices > 0">
                 <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
@@ -143,6 +152,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             </div>
         </template>
         <h4 v-else><?php echo tr('Loading') ?></h4>
+
+        <!-- disable input creation button, only show if input creation is not already disabled and there are existing inputs -->
+        <div v-if="!input_creation_disabled && total_inputs > 0">
+            <button @click="disableInputCreation" class="btn float-end" style="margin-top:10px;">
+                <i class="icon icon-lock" style="margin-top:2px"></i>
+                <?php echo tr('Disable further input creation'); ?></button>
+        </div>
     </div>
 
     <div id="input-none" class="alert alert-block hide">
@@ -153,6 +169,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <div id="input-footer" class="hide">
         <button id="device-new" class="btn btn-small">&nbsp;<i class="icon-plus-sign"></i>&nbsp;<?php echo tr('New device'); ?></button>
     </div>
+
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
