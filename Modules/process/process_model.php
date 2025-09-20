@@ -575,4 +575,74 @@ class Process
         return implode(',', $encoded_process_list);
     }
 
+    /**
+     * Fetch referenced inputs and feeds in input process list
+     * 
+     * @param string $processList The process list string to analyze.
+     * @return array An array containing referenced input and feed IDs: array("inputs"=>array(...), "feeds"=>array(...))
+     */
+    public function get_referenced_entities($processList) {
+        $referenced_inputs = array();
+        $referenced_feeds = array();
+
+        $process_list = $this->get_process_list();
+        $pairs = explode(",",$processList);
+        $total = count($pairs);
+
+        for ($i=0; $i<$total; $i++) {
+            $inputprocess = explode(":", $pairs[$i]);  // Divide into process key and arg
+
+            $id_and_arg_count = count($inputprocess);
+            // if less than 1, skip this process
+            if ($id_and_arg_count < 1) continue;
+
+            // processkey may be an id or a module function name
+            $processkey = $inputprocess[0];
+            
+            // Map ids to process key names
+            if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+            
+            // Check if processkey exists in the process list
+            if (!isset($process_list[$processkey])) {
+                $this->log->error("get_referenced_entities() Processor '".$processkey."' does not exists. Module missing?");
+                return false;
+            }
+
+            $arg_count = $id_and_arg_count - 1;
+
+            if ($arg_count == 1) {
+                // Singular arg, just the value
+                $args = array($inputprocess[1]);
+            } else if ($arg_count > 1) {
+                // Multiple args (remove the process id)
+                $args = array_slice($inputprocess, 1);
+            } else {
+                $args = array();
+            }
+
+            // Check each arg for type INPUTID or FEEDID
+            $process_info = $this->get_info($processkey);
+            if ($process_info && isset($process_info['args']) && is_array($process_info['args'])) {
+                for ($j=0; $j<count($args); $j++) {
+                    if (isset($process_info['args'][$j]) && isset($process_info['args'][$j]['type'])) {
+                        $arg_type = $process_info['args'][$j]['type'];
+                        
+                        if ($arg_type == ProcessArg::INPUTID) {
+                            $input_id = (int) $args[$j];
+                            if ($input_id > 0 && !in_array($input_id, $referenced_inputs)) {
+                                $referenced_inputs[] = $input_id;
+                            }
+                        } elseif ($arg_type == ProcessArg::FEEDID) {
+                            $feed_id = (int) $args[$j];
+                            if ($feed_id > 0 && !in_array($feed_id, $referenced_feeds)) {
+                                $referenced_feeds[] = $feed_id;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return array("inputs" => $referenced_inputs, "feeds" => $referenced_feeds);
+    }
 }
