@@ -17,6 +17,7 @@ $config['units'] = array(
     array("short" => "°F", "long" => "Fahrenheit"),
     array("short" => "%", "long" => "Percent"),
     array("short" => "Hz", "long" => "Hertz"),
+    array("short" => "rpm", "long" => "Revolutions per minute"),
     array("short" => "pulses", "long" => "Pulses"),
     array("short" => "dB", "long" => "Decibel"),
     array("short" => "hPa", "long" => "Hectopascal"),
