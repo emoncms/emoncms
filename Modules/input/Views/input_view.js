@@ -92,7 +92,6 @@ var app = new Vue({
         collapsed: [],
         paused: false,
         device_module: DEVICE_MODULE === true,
-        scrolled: false,
         loaded: false,
         local_cache_key: 'input_nodes_display',
         input_creation_disabled: false // new property
@@ -210,13 +209,6 @@ var app = new Vue({
             })
             return oldest;
         },
-        handleScroll: function () {
-            window.clearTimeout(this.timeout);
-            let self = this;
-            this.timeout = window.setTimeout(function(){
-                self.scrolled = window.scrollY > 45;
-            }, 20)
-        },
         getDeviceInputIds: function (device) {
             // return array of ids from array of inputs
             return find(device.inputs, 'id')
@@ -277,7 +269,6 @@ var app = new Vue({
         }
     },
     created () {
-        window.addEventListener('scroll', this.handleScroll);
         // load list collapsed state from previous visit
         this.firstLoad = true;
         /*if(docCookies.hasItem(this.local_cache_key)) {
@@ -290,7 +281,7 @@ var app = new Vue({
         }*/
     },
     destroyed () {
-        window.removeEventListener('scroll', this.handleScroll);
+
     }
 });
 
@@ -300,7 +291,6 @@ var controls = new Vue({
     el: '#input-controls',
     data: {
         timeout: null,
-        overlayControlsOveride: false,
 
         // used for clean feature
         show_clean: false,
@@ -341,12 +331,6 @@ var controls = new Vue({
         },
         selectMode: function() {
             return app.selectMode;
-        },
-        scrolled: function() {
-            return app.scrolled;
-        },
-        overlayControls: function () {
-            return this.overlayControlsOveride || this.selectMode && this.scrolled
         }
     },
     methods: {
@@ -406,15 +390,7 @@ var controls = new Vue({
     },
     watch: {
         selectMode: function(newVal, oldVal) {
-            if (oldVal && !newVal && this.scrolled) {
-                this.overlayControlsOveride = true;
-            } else {
-                this.overlayControlsOveride = false;
-            }
             return newVal;
-        },
-        scrolled: function(newVal, oldVal) {
-            if (!newVal) this.overlayControlsOveride = false;
         }
     }
 });

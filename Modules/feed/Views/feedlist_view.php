@@ -88,9 +88,6 @@ function translate(property) {
 <style>
 body{padding:0!important}
 
-#table {
-    margin-top:4rem
-}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -100,6 +97,8 @@ body{padding:0!important}
 }
 
 .controls { margin-bottom:10px; }
+
+
 #feeds-to-delete { font-style:italic; }
 
 #deleteFeedModalSelectedItems{
@@ -148,7 +147,8 @@ body{padding:0!important}
 
 <input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
 
-<div class="controls" data-spy="affix" data-offset-top="100">
+<div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+<div class="sticky-controls">
     <button id="expand-collapse-all" class="btn" title="<?php echo tr('Collapse') ?>" data-alt-title="<?php echo tr('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo tr('Select all') ?>" data-alt-title="<?php echo tr('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="<?php echo tr('Edit') ?>"><i class="icon-pencil"></i></button>

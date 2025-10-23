@@ -1,4 +1,4 @@
-<?php $v=31; 
+<?php $v=32; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -6,7 +6,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=28"></script>
 <?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=26"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=27"></script>
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
 <script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=26"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
@@ -52,12 +52,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <h3><?php echo tr('Inputs'); ?></h3>
         <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a></span>
     </div>
-    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div v-cloak id="input-controls" class="sticky-controls" v-if="total_devices > 0">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+            <i class="icon icon-check" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
         <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
-            <svg class="icon">
+            <svg class="icon icon-check">
                 <use :xlink:href="checkbox_icon"></use>
             </svg>
             <span>{{selected.length}}</span>
@@ -75,7 +77,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <button v-if="show_clean" @click="clean_unused" class="btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-
     </div>
 
     <div id="noprocesses clearfix"></div>
