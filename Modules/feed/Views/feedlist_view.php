@@ -229,16 +229,16 @@ body{padding:0!important}
         <button class="btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
             <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="openEditFeedModal">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="openEditFeedModal(selectedFeeds)">
             <i class="icon-pencil"></i>
         </button>
-        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="openDeleteFeedModal">
+        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="openDeleteFeedModal(selectedFeeds)">
             <i class="icon-trash"></i>
         </button>
-        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="openDownsampleModal">
+        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="openDownsampleModal(selectedFeeds)">
             <i class="icon-repeat"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="openFeedExportModal">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="openFeedExportModal(selectedFeeds)">
             <i class="icon-download"></i>
         </button>
         <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
@@ -751,6 +751,6 @@ $("#refreshfeedsize").click(function(){
 
 </script>
 <?php require "Modules/feed/Views/feed_new_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js?v=1"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=3"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js?v=4"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=4"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=4"></script>
