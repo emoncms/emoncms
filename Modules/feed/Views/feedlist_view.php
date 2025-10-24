@@ -112,7 +112,7 @@ body{padding:0!important}
 .feed-list-grid {
     display: grid;
     /* Columns:            Checkbox, Name,           Public, Engine, Size, Process List, Value, Updated */
-    grid-template-columns: 30px max-content 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
+    grid-template-columns: 40px max-content 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -129,7 +129,7 @@ body{padding:0!important}
 /* Responsive behavior - hide public, engine, and size columns on smaller screens */
 @media (max-width: 768px) {
     .feed-list-grid {
-        grid-template-columns: 30px 1fr 80px 80px;
+        grid-template-columns: 40px 1fr 80px 80px;
     }
     
     /* Hide public, engine, and size columns */
@@ -233,6 +233,20 @@ body{padding:0!important}
     width: 2px;
 }
 
+/* Selected feed styling */
+.node-feed.selected {
+    background-color: rgba(60, 135, 170, 0.2) !important; /* Semi-transparent blue background */
+}
+
+.node-feed.selected:after {
+    width: 4px !important;
+    background: rgb(60, 135, 170) !important; /* Blue left border */
+}
+
+.node-feed.selected:hover {
+    background-color: rgba(60, 135, 170, 0.15) !important; /* Slightly more opaque on hover */
+}
+
 /* Arrow animation for Vue */
 .arrow-icon {
     transition: transform 0.3s ease;
@@ -328,6 +342,7 @@ body{padding:0!important}
             <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[node]}">
                 <div v-for="feed in nodeFeeds" :key="feed.id"
                      class="grid-row node-feed feed-graph-link"
+                     :class="{'selected': selectedFeeds[feed.id]}"
                      :style="{'--status-color': feed.color}"
                      :feedid="feed.id"
                      :title="getFeedTooltip(feed)"
