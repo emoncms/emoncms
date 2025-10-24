@@ -59,7 +59,7 @@
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
 // ---------------------------------------------------------------------------------------------
-function openEditFeedModal(selected_feeds){
+function openEditFeedModal(){
     $('#feedEditModal').modal('show');
     var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
     var feedid = 0;

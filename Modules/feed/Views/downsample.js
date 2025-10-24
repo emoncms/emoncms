@@ -2,7 +2,7 @@
 /**
  * Downsample modal
  */
-function openDownsampleModal(selected_feeds) {
+function openDownsampleModal() {
 
     console.log('openDownsampleModal called');
 

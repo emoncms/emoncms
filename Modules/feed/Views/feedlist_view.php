@@ -112,7 +112,7 @@ body{padding:0!important}
 .feed-grid {
     display: grid;
     /* Columns:            Name,           Public, Engine, Size, Value, Updated */
-    grid-template-columns: 30px minmax(150px, 3fr) 80px 120px 80px 80px 100px;
+    grid-template-columns: 30px minmax(150px, 1fr) 80px 120px 80px minmax(150px, 3fr) 80px 100px;
     align-items: center;
     cursor: default;
     min-height: 41px;
@@ -181,7 +181,7 @@ body{padding:0!important}
 .node-feeds .feed-grid.node-feed:after {
     content: '';
     width: 0px;
-    background: var(--status-color);
+    background: var(--bg-menu-top);
     height: 100%;
     display: block;
     position: absolute;
@@ -204,7 +204,7 @@ body{padding:0!important}
 .vue-collapsible-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease-in-out;
+    transition: max-height 0.2s ease-in-out;
     will-change: max-height;
 }
 
@@ -227,18 +227,18 @@ body{padding:0!important}
             <i class="icon" :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
         </button>
         <button class="btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
-            <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i>
+            <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="openEditFeedModal(selectedFeeds)">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
         </button>
-        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="openDeleteFeedModal(selectedFeeds)">
+        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
             <i class="icon-trash"></i>
         </button>
-        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="openDownsampleModal(selectedFeeds)">
+        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
             <i class="icon-repeat"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="openFeedExportModal(selectedFeeds)">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
             <i class="icon-download"></i>
         </button>
         <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
@@ -252,12 +252,13 @@ body{padding:0!important}
 <!-- Vue.js Feed List Component -->
     <div v-if="nodes && Object.keys(nodes).length > 0">
         <!-- Header Row -->
-        <div class="feed-grid feed-header">
+        <div class="feed-grid feed-header" style="display: none">
             <div class="grid-cell"></div>
             <div class="grid-cell">Name</div>
             <div class="grid-cell text-center">Public</div>
             <div class="grid-cell">Engine</div>
             <div class="grid-cell text-center">Size</div>
+            <div class="grid-cell text-center">Process List</div>
             <div class="grid-cell text-center">Value</div>
             <div class="grid-cell text-center">Updated</div>
         </div>
@@ -275,6 +276,7 @@ body{padding:0!important}
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
+                <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center" :style="{color: node_time_and_colour[node].color}">
                     {{ node_time_and_colour[node].text }}
@@ -299,6 +301,9 @@ body{padding:0!important}
                     </div>
                     <div class="grid-cell">{{ formatEngine(feed.engine, feed.interval) }}</div>
                     <div class="grid-cell text-center">{{ formatSize(feed.size) }}</div>
+                    <div class="grid-cell text-center">
+                        <i v-if="feed.process_list && feed.process_list.length > 0" class="icon-cogs" :title="feed.process_list.join(', ')"></i>
+                    </div>
                     <div class="grid-cell text-center" v-html="formatValue(feed.value, feed.unit)"></div>
                     <div class="grid-cell text-center" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
@@ -352,6 +357,7 @@ var nodes_display = {};
 var node_time_and_colour = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
+var selected_feeds = {}; // Global scope used by edit/delete/downsample/export modals
 
 var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
 var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
@@ -595,6 +601,24 @@ var feedApp = new Vue({
                 update_feed_list(); 
                 alert('<?php echo addslashes(tr("Total size of used space for feeds:")); ?>' + self.formatSize(bytes)); 
             } });
+        },
+
+        // Actions: edit, delete, downsample, export
+        editFeeds: function() {
+            selected_feeds = this.selectedFeeds;
+            openEditFeedModal();
+        },
+        deleteFeeds: function() {
+            selected_feeds = this.selectedFeeds;
+            openDeleteFeedModal();
+        },
+        downsampleFeeds: function() {
+            selected_feeds = this.selectedFeeds;
+            openDownsampleModal();
+        },
+        exportFeeds: function() {
+            selected_feeds = this.selectedFeeds;
+            openFeedExportModal();
         }
     }
 });
@@ -751,6 +775,6 @@ $("#refreshfeedsize").click(function(){
 
 </script>
 <?php require "Modules/feed/Views/feed_new_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js?v=4"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=4"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=4"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js?v=5"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=5"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=5"></script>

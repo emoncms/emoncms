@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
-function openFeedExportModal(selected_feeds){
+function openFeedExportModal(){
     $("#export-average").parent().hide();
     $("#export-average").data("enabled",0);
     
