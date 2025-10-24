@@ -294,7 +294,7 @@ body{padding:0!important}
                         <input class="feed-select" type="checkbox" :feedid="feed.id" v-model="selectedFeeds[feed.id]" @change="onFeedSelectionChange">
                     </div>
                     <div class="grid-cell">{{ feed.name }}</div>
-                    <div class="grid-cell text-center" @click.stop="toggleFeedPublic(feed)">
+                    <div class="grid-cell text-center">
                         <i :class="feed.public == 1 ? 'icon-globe' : 'icon-lock'"></i>
                     </div>
                     <div class="grid-cell">{{ formatEngine(feed.engine, feed.interval) }}</div>
@@ -349,103 +349,13 @@ var app = {};
 var feeds = {};
 var nodes = {};
 var selected_feeds = {};
-var local_cache_key = 'feed_nodes_display';
 var nodes_display = {};
-var node_colours = {};
-var node_times = {};
+var node_time_and_colour = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
 
 var available_intervals = <?php echo json_encode(Engine::available_intervals()); ?>;
 var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
-
-// Get filter element
-var filter = document.getElementById("filter");
-
-
-// Updated event handlers for Vue.js integration
-
-// Handle public toggle clicks via custom event  
-document.addEventListener('feedPublicClick', function(e) {
-    var feedid = e.detail.feedid;
-    e.stopPropagation();
-    // Existing functionality preserved - can be extended here
-});
-
-// Legacy jQuery handlers for elements not in Vue
-$("#table").on("click select",".feed-select",function(e) {
-    feed_selection();
-});
-
-// Keep existing graph button functionality
-$(".feed-graph").click(function(){
-    var graph_feeds = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
-    }
-
-    var public_username_str = "";
-    if (public_userid) public_username_str = public_username+"/";
-    
-    window.location = path+public_username_str+feedviewpath+graph_feeds.join(",");      
-});
-
-function buildFeedNodeList() {
-    node_names = [];
-    for (n in nodes) {
-        let feed = nodes[n];
-        node_names.push(feed[0].tag)
-    }
-    autocomplete(document.getElementById("feed-node"), node_names);
-}
-
-
-
-// ---------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------
-function feed_selection() 
-{
-    selected_feeds = {};
-    var num_selected = 0;
-    var phpfina_selected = 0;
-    $(".feed-select").each(function(){
-        var feedid = $(this).attr("feedid");
-        selected_feeds[feedid] = $(this)[0].checked;
-        if (selected_feeds[feedid]==true) {
-            num_selected += 1;
-            if (feeds[feedid].engine==5) phpfina_selected += 1;
-        }
-    });
-    
-    if (num_selected>0) {
-        if (session_write) $(".feed-delete").show();
-        $(".feed-download").show();
-        $(".feed-graph").show();
-        if (session_write) $(".feed-edit").show();
-        $("#filter").hide();
-    } else {
-        $(".feed-delete").hide();
-        $(".feed-download").hide();
-        $(".feed-graph").hide();
-        $(".feed-edit").hide();
-        $("#filter").show();
-    }
-    
-    if (phpfina_selected>0 && num_selected == phpfina_selected) {
-        $(".feed-downsample").show();
-    } else {
-        $(".feed-downsample").hide();
-    }
-
-    // There should only ever be one feed that is selected here:
-    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-    // Only show feed process button for Virtual feeds
-    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) {
-        if (session_write) $(".feed-process").show(); 
-    } else {
-        $(".feed-process").hide();
-    }
-}
 
 // Translations
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
@@ -601,9 +511,7 @@ var feedApp = new Vue({
         },
         
         toggleFeedPublic: function(feed) {
-            // Trigger the existing public toggle functionality
-            var event = new CustomEvent('feedPublicClick', { detail: { feedid: feed.id } });
-            document.dispatchEvent(event);
+
         },
         
         onFeedSelectionChange: function() {
@@ -802,24 +710,30 @@ function update_feed_list() {
         firstLoad = false;
         
         // Update Vue.js data
-        if (typeof feedApp !== 'undefined') {
-            feedApp.nodes = Object.assign({}, nodes);
-            feedApp.feeds = Object.assign({}, feeds);
-            feedApp.nodesDisplay = Object.assign({}, nodes_display);
-            feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
-            
-            // Preserve existing selections
-            var newSelectedFeeds = {};
-            for (var feedid in feeds) {
-                newSelectedFeeds[feedid] = selected_feeds[feedid] || false;
-            }
-            feedApp.selectedFeeds = newSelectedFeeds;
+        feedApp.nodes = Object.assign({}, nodes);
+        feedApp.feeds = Object.assign({}, feeds);
+        feedApp.nodesDisplay = Object.assign({}, nodes_display);
+        feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
+        
+        // Preserve existing selections
+        var newSelectedFeeds = {};
+        for (var feedid in feeds) {
+            newSelectedFeeds[feedid] = selected_feeds[feedid] || false;
         }
+        feedApp.selectedFeeds = newSelectedFeeds;
         
     }}); // end of ajax callback
 }// end of update_feed_list() function
 
-
+// Used by new feed modal autocomplete?
+function buildFeedNodeList() {
+    node_names = [];
+    for (n in nodes) {
+        let feed = nodes[n];
+        node_names.push(feed[0].tag)
+    }
+    autocomplete(document.getElementById("feed-node"), node_names);
+}
 
 // -----------------------------------------------------------------------------
 // Helper functions
@@ -892,4 +806,3 @@ $("#refreshfeedsize").click(function(){
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=2"></script>
-
