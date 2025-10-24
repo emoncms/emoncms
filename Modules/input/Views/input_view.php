@@ -8,7 +8,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 <script src="<?php echo $path; ?>Modules/input/Views/input.js?v=27"></script>
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=26"></script>
+<script src="<?php echo $path; ?>Lib/list_format_time_value.js?v=27"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
 
