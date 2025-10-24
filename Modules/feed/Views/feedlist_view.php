@@ -109,53 +109,59 @@ body{padding:0!important}
 }
 
 /* CSS Grid Feed List Styles */
-.feed-grid {
+.feed-list-grid {
     display: grid;
-    /* Columns:            Name,           Public, Engine, Size, Value, Updated */
-    grid-template-columns: 30px minmax(200px, 1fr) 80px 120px 80px minmax(150px, 3fr) 80px 100px;
-    align-items: center;
-    cursor: default;
-    min-height: 41px;
+    /* Columns:            Checkbox, Name,           Public, Engine, Size, Process List, Value, Updated */
+    grid-template-columns: 30px max-content max-content max-content max-content minmax(150px, 1fr) 80px 100px;
     width: 100%;
     box-sizing: border-box;
 }
 
+.grid-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 41px;
+    cursor: default;
+}
+
 /* Responsive behavior - hide public, engine, and size columns on smaller screens */
 @media (max-width: 768px) {
-    .feed-grid {
+    .feed-list-grid {
         grid-template-columns: 30px minmax(200px, 1fr) 80px 80px;
     }
     
     /* Hide public, engine, and size columns */
-    .feed-grid .grid-cell:nth-child(3),  /* Public column */
-    .feed-grid .grid-cell:nth-child(4),  /* Engine column */
-    .feed-grid .grid-cell:nth-child(5), /* Size column */
-    .feed-grid .grid-cell:nth-child(6) { /* Process List column */
+    .grid-row > .grid-cell:nth-child(3),  /* Public column */
+    .grid-row > .grid-cell:nth-child(4),  /* Engine column */
+    .grid-row > .grid-cell:nth-child(5), /* Size column */
+    .grid-row > .grid-cell:nth-child(6) { /* Process List column */
         display: none;
     }
 }
 
 @media (max-width: 480px) {
-    .feed-grid {
+    .feed-list-grid {
         grid-template-columns: 30px minmax(200px, 1fr) 80px 80px;
     }
     
     /* Hide public, engine, size, and process list columns on very small screens */
-    .feed-grid .grid-cell:nth-child(3),  /* Public column */
-    .feed-grid .grid-cell:nth-child(4),  /* Engine column */
-    .feed-grid .grid-cell:nth-child(5),  /* Size column */
-    .feed-grid .grid-cell:nth-child(6) { /* Process List column */
+    .grid-row > .grid-cell:nth-child(3),  /* Public column */
+    .grid-row > .grid-cell:nth-child(4),  /* Engine column */
+    .grid-row > .grid-cell:nth-child(5),  /* Size column */
+    .grid-row > .grid-cell:nth-child(6) { /* Process List column */
         display: none;
     }
 }
 
-.feed-grid.feed-header {
+.feed-header {
     background: #ddd;
     font-weight: bold;
     border-bottom: 1px solid #ccc;
 }
 
-.feed-grid .grid-cell {
+.grid-cell {
     padding: 0 8px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -172,46 +178,45 @@ body{padding:0!important}
 }
 
 /* Node header styles for grid */
-.node .feed-grid.node-header {
+.node-header {
     background: #ddd;
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
-    display: grid;
     border-right: 4px solid var(--status-color);
 }
 
-.node .feed-grid.node-header:hover {
+.node-header:hover {
     background-color: #e3e3e3;
 }
 
-.node .feed-grid.node-header h5 {
+.node-header h5 {
     margin: 0;
     font-weight: bold;
     font-size: 14px;
+    grid-column: 2;
 }
 
 /* Feed row styles for grid */
-.node-feeds .feed-grid.node-feed {
+.node-feed {
     border-bottom: 1px solid #fff;
     background: #f0f0f0;
     position: relative;
     transition: background-color 0.1s ease;
-    display: grid;
     width: 100%;
     cursor: pointer;
     border-right: 4px solid var(--status-color);
 }
 
-.node-feeds .feed-grid.node-feed:hover {
+.node-feed:hover {
     background-color: #f5f5f5;
 }
 
-.node-feeds .feed-grid.node-feed:last-child {
+.node-feed:last-of-type {
     border-bottom-width: 0;
 }
 
 /* Feed status indicator on right side */
-.node-feeds .feed-grid.node-feed:after {
+.node-feed:after {
     content: '';
     width: 0px;
     background: var(--bg-menu-top);
@@ -223,7 +228,7 @@ body{padding:0!important}
     transition: width .2s ease-out;
 }
 
-.node-feeds .feed-grid.node-feed:hover:after {
+.node-feed:hover:after {
     width: 2px;
 }
 
@@ -235,6 +240,9 @@ body{padding:0!important}
 
 /* Collapsible content for Vue */
 .vue-collapsible-content {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-in-out;
@@ -242,7 +250,7 @@ body{padding:0!important}
 }
 
 .vue-collapsible-content.is-expanded {
-    max-height: 2000px;
+    max-height: 2000px; /* Adjust as needed, should be larger than any possible content height */
 }
 </style>
 <div id="feed-header">
@@ -283,9 +291,10 @@ body{padding:0!important}
     </div>
 
 <!-- Vue.js Feed List Component -->
-    <div v-if="nodes && Object.keys(nodes).length > 0">
+    <div v-if="nodes && Object.keys(nodes).length > 0" class="feed-list-grid">
         <!-- Header Row -->
-        <div class="feed-grid feed-header" style="display: none">
+        <!--
+        <div class="grid-row feed-header">
             <div class="grid-cell"></div>
             <div class="grid-cell">Name</div>
             <div class="grid-cell text-center">Public</div>
@@ -295,17 +304,15 @@ body{padding:0!important}
             <div class="grid-cell text-center">Value</div>
             <div class="grid-cell text-center">Updated</div>
         </div>
-
+        -->
         <!-- Node Groups -->
-        <div v-for="(nodeFeeds, node) in nodes" :key="node" class="node accordion" :style="{'--status-color': node_time_and_colour[node].color}">
+        <template v-for="(nodeFeeds, node) in nodes">
             <!-- Node Header -->
-            <div class="feed-grid node-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}">
+            <div :key="node" class="grid-row node-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator">
                     <i class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></i>
                 </div>
-                <div class="grid-cell">
-                    <h5>{{ node }}:</h5>
-                </div>
+                <h5>{{ node }}:</h5>
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
@@ -317,14 +324,14 @@ body{padding:0!important}
             </div>
 
             <!-- Node Feeds -->
-            <div class="vue-collapsible-content node-feeds" :class="{'is-expanded': nodesDisplay[node]}">
-                <div v-for="feed in nodeFeeds" :key="feed.id" 
-                     class="feed-grid node-feed feed-graph-link" 
+            <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[node]}">
+                <div v-for="feed in nodeFeeds" :key="feed.id"
+                     class="grid-row node-feed feed-graph-link"
                      :style="{'--status-color': feed.color}"
                      :feedid="feed.id"
                      :title="getFeedTooltip(feed)"
                      @click="openFeedGraph(feed.id)">
-                    
+
                     <div class="grid-cell text-center" @click.stop>
                         <input class="feed-select" type="checkbox" :feedid="feed.id" v-model="selectedFeeds[feed.id]" @change="onFeedSelectionChange">
                     </div>
@@ -341,7 +348,10 @@ body{padding:0!important}
                     </div>
                 </div>
             </div>
-        </div>
+
+            <!-- Spacer for clarity -->
+            <div style="height:10px; grid-column: 1 / -1; background: #fff;"></div>
+        </template>
     </div>
 
     <div id="feed-none" class="alert alert-block" v-show="showNoFeeds">
@@ -666,7 +676,7 @@ setTimeout(update_feed_list,1);
 setInterval(update_feed_list,5000);
 filter.oninput = update_feed_list;
 
-var firstLoad = true;
+var first_load = true;
 function update_feed_list() {
     var public_username_str = "";
     if (public_userid) public_username_str = public_username+"/";
@@ -718,24 +728,24 @@ function update_feed_list() {
         for (var z in feeds) {
             var node = feeds[z].tag;
             if (nodes[node]==undefined) nodes[node] = [];
-
-            if (nodes_display[node]==undefined) nodes_display[node] = true;
             nodes[node].push(feeds[z]);
         }
-        
-        // Auto-collapse logic for first load
-        if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
-            for (var node in nodes) {
-                nodes_display[node] = false;
+
+        // make copy of current nodesDisplay on first load
+        let nodes_display = feedApp.nodesDisplay;
+        for (var n in nodes) {
+            if (nodes_display[n] === undefined) {
+                // First time seeing this node, expand by default
+                nodes_display[n] = true;
             }
         }
-        firstLoad = false;
+
         
         // Update Vue.js data
         feedApp.nodes = Object.assign({}, nodes);
         feedApp.feeds = Object.assign({}, feeds);
-        feedApp.nodesDisplay = Object.assign({}, nodes_display);
         feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
+        feedApp.nodesDisplay = Object.assign({}, nodes_display);
         feedApp.feedsLoaded = true;
     }}); // end of ajax callback
 }// end of update_feed_list() function
