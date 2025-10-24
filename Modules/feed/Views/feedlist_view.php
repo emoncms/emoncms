@@ -112,12 +112,41 @@ body{padding:0!important}
 .feed-grid {
     display: grid;
     /* Columns:            Name,           Public, Engine, Size, Value, Updated */
-    grid-template-columns: 30px minmax(150px, 1fr) 80px 120px 80px minmax(150px, 3fr) 80px 100px;
+    grid-template-columns: 30px minmax(200px, 1fr) 80px 120px 80px minmax(150px, 3fr) 80px 100px;
     align-items: center;
     cursor: default;
     min-height: 41px;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Responsive behavior - hide public, engine, and size columns on smaller screens */
+@media (max-width: 768px) {
+    .feed-grid {
+        grid-template-columns: 30px minmax(200px, 1fr) 80px 80px;
+    }
+    
+    /* Hide public, engine, and size columns */
+    .feed-grid .grid-cell:nth-child(3),  /* Public column */
+    .feed-grid .grid-cell:nth-child(4),  /* Engine column */
+    .feed-grid .grid-cell:nth-child(5), /* Size column */
+    .feed-grid .grid-cell:nth-child(6) { /* Process List column */
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .feed-grid {
+        grid-template-columns: 30px minmax(200px, 1fr) 80px 80px;
+    }
+    
+    /* Hide public, engine, size, and process list columns on very small screens */
+    .feed-grid .grid-cell:nth-child(3),  /* Public column */
+    .feed-grid .grid-cell:nth-child(4),  /* Engine column */
+    .feed-grid .grid-cell:nth-child(5),  /* Size column */
+    .feed-grid .grid-cell:nth-child(6) { /* Process List column */
+        display: none;
+    }
 }
 
 .feed-grid.feed-header {
@@ -136,6 +165,10 @@ body{padding:0!important}
 
 .text-center {
     text-align: center;
+}
+
+.text-left {
+    text-align: left;
 }
 
 /* Node header styles for grid */
@@ -244,7 +277,7 @@ body{padding:0!important}
         <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
             <i class="icon-eye-open"></i>
         </button>
-        <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeeds">
+        <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
     </div>
@@ -258,7 +291,7 @@ body{padding:0!important}
             <div class="grid-cell text-center">Public</div>
             <div class="grid-cell">Engine</div>
             <div class="grid-cell text-center">Size</div>
-            <div class="grid-cell text-center">Process List</div>
+            <div class="grid-cell text-left">Process List</div>
             <div class="grid-cell text-center">Value</div>
             <div class="grid-cell text-center">Updated</div>
         </div>
@@ -301,9 +334,7 @@ body{padding:0!important}
                     </div>
                     <div class="grid-cell">{{ formatEngine(feed.engine, feed.interval) }}</div>
                     <div class="grid-cell text-center">{{ formatSize(feed.size) }}</div>
-                    <div class="grid-cell text-center">
-                        <i v-if="feed.process_list && feed.process_list.length > 0" class="icon-cogs" :title="feed.process_list.join(', ')"></i>
-                    </div>
+                    <div class="grid-cell text-left" v-html="feed.processListHTML"></div>
                     <div class="grid-cell text-center" v-html="formatValue(feed.value, feed.unit)"></div>
                     <div class="grid-cell text-center" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
@@ -589,9 +620,14 @@ var feedApp = new Vue({
             window.location = path+public_username_str+feedviewpath+graph_feeds.join(",");
         },
         
-        processSelectedFeeds: function() {
-            // Trigger existing process modal functionality
-            $(".feed-process").trigger('click');
+        processSelectedFeed: function() {
+            // There should only ever be one feed that is selected here:
+            var feedid = 0;
+            for (var z in this.selectedFeeds) {
+                if (this.selectedFeeds[z]) feedid = z;
+            }
+            var contextname = this.feeds[feedid].tag + ": " + this.feeds[feedid].name;
+            process_vue.load(1, feedid, this.feeds[feedid].processList, contextname, null, null); // load configs
         },
 
         // Integrated refresh functionality
@@ -667,6 +703,13 @@ function update_feed_list() {
 
             if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
                 node_time_and_colour[feeds[z].tag] = formatted_time;
+            }
+        }
+
+        // get processList html
+        for (var z in feeds) {
+            if (feeds[z].processList != undefined && feeds[z].processList) {
+                feeds[z].processListHTML = process_vue ? process_vue.drawPreview(feeds[z].processList, feeds[z]) : '';
             }
         }
         
