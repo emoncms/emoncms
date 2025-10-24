@@ -462,7 +462,7 @@ function disableTrim(){
  * jQuery Event handler for the delete feed button
  * also shows items selected as well as a processlist warning
  */
-$(".feed-delete").click(function(){
+function openDeleteFeedModal(){
     $('#feedDeleteModal #deleteFeedText').show();
     $('#feedDeleteModal #deleteVirtualFeedText').hide();
     $('#feedDeleteModal').modal('show'); //show the delete modal
@@ -482,7 +482,7 @@ $(".feed-delete").click(function(){
 
     initTrim();
     initClear();
-});
+}
 
 function isSelectionValidForClear(){
     /*

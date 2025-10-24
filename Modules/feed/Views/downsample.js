@@ -2,7 +2,10 @@
 /**
  * Downsample modal
  */
-$(".feed-downsample").click(function(){
+openDownsampleModal = function() {
+
+    console.log('openDownsampleModal called');
+
     $('#downsampleModal').modal('show');
     $("#downsample-confirm").show();
     $(".downsample-options").show();
@@ -51,7 +54,7 @@ $(".feed-downsample").click(function(){
             $("#downsample-interval option[value='300']").prop('selected', true);
         }
     });
-});
+}
 
 // downsample confirm button 
 $("#downsample-confirm").click(function(){

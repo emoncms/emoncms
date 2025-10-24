@@ -229,22 +229,22 @@ body{padding:0!important}
         <button class="btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
             <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editSelectedFeeds()">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="openEditFeedModal">
             <i class="icon-pencil"></i>
         </button>
-        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteSelectedFeeds()">
+        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="openDeleteFeedModal">
             <i class="icon-trash"></i>
         </button>
-        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleSelectedFeeds()">
+        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="openDownsampleModal">
             <i class="icon-repeat"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="downloadSelectedFeeds()">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="openFeedExportModal">
             <i class="icon-download"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds()">
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
             <i class="icon-eye-open"></i>
         </button>
-        <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeeds()">
+        <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeeds">
             <i class="icon-wrench"></i>
         </button>
     </div>
@@ -565,26 +565,6 @@ var feedApp = new Vue({
             }
         },
         
-        editSelectedFeeds: function() {
-            // Trigger existing edit modal functionality
-            $(".feed-edit").trigger('click');
-        },
-        
-        deleteSelectedFeeds: function() {
-            // Trigger existing delete modal functionality
-            $(".feed-delete").trigger('click');
-        },
-        
-        downsampleSelectedFeeds: function() {
-            // Trigger existing downsample modal functionality
-            $(".feed-downsample").trigger('click');
-        },
-        
-        downloadSelectedFeeds: function() {
-            // Trigger existing download modal functionality
-            $(".feed-download").trigger('click');
-        },
-        
         graphSelectedFeeds: function() {
             var graph_feeds = [];
             for (var feedid in this.selectedFeeds) {
@@ -803,6 +783,6 @@ $("#refreshfeedsize").click(function(){
 
 </script>
 <?php require "Modules/feed/Views/feed_new_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js?v=1"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=2"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=3"></script>

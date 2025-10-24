@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
-$(".feed-download").click(function(){
+function openFeedExportModal(){
     $("#export-average").parent().hide();
     $("#export-average").data("enabled",0);
     
@@ -36,7 +36,7 @@ $(".feed-download").click(function(){
     calculate_download_size(ids.length);
     
     $('#feedExportModal').modal('show');
-});
+}
 
 $('#datetimepicker1').datetimepicker({
     language: 'en-EN'
