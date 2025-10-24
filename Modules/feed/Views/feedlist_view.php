@@ -308,12 +308,12 @@ body{padding:0!important}
         </div>
     </div>
 
-    <div id="feed-none" class="alert alert-block hide">
+    <div id="feed-none" class="alert alert-block" v-show="showNoFeeds">
         <h4 class="alert-heading"><?php echo tr('No feeds created'); ?></h4>
         <p><?php echo tr('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Feed API helper'); ?></a></p>
     </div>
 
-    <div id="public-feeds-none" class="alert alert-block hide">
+    <div id="public-feeds-none" class="alert alert-block" v-show="showNoPublicFeeds">
         <h4 class="alert-heading"><?php echo tr('No public feeds available'); ?></h4>
     </div>
 
@@ -348,7 +348,6 @@ var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 var app = {};
 var feeds = {};
 var nodes = {};
-var selected_feeds = {};
 var nodes_display = {};
 var node_time_and_colour = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
@@ -373,7 +372,8 @@ var feedApp = new Vue({
         feeds: {},
         selectedFeeds: {},
         nodesDisplay: {},
-        node_time_and_colour: {}
+        node_time_and_colour: {},
+        feedsLoaded: false
     },
     computed: {
         allExpanded: function() {
@@ -420,6 +420,14 @@ var feedApp = new Vue({
                 if (this.selectedFeeds[z]) feedid = z;
             }
             return this.feeds[feedid] && this.feeds[feedid].engine == 7;
+        },
+        
+        showNoFeeds: function() {
+            return this.feedsLoaded && Object.keys(this.feeds).length === 0 && !public_userid;
+        },
+        
+        showNoPublicFeeds: function() {
+            return this.feedsLoaded && Object.keys(this.feeds).length === 0 && public_userid;
         }
     },
     methods: {
@@ -515,8 +523,6 @@ var feedApp = new Vue({
         },
         
         onFeedSelectionChange: function() {
-            // Update the global selected_feeds object
-            selected_feeds = Object.assign({}, this.selectedFeeds);
             // Hide filter when feeds are selected
             if (this.selectedFeedCount > 0) {
                 $("#filter").hide();
@@ -590,22 +596,6 @@ var feedApp = new Vue({
                 alert('<?php echo addslashes(tr("Total size of used space for feeds:")); ?>' + self.formatSize(bytes)); 
             } });
         }
-    },
-    
-    watch: {
-        selectedFeeds: {
-            handler: function(newVal) {
-                selected_feeds = Object.assign({}, newVal);
-            },
-            deep: true
-        },
-        
-        nodesDisplay: {
-            handler: function(newVal) {
-                nodes_display = Object.assign({}, newVal);
-            },
-            deep: true
-        }
     }
 });
 
@@ -629,23 +619,8 @@ function update_feed_list() {
             return false;
         }
     
-        // Show/hide no feeds alert
+        // Show/hide no feeds alert - now handled by Vue
         $('#feed-loader').hide();
-        if (data.length == 0){
-            if (public_userid) {
-                $("#public-feeds-none").show();
-            } else {
-                $("#feed-none").show();
-            }
-            // Clear Vue data
-            if (typeof feedApp !== 'undefined') {
-                feedApp.nodes = {};
-                feedApp.feeds = {};
-            }
-        } else {
-            $("#feed-none").hide();
-            $("#public-feeds-none").hide();
-        }
         
         // Filter feeds
         feeds = {};
@@ -694,14 +669,7 @@ function update_feed_list() {
         feedApp.feeds = Object.assign({}, feeds);
         feedApp.nodesDisplay = Object.assign({}, nodes_display);
         feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
-        
-        // Preserve existing selections
-        var newSelectedFeeds = {};
-        for (var feedid in feeds) {
-            newSelectedFeeds[feedid] = selected_feeds[feedid] || false;
-        }
-        feedApp.selectedFeeds = newSelectedFeeds;
-        
+        feedApp.feedsLoaded = true;
     }}); // end of ajax callback
 }// end of update_feed_list() function
 
