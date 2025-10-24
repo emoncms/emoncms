@@ -77,7 +77,6 @@ function translate(property) {
 
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=8"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
@@ -221,22 +220,37 @@ body{padding:0!important}
 
 <input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
 
-<div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
-<div class="sticky-controls">
-    <button id="expand-collapse-all" class="btn" title="<?php echo tr('Collapse') ?>" data-alt-title="<?php echo tr('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-    <button id="select-all" class="btn" title="<?php echo tr('Select all') ?>" data-alt-title="<?php echo tr('Unselect all') ?>"><i class="icon icon-check"></i></button>
-    <button class="btn feed-edit hide" title="<?php echo tr('Edit') ?>"><i class="icon-pencil"></i></button>
-    <button class="btn feed-delete hide" title="<?php echo tr('Delete') ?>"><i class="icon-trash" ></i></button>
-    <button class="btn feed-downsample hide" title="<?php echo tr('Downsample') ?>"><i class="icon-repeat"></i></button>
-    <button class="btn feed-download hide" title="<?php echo tr('Download') ?>"><i class="icon-download"></i></button>
-    <button class="btn feed-graph hide" title="<?php echo tr('Graph view') ?>"><i class="icon-eye-open"></i></button>
-    <button class="btn feed-process hide" title="<?php echo tr('Process config') ?>"><i class="icon-wrench"></i></button>
+<div id="feed-app">
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div class="sticky-controls">
+        <button class="btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
+            <i class="icon" :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
+        </button>
+        <button class="btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
+            <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i>
+        </button>
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editSelectedFeeds()">
+            <i class="icon-pencil"></i>
+        </button>
+        <button class="btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteSelectedFeeds()">
+            <i class="icon-trash"></i>
+        </button>
+        <button class="btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleSelectedFeeds()">
+            <i class="icon-repeat"></i>
+        </button>
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="downloadSelectedFeeds()">
+            <i class="icon-download"></i>
+        </button>
+        <button class="btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds()">
+            <i class="icon-eye-open"></i>
+        </button>
+        <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeeds()">
+            <i class="icon-wrench"></i>
+        </button>
+    </div>
 
-</div>
-
-<div id="table" class="feed-list">
-    <!-- Vue.js Feed List Component -->
-    <div id="feed-app" v-if="nodes && Object.keys(nodes).length > 0">
+<!-- Vue.js Feed List Component -->
+    <div v-if="nodes && Object.keys(nodes).length > 0">
         <!-- Header Row -->
         <div class="feed-grid feed-header">
             <div class="grid-cell"></div>
@@ -291,15 +305,16 @@ body{padding:0!important}
             </div>
         </div>
     </div>
-</div>
 
-<div id="feed-none" class="alert alert-block hide">
-    <h4 class="alert-heading"><?php echo tr('No feeds created'); ?></h4>
-    <p><?php echo tr('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Feed API helper'); ?></a></p>
-</div>
+    <div id="feed-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo tr('No feeds created'); ?></h4>
+        <p><?php echo tr('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Feed API helper'); ?></a></p>
+    </div>
 
-<div id="public-feeds-none" class="alert alert-block hide">
-    <h4 class="alert-heading"><?php echo tr('No public feeds available'); ?></h4>
+    <div id="public-feeds-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo tr('No public feeds available'); ?></h4>
+    </div>
+
 </div>
 
 <div id="feed-footer">
@@ -471,10 +486,6 @@ function buildFeedNodeList() {
 
 
 
-$("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update_feed_list(); alert('<?php echo addslashes(tr("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
-});
-
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
 function feed_selection() 
@@ -521,16 +532,6 @@ function feed_selection()
     }
 }
 
-// -------------------------------------------------------------------------------------------------------
-// Interface responsive
-//
-// The following implements the showing and hiding of the device fields depending on the available width
-// of the container and the width of the individual fields themselves. It implements a level of responsivness
-// that is one step more advanced than is possible using css alone.
-// -------------------------------------------------------------------------------------------------------
-watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
-
-
 // Translations
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 var str_enter_valid_start_date = "<?php echo tr('Please enter a valid start date.'); ?>";
@@ -548,6 +549,53 @@ var feedApp = new Vue({
         selectedFeeds: {},
         nodesDisplay: {}
     },
+    computed: {
+        allExpanded: function() {
+            for (var node in this.nodes) {
+                if (!this.nodesDisplay[node]) {
+                    return false;
+                }
+            }
+            return true;
+        },
+        
+        allSelected: function() {
+            for (var feedid in this.feeds) {
+                if (!this.selectedFeeds[feedid]) {
+                    return false;
+                }
+            }
+            return Object.keys(this.feeds).length > 0;
+        },
+        
+        selectedFeedCount: function() {
+            var count = 0;
+            for (var feedid in this.selectedFeeds) {
+                if (this.selectedFeeds[feedid]) count++;
+            }
+            return count;
+        },
+        
+        showDownsample: function() {
+            if (this.selectedFeedCount === 0) return false;
+            var phpfinaSelected = 0;
+            for (var feedid in this.selectedFeeds) {
+                if (this.selectedFeeds[feedid] && this.feeds[feedid] && this.feeds[feedid].engine == 5) {
+                    phpfinaSelected++;
+                }
+            }
+            return phpfinaSelected > 0 && this.selectedFeedCount == phpfinaSelected;
+        },
+        
+        showProcess: function() {
+            if (this.selectedFeedCount !== 1) return false;
+            var feedid = 0;
+            for (var z in this.selectedFeeds) {
+                if (this.selectedFeeds[z]) feedid = z;
+            }
+            return this.feeds[feedid] && this.feeds[feedid].engine == 7;
+        }
+    },
     methods: {
         getNodeColor: function(nodeFeeds) {
             var maxColorCode = 0;
@@ -556,7 +604,7 @@ var feedApp = new Vue({
             for (var i = 0; i < nodeFeeds.length; i++) {
                 var feed = nodeFeeds[i];
                 if (feed.time != null && parseInt(feed.engine) !== 7) {
-                    var fv = list_format_updated_obj(feed.time, feed.interval);
+                    var fv = this.formatUpdatedObj(feed.time, feed.interval);
                     if (fv.color_code > maxColorCode) {
                         maxColorCode = fv.color_code;
                         nodeColor = fv.color;
@@ -571,7 +619,7 @@ var feedApp = new Vue({
             for (var i = 0; i < nodeFeeds.length; i++) {
                 totalSize += Number(nodeFeeds[i].size);
             }
-            return list_format_size(totalSize);
+            return this.formatSize(totalSize);
         },
         
         getNodeTime: function(nodeFeeds) {
@@ -581,7 +629,7 @@ var feedApp = new Vue({
             for (var i = 0; i < nodeFeeds.length; i++) {
                 var feed = nodeFeeds[i];
                 if (feed.time != null && parseInt(feed.engine) !== 7) {
-                    var fv = list_format_updated_obj(feed.time, feed.interval);
+                    var fv = this.formatUpdatedObj(feed.time, feed.interval);
                     if (fv.color_code > maxColorCode) {
                         maxColorCode = fv.color_code;
                         nodeTime = fv.value;
@@ -592,7 +640,7 @@ var feedApp = new Vue({
         },
         
         getFeedColor: function(feed) {
-            var fv = list_format_updated_obj(feed.time, feed.interval);
+            var fv = this.formatUpdatedObj(feed.time, feed.interval);
             return fv.color;
         },
         
@@ -635,17 +683,99 @@ var feedApp = new Vue({
             return engineName + intervalStr;
         },
         
-        formatSize: function(size) {
-            return list_format_size(size);
+        formatSize: function(bytes) {
+            if (!$.isNumeric(bytes)) {
+                return "n/a";
+            } else if (bytes < 1024) {
+                return bytes + "B";
+            } else if (bytes < 1024 * 100) {
+                return (bytes / 1024).toFixed(1) + "KB";
+            } else if (bytes < 1024 * 1024) {
+                return Math.round(bytes / 1024) + "KB";
+            } else if (bytes <= 1024 * 1024 * 1024) {
+                return Math.round(bytes / (1024 * 1024)) + "MB";
+            } else {
+                return (bytes / (1024 * 1024 * 1024)).toFixed(1) + "GB";
+            }
         },
         
         formatValue: function(value, unit) {
             if (unit == undefined) unit = "";
-            return list_format_value(value) + ' ' + unit;
+            return this.formatValueDynamic(value) + ' ' + unit;
+        },
+        
+        formatValueDynamic: function(value) {
+            if (value == null) return "NULL";
+            value = parseFloat(value);
+            if (value >= 1000) value = parseFloat(value.toFixed(0));
+            else if (value >= 100) value = parseFloat(value.toFixed(1));
+            else if (value >= 10) value = parseFloat(value.toFixed(2));
+            else if (value <= -1000) value = parseFloat(value.toFixed(0));
+            else if (value <= -100) value = parseFloat(value.toFixed(1));
+            else if (value < 10) value = parseFloat(value.toFixed(2));
+            return value;
         },
         
         formatTime: function(time, interval) {
-            return list_format_updated(time, interval);
+            var fv = this.formatUpdatedObj(time, interval);
+            return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
+        },
+        
+        formatColor: function(color_code) {
+            var colours = [
+                "rgb(60,135,170)",  // 0: blue
+                "rgb(50,200,50)",   // 1: green
+                "rgb(240,180,20)",  // 2: yellow
+                "rgb(255,125,20)",  // 3: orange
+                "rgb(255,0,0)",     // 4: red
+                "rgb(150,150,150)", // 5: grey
+            ];
+            return colours[color_code];
+        },
+        
+        formatUpdatedObj: function(time, interval) {
+            interval = interval || 1;
+            var servertime = (new Date()).getTime() - (app.timeServerLocalOffset || 0);
+            time = new Date(time * 1000);
+            var update = time.getTime();
+
+            var delta = servertime - update;
+            var secs = Math.abs(delta) / 1000;
+            var mins = secs / 60;
+            var hour = secs / 3600;
+            var day = hour / 24;
+
+            var updated = secs.toFixed(0) + "s";
+            if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+            else if (secs.toFixed(0) == 0) updated = "now";
+            else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
+            else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
+            else if (day > 2) updated = day.toFixed(0) + " days";
+            else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+            else if (secs > 180) updated = mins.toFixed(0) + " mins";
+
+            secs = Math.abs(secs);
+
+            var color_code = 5;                                  // grey    - Inactive
+
+            if (interval == 1) {                                 // => Variable Interval Feeds
+                if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+                else if (secs < 30) color_code = 1;              // green   - < 30s
+                else if (secs < 60) color_code = 2;              // yellow  - < 2 min
+                else if (secs < (60 * 60)) color_code = 3;       // orange  - < 1h
+                else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+            }
+            else {                                               // => Fixed Interval Feeds
+                if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+                else if (secs < interval*3) color_code = 1;      // green   - < 3x interval
+                else if (secs < interval*6) color_code = 2;      // yellow  - < 6x interval
+                else if (secs < interval*12) color_code = 3;     // orange  - < 12x interval
+                else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+            }
+
+            var color = this.formatColor(color_code);
+
+            return {color:color, color_code: color_code, value:updated};
         },
         
         openFeedGraph: function(feedid) {
@@ -663,7 +793,98 @@ var feedApp = new Vue({
         onFeedSelectionChange: function() {
             // Update the global selected_feeds object
             selected_feeds = Object.assign({}, this.selectedFeeds);
-            feed_selection();
+            // Hide filter when feeds are selected
+            if (this.selectedFeedCount > 0) {
+                $("#filter").hide();
+            } else {
+                $("#filter").show();
+            }
+        },
+        
+        // Integrated expand/collapse functionality
+        expandAllNodes: function(state) {
+            if (typeof state == 'undefined') {
+                // Determine current state - true if all expanded
+                var allExpanded = true;
+                for (var node in this.nodes) {
+                    if (!this.nodesDisplay[node]) {
+                        allExpanded = false;
+                        break;
+                    }
+                }
+                state = !allExpanded;
+            }
+            
+            // Set all nodes to the new state
+            var newState = {};
+            for (var node in this.nodes) {
+                newState[node] = state;
+            }
+            this.nodesDisplay = newState;
+        },
+        
+        // Integrated select all functionality
+        selectAllFeeds: function(state) {
+            if (typeof state == 'undefined') {
+                state = !this.allSelected;
+            }
+            
+            var newSelections = {};
+            for (var feedid in this.feeds) {
+                newSelections[feedid] = state;
+            }
+            this.selectedFeeds = newSelections;
+            
+            // Expand all if selecting all
+            if (state === true) {
+                this.expandAllNodes(true);
+            }
+        },
+        
+        editSelectedFeeds: function() {
+            // Trigger existing edit modal functionality
+            $(".feed-edit").trigger('click');
+        },
+        
+        deleteSelectedFeeds: function() {
+            // Trigger existing delete modal functionality
+            $(".feed-delete").trigger('click');
+        },
+        
+        downsampleSelectedFeeds: function() {
+            // Trigger existing downsample modal functionality
+            $(".feed-downsample").trigger('click');
+        },
+        
+        downloadSelectedFeeds: function() {
+            // Trigger existing download modal functionality
+            $(".feed-download").trigger('click');
+        },
+        
+        graphSelectedFeeds: function() {
+            var graph_feeds = [];
+            for (var feedid in this.selectedFeeds) {
+                if (this.selectedFeeds[feedid]) graph_feeds.push(feedid);
+            }
+
+            var public_username_str = "";
+            if (public_userid) public_username_str = public_username+"/";
+            
+            window.location = path+public_username_str+feedviewpath+graph_feeds.join(",");
+        },
+        
+        processSelectedFeeds: function() {
+            // Trigger existing process modal functionality
+            $(".feed-process").trigger('click');
+        },
+
+        // Integrated refresh functionality
+        refreshFeedSize: function() {
+            var self = this;
+            $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(bytes){ 
+                update_feed_list(); 
+                alert('<?php echo addslashes(tr("Total size of used space for feeds:")); ?>' + self.formatSize(bytes)); 
+            } });
         }
     },
     
@@ -671,14 +892,12 @@ var feedApp = new Vue({
         selectedFeeds: {
             handler: function(newVal) {
                 selected_feeds = Object.assign({}, newVal);
-                feed_selection();
             },
             deep: true
         },
         
         nodesDisplay: {
             handler: function(newVal) {
-                // Update global nodes_display object
                 nodes_display = Object.assign({}, newVal);
             },
             deep: true
@@ -686,76 +905,33 @@ var feedApp = new Vue({
     }
 });
 
-// Vue-compatible expand/collapse and select-all functionality  
-$(document).ready(function() {
-    // Wait for Vue to initialize before overriding button handlers
-    setTimeout(function() {
-        // Override the expand-collapse button for Vue compatibility
-        $("#expand-collapse-all").off('click').on('click', function() {
-            if (typeof feedApp !== 'undefined' && feedApp.nodes) {
-                // Determine if we should expand or collapse all
-                var allExpanded = true;
-                for (var node in feedApp.nodes) {
-                    if (!feedApp.nodesDisplay[node]) {
-                        allExpanded = false;
-                        break;
-                    }
-                }
-                
-                // Set all nodes to opposite state
-                var newState = {};
-                for (var node in feedApp.nodes) {
-                    newState[node] = !allExpanded;
-                }
-                feedApp.nodesDisplay = newState;
-                
-                // Update button state
-                var $btn = $(this);
-                var $icon = $btn.find('.icon');
-                $icon.toggleClass('icon-resize-small', !allExpanded)
-                     .toggleClass('icon-resize-full', allExpanded);
-                
-                if (!$btn.data('original-title')) $btn.data('original-title', $btn.attr('title'));
-                $btn.attr('title', allExpanded ? $btn.data('alt-title') : $btn.data('original-title'));
-            }
-        });
 
-        // Override the select-all button for Vue compatibility
-        $("#select-all").off('click').on('click', function() {
-            if (typeof feedApp !== 'undefined' && feedApp.feeds) {
-                var $btn = $(this);
-                var currentState = $btn.data('state') !== false;
-                
-                // Toggle all checkboxes
-                var newSelections = {};
-                for (var feedid in feedApp.feeds) {
-                    newSelections[feedid] = currentState;
-                }
-                feedApp.selectedFeeds = newSelections;
-                
-                // Update button appearance
-                $btn.find('.icon').toggleClass('icon-ban-circle', currentState)
-                                  .toggleClass('icon-check', !currentState);
-                
-                if (!$btn.data('title-original')) {
-                    $btn.data('title-original', $btn.attr('title'));
-                }
-                var title = currentState ? $btn.data('alt-title') : $btn.data('title-original');
-                $btn.attr('title', title);
-                $btn.data('state', !currentState);
-                
-                // Expand all if selecting all
-                if (currentState) {
-                    var expandedState = {};
-                    for (var node in feedApp.nodes) {
-                        expandedState[node] = true;
-                    }
-                    feedApp.nodesDisplay = expandedState;
-                }
-            }
-        });
-    }, 100);
+$("#refreshfeedsize").click(function(){
+    feedApp.refreshFeedSize();
 });
+
+
+// Responsive resize handling - simplified version
+function watchResize(callback, timeout) {
+    if (typeof callback == "undefined" || !(callback instanceof Function)) return;
+    timeout = timeout || 50;
+    
+    var resizeTimer;
+    $(window).on("resize", function(e) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            callback();
+        }, timeout);
+    });
+}
+
+function onResize() {
+    // Simplified responsive behavior - can be enhanced as needed
+    // The CSS Grid layout handles most of the responsive behavior
+}
+
+// Initialize resize watcher
+watchResize(onResize, 20);
 </script>
 
 <?php require "Modules/feed/Views/feed_new_modal.php"; ?>
