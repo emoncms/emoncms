@@ -111,10 +111,11 @@ body{padding:0!important}
 /* CSS Grid Feed List Styles */
 .feed-list-grid {
     display: grid;
-    /* Columns:            Checkbox, Name,           Public, Engine, Size, Process List, Value, Updated */
-    grid-template-columns: 40px max-content 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
+    grid-template-columns: 40px minmax(max-content, 2fr) 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
     width: 100%;
     box-sizing: border-box;
+    contain: layout style; /* CSS containment for better performance */
+    gap: 0; /* Explicit gap control */
 }
 
 .grid-row {
@@ -126,17 +127,26 @@ body{padding:0!important}
     cursor: default;
 }
 
-/* Responsive behavior - hide public, engine, and size columns on smaller screens */
+/* Responsive behavior */
+@media (max-width: 992px) {
+    .feed-list-grid {
+        grid-template-columns: 40px max-content 40px max-content minmax(80px, 1fr) 80px 100px;
+    }
+    
+    /* Start by hiding the process list column */
+    .grid-row > .grid-cell:nth-child(6) {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     .feed-list-grid {
         grid-template-columns: 40px 1fr 80px 80px;
     }
-    
     /* Hide public, engine, and size columns */
     .grid-row > .grid-cell:nth-child(3),  /* Public column */
     .grid-row > .grid-cell:nth-child(4),  /* Engine column */
-    .grid-row > .grid-cell:nth-child(5), /* Size column */
-    .grid-row > .grid-cell:nth-child(6) { /* Process List column */
+    .grid-row > .grid-cell:nth-child(5) { /* Size column */
         display: none;
     }
 }
@@ -145,13 +155,8 @@ body{padding:0!important}
     .feed-list-grid {
         grid-template-columns: 30px 1fr 80px;
     }
-    
-    /* Hide public, engine, size, and process list columns on very small screens */
-    .grid-row > .grid-cell:nth-child(3),  /* Public column */
-    .grid-row > .grid-cell:nth-child(4),  /* Engine column */
-    .grid-row > .grid-cell:nth-child(5),  /* Size column */
-    .grid-row > .grid-cell:nth-child(6), /* Process List column */
-    .grid-row > .grid-cell:nth-child(8) { /* Value column */
+    /* Additionally hide value column on very small screens */
+    .grid-row > .grid-cell:nth-child(8) {
         display: none;
     }
 }
@@ -163,11 +168,14 @@ body{padding:0!important}
 }
 
 .grid-cell {
-    padding: 0 8px;
+    padding: 4px 8px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     min-width: 0;
+    /*Not sure if this adds anything*/
+    word-break: break-word;
+    hyphens: auto;
 }
 
 .text-center {
@@ -267,6 +275,7 @@ body{padding:0!important}
 .vue-collapsible-content.is-expanded {
     max-height: 2000px; /* Adjust as needed, should be larger than any possible content height */
 }
+
 </style>
 <div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a></span>
