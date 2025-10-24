@@ -69,30 +69,6 @@ a.text-muted i[class*="icon-"] {
 #app .accordion {
     margin-bottom: .3rem;
 }
-#input-controls {
-    top: 3.5rem;
-    z-index: 1;
-}
-#input-controls.fixed {
-    position: sticky;
-}
-#input-controls:before {
-    background: rgba(0, 0, 0, 0.5);
-    content: "";
-    position: fixed;
-    top: 3rem;
-    height: 0rem;
-    width: 100%;
-    left: 0;
-    z-index: -1;
-    margin-top: -.18em;
-    transition: .2s height, .16s opacity ease-out;
-    opacity: 0;
-}
-#input-controls.fixed:before {
-    opacity: 1;
-    height: 3.15rem;
-}
 .select-mode .node-inputs .node-input {
     cursor: pointer;
 }

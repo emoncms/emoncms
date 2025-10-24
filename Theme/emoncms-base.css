@@ -324,39 +324,28 @@ div#account {
     margin-bottom: .5em
 }
 
-/* Used by dashboard designer */
-.controls {
-    transition: all .2s ease-out
+/* New sticky controls used by input & feed list */
+.sticky-controls {
+    position: sticky;
+    top: 46px;
+    z-index: 100;
+    background: #fff;
+    padding: 10px 0;
+    margin-bottom: 10px;
 }
-.controls.affix:before {
-    content: '';
+
+.menu-top.menu-top-hide ~ * .sticky-controls,
+.menu-top.menu-top-hide ~ .sticky-controls {
+    top: 0;
+}
+
+.sticky-controls.is-stuck {
     background: var(--bg-menu-top-active);
     opacity: 0.90;
-    width: 100%;
-    display: block;
-    position: fixed;
-    z-index: -1;
-    height: 2.6rem;
-    left: 0;
-    margin-top: -.3rem;
+    margin-left: -20px;
+    padding-left: 20px;
+    margin-right: -20px;
 }
-.controls.affix > * {
-    z-index: 2
-}
-.controls.affix {
-    z-index: 2;
-    top: 2.9rem;
-    padding: .3rem 0;
-}
-.controls.affix-top{position:absolute;}
-
-@media only screen and (max-width:979px) {
-    .controls.affix{top:0}
-}
-@media only screen and (min-width:870px) {
-    body{font-size:16px}
-}
-
 /*-------------------------------------*/
 /* Log windows */
 /* used by: admin page, emonhub config */
