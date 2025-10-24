@@ -263,7 +263,7 @@ body{padding:0!important}
         </div>
 
         <!-- Node Groups -->
-        <div v-for="(nodeFeeds, node) in nodes" :key="node" class="node accordion" :style="{'--status-color': getNodeColor(nodeFeeds)}">
+        <div v-for="(nodeFeeds, node) in nodes" :key="node" class="node accordion" :style="{'--status-color': node_time_and_colour[node].color}">
             <!-- Node Header -->
             <div class="feed-grid node-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}">
                 <div class="grid-cell text-center has-indicator">
@@ -276,8 +276,8 @@ body{padding:0!important}
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
                 <div class="grid-cell"></div>
-                <div class="grid-cell text-center">
-                    <span class="last-update" :style="{color: getNodeColor(nodeFeeds)}">{{ getNodeTime(nodeFeeds) }}</span>
+                <div class="grid-cell text-center" :style="{color: node_time_and_colour[node].color}">
+                    {{ node_time_and_colour[node].text }}
                 </div>
             </div>
 
@@ -285,22 +285,24 @@ body{padding:0!important}
             <div class="vue-collapsible-content node-feeds" :class="{'is-expanded': nodesDisplay[node]}">
                 <div v-for="feed in nodeFeeds" :key="feed.id" 
                      class="feed-grid node-feed feed-graph-link" 
-                     :style="{'--status-color': getFeedColor(feed)}"
+                     :style="{'--status-color': feed.color}"
                      :feedid="feed.id"
                      :title="getFeedTooltip(feed)"
                      @click="openFeedGraph(feed.id)">
                     
-                    <div class="grid-cell text-center select" @click.stop>
+                    <div class="grid-cell text-center" @click.stop>
                         <input class="feed-select" type="checkbox" :feedid="feed.id" v-model="selectedFeeds[feed.id]" @change="onFeedSelectionChange">
                     </div>
-                    <div class="grid-cell name">{{ feed.name }}</div>
-                    <div class="grid-cell text-center public" @click.stop="toggleFeedPublic(feed)">
+                    <div class="grid-cell">{{ feed.name }}</div>
+                    <div class="grid-cell text-center" @click.stop="toggleFeedPublic(feed)">
                         <i :class="feed.public == 1 ? 'icon-globe' : 'icon-lock'"></i>
                     </div>
-                    <div class="grid-cell engine">{{ formatEngine(feed.engine, feed.interval) }}</div>
-                    <div class="grid-cell text-center size">{{ formatSize(feed.size) }}</div>
-                    <div class="grid-cell text-center value" v-html="formatValue(feed.value, feed.unit)"></div>
-                    <div class="grid-cell text-center time" v-html="formatTime(feed.time, feed.interval)"></div>
+                    <div class="grid-cell">{{ formatEngine(feed.engine, feed.interval) }}</div>
+                    <div class="grid-cell text-center">{{ formatSize(feed.size) }}</div>
+                    <div class="grid-cell text-center" v-html="formatValue(feed.value, feed.unit)"></div>
+                    <div class="grid-cell text-center" :style="{color: feed.color}">
+                        {{ feed.formatted_time }}
+                    </div>
                 </div>
             </div>
         </div>
@@ -349,6 +351,8 @@ var nodes = {};
 var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = {};
+var node_colours = {};
+var node_times = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
 
@@ -358,97 +362,8 @@ var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]
 // Get filter element
 var filter = document.getElementById("filter");
 
-// auto refresh
-// update_feed_list();
-setTimeout(update_feed_list,1);
-setInterval(update_feed_list,5000);
-filter.oninput = update_feed_list;
-
-var firstLoad = true;
-function update_feed_list() {
-    var public_username_str = "";
-    if (public_userid) public_username_str = public_username+"/";
-    var requestTime = (new Date()).getTime();
-
-    $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        if( typeof app !== 'undefined') app.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-        if (data.message!=undefined && data.message=="Username or password empty") {
-            window.location.href = "/";
-            return false;
-        }
-    
-        // Show/hide no feeds alert
-        $('#feed-loader').hide();
-        if (data.length == 0){
-            if (public_userid) {
-                $("#public-feeds-none").show();
-            } else {
-                $("#feed-none").show();
-            }
-            // Clear Vue data
-            if (typeof feedApp !== 'undefined') {
-                feedApp.nodes = {};
-                feedApp.feeds = {};
-            }
-        } else {
-            $("#feed-none").hide();
-            $("#public-feeds-none").hide();
-        }
-        
-        // Filter feeds
-        feeds = {};
-        filterText = filter.value.toLowerCase()
-        for (var z in data) {
-            if (filterText == '' || data[z].name.toLowerCase().includes(filterText)) {
-                feeds[data[z].id] = data[z];
-            }
-        }
-        
-        // Group feeds by node
-        nodes = {};
-        for (var z in feeds) {
-            var node = feeds[z].tag;
-            if (nodes[node]==undefined) nodes[node] = [];
-
-            if (nodes_display[node]==undefined) nodes_display[node] = true;
-            nodes[node].push(feeds[z]);
-        }
-        
-        // Auto-collapse logic for first load
-        if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
-            for (var node in nodes) {
-                nodes_display[node] = false;
-            }
-        }
-        firstLoad = false;
-        
-        // Update Vue.js data
-        if (typeof feedApp !== 'undefined') {
-            feedApp.nodes = Object.assign({}, nodes);
-            feedApp.feeds = Object.assign({}, feeds);
-            feedApp.nodesDisplay = Object.assign({}, nodes_display);
-            
-            // Preserve existing selections
-            var newSelectedFeeds = {};
-            for (var feedid in feeds) {
-                newSelectedFeeds[feedid] = selected_feeds[feedid] || false;
-            }
-            feedApp.selectedFeeds = newSelectedFeeds;
-        }
-        
-    }}); // end of ajax callback
-}// end of update_feed_list() function
 
 // Updated event handlers for Vue.js integration
-
-// Handle feed graph clicks via custom event  
-document.addEventListener('feedGraphClick', function(e) {
-    var feedid = e.detail.feedid;
-    var public_username_str = "";
-    if (public_userid) public_username_str = public_username+"/";
-    
-    window.location = path+public_username_str+feedviewpath+feedid;
-});
 
 // Handle public toggle clicks via custom event  
 document.addEventListener('feedPublicClick', function(e) {
@@ -547,7 +462,8 @@ var feedApp = new Vue({
         nodes: {},
         feeds: {},
         selectedFeeds: {},
-        nodesDisplay: {}
+        nodesDisplay: {},
+        node_time_and_colour: {}
     },
     computed: {
         allExpanded: function() {
@@ -597,22 +513,6 @@ var feedApp = new Vue({
         }
     },
     methods: {
-        getNodeColor: function(nodeFeeds) {
-            var maxColorCode = 0;
-            var nodeColor = '#999';
-            
-            for (var i = 0; i < nodeFeeds.length; i++) {
-                var feed = nodeFeeds[i];
-                if (feed.time != null && parseInt(feed.engine) !== 7) {
-                    var fv = this.formatUpdatedObj(feed.time, feed.interval);
-                    if (fv.color_code > maxColorCode) {
-                        maxColorCode = fv.color_code;
-                        nodeColor = fv.color;
-                    }
-                }
-            }
-            return nodeColor;
-        },
         
         getNodeSize: function(nodeFeeds) {
             var totalSize = 0;
@@ -620,28 +520,6 @@ var feedApp = new Vue({
                 totalSize += Number(nodeFeeds[i].size);
             }
             return this.formatSize(totalSize);
-        },
-        
-        getNodeTime: function(nodeFeeds) {
-            var maxColorCode = 0;
-            var nodeTime = '';
-            
-            for (var i = 0; i < nodeFeeds.length; i++) {
-                var feed = nodeFeeds[i];
-                if (feed.time != null && parseInt(feed.engine) !== 7) {
-                    var fv = this.formatUpdatedObj(feed.time, feed.interval);
-                    if (fv.color_code > maxColorCode) {
-                        maxColorCode = fv.color_code;
-                        nodeTime = fv.value;
-                    }
-                }
-            }
-            return nodeTime;
-        },
-        
-        getFeedColor: function(feed) {
-            var fv = this.formatUpdatedObj(feed.time, feed.interval);
-            return fv.color;
         },
         
         getFeedTooltip: function(feed) {
@@ -716,72 +594,10 @@ var feedApp = new Vue({
             return value;
         },
         
-        formatTime: function(time, interval) {
-            var fv = this.formatUpdatedObj(time, interval);
-            return "<span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span>";
-        },
-        
-        formatColor: function(color_code) {
-            var colours = [
-                "rgb(60,135,170)",  // 0: blue
-                "rgb(50,200,50)",   // 1: green
-                "rgb(240,180,20)",  // 2: yellow
-                "rgb(255,125,20)",  // 3: orange
-                "rgb(255,0,0)",     // 4: red
-                "rgb(150,150,150)", // 5: grey
-            ];
-            return colours[color_code];
-        },
-        
-        formatUpdatedObj: function(time, interval) {
-            interval = interval || 1;
-            var servertime = (new Date()).getTime() - (app.timeServerLocalOffset || 0);
-            time = new Date(time * 1000);
-            var update = time.getTime();
-
-            var delta = servertime - update;
-            var secs = Math.abs(delta) / 1000;
-            var mins = secs / 60;
-            var hour = secs / 3600;
-            var day = hour / 24;
-
-            var updated = secs.toFixed(0) + "s";
-            if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
-            else if (secs.toFixed(0) == 0) updated = "now";
-            else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
-            else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
-            else if (day > 2) updated = day.toFixed(0) + " days";
-            else if (hour > 2) updated = hour.toFixed(0) + " hrs";
-            else if (secs > 180) updated = mins.toFixed(0) + " mins";
-
-            secs = Math.abs(secs);
-
-            var color_code = 5;                                  // grey    - Inactive
-
-            if (interval == 1) {                                 // => Variable Interval Feeds
-                if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
-                else if (secs < 30) color_code = 1;              // green   - < 30s
-                else if (secs < 60) color_code = 2;              // yellow  - < 2 min
-                else if (secs < (60 * 60)) color_code = 3;       // orange  - < 1h
-                else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
-            }
-            else {                                               // => Fixed Interval Feeds
-                if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
-                else if (secs < interval*3) color_code = 1;      // green   - < 3x interval
-                else if (secs < interval*6) color_code = 2;      // yellow  - < 6x interval
-                else if (secs < interval*12) color_code = 3;     // orange  - < 12x interval
-                else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
-            }
-
-            var color = this.formatColor(color_code);
-
-            return {color:color, color_code: color_code, value:updated};
-        },
-        
         openFeedGraph: function(feedid) {
-            // Trigger the existing feed graph functionality
-            var event = new CustomEvent('feedGraphClick', { detail: { feedid: feedid } });
-            document.dispatchEvent(event);
+            var public_username_str = "";
+            if (public_userid) public_username_str = public_username+"/";            
+            window.location = path+public_username_str+feedviewpath+feedid;
         },
         
         toggleFeedPublic: function(feed) {
@@ -905,38 +721,174 @@ var feedApp = new Vue({
     }
 });
 
+// -----------------------------------------------------------------------------
+// Feed list update function
+// -----------------------------------------------------------------------------
+setTimeout(update_feed_list,1);
+setInterval(update_feed_list,5000);
+filter.oninput = update_feed_list;
+
+var firstLoad = true;
+function update_feed_list() {
+    var public_username_str = "";
+    if (public_userid) public_username_str = public_username+"/";
+    var requestTime = (new Date()).getTime();
+
+    $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+        if( typeof app !== 'undefined') app.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+        if (data.message!=undefined && data.message=="Username or password empty") {
+            window.location.href = "/";
+            return false;
+        }
+    
+        // Show/hide no feeds alert
+        $('#feed-loader').hide();
+        if (data.length == 0){
+            if (public_userid) {
+                $("#public-feeds-none").show();
+            } else {
+                $("#feed-none").show();
+            }
+            // Clear Vue data
+            if (typeof feedApp !== 'undefined') {
+                feedApp.nodes = {};
+                feedApp.feeds = {};
+            }
+        } else {
+            $("#feed-none").hide();
+            $("#public-feeds-none").hide();
+        }
+        
+        // Filter feeds
+        feeds = {};
+        filterText = filter.value.toLowerCase()
+        for (var z in data) {
+            if (filterText == '' || data[z].name.toLowerCase().includes(filterText)) {
+                feeds[data[z].id] = data[z];
+            }
+        }
+
+        node_time_and_colour = {};
+
+        // Get feed and node colours and formatted values
+        for (var z in feeds) {
+            var formatted_time = formatTime(feeds[z].time, feeds[z].interval);
+
+            feeds[z].color = formatted_time.color;
+            feeds[z].color_code = formatted_time.color_code;
+            feeds[z].formatted_time = formatted_time.text;
+
+            if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
+                node_time_and_colour[feeds[z].tag] = formatted_time;
+            }
+        }
+        
+        // Group feeds by node
+        nodes = {};
+        for (var z in feeds) {
+            var node = feeds[z].tag;
+            if (nodes[node]==undefined) nodes[node] = [];
+
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(feeds[z]);
+        }
+        
+        // Auto-collapse logic for first load
+        if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
+            for (var node in nodes) {
+                nodes_display[node] = false;
+            }
+        }
+        firstLoad = false;
+        
+        // Update Vue.js data
+        if (typeof feedApp !== 'undefined') {
+            feedApp.nodes = Object.assign({}, nodes);
+            feedApp.feeds = Object.assign({}, feeds);
+            feedApp.nodesDisplay = Object.assign({}, nodes_display);
+            feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
+            
+            // Preserve existing selections
+            var newSelectedFeeds = {};
+            for (var feedid in feeds) {
+                newSelectedFeeds[feedid] = selected_feeds[feedid] || false;
+            }
+            feedApp.selectedFeeds = newSelectedFeeds;
+        }
+        
+    }}); // end of ajax callback
+}// end of update_feed_list() function
+
+
+
+// -----------------------------------------------------------------------------
+// Helper functions
+// -----------------------------------------------------------------------------
+
+// This could be moved to a shared utility file if needed elsewhere
+function formatTime(time, interval) {
+    interval = interval || 1;
+    var servertime = (new Date()).getTime() - (app.timeServerLocalOffset || 0);
+    time = new Date(time * 1000);
+    var update = time.getTime();
+
+    var delta = servertime - update;
+    var secs = Math.abs(delta) / 1000;
+    var mins = secs / 60;
+    var hour = secs / 3600;
+    var day = hour / 24;
+
+    var updated = secs.toFixed(0) + "s";
+    if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+    else if (secs.toFixed(0) == 0) updated = "now";
+    else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
+    else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
+    else if (day > 2) updated = day.toFixed(0) + " days";
+    else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+    else if (secs > 180) updated = mins.toFixed(0) + " mins";
+
+    secs = Math.abs(secs);
+
+    var color_code = 5;                                  // grey    - Inactive
+
+    if (interval == 1) {                                 // => Variable Interval Feeds
+        if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+        else if (secs < 30) color_code = 1;              // green   - < 30s
+        else if (secs < 60) color_code = 2;              // yellow  - < 2 min
+        else if (secs < (60 * 60)) color_code = 3;       // orange  - < 1h
+        else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+    }
+    else {                                               // => Fixed Interval Feeds
+        if (delta < 0) color_code = 0;                   // blue    - Ahead of time!
+        else if (secs < interval*3) color_code = 1;      // green   - < 3x interval
+        else if (secs < interval*6) color_code = 2;      // yellow  - < 6x interval
+        else if (secs < interval*12) color_code = 3;     // orange  - < 12x interval
+        else if (secs < (3600*24*31)) color_code = 4;    // red     - < 1 month
+    }
+
+    var colours = [
+        "rgb(60,135,170)",  // 0: blue
+        "rgb(50,200,50)",   // 1: green
+        "rgb(240,180,20)",  // 2: yellow
+        "rgb(255,125,20)",  // 3: orange
+        "rgb(255,0,0)",     // 4: red
+        "rgb(150,150,150)", // 5: grey
+    ];
+
+    var color = colours[color_code];
+
+    return {color:color, color_code: color_code, text:updated};
+}
+
+// -----------------------------------------------------------------------------
+
 
 $("#refreshfeedsize").click(function(){
     feedApp.refreshFeedSize();
 });
 
-
-// Responsive resize handling - simplified version
-function watchResize(callback, timeout) {
-    if (typeof callback == "undefined" || !(callback instanceof Function)) return;
-    timeout = timeout || 50;
-    
-    var resizeTimer;
-    $(window).on("resize", function(e) {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(function() {
-            callback();
-        }, timeout);
-    });
-}
-
-function onResize() {
-    // Simplified responsive behavior - can be enhanced as needed
-    // The CSS Grid layout handles most of the responsive behavior
-}
-
-// Initialize resize watcher
-watchResize(onResize, 20);
 </script>
-
 <?php require "Modules/feed/Views/feed_new_modal.php"; ?>
-
-
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/exporter.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/importer.js?v=2"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/downsample.js?v=2"></script>
