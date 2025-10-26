@@ -514,16 +514,12 @@ h4 small {
   font-size: 14px;
 }
 
-ul,
-ol {
+ul {
   padding: 0;
   margin: 0 0 10px 25px;
 }
 
-ul ul,
-ul ol,
-ol ol,
-ol ul {
+ul ul {
   margin-bottom: 0;
 }
 
@@ -531,14 +527,12 @@ li {
   line-height: 20px;
 }
 
-ul.inline,
-ol.inline {
+ul.inline {
   margin-left: 0;
   list-style: none;
 }
 
-ul.inline > li,
-ol.inline > li {
+ul.inline > li {
   display: inline-block;
   *display: inline;
   padding-right: 5px;
@@ -1648,14 +1642,6 @@ table th[class*="span"],
   background-image: url("../img/glyphicons-halflings-white.png");
 }
 
-.icon-search {
-  background-position: -48px 0;
-}
-
-.icon-star {
-  background-position: -120px 0;
-}
-
 .icon-user {
   background-position: -168px 0;
 }
@@ -1678,10 +1664,6 @@ table th[class*="span"],
 
 .icon-trash {
   background-position: -456px 0;
-}
-
-.icon-home {
-  background-position: 0 -24px;
 }
 
 .icon-time {
@@ -1788,10 +1770,6 @@ table th[class*="span"],
   background-position: -433px -96px;
 }
 
-.icon-exclamation-sign {
-  background-position: 0 -120px;
-}
-
 .icon-leaf {
   background-position: -48px -120px;
 }
@@ -1816,20 +1794,12 @@ table th[class*="span"],
   background-position: -456px -118px;
 }
 
-.icon-bullhorn {
-  background-position: -24px -144px;
-}
-
 .icon-globe {
   background-position: -336px -144px;
 }
 
 .icon-wrench {
   background-position: -360px -144px;
-}
-
-.icon-tasks {
-  background-position: -384px -144px;
 }
 
 .icon-briefcase {
