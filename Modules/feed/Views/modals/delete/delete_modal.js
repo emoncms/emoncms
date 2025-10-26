@@ -167,6 +167,9 @@ function initRelativeStartDateButtons(start_time){
         // add more cases here for additional options (and also data-relative_time='xyz' in the html)
         // returns function so that the dates are calculated to when the user clicks the buttons
         switch ($btn.data('relative_time')) {
+        case '-3y':
+            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-3,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) });
+            break;
         case '-2y':
             relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-2,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) });
             break;

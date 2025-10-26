@@ -33,6 +33,7 @@
                                 <button class="btn btn-mini active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
                                 <button class="btn btn-mini" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>
                                 <button class="btn btn-mini" title="<?php echo tr('Two years ago') ?>" data-relative_time="-2y"><?php echo tr('- 2 year') ?></button>
+                                <button class="btn btn-mini" title="<?php echo tr('Three years ago') ?>" data-relative_time="-3y"><?php echo tr('- 3 year') ?></button>
                                 <button class="btn btn-mini" title="<?php echo tr('Set to the current date/time') ?>" data-relative_time="now"><?php echo tr('Now') ?></button>
                             </div>
                         </div>

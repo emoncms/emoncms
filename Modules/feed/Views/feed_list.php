@@ -34,6 +34,8 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
 </script>
 <?php require "Modules/feed/Views/translate.php"; ?>
+
+<!-- feed.clear, trim, remove used by delete modal -->
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
