@@ -1,63 +1,3 @@
-
-<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<!-- FEED DELETE MODAL                                                                                                                             -->
-<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedDeleteModalLabel"><?php echo tr('Delete feed'); ?> 
-        <span id="feedDelete-message" class="label label-warning" data-default="<?php echo tr('Deleting a feed is permanent.'); ?>"><?php echo tr('Deleting a feed is permanent.'); ?></span>
-        </h3>
-    </div>
-    <div class="modal-body">
-        <div class="clearfix d-flex row">
-            <div id="clearContainer" class="span6">
-                <div style="min-height:12.1em; position:relative" class="well well-small">
-                    <h4 class="text-info"><?php echo tr('Clear') ?>:</h4>
-                    <p><?php echo tr('Empty feed of all data') ?></p>
-                    <button id="feedClear-confirm" class="btn btn-inverse" style="position:absolute;bottom:.8em"><?php echo tr('Clear Data'); ?>&hellip;</button>
-                </div>
-            </div>
-
-            <div id="trimContainer" class="span6">
-                <div class="well well-small">
-                    <h4 class="text-info"><?php echo tr('Trim') ?>:</h4>
-                    <p><?php echo tr('Empty feed data up to') ?>:</p>
-                    <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
-                        <div class="controls">
-                            <div id="feed_trim_datetimepicker" class="input-append date" style="margin-bottom:0">
-                                <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
-                                <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
-                            </div>
-                            <div class="btn-group" style="margin-bottom:-4px">
-                                <button class="btn btn-mini active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
-                                <button class="btn btn-mini" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>
-                                <button class="btn btn-mini" title="<?php echo tr('Two years ago') ?>" data-relative_time="-2y"><?php echo tr('- 2 year') ?></button>
-                                <button class="btn btn-mini" title="<?php echo tr('Set to the current date/time') ?>" data-relative_time="now"><?php echo tr('Now') ?></button>
-                            </div>
-                        </div>
-                    </div>
-                    <button id="feedTrim-confirm" class="btn btn-inverse"><?php echo tr('Trim Data'); ?>&hellip;</button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="well well-small" style="margin-bottom:0">
-            <h4 class="text-info"><?php echo tr('Delete')?>: <span id="feedProcessList"></span></h4>
-            <p id="deleteFeedText"><?php echo tr('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
-            <p id="deleteVirtualFeedText"><?php echo tr('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
-            <button id="feedDelete-confirm" class="btn btn-danger"><?php echo tr('Delete feed permanently'); ?></button>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <div id="feeds-to-delete" class="pull-left"></div>
-        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
-    </div>
-</div>
-<script>
-
-
 // ---------------------------------------------------------------------------------------------
 // DELETE FEED
 // ---------------------------------------------------------------------------------------------
@@ -160,22 +100,20 @@ function showSelectedFeeds(feed_inputs) {
     if (total_selected === 1) {
         total_summary += `<h5>${feedListShort}</h5>`;
     } else {
-        total_summary += `<h5 title="${feedListShort}"><?php echo tr('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>`.replace('%s', total_selected);
+        total_summary += `<h5 title="${feedListShort}">`+total_selected+' '+tr('feeds selected')+`<i class="icon icon-question-sign"></i></h5>`;
     }
 
     // Compose the combined message
     if (total_input_processes_linked > 0 || total_virtual_feed_processes_linked > 0) {
         let msg = '';
         if (total_input_processes_linked > 0) {
-            msg += total_input_processes_linked + ' <?php echo tr("input processes") ?>';
+            msg += total_input_processes_linked + ' ' + tr("input processes");
         }
         if (total_virtual_feed_processes_linked > 0) {
             if (msg.length > 0) msg += ' and ';
-            msg += total_virtual_feed_processes_linked + ' <?php echo tr("virtual feed processes") ?>';
+            msg += total_virtual_feed_processes_linked + ' '+tr("virtual feed processes");
         }
-        msg += total_selected === 1
-            ? ' <?php echo tr("associated with this feed") ?>'
-            : ' <?php echo tr("associated with these feeds") ?>';
+        msg += total_selected === 1? tr("associated with this feed"): tr("associated with these feeds");
 
         feedProcessList = `<span class="badge badge-default" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
     }
@@ -248,7 +186,7 @@ function initRelativeStartDateButtons(start_time){
         if (relativeTime < startDate) {
             $btn.hide() // hide button date is beyond start date
             $btn.css({'font-style':'italic', color:'#9a9eaa'});
-            $btn.attr('title',$btn.attr('title')+' - [<?php echo tr('Out of range')?>]');
+            $btn.attr('title',$btn.attr('title')+' - ['+tr('Out of range')+']');
         }
     })
     // open date picker on input focus
@@ -420,7 +358,7 @@ function enableTrim(start_time){
                 $input.focus();
                 return false;
             }else{
-                if(confirm("<?php echo tr('This is a new feature. Consider backing up your data before you continue. OK to continue?') ?>") == true) {
+                if(confirm(tr('This is a new feature. Consider backing up your data before you continue. OK to continue?')) == true) {
                     $('#trim_start_time_container').removeClass('error');
                     // set to seconds from milliseconds
                     let start_time = start_date.getTime()/1000;
@@ -449,7 +387,7 @@ function enableTrim(start_time){
  * @return void
  */
 function disableTrim(){
-    $('#trimContainer').attr('title','<?php echo tr('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#trimContainer').attr('title',tr('"Trim" not available for this storage engine')).addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button,input').addClass('disabled')
         .find('input').val('');
@@ -526,7 +464,7 @@ function enableClear(){
     $("#feedClear-confirm")
         .unbind('click')
         .click(function(){
-            if( confirm("<?php echo tr('Are you sure you want to delete all the feeds data?') ?>") == true ){
+            if( confirm(tr('Are you sure you want to delete all the feeds data?')) == true ){
                 $modal = $('#feedDeleteModal');
                 $("#feedDelete-loader").fadeIn();
 
@@ -549,17 +487,17 @@ function enableClear(){
 function disableClear(){
     $("#feedClear-confirm").unbind();
 
-    $('#clearContainer').attr('title','<?php echo tr('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
+    $('#clearContainer').attr('title',tr('"Clear" not available for this storage engine')).addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button').addClass('disabled');
 }
 
 $("#feedDelete-confirm").click(function(){
-    if( confirm("<?php echo tr('Are you sure you want to delete?') ?>") == true) {
+    if (confirm(tr('Are you sure you want to delete?')) == true) {
         for (let feedid in selected_feeds) {
             if (selected_feeds[feedid]) {
                 let response = feed.remove(feedid);
-                response = response ? response : {success:true, message: '<?php echo tr("Feeds Deleted") ?>'};
+                response = response ? response : {success:true, message: tr("Feeds Deleted")};
                 updateFeedDeleteModalMessage(response);
             }
         }
@@ -572,4 +510,3 @@ $("#feedDelete-confirm").click(function(){
         }, 5000);
     }
 });
-</script>
