@@ -176,12 +176,17 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 <!-- Load after the main content -->
 <?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php // delete and edit modals
-require "Modules/input/Views/input_dialog.php";
-?>
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+
+<!-- Edit input modal -->
+<?php require "Modules/input/Views/modals/edit/edit_modal.php"; ?>
+<script src="<?php echo $path; ?>Modules/input/Views/modals/edit/edit_modal.js?v=<?php echo $v; ?>"></script>
+
+<!-- Delete input modal -->
+<?php require "Modules/input/Views/modals/delete/delete_modal.php"; ?>
+<script src="<?php echo $path; ?>Modules/input/Views/modals/delete/delete_modal.js?v=<?php echo $v; ?>"></script>

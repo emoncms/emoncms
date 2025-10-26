@@ -116,3 +116,57 @@ input.checkbox-lg,
 [v-cloak] {
     visibility: hidden
 }
+
+/* Moved from input_dialog */
+
+.modal-body .form-group{
+    position: relative;
+}
+.modal-body .form-group .add-on,
+.modal-body .form-group input{
+    margin-bottom: 0;
+    margin-top: .8rem
+}
+.modal-body .form-group input + label {
+    position: absolute;
+    transition: all .2s ease-out;
+    left: 0.45rem;
+    opacity: 0;
+    top: 1.1rem;
+}
+.modal-body .form-group input:focus + label,
+.modal-body .form-group input:focus::placeholder{
+    color: #5b9bce;
+}
+.modal-body .form-group label.away{
+    font-size: x-small;
+    top: -.7em;
+    left: .5em;
+    opacity: 1;
+}
+.modal-body form.align-items-center p,
+.modal-body form.align-items-center button{
+    margin-top: .75rem;
+}
+.modal-footer::before, .modal-footer::after{
+    content: none
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.25s ease-out;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
+.dl-horizontal dt {
+    float: left;
+}
+.dl-horizontal dt.text-right{
+    text-align: right 
+}
+.dl-horizontal dt{
+    float: left;
+}
+.clear-both {
+    clear: both!important;
+}
