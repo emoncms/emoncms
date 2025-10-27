@@ -1,54 +1,10 @@
-/**
- * uses moment.js to format to local time 
- * @param int time unix epoc time
- * @param string format moment.js date formatting options
- * @see date format options - https://momentjs.com/docs/#/displaying/
- */
-function format_time(time,format){
-    if(!Number.isInteger(time)) return time;
-    format = format || 'YYYY-MM-DD';
-    formatted_date = moment.unix(time).utc().format(format);
-    return formatted_date;
-}
-/**
- * uses moment.js to display relative time from input time 
- * @param int time unix epoc time
- * @see docs - https://momentjs.com/docs/#/displaying/fromnow
- */
-function time_since(time){
-    if(!Number.isInteger(time)) return time;
-    formatted_date = moment.unix(time).utc().fromNow();
-    return formatted_date;
-}
-
-/**
- * wrapper for gettext like string replace function
- */
-function _(str) {
-    return translate(str);
-}
-/**
- * emulate the php gettext function for replacing php strings in js
- */
-function translate(property) {
-    _strings = typeof translations === 'undefined' ? getTranslations() : translations;
-    if (_strings.hasOwnProperty(property)) {
-        return _strings[property];
-    } else {
-        return property;
-    }
-}
-
 var inactive_input_timeout = 3600; // seconds of inactivity before input is considered inactive
 var devices = {};
 var inputs = {};
-var nodes = {};
 var local_cache_key = 'input_nodes_display';
 var nodes_display = {};
 // clear cookie value if not in correct format
 if (Array.isArray(nodes_display)) nodes_display = {};
-var selected_inputs = {};
-var selected_device = false;
 
 if (DEVICE_MODULE) {
     var device_templates = {};
@@ -182,16 +138,16 @@ var app = new Vue({
         },
         device_configure: function(device) {
             if(DEVICE_MODULE) {
-                device_configure(device);
+                device_dialog.loadConfig(device_templates, device);
             } else {
-                alert(_("Please install the device module to enable this feature"));
+                alert(tr("Please install the device module to enable this feature"));
             }
         },
         show_device_key: function(device) {
-            var devicekey = _("Please install the device module to enable this feature");
+            var devicekey = tr("Please install the device module to enable this feature");
             if(DEVICE_MODULE) {
                 devicekey = device.devicekey;
-                if (devicekey === "") devicekey = _("No device key created");
+                if (devicekey === "") devicekey = tr("No device key created");
             }
             alert(devicekey)
         },
@@ -314,9 +270,9 @@ var controls = new Vue({
         collapse_title: function () {
             var title = ''
             if (this.collapsed.length < this.total_devices) {
-                title += _('Collapse');
+                title += tr('Collapse');
             } else {
-                title += _('Expand');
+                title += tr('Expand');
             }
             return title;
         },
@@ -362,7 +318,7 @@ var controls = new Vue({
             if (inputs[inputid] !== undefined) {
                 showInputConfigure(inputs[inputid]);
             } else {
-                alert(_("Input not found"));
+                alert(tr("Input not found"));
             }
         },
         clean_unused: function() {
@@ -413,30 +369,6 @@ function clone(original) {
 }
 
 /**
- * overwrite an object's properties by subsequent objects' properties
- * @param {*} arguments object1, object2..
- * @return new object
- */
-var extend = function () {
-    // Create a new object
-    var extended = {};
-    // Merge the object into the extended object
-    var merge = function (obj) {
-        for (var prop in obj) {
-            if (obj.hasOwnProperty(prop)) {
-                // Push each value from `obj` into `extended`
-                extended[prop] = obj[prop];
-            }
-        }
-    };
-    // Loop through each object and conduct a merge
-    for (var i = 0; i < arguments.length; i++) {
-        merge(arguments[i]);
-    }
-    return extended;
-};
-
-/**
  * search all devices for input that matches the inputid
  * @param {Object} devices data returned from api 
  * @param {Number} inputid id of input to find as integer
@@ -460,8 +392,6 @@ function getInput(devices, inputid, returnIndex) {
     }
     return found
 }
-
-
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
@@ -587,7 +517,7 @@ function noProcessNotification(devices){
         }
     }
     if(processList.length<1 && Object.keys(devices).length > 0){
-        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',_("Configure your device here"))
+        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',tr("Configure your device here"))
     }
     $('#noprocesses').html(message);
 }
@@ -760,14 +690,6 @@ function resize_view() {
     }
 }
 
-function device_configure(device){
-    if (DEVICE_MODULE) {
-        device_dialog.loadConfig(device_templates, device);
-    } else {
-        alert(_("Please install the device module to enable this feature"));
-    }
-};
-
 function showInputConfigure(input) {
     var i = input
     var contextid = i.id; // Current Input ID
@@ -833,18 +755,6 @@ function find(arr, prop) {
         return a[prop];
     });
 }
-$(function(){
-    $(document).on('hide show', '#table', function(event){
-        // cache state in cookie
-        if(!firstLoad) {
-            nodes_display[event.target.dataset.node] = event.type === 'show';
-            //docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
-            firstLoad = false;
-        }
-        console.log(event.target.dataset.node,nodes_display)
-    })
-})
-
 
 // Check if input creation is disabled for the user
 $.get(path + "input/isdisabled.json").done(function(response) {

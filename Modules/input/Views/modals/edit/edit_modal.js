@@ -16,6 +16,30 @@ function hasChanged(newValue, oldValue){
     return changed
 }
 
+/**
+ * overwrite an object's properties by subsequent objects' properties
+ * @param {*} arguments object1, object2..
+ * @return new object
+ */
+var extend = function () {
+    // Create a new object
+    var extended = {};
+    // Merge the object into the extended object
+    var merge = function (obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                // Push each value from `obj` into `extended`
+                extended[prop] = obj[prop];
+            }
+        }
+    };
+    // Loop through each object and conduct a merge
+    for (var i = 0; i < arguments.length; i++) {
+        merge(arguments[i]);
+    }
+    return extended;
+};
+
 var edit_input = new Vue({
     el: '#inputEditModal',
     data: {
