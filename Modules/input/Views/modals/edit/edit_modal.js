@@ -1,3 +1,20 @@
+/**
+ * get the key/property. only returns the last found.
+ * @param {*} newValue 
+ * @param {*} oldValue 
+ * @returns {String|Boolean} the changed property name or false
+ */
+function hasChanged(newValue, oldValue){
+    let changed = false;
+    let properties = Object.keys(newValue)
+    properties.forEach(function(key) {
+        if (newValue[key] !== oldValue[key]) {
+            // value changed
+            changed = key
+        }
+    })
+    return changed
+}
 
 var edit_input = new Vue({
     el: '#inputEditModal',
