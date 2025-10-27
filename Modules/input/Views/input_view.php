@@ -6,10 +6,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=28"></script>
 <?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=27"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
-<script src="<?php echo $path; ?>Lib/list_format_time_value.js?v=27"></script>
+<!-- This view uses vue.js -->
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+
+<!-- used by input delete modal -->
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=27"></script>
+<!-- used by input processing ui -->
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
+<!-- used for formatting last updated time both colour and text -->
+<script src="<?php echo $path; ?>Lib/list_format_time_value.js?v=27"></script>
+<!-- js translation support -->
+<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+
+<!-- input list and edit/delete modal css -->
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
 
 <!-- PHP code to determine if the device module is installed AND translations -->
@@ -174,14 +183,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
-<!-- Load after the main content -->
-<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php require "Modules/process/Views/process_ui.php"; ?>
-
-<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
-<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
+<!-- Main input list javascript -->
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+
+<!-- Device modal: enables configuring devices using pre-set templates -->
+<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
+
+<!-- Input processing modal: configure input processing -->
+<?php require "Modules/process/Views/process_ui.php"; ?>
 
 <!-- Edit input modal -->
 <?php require "Modules/input/Views/modals/edit/edit_modal.php"; ?>
