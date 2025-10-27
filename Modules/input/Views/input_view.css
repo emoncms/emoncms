@@ -4,11 +4,6 @@
     margin-right: 0px;
 }
 
-.navbar-fixed-top {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
 input[type="checkbox"] { margin:0px; }
 .controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
@@ -150,13 +145,6 @@ input.checkbox-lg,
 }
 .modal-footer::before, .modal-footer::after{
     content: none
-}
-
-.fade-enter-active, .fade-leave-active {
-    transition: opacity 0.25s ease-out;
-}
-.fade-enter, .fade-leave-to {
-    opacity: 0;
 }
 .dl-horizontal dt {
     float: left;
