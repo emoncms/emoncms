@@ -84,12 +84,8 @@ body{padding:0!important}
 .grid-cell {
     padding: 4px 8px;
     overflow: hidden;
-    text-overflow: ellipsis;
     white-space: nowrap;
     min-width: 0;
-    /*Not sure if this adds anything*/
-    word-break: break-word;
-    hyphens: auto;
 }
 
 .text-center {

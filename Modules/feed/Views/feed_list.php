@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=7;
+    $v=8;
         
     $public_username_str = "";
     if ($session['public_userid']) {
