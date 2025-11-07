@@ -1,4 +1,4 @@
-<?php $v=31; 
+<?php $v=35; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -6,10 +6,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=28"></script>
 <?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=26"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=26"></script>
+<!-- This view uses vue.js -->
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+
+<!-- used by input delete modal -->
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=27"></script>
+<!-- used by input processing ui -->
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
+<!-- used for formatting last updated time both colour and text -->
+<script src="<?php echo $path; ?>Lib/list_format_time_value.js?v=27"></script>
+<!-- js translation support -->
+<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+
+<!-- input list and edit/delete modal css -->
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
 
 <!-- PHP code to determine if the device module is installed AND translations -->
@@ -52,12 +61,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <h3><?php echo tr('Inputs'); ?></h3>
         <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a></span>
     </div>
-    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div v-cloak id="input-controls" class="sticky-controls" v-if="total_devices > 0">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+            <i class="icon icon-check" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
         <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
-            <svg class="icon">
+            <svg class="icon icon-check">
                 <use :xlink:href="checkbox_icon"></use>
             </svg>
             <span>{{selected.length}}</span>
@@ -75,7 +86,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <button v-if="show_clean" @click="clean_unused" class="btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-
     </div>
 
     <div id="noprocesses clearfix"></div>
@@ -173,14 +183,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
-<!-- Load after the main content -->
+<!-- Main input list javascript -->
+<script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+
+<!-- Device modal: enables configuring devices using pre-set templates -->
 <?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php // delete and edit modals
-require "Modules/input/Views/input_dialog.php";
-?>
+
+<!-- Input processing modal: configure input processing -->
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
-<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
-<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+<!-- Edit input modal -->
+<?php require "Modules/input/Views/modals/edit/edit_modal.php"; ?>
+<script src="<?php echo $path; ?>Modules/input/Views/modals/edit/edit_modal.js?v=<?php echo $v; ?>"></script>
+
+<!-- Delete input modal -->
+<?php require "Modules/input/Views/modals/delete/delete_modal.php"; ?>
+<script src="<?php echo $path; ?>Modules/input/Views/modals/delete/delete_modal.js?v=<?php echo $v; ?>"></script>

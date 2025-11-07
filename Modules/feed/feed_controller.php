@@ -50,7 +50,7 @@ function feed_controller()
             if (!$session['read'] && !$session['public_userid']) {
                 return "";
             }
-            return view("Modules/feed/Views/feedlist_view.php");
+            return view("Modules/feed/Views/feed_list.php");
         } elseif ($route->action == "api") {
             if (!$session['read'] && !$session['public_userid']) {
                 return "";

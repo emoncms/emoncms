@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 42;
+$v = 48;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -32,9 +32,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
     <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/logo_normal.png">
 
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <link href="<?php echo $path; ?>Theme/css/bootstrap.css?v=4" rel="stylesheet">
+    <link href="<?php echo $path; ?>Theme/css/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <?php include 'Lib/menu/menu_langjs.php' ?>
@@ -118,7 +117,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js?v=2"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Theme/js/bootstrap.js?v=2"></script>
+    <Script type="text/javascript" src="<?php echo $path; ?>Theme/js/theme.js?v=<?php echo $v; ?>"></Script>
 
 <!-- ICONS --------------------------------------------- -->
 
