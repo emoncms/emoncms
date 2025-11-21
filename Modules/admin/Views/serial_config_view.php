@@ -266,7 +266,11 @@
             set_ical: function(i) {
                 let ical = app.device.channels[i].ical * 1;
                 let ilead = app.device.channels[i].ilead * 1;
-                writeToStream("k" + (i + 1) + " " + ical.toFixed(3) + " " + ilead.toFixed(3))
+                if (app.device.hardware=='emonPi3') {
+                    writeToStream("k" + (i + 4) + " 1 " + ical.toFixed(3) + " " + ilead.toFixed(3) + " 1 1")
+                } else {
+                    writeToStream("k" + (i + 1) + " " + ical.toFixed(3) + " " + ilead.toFixed(3))
+                }
                 app.changes = true;
             },
             set_vcal: function() {
@@ -363,6 +367,7 @@
     }
 
     function process_line(line) {
+        // console.log("process_line:", line);
 
         // Is the line valid JSON?
         // {"MSG":"P1:0.00,P2:0.00,P3:0.00,P4:0.00,P5:0.00,P6:0.00,E1:0.00,E2:0.00,E3:0.00,E4:0.00,E5:0.00,E6:0.00"}
@@ -427,6 +432,15 @@
                 populate_channels(6);
             }
             return;
+        }
+
+        // hardware
+        if (line.substring(0, 11) == "hardware = ") {
+            app.device.hardware = line.split("=")[1].trim();
+            if (app.device.hardware == "emonPi3") {
+                app.new_config_format = true;
+                populate_channels(12);
+            }
         }
 
         if (line.startsWith("Settings:")) {
