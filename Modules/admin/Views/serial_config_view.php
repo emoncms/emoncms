@@ -64,28 +64,66 @@
 
 
 
-        <div class="input-prepend input-append">
+        <div class="input-prepend input-append" v-if="device.hardware!='emonPi3'">
             <span class="add-on">Voltage calibration</span>
             <input type="text" v-model="device.vcal" style="width:60px" @change="set_vcal" :disabled="!connected" />
             <span class="add-on">%</span>
         </div>
 
+        <!-- Multi voltage calibration for emonPi3 -->
+        <h4 v-if="device.hardware=='emonPi3'">Voltage channels</h4>
+        <table class="table" v-if="device.hardware=='emonPi3'">
+            <tr>
+                <th>Active</th>
+                <th>Channel</th>
+                <th style="width:80%">Calibration</th>
+            </tr>
+            <tr v-for="(vchannel,index) in device.vchannels">
+                <td>
+                    <input type="checkbox" v-model="vchannel.active" :disabled="!connected" @change="set_vchannel(index)" />
+                </td>
+                <td>V{{ index+1 }}</td>
+                <td>
+                    <input type="text" v-model="vchannel.vcal" style="width:60px" :disabled="!connected" @change="set_vchannel(index)" />
+                    <span class="add-on">%</span>
+                </td>
+            </tr>
+        </table>
+
+        <!-- Current calibration table -->
+        <h4>Current channels</h4>
         <table class="table">
             <tr>
+                <th v-if="device.hardware=='emonPi3'">Active</th>
                 <th>Channel</th>
                 <th>CT Type</th>
                 <th>Phase Correction</th>
+                <th v-if="device.hardware=='emonPi3'">V Chan 1</th>
+                <th v-if="device.hardware=='emonPi3'">V Chan 2</th>
                 <th>Power</th>
                 <th>Energy</th>
             </tr>
-            <tr v-for="(channel,index) in device.channels">
+            <tr v-for="(channel,index) in device.ichannels">
+                <td v-if="device.hardware=='emonPi3'">
+                    <input type="checkbox" v-model="channel.active" :disabled="!connected" @change="set_ical(index)" />
+                </td>
                 <td>CT {{ index+1 }}</td>
                 <td>
                     <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected">
                         <option v-for="rating in cts_available" v-bind:value="rating">{{ rating }}A</option>
                     </select>
                 </td>
-                <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:80px" :disabled="!connected" /></td>
+                <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:50px" :disabled="!connected" /></td>
+                <td v-if="device.hardware=='emonPi3'">
+                    <select style="width:80px" v-model="channel.vchan1" :disabled="!connected" @change="set_ical(index)">
+                        <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
+                    </select>
+                </td>
+                <td v-if="device.hardware=='emonPi3'">
+                    <select style="width:80px" v-model="channel.vchan2" :disabled="!connected" @change="set_ical(index)">
+                        <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
+                    </select>
+                </td>
                 <td>{{ channel.power }}</td>
                 <td>{{ channel.energy }}</td>
             </tr>
@@ -155,7 +193,7 @@
     </div>
 </div>
 
-<pre id="log" class="log" style="padding:10px"></pre>
+<pre id="log" class="log" style="padding:10px; height: 500px"></pre>
 
 <script>
     const log = document.getElementById("log")
@@ -200,7 +238,12 @@
                 // Calibration
                 emon_library: "emonLibDB",
                 vcal: '',
-                channels: [
+                vchannels: [
+                    {vcal: 100, active: true},
+                    {vcal: 100, active: false},
+                    {vcal: 100, active: false}
+                ],
+                ichannels: [
                     /*
                     {
                     	ical: 20,
@@ -264,10 +307,11 @@
                 });
             },
             set_ical: function(i) {
-                let ical = app.device.channels[i].ical * 1;
-                let ilead = app.device.channels[i].ilead * 1;
+                let ical = app.device.ichannels[i].ical * 1;
+                let ilead = app.device.ichannels[i].ilead * 1;
+                let active = app.device.ichannels[i].active ? 1 : 0;
                 if (app.device.hardware=='emonPi3') {
-                    writeToStream("k" + (i + 4) + " 1 " + ical.toFixed(3) + " " + ilead.toFixed(3) + " 1 1")
+                    writeToStream("k" + (i + 4) + " " + active + " " + ical.toFixed(3) + " " + ilead.toFixed(3) + " " + app.device.ichannels[i].vchan1 + " " + app.device.ichannels[i].vchan2);
                 } else {
                     writeToStream("k" + (i + 1) + " " + ical.toFixed(3) + " " + ilead.toFixed(3))
                 }
@@ -276,6 +320,12 @@
             set_vcal: function() {
                 let vcal = app.device.vcal * 1;
                 writeToStream("k0 " + vcal.toFixed(3) + " 0");
+                app.changes = true;
+            },
+            set_vchannel: function(i) {
+                let vcal = app.device.vchannels[i].vcal * 1;
+                let active = app.device.vchannels[i].active ? 1 : 0;
+                writeToStream("k" + (i + 1) + " " + active + " " + vcal.toFixed(3));
                 app.changes = true;
             },
             set_radio: function() {
@@ -376,14 +426,14 @@
         try {
             var json = JSON.parse(line);
 
-            for (var c = 0; c < app.device.channels.length; c++) {
+            for (var c = 0; c < app.device.ichannels.length; c++) {
                 var power_key = "P" + (c + 1);
                 if (json[power_key] !== undefined) {
-                    app.device.channels[c].power = json[power_key] + 'W';
+                    app.device.ichannels[c].power = json[power_key] + 'W';
                 }
                 var energy_key = "E" + (c + 1);
                 if (json[energy_key] !== undefined) {
-                    app.device.channels[c].energy = json[energy_key] + 'Wh';
+                    app.device.ichannels[c].energy = json[energy_key] + 'Wh';
                 }
             }
             return;
@@ -398,13 +448,13 @@
             let pairs = line.split(",");
             for (var z in pairs) {
                 let keyval = pairs[z].split(":");
-                for (var c = 0; c < app.device.channels.length; c++) {
+                for (var c = 0; c < app.device.ichannels.length; c++) {
                     if (keyval[0] == "P" + (c + 1)) {
-                        app.device.channels[c].power = keyval[1] + 'W';
+                        app.device.ichannels[c].power = keyval[1] + 'W';
                         break;
                     }
                     if (keyval[0] == "E" + (c + 1)) {
-                        app.device.channels[c].energy = keyval[1] + 'Wh';
+                        app.device.ichannels[c].energy = keyval[1] + 'Wh';
                         break;
                     }
                 }
@@ -439,6 +489,8 @@
             app.device.hardware = line.split("=")[1].trim();
             if (app.device.hardware == "emonPi3") {
                 app.new_config_format = true;
+                app.device.emon_library = "integrated";
+                app.device.firmware = "main";
                 populate_channels(12);
             }
         }
@@ -458,7 +510,7 @@
                 if (keyval.length == 2) {
                     let key = keyval[0].trim();
                     let val = keyval[1].trim();
-                    console.log(key + ": " + val);
+                    // console.log(key + ": " + val);
 
                     // CT calibration
                     if (key.substring(0, 4) == "iCal") {
@@ -467,19 +519,58 @@
 
                         // channel could be double digit
                         let c = key.substring(4, 6).trim();
-                        app.device.channels[c - 1].ical = Math.round(val);
+                        app.device.ichannels[c - 1].ical = Math.round(val);
                     }
 
                     // CT phase lead
                     else if (key.substring(0, 5) == "iLead") {
                         let c = key.substring(5, 7).trim();
-                        app.device.channels[c - 1].ilead = val * 1;
+                        app.device.ichannels[c - 1].ilead = val * 1;
+                    }
+
+                    // Active
+                    else if (key.substring(0, 7) == "iActive") {
+                        let c = key.substring(7, 9).trim();
+                        if (val == "1") {
+                            app.device.ichannels[c - 1].active = true;
+                        } else {
+                            app.device.ichannels[c - 1].active = false;
+                        }
+                    }
+
+                    // vChan1
+                    else if (key.substring(0, 5) == "vChan") {
+                        let c = key.substring(5, 7).trim();
+                        app.device.ichannels[c - 1].vchan1 = val * 1;
+                    }
+
+                    // vChan2
+                    else if (key.substring(0, 5) == "vChan") {
+                        let c = key.substring(5, 7).trim();
+                        app.device.ichannels[c - 1].vchan2 = val * 1;
                     }
 
                     // Voltage calibration
                     else if (key == "vCal") {
                         app.device.vcal = val;
                     }
+
+                    // Multi voltage calibration
+                    else if (key.substring(0, 4) == "vCal") {
+                        let c = key.substring(4, 5).trim();
+                        app.device.vchannels[c - 1].vcal = val * 1;
+                    }
+
+                    // Active
+                    /*
+                    else if (key.substring(0, 7) == "vActive") {
+                        let c = key.substring(7, 8).trim();
+                        if (val == "1") {
+                            app.device.vchannels[c - 1].active = true;
+                        } else {
+                            app.device.vchannels[c - 1].active = false;
+                        }
+                    }*/
 
                     // hardware
                     else if (key == "hardware") {
@@ -562,12 +653,15 @@
     populate_channels(6);
 
     function populate_channels(num_i_channels) {
-        app.device.channels = [];
+        app.device.ichannels = [];
         // Populate 6 CT channels
         for (var i = 0; i < num_i_channels; i++) {
-            app.device.channels.push({
+            app.device.ichannels.push({
+                active: true,
                 ical: 20,
                 ilead: '',
+                vchan1: 1,
+                vchan2: 1,
                 name: "P" + (i + 1),
                 power: '',
                 energy: ''
