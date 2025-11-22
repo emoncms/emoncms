@@ -512,7 +512,7 @@
                     let val = keyval[1].trim();
                     // console.log(key + ": " + val);
 
-                    // CT calibration
+                    // CT calibration (all)
                     if (key.substring(0, 4) == "iCal") {
                         // Use iCal as flag to indicate that config has been received
                         app.config_received = true;
@@ -522,13 +522,13 @@
                         app.device.ichannels[c - 1].ical = Math.round(val);
                     }
 
-                    // CT phase lead
+                    // CT phase lead (all)
                     else if (key.substring(0, 5) == "iLead") {
                         let c = key.substring(5, 7).trim();
                         app.device.ichannels[c - 1].ilead = val * 1;
                     }
 
-                    // Active
+                    // Active (emonPi3)
                     else if (key.substring(0, 7) == "iActive") {
                         let c = key.substring(7, 9).trim();
                         if (val == "1") {
@@ -538,31 +538,30 @@
                         }
                     }
 
-                    // vChan1
-                    else if (key.substring(0, 5) == "vChan") {
-                        let c = key.substring(5, 7).trim();
+                    // v1ChanXX (emonPi3)
+                    else if (key.substring(0, 6) == "v1Chan") {
+                        let c = key.substring(6, 8).trim();
                         app.device.ichannels[c - 1].vchan1 = val * 1;
                     }
 
-                    // vChan2
-                    else if (key.substring(0, 5) == "vChan") {
-                        let c = key.substring(5, 7).trim();
+                    // v2ChanXX (emonPi3)
+                    else if (key.substring(0, 6) == "v2Chan") {
+                        let c = key.substring(6, 8).trim();
                         app.device.ichannels[c - 1].vchan2 = val * 1;
                     }
 
-                    // Voltage calibration
+                    // vCal: voltage calibration (emonPi2, emonTx4, emonTx5)
                     else if (key == "vCal") {
                         app.device.vcal = val;
                     }
 
-                    // Multi voltage calibration
+                    // vCalX: Multi voltage calibration (emonPi3)
                     else if (key.substring(0, 4) == "vCal") {
                         let c = key.substring(4, 5).trim();
                         app.device.vchannels[c - 1].vcal = val * 1;
                     }
 
-                    // Active
-                    /*
+                    // vActiveX (emonPi3)
                     else if (key.substring(0, 7) == "vActive") {
                         let c = key.substring(7, 8).trim();
                         if (val == "1") {
@@ -570,7 +569,7 @@
                         } else {
                             app.device.vchannels[c - 1].active = false;
                         }
-                    }*/
+                    }
 
                     // hardware
                     else if (key == "hardware") {
