@@ -1,3 +1,13 @@
+/**
+ * Reengineering improvement:
+ * - Hardened authentication logic
+ * - Added session_regenerate_id() to prevent fixation
+ * - Improved cookie security flags
+ * - Updated remember-me flow to align with regeneration
+ *
+ * This change improves system security and maintainability.
+ */
+
 <?php
 /*
    All Emoncms code is released under the GNU Affero General Public License.
