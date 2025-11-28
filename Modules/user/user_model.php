@@ -213,6 +213,36 @@ class User
         }
         
         session_start();
+        // --- Session lifetime & idle timeout (added by reengineering) ---
+        $now = time();
+        $max_idle     = 1800;   // 30 minutes of inactivity
+        $max_lifetime = 86400;  // 24 hours absolute session lifetime
+
+        if (!isset($_SESSION['created_at'])) {
+             $_SESSION['created_at'] = $now;
+         }      
+
+        if (isset($_SESSION['last_activity'])) {
+          $idle_time = $now - $_SESSION['last_activity'];
+          $life_time = $now - $_SESSION['created_at'];
+
+          if ($idle_time > $max_idle || $life_time > $max_lifetime) {
+              // Session expired: clear authentication-related data
+              foreach ([
+                  'userid','username','read','write','admin','lang',
+                  'timezone','startingpage','gravatar','cookielogin','emailverified'
+              ] as $key) {
+                  if (isset($_SESSION[$key])) {
+                      unset($_SESSION[$key]);
+                  }
+              }
+              // Reset creation time for new anonymous session
+              $_SESSION['created_at'] = $now;
+            }
+         }
+
+         $_SESSION['last_activity'] = $now;
+         // --- End of session timeout logic ---
 
         if ($this->enable_rememberme)
         {
