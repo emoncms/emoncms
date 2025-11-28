@@ -441,7 +441,10 @@ class User
         }
         else
         {
-            session_regenerate_id();
+             // Regenerate session ID on successful login to harden against session fixation
+             if (session_status() === PHP_SESSION_ACTIVE) {
+                 session_regenerate_id(true);
+             }
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
             $_SESSION['read'] = 1;
