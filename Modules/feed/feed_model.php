@@ -944,37 +944,35 @@ class Feed
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
         $fields = json_decode(stripslashes($fields));
 
-        $success = false;
         $fields_out = array();
+        
+        if (!$fields) {
+            return array('success' => false, 'message' => 'Invalid JSON');
+        }
 
+        $updates = array();
+        $types = "";
+        $params = array();
+        $redis_updates = array();
+
+        // Build the query dynamically
         if (isset($fields->name)) {
             //remove illegal characters
             $fields->name = trim(htmlspecialchars($fields->name));
-            //prepare an sql statement that cannot be altered by sql injection
-            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET name = ? WHERE id = ?")) {
-                $stmt->bind_param("si",$fields->name, $id);
-                if (false === $stmt->execute()) {
-                    return array('success'=>false, 'message'=>'field update failed');
-                } else {
-                    $success = true;
-                }
-                $stmt->close();
-                if ($this->redis) $this->redis->hset("feed:$id",'name',$fields->name);
-                $fields_out['name'] = $fields->name;
-            } else {
-                return array('success'=>false, 'message'=>'error setting up database update');
-            }
+            $updates[] = "name = ?";
+            $types .= "s";
+            $params[] = $fields->name;
+            $redis_updates['name'] = $fields->name;
+            $fields_out['name'] = $fields->name;
         }
 
         if (isset($fields->tag)) {
             if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
-            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET tag = ? WHERE id = ?")) {
-                $stmt->bind_param("si",$fields->tag,$id);
-                if ($stmt->execute()) $success = true;
-                $stmt->close();
-                if ($this->redis) $this->redis->hset("feed:$id",'tag',$fields->tag);
-                $fields_out['tag'] = $fields->tag;
-            }
+            $updates[] = "tag = ?";
+            $types .= "s";
+            $params[] = $fields->tag;
+            $redis_updates['tag'] = $fields->tag;
+            $fields_out['tag'] = $fields->tag;
         }
 
         if (isset($fields->unit)) {
@@ -983,37 +981,54 @@ class Feed
                 return array('success'=>false, 'message'=>'invalid characters in feed unit');
             }
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
-            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
-                $stmt->bind_param("si",$fields->unit,$id);
-                if ($stmt->execute()) $success = true;
-                $stmt->close();
-                if ($this->redis) $this->redis->hset("feed:$id",'unit',$fields->unit);
-                $fields_out['unit'] = $fields->unit;
-            }
+            $updates[] = "unit = ?";
+            $types .= "s";
+            $params[] = $fields->unit;
+            $redis_updates['unit'] = $fields->unit;
+            $fields_out['unit'] = $fields->unit;
         }
 
         if (isset($fields->public)) {
             $public = (int) $fields->public;
-            if ($public>0) $public = 1;
-            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET public = ? WHERE id = ?")) {
-                $stmt->bind_param("ii",$public,$id);
-                if ($stmt->execute()) $success = true;
-                $stmt->close();
-                if ($this->redis) $this->redis->hset("feed:$id",'public',$public);
-                $fields_out['public'] = $public;
-            }
+            if ($public > 0) $public = 1;
+            $updates[] = "public = ?";
+            $types .= "i";
+            $params[] = $public; 
+            $redis_updates['public'] = $public;
+            $fields_out['public'] = $public;
         }
 
-        if ($success){
+        if (empty($updates)) {
+            return array('success' => true, 'message' => 'No changes made');
+        }
+
+        // Execute one atomic database update
+        $sql = "UPDATE feeds SET " . implode(", ", $updates) . " WHERE id = ?";
+        $types .= "i"; // For the ID at WHERE clause
+        $params[] = $id;
+
+        $stmt = $this->mysqli->prepare($sql);
+
+        // Guard against prepare failure(SQL syntax error/typo in table name)
+        if (!$stmt) {
+            return array('success' => false, 'message' => 'Error preparing database update');
+        }
+        $stmt->bind_param($types, ...$params); 
+        
+        if ($stmt->execute()) {
+            // Update Redis once
+            if ($this->redis && !empty($redis_updates)) {
+                $this->redis->hMSet("feed:$id", $redis_updates);
+            }
             return array(
-                'success'=>true, 
-                'message'=>'Field updated',
-                'feedid'=>$id,
+                'success' => true, 
+                'message' => 'Fields updated', 
+                'feedid' => $id,  
                 'fields'=>$fields_out
             );
-        } else {
-            return array('success'=>false, 'message'=>'Field could not be updated');
         }
+
+        return array('success' => false, 'message' => 'Field could not be updated');
     }
 
     public function set_timevalue($id, $value, $time)
