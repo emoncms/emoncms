@@ -1,0 +1,127 @@
+body{padding:0!important}
+
+#table {
+    margin-top:4rem
+}
+#footer {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.node .feed-graph-link {
+    cursor:pointer;
+}
+
+.controls { margin-bottom:10px; }
+#feeds-to-delete { font-style:italic; }
+
+#deleteFeedModalSelectedItems{
+    position:absolute;
+    overflow:hidden;
+    text-align:left;
+    background: #f5f5f5;
+}
+#deleteFeedModalSelectedItems h5{ margin:0 }
+#deleteFeedModalSelectedItems ol{
+    max-width:80%;
+    position:absolute;
+}
+
+#mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
+
+.node .accordion-toggle{
+    border-bottom: 1px solid white;
+}
+.node .accordion-toggle,
+.node-feeds .node-feed {
+    position: relative;
+}
+.node .accordion-toggle:after,
+.node-feeds .node-feed:after{
+    content: '';
+    width: .4em;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.node-feeds .node-feed:after,
+.accordion-toggle:after {
+    background: var(--status-color)!important;
+}
+
+/* Feed Edit Modal Layout */
+
+#feedEditModal .feed-row {
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  height: 50px;
+}
+
+#feedEditModal .feed-row .feed-label {
+  width: 100px;
+  display: inline-block;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+#feedEditModal .feed-row .feed-input {
+  width: 250px;
+}
+
+#feedEditModal .feed-row button.feed-edit-save {
+  margin-left: auto;
+}
+
+/* Footer message position */
+#feedEditModal .modal-footer #feed-edit-save-message {
+  position: absolute;
+}
+
+/* Feed Toggle Switch (CSS version) */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 24px;
+}
+
+.switch .slider::before {
+  content: "";
+  position: absolute;
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+.switch input:checked + .slider {
+  background-color: #0f89f4;
+}
+
+.switch input:checked + .slider::before {
+  transform: translateX(22px);
+}
