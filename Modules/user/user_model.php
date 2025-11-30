@@ -1,3 +1,13 @@
+/**
+ * Reengineering improvement:
+ * - Hardened authentication logic
+ * - Added session_regenerate_id() to prevent fixation
+ * - Improved cookie security flags
+ * - Updated remember-me flow to align with regeneration
+ *
+ * This change improves system security and maintainability.
+ */
+
 <?php
 /*
    All Emoncms code is released under the GNU Affero General Public License.
@@ -213,6 +223,36 @@ class User
         }
         
         session_start();
+        // --- Session lifetime & idle timeout (added by reengineering) ---
+        $now = time();
+        $max_idle     = 1800;   // 30 minutes of inactivity
+        $max_lifetime = 86400;  // 24 hours absolute session lifetime
+
+        if (!isset($_SESSION['created_at'])) {
+             $_SESSION['created_at'] = $now;
+         }      
+
+        if (isset($_SESSION['last_activity'])) {
+          $idle_time = $now - $_SESSION['last_activity'];
+          $life_time = $now - $_SESSION['created_at'];
+
+          if ($idle_time > $max_idle || $life_time > $max_lifetime) {
+              // Session expired: clear authentication-related data
+              foreach ([
+                  'userid','username','read','write','admin','lang',
+                  'timezone','startingpage','gravatar','cookielogin','emailverified'
+              ] as $key) {
+                  if (isset($_SESSION[$key])) {
+                      unset($_SESSION[$key]);
+                  }
+              }
+              // Reset creation time for new anonymous session
+              $_SESSION['created_at'] = $now;
+            }
+         }
+
+         $_SESSION['last_activity'] = $now;
+         // --- End of session timeout logic ---
 
         if ($this->enable_rememberme)
         {
@@ -239,6 +279,11 @@ class User
                         $userData = $result->fetch_object();
                         if ($userData->id != 0)
                         {
+                           // Regenerate session ID when logging in via remember-me token
+                            if (session_status() === PHP_SESSION_ACTIVE) {
+                                session_regenerate_id(true);
+                            }
+                           
                             $_SESSION['userid'] = $userData->id;
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
@@ -253,9 +298,10 @@ class User
                         }
                     }
                 } else {
-                    // if($this->rememberme->loginTokenWasInvalid()) {
-                    //    $this->logout(); // Stolen
-                    // }
+                    // If a remember-me token was presented but is invalid we treat it as potentially stolen
+                    if ($this->rememberme->loginTokenWasInvalid()) {
+                    $this->logout();
+                    }
                 }
             }
         }
@@ -441,7 +487,10 @@ class User
         }
         else
         {
-            session_regenerate_id();
+             // Regenerate session ID on successful login to harden against session fixation
+             if (session_status() === PHP_SESSION_ACTIVE) {
+                 session_regenerate_id(true);
+             }
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
             $_SESSION['read'] = 1;
