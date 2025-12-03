@@ -1,4 +1,11 @@
 <?php
+/**
+ * Admin Users Page
+ *
+ * Provides the interface for viewing, searching, ordering, and adding users.
+ * Uses AJAX calls to fetch user data from the server.
+ *
+ */
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path;
 ?>
