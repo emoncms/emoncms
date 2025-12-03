@@ -15,8 +15,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <!-- PHP code to determine if the device module is installed AND translations -->
 <script>
     var path = "<?php echo $path; ?>";
-    const DEVICE_MODULE = <?php if ($device_module) echo 'true';
-                            else echo 'false'; ?>;
+    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
 
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
@@ -49,21 +48,53 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 <div class="position-relative">
     <div id="input-header" class="d-flex justify-content-between align-items-center">
-        <h3><?php echo tr('Inputs'); ?></h3>
-        <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a></span>
+    <div>
+        <h3 class="mb-0"><?php echo tr('Inputs'); ?></h3>
+        <small class="text-muted">
+            <?php echo tr('View and manage data inputs sent from your devices.'); ?>
+        </small>
     </div>
+    <span id="api-help">
+        <a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a>
+    </span>
+</div>
+
     <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
-        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+    
+    <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
+    <i class="icon"
+       :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
-            <svg class="icon">
-                <use :xlink:href="checkbox_icon"></use>
-            </svg>
-            <span>{{selected.length}}</span>
+
+        <!-- NEW SELECT ALL -->
+        <label class="btn select-all-btn">
+            <input type="checkbox" v-model="selectAllState" @change="selectAll">
+            <span><?php echo tr('Select All'); ?></span>
+        </label>
+
+        <!-- SELECTED COUNT -->
+        <span v-if="selected.length > 0" class="selected-count">
+            {{ selected.length }} <?php echo tr('selected'); ?>
+        </span>
+
+        <!-- DELETE BUTTON (RED) -->
+        <button @click="open_delete"
+                class="btn btn-delete"
+                :disabled="selected.length === 0"
+                :class="{'hide': !selectMode}"
+                title="<?php echo tr('Delete selected inputs'); ?>">
+            <i class="icon-trash"></i> <?php echo tr('Delete'); ?>
         </button>
-        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
-        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
+
+        <!-- EDIT BUTTON (YELLOW) -->
+        <button @click="open_edit"
+                class="btn btn-edit"
+                :disabled="selected.length === 0"
+                :class="{'hide': !selectMode}"
+                title="<?php echo tr('Edit selected inputs'); ?>">
+            <i class="icon-pencil"></i> <?php echo tr('Edit'); ?>
+        </button>
+
         <!-- input processing configure only show if one input selected -->
         <button
             v-if="selectMode && selected.length === 1"
@@ -82,14 +113,27 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
     <div id="app" v-cloak>
 
-        <!-- alert danger if input creation is disabled for user, click enable button to enable -->
-        <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
-            <button @click="enableInputCreation" class="btn" style="float:right;">
-                <i class="icon icon-play" style="margin-top:2px"></i>
-                <?php echo tr('Enable Input Creation'); ?></button>
-            <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
-        </div>
+    <!-- Page description to help new users -->
+    <div class="alert alert-info mb-2">
+        <strong><?php echo tr('About Inputs'); ?></strong><br>
+        <?php echo tr('Inputs are the main entry point for data sent from your devices to Emoncms. Each input can be processed and linked to feeds for logging and visualisation.'); ?>
+    </div>
 
+
+        <!-- alert danger if input creation is disabled for user, click enable button to enable -->
+      <div v-if="input_creation_disabled"
+     class="alert alert-danger alert-input-creation-disabled">
+    <button @click="enableInputCreation"
+            class="btn btn-enable-input-creation">
+        <i class="icon icon-play icon-inline-top"></i>
+        <?php echo tr('Enable Input Creation'); ?>
+    </button>
+    <div class="alert-input-creation-text">
+        <?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?>
+    </div>
+</div>
+
+        <!-- Main input list -->
         <template v-if="loaded">
             <template v-if="total_devices > 0">
                 <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
@@ -105,15 +149,30 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                                 <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
                             </span>
                         </h5>
+
+
+                    <tr class="node-header">
+                        <td colspan="6">
+                            <div class="node-columns-header">
+                                <span class="col-label">Description</span>
+                                <span class="col-label">Processing</span>
+                        <!-- add more labels to match your columns if needed -->
+                            </div>
+                        </td>
+                    </tr>
+
+
+
+
                         <span class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
                         <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
                         <div class="buttons pull-right">
                             <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
-                            <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px', color:device.time_color}">{{ device.time_value }}</div>
-                            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50" title="<?php echo tr('Show device key'); ?>">
+                            <div class="device-last-updated text-center node-columns-header" data-col="E" :style="{width:col.E+'px', color:'#000', 'white-space': 'nowrap'}"><?php echo tr('Last Updated'); ?></div>
+                            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50" title="<?php echo tr('Show write API key for this device'); ?>">
                                 <i class="icon-lock"></i>
                             </a>
-                            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure device using device template'); ?>">
+                            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure this device using a template'); ?>">
                                 <i class="icon-cog"></i>
                             </a>
                         </div>
@@ -124,7 +183,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                                 <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
                             </div>
                             <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
-                            <div class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
+                            <div class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{ formatDescription(input.description) }}</div>
                             <div class="processlist" data-col="H" :style="{width:col.H+'px', height:col_h.H}">
                                 <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
                             </div>
@@ -134,7 +193,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                                     {{ input.time_value }}
                                 </span>
                                 <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
-                                    {{ input.value_str }}
+                                    {{ formatValue(input.value_str) }}
                                 </span>
                                 <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo tr('Configure Input processing') ?>" href="#">
                                     <i class="icon-wrench"></i>
@@ -154,12 +213,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <h4 v-else><?php echo tr('Loading') ?></h4>
 
         <!-- disable input creation button, only show if input creation is not already disabled and there are existing inputs -->
-        <div v-if="!input_creation_disabled && total_inputs > 0">
-            <button @click="disableInputCreation" class="btn float-end" style="margin-top:10px;">
-                <i class="icon icon-lock" style="margin-top:2px"></i>
-                <?php echo tr('Disable further input creation'); ?></button>
-        </div>
-    </div>
+       <div v-if="!input_creation_disabled && total_inputs > 0">
+    <button @click="disableInputCreation"
+            class="btn float-end btn-disable-input-creation">
+        <i class="icon icon-lock icon-inline-top"></i>
+        <?php echo tr('Disable further input creation'); ?>
+    </button>
+</div>
 
     <div id="input-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo tr('No inputs created'); ?></h4>

@@ -1,142 +1,322 @@
-
-#footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
+/* ============================================
+   GLOBAL RESET & BASIC ELEMENT OVERRIDES
+   ============================================ */
+#footer,
 .navbar-fixed-top {
-    margin-left: 0px;
-    margin-right: 0px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
-input[type="checkbox"] { margin:0px; }
-.controls { margin-bottom:10px; }
-#inputs-to-delete { font-style:italic; }
-
-#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
-
-@media (min-width: 768px) {
-    .modal-wide{
-        width:650px;
-        margin-left:-325px
-    }
+input[type="checkbox"] {
+    margin: 0;
 }
 
-@media (max-width: 768px) {
-    body {padding:0};
+.controls {
+    margin-bottom: 10px;
 }
 
-.node .node-info{
-    border-bottom: 1px solid white;
-}
-.node .node-info,
-.node .node-input {
-    position: relative;
-}
-.node .node-info::after,
-.node .node-input::after {
-    content: '';
-    width: .4em;
-    height: 100%;
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: rgba(0,0,0,.1);
-}
-.buttons{
-    padding-right: .4em;
+#inputs-to-delete {
+    font-style: italic;
 }
 
-.node-info::after,
-.node-input::after {
-    background: var(--status-color)!important;
-}
-
-
-[data-col] { overflow:hidden; }
-
-[data-col="B"] { width:40px; }
-[data-col="A"] { width:200px; }
-[data-col="G"] { width:200px; }
-[data-col="F"] { width:50px; }
-[data-col="E"] { width:100px; }
-[data-col="D"] { width:100px; }
-[data-col="C"] { width:50px; }
-a.text-muted i[class*="icon-"] {
-    opacity: .5;
-}
-#app .accordion {
-    margin-bottom: .3rem;
-}
-#input-controls {
-    top: 3.5rem;
-    z-index: 1;
-}
-#input-controls.fixed {
-    position: sticky;
-}
-#input-controls:before {
-    background: rgba(0, 0, 0, 0.5);
-    content: "";
-    position: fixed;
-    top: 3rem;
-    height: 0rem;
-    width: 100%;
-    left: 0;
-    z-index: -1;
-    margin-top: -.18em;
-    transition: .2s height, .16s opacity ease-out;
-    opacity: 0;
-}
-#input-controls.fixed:before {
-    opacity: 1;
-    height: 3.15rem;
-}
-.select-mode .node-inputs .node-input {
-    cursor: pointer;
-}
-input.checkbox-lg {
-    float: none;
-}
-input.checkbox-lg,
-.select-mode .node-inputs .node-input input[type="checkbox"] {
-    transform: scale(1.3);
-}
-.selected {
-    background-color: rgba(68, 179, 226, 0.8) !important;
-    background-color: #C2DBFF!important;
-}
 [v-cloak] {
-  display: none;
+    display: none;
+    visibility: hidden;
 }
+
 .position-absolute {
     position: absolute;
 }
 
-/* overwrite bootstrap collapse animation */
+/* ============================================
+   ALERTS & MESSAGES
+   ============================================ */
+#noprocesses .alert {
+    margin: 0;
+    border-bottom-color: #fcf8e3;
+    border-radius: 4px 4px 0 0;
+    padding-right: 14px;
+}
+
+/* Input creation disabled alert */
+.alert-input-creation-disabled {
+    padding-right: 8px;
+}
+
+.alert-input-creation-text {
+    margin: 5px 0;
+}
+
+.btn-enable-input-creation {
+    float: right;
+}
+
+.btn-disable-input-creation {
+    margin-top: 10px;
+}
+
+.icon-inline-top {
+    margin-top: 2px;
+}
+
+/* ============================================
+   RESPONSIVE FIXES
+   ============================================ */
+@media (min-width: 768px) {
+    .modal-wide {
+        width: 650px;
+        margin-left: -325px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+}
+
+/* ============================================
+   NODE ROWS & STATUS COLOR BAR
+   ============================================ */
+.node .node-info {
+    border-bottom: 1px solid white;
+}
+
+.node .node-info,
+.node .node-input {
+    position: relative;
+}
+
+.node .node-info::after,
+.node .node-input::after {
+    content: '';
+    width: 0.4em;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    background: var(--status-color) !important;
+}
+
+.buttons {
+    padding-right: 0.4em;
+}
+
+/* Selection mode */
+.select-mode .node-inputs .node-input {
+    cursor: pointer;
+}
+
+/* Large checkboxes */
+input.checkbox-lg,
+.select-mode .node-inputs .node-input input[type="checkbox"] {
+    transform: scale(1.3);
+}
+
+input.checkbox-lg {
+    float: none;
+}
+
+/* Selected row */
+.selected {
+    background-color: #C2DBFF !important;
+}
+
+/* ============================================
+   COLLAPSE ANIMATION (Bootstrap override)
+   ============================================ */
+.collapse {
+    height: inherit !important;
+}
 
 .collapse .node-input {
     height: 0;
-    transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
-    transition-duration: .6s;
     min-height: 0;
     border-width: 0;
+    transition: height 0.6s cubic-bezier(.18,.89,.32,1.28);
 }
+
 .collapse.in .node-input {
     height: auto;
-    transition: all .2s cubic-bezier(.23,1,.32,1);
     border-width: 1px;
+    transition: all .2s cubic-bezier(.23,1,.32,1);
 }
-.collapse {
-    height: inherit!important;
+
+/* ============================================
+   COLUMN SYSTEM
+   ============================================ */
+[data-col] {
+    overflow: hidden;
 }
-.break-all {
-    word-break: break-all;
+
+[data-col="A"] { width: 200px; }
+[data-col="B"] { width: 40px; }
+[data-col="C"] { width: 50px; }
+[data-col="D"] { width: 100px; }
+[data-col="E"] { width: 120px; } /* also controlled below */
+[data-col="F"] { width: 50px; }
+[data-col="G"] { width: 200px; }
+
+/* Last updated column (center aligned) */
+.device-last-updated,
+.node-columns-header[data-col="E"],
+[data-col="E"] {
+    min-width: 120px;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: #000;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
-.text-nowrap {
-    white-space: nowrap !important;
+
+.device-last-updated.node-columns-header {
+    justify-content: center !important;
+    text-align: center !important;
 }
-[v-cloak] {
-    visibility: hidden
+
+.device-last-updated-header {
+    color: #000;
+}
+
+/* ============================================
+   HEADER STRUCTURE
+   ============================================ */
+.node-header-inner {
+    display: flex;
+    align-items: center;
+}
+
+.node-title {
+    font-weight: bold;
+}
+
+.node-columns-header {
+    margin-left: auto;
+    display: flex;
+    gap: 2rem;
+    font-weight: bold;
+    font-size: .9rem;
+    opacity: .8;
+}
+
+.col-last-updated {
+    white-space: nowrap;
+    min-width: 80px;
+    text-align: right;
+}
+
+/* ============================================
+   MISC UTILITY
+   ============================================ */
+.break-all { word-break: break-all; }
+.text-nowrap { white-space: nowrap !important; }
+
+a.text-muted i[class*="icon-"] {
+    opacity: .5;
+}
+
+#app .accordion {
+    margin-bottom: .3rem;
+}
+
+/* ============================================
+   INPUT CONTROL BAR (FULL REWRITE — CLEAN)
+   ============================================ */
+#input-controls {
+    position: sticky;
+    top: 3.5rem;
+    z-index: 10;
+    background: #fff;
+    padding: 6px 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Main bar layout: LEFT | CENTER | RIGHT */
+.input-controls-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 6px 4px !important;
+    gap: 12px !important;
+}
+
+.controls-left,
+.controls-center,
+.controls-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Standardized button behavior */
+.input-controls-row .btn,
+.select-all-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    height: 34px !important;
+    padding: 0 14px !important;
+
+    border-radius: 6px !important;
+    border: 2px solid transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+
+    font-weight: 600 !important;
+    line-height: 1 !important;
+}
+
+/* Icons inside toolbar buttons */
+.input-controls-row .btn i {
+    margin-right: 6px;
+}
+
+/* SELECT ALL button */
+.select-all-wrapper {
+    background: #eaeaea !important;
+    border-color: #ccc !important;
+    cursor: pointer;
+}
+
+/* DELETE button */
+.btn-delete {
+    background: #e05b4b !important;
+    border-color: #b94135 !important;
+    color: #fff !important;
+     float: right;
+  margin-left: 10px;
+    
+}
+.btn-delete:hover {
+    background: #c94c3e !important;
+}
+
+/* EDIT button */
+.btn-edit {
+    background: #f7c843 !important;
+    border-color: #d8a200 !important;
+    color: #000 !important;
+    float: right;
+  margin-left: 10px;
+}
+.btn-edit:hover {
+    background: #e7b739 !important;
+}
+
+/* Disabled buttons */
+.btn-edit:disabled,
+.btn-delete:disabled {
+    opacity: 0.45 !important;
+    cursor: not-allowed !important;
+}
+
+/* Selected count text */
+.selected-count {
+    font-weight: bold;
+    color: #555;
+    margin: 0 8px;
 }

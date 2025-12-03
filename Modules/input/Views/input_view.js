@@ -1,3 +1,25 @@
+
+function formatValue(value) {
+    if (
+        value === null ||
+        value === undefined ||
+        value === '' ||
+        value === 'NULL' ||
+        value === 'N/A' ||
+        value === 'NaN'
+    ) {
+        return '—'; // or 'Not available'
+    }
+    return value;
+}
+
+function formatDescription(text) {
+    if (text === null || text === undefined) return 'No description';
+    text = String(text);
+    if (text.trim() === '') return 'No description';
+    return text;
+}
+
 /**
  * uses moment.js to format to local time 
  * @param int time unix epoc time
@@ -154,6 +176,7 @@ var app = new Vue({
             }
 
         },
+
         toggleSelected: function(event, inputid) {
             if (event.target.tagName === 'A') {
                 // allow links to be clicked
@@ -305,8 +328,10 @@ var controls = new Vue({
         // used for clean feature
         show_clean: false,
         inactive_unconfigured_inputs: 0,
-        inactive_unconfigured_devices: 0
+        inactive_unconfigured_devices: 0,
 
+        // header "Select All" checkbox state
+        selectAllState: false
     },
     computed: {
         total_inputs: function(){
@@ -351,15 +376,17 @@ var controls = new Vue({
     },
     methods: {
         selectAll: function() {
-            if(app.selected.length < this.total_inputs) {
-                let ids = [];
-                app.inputs.forEach(function(input){
-                    ids.push(input.id)
-                })
-                app.selected = ids
-            } else {
-                app.selected = [];
-            }
+           if (this.selectAllState) {
+            // Select all inputs
+            let ids = [];
+            app.inputs.forEach(function(input) {
+                ids.push(input.id);
+            });
+            app.selected = ids;
+        } else {
+            // Clear selection
+            app.selected = [];
+        }
         },
         collapseAll: function() {
             if(app.collapsed.length < app.total_devices) {
@@ -415,7 +442,10 @@ var controls = new Vue({
         },
         scrolled: function(newVal, oldVal) {
             if (!newVal) this.overlayControlsOveride = false;
-        }
+        },
+        selected: function(newVal) {
+        this.selectAllState = (newVal.length === this.total_inputs && this.total_inputs > 0);
+    }
     }
 });
 
