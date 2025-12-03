@@ -1,4 +1,11 @@
 <?php
+/**
+ * Emoncms Log Viewer
+ *
+ * Displays the latest log entries, allows copying and downloading logs,
+ * and optionally auto-refreshes the log content.
+ *
+ */
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 
