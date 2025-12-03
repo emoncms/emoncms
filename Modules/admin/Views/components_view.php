@@ -1,4 +1,15 @@
 <?php 
+/**
+ * Emoncms Components Page
+ *
+ * Allows selective update of system components and branch switching.
+ *
+ * Actions logged:
+ *  - Component branch switch
+ *  - Component update
+ *  - Update all components
+ *  - Log refresh
+ */
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path;
 ?>
