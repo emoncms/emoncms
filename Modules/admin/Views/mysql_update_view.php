@@ -1,4 +1,11 @@
 <?php
+/**
+ * Admin Database Update Page
+ *
+ * Shows database updates that need to be applied, applies changes if requested,
+ * and displays success/error messages.
+ *
+ */
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path;
 
