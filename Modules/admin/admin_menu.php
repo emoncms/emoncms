@@ -1,4 +1,29 @@
 <?php
+/**
+ * Admin Menu Configuration
+ *
+ * This file defines the admin panel menu structure for Emoncms.
+ * Only users with write access and admin privileges will see this menu.
+ *
+ * Structure:
+ * - $menu['setup']['l2']['admin']: Top-level Admin menu
+ * - 'name'   : Display name
+ * - 'href'   : Link to the page
+ * - 'default': Default page when clicked
+ * - 'icon'   : Icon for the menu item
+ * - 'order'  : Order in the menu
+ * - 'l3'     : Submenus (level 3), each with its own name, href, icon, and order
+ *
+ * Submenus included:
+ * - System Info
+ * - Update
+ * - Components
+ * - Serial Monitor
+ * - Serial Config
+ * - Emoncms Log
+ * - Users
+ *
+ */
 global $session;
 if ($session["write"] && $session["admin"]) {
     $menu['setup']['l2']['admin'] = array(
