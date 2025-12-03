@@ -52,11 +52,13 @@ class Admin
 
     public function get_services_list()
     {
+        $this->log->info("admin_model: get_services_list() called");
         return array('emonhub', 'mqtt_input', 'emoncms_mqtt', 'feedwriter', 'service-runner', 'emonPiLCD', 'redis-server', 'mosquitto', 'demandshaper', 'emoncms_sync');
     }
 
     public function listSerialPorts()
     {
+        $this->log->info("admin_model: listSerialPorts() called");
         $ports = array();
         for ($i = 0; $i < 5; $i++) {
             try {
@@ -70,6 +72,7 @@ class Admin
                     $ports[] = "ttyS$i";
                 }
             } catch (Exception $e) {
+                $this->log->error("admin_model: listSerialPorts() exception: " . $e->getMessage());
                 // no need to do anything here, function will exit with no ports
             }
         }
@@ -184,6 +187,7 @@ class Admin
     {
         // Validate service name
         // remove .service from name
+        $this->log->info("admin_model: getServiceStatus() called for service name='$name'");
         $service_name = str_replace('.service', '', $name);
         if (file_exists("/.dockerenv")) {
             if (file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
@@ -270,6 +274,7 @@ class Admin
      */
     public function system_information()
     {
+        $this->log->info("admin_model: system_information() called");
         $result = $this->mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
 
