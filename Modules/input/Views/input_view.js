@@ -422,7 +422,7 @@ var controls = new Vue({
             }
 
             if (confirm(msg)) {
-                // call device/clean.json result is plain text
+                //call device/clean.json result is plain text
                 $.get(path+"device/clean.json?active="+inactive_input_timeout).done( function(response) {
                     alert(response);
                 });

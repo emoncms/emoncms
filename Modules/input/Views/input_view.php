@@ -77,7 +77,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             {{ selected.length }} <?php echo tr('selected'); ?>
         </span>
 
-        <!-- DELETE BUTTON (RED) -->
+        <!-- DELETE BUTTON (RED) ->
         <button @click="open_delete"
                 class="btn btn-delete"
                 :disabled="selected.length === 0"
