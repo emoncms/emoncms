@@ -255,13 +255,17 @@ class CassandraEngine implements engine_methods
 
 
 // #### \/ Below are engine private methods
-    private function execCQL($cql)
-    {
+private function execCQL($cql)
+{
+    try {
         $statement = new Cassandra\SimpleStatement($cql);
-        $future    = $this->session->executeAsync($statement);  // fully asynchronous and easy parallel execution
-        $result    = $future->get();                            // wait for the result, with an optional timeout
-        return $result;
+        $future = $this->session->executeAsync($statement);
+        return $future->get(); // wait for the result
+    } catch (\Exception $e) {
+        $this->log->error("Cassandra query failed: " . $e->getMessage() . " | Query: $cql");
+        return false; // safely return false instead of crashing
     }
+}
 
     private function unixtoday($unixtime)
     {

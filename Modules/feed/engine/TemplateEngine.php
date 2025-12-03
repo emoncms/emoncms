@@ -30,7 +30,7 @@ class TemplateEngine implements engine_methods
      * @param integer $feedid The id of the feed to be created
      * @param array $options for the engine
     */
-      public function create($feedid, $options)
+ public function create($feedid, $options)
     {
         try {
             // Your create logic
@@ -41,6 +41,11 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    /**
+     * Delete feed
+     *
+     * @param integer $feedid The id of the feed to be created
+    */
     public function delete($feedid)
     {
         try {
@@ -50,6 +55,11 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    /**
+     * Gets engine metadata
+     *
+     * @param integer $feedid The id of the feed to be created
+    */
     public function get_meta($feedid)
     {
         try {
@@ -71,7 +81,7 @@ class TemplateEngine implements engine_methods
      *
      * @param integer $feedid The id of the feed to be created
     */
-     public function get_feed_size($feedid)
+    public function get_feed_size($feedid)
     {
         try {
             return 0;
@@ -81,7 +91,15 @@ class TemplateEngine implements engine_methods
         }
     }
 
-    public function post($feedid, $time, $value, $padding_mode = null)
+    /**
+     * Adds or updates a data point
+     *
+     * @param integer $feedid The id of the feed to add to
+     * @param integer $time The unix timestamp of the data point, in seconds
+     * @param float $value The value of the data point
+     * @param array $padding_mode optional padding mode argument
+    */
+      public function post($feedid, $time, $value, $padding_mode = null)
     {
         try {
             // Post logic
@@ -90,6 +108,15 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    /**
+     * scale a portion of a feed
+     * added by Alexandre CUER - january 2019
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $start unix time stamp in ms of the start of the data range
+     * @param integer $end unix time stamp in ms of the end of the data rage
+     * @param float $scale : numeric value for the scaling
+    */
     public function scalerange($id, $start, $end, $scale)
     {
         try {
@@ -99,6 +126,11 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    /**
+     * Get array with last time and value from a feed
+     *
+     * @param integer $feedid The id of the feed
+    */
     public function lastvalue($feedid)
     {
         try {
@@ -108,7 +140,12 @@ class TemplateEngine implements engine_methods
             return null;
         }
     }
-
+    /**
+     * Get value at specified time
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $time in seconds
+    */
     public function get_value($feedid, $time)
     {
         try {
@@ -118,8 +155,22 @@ class TemplateEngine implements engine_methods
             return null;
         }
     }
-
-    public function get_data_combined($id, $start, $end, $interval, $average=0, $timezone="UTC", $timeformat="unix", $csv=false, $skipmissing=0, $limitinterval=1)
+    /**
+     * Return the data for the given timerange - cf shared_helper.php
+     *
+     * please note that unix timestamps should be expressed in ms cause coming from the js
+     *
+     * It is important that the response to this function adheers to the convention outlined below so that data can then be used consistently within the rest of the emoncms application.
+     *
+     * The request defines the timestamps and number of datapoints that should be returned rather than necessarily the exact timestamp of the recorded data
+     * It is the goal of the function below to find the closest data point/s that represent the request timestamp/interval.
+     *
+     * Aligned timestamps returned across multiple feeds allows for easy post processing such as calculating grid import/export from solar generation and consumption data or
+     * heat pump COP from electric consumption and heat output data. CSV export in multiple columns and stacking of feeds in graphs are also made easier.
+     *
+     * While there are applications where returning the exact timestamp of the recorded data is important, this is currently outside of the design goals of the emoncms application.
+    */
+public function get_data_combined($id, $start, $end, $interval, $average=0, $timezone="UTC", $timeformat="unix", $csv=false, $skipmissing=0, $limitinterval=1)
     {
         try {
             $id = (int)$id;
@@ -218,9 +269,12 @@ class TemplateEngine implements engine_methods
             return false;
         }
     }
+// #### /\ Above are required methods
 
-    // #### Buffer write methods
 
+// #### \/ Below are buffer write methods
+
+    // Insert data in post write buffer, parameters like post()
     public function post_bulk_prepare($feedid, $time, $value, $padding_mode=null)
     {
         try {
@@ -230,6 +284,8 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    // Saves post buffer to engine in bulk
+    // Writing data in larger blocks saves reduces disk write load
     public function post_bulk_save()
     {
         try {
@@ -249,7 +305,6 @@ class TemplateEngine implements engine_methods
             $this->log->error("Upload fixed interval failed for feed $id: " . $e->getMessage());
         }
     }
-
     public function upload_variable_interval($feedid, $npoints)
     {
         try {
@@ -259,6 +314,13 @@ class TemplateEngine implements engine_methods
         }
     }
 
+
+    /**
+     * Clear feed
+     *
+     * @param integer $feedid
+     * @return boolean true == success
+     */
     public function clear($feedid)
     {
         try {
@@ -269,6 +331,13 @@ class TemplateEngine implements engine_methods
         }
     }
 
+    /**
+     * clear out data from file before $start_time
+     *
+     * @param integer $feedid
+     * @param integer $start_time new timestamp to start the feed data from
+     * @return boolean
+     */
     public function trim($feedid, $start_time)
     {
         try {

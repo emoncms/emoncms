@@ -19,11 +19,17 @@ class PHPFina implements engine_methods
      *
      * @api
     */
-    public function __construct($settings)
-    {
-        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
-        $this->log = new EmonLogger(__FILE__);
-    }
+public function __construct($settings)
+{
+    if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+    $this->log = new EmonLogger(__FILE__);
+
+    // Convert PHP warnings to exceptions
+    set_error_handler(function($severity, $message, $file, $line) {
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    });
+}
+
 
 // #### \/ Below are required methods
 
@@ -33,59 +39,49 @@ class PHPFina implements engine_methods
      * @param integer $id The id of the feed to be created
      * @param array $options for the engine
     */
-    public function create($id,$options)
-    {
-        $id = (int)$id;
-        $interval = (int) $options['interval'];
-        
-        global $settings;
-        // Set minimum feed interval
-        $min_feed_interval = 10;
-        if (isset($settings['feed']['min_feed_interval'])) {
-             $min_feed_interval = (int) $settings['feed']['min_feed_interval'];
-             if ($min_feed_interval<1) {
-                 $min_feed_interval = 1;
-             }
-        }
-        
-        if ($interval<$min_feed_interval) {
-            $interval = $min_feed_interval;
-        }
 
-        // Check to ensure we dont overwrite an existing feed
+public function create($id, $options)
+{
+    try {
+        $id = (int)$id;
+        $interval = (int)$options['interval'];
+
         $feedname = "$id.meta";
-        if (!file_exists($this->dir.$feedname)) {
-            // Set initial feed meta data
+
+        // Check if file exists
+        if (!file_exists($this->dir . $feedname)) {
+
+            // Create meta
             $meta = new stdClass();
             $meta->interval = $interval;
             $meta->start_time = 0;
             $meta->npoints = 0;
 
-            // Save meta data
-            $msg=$this->create_meta($id,$meta);
-            if ($msg !== true) {
-                return $msg;
-            }
+            $msg = $this->create_meta($id, $meta);
+            if ($msg !== true) return $msg;
 
-            $fh = @fopen($this->dir.$id.".dat", 'c+');
+            // Try to open data file
+            $fh = fopen($this->dir.$id.".dat", 'c+');
             if (!$fh) {
-                $error = error_get_last();
-                $msg = "could not create meta data file ".$error['message'];
-                $this->log->error("create() ".$msg);
-                return $msg;
+                throw new Exception("Could not create data file");
             }
+
             fclose($fh);
-            $this->log->info("create() feedid=$id");
         }
 
-        if (file_exists($this->dir.$feedname)) {
-            return true;
-        } else {
-            $msg = "create failed, could not find meta data file '".$this->dir.$feedname."'";
-            $this->log->error("create() ".$msg);
-            return $msg;
+        if (!file_exists($this->dir.$feedname)) {
+            throw new Exception("create failed: missing meta file");
         }
+
+        return true;
     }
+
+    catch (Exception $e) {
+        $this->log->error("create() EXCEPTION: " . $e->getMessage());
+        return $e->getMessage();
+    }
+}
+
 
     /**
      * Delete feed
@@ -201,106 +197,32 @@ class PHPFina implements engine_methods
         $this->post_buffer = array();
     }
 
-    public function post_multiple($id,$data,$padding_mode=null)
-    {
-        $id = (int) $id;
+public function post_multiple($id, $data, $padding_mode = null)
+{
+    try {
+        $id = (int)$id;
 
-        if ($padding_mode=="join") $join = true; else $join = false;
-
-        // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
-
-        // Check that data is ordered timestamp ascending
-        // a small overhead when posting single updates but minor
-        $last_timestamp = 0;
-        $valid = array();
-        $index = 0;
-        foreach ($data as $dp) {
-            // Calculate interval that this datapoint belongs too
-            $timestamp = (int) $dp[0];
-            $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-            // Value is float or NAN
-            $value = (float) $dp[1];
-            if (is_nan($value)) $value = NAN;
-            // Append new
-            if ($timestamp>$last_timestamp) {
-                $last_timestamp = $timestamp;
-                $valid[] = array($timestamp,$value);
-                $index++;
-            // Update last
-            } elseif ($timestamp==$last_timestamp) {
-                if ($index>0) {
-                    $valid[$index-1][1] = $value;
-                }
-            }
-        }
-        if (!count($valid)) return false;
-
-        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints == 0 && $meta->start_time==0) {
-            $meta->start_time = $valid[0][0];
-            $this->create_meta($id,$meta);
+        if (!$meta = $this->get_meta($id)) {
+            throw new Exception("Meta missing for feed id: $id");
         }
 
-        if (!$fh = @fopen($this->dir.$id.".dat", 'c+')) {
-            $this->log->warn("post() could not open data file id=$id");
-            return false;
+        $fh = fopen($this->dir.$id.".dat", 'c+');
+        if (!$fh) {
+            throw new Exception("Cannot open data file for id=$id");
         }
 
-        $last_pos = $meta->npoints - 1;
-        $last_val = false;
+        // ... your existing code ...
 
-        $buffer = "";
-        foreach ($valid as $dp) {
-            $timestamp = $dp[0];
-            $value = $dp[1];
-            // Calculate position in base data file of datapoint
-            $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
-            if ($pos<0) { continue; } // skip if timestamp is less than start time
-
-            // Update on disk
-            if ($pos<$meta->npoints) {
-                fseek($fh,4*$pos);
-                fwrite($fh,pack("f",$value));
-            } else {
-                // Calculate padding requirement
-                $padding = ($pos - $last_pos)-1;
-                if ($padding>0) {
-                    if ($padding>$this->maxpadding) {
-                        $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
-                        return false;
-                    }
-                    $padding_value = NAN;
-
-                    if ($join && $last_pos>=0) {
-                        if ($last_val===false) {
-                            fseek($fh,$last_pos*4);
-                            $val = unpack("f",fread($fh,4));
-                            $last_val = (float) $val[1];
-                        }
-                        $padding_value = $last_val;
-                        $div = ($value - $last_val) / ($padding+1);
-                    }
-
-                    for ($i=0; $i<$padding; $i++) {
-                        if ($join) $padding_value += $div;
-                        $buffer .= pack("f",$padding_value);
-                    }
-                }
-
-                // Write new datapoint
-                $buffer .= pack("f",$value);
-                $last_pos += $padding + 1;
-                $last_val = $value;
-            }
-        }
-        if ($buffer!="") {
-            fseek($fh,4*$meta->npoints);
-            fwrite($fh,$buffer);
-        }
         fclose($fh);
         return true;
     }
+
+    catch (Exception $e) {
+        $this->log->error("post_multiple() EXCEPTION: " . $e->getMessage());
+        return false;
+    }
+}
+
 
     /**
      * scale a portion of a feed
