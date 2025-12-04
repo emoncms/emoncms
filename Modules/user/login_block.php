@@ -207,29 +207,25 @@ function login(){
     var referrer = $("input[name='referrer']").val();
     var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
 
-    var result = user.login(username,password,rememberme,referrer);
-
-    if (result.success==undefined) {
-        $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
-        return false;
-    
-    } else {
+    user.login(username,password,rememberme,referrer, function(result){
+        if (!result || result.success===undefined) {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+            return;
+        }
+        
         if (result.success)
         {
             var href = result.hasOwnProperty('startingpage') ? path+result.startingpage: path; 
             window.location.href = href;
-            return true;
+            return;
         }
-        else
-        {
-            if (result.message=="Please verify email address") {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"<br><br><button class='btn resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
-            } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
-            }
-            return false;
+        
+        if (result.message=="Please verify email address") {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"<br><br><button class='btn resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
+        } else {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
         }
-    }
+    });
 }
 
 function register(){

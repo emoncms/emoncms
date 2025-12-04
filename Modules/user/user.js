@@ -1,9 +1,8 @@
 
 var user = {
 
-  'login':function(username,password,rememberme,referrer)
+  'login':function(username,password,rememberme,referrer, callback)
   {
-    var result = {};
     var data = {
         username: encodeURIComponent(username),
         password: encodeURIComponent(password),
@@ -15,27 +14,29 @@ var user = {
       url: path+"user/login.json",
       data: data,
       dataType: "text",
-      async: false,
+      async: true,
       success: function(data_in)
       {
+         var result;
          try {
              result = JSON.parse(data_in);
              if (result.success==undefined) result = data_in;
          } catch (e) {
              result = data_in;
          }
+         if (callback) callback(result);
       },
       error: function (xhr, ajaxOptions, thrownError) {
+        var result;
         if(xhr.status==404) {
             result = "404 Not Found: Is modrewrite configured on your system?"
         } else {
             result = xhr.status+" "+thrownError;
         }
+        if (callback) callback({success:false, message:result});
       }
     });
-    return result;
   },
-
   'register':function(username,password,email,timezone)
   {
     var result = {};
@@ -112,4 +113,3 @@ var user = {
   }
 
 }
-
