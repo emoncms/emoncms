@@ -119,7 +119,7 @@ global $path, $settings;
 menu.disable();
 
 var verify = <?php echo json_encode($verify); ?>;
-var register_open = false;
+var register_open = true;
 $("body").addClass("body-login");
 
 if (verify.success!=undefined) {
@@ -133,6 +133,11 @@ if (verify.success!=undefined) {
 var passwordreset = "<?php echo $settings['interface']['enable_password_reset']; ?>";
 $(document).ready(function() {
     if (!passwordreset) $("#passwordreset-link").hide();
+    //  // Reset login/register form visibility
+    // $(".login-item").hide();         // show login fields
+    // $(".register-item").show();       // hide registration fields
+    // $("#register-link").hide();       // show the register link/button
+    // register_open = true;            // reset register state
 });
 
 $("#passwordreset-link").on("click", function(){
@@ -247,28 +252,31 @@ function register(){
             console.log(user_timezone);
         }
             
-        var result = user.register(username,password,email,user_timezone);
-
-        if (result.success==undefined) {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
-            return false;
-        
-        } else {
-            if (result.success) {
-                if (result.verifyemail) {
-                    $(".login-item").show();
-                    $(".register-item").hide();
-                    $("#loginmessage").html("");
-                    register_open = false;
-                    $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
-                } else {
-                    login();
-                }
-                
+        // CALL REGISTER ASYNC WITH CALLBACK
+        user.register(username, password, email, user_timezone, function(result){
+            
+            // Logic moved inside this callback function
+            if (result.success==undefined) {
+                $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+                return false;
+            
             } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+                if (result.success) {
+                    if (result.verifyemail) {
+                        $(".login-item").show();
+                        $(".register-item").hide();
+                        $("#loginmessage").html("");
+                        register_open = false;
+                        $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
+                    } else {
+                        login();
+                    }
+                    
+                } else {
+                    $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+                }
             }
-        }
+        });
     }
 }
 

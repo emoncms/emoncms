@@ -37,33 +37,39 @@ var user = {
       }
     });
   },
-  'register':function(username,password,email,timezone)
+  'register':function(username,password,email,timezone, callback)
   {
-    var result = {};
     $.ajax({
       type: "POST",
       url: path+"user/register.json",
       data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email)+"&timezone="+encodeURIComponent(timezone),
       dataType: "text",
-      async: false,
+      async: true, // This must be true
       success: function(data_in)
       {
+         var result;
          try {
              result = JSON.parse(data_in);
              if (result.success==undefined) result = data_in;
          } catch (e) {
              result = data_in;
          }
+         
+         // THIS LINE IS CRITICAL: It triggers the code in login_block.php
+         if (callback) callback(result);
       },
       error: function (xhr, ajaxOptions, thrownError) {
+        var result;
         if(xhr.status==404) {
             result = "404 Not Found: Is modrewrite configured on your system?"
         } else {
             result = xhr.status+" "+thrownError;
         }
+        
+        // THIS LINE IS CRITICAL: It triggers the error message
+        if (callback) callback({success:false, message:result});
       }
     });
-    return result;
   },
 
   'get':function()
