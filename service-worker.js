@@ -41,7 +41,12 @@ self.addEventListener('fetch', event => {
         
         return fetch(fetchRequest).then(response => {
           // Check if valid response
-          if (!response || response.status !== 200 || (response.type !== 'basic' && response.type !== 'cors')) {
+          if (!response || response.status !== 200) {
+            return response;
+          }
+          
+          // Cache basic, cors, and opaque responses
+          if (response.type !== 'basic' && response.type !== 'cors' && response.type !== 'opaque') {
             return response;
           }
           
@@ -58,8 +63,8 @@ self.addEventListener('fetch', event => {
         });
       })
       .catch(() => {
-        // For navigation requests, return the cached root page
-        if (event.request.mode === 'navigate') {
+        // For navigation requests (HTML pages), return the cached root page
+        if (event.request.mode === 'navigate' || event.request.destination === 'document') {
           return caches.match('./');
         }
         // For other requests, return a generic offline response
