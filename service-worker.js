@@ -41,7 +41,7 @@ self.addEventListener('fetch', event => {
         
         return fetch(fetchRequest).then(response => {
           // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
+          if (!response || response.status !== 200 || (response.type !== 'basic' && response.type !== 'cors')) {
             return response;
           }
           
@@ -58,8 +58,18 @@ self.addEventListener('fetch', event => {
         });
       })
       .catch(() => {
-        // Return offline page if available
-        return caches.match('./');
+        // For navigation requests, return the cached root page
+        if (event.request.mode === 'navigate') {
+          return caches.match('./');
+        }
+        // For other requests, return a generic offline response
+        return new Response('Offline - content not available', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: new Headers({
+            'Content-Type': 'text/plain'
+          })
+        });
       })
   );
 });

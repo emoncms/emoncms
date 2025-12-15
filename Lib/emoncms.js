@@ -140,7 +140,7 @@ if (typeof localStorage !== 'undefined') {
 }
 
 /* Register Service Worker for PWA support */
-if ('serviceWorker' in navigator) {
+if ('serviceWorker' in navigator && typeof path !== 'undefined') {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register(path + 'service-worker.js')
             .then(function(registration) {
