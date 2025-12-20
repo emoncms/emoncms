@@ -8,9 +8,7 @@
     },
     "require-dev": {
         "php-parallel-lint/php-parallel-lint": "^1.2.0",
-        "squizlabs/php_codesniffer": "3.13.2",
-        "qossmic/deptrac-shim": "^1.0",
-        "smeghead/php-class-diagram": "^1.6"
+        "squizlabs/php_codesniffer": "3.13.2"
     },
     "scripts": {
         "fix": "phpcbf -p .",
