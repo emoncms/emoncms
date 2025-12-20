@@ -6,9 +6,9 @@
 - Routing (user_controller.php): The request is passed to the user_controller().
 - Authentication (user_model.php): The login() method performs the primary credential validation (username and password).
 - Token Management (rememberme_model.php): <br/>
-Case 1: No cookie<br/>
-getCookieValues() invokes setCookie to clear the cookie<br/>
-Case 2: Cookie Found<br/>
+#### Case 1: No cookie<br/>
+- getCookieValues() invokes setCookie to clear the cookie<br/>
+#### Case 2: Cookie Found<br/>
 1. TRIPLET_INVALID: findTriplet() invokes setCookie() to clear the cookie
 2. TRIPLET_NOT_FOUND: findTriplet() invokes setCookie() to clear the cooker
 3. TRIPLET_FOUND: 
