@@ -13,7 +13,6 @@
         $public_username_str = $session['public_username']."/";
     }
 ?>
-
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
@@ -84,62 +83,8 @@ function translate(property) {
 
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
+<link rel="stylesheet" href="<?php echo $path; ?>Modules/feed/Views/feed_view.css?v=<?php echo $v; ?>">
 
-<style>
-body{padding:0!important}
-
-#table {
-    margin-top:4rem
-}
-#footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-.node .feed-graph-link {
-    cursor:pointer;
-}
-
-.controls { margin-bottom:10px; }
-#feeds-to-delete { font-style:italic; }
-
-#deleteFeedModalSelectedItems{
-    position:absolute;
-    overflow:hidden;
-    text-align:left;
-    background: #f5f5f5;
-}
-#deleteFeedModalSelectedItems h5{ margin:0 }
-#deleteFeedModalSelectedItems ol{
-    max-width:80%;
-    position:absolute;
-}
-
-#mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
-
-.node .accordion-toggle{
-    border-bottom: 1px solid white;
-}
-.node .accordion-toggle,
-.node-feeds .node-feed {
-    position: relative;
-}
-.node .accordion-toggle:after,
-.node-feeds .node-feed:after{
-    content: '';
-    width: .4em;
-    height: 100%;
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-}
-
-.node-feeds .node-feed:after,
-.accordion-toggle:after {
-    background: var(--status-color)!important;
-}
-
-</style>
 <div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a></span>
     <h3 id="feeds-title"><?php echo tr('Feeds'); ?></h3>
@@ -182,57 +127,80 @@ body{padding:0!important}
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="feedEditModal" 
+     class="modal hide" 
+     tabindex="-1" 
+     role="dialog" 
+     aria-labelledby="feedEditModalLabel" 
+     aria-hidden="true" 
+     data-backdrop="static">
+
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-dismiss="modal">×</button>
         <h3 id="feedEditModalLabel"><?php echo tr('Edit feed'); ?></h3>
     </div>
+
     <div class="modal-body">
 
-        <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo tr('Name'); ?></span>
-          <input id="feed-name" type="text" style="width:250px">
-          <button class="btn btn-primary feed-edit-save" field="name">Save</button>
-        </div>
-    
-        <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo tr('Node'); ?></span>
-          <div class="autocomplete">
-              <input id="feed-node" type="text" style="width:250px">
-          </div>
-          <button class="btn btn-primary feed-edit-save" field="node">Save</button>
+        <!-- Feed Name -->
+        <div class="feed-row">
+            <span class="feed-label"><?php echo tr('Name'); ?></span>
+            <input id="feed-name" type="text" class="feed-input">
+            <button class="btn btn-primary feed-edit-save" field="name">Save</button>
         </div>
 
-        <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo tr('Make public'); ?></span>
-          <span class="add-on" style="width:255px"><input id="feed-public" type="checkbox"></span>
-          <button class="btn btn-primary feed-edit-save" field="public">Save</button>
+        <!-- Node -->
+        <div class="feed-row">
+            <span class="feed-label"><?php echo tr('Node'); ?></span>
+            <div class="autocomplete">
+                <input id="feed-node" type="text" class="feed-input">
+            </div>
+            <button class="btn btn-primary feed-edit-save" field="node">Save</button>
         </div>
 
-        <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo tr('Unit'); ?></span>
-          <select id="feed_unit_dropdown" style="width:auto">
-              <option value=""></option>
-              <?php
-              // add available units from units.php
-              include('Lib/units.php');
-              if (defined('UNITS')) {
-                  foreach(UNITS as $unit){
-                      printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
-                  }
-              }
-              ?>
-              <option value="_other"><?php echo tr('Other'); ?></option>
-          </select>
-          <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>       
-          <button class="btn btn-primary feed-edit-save" field="unit">Save</button>
+        <!-- Unit -->
+        <div class="feed-row">
+            <span class="feed-label"><?php echo tr('Unit'); ?></span>
+
+            <select id="feed_unit_dropdown" class="feed-input">
+                <option value=""></option>
+
+                <?php
+                include('Lib/units.php');
+                if (defined('UNITS')) {
+                    foreach(UNITS as $unit){
+                        printf(
+                            '<option value="%s">%s (%1$s)</option>',
+                            $unit["short"],
+                            $unit["long"]
+                        );
+                    }
+                }
+                ?>
+                <option value="_other"><?php echo tr('Other'); ?></option>
+            </select>
+
+            <input type="text" id="feed_unit_dropdown_other" class="feed-input" />
+            <button class="btn btn-primary feed-edit-save" field="unit">Save</button>
+        </div>
+
+        <!-- Make Public -->
+        <div class="feed-row">
+            <span class="feed-label"><?php echo tr('Make public'); ?></span>
+            <label class="switch">
+                <input id="feed-public" type="checkbox">
+                <span class="slider"></span>
+            </label>
+            <button class="btn btn-primary feed-edit-save" field="public">Save</button>
         </div>
     </div>
+
     <div class="modal-footer">
-        <div id="feed-edit-save-message" style="position:absolute"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
+        <div id="feed-edit-save-message"></div>
+        <button class="btn" data-dismiss="modal"><?php echo tr('Close'); ?></button>
     </div>
 </div>
+
 
 <?php require "Modules/feed/Views/exporter.php"; ?>
 
