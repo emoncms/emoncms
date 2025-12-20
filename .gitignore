@@ -6,8 +6,6 @@ settings.php
 settings.ini
 old.settings.php
 emoncms.log
-.deptrac.cache
-deptrac.yaml
 .idea
 .vagrant/
 .env
