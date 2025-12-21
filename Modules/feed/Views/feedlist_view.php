@@ -198,6 +198,7 @@ function translate(property) {
     <div class="modal-footer">
         <div id="feed-edit-save-message"></div>
         <button class="btn" data-dismiss="modal"><?php echo tr('Close'); ?></button>
+        <button id="feed-edit-save-all" class="btn btn-primary"><?php echo tr('Save all'); ?></button>
     </div>
 </div>
 
@@ -676,6 +677,68 @@ $(".feed-edit-save").click(function() {
         $('#feed-edit-save-message').text('').hide();
     }
     
+});
+
+$("#feed-edit-save-all").click(function() {
+    var feedid = 0;
+    var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+    
+    for (var z in selected_feeds) {
+        if (selected_feeds[z]) {
+            feedid = z; 
+
+            // collect all inputs 
+            var fields = {};
+
+             // only add field 'name' to the payload if editing a single feed
+            if (edited_feeds.length === 1) {
+                fields.name = $("#feed-name").val();
+            }
+
+            fields.tag = $("#feed-node").val();
+            fields.public = $("#feed-public")[0].checked ? 1 : 0;
+            
+            var unit = $('#feed_unit_dropdown').val();
+            fields.unit = (unit == '_other') ? $('#feed_unit_dropdown_other').val() : unit;
+
+            var data = {};
+            var has_changes = false;
+            
+            for (var f in fields) {
+                // determine if value changed
+                if (fields[f] != feeds[feedid][f]) {
+                    data[f] = fields[f];
+                    has_changes = true;
+                }
+            }
+
+            // stop if no changes 
+            if (!has_changes) {
+                $('#feedEditModal').modal('hide');
+                return;
+            }
+
+            $('#feed-edit-save-message').text('').hide();
+            
+            $.ajax({ 
+                url: path + "feed/set.json", 
+                data: {
+                    id: feedid,
+                    fields: JSON.stringify(data) 
+                },
+                dataType: 'json'
+            })
+            .done(function(response) {
+                if (response.success) {
+                    update_feed_list();
+                    $('#feedEditModal').modal('hide');
+                    $('#feed-edit-save-message').text('').hide();
+                } else {
+                    $('#feed-edit-save-message').text(response.message).fadeIn();
+                }
+            });
+        }
+    }
 });
 
 // ---------------------------------------------------------------------------------------------
