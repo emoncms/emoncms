@@ -31,6 +31,7 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
+// ========== js setup ============
 var feedid = <?php echo $feedid; ?>; //Fetch table name
 var apikey = "<?php echo $apikey; ?>";
 feed.apikey = apikey;
@@ -39,7 +40,12 @@ var is_kw = <?php echo $kw === 1?'true':'false'; ?>;
 var data = [];
 var timerget;
 var fast_update_fps = 10;
+// --- new: track last plotted state
+var lastPlottedTimestamp = null;
+var lastPlottedStart = null;
+var lastPlottedEnd = null;
 
+// ========== colours from url ============
 var plotColour = urlParams.colour;
 if (plotColour == undefined || plotColour == '') plotColour = "EDC240";
 
@@ -51,11 +57,13 @@ var backgroundColour = urlParams.colourbg;
 if (backgroundColour == undefined || backgroundColour == '') backgroundColour = "ffffff";
 $("body").css("background-color", "#" + backgroundColour);
 
+// ========== initial zoom/time window ============
 var initzoom = urlParams.initzoom;
 if (initzoom == undefined || initzoom == '' || initzoom < 1) initzoom = '15'; // Initial zoom default to 15 mins
 
 var timeWindow = (60 * 1000 * initzoom); //Initial time window
 
+// ========== dom sizing & initial time range ============
 var graph_bound = $('#graph_bound'),
     graph = $("#graph");
 graph.width(graph_bound.width()).height(graph_bound.height());
@@ -64,9 +72,12 @@ if (embed) graph.height($(window).height());
 var now = (new Date()).getTime();
 var start = now - timeWindow; // start time
 var end = now; // end time
+
+// ========== initial bulk data fetch ============
 var interval = parseInt(((end * 0.001 + 10) - (start * 0.001 - 10)) / 800);
 data = feed.getdata(feedid, (start - 10000), (end + 10000), interval, 0, 0, 1, 1);
 
+// ========== polling loop ============
 timerget = setInterval(getdp, 7500);
 gpu_fast();
 //setInterval(fast,150);
@@ -80,13 +91,34 @@ function gpu_fast() {
         }, 1000 / fast_update_fps);
 };
 
+// animates/pans the graph window
 function fast() {
     var now = (new Date()).getTime();
     start = now - timeWindow; // start time
     end = now; // end time
-    plot();
+
+    if(data.length === 0) return;
+
+    var newestTs = data[data.length - 1][0];
+
+    // draw only if:
+    //  - we have never drawn before, OR
+    //  - latest datapoint changed, OR
+    //  - visible window changed (e.g. user clicked a different time window)
+    if (
+        lastPlottedTimestamp === null ||
+        lastPlottedTimestamp !== newestTs ||
+        lastPlottedStart !== start ||
+        lastPlottedEnd !== end
+    ) {
+        lastPlottedTimestamp = newestTs;
+        lastPlottedStart = start;
+        lastPlottedEnd = end;
+        plot();
+    }
 }
 
+// ========== resize handling ============
 $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse', vis_resize);
 
 function vis_resize() {
@@ -95,6 +127,7 @@ function vis_resize() {
     window.requestAnimationFrame(plot);
 }
 
+// ========== poll latest datapoint - add to `data` ============
 function getdp() {
     $.ajax({
         url: path + "feed/timevalue.json",
@@ -117,6 +150,7 @@ function getdp() {
     });
 }
 
+// ========== draw the graph with Flot ============
 function plot() {
     if (is_kw) {
         var word = 'converted';
@@ -152,6 +186,7 @@ function plot() {
     });
 }
 
+// ========== time window buttons logic ============
 // Operate buttons
 $('.viewWindow').click(function() {
     timeWindow = (1000 * $(this).attr("time"));
