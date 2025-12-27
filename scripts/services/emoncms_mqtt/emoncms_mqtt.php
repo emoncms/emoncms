@@ -414,7 +414,7 @@
             if (!isset($dbinputs[$nodeid])) {
                 $dbinputs[$nodeid] = array();
                 if ($device && method_exists($device,"create")) {
-                    if ($input->is_creation_disabled()) {
+                    if ($input->is_creation_disabled($userid)) {
                         $log->warn("Input creation is disabled, cannot create device for nodeid: ".$nodeid);
                     } else {
                         $log->info("Creating device for nodeid: ".$nodeid);
@@ -450,7 +450,7 @@
                 else
                 {
                     if (!isset($dbinputs[$nodeid][$name])) {
-                        if ($input->is_creation_disabled()) {
+                        if ($input->is_creation_disabled($userid)) {
                             $log->warn("Input creation is disabled, cannot create input: ".$name." for nodeid: ".$nodeid);
                             continue;
                         } else {
