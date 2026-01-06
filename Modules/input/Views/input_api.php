@@ -39,6 +39,18 @@ td:nth-of-type(2) { width:4%;}
 
 <p><?php echo tr("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the EmonCMS apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
 
+<div style="background-color: #f8f9fa; border-left: 4px solid #0275d8; padding: 15px; margin: 20px 0;">
+    <h4 style="margin-top: 0; color: #0275d8;"><?php echo tr('Input Name Constraints'); ?></h4>
+    <p><strong><?php echo tr('Maximum Length:'); ?></strong> <?php echo tr('64 characters'); ?></p>
+    <p><strong><?php echo tr('Allowed Characters:'); ?></strong></p>
+    <ul style="margin-bottom: 10px;">
+        <li><?php echo tr('Letters: A-Z, a-z (including Unicode letters)'); ?></li>
+        <li><?php echo tr('Numbers: 0-9'); ?></li>
+        <li><?php echo tr('Special characters: _ (underscore), - (hyphen), . (period), and whitespace'); ?></li>
+    </ul>
+    <p><strong><?php echo tr('Important:'); ?></strong> <?php echo tr('Input names containing characters outside this allowed set will have the invalid characters silently removed. Input names exceeding 64 characters may be rejected on some installations (such as emoncms.org). To ensure compatibility, keep input names within these constraints.'); ?></p>
+</div>
+
 <h4><?php echo tr('input/post'); ?></h4>
 
 <ul>
