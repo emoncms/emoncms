@@ -23,7 +23,7 @@ PHP Example source code:
     $iv = openssl_random_pseudo_bytes(16);
     $encryptedData = $iv.openssl_encrypt($data, 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, $iv);
     $base64EncryptedData = rtrim(strtr(base64_encode($encryptedData), '+/', '-_'), '=');
-    
+
     // Generate hmac_hash for user authorization
     $hmac = hash_hmac('sha256',$data,hex2bin($apikey));
 
@@ -31,22 +31,28 @@ PHP Example source code:
     $ch = curl_init();
     curl_setopt($ch,CURLOPT_URL,"http://localhost/emoncms/input/post");
     curl_setopt($ch,CURLOPT_POST,1);
-    
+
     // Set request headers Authorization & Content-Type
     curl_setopt($ch,CURLOPT_HTTPHEADER, array(
       "Authorization: $userid:$hmac",
       "Content-Type: aes128cbc"
     ));
-    
+
     curl_setopt($ch,CURLOPT_POSTFIELDS,$base64EncryptedData);
     curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    
+
     $result = curl_exec($ch);
-    curl_close($ch);
+    if (PHP_VERSION_ID < 80000) {
+        curl_close($ch);
+    }
 
     // Generate sha256 hash of data string to compare with returned sha256 hash result
     $sha1 = str_replace(array('+','/'),array('-','_'), base64_encode(hash("sha256", $data, true)));
 
-    if ($sha1==$result) print "ok"; else print $result;
+    if ($sha1==$result) {
+        print "ok";
+    } else {
+        print $result;
+    }
 
 
