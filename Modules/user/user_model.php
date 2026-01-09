@@ -444,6 +444,11 @@ class User
         }
         else
         {
+            // Ensure session is active before regenerating
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
             session_regenerate_id(true);
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
