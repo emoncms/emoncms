@@ -28,9 +28,12 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
     <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["favicon"]; ?>" />
     <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#44b3e2">
     <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
     <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/logo_normal.png">
+    <link rel="manifest" href="<?php echo $path; ?>manifest.json">
 
     <!-- Open Graph meta tags for social media link preview -->
     <meta property="og:title" content="Emoncms - open source energy visualisation">
