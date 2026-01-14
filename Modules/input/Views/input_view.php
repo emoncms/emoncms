@@ -77,7 +77,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             {{ selected.length }} <?php echo tr('selected'); ?>
         </span>
 
-        <!-- DELETE BUTTON (RED) ->
+        <!-- DELETE BUTTON (RED) -->
         <button @click="open_delete"
                 class="btn btn-delete"
                 :disabled="selected.length === 0"
@@ -133,6 +133,24 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     </div>
 </div>
 
+        <!-- Notification Alert -->
+        <transition name="fade">
+            <div v-if="notification.show" 
+                 class="alert" 
+                 :class="[
+                     'alert-' + notification.type,
+                     {
+                         'alert-info': notification.type === 'info',
+                         'alert-warning': notification.type === 'warning',
+                         'alert-danger': notification.type === 'error',
+                         'alert-success': notification.type === 'success'
+                     }
+                 ]"
+                 style="margin-bottom: 1rem;">
+                {{ notification.message }}
+            </div>
+        </transition>
+
         <!-- Main input list -->
         <template v-if="loaded">
             <template v-if="total_devices > 0">
@@ -150,16 +168,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                             </span>
                         </h5>
 
-
-                    <tr class="node-header">
-                        <td colspan="6">
-                            <div class="node-columns-header">
-                                <span class="col-label">Description</span>
-                                <span class="col-label">Processing</span>
-                        <!-- add more labels to match your columns if needed -->
-                            </div>
-                        </td>
-                    </tr>
+                    <div class="node-header">
+                        <div class="node-columns-header">
+                            <span class="col-label">Description</span>
+                            <span class="col-label">Processing</span>
+                            <!-- add more labels to match your columns if needed -->
+                        </div>
+                    </div>
 
 
 

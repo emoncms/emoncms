@@ -112,12 +112,19 @@ var app = new Vue({
         },
         selected: [],
         collapsed: [],
+        selectAllState: false,
         paused: false,
         device_module: DEVICE_MODULE === true,
         scrolled: false,
         loaded: false,
         local_cache_key: 'input_nodes_display',
-        input_creation_disabled: false // new property
+        input_creation_disabled: false, // new property
+        notification: {
+            show: false,
+            type: 'info', // 'info', 'warning', 'error', 'success'
+            message: '',
+            timeout: null
+        }
     },
     computed: {
         total_inputs: function() {
@@ -219,9 +226,11 @@ var app = new Vue({
             }
             alert(devicekey)
         },
-        create_device: function(device) {
-            if(typeof device_templates !== 'undefined') {
-                device_dialog.loadConfig(device_templates)
+        create_device: function() {
+            if(DEVICE_MODULE && typeof device_templates !== 'undefined') {
+                device_dialog.loadConfig(device_templates);
+            } else {
+                this.showNotification(_("Please install the device module to enable this feature"), 'warning', 4000);
             }
         },
         oldestDeviceInput: function(device) {
@@ -297,6 +306,26 @@ var app = new Vue({
                     }
                 });
             }
+        },
+        showNotification: function(message, type, duration) {
+            type = type || 'info'; // 'info', 'warning', 'error', 'success'
+            duration = duration || 3000;
+            var self = this;
+            
+            // Clear any existing timeout
+            if (this.notification.timeout) {
+                clearTimeout(this.notification.timeout);
+            }
+            
+            // Show notification
+            this.notification.message = message;
+            this.notification.type = type;
+            this.notification.show = true;
+            
+            // Auto-hide after duration
+            this.notification.timeout = setTimeout(function() {
+                self.notification.show = false;
+            }, duration);
         }
     },
     created () {

@@ -58,6 +58,7 @@
 
 </style>
 
+<!-- //Modal to delete input// -->
 <div id="inputDeleteModal" v-cloak>
     <div class="modal" :class="{'hide': hidden}" tabindex="-1" role="dialog" aria-labelledby="inputDeleteModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
@@ -93,6 +94,8 @@
     <!-- <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input_dialog.js"></script> -->
 </div>
 
+
+<!-- // Modal to edit input -->
 <div id="inputEditModal" v-cloak>
     <div :class="{hide: hidden}" class="modal modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
