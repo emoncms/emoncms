@@ -965,6 +965,7 @@ class User
 
     public function update_last_active($userid) {
         $userid = (int) $userid;
+        $lastactive = time();
         $result = $this->mysqli->query("SHOW COLUMNS FROM users LIKE 'lastactive'");
         if ($result->num_rows > 0) {
             $this->mysqli->query("UPDATE users SET `lastactive` = '$lastactive' WHERE `id`= '$userid'");
