@@ -70,8 +70,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <div class="menu-top bg-menu-top">
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
-
-            <?php if ($session["read"]) { ?>
+            <?php if ($session["write"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
                 <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
@@ -81,8 +80,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             </a>
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
-                    <?php if ($session["write"]) { ?>
                     <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li class="divider"><a href="#"></a></li>  
+                    <?php if (isset($_SESSION['adminuser'])) { ?>
+                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
                     <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>

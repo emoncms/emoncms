@@ -9,6 +9,8 @@ $schema['users'] = array(
     'apikey_write' => array('type' => 'varchar(64)'),
     'apikey_read' => array('type' => 'varchar(64)'),
     'lastlogin' => array('type' => 'datetime'),
+    // Via username & password login (0: no access, 1: read access, 2: write access)
+    'access' => array('type' => 'int(11)', 'default'=>2),
     'admin' => array('type' => 'int', 'Null'=>false),
 
     // User profile fields
@@ -23,7 +25,12 @@ $schema['users'] = array(
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int', 'default'=>0),
     'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
-    'uuid' => array('type' => 'varchar(36)', 'default'=>'')
+    'uuid' => array('type' => 'varchar(36)', 'default'=>''),
+
+    'lastactive'=> array('type' => 'int(11)'),
+    'feeds'=> array('type' => 'int(11)'),
+    'activefeeds'=> array('type' => 'int(11)'),
+    'diskuse' => array('type' => 'bigint(20)')
 );
 
 $schema['rememberme'] = array(
