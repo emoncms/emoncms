@@ -12,6 +12,7 @@
 use Mosquitto\Client;
 
 defined('EMONCMS_EXEC') or die('Restricted access');
+require_once "core.php";
 
 // This is core Process list module
 class Process_ProcessList
@@ -1009,9 +1010,9 @@ class Process_ProcessList
     // Times value by current value of another input
     //---------------------------------------------------------------------------------------
     public function times_input($id, $time, $value)
-    {   
+    {
         $last_value = $this->input->get_last_value($id);
-        
+
         // Handle null values and ensure numeric types
         if ($value === null || $last_value === null) {
             return null;
@@ -1062,28 +1063,28 @@ class Process_ProcessList
     public function add_input($id, $time, $value)
     {
         $last_value = $this->input->get_last_value($id);
-        
+
         // Handle null values and ensure numeric types
         if ($value === null || $last_value === null) {
             return null;
         }
-        
+
         // Convert to numeric values
         $value = (float)$value;
         $last_value = (float)$last_value;
-        
+
         return $value + $last_value;
     }
 
     public function subtract_input($id, $time, $value)
     {
         $last_value = $this->input->get_last_value($id);
-        
+
         // Handle null values and ensure numeric types
         if ($value === null || $last_value === null) {
             return null;
         }
-        
+
         // Convert to numeric values
         $value = (float)$value;
         $last_value = (float)$last_value;
@@ -1138,7 +1139,7 @@ class Process_ProcessList
         if ($value === null) {
             return null;
         }
-        
+
         // Convert to numeric value
         $value = (float)$value;
 
@@ -1182,7 +1183,7 @@ class Process_ProcessList
         if ($value === null) {
             return null;
         }
-        
+
         // Convert to numeric value - this is the key fix for PHP 8+
         $value = (float)$value;
 
@@ -1451,7 +1452,7 @@ class Process_ProcessList
         if ($value === null) {
             return null;
         }
-        
+
         // Convert to numeric value - this is the key fix for PHP 8+
         $value = (float)$value;
 
@@ -1582,7 +1583,7 @@ class Process_ProcessList
         if ($value === null || $last['value'] === null) {
             return null;
         }
-        
+
         // Convert to numeric values
         $value = (float)$value;
         $last_value = (float)$last['value'];
@@ -1601,7 +1602,7 @@ class Process_ProcessList
         if ($value === null || $last['value'] === null) {
             return null;
         }
-        
+
         // Convert to numeric values
         $value = (float)$value;
         $last_value = (float)$last['value'];
