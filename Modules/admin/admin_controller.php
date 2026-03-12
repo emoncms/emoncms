@@ -274,7 +274,7 @@ function admin_controller()
         $filename_parts = explode('.', $clean_filename);
         $file_extension = end($filename_parts);
         // Only allow hex files
-        if (strtolower($file_extension) !== 'hex') return array('success'=>false, 'message'=>"Only .hex files are allowed");
+        if (strtolower($file_extension) !== 'hex' && strtolower($file_extension) !== 'bin') return array('success'=>false, 'message'=>"Only .hex or .bin files are allowed");
         
         // Generate safe filename using timestamp and random string
         $safe_filename = 'firmware_' . time() . '_' . bin2hex(random_bytes(8)) . '.hex';
