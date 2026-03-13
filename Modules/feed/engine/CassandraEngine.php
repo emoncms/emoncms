@@ -164,9 +164,10 @@ class CassandraEngine implements engine_methods
      * Return the data for the given timerange - cf shared_helper.php
      *
      * @param integer $limitinterval not implemented
+     * @param integer $retro not implemented
      *
      */
-    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         global $settings; // max_datapoints;
 

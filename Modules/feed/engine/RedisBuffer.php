@@ -107,8 +107,9 @@ class RedisBuffer implements engine_methods
      *
      * @param integer $skipmissing not implemented
      * @param integer $limitinterval not implemented
+     * @param integer $retro not implemented
     */
-    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         $feedid = intval($feedid);
         $start = intval($start);
