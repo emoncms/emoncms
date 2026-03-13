@@ -495,13 +495,36 @@ var process_vue = new Vue({
 
                 // Serialize and copy to clipboard
                 const clipboardText = JSON.stringify(copiedProcesses);
-                navigator.clipboard.writeText(clipboardText).then(() => {
-                    // Optionally notify the user
-                    // alert("Copied processes to clipboard.");
-                }).catch((error) => {
-                    console.error("Failed to copy to clipboard:", error);
-                    alert("Failed to copy processes to clipboard. " + error);
-                });
+                // navigator.clipboard is only avaiable if HTTPS (and some browsers, but most modern/up to date will have it)
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(clipboardText).then(() => {
+                        // Optionally notify the user
+                        // alert("Copied processes to clipboard.");
+                    }).catch((error) => {
+                        console.error("Failed to copy to clipboard:", error);
+                        alert("Failed to copy processes to clipboard. " + error);
+                    });
+                } else {
+                    // Hacky fallback...
+
+                    var textArea = document.createElement("textarea");
+                    textArea.value = clipboardText;
+
+                    textArea.style.top = "0";
+                    textArea.style.left = "0";
+                    textArea.style.position = "fixed";
+
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                    } catch (err) {
+                        console.error("Failed to copy to clipboard:", error);
+                        alert("Failed to copy processes to clipboard. " + error);
+                    }
+                    document.body.removeChild(textArea);
+                }
             } else {
                 alert("No processes selected to copy.");
             }
@@ -511,42 +534,56 @@ var process_vue = new Vue({
         // This is currently a bit sticky for some reason? 
         // You have to click away from the paste button to see the changes
         paste: function () {
-            // Try to read from the clipboard first
-            navigator.clipboard.readText().then((clipboardText) => {
-                try {
-                    const pastedProcesses = JSON.parse(clipboardText);
-                    if (!Array.isArray(pastedProcesses)) {
-                        throw new Error("Clipboard data is not a valid array");
+            // navigator.clipboard is only avaiable if HTTPS (and some browsers, but most modern/up to date will have it)
+            if (navigator.clipboard && navigator.clipboard.readText) {
+                // Try to read from the clipboard first
+                navigator.clipboard.readText().then((clipboardText) => {
+                    try {
+                        this.process_paste(clipboardText);
+                    } catch (error) {
+                        alert("Failed to paste processes. The clipboard data is not in the correct format.");
+                        console.error("Error parsing clipboard data:", error);
                     }
-                    // Validate each pasted process
-                    pastedProcesses.forEach(process => {
-                        if (!process.fn || !Array.isArray(process.args)) {
-                            throw new Error("Invalid process format in clipboard data");
-                        }
-                        // Ensure the process function exists in the known processes
-                        if (!this.processes_by_key[process.fn]) {
-                            throw new Error(`Process function ${process.fn} not found`);
-                        }
-                    });
-                    // Insert pasted processes at the end of the process list
-                    this.process_list.push(...pastedProcesses);
-                    this.selected_processes = []; // Clear selected processes after pasting
-                    this.modified();
-                } catch (error) {
-                    alert("Failed to paste processes. The clipboard data is not in the correct format.");
-                    console.error("Error parsing clipboard data:", error);
+                }).catch((error) => {
+                    // If clipboard read fails, fallback to internal copied_processes
+                    if (this.copied_processes && this.copied_processes.length > 0) {
+                        this.process_list.push(...this.copied_processes);
+                        this.selected_processes = [];
+                        this.modified();
+                    } else {
+                        alert("Failed to read data from the clipboard." + error);
+                        console.error("Failed to read data from the clipboard:", error);
+                    }
+                });
+            } else {
+                // There's no "nice" fallback for paste...
+                // This doesn't fallback to the value in this.copied_processes either...
+                const input = window.prompt("Paste text here:");
+                if (input !== null) {
+                    this.process_paste(input);
                 }
-            }).catch((error) => {
-                // If clipboard read fails, fallback to internal copied_processes
-                if (this.copied_processes && this.copied_processes.length > 0) {
-                    this.process_list.push(...this.copied_processes);
-                    this.selected_processes = [];
-                    this.modified();
-                } else {
-                    alert("Failed to read data from the clipboard." + error);
-                    console.error("Failed to read data from the clipboard:", error);
+            }
+        },
+
+        process_paste: function(text) {
+            const pastedProcesses = JSON.parse(text);
+            if (!Array.isArray(pastedProcesses)) {
+                throw new Error("Clipboard data is not a valid array");
+            }
+            // Validate each pasted process
+            pastedProcesses.forEach(process => {
+                if (!process.fn || !Array.isArray(process.args)) {
+                    throw new Error("Invalid process format in clipboard data");
+                }
+                // Ensure the process function exists in the known processes
+                if (!this.processes_by_key[process.fn]) {
+                    throw new Error(`Process function ${process.fn} not found`);
                 }
             });
+            // Insert pasted processes at the end of the process list
+            this.process_list.push(...pastedProcesses);
+            this.selected_processes = []; // Clear selected processes after pasting
+            this.modified();
         },
 
         // Removes the selected processes from the process list
