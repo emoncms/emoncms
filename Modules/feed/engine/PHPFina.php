@@ -467,9 +467,10 @@ class PHPFina implements engine_methods
      * @param integer $csv pipe output as csv
      * @param integer $skipmissing skip null datapoints
      * @param integer $limitinterval limit interval to feed interval
+     * @param integer $retro Not used in this module. Required to preserve method signature
      * @return void or array
      */
-    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         $id = (int) $id;
         $start = (int) $start;
