@@ -7,6 +7,9 @@
 # - Backup module
 # - Others??
 
+# Patched in emoncms-docker: default redis.Redis() uses localhost; Docker Compose uses hostname `redis`.
+
+import os
 import subprocess
 import time
 import shlex
@@ -15,10 +18,17 @@ import redis
 KEYS = ["service-runner", "emoncms:service-runner"]
 
 
+def _redis_client():
+    return redis.Redis(
+        host=os.environ.get("REDIS_HOST", "127.0.0.1"),
+        port=int(os.environ.get("REDIS_PORT", "6379")),
+    )
+
+
 def connect_redis():
     while True:
         try:
-            server = redis.Redis()
+            server = _redis_client()
             if server.ping():
                 print("Connected to redis server", flush=True)
                 return server
@@ -55,7 +65,7 @@ def main():
                     # the specified logfile
                     f.write("Error running [%s]" % script)
                     f.write("Exception occurred: %s" % exc)
-                    continue          
+                    continue
         else:
             script = flag
             print("STARTING:", script, flush=True)
@@ -63,7 +73,6 @@ def main():
                 subprocess.call(shlex.split(script), stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
             except Exception as exc:
                 continue
-        
 
         print("COMPLETE:", script, flush=True)
 
