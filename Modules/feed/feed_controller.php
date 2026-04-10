@@ -172,7 +172,7 @@ function feed_controller()
                             if (!isset($_GET['split'])) {
 
                                 if (isset($averages[$index]) && $averages[$index]) $average = $averages[$index];
-                                if (isset($deltas[$index]) && $deltas[$index]) $delta = $deltas[$index]; 
+                                if (isset($deltas[$index])) $delta = $deltas[$index];
                                 elseif (isset($deltas[0])) $delta = $deltas[0]; 
                                 else $delta = 0;
                                 
