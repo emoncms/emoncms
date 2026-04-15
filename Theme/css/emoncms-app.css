@@ -279,6 +279,19 @@ body {
 /* ── Inline inputs ───────────────────────────────────────── */
 .emon-app input[type="text"] {
     width: 88%;
+    background-color: #2e2e2e;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: 13px;
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: none;
+}
+.emon-app input[type="text"]:focus {
+    border-color: var(--accent);
 }
 
 /* ── Loader ───────────────────────────────────────────────── */
@@ -288,4 +301,120 @@ body {
     color: var(--text-muted);
     font-size: 12px;
     letter-spacing: 0.05em;
+}
+
+/* ── Vue cloak ───────────────────────────────────────────── */
+.emon-app [v-cloak] { display: none; }
+
+/* ── Button size / colour modifiers ──────────────────────── */
+.emon-app .app-btn-sm {
+    padding: 0.15rem 0.55rem;
+    font-size: 12px;
+}
+.emon-app .app-btn-danger {
+    background-color: rgba(200,60,60,0.12);
+    color: #e06060;
+    border-color: rgba(200,60,60,0.3);
+}
+.emon-app .app-btn-danger:hover,
+.emon-app .app-btn-danger:focus {
+    background-color: rgba(200,60,60,0.25);
+    color: #ff8080;
+}
+
+/* ── Settings table column widths ────────────────────────── */
+.emon-app .group-card table col.col-w-label  { width: 200px; }
+.emon-app .group-card table col.col-w-action { width: 32px; }
+.emon-app .group-card table col.col-w-btn    { width: 130px; }
+
+/* ── Inline edit: input + confirm button ─────────────────── */
+.emon-app .inline-edit {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.emon-app .inline-edit input {
+    width: 180px !important;
+}
+.emon-app .inline-edit select {
+    background-color: #2e2e2e;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 0.25rem;
+    padding: 0 6px;
+    font-size: 13px;
+    height: 30px;
+    outline: none;
+}
+.emon-app .inline-edit select:focus { border-color: var(--accent); }
+
+/* ── Password inputs ─────────────────────────────────────── */
+.emon-app input[type="password"] {
+    background-color: #2e2e2e;
+    color: #ccc;
+    border: 1px solid #444;
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: 13px;
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: none;
+}
+.emon-app input[type="password"]:focus { border-color: var(--accent); }
+
+/* ── Password change sub-form ────────────────────────────── */
+.emon-app .password-form { padding: 0.15rem 0; }
+.emon-app .password-form .pw-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+}
+.emon-app .password-form .pw-label {
+    width: 160px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+.emon-app .password-form .pw-buttons {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+}
+
+/* ── API key display ─────────────────────────────────────── */
+.emon-app .apikey {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 280px;
+}
+
+/* ── Colour swatch picker ────────────────────────────────── */
+.emon-app .color-box {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    margin-right: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    vertical-align: middle;
+    transition: border-color 0.15s, transform 0.1s;
+}
+.emon-app .color-box:hover {
+    border-color: rgba(255,255,255,0.6);
+    transform: scale(1.15);
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 576px) {
+    .emon-app .group-card table col.col-w-label { width: 90px; }
+    .emon-app .apikey { max-width: 130px; }
+    .emon-app .inline-edit input { width: 120px !important; }
+    .emon-app .password-form .pw-label { width: 120px; }
 }
