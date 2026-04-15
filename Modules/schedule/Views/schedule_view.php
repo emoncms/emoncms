@@ -6,76 +6,75 @@
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Theme/css/emoncms-app.css">
 
-<style>
-#schedule-app input[type="text"] {
-  width: 88%;
-}
-#schedule-app .schedule-action { cursor: pointer; }
-</style>
+<div id="schedule-app" class="emon-app">
 
-<div id="schedule-app">
-    <div id="apihelphead" v-show="schedules.length" style="float:right;"><a href="api"><?php echo ctx_tr('schedule_messages','Schedule Help'); ?></a></div>
-    <div id="localheading" v-show="schedules.length"><h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2></div>
+    <div v-show="schedules.length" class="page-header">
+        <h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2>
+        <a href="api"><?php echo ctx_tr('schedule_messages','Schedule Help'); ?></a>
+    </div>
 
-    <div v-if="!schedules.length" class="alert alert-block mt-3">
-        <h4 class="alert-heading"><?php echo ctx_tr('schedule_messages','No schedules'); ?></h4><br>
+    <div v-if="!schedules.length" class="empty-state">
+        <h4><?php echo ctx_tr('schedule_messages','No schedules'); ?></h4>
         <p><?php echo ctx_tr('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
     </div>
 
-    <table v-if="schedules.length" class="table table-hover">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th><?php echo ctx_tr('schedule_messages','Name'); ?></th>
-                <th><?php echo ctx_tr('schedule_messages','Expression'); ?></th>
-                <th><?php echo ctx_tr('schedule_messages','Public'); ?></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr v-for="s in schedules" :key="s.id">
-                <td>{{ s.id }}</td>
-                <td>
-                    <input v-if="editingId === s.id" type="text" v-model="editFields.name" />
-                    <span v-else>{{ s.name }}</span>
-                </td>
-                <td>
-                    <input v-if="editingId === s.id" type="text" v-model="editFields.expression" />
-                    <span v-else>{{ s.expression }}</span>
-                </td>
-                <td>
-                    <i :class="s.public ? 'icon-globe' : 'icon-lock'"
-                       class="schedule-action"
-                       @click="s.own ? togglePublic(s) : null"></i>
-                </td>
-                <td>
-                    <a v-if="s.own" class="schedule-action" @click="editingId === s.id ? saveEdit(s) : startEdit(s)">
-                        <i :class="editingId === s.id ? 'icon-ok' : 'icon-pencil'"></i>
-                    </a>
-                </td>
-                <td>
-                    <a v-if="s.own" class="schedule-action" @click="promptDelete(s.id)">
-                        <i class="icon-trash"></i>
-                    </a>
-                </td>
-                <td>
-                    <i class="icon-wrench schedule-action" @click="wrenchSchedule(s)"></i>
-                </td>
-                <td>
-                    <i class="icon-eye-open schedule-action" @click="testSchedule(s)"></i>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+    <div v-if="schedules.length" class="group-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th><?php echo ctx_tr('schedule_messages','Name'); ?></th>
+                    <th><?php echo ctx_tr('schedule_messages','Expression'); ?></th>
+                    <th><?php echo ctx_tr('schedule_messages','Public'); ?></th>
+                    <th class="col-action"></th>
+                    <th class="col-action"></th>
+                    <th class="col-action"></th>
+                    <th class="col-action"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="s in schedules" :key="s.id">
+                    <td class="col-secondary">{{ s.id }}</td>
+                    <td class="col-primary">
+                        <input v-if="editingId === s.id" type="text" v-model="editFields.name" />
+                        <span v-else>{{ s.name }}</span>
+                    </td>
+                    <td>
+                        <input v-if="editingId === s.id" type="text" v-model="editFields.expression" />
+                        <span v-else>{{ s.expression }}</span>
+                    </td>
+                    <td class="col-action">
+                        <i :class="s.public ? 'icon-white icon-globe' : 'icon-white icon-lock'"
+                           class="row-action"
+                           @click="s.own ? togglePublic(s) : null"></i>
+                    </td>
+                    <td class="col-action">
+                        <a v-if="s.own" class="row-action" @click="editingId === s.id ? saveEdit(s) : startEdit(s)">
+                            <i :class="editingId === s.id ? 'icon-white icon-ok' : 'icon-white icon-pencil'"></i>
+                        </a>
+                    </td>
+                    <td class="col-action">
+                        <a v-if="s.own" class="row-action" @click="promptDelete(s.id)">
+                            <i class="icon-white icon-trash"></i>
+                        </a>
+                    </td>
+                    <td class="col-action">
+                        <i class="icon-white icon-wrench row-action" @click="wrenchSchedule(s)"></i>
+                    </td>
+                    <td class="col-action">
+                        <i class="icon-white icon-eye-open row-action" @click="testSchedule(s)"></i>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-    <div id="schedule-loader" class="ajax-loader" v-show="loading"></div>
+    <div class="app-loader" v-show="loading"></div>
 
-    <div id="bottomtoolbar"><hr>
-        <button class="btn btn-small" @click="addNew">&nbsp;<i class="icon-plus-sign"></i>&nbsp;<?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
+    <div class="app-toolbar"><hr>
+        <button class="app-btn" @click="addNew"><i class="icon-white icon-plus-sign"></i> <?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
     </div>
 
     <div v-if="deleteTargetId !== null" class="modal show" tabindex="-1" role="dialog" style="display:block;" data-backdrop="static">
