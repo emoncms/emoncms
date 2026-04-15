@@ -32,8 +32,23 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
     <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/logo_normal.png">
 
+    <!-- Open Graph meta tags for social media link preview -->
+    <meta property="og:title" content="Emoncms - open source energy visualisation">
+    <meta property="og:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<?php echo $_SERVER['REQUEST_SCHEME'] ?? 'http'; ?>://<?php echo $_SERVER['HTTP_HOST'] ?? $settings['domain']; ?><?php echo $_SERVER['REQUEST_URI'] ?? ''; ?>">
+    <meta property="og:image" content="<?php echo $path; ?>emoncms_graphic.png">
+    <meta property="og:site_name" content="Emoncms">
+
+    <!-- Twitter Card meta tags for social media link preview -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Emoncms - open source energy visualisation">
+    <meta name="twitter:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
+    <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
+
     <link href="<?php echo $path; ?>Theme/css/bootstrap.css?v=4" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/css/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+
     <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <?php include 'Lib/menu/menu_langjs.php' ?>
@@ -55,7 +70,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <div class="menu-top bg-menu-top">
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
-
             <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
@@ -68,7 +82,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
                     <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li class="divider"><a href="#"></a></li>  
+                    <?php if (isset($_SESSION['adminuser'])) { ?>
+                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
+                    <?php } ?>
                     <?php } ?>
                     <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>

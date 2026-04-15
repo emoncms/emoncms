@@ -235,10 +235,28 @@ function tooltip(x, y, contents, bgColour, borderColour="rgb(255, 221, 221)")
         'text-align': 'left'
     }).appendTo("body").fadeIn(200);
 
-    var elemY = y - elem.height() - offset;
-    var elemX = x - elem.width()  - offset;
-    if (elemY < 0) { elemY = 0; } 
-    if (elemX < 0) { elemX = 0; } 
+    var windowWidth = $(window).width();
+    var elemWidth = elem.width();
+    var elemHeight = elem.height();
+    
+    // Determine horizontal position based on cursor position
+    var elemX;
+    if (x < windowWidth / 2) {
+        // Near left edge: position tooltip to the right of cursor
+        elemX = x + offset;
+    } else {
+        // Near right edge: position tooltip to the left of cursor
+        elemX = x - elemWidth - offset;
+    }
+    
+    // Ensure tooltip doesn't go off screen
+    if (elemX < 0) { elemX = 0; }
+    if (elemX + elemWidth > windowWidth) { elemX = windowWidth - elemWidth; }
+    
+    // Position tooltip above cursor
+    var elemY = y - elemHeight - offset;
+    if (elemY < 0) { elemY = 0; }
+    
     elem.css({
         top: elemY,
         left: elemX

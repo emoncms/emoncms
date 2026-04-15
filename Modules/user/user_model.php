@@ -38,6 +38,10 @@ class User
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
     }
+    
+    public function set_email_verification($email_verification) {
+        $this->email_verification = $email_verification;
+    }
 
     //---------------------------------------------------------------------------------------
     // Core session methods
@@ -239,6 +243,9 @@ class User
                         $userData = $result->fetch_object();
                         if ($userData->id != 0)
                         {
+                            // Regenerate session ID when logging in via remember-me token
+                            session_regenerate_id(true);
+
                             $_SESSION['userid'] = $userData->id;
                             $_SESSION['username'] = $userData->username;
                             $_SESSION['read'] = 1;
@@ -253,9 +260,9 @@ class User
                         }
                     }
                 } else {
-                    // if($this->rememberme->loginTokenWasInvalid()) {
-                    //    $this->logout(); // Stolen
-                    // }
+                    if($this->rememberme->loginTokenWasInvalid()) {
+                        $this->logout(); // Stolen
+                    }
                 }
             }
         }
@@ -441,14 +448,35 @@ class User
         }
         else
         {
-            session_regenerate_id();
+            // Default write access
+            if (!isset($userData->access)) $userData->access = 2;
+
+            // If no access via login
+            if ($userData->access==0) {
+                return array('success'=>false, 'message'=>tr("Login disabled for this account"));
+            }
+        
+            // Ensure session is active before regenerating
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
+            $this->update_last_active($userData->id);            
+        
+            session_regenerate_id(true);
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
-            $_SESSION['read'] = 1;
-            $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData->admin;
+            
+            if ($userData->access>0) { 
+                $_SESSION['read'] = 1;
+            }
+            if ($userData->access>1) {
+                $_SESSION['write'] = 1;
+                $_SESSION['admin'] = $userData->admin;
+            }
             $_SESSION['lang'] = $userData->language;
             $_SESSION['timezone'] = $userData->timezone;
+            $_SESSION['emailverified'] = $userData->email_verified;
             $_SESSION['startingpage'] = $userData->startingpage;
             $_SESSION['gravatar'] = $userData->gravatar;
                                         
@@ -636,15 +664,20 @@ class User
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
         $stmt->close();
-
-        // $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
-        // $stmt->bind_param("i", $userid);
-        // $stmt->execute();
-        // $stmt->close();
         
-        // global $session;
-        // $session['emailverified'] = 0;
-        // $_SESSION['emailverified'] = 0;
+	/*
+        global $session;
+        
+        if (!$session['admin']) {
+            $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
+            $stmt->bind_param("i", $userid);
+            $stmt->execute();
+            $stmt->close();
+        }
+        
+        $session['emailverified'] = 0;
+        $_SESSION['emailverified'] = 0;
+	*/
         
         return array('success'=>true, 'message'=>tr("Email updated"));
     }
@@ -813,6 +846,24 @@ class User
 
         return array('success'=>true, 'message'=>"Timezone updated");
     }
+    
+    //---------------------------------------------------------------------------------------
+    // Access
+    //---------------------------------------------------------------------------------------
+    public function set_access($userid, $access) {
+        $userid = (int) $userid;
+        $access = (int) $access;
+        $this->mysqli->query("UPDATE users SET `access`='$access' WHERE `id`='$userid'");
+
+        return array('success'=>true, 'message'=>"Access updated");
+    }
+    
+    public function get_access($userid) {
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT `access` FROM users WHERE `id`='$userid'");
+        $data = $result->fetch_object();
+        return $data->access;
+    }
 
     //---------------------------------------------------------------------------------------
     // Special methods
@@ -910,6 +961,19 @@ class User
         
         return $users;
     }
+
+
+    public function update_last_active($userid) {
+        $userid = (int) $userid;
+        $lastactive = time();
+        $result = $this->mysqli->query("SHOW COLUMNS FROM users LIKE 'lastactive'");
+        if ($result->num_rows > 0) {
+            $this->mysqli->query("UPDATE users SET `lastactive` = '$lastactive' WHERE `id`= '$userid'");
+            return true;
+	}
+        return false;
+    }
+
     /**
      * return true if input is not null
      *

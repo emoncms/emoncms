@@ -94,7 +94,7 @@ global $settings;
                 <hr>
                 <!-- option to upload custom firmware -->
                 <p>- or - upload custom firmware to <b><span id="custom_firmware_hardware"></span></b> on <b><span id="custom_firmware_port"></span></b>:
-                <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex"></p>
+                <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex,.bin"></p>
             </div>
         </div>
 
@@ -244,8 +244,9 @@ $("#custom_firmware").change(function(){
     var file = this.files[0];
 
     // check if file is a hex file
-    if (file.name.split('.').pop() != "hex") {
-        alert("Please select a .hex file");
+    var ext = file.name.split('.').pop();
+    if (ext != "hex" && ext != "bin") {
+        alert("Please select a .hex or .bin file");
         return;
     }
 

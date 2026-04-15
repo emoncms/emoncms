@@ -736,7 +736,7 @@ class Feed
             }
         }
 
-        if ($delta) $data = $this->delta_mode_convert($feedid,$data,$timeformat);
+        if ($delta) $data = $this->delta_mode_convert($feedid,$data,$timeformat, $start,$interval);
 
         // Apply dp setting
         if ($dp!=-1) {
@@ -790,24 +790,33 @@ class Feed
         return $end;
     }
 
-    private function delta_mode_convert($feedid,$data,$timeformat) {
+    private function delta_mode_convert($feedid,$data,$timeformat,$start,$interval) {
         // Get last value
         $dp = $this->get_timevalue($feedid);
         $time = $dp["time"];
 
         if ($timeformat=="notime") {
-             // Calculate delta mode
-             $last_val = null;
-             for($i=0; $i<count($data)-1; $i++) {
-                 // Delta calculation
-                 if ($data[$i]===null || $data[$i+1]===null) {
-                     $data[$i] = null;
-                 } else {
-                     $data[$i] = $data[$i+1] - $data[$i];
-                     $last_val = $data[$i+1];
-                 }
-             }
-             array_pop($data);           
+            // Calculate delta mode
+            $last_val = null;
+            for($i=0; $i<count($data)-1; $i++) {
+                // Calculate time for this interval to check if current value should be applied
+                $calculated_time_start = $start + ($i * $interval);
+                $calculated_time_end = $start + (($i+1) * $interval);
+                
+                // Apply current value to end of day, week, month, year, interval
+                if ($data[$i+1]===null && $time>$calculated_time_start && $time<=$calculated_time_end) {
+                    $data[$i+1] = $dp['value'];
+                }
+                
+                // Delta calculation
+                if ($data[$i]===null || $data[$i+1]===null) {
+                    $data[$i] = null;
+                } else {
+                    $data[$i] = $data[$i+1] - $data[$i];
+                    $last_val = $data[$i+1];
+                }
+            }
+            array_pop($data);           
         } else {
             // Calculate delta mode
             $last_val = null;
@@ -826,9 +835,6 @@ class Feed
             }
             array_pop($data);
         }
-
-
-
         return $data;
     }
 

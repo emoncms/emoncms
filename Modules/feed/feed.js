@@ -75,7 +75,22 @@ var feed = {
         }
         return bytag;
     },
-
+    
+    // Returns an associative array bytagname[tag][name] = id
+    by_tag_and_name: function(feeds) {
+        if (!Array.isArray(feeds) || feeds.length === 0) return {};
+        const bytagname = {};
+        for (const feed of feeds) {
+            if (!feed || !feed.tag) continue;
+            
+            if (bytagname[feed.tag]===undefined) {
+                bytagname[feed.tag] = {};
+            }
+            bytagname[feed.tag][feed.name] = feed;
+        }
+        return bytagname;
+    },
+    
     // Returns an object with feeds grouped by group
     by_id: function(feeds) {
         if (!Array.isArray(feeds) || feeds.length === 0) return {};
