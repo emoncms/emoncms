@@ -18,7 +18,7 @@
     <div id="apihelphead" v-show="schedules.length" style="float:right;"><a href="api"><?php echo ctx_tr('schedule_messages','Schedule Help'); ?></a></div>
     <div id="localheading" v-show="schedules.length"><h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2></div>
 
-    <div v-if="!schedules.length" class="alert alert-block">
+    <div v-if="!schedules.length" class="alert alert-block mt-3">
         <h4 class="alert-heading"><?php echo ctx_tr('schedule_messages','No schedules'); ?></h4><br>
         <p><?php echo ctx_tr('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
     </div>
