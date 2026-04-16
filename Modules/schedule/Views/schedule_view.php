@@ -6,7 +6,6 @@
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Theme/css/emoncms-app.css">
 
 <div id="schedule-app" class="emon-app">
 

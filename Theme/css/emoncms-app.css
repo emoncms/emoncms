@@ -33,6 +33,13 @@ Mount on any container element with class="emon-app".
     --accent-bg-hover:    rgba(68,179,226,0.22);
     --accent-row-hover:   rgba(68,179,226,0.05);
     --accent-border:      rgba(68,179,226,0.3);
+
+    --font-heading:    1.1rem;
+    --font-subheading: 1rem;
+    --font-base:       14px;
+    --font-sm:         13px;
+    --font-xs:         12px;
+    --font-2xs:        12px;
 }
 
 body {
@@ -51,7 +58,7 @@ body {
 
 .emon-app {
     color: var(--text-body);
-    font-size: 14px;
+    font-size: var(--font-base);
 }
 
 /* ── Page header ─────────────────────────────────────────── */
@@ -65,13 +72,13 @@ body {
 }
 .emon-app .page-header h2 {
     margin: 0;
-    font-size: 1.1rem;
+    font-size: var(--font-heading);
     font-weight: 600;
     color: var(--text-primary);
     letter-spacing: 0.01em;
 }
 .emon-app .page-header a {
-    font-size: 12px;
+    font-size: var(--font-xs);
     color: var(--accent);
     text-decoration: none;
     opacity: 0.8;
@@ -90,7 +97,7 @@ body {
 }
 .emon-app .empty-state h4 {
     margin: 0 0 0.6rem 0;
-    font-size: 1rem;
+    font-size: var(--font-subheading);
     color: var(--text-primary);
 }
 .emon-app .empty-state a { color: var(--accent); }
@@ -130,13 +137,13 @@ body {
 }
 .emon-app .group-card-header .group-name {
     font-weight: 600;
-    font-size: 13px;
+    font-size: var(--font-sm);
     color: var(--text-primary);
     flex: 1;
     letter-spacing: 0.02em;
 }
 .emon-app .group-card-header .group-badge {
-    font-size: 11px;
+    font-size: var(--font-2xs);
     color: var(--text-secondary);
     background-color: var(--bg-badge);
     border: 1px solid var(--border-strong);
@@ -144,12 +151,12 @@ body {
     padding: 1px 8px;
 }
 .emon-app .group-card-header .group-updated {
-    font-size: 11px;
+    font-size: var(--font-2xs);
     color: var(--text-secondary);
     white-space: nowrap;
 }
 .emon-app .group-card-header .collapse-icon {
-    font-size: 11px;
+    font-size: var(--font-2xs);
     color: var(--text-secondary);
     transition: color 0.2s;
     flex-shrink: 0;
@@ -164,7 +171,7 @@ body {
 }
 .emon-app .group-card table th {
     padding: 5px 12px;
-    font-size: 11px;
+    font-size: var(--font-2xs);
     font-weight: normal;
     color: var(--text-secondary);
     text-align: left;
@@ -200,7 +207,7 @@ body {
 /* Chip / pill badge in a cell */
 .emon-app .group-card table td.col-chip span {
     display: inline-block;
-    font-size: 11px;
+    font-size: var(--font-2xs);
     color: var(--text-secondary);
     background-color: var(--bg-chip);
     border: 1px solid var(--border-strong);
@@ -210,13 +217,13 @@ body {
 /* Monospace cell */
 .emon-app .group-card table td.col-mono {
     font-family: monospace;
-    font-size: 12px;
+    font-size: var(--font-xs);
     color: var(--text-secondary);
 }
 /* Truncated monospace cell */
 .emon-app .group-card table td.col-mono-truncate {
     font-family: monospace;
-    font-size: 11px;
+    font-size: var(--font-2xs);
     color: var(--text-secondary);
     max-width: 160px;
     overflow: hidden;
@@ -264,7 +271,7 @@ body {
     border: 1px solid var(--accent-border);
     border-radius: 0.375rem;
     padding: 0.3rem 0.85rem;
-    font-size: 13px;
+    font-size: var(--font-sm);
     font-family: inherit;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
@@ -284,7 +291,7 @@ body {
     border: 1px solid #444;
     border-radius: 0.25rem;
     padding: 0 8px;
-    font-size: 13px;
+    font-size: var(--font-sm);
     height: 30px;
     box-sizing: border-box;
     outline: none;
@@ -299,7 +306,7 @@ body {
     text-align: center;
     padding: 1.5rem 0;
     color: var(--text-muted);
-    font-size: 12px;
+    font-size: var(--font-xs);
     letter-spacing: 0.05em;
 }
 
@@ -309,7 +316,7 @@ body {
 /* ── Button size / colour modifiers ──────────────────────── */
 .emon-app .app-btn-sm {
     padding: 0.15rem 0.55rem;
-    font-size: 12px;
+    font-size: var(--font-xs);
 }
 .emon-app .app-btn-danger {
     background-color: rgba(200,60,60,0.12);
@@ -342,7 +349,7 @@ body {
     border: 1px solid #444;
     border-radius: 0.25rem;
     padding: 0 6px;
-    font-size: 13px;
+    font-size: var(--font-sm);
     height: 30px;
     outline: none;
 }
@@ -355,7 +362,7 @@ body {
     border: 1px solid #444;
     border-radius: 0.25rem;
     padding: 0 8px;
-    font-size: 13px;
+    font-size: var(--font-sm);
     height: 30px;
     box-sizing: border-box;
     outline: none;
@@ -373,7 +380,7 @@ body {
 }
 .emon-app .password-form .pw-label {
     width: 160px;
-    font-size: 12px;
+    font-size: var(--font-xs);
     color: var(--text-secondary);
     flex-shrink: 0;
 }
@@ -386,7 +393,7 @@ body {
 /* ── API key display ─────────────────────────────────────── */
 .emon-app .apikey {
     font-family: monospace;
-    font-size: 12px;
+    font-size: var(--font-xs);
     color: var(--text-secondary);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -409,6 +416,92 @@ body {
 .emon-app .color-box:hover {
     border-color: rgba(255,255,255,0.6);
     transform: scale(1.15);
+}
+
+/* ── Dark / Light mode segmented toggle ─────────────────── */
+.emon-app .mode-toggle {
+    display: inline-flex;
+    border: 1px solid var(--border-strong);
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+.emon-app .mode-toggle-btn {
+    padding: 0.2rem 0.75rem;
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color 0.15s, color 0.15s;
+    line-height: 1.6;
+}
+.emon-app .mode-toggle-btn + .mode-toggle-btn {
+    border-left: 1px solid var(--border-strong);
+}
+.emon-app .mode-toggle-btn.active {
+    background-color: var(--accent-bg);
+    color: var(--accent);
+}
+.emon-app .mode-toggle-btn:hover:not(.active) {
+    background-color: rgba(255,255,255,0.05);
+    color: var(--text-primary);
+}
+
+/* ── Light mode overrides (html.color-mode-light) ───────── */
+html.color-mode-light .emon-app {
+    --bg-card:              #ffffff;
+    --bg-card-header:       #ddd;
+    --bg-card-header-hover: #ececec;
+    --bg-chip:              #efefef;
+    --bg-badge:             #efefef;
+
+    --border:               #e0e0e0;
+    --border-card:          #e0e0e0;
+    --border-strong:        #c0c0c0;
+
+    --text-primary:         #111111;
+    --text-body:            #333333;
+    --text-secondary:       #555555;
+    --text-muted:           #bbbbbb;
+
+    --accent:               #2a8fc7;
+    --accent-bg:            rgba(42,143,199,0.10);
+    --accent-bg-hover:      rgba(42,143,199,0.20);
+    --accent-row-hover:     rgba(42,143,199,0.05);
+    --accent-border:        rgba(42,143,199,0.35);
+}
+
+html.color-mode-light body {
+    background-color: whitesmoke;
+}
+
+html.color-mode-light #footer {
+    background-color: #e4e6e8;
+    color: #555;
+}
+
+/* Fix hard-coded dark values that bypass CSS variables */
+html.color-mode-light .emon-app input[type="text"],
+html.color-mode-light .emon-app input[type="password"] {
+    background-color: #ffffff;
+    color: #333;
+    border-color: #ccc;
+}
+
+html.color-mode-light .emon-app .inline-edit select {
+    background-color: #ffffff;
+    color: #333;
+    border-color: #ccc;
+}
+
+html.color-mode-light .emon-app .group-card table td {
+    border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+html.color-mode-light .emon-app .mode-toggle-btn:hover:not(.active) {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-primary);
 }
 
 /* ── Responsive ──────────────────────────────────────────── */

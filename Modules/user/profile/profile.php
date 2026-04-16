@@ -10,10 +10,8 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=5;
+global $path; $v=6;
 ?>
-<link rel="stylesheet" href="<?php echo $path; ?>Theme/css/emoncms-app.css">
-<link href="<?php echo $path; ?>Modules/user/profile/profile.css?v=<?php echo $v; ?>" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
@@ -229,6 +227,15 @@ global $path; $v=5;
           <td>
             <div class="color-box sidebarcolor" name="dark"  style="background-color:#333"></div>
             <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
+          </td>
+        </tr>
+        <tr>
+          <td class="col-secondary"><?php echo tr('Colour scheme'); ?></td>
+          <td>
+            <div class="mode-toggle">
+              <button class="mode-toggle-btn" id="mode-btn-dark"><?php echo tr('Dark'); ?></button>
+              <button class="mode-toggle-btn" id="mode-btn-light"><?php echo tr('Light'); ?></button>
+            </div>
           </td>
         </tr>
       </tbody>

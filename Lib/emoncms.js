@@ -137,4 +137,12 @@ if (typeof localStorage !== 'undefined') {
         $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
         current_themesidebar = themesidebar
     }
+
+    // Colour scheme: dark is default, light adds the override class
+    if (localStorage.getItem('colormode') === 'light') {
+        $('html').addClass('color-mode-light');
+        console.log("Color mode set to light");
+    } else {
+        console.log("Color mode set to dark");
+    }
 }

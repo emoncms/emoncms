@@ -197,3 +197,21 @@ $(".sidebarcolor").click(function() {
     $(".sidebarcolor[name='"+themesidebar+"']").addClass("color-box-active"); 
     current_themesidebar = themesidebar
 });
+
+// Colour scheme toggle (dark / light)
+var current_colormode = localStorage.getItem('colormode') || 'dark';
+$('#mode-btn-' + current_colormode).addClass('active');
+
+$('#mode-btn-dark, #mode-btn-light').click(function() {
+    var mode = $(this).attr('id').replace('mode-btn-', '');
+    $('html').removeClass('color-mode-light');
+    if (mode === 'light') {
+        $('html').addClass('color-mode-light');
+    }
+    localStorage.setItem('colormode', mode);
+    $('#mode-btn-dark, #mode-btn-light').removeClass('active');
+    $(this).addClass('active');
+    current_colormode = mode;
+
+    console.log("Color mode set to " + mode);
+});
