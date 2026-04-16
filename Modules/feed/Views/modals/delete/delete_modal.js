@@ -509,7 +509,6 @@ $("#feedDelete-confirm").click(function(){
             update_feed_list();
             updaterStart(update_feed_list, 5000);
             $('#feedDeleteModal').modal('hide');
-            feed_selection();
         }, 5000);
     }
 });
