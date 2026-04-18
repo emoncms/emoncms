@@ -209,7 +209,7 @@ var feed = {
         }
     },
 
-    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false,timeformat='unixms'){
+    getdata: function(feedid,start,end,interval,average=0,delta=0,skipmissing=0,limitinterval=0,callback=false,context=false,timeformat='unixms',route='feed/data.json'){
         let data = {
             id: feedid,
             start: start,
@@ -236,7 +236,7 @@ var feed = {
 
         var non_async_result = false;
         var ajaxAsyncXdr = $.ajax({
-            url: path+'feed/data.json',
+            url: path+route,
             data: data,
             dataType: 'json',
             async: async,
