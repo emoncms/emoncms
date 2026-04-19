@@ -103,6 +103,8 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         -->
         <!-- Node Groups -->
         <template v-for="(nodeFeeds, node) in nodes">
+
+            <div class="node-group">
             <!-- Node Header -->
             <div :key="node" class="grid-row node-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator">
@@ -145,9 +147,10 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
                     </div>
                 </div>
             </div>
+            </div>
 
             <!-- Spacer for clarity -->
-            <div style="height:10px; grid-column: 1 / -1; background: #fff;"></div>
+            <div style="height:10px; grid-column: 1 / -1"></div>
         </template>
     </div>
 

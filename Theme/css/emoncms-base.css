@@ -329,7 +329,6 @@ div#account {
     position: sticky;
     top: 46px;
     z-index: 100;
-    background: #fff;
     padding: 10px 0;
     margin-bottom: 10px;
 }

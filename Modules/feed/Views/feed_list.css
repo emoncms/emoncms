@@ -117,8 +117,8 @@ body{padding:0!important}
 
 /* Feed row styles for grid */
 .node-feed {
-    border-bottom: 1px solid #fff;
-    background: #f0f0f0;
+    border-bottom: 1px solid #eee;
+    background: #fff;
     position: relative;
     transition: background-color 0.1s ease;
     width: 100%;
@@ -184,4 +184,12 @@ body{padding:0!important}
 
 .vue-collapsible-content.is-expanded {
     max-height: 2000px; /* Adjust as needed, should be larger than any possible content height */
+}
+
+.node-group {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    border-radius: 6px;
+    overflow: hidden;
 }
