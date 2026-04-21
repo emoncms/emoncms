@@ -49,10 +49,10 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
 
 
-<div id="feed-header">
-    <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a></span>
-    <h3 id="feeds-title"><?php echo tr('Feeds'); ?></h3>
-    <h3 id="public-feeds-title" class="hide"><?php echo tr('Public Feeds'); ?></h3>
+<div id="feed-header" class="page-header">
+    <h2 id="feeds-title"><?php echo tr('Feeds'); ?></h2>
+    <h2 id="public-feeds-title" class="hide"><?php echo tr('Public Feeds'); ?></h2>
+    <a id="api-help" href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('API Help'); ?></a>
 </div>
 
 <div id="feed-app">
@@ -82,7 +82,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         <button class="app-btn app-btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" placeholder="<?php echo tr('Filter feeds') ?>">
+        <input type="text" name="filter" id="filter" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
     </div>
 
 <!-- Vue.js Feed List Component -->

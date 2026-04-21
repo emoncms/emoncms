@@ -70,6 +70,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <div class="menu-top bg-menu-top">
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
+            <li id="nav-colormode-li">
+                <button id="nav-colormode-btn" title="Toggle dark/light mode" onclick="navToggleColorMode()" aria-label="Toggle colour mode">
+                    <svg id="nav-colormode-icon" class="icon"><use id="nav-colormode-use" xlink:href="#icon-sun"></use></svg>
+                </button>
+            </li>
             <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
@@ -137,6 +142,26 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
     <script type="text/javascript" src="<?php echo $path; ?>Theme/js/bootstrap.js?v=2"></script>
     <Script type="text/javascript" src="<?php echo $path; ?>Theme/js/theme.js?v=<?php echo $v; ?>"></Script>
+    <script>
+    (function() {
+        var mode = localStorage.getItem('colormode') || 'dark';
+        var use = document.getElementById('nav-colormode-use');
+        if (use) use.setAttribute('xlink:href', mode === 'light' ? '#icon-moon' : '#icon-sun');
+    })();
+    function navToggleColorMode() {
+        var mode = localStorage.getItem('colormode') || 'dark';
+        var next = mode === 'light' ? 'dark' : 'light';
+        localStorage.setItem('colormode', next);
+        var html = document.documentElement;
+        if (next === 'light') {
+            html.classList.add('color-mode-light');
+        } else {
+            html.classList.remove('color-mode-light');
+        }
+        var use = document.getElementById('nav-colormode-use');
+        if (use) use.setAttribute('xlink:href', next === 'light' ? '#icon-moon' : '#icon-sun');
+    }
+    </script>
 
 <!-- ICONS --------------------------------------------- -->
 

@@ -346,9 +346,6 @@ div#account {
     top: 0;
 }
 
-.sticky-controls.is-stuck {
-    border-color: var(--accent-border);
-}
 /*-------------------------------------*/
 /* Log windows */
 /* used by: admin page, emonhub config */
@@ -1330,6 +1327,38 @@ html.color-mode-light input[type="password"] {
     text-overflow: ellipsis;
     white-space: nowrap;
     max-width: 280px;
+}
+
+/* ── Nav bar dark/light toggle button ───────────────────────── */
+.menu-tr > ul {
+    display: flex;
+    align-items: center;
+}
+#nav-colormode-li {
+    display: flex;
+    align-items: stretch;
+}
+#nav-colormode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    width: 40px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    opacity: 0.75;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+#nav-colormode-btn:hover {
+    opacity: 1;
+    background-color: rgba(0,0,0,0.15);
+}
+#nav-colormode-btn .icon {
+    width: 1.2em;
+    height: 1.2em;
 }
 
 /* ── Dark/Light mode segmented toggle ───────────────────────── */
