@@ -7,12 +7,94 @@ Emoncms - open source energy visualisation
 Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
+Table of contents
+  1. Design tokens (:root, dark theme defaults)
+  2. Colour themes (menu/navbar themes)
+  3. Sidebar themes
+  4. Light mode overrides
+  5. Base / reset
+  6. Layout shell (#wrap, #footer, .content-container)
+  7. Navigation bar
+  8. Utilities — colours & text
+  9. Utilities — spacing (margin / padding)
+  10. Utilities — display, flex, sizing, borders
+  11. Grid columns (Bootstrap 3 style cols)
+  12. Responsive breakpoints
+  13. Typography & global UI (alerts, icons, misc)
+  14. Login page
+  15. Components — accordion / node tree
+  16. Components — sticky controls toolbar
+  17. Components — log windows & snackbar
+  18. Components — page header & empty state
+  19. Components — group cards & tables
+  20. Components — toolbar & buttons
+  21. Components — forms & inputs
+  22. Components — color‑mode toggle
+  23. Feed list grid
 */
 
 
-/* ------------------------------ */
-/* Colour schemes */
-/* ------------------------------ */
+/* ================================================================== */
+/* 1. DESIGN TOKENS                                                   */
+/* ================================================================== */
+
+:root {
+    /* ── Spacing ───────────────────────────────────────────── */
+    --spacer: 1rem;
+    --s1: calc(var(--spacer) * .25);
+    --s2: calc(var(--spacer) * .5);
+    --s3: var(--spacer);
+    --s4: calc(var(--spacer) * 1.25);
+    --s5: calc(var(--spacer) * 1.5);
+    --s6: calc(var(--spacer) * 2);
+
+    /* ── Typography ────────────────────────────────────────── */
+    --font-heading:    1.1rem;
+    --font-subheading: 1rem;
+    --font-base:       14px;
+    --font-sm:         13px;
+    --font-xs:         12px;
+    --font-2xs:        12px;
+
+    /* ── Radii ─────────────────────────────────────────────── */
+    --radius-card:    8px;
+    --radius-control: 6px;
+
+    color-scheme: dark;
+
+    /* ── Dark theme design tokens (default) ─────────────────── */
+    --bg-body:              #1e1e1e;
+    --bg-card:              #282828;
+    --bg-card-header:       #222;
+    --bg-card-header-hover: #242424;
+    --bg-chip:              #2e2e2e;
+    --bg-badge:             #2a2a2a;
+    --bg-input:             #2a2a2a;
+    --controls-bg:          rgba(18, 18, 18, 0.92);
+
+    --border:               #333;
+    --border-card:          #333;
+    --border-strong:        #666;
+
+    --text-primary:         #ddd;
+    --text-body:            #ddd;
+    --text-secondary:       #ddd;
+    --text-muted:           #444;
+
+    --accent:               #44b3e2;
+    --accent-bg:            rgba(68, 179, 226, 0.1);
+    --accent-bg-hover:      rgba(68, 179, 226, 0.22);
+    --accent-row-hover:     rgba(68, 179, 226, 0.05);
+    --accent-border:        rgba(68, 179, 226, 0.3);
+    --focus-ring:           rgba(68, 179, 226, 0.2);
+
+    --bg-vis-graph-color:   rgba(255,255,255,0);
+}
+
+
+/* ================================================================== */
+/* 2. COLOUR THEMES (menu / navbar)                                   */
+/* ================================================================== */
 
 .theme-standard, .theme-blue {
   --bg-menu-top: #44b3e2;
@@ -68,6 +150,11 @@ http://openenergymonitor.org
   --bg-menu-tr-hover: #469904;
 }
 
+
+/* ================================================================== */
+/* 3. SIDEBAR THEMES                                                  */
+/* ================================================================== */
+
 .sidebar-dark {
   --bg-l2: #333;
   --l2-border: #444;
@@ -97,852 +184,12 @@ http://openenergymonitor.org
   --l3-text-active:#000;
   --l3-text-hover:#000;
 }
-/* ------------------------------ */
-
-
-html,body{
-    height: initial!important;
-    --bg-vis-graph-color: rgba(255,255,255,0);
-}
-
-:fullscreen, ::backdrop {
-    background-color: var(--bg-vis-graph-color);
-}
-
-#wrap{
-  min-height: calc(100vh - 5.4rem)!important;
-  margin-top: 0;
-}
-
-#footer {
-    transition: margin .3s ease-out;
-}
-
-.fullwidth.collapsed #wrap,
-.fullwidth.collapsed #footer{
-    margin-left: 0!important;
-}
-
-.container-fluid { padding: 0px 10px 0px 10px; }
-
-@media (min-width: 768px) {
-    .container-fluid { padding: 0px 20px 0px 20px; }
-}    
-    
-
-#wrap main.content-container{
-  height: 100%;
-  /*margin-top: 2.7rem;
-  margin-left: 15rem;
-  margin-bottom: 0;
-  margin-right: 0;*/
-  margin: 46px auto 0 auto;
-  padding-bottom: 2rem!important;
-  box-sizing: border-box;
-}
-
-body.collapsed #wrap main.content-container{
-  margin-left: auto;
-  margin-right: auto;
-} 
-
-svg.icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  vertical-align: -0.15em;
-}
-
-/*-------------------------------------*/
-/* Previously in emon-blue.css */
-/*-------------------------------------*/
-
-.body-login {
-    background-color:var(--bg-body-login);
-}
-
-#login-form input[type="text"], #login-form input[type="password"] {
-    width: 94%;
-}
-
-#push, #footer {
-    height: 30px;
-}
-
-#footer {
-    background-color: #f5f5f5;
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-#footer a {
-    color: #77b4d9;
-    text-decoration: none;
-}
-
-#footer span {
-    color: #999;
-}
-
-div#account {
-    width:250px;
-}
-
-/* Used user/profile/profile.php */
-.account-item {
-    margin-bottom:10px;
-}
-
-/* Lastly, apply responsive CSS fixes as necessary */
-@media (max-width: 767px) {
-    #footer {
-        padding-left: 20px;
-        padding-right: 20px;
-    }
-}
-
-.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
-    display: inherit !important;
-}
-
-/* dashboardeditor */
-.scrollable-menu {
-    height: auto;
-    max-height: 333px;
-    overflow-y: auto;
-}
-
-.ajax-loader {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
-}
-
-.caret {
-    border-top-color: #fff !important;
-}
-
-.text-larger {
-    font-size: larger
-}
-
-.expand-all .icon-resize-small {
-    display: none
-}
-.expand-all.in .icon-resize-small {
-    display: inline-block
-}
-.expand-all.in .icon-resize-full {
-    display: none
-}
-
-/* collapsable groups of items */
-.node.accordion {
-    line-height: 41px;
-}
-
-.node .accordion-toggle {
-    background: #ddd;
-    height: 41px;
-}
-.node .accordion-toggle:hover {
-    background-color: #e3e3e3;
-}
-
-/* dropdown indicator */
-.node .has-indicator .icon-indicator {
-    opacity: 0.333;
-    float: none;
-}
-
-.node .select input {margin-top: -1px}
-.node .collapse {
-    width: 100%;
-    transition-duration: 350ms;
-    transition-property: all;
-    transition-timing-function: ease;
-}
-.node .collapse > * {
-    width: 100%;
-    position: relative;
-    border-bottom: 1px solid #fff;
-    background: #f0f0f0;
-}
-.node .collapse > *:hover {
-    background-color: #f5f5f5;
-}
-/* left-accent bar is now shared — see .node-feed::before / .node .collapse > *::before above */
-.node .collapse > *:last-child {
-    border-bottom-width: 0
-}
-.node > * > * ,
-.node > * > * > * ,
-.node > * > * > .pull-right > * {
-    float: left;
-    min-height: 1px;
-}
-.pull-right{float:right!important}
-.line-height-expanded{line-height: 2;}
-.line-height-normal{line-height: 1.5;}
-.cursor-pointer{ cursor: pointer; }
-
-/* input_view interface */
-.device-key,
-.device-schedule,
-.device-configure,
-.device-last-updated {
-    border-left: 1px solid #eee;
-    color: white;
-}
-
-.device-key:hover {background-color:#eaeaea;}
-.device-configure:hover {background-color:#eaeaea;}
-.label-container{padding-top:.6em; display:inline-block; min-width:200px}
-
-/* #table used by device, input, profile, feedlist, schedule view */
-#table .accordion {
-    margin-bottom: .5em
-}
-
-/* Sticky controls toolbar — used by input & feed list */
-.sticky-controls {
-    position: sticky;
-    top: 50px; /* 46px navbar + 4px gap */
-    z-index: 10;
-    padding: 6px 8px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    flex-wrap: wrap;
-    background: var(--controls-bg);
-    backdrop-filter: blur(6px);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
-}
-
-.menu-top.menu-top-hide ~ * .sticky-controls,
-.menu-top.menu-top-hide ~ .sticky-controls {
-    top: 0;
-}
-
-/*-------------------------------------*/
-/* Log windows */
-/* used by: admin page, emonhub config */
-/* backup, postprocess modules
-/*-------------------------------------*/
-.log {
-    /*width:100%;*/
-    height:12rem;
-    margin:0px;
-    padding:0px;
-    
-    color:#fff;
-    background-color:#300a24;
-    overflow: scroll;
-    overflow-x: hidden;
-    /*font-size:14px;*/
-}
-
-.log div {
-    padding-left:10px;
-    padding-top:10px;
-}
-
-/* Used to create log level selector */
-#log-level {
-    position: absolute;
-    right: .2rem;
-    bottom: 0;
-}
-#log-level .dropdown-menu {
-    background: 0;
-    background: transparent;
-    border-radius: 0;
-    border: 0;
-    box-shadow: none;
-    margin: 0;
-}
-#log-level .dropdown-menu .active {
-    font-weight: bold;
-}
-#log-level .dropdown-menu .btn {
-    border: 0;
-    border-radius: 0;
-    background-image: none;
-}
-#log-level li:first-child .btn {
-    border-radius: .3em .3em 0 0;
-}
-#log-level li:last-child .btn {
-    border-radius: 0 0 .3em .3em;
-}
-
-/* Similar to a modal, used for notifications */
-/* on the admin and emonhub config pages      */
-/* when log level is changed e.g INFO to DEBUG*/
-#snackbar {
-    visibility: hidden;
-    min-width: 250px;
-    margin-left: -125px;
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    border-radius: 2px;
-    padding: 16px;
-    position: fixed;
-    z-index: 1;
-    left: 50%;
-    bottom: 30px;
-    font-size: 17px;
-}
-#snackbar.show {
-    visibility: visible;
-    animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-/*-------------------------------------*/
-/* utilities */
-/*-------------------------------------*/
-
-/* text colours */
-.text-white{color:white!important}
-.text-light {color: #aaa !important;}
-.text-primary{color:#0699fa!important}
-.text-warning{color:#dccc1f!important}
-.text-success{color:#89ae65!important}
-.text-secondary{color:#6c757d!important}
-.text-tertiary{color:#b7aa1f!important}
-.text-quaternary {color: #fb7b50!important}
-.text-danger{color:#d52e2e!important}
-.text-exporting{color:#2ed52e!important}
-.text-dark {color: #333 !important;}
-
-/* colours */
-.bg-dark {background: #333 !important;}
-.bg-primary {background: #44b3e2 !important;}
-.bg-secondary {background: #6c757d !important;}
-.bg-success {background: #28a745 !important;}
-.bg-danger {background: #dc3545 !important;}
-.bg-warning {background: #ffc107 !important;}
-.bg-info {background: #17a2b8 !important;}
-.bg-light {background: #f8f9fa !important;}
-.bg-white {background: #fff !important;}
-.bg-transparent {background: transparent !important;}
-
-/* spaces: 
-    1 = .25rem
-    2 = .5rem
-    3 = 1rem
-*/
-:root {
-    /* ── Spacing ───────────────────────────────────────────── */
-    --spacer: 1rem;
-    --s1: calc(var(--spacer) * .25);
-    --s2: calc(var(--spacer) * .5);
-    --s3: var(--spacer);
-    --s4: calc(var(--spacer) * 1.25);
-    --s5: calc(var(--spacer) * 1.5);
-    --s6: calc(var(--spacer) * 2);
-
-    /* ── Typography ────────────────────────────────────────── */
-    --font-heading:    1.1rem;
-    --font-subheading: 1rem;
-    --font-base:       14px;
-    --font-sm:         13px;
-    --font-xs:         12px;
-    --font-2xs:        12px;
-
-    /* ── Radii ─────────────────────────────────────────────── */
-    --radius-card:    8px;
-    --radius-control: 6px;
-
-    color-scheme: dark;
-
-    /* ── Dark theme design tokens (default) ─────────────────── */
-    --bg-body:              #1e1e1e;
-    --bg-card:              #282828;
-    --bg-card-header:       #222;
-    --bg-card-header-hover: #242424;
-    --bg-chip:              #2e2e2e;
-    --bg-badge:             #2a2a2a;
-    --bg-input:             #2a2a2a;
-    --controls-bg:          rgba(18, 18, 18, 0.92);
-
-    --border:               #333;
-    --border-card:          #333;
-    --border-strong:        #666;
-
-    --text-primary:         #ddd;
-    --text-body:            #ddd;
-    --text-secondary:       #ddd;
-    --text-muted:           #444;
-
-    --accent:               #44b3e2;
-    --accent-bg:            rgba(68, 179, 226, 0.1);
-    --accent-bg-hover:      rgba(68, 179, 226, 0.22);
-    --accent-row-hover:     rgba(68, 179, 226, 0.05);
-    --accent-border:        rgba(68, 179, 226, 0.3);
-    --focus-ring:           rgba(68, 179, 226, 0.2);
-}
-/*-------------------------------------*/
-/* @see: bootstrap 4 documentation for examples */
-.m-1{padding: var(--s1)}
-.m-2{padding: var(--s2)}
-.m-3{padding: var(--s3)}
-.m-4{padding: var(--s4)}
-.m-5{padding: var(--s5)}
-.m-6{padding: var(--s6)}
-/* remove margins */
-.my-0,.mb-0,.m-0{margin-bottom:0!important}
-.my-0,.mt-0,.m-0{margin-top:0!important}
-.mx-0,.ml-0,.m-0{margin-left:0!important}
-.mx-0,.mr-0,.m-0{margin-right:0!important}
-
-/*-------------------------------------*/
-/* margin top */
-.my-1,.mt-1{margin-top: var(--s1)!important}
-.my-2,.mt-2{margin-top: var(--s2)!important}
-.my-3,.mt-3{margin-top: var(--s3)!important}
-.my-4,.mt-4{margin-top: var(--s4)!important}
-.my-5,.mt-5{margin-top: var(--s5)!important}
-.my-6,.mt-6{margin-top: var(--s6)!important}
-
-/* margin right */
-.mx-1,.mr-1{margin-right: var(--s1)!important}
-.mx-2,.mr-2{margin-right: var(--s2)!important}
-.mx-3,.mr-3{margin-right: var(--s3)!important}
-.mx-4,.mr-4{margin-right: var(--s4)!important}
-.mx-5,.mr-5{margin-right: var(--s5)!important}
-.mx-6,.mr-6{margin-right: var(--s6)!important}
-
-/* margin bottom */
-.my-1,.mb-1{margin-bottom: var(--s1)!important}
-.my-2,.mb-2{margin-bottom: var(--s2)!important}
-.my-3,.mb-3{margin-bottom: var(--s3)!important}
-.my-4,.mb-4{margin-bottom: var(--s4)!important}
-.my-5,.mb-5{margin-bottom: var(--s5)!important}
-.my-6,.mb-6{margin-bottom: var(--s6)!important}
-
-/* margin left */
-.mx-1,.ml-1{margin-left: var(--s1)!important}
-.mx-2,.ml-2{margin-left: var(--s2)!important}
-.mx-3,.ml-3{margin-left: var(--s3)!important}
-.mx-4,.ml-4{margin-left: var(--s4)!important}
-.mx-5,.ml-5{margin-left: var(--s5)!important}
-.mx-6,.ml-6{margin-left: var(--s6)!important}
-
-/*-------------------------------------*/
-.p-1{padding: var(--s1)}
-.p-2{padding: var(--s2)}
-.p-3{padding: var(--s3)}
-.p-4{padding: var(--s4)}
-.p-5{padding: var(--s5)}
-.p-6{padding: var(--s6)}
-
-/* remove padding */
-.py-0,.pb-0,.p-0{padding-bottom:0!important}
-.py-0,.pt-0,.p-0{padding-top:0!important}
-.px-0,.pl-0,.p-0{padding-left:0!important}
-.px-0,.pr-0,.p-0{padding-right:0!important}
-
-/* padding top */
-.py-1,.pt-1{padding-top: var(--s1)!important}
-.py-2,.pt-2{padding-top: var(--s2)!important}
-.py-3,.pt-3{padding-top: var(--s3)!important}
-.py-4,.pt-4{padding-top: var(--s4)!important}
-.py-5,.pt-5{padding-top: var(--s5)!important}
-.py-6,.pt-6{padding-top: var(--s6)!important}
-
-/* padding right */
-.px-1,.pr-1{padding-right: var(--s1)!important}
-.px-2,.pr-2{padding-right: var(--s2)!important}
-.px-3,.pr-3{padding-right: var(--s3)!important}
-.px-4,.pr-4{padding-right: var(--s4)!important}
-.px-5,.pr-5{padding-right: var(--s5)!important}
-.px-6,.pr-6{padding-right: var(--s6)!important}
-
-/* padding bottom */
-.py-1,.pb-1{padding-bottom: var(--s1)!important}
-.py-2,.pb-2{padding-bottom: var(--s2)!important}
-.py-3,.pb-3{padding-bottom: var(--s3)!important}
-.py-4,.pb-4{padding-bottom: var(--s4)!important}
-.py-5,.pb-5{padding-bottom: var(--s5)!important}
-.py-6,.pb-6{padding-bottom: var(--s6)!important}
-
-/* padding left */
-.px-1,.pl-1{padding-left: var(--s1)!important}
-.px-2,.pl-2{padding-left: var(--s2)!important}
-.px-3,.pl-3{padding-left: var(--s3)!important}
-.px-4,.pl-4{padding-left: var(--s4)!important}
-.px-5,.pl-5{padding-left: var(--s5)!important}
-.px-6,.pl-6{padding-left: var(--s6)!important}
-
-.d-none{display:none!important}
-.d-block{display:block!important}
-.d-inline{display:inline!important}
-.d-inline-block{display:inline-block!important}
-
-.text-uppercase {
-    text-transform: uppercase;
-}
-
-/* "bs4 style" utility styles */
-/* flexbox */
-.d-flex {
-    display: flex !important;
-}
-.justify-content-between {
-    justify-content: space-between !important;
-    flex-wrap: wrap;
-}
-.justify-content-center {
-    justify-content: center !important;
-}
-.justify-content-end {
-    -ms-flex-pack: end !important;
-    justify-content: flex-end !important;
-}
-.justify-content-start {
-    -ms-flex-pack: start !important;
-    justify-content: flex-start !important;
-}
-.justify-content-around {
-    -ms-flex-pack: distribute !important;
-    justify-content: space-around !important;
-}
-
-.align-items-center {
-    align-items: center !important;
-}
-.align-items-end {
-    align-items: flex-end !important;
-}
-.align-items-stretch {
-    -ms-flex-align: stretch !important;
-    align-items: stretch !important;
-}
-.align-self-center {
-    -ms-flex-item-align: center !important;
-    align-self: center !important;
-}
-
-.flex-row {
-    -ms-flex-direction: row !important;
-    flex-direction: row !important;
-}
-.flex-column {
-    flex-direction: column !important;
-}
-.flex-fill {
-    flex: 1 1 auto !important;
-}
-.flex-row-reverse {
-    -ms-flex-direction: row-reverse !important;
-    flex-direction: row-reverse !important;
-}
-.flex-nowrap {
-    -ms-flex-wrap: nowrap !important;
-    flex-wrap: nowrap !important;
-}
-
-/* sizing */
-.img-fluid {
-    max-width: 100%;
-    height: auto;
-}
-.h-100 {
-    height: 100% !important;
-}
-.w-100 {
-    width: 100% !important;
-}
-
-/* borders */
-.border-top{
-    border: 0;
-    border-top: 1px solid currentColor;
-}
-.border-bottom{
-    border-bottom: 1px solid rgba(222, 226, 230, .5) !important
-}
-/* text cut offs */
-.text-truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.color-box {
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    border-radius: 4px;
-    margin-right: 5px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    vertical-align: middle;
-    transition: border-color 0.15s, transform 0.1s;
-}
-
-.color-box-active {
-    border: 2px solid rgba(255,255,255,0.8);
-}
-
-.color-box:hover {
-    border-color: rgba(255,255,255,0.6);
-    transform: scale(1.15);
-}
-
-body {
- padding: 0;
- margin: 0;
-}
-
-html {
-    scroll-behavior: smooth;
-}
-
-ul.nav > li > [disabled] {
-    opacity: .2!important;
-}
-.alert .alert-link {
-    color: inherit;
-    opacity: .8;
-    transition: all .2s ease-in-out;
-    font-weight: bold;
-}
-.alert .alert-link:hover {
-    opacity: 1;
-    color: inherit;
-}
-
-/* bs4 style grid 
-@todo: upgrade to bs4 if possible
-*/
-[class*="col-"]{
-    position: relative;
-    width: 100%;
-    margin: 0;
-}
-.col-2 {
-    -ms-flex: 0 0 16.666667%;
-    flex: 0 0 16.666667%;
-    max-width: 16.666667%;
-}
-.col-3 {
-    -ms-flex: 0 0 25%;
-    flex: 0 0 25%;
-    max-width: 25%;
-}
-.col-4 {
-    -ms-flex: 0 0 33.333333%;
-    flex: 0 0 33.333333%;
-    flex-grow: 0;
-    flex-basis: 33.3333%;
-    max-width: 33.333333%;
-}
-.col-5 {
-    -ms-flex: 0 0 41.666667%;
-    flex: 0 0 41.666667%;
-    max-width: 41.666667%;
-}
-.col-6 {
-    -ms-flex: 0 0 50%;
-    flex: 0 0 50%;
-    max-width: 50%;
-}
-.col-8 {
-    -ms-flex: 0 0 66.666667%;
-    flex: 0 0 66.666667%;
-    flex-grow: 0;
-    flex-basis: 66.6667%;
-    max-width: 66.666667%;
-}
-.col-10 {
-    -ms-flex: 0 0 83.333333%;
-    flex: 0 0 83.333333%;
-    max-width: 83.333333%;
-}
-/* end of grid css */
-
-
-/** MOBILE FIRST **/
-/*-------------------------------------*/
-
-/* 
-// Extra small devices (portrait phones, 320px and up)
-*/
-@media (min-width: 320px) {
-    .text-xs-right {
-        text-align: right!important;
-    }
-    .text-xs-center {
-        text-align: center!important;
-    }
-    .d-xs-none{display:none!important}
-
-    .d-xs-inline-block {
-        display: inline-block!important;
-    }
-    .d-xs-inline {
-        display: inline!important;
-    }
-    .justify-content-xs-between {
-        justify-content: space-between !important;
-        flex-wrap: wrap;
-    }
-}
-/* 
-// Small devices (landscape phones, 576px and up)
-*/
-@media (min-width: 576px) {
-    .d-sm-none {
-        display: none!important;
-    }
-    .d-sm-inline-block {
-        display: inline-block!important;
-    }
-    .d-sm-block {
-        display: block!important;
-    }
-    .col-sm-2 {
-        -ms-flex: 0 0 16.666667%;
-        flex: 0 0 16.666667%;
-        max-width: 16.666667%;
-    }
-    .col-sm-4 {
-        -ms-flex: 0 0 33.333333%;
-        flex: 0 0 33.333333%;
-        flex-grow: 0;
-        flex-basis: 33.3333%;
-        max-width: 33.333333%;
-    }
-    .col-sm-8 {
-        -ms-flex: 0 0 66.666667%;
-        flex: 0 0 66.666667%;
-        flex-grow: 0;
-        flex-basis: 66.6667%;
-        max-width: 66.666667%;
-    }
-    .col-sm-10 {
-        -ms-flex: 0 0 83.333333%;
-        flex: 0 0 83.333333%;
-        max-width: 83.333333%;
-    }
-    .justify-content-sm-between {
-        justify-content: space-between !important;
-        flex-wrap: wrap;
-    }
-}
-/* 
-// Medium devices (tablets, 768px and up)
-*/
-@media (min-width: 768px) {
-    .d-md-none {
-        display: none!important;
-    }
-    .d-md-inline-block {
-        display: inline-block!important;
-    }
-    .d-md-flex {
-        display: flex !important;
-    }
-    .pb-md-0{
-        padding-bottom: 0!important
-    }
-    .mb-md-2{
-        margin-bottom: var(--s2) !important;
-    }
-
-    .col-md-2 {
-        -ms-flex: 0 0 16.666667%;
-        flex: 0 0 16.666667%;
-        max-width: 16.666667%;
-    }
-    .col-md-3 {
-        -ms-flex: 0 0 25%;
-        flex: 0 0 25%;
-        max-width: 25%;
-    }
-    .col-md-4 {
-        -ms-flex: 0 0 33.333333%;
-        flex: 0 0 33.333333%;
-        flex-grow: 0;
-        flex-basis: 33.3333%;
-        max-width: 33.333333%;
-    }
-    .col-md-8 {
-        -ms-flex: 0 0 66.666667%;
-        flex: 0 0 66.666667%;
-        flex-grow: 0;
-        flex-basis: 66.6667%;
-        max-width: 66.666667%;
-    }
-    .col-md-10 {
-        -ms-flex: 0 0 83.333333%;
-        flex: 0 0 83.333333%;
-        max-width: 83.333333%;
-    }
-}
-/* 
-// Large devices (desktops, 992px and up)
-*/
-@media (min-width: 992px) {
-    .mb-lg-3{
-        margin-bottom: .3em!important;
-    }
-    .py-lg-3,.pt-lg-3{
-        padding-top: calc(var(--spacer) * .8)
-    }
-    .py-lg-3,.pb-lg-3{
-        padding-bottom: calc(var(--spacer) * .8)
-    }
-    .d-lg-none{display:none!important}
-
-}
-/* 
-// Extra large devices (large desktops, 1200px and up)
-*/
-@media (min-width: 1200px) {
-    .d-xl-none{
-        display:none!important
-    }
-}
 
 
 /* ================================================================== */
-/* EMONCMS COMPONENT LIBRARY                                          */
-/* Consolidated from emoncms-app.css + feed_list.css                  */
+/* 4. LIGHT MODE OVERRIDES                                            */
 /* ================================================================== */
 
-/* ── Dark theme body & footer ───────────────────────────────── */
-body {
-    background-color: var(--bg-body);
-    color: var(--text-body);
-    font-size: var(--font-base);
-}
-
-.content-container {
-    max-width: 1150px;
-}
-
-#footer {
-    margin: 0;
-    background-color: #181818;
-    color: #999;
-}
-
-/* ── Light mode: design token overrides ─────────────────────── */
 html.color-mode-light {
     color-scheme: light;
 
@@ -981,10 +228,503 @@ html.color-mode-light #footer {
     color: #555;
 }
 
-/* ── Vue cloak ───────────────────────────────────────────────── */
+/* Glyphicon sprite — white in dark mode, dark in light mode */
+[class^="icon-"],
+[class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings-white.png");
+}
+html.color-mode-light [class^="icon-"],
+html.color-mode-light [class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings.png");
+}
+
+html.color-mode-light .group-card table td {
+    border-bottom-color: rgba(0,0,0,0.06);
+}
+
+html.color-mode-light .inline-edit select {
+    background-color: #ffffff;
+    color: #333;
+    border-color: #ccc;
+}
+
+html.color-mode-light input[type="text"],
+html.color-mode-light input[type="password"] {
+    background-color: #ffffff;
+    color: #333;
+    border-color: #ccc;
+}
+
+html.color-mode-light .mode-toggle-btn:hover:not(.active) {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+}
+
+
+/* ================================================================== */
+/* 5. BASE / RESET                                                    */
+/* ================================================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+html, body {
+    height: initial !important;
+}
+
+body {
+    padding: 0;
+    margin: 0;
+    background-color: var(--bg-body);
+    color: var(--text-body);
+    font-size: var(--font-base);
+}
+
+:fullscreen, ::backdrop {
+    background-color: var(--bg-vis-graph-color);
+}
+
+/* Vue cloak — hide un-compiled templates */
 [v-cloak] { display: none; }
 
-/* ── Page typography ─────────────────────────────────────────── */
+svg.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+    vertical-align: -0.15em;
+}
+
+
+/* ================================================================== */
+/* 6. LAYOUT SHELL                                                    */
+/* ================================================================== */
+
+#wrap {
+    min-height: calc(100vh - 5.4rem) !important;
+    margin-top: 0;
+}
+
+#wrap main.content-container {
+    height: 100%;
+    margin: 46px auto 0 auto;
+    padding-bottom: 2rem !important;
+    box-sizing: border-box;
+}
+
+body.collapsed #wrap main.content-container {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content-container {
+    max-width: 1150px;
+}
+
+.fullwidth.collapsed #wrap,
+.fullwidth.collapsed #footer {
+    margin-left: 0 !important;
+}
+
+.container-fluid { padding: 0 10px; }
+
+@media (min-width: 768px) {
+    .container-fluid { padding: 0 20px; }
+}
+
+#push, #footer {
+    height: 30px;
+}
+
+#footer {
+    margin: 0;
+    background-color: #181818;
+    color: #999;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 10px;
+    transition: margin .3s ease-out;
+}
+
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+
+#footer span {
+    color: #999;
+}
+
+@media (max-width: 767px) {
+    #footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+}
+
+
+/* ================================================================== */
+/* 7. NAVIGATION BAR                                                  */
+/* ================================================================== */
+
+.menu-dashboard, .menu-left, .menu-extra, .menu-setup, .menu-right {
+    display: inherit !important;
+}
+
+/* Scrollable dropdown menus (e.g. dashboard editor) */
+.scrollable-menu {
+    height: auto;
+    max-height: 333px;
+    overflow-y: auto;
+}
+
+/* Nav bar items */
+.menu-tr > ul {
+    display: flex;
+    align-items: center;
+}
+#nav-colormode-li {
+    display: flex;
+    align-items: stretch;
+}
+
+/* Dark/light mode toggle button in the navbar */
+#nav-colormode-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 46px;
+    width: 40px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    opacity: 0.75;
+    transition: opacity 0.2s, background-color 0.2s;
+}
+#nav-colormode-btn:hover {
+    opacity: 1;
+    background-color: rgba(0,0,0,0.15);
+}
+#nav-colormode-btn .icon {
+    width: 1.2em;
+    height: 1.2em;
+}
+
+.caret {
+    border-top-color: #fff !important;
+}
+
+ul.nav > li > [disabled] {
+    opacity: .2 !important;
+}
+
+
+/* ================================================================== */
+/* 8. UTILITIES — COLOURS & TEXT                                      */
+/* ================================================================== */
+
+/* Text colours */
+.text-white      { color: white !important; }
+.text-light      { color: #aaa !important; }
+.text-primary    { color: #0699fa !important; }
+.text-warning    { color: #dccc1f !important; }
+.text-success    { color: #89ae65 !important; }
+.text-secondary  { color: #6c757d !important; }
+.text-tertiary   { color: #b7aa1f !important; }
+.text-quaternary { color: #fb7b50 !important; }
+.text-danger     { color: #d52e2e !important; }
+.text-exporting  { color: #2ed52e !important; }
+.text-dark       { color: #333 !important; }
+.text-larger     { font-size: larger; }
+.text-uppercase  { text-transform: uppercase; }
+.text-truncate   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Background colours */
+.bg-dark        { background: #333 !important; }
+.bg-primary     { background: #44b3e2 !important; }
+.bg-secondary   { background: #6c757d !important; }
+.bg-success     { background: #28a745 !important; }
+.bg-danger      { background: #dc3545 !important; }
+.bg-warning     { background: #ffc107 !important; }
+.bg-info        { background: #17a2b8 !important; }
+.bg-light       { background: #f8f9fa !important; }
+.bg-white       { background: #fff !important; }
+.bg-transparent { background: transparent !important; }
+
+/* Borders */
+.border-top    { border: 0; border-top: 1px solid currentColor; }
+.border-bottom { border-bottom: 1px solid rgba(222, 226, 230, .5) !important; }
+
+/* Color swatch box (used by graph/vis colour pickers) */
+.color-box {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 4px;
+    margin-right: 5px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    vertical-align: middle;
+    transition: border-color 0.15s, transform 0.1s;
+}
+.color-box-active {
+    border: 2px solid rgba(255,255,255,0.8);
+}
+.color-box:hover {
+    border-color: rgba(255,255,255,0.6);
+    transform: scale(1.15);
+}
+
+/* Alerts */
+.alert .alert-link {
+    color: inherit;
+    opacity: .8;
+    transition: all .2s ease-in-out;
+    font-weight: bold;
+}
+.alert .alert-link:hover {
+    opacity: 1;
+    color: inherit;
+}
+
+
+/* ================================================================== */
+/* 9. UTILITIES — SPACING (margin / padding)                          */
+/* @see Bootstrap 4 documentation for usage examples                  */
+/* ================================================================== */
+
+/* Remove margins */
+.my-0, .mb-0, .m-0 { margin-bottom: 0 !important; }
+.my-0, .mt-0, .m-0 { margin-top: 0 !important; }
+.mx-0, .ml-0, .m-0 { margin-left: 0 !important; }
+.mx-0, .mr-0, .m-0 { margin-right: 0 !important; }
+
+/* Margin shorthands */
+.m-1 { padding: var(--s1); }
+.m-2 { padding: var(--s2); }
+.m-3 { padding: var(--s3); }
+.m-4 { padding: var(--s4); }
+.m-5 { padding: var(--s5); }
+.m-6 { padding: var(--s6); }
+
+/* Margin top */
+.my-1, .mt-1 { margin-top: var(--s1) !important; }
+.my-2, .mt-2 { margin-top: var(--s2) !important; }
+.my-3, .mt-3 { margin-top: var(--s3) !important; }
+.my-4, .mt-4 { margin-top: var(--s4) !important; }
+.my-5, .mt-5 { margin-top: var(--s5) !important; }
+.my-6, .mt-6 { margin-top: var(--s6) !important; }
+
+/* Margin right */
+.mx-1, .mr-1 { margin-right: var(--s1) !important; }
+.mx-2, .mr-2 { margin-right: var(--s2) !important; }
+.mx-3, .mr-3 { margin-right: var(--s3) !important; }
+.mx-4, .mr-4 { margin-right: var(--s4) !important; }
+.mx-5, .mr-5 { margin-right: var(--s5) !important; }
+.mx-6, .mr-6 { margin-right: var(--s6) !important; }
+
+/* Margin bottom */
+.my-1, .mb-1 { margin-bottom: var(--s1) !important; }
+.my-2, .mb-2 { margin-bottom: var(--s2) !important; }
+.my-3, .mb-3 { margin-bottom: var(--s3) !important; }
+.my-4, .mb-4 { margin-bottom: var(--s4) !important; }
+.my-5, .mb-5 { margin-bottom: var(--s5) !important; }
+.my-6, .mb-6 { margin-bottom: var(--s6) !important; }
+
+/* Margin left */
+.mx-1, .ml-1 { margin-left: var(--s1) !important; }
+.mx-2, .ml-2 { margin-left: var(--s2) !important; }
+.mx-3, .ml-3 { margin-left: var(--s3) !important; }
+.mx-4, .ml-4 { margin-left: var(--s4) !important; }
+.mx-5, .ml-5 { margin-left: var(--s5) !important; }
+.mx-6, .ml-6 { margin-left: var(--s6) !important; }
+
+/* Remove padding */
+.py-0, .pb-0, .p-0 { padding-bottom: 0 !important; }
+.py-0, .pt-0, .p-0 { padding-top: 0 !important; }
+.px-0, .pl-0, .p-0 { padding-left: 0 !important; }
+.px-0, .pr-0, .p-0 { padding-right: 0 !important; }
+
+/* Padding shorthands */
+.p-1 { padding: var(--s1); }
+.p-2 { padding: var(--s2); }
+.p-3 { padding: var(--s3); }
+.p-4 { padding: var(--s4); }
+.p-5 { padding: var(--s5); }
+.p-6 { padding: var(--s6); }
+
+/* Padding top */
+.py-1, .pt-1 { padding-top: var(--s1) !important; }
+.py-2, .pt-2 { padding-top: var(--s2) !important; }
+.py-3, .pt-3 { padding-top: var(--s3) !important; }
+.py-4, .pt-4 { padding-top: var(--s4) !important; }
+.py-5, .pt-5 { padding-top: var(--s5) !important; }
+.py-6, .pt-6 { padding-top: var(--s6) !important; }
+
+/* Padding right */
+.px-1, .pr-1 { padding-right: var(--s1) !important; }
+.px-2, .pr-2 { padding-right: var(--s2) !important; }
+.px-3, .pr-3 { padding-right: var(--s3) !important; }
+.px-4, .pr-4 { padding-right: var(--s4) !important; }
+.px-5, .pr-5 { padding-right: var(--s5) !important; }
+.px-6, .pr-6 { padding-right: var(--s6) !important; }
+
+/* Padding bottom */
+.py-1, .pb-1 { padding-bottom: var(--s1) !important; }
+.py-2, .pb-2 { padding-bottom: var(--s2) !important; }
+.py-3, .pb-3 { padding-bottom: var(--s3) !important; }
+.py-4, .pb-4 { padding-bottom: var(--s4) !important; }
+.py-5, .pb-5 { padding-bottom: var(--s5) !important; }
+.py-6, .pb-6 { padding-bottom: var(--s6) !important; }
+
+/* Padding left */
+.px-1, .pl-1 { padding-left: var(--s1) !important; }
+.px-2, .pl-2 { padding-left: var(--s2) !important; }
+.px-3, .pl-3 { padding-left: var(--s3) !important; }
+.px-4, .pl-4 { padding-left: var(--s4) !important; }
+.px-5, .pl-5 { padding-left: var(--s5) !important; }
+.px-6, .pl-6 { padding-left: var(--s6) !important; }
+
+
+/* ================================================================== */
+/* 10. UTILITIES — DISPLAY, FLEX, SIZING                              */
+/* ================================================================== */
+
+.d-none         { display: none !important; }
+.d-block        { display: block !important; }
+.d-inline       { display: inline !important; }
+.d-inline-block { display: inline-block !important; }
+.d-flex         { display: flex !important; }
+
+/* Flexbox alignment */
+.justify-content-between { justify-content: space-between !important; flex-wrap: wrap; }
+.justify-content-center  { justify-content: center !important; }
+.justify-content-end     { -ms-flex-pack: end !important; justify-content: flex-end !important; }
+.justify-content-start   { -ms-flex-pack: start !important; justify-content: flex-start !important; }
+.justify-content-around  { -ms-flex-pack: distribute !important; justify-content: space-around !important; }
+
+.align-items-center  { align-items: center !important; }
+.align-items-end     { align-items: flex-end !important; }
+.align-items-stretch { -ms-flex-align: stretch !important; align-items: stretch !important; }
+.align-self-center   { -ms-flex-item-align: center !important; align-self: center !important; }
+
+.flex-row         { -ms-flex-direction: row !important; flex-direction: row !important; }
+.flex-column      { flex-direction: column !important; }
+.flex-fill        { flex: 1 1 auto !important; }
+.flex-row-reverse { -ms-flex-direction: row-reverse !important; flex-direction: row-reverse !important; }
+.flex-nowrap      { -ms-flex-wrap: nowrap !important; flex-wrap: nowrap !important; }
+
+/* Sizing */
+.img-fluid { max-width: 100%; height: auto; }
+.h-100     { height: 100% !important; }
+.w-100     { width: 100% !important; }
+
+/* Misc */
+.pull-right        { float: right !important; }
+.cursor-pointer    { cursor: pointer; }
+.line-height-expanded { line-height: 2; }
+.line-height-normal   { line-height: 1.5; }
+
+/* AJAX loading overlay */
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8) url(ajax-loader.gif) center no-repeat;
+}
+
+/* Expand-all toggle icons */
+.expand-all .icon-resize-small         { display: none; }
+.expand-all.in .icon-resize-small      { display: inline-block; }
+.expand-all.in .icon-resize-full       { display: none; }
+
+
+/* ================================================================== */
+/* 11. GRID COLUMNS (Bootstrap 3-style, @todo upgrade to BS4)         */
+/* ================================================================== */
+
+[class*="col-"] {
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+.col-2  { -ms-flex: 0 0 16.666667%; flex: 0 0 16.666667%; max-width: 16.666667%; }
+.col-3  { -ms-flex: 0 0 25%;         flex: 0 0 25%;         max-width: 25%; }
+.col-4  { -ms-flex: 0 0 33.333333%; flex: 0 0 33.333333%; flex-grow: 0; flex-basis: 33.3333%; max-width: 33.333333%; }
+.col-5  { -ms-flex: 0 0 41.666667%; flex: 0 0 41.666667%; max-width: 41.666667%; }
+.col-6  { -ms-flex: 0 0 50%;         flex: 0 0 50%;         max-width: 50%; }
+.col-8  { -ms-flex: 0 0 66.666667%; flex: 0 0 66.666667%; flex-grow: 0; flex-basis: 66.6667%; max-width: 66.666667%; }
+.col-10 { -ms-flex: 0 0 83.333333%; flex: 0 0 83.333333%; max-width: 83.333333%; }
+
+
+/* ================================================================== */
+/* 12. RESPONSIVE BREAKPOINTS (mobile first)                          */
+/* ================================================================== */
+
+/* Extra small — portrait phones (≥320px) */
+@media (min-width: 320px) {
+    .text-xs-right  { text-align: right !important; }
+    .text-xs-center { text-align: center !important; }
+    .d-xs-none         { display: none !important; }
+    .d-xs-inline-block { display: inline-block !important; }
+    .d-xs-inline       { display: inline !important; }
+    .justify-content-xs-between { justify-content: space-between !important; flex-wrap: wrap; }
+}
+
+/* Small — landscape phones (≥576px) */
+@media (min-width: 576px) {
+    .d-sm-none         { display: none !important; }
+    .d-sm-inline-block { display: inline-block !important; }
+    .d-sm-block        { display: block !important; }
+
+    .col-sm-2  { -ms-flex: 0 0 16.666667%; flex: 0 0 16.666667%; max-width: 16.666667%; }
+    .col-sm-4  { -ms-flex: 0 0 33.333333%; flex: 0 0 33.333333%; flex-grow: 0; flex-basis: 33.3333%; max-width: 33.333333%; }
+    .col-sm-8  { -ms-flex: 0 0 66.666667%; flex: 0 0 66.666667%; flex-grow: 0; flex-basis: 66.6667%; max-width: 66.666667%; }
+    .col-sm-10 { -ms-flex: 0 0 83.333333%; flex: 0 0 83.333333%; max-width: 83.333333%; }
+
+    .justify-content-sm-between { justify-content: space-between !important; flex-wrap: wrap; }
+}
+
+/* Medium — tablets (≥768px) */
+@media (min-width: 768px) {
+    .d-md-none         { display: none !important; }
+    .d-md-inline-block { display: inline-block !important; }
+    .d-md-flex         { display: flex !important; }
+    .pb-md-0           { padding-bottom: 0 !important; }
+    .mb-md-2           { margin-bottom: var(--s2) !important; }
+
+    .col-md-2  { -ms-flex: 0 0 16.666667%; flex: 0 0 16.666667%; max-width: 16.666667%; }
+    .col-md-3  { -ms-flex: 0 0 25%;         flex: 0 0 25%;         max-width: 25%; }
+    .col-md-4  { -ms-flex: 0 0 33.333333%; flex: 0 0 33.333333%; flex-grow: 0; flex-basis: 33.3333%; max-width: 33.333333%; }
+    .col-md-8  { -ms-flex: 0 0 66.666667%; flex: 0 0 66.666667%; flex-grow: 0; flex-basis: 66.6667%; max-width: 66.666667%; }
+    .col-md-10 { -ms-flex: 0 0 83.333333%; flex: 0 0 83.333333%; max-width: 83.333333%; }
+}
+
+/* Large — desktops (≥992px) */
+@media (min-width: 992px) {
+    .mb-lg-3        { margin-bottom: .3em !important; }
+    .py-lg-3, .pt-lg-3 { padding-top: calc(var(--spacer) * .8); }
+    .py-lg-3, .pb-lg-3 { padding-bottom: calc(var(--spacer) * .8); }
+    .d-lg-none      { display: none !important; }
+}
+
+/* Extra large — large desktops (≥1200px) */
+@media (min-width: 1200px) {
+    .d-xl-none { display: none !important; }
+}
+
+
+/* ================================================================== */
+/* 13. TYPOGRAPHY & GLOBAL UI                                         */
+/* ================================================================== */
+
+/* Page section header */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -1009,7 +749,192 @@ html.color-mode-light #footer {
 }
 .page-header a:hover { opacity: 1; text-decoration: none; }
 
-/* ── Empty state ─────────────────────────────────────────────── */
+/* User profile account section */
+div#account {
+    width: 250px;
+}
+.account-item {
+    margin-bottom: 10px;
+}
+
+/* label-container — used in various module list views */
+.label-container { padding-top: .6em; display: inline-block; min-width: 200px; }
+
+
+/* ================================================================== */
+/* 14. LOGIN PAGE                                                     */
+/* ================================================================== */
+
+.body-login {
+    background-color: var(--bg-body-login);
+}
+
+#login-form input[type="text"],
+#login-form input[type="password"] {
+    width: 94%;
+}
+
+
+/* ================================================================== */
+/* 15. COMPONENTS — ACCORDION / NODE TREE                             */
+/* Used by: input list, device list, schedule view                    */
+/* ================================================================== */
+
+/* Collapsible group rows */
+.node.accordion {
+    line-height: 41px;
+}
+.node .accordion-toggle {
+    background: #ddd;
+    height: 41px;
+}
+.node .accordion-toggle:hover {
+    background-color: #e3e3e3;
+}
+
+/* Dropdown indicator icon */
+.node .has-indicator .icon-indicator {
+    opacity: 0.333;
+    float: none;
+}
+
+.node .select input { margin-top: -1px; }
+
+.node .collapse {
+    width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
+}
+.node .collapse > * {
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #fff;
+    background: #f0f0f0;
+}
+.node .collapse > *:hover {
+    background-color: #f5f5f5;
+}
+/* Left-accent bar — shared with .node-feed::before */
+.node .collapse > *:last-child {
+    border-bottom-width: 0;
+}
+
+.node > * > *,
+.node > * > * > *,
+.node > * > * > .pull-right > * {
+    float: left;
+    min-height: 1px;
+}
+
+/* Input view — device column cells */
+.device-key,
+.device-schedule,
+.device-configure,
+.device-last-updated {
+    border-left: 1px solid #eee;
+    color: white;
+}
+.device-key:hover       { background-color: #eaeaea; }
+.device-configure:hover { background-color: #eaeaea; }
+
+/* #table used by device, input, profile, feedlist, schedule view */
+#table .accordion {
+    margin-bottom: .5em;
+}
+
+
+/* ================================================================== */
+/* 16. COMPONENTS — STICKY CONTROLS TOOLBAR                          */
+/* Used by: input list, feed list                                     */
+/* ================================================================== */
+
+.sticky-controls {
+    position: sticky;
+    top: 50px; /* 46px navbar + 4px gap */
+    z-index: 10;
+    padding: 6px 8px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    background: var(--controls-bg);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+}
+
+.menu-top.menu-top-hide ~ * .sticky-controls,
+.menu-top.menu-top-hide ~ .sticky-controls {
+    top: 0;
+}
+
+
+/* ================================================================== */
+/* 17. COMPONENTS — LOG WINDOWS & SNACKBAR                            */
+/* Used by: admin page, emonhub config, backup, postprocess           */
+/* ================================================================== */
+
+.log {
+    height: 12rem;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+    background-color: #300a24;
+    overflow: scroll;
+    overflow-x: hidden;
+}
+
+.log div {
+    padding-left: 10px;
+    padding-top: 10px;
+}
+
+/* Log level dropdown, positioned inside .log */
+#log-level {
+    position: absolute;
+    right: .2rem;
+    bottom: 0;
+}
+#log-level .dropdown-menu {
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+}
+#log-level .dropdown-menu .active { font-weight: bold; }
+#log-level .dropdown-menu .btn    { border: 0; border-radius: 0; background-image: none; }
+#log-level li:first-child .btn    { border-radius: .3em .3em 0 0; }
+#log-level li:last-child .btn     { border-radius: 0 0 .3em .3em; }
+
+/* Snackbar notification (shown when log level changes) */
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+#snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+
+/* ================================================================== */
+/* 18. COMPONENTS — EMPTY STATE                                       */
+/* ================================================================== */
+
 .empty-state {
     background-color: var(--bg-card);
     border: 1px solid var(--border-card);
@@ -1025,7 +950,12 @@ html.color-mode-light #footer {
 }
 .empty-state a { color: var(--accent); }
 
-/* ── Shared card base (group-card & node-group) ─────────────── */
+
+/* ================================================================== */
+/* 19. COMPONENTS — GROUP CARDS & TABLES                              */
+/* ================================================================== */
+
+/* Shared card base */
 .group-card,
 .node-group {
     border: 1px solid var(--border-card);
@@ -1033,13 +963,12 @@ html.color-mode-light #footer {
     overflow: hidden;
 }
 
-/* ── Group / info cards ──────────────────────────────────────── */
 .group-card {
     background-color: var(--bg-card);
     margin-bottom: 0.75rem;
 }
 
-/* ── Shared card-header base ────────────────────────────────── */
+/* Shared card-header base */
 .group-card-header,
 .node-header,
 .group-header {
@@ -1053,7 +982,6 @@ html.color-mode-light #footer {
     background-color: var(--bg-card-header-hover);
 }
 
-/* Card header */
 .group-card-header {
     display: flex;
     align-items: center;
@@ -1126,21 +1054,14 @@ html.color-mode-light #footer {
     border-bottom: 1px solid rgba(255,255,255,0.06);
     vertical-align: middle;
 }
-html.color-mode-light .group-card table td {
-    border-bottom-color: rgba(0,0,0,0.06);
-}
-.group-card table tr:last-child td {
-    border-bottom: none;
-}
-.group-card table tbody tr:hover td {
-    background-color: var(--accent-row-hover);
-}
+.group-card table tr:last-child td { border-bottom: none; }
+.group-card table tbody tr:hover td { background-color: var(--accent-row-hover); }
 
 /* Column variants */
 .group-card table td.col-secondary { color: var(--text-secondary); }
 .group-card table td.col-primary   { color: var(--text-primary); font-weight: 500; }
 
-/* Chip / pill badge in a cell */
+/* Chip / pill badge cell */
 .group-card table td.col-chip span {
     display: inline-block;
     font-size: var(--font-2xs);
@@ -1150,6 +1071,7 @@ html.color-mode-light .group-card table td {
     border-radius: 0.75rem;
     padding: 1px 8px;
 }
+
 /* Monospace cells */
 .group-card table td.col-mono,
 .group-card table td.col-mono-truncate {
@@ -1164,18 +1086,12 @@ html.color-mode-light .group-card table td {
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
 /* Updated / action column alignment */
 .group-card table th.col-updated,
-.group-card table td.col-updated {
-    text-align: right;
-    white-space: nowrap;
-}
+.group-card table td.col-updated { text-align: right; white-space: nowrap; }
 .group-card table th.col-action,
-.group-card table td.col-action {
-    width: 24px;
-    text-align: center;
-    padding: 9px 6px;
-}
+.group-card table td.col-action  { width: 24px; text-align: center; padding: 9px 6px; }
 
 /* Row action icon — visible on row hover */
 .row-action {
@@ -1183,19 +1099,24 @@ html.color-mode-light .group-card table td {
     color: transparent;
     transition: color 0.15s;
 }
-.group-card table tbody tr:hover .row-action {
-    color: var(--text-secondary);
-}
-.row-action:hover {
-    color: var(--accent) !important;
-}
+.group-card table tbody tr:hover .row-action { color: var(--text-secondary); }
+.row-action:hover { color: var(--accent) !important; }
 
 /* Settings table column widths */
 .group-card table col.col-w-label  { width: 200px; }
 .group-card table col.col-w-action { width: 32px; }
 .group-card table col.col-w-btn    { width: 130px; }
 
-/* ── Toolbar ─────────────────────────────────────────────────── */
+/* Responsive overrides */
+@media (max-width: 576px) {
+    .group-card table col.col-w-label { width: 90px; }
+}
+
+
+/* ================================================================== */
+/* 20. COMPONENTS — TOOLBAR & BUTTONS                                 */
+/* ================================================================== */
+
 .app-toolbar {
     display: flex;
     align-items: center;
@@ -1203,7 +1124,6 @@ html.color-mode-light .group-card table td {
     gap: 0.5rem;
 }
 
-/* ── Buttons ─────────────────────────────────────────────────── */
 .app-btn {
     display: inline-flex;
     align-items: center;
@@ -1241,7 +1161,7 @@ html.color-mode-light .group-card table td {
     color: #ff8080;
 }
 
-/* ── App loader ──────────────────────────────────────────────── */
+/* App spinner / loader */
 .app-loader {
     text-align: center;
     padding: 1.5rem 0;
@@ -1250,7 +1170,31 @@ html.color-mode-light .group-card table td {
     letter-spacing: 0.05em;
 }
 
-/* ── Inline edit: input + confirm button ─────────────────────── */
+
+/* ================================================================== */
+/* 21. COMPONENTS — FORMS & INPUTS                                    */
+/* ================================================================== */
+
+/* Base text inputs */
+input[type="text"],
+input[type="password"] {
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: var(--font-sm);
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: none;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: var(--accent);
+}
+
+/* Inline edit (name rename, etc.) */
 .inline-edit {
     display: flex;
     align-items: center;
@@ -1270,38 +1214,8 @@ html.color-mode-light .group-card table td {
     outline: none;
 }
 .inline-edit select:focus { border-color: var(--accent); }
-html.color-mode-light .inline-edit select {
-    background-color: #ffffff;
-    color: #333;
-    border-color: #ccc;
-}
 
-/* ── Form inputs ─────────────────────────────────────────────── */
-input[type="text"],
-input[type="password"] {
-    background-color: var(--bg-input);
-    color: var(--text-body);
-    border: 1px solid var(--border-strong);
-    border-radius: 0.25rem;
-    padding: 0 8px;
-    font-size: var(--font-sm);
-    height: 30px;
-    box-sizing: border-box;
-    outline: none;
-    box-shadow: none;
-}
-input[type="text"]:focus,
-input[type="password"]:focus {
-    border-color: var(--accent);
-}
-html.color-mode-light input[type="text"],
-html.color-mode-light input[type="password"] {
-    background-color: #ffffff;
-    color: #333;
-    border-color: #ccc;
-}
-
-/* ── Password change sub-form ────────────────────────────────── */
+/* Password change sub-form */
 .password-form { padding: 0.15rem 0; }
 .password-form .pw-field {
     display: flex;
@@ -1321,7 +1235,7 @@ html.color-mode-light input[type="password"] {
     margin-top: 0.4rem;
 }
 
-/* ── API key display ─────────────────────────────────────────── */
+/* API key display */
 .apikey {
     font-family: monospace;
     font-size: var(--font-xs);
@@ -1332,39 +1246,37 @@ html.color-mode-light input[type="password"] {
     max-width: 280px;
 }
 
-/* ── Nav bar dark/light toggle button ───────────────────────── */
-.menu-tr > ul {
-    display: flex;
-    align-items: center;
+/* Filter input (feed/input list search box) */
+.filter-input {
+    margin-left: auto;
+    padding: 4px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    font-size: var(--font-sm);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 120px;
 }
-#nav-colormode-li {
-    display: flex;
-    align-items: stretch;
-}
-#nav-colormode-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 46px;
-    width: 40px;
-    padding: 0;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-    opacity: 0.75;
-    transition: opacity 0.2s, background-color 0.2s;
-}
-#nav-colormode-btn:hover {
-    opacity: 1;
-    background-color: rgba(0,0,0,0.15);
-}
-#nav-colormode-btn .icon {
-    width: 1.2em;
-    height: 1.2em;
+.filter-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
-/* ── Dark/Light mode segmented toggle ───────────────────────── */
+/* Responsive form overrides */
+@media (max-width: 576px) {
+    .apikey { max-width: 130px; }
+    .inline-edit input { width: 120px !important; }
+    .password-form .pw-label { width: 120px; }
+}
+
+
+/* ================================================================== */
+/* 22. COMPONENTS — COLOR-MODE TOGGLE                                 */
+/* ================================================================== */
+
+/* Segmented dark/light toggle (used in account/settings) */
 .mode-toggle {
     display: inline-flex;
     border: 1px solid var(--border-strong);
@@ -1393,24 +1305,13 @@ html.color-mode-light input[type="password"] {
     background-color: rgba(255,255,255,0.05);
     color: var(--text-primary);
 }
-html.color-mode-light .mode-toggle-btn:hover:not(.active) {
-    background-color: rgba(0,0,0,0.05);
-    color: var(--text-primary);
-}
 
-/* ── Responsive component overrides ─────────────────────────── */
-@media (max-width: 576px) {
-    .group-card table col.col-w-label { width: 90px; }
-    .apikey { max-width: 130px; }
-    .inline-edit input { width: 120px !important; }
-    .password-form .pw-label { width: 120px; }
-}
 
 /* ================================================================== */
-/* FEED LIST COMPONENT CSS                                            */
+/* 23. FEED LIST GRID                                                 */
 /* ================================================================== */
 
-/* CSS Grid Feed List */
+/* CSS subgrid feed list */
 .feed-list-grid {
     display: grid;
     grid-template-columns: 40px minmax(max-content, 2fr) 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
@@ -1509,7 +1410,7 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 .node-feed:hover { background-color: var(--bg-chip); }
 .node-feed:last-of-type { border-bottom-width: 0; }
 
-/* ── Shared left-accent bar (feed rows + input accordion rows) ── */
+/* Shared left-accent bar (feed rows + input accordion rows) */
 .node-feed::before,
 .node .collapse > *::before {
     content: '';
@@ -1526,9 +1427,9 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 .node .collapse > *:hover::before { width: 2px; }
 
 /* Selected feed */
-.node-feed.selected { background-color: var(--accent-bg); }
+.node-feed.selected         { background-color: var(--accent-bg); }
 .node-feed.selected::before { width: 4px; background: var(--accent); }
-.node-feed.selected:hover { background-color: var(--accent-bg-hover); }
+.node-feed.selected:hover   { background-color: var(--accent-bg-hover); }
 
 /* Vue collapse / arrow */
 .arrow-icon {
@@ -1576,43 +1477,15 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
     text-transform: none;
     opacity: 0.85;
 }
-.engine-badge.engine-fixed    { background: #2563eb; }
-.engine-badge.engine-variable { background: #7c3aed; }
-.engine-badge.engine-mysql    { background: #d97706; }
-.engine-badge.engine-virtual  { background: #059669; }
-.engine-badge.engine-memory   { background: #dc2626; }
-.engine-badge.engine-redis    { background: #db2777; }
-.engine-badge.engine-cassandra{ background: #92400e; }
-.engine-badge.engine-other    { background: #6b7280; }
+.engine-badge.engine-fixed     { background: #2563eb; }
+.engine-badge.engine-variable  { background: #7c3aed; }
+.engine-badge.engine-mysql     { background: #d97706; }
+.engine-badge.engine-virtual   { background: #059669; }
+.engine-badge.engine-memory    { background: #dc2626; }
+.engine-badge.engine-redis     { background: #db2777; }
+.engine-badge.engine-cassandra { background: #92400e; }
+.engine-badge.engine-other     { background: #6b7280; }
 
-/* Public / private icons */
+/* Public / private feed icons */
 .icon-public  { color: #2e7c9e; }
 .icon-private { color: #8b8b8b; }
-
-/* ── Glyphicon sprite: white in dark mode, dark in light mode ── */
-[class^="icon-"],
-[class*=" icon-"] {
-    background-image: url("../img/glyphicons-halflings-white.png");
-}
-html.color-mode-light [class^="icon-"],
-html.color-mode-light [class*=" icon-"] {
-    background-image: url("../img/glyphicons-halflings.png");
-}
-
-/* Filter input */
-.filter-input {
-    margin-left: auto;
-    padding: 4px 8px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-control);
-    background-color: var(--bg-input);
-    color: var(--text-body);
-    font-size: var(--font-sm);
-    outline: none;
-    transition: border-color 0.15s ease, box-shadow 0.15s ease;
-    min-width: 120px;
-}
-.filter-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--focus-ring);
-}
