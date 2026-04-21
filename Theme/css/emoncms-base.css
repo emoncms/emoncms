@@ -480,6 +480,8 @@ div#account {
     --radius-card:    8px;
     --radius-control: 6px;
 
+    color-scheme: dark;
+
     /* ── Dark theme design tokens (default) ─────────────────── */
     --bg-body:              #1e1e1e;
     --bg-card:              #282828;
@@ -954,6 +956,8 @@ body {
 
 /* ── Light mode: design token overrides ─────────────────────── */
 html.color-mode-light {
+    color-scheme: light;
+
     --bg-body:              whitesmoke;
     --bg-card:              #ffffff;
     --bg-card-header:       #ddd;
@@ -1564,6 +1568,16 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 /* Public / private icons */
 .icon-public  { color: #2e7c9e; }
 .icon-private { color: #8b8b8b; }
+
+/* ── Glyphicon sprite: white in dark mode, dark in light mode ── */
+[class^="icon-"],
+[class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings-white.png");
+}
+html.color-mode-light [class^="icon-"],
+html.color-mode-light [class*=" icon-"] {
+    background-image: url("../img/glyphicons-halflings.png");
+}
 
 /* Filter input */
 #filter {

@@ -58,28 +58,28 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 <div id="feed-app">
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div class="sticky-controls">
-        <button class="app-btn app-btn-sm" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
+        <button class="app-btn app-btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
             <i class="icon" :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
         </button>
-        <button class="app-btn app-btn-sm" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
+        <button class="app-btn app-btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
             <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
-        <button class="app-btn app-btn-sm" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
+        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
         </button>
-        <button class="app-btn app-btn-sm" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
+        <button class="app-btn app-btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
             <i class="icon-trash"></i>
         </button>
-        <button class="app-btn app-btn-sm" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
+        <button class="app-btn app-btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
             <i class="icon-repeat"></i>
         </button>
-        <button class="app-btn app-btn-sm" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
+        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
             <i class="icon-download"></i>
         </button>
-        <button class="app-btn app-btn-sm" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
+        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
             <i class="icon-eye-open"></i>
         </button>
-        <button class="app-btn app-btn-sm" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
+        <button class="app-btn app-btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
         <input type="text" name="filter" id="filter" placeholder="<?php echo tr('Filter feeds') ?>">
