@@ -17,9 +17,7 @@ global $path; $v=6;
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
-<div class="emon-app">
-
-  <div id="app" v-cloak>
+<div id="app" v-cloak>
 
     <div class="page-header">
       <h2><?php echo tr('My Account'); ?></h2>
@@ -198,9 +196,9 @@ global $path; $v=6;
       </table>
     </div>
 
-  </div><!-- end Vue #app -->
+</div><!-- end Vue #app -->
 
-  <!-- ── Appearance card (non-Vue) ──────────────────────── -->
+<!-- ── Appearance card (non-Vue) ──────────────────────── -->
   <div class="group-card">
     <div class="group-card-header">
       <span class="group-name"><?php echo tr('Appearance'); ?></span>
@@ -241,8 +239,6 @@ global $path; $v=6;
       </tbody>
     </table>
   </div>
-
-</div><!-- end .emon-app -->
 
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">

@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 50;
+$v = 51;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -48,7 +48,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
     <link href="<?php echo $path; ?>Theme/css/bootstrap.css?v=4" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/css/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/css/emoncms-app.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
 

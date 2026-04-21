@@ -7,7 +7,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
-<div id="schedule-app" class="emon-app">
+<div id="schedule-app">
 
     <div v-show="schedules.length" class="page-header">
         <h2><?php echo ctx_tr('schedule_messages','Schedules'); ?></h2>
