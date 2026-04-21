@@ -1,5 +1,65 @@
 
+/* ------------------------------------------------------------------ */
+/* CSS Custom Properties (design tokens)                              */
+/* Default = dark (matches emoncms default colour mode).             */
+/* Light overrides applied via html.color-mode-light (set by the    */
+/* Colour Scheme toggle in user profile, stored in localStorage).    */
+/* ------------------------------------------------------------------ */
+:root {
+    /* Aligned to emon-app dark palette (emoncms-app.css) */
+    --color-accent:            #44b3e2;
+    --color-selected-bg:       rgba(68, 179, 226, 0.1);
+    --color-selected-bg-hover: rgba(68, 179, 226, 0.22);
+    --color-border:            #333;
+    --color-header-bg:         #222;
+    --color-header-hover:      #242424;
+    --color-header-text:       #ddd;
+    --color-row-bg:            #282828;
+    --color-row-border:        #333;
+    --color-surface:           #2e2e2e;
+    --color-text:              #ddd;
+    --color-btn-hover-bg:      #2e2e2e;
+    --color-btn-hover-border:  #666;
+    --color-input-bg:          #2a2a2a;
+    --color-controls-bg:       rgba(18, 18, 18, 0.92);
+    --color-muted:             #666;
+    --color-focus-ring:        rgba(68, 179, 226, 0.2);
+    --radius-card:             8px;
+    --radius-control:          6px;
+    --font-base:               14px;
+    --font-sm:                 13px;
+    --font-xs:                 12px;
+}
+
+/* Light mode — mirrors html.color-mode-light pattern from emoncms-app.css */
+html.color-mode-light {
+    --color-accent:            #2a8fc7;
+    --color-selected-bg:       rgba(42, 143, 199, 0.1);
+    --color-selected-bg-hover: rgba(42, 143, 199, 0.2);
+    --color-border:            #e0e0e0;
+    --color-header-bg:         #f5f5f5;
+    --color-header-hover:      #ececec;
+    --color-header-text:       #111;
+    --color-row-bg:            #ffffff;
+    --color-row-border:        #e8e8e8;
+    --color-surface:           #efefef;
+    --color-text:              #333;
+    --color-btn-hover-bg:      #e0e0e0;
+    --color-btn-hover-border:  #c0c0c0;
+    --color-input-bg:          #fff;
+    --color-controls-bg:       rgba(234, 234, 234, 0.92);
+    --color-muted:             #bbb;
+    --color-focus-ring:        rgba(42, 143, 199, 0.2);
+}
+
 body{padding:0!important}
+
+/* Apply correct text colour and base font size to the entire feed list —
+   Bootstrap sets body { color: #333 } which is invisible on dark row backgrounds */
+#feed-app, #feed-header, #feed-footer {
+    color: var(--color-text);
+    font-size: var(--font-base);
+}
 
 #footer {
     margin-left: 0px;
@@ -14,7 +74,7 @@ body{padding:0!important}
     position:absolute;
     overflow:hidden;
     text-align:left;
-    background: #f5f5f5;
+    background: var(--color-header-bg);
 }
 #deleteFeedModalSelectedItems h5{ margin:0 }
 #deleteFeedModalSelectedItems ol{
@@ -28,8 +88,8 @@ body{padding:0!important}
     grid-template-columns: 40px minmax(max-content, 2fr) 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
     width: 100%;
     box-sizing: border-box;
-    contain: layout style; /* CSS containment for better performance */
-    gap: 0; /* Explicit gap control */
+    contain: layout style;
+    gap: 0;
 }
 
 .grid-row {
@@ -37,7 +97,7 @@ body{padding:0!important}
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     align-items: center;
-    min-height: 41px;
+    min-height: 44px;
     cursor: default;
 }
 
@@ -46,8 +106,6 @@ body{padding:0!important}
     .feed-list-grid {
         grid-template-columns: 40px max-content 40px max-content minmax(80px, 1fr) 80px 100px;
     }
-    
-    /* Start by hiding the process list column */
     .grid-row > .grid-cell:nth-child(6) {
         display: none;
     }
@@ -57,10 +115,9 @@ body{padding:0!important}
     .feed-list-grid {
         grid-template-columns: 40px 1fr 80px 80px;
     }
-    /* Hide public, engine, and size columns */
-    .grid-row > .grid-cell:nth-child(3),  /* Public column */
-    .grid-row > .grid-cell:nth-child(4),  /* Engine column */
-    .grid-row > .grid-cell:nth-child(5) { /* Size column */
+    .grid-row > .grid-cell:nth-child(3),
+    .grid-row > .grid-cell:nth-child(4),
+    .grid-row > .grid-cell:nth-child(5) {
         display: none;
     }
 }
@@ -69,76 +126,101 @@ body{padding:0!important}
     .feed-list-grid {
         grid-template-columns: 30px 1fr 80px;
     }
-    /* Additionally hide value column on very small screens */
     .grid-row > .grid-cell:nth-child(8) {
         display: none;
     }
 }
 
 .feed-header {
-    background: #ddd;
+    background: var(--color-header-bg);
     font-weight: bold;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .grid-cell {
-    padding: 4px 8px;
+    padding: 6px 10px;
     overflow: hidden;
     white-space: nowrap;
     min-width: 0;
 }
 
-.text-center {
-    text-align: center;
+/* Tabular numbers for data columns */
+.grid-cell.text-center,
+.grid-cell.text-left {
+    font-variant-numeric: tabular-nums;
 }
 
-.text-left {
-    text-align: left;
+.text-center { text-align: center; }
+.text-left   { text-align: left; }
+.text-muted  { color: var(--color-muted); }
+
+.feed-select {
+    accent-color: var(--color-accent);
+    cursor: pointer;
+}
+
+/* Node group card */
+.node-group {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    transition: box-shadow 0.15s ease;
+    border: 1px solid var(--color-border);
+}
+
+.node-group:hover {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.13);
 }
 
 /* Node header styles for grid */
-.node-header {
-    background: #ddd;
+.node-header, .group-header {
+    background: var(--color-header-bg);
+    color: var(--color-header-text, inherit);
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
     border-right: 4px solid var(--status-color);
 }
 
-.node-header:hover {
-    background-color: #e3e3e3;
+.node-header:hover, .group-header:hover {
+    background-color: var(--color-header-hover);
 }
 
-.node-header h5 {
+.node-header h5, .group-header h5 {
     margin: 0;
-    font-weight: bold;
-    font-size: 14px;
+    font-weight: 600;
+    font-size: var(--font-xs);
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
     grid-column: 2;
 }
 
 /* Feed row styles for grid */
 .node-feed {
-    border-bottom: 1px solid #eee;
-    background: #fff;
+    border-top: 1px solid var(--color-row-border);
+    background: var(--color-row-bg);
+    color: var(--color-text);
     position: relative;
     transition: background-color 0.1s ease;
-    width: 100%;
     cursor: pointer;
     border-right: 4px solid var(--status-color);
 }
 
 .node-feed:hover {
-    background-color: #f5f5f5;
+    background-color: var(--color-surface);
 }
 
 .node-feed:last-of-type {
     border-bottom-width: 0;
 }
 
-/* Feed status indicator on right side */
+/* Feed left-edge indicator */
 .node-feed:after {
     content: '';
-    width: 0px;
-    background: var(--bg-menu-top);
+    width: 0;
+    background: var(--color-accent);
     height: 100%;
     display: block;
     position: absolute;
@@ -153,22 +235,23 @@ body{padding:0!important}
 
 /* Selected feed styling */
 .node-feed.selected {
-    background-color: rgba(60, 135, 170, 0.2) !important; /* Semi-transparent blue background */
+    background-color: var(--color-selected-bg);
 }
 
 .node-feed.selected:after {
-    width: 4px !important;
-    background: rgb(60, 135, 170) !important; /* Blue left border */
+    width: 4px;
+    background: var(--color-accent);
 }
 
 .node-feed.selected:hover {
-    background-color: rgba(60, 135, 170, 0.15) !important; /* Slightly more opaque on hover */
+    background-color: var(--color-selected-bg-hover);
 }
 
 /* Arrow animation for Vue */
 .arrow-icon {
     transition: transform 0.3s ease;
-    opacity: 0.333;
+    color: var(--status-color);
+    opacity: 0.7;
 }
 
 /* Collapsible content for Vue */
@@ -179,17 +262,90 @@ body{padding:0!important}
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.2s ease-in-out;
-    will-change: max-height;
 }
 
 .vue-collapsible-content.is-expanded {
-    max-height: 2000px; /* Adjust as needed, should be larger than any possible content height */
+    max-height: 2000px;
 }
 
-.node-group {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    border-radius: 6px;
-    overflow: hidden;
+/* Engine badges */
+.engine-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+    color: #fff;
+    vertical-align: middle;
+}
+
+.engine-badge .interval-sep {
+    display: inline-block;
+    width: 1px;
+    height: 0.9em;
+    background: rgba(255,255,255,0.45);
+    vertical-align: middle;
+    margin: 0 1px;
+}
+
+.engine-badge .interval-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+    opacity: 0.85;
+}
+
+.engine-badge.engine-fixed    { background: #2563eb; }
+.engine-badge.engine-variable { background: #7c3aed; }
+.engine-badge.engine-mysql    { background: #d97706; }
+.engine-badge.engine-virtual  { background: #059669; }
+.engine-badge.engine-memory   { background: #dc2626; }
+.engine-badge.engine-redis    { background: #db2777; }
+.engine-badge.engine-cassandra{ background: #92400e; }
+.engine-badge.engine-other    { background: #6b7280; }
+
+/* Public / private icon colours */
+.icon-public  { color: #2e7c9e; }
+.icon-private { color: #8b8b8b; }
+
+/* Sticky toolbar */
+.sticky-controls {
+    position: sticky;
+    top: 50px;  /* 46px navbar + 4px gap */
+    padding: 6px 8px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+    background: var(--color-controls-bg);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+/* Push filter to the right end of the toolbar */
+#filter {
+    margin-left: auto;
+    padding: 4px 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-control);
+    background-color: var(--color-input-bg);
+    color: var(--color-text);
+    font-size: var(--font-sm);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 120px;
+}
+
+#filter:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-focus-ring);
 }

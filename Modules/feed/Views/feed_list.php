@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=8;
+    $v=10;
         
     $public_username_str = "";
     if ($session['public_userid']) {
@@ -55,8 +55,6 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     <h3 id="public-feeds-title" class="hide"><?php echo tr('Public Feeds'); ?></h3>
 </div>
 
-<input type="text" name="filter" id="filter" placeholder="Filter feeds" style="float:right">
-
 <div id="feed-app">
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div class="sticky-controls">
@@ -84,6 +82,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         <button class="btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
+        <input type="text" name="filter" id="filter" placeholder="<?php echo tr('Filter feeds') ?>">
     </div>
 
 <!-- Vue.js Feed List Component -->
@@ -106,7 +105,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
             <div class="node-group">
             <!-- Node Header -->
-            <div :key="node" class="grid-row node-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
+            <div :key="node" class="grid-row group-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator">
                     <i class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></i>
                 </div>
@@ -136,10 +135,10 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
                     </div>
                     <div class="grid-cell">{{ feed.name }}</div>
                     <div class="grid-cell text-center">
-                        <i :class="feed.public == 1 ? 'icon-globe' : 'icon-lock'"></i>
+                        <i :class="feed.public == 1 ? 'icon-globe icon-public' : 'icon-lock icon-private'"></i>
                     </div>
-                    <div class="grid-cell">{{ formatEngine(feed.engine, feed.interval) }}</div>
-                    <div class="grid-cell text-center">{{ formatSize(feed.size) }}</div>
+                    <div class="grid-cell" v-html="formatEngine(feed.engine, feed.interval)"></div>
+                    <div class="grid-cell text-center text-muted">{{ formatSize(feed.size) }}</div>
                     <div class="grid-cell text-left" v-html="feed.processListHTML"></div>
                     <div class="grid-cell text-center" v-html="formatValue(feed.value, feed.unit)"></div>
                     <div class="grid-cell text-center" :style="{color: feed.color}">

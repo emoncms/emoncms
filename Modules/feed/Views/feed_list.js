@@ -121,15 +121,18 @@ var feedApp = new Vue({
         
         formatEngine: function(engine, interval) {
             var engineName = feed_engines[engine];
-            if (engineName == "PHPFINA") engineName = "FIXED";
-            else if (engineName == "PHPTIMESERIES") engineName = "VARIABLE";
-            
-            var intervalStr = "";
-            if (engine == 5) {
-                intervalStr = " (" + interval + "s)";
-            }
-            
-            return engineName + intervalStr;
+            var cssClass = 'engine-other';
+            if (engineName == 'PHPFINA')           { engineName = 'FIXED';    cssClass = 'engine-fixed'; }
+            else if (engineName == 'PHPTIMESERIES'){ engineName = 'VARIABLE'; cssClass = 'engine-variable'; }
+            else if (engineName == 'MYSQL')        { cssClass = 'engine-mysql'; }
+            else if (engineName == 'VIRTUAL')      { cssClass = 'engine-virtual'; }
+            else if (engineName == 'MEMORY')       { cssClass = 'engine-memory'; }
+            else if (engineName == 'REDISBUFFER')  { engineName = 'REDIS'; cssClass = 'engine-redis'; }
+            else if (engineName == 'CASSANDRA')    { cssClass = 'engine-cassandra'; }
+            var intervalTag = (engine == 5)
+                ? '<span class="interval-sep"></span><span class="interval-tag">' + interval + 's</span>'
+                : '';
+            return '<span class="engine-badge ' + cssClass + '">' + engineName + intervalTag + '</span>';
         },
         
         formatSize: function(bytes) {
