@@ -82,7 +82,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         <button class="app-btn app-btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
+        <input type="text" name="filter" id="filter" class="filter-input" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
     </div>
 
 <!-- Vue.js Feed List Component -->

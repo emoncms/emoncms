@@ -280,18 +280,7 @@ div#account {
 .node .collapse > *:hover {
     background-color: #f5f5f5;
 }
-.node .collapse > *:before {
-    content: '';
-    width: 0px;
-    background: #44b3e2;
-    height: 100%;
-    display: block;
-    position: absolute;
-    transition: width .2s ease-out;
-}
-.node .collapse > *:hover:before {
-    width: 2px;
-}
+/* left-accent bar is now shared — see .node-feed::before / .node .collapse > *::before above */
 .node .collapse > *:last-child {
     border-bottom-width: 0
 }
@@ -939,6 +928,8 @@ ul.nav > li > [disabled] {
 /* ── Dark theme body & footer ───────────────────────────────── */
 body {
     background-color: var(--bg-body);
+    color: var(--text-body);
+    font-size: var(--font-base);
 }
 
 .content-container {
@@ -1022,7 +1013,7 @@ html.color-mode-light #footer {
 .empty-state {
     background-color: var(--bg-card);
     border: 1px solid var(--border-card);
-    border-radius: 0.5rem;
+    border-radius: var(--radius-card);
     padding: 1.5rem 1.75rem;
     color: var(--text-secondary);
     line-height: 1.6;
@@ -1034,13 +1025,32 @@ html.color-mode-light #footer {
 }
 .empty-state a { color: var(--accent); }
 
+/* ── Shared card base (group-card & node-group) ─────────────── */
+.group-card,
+.node-group {
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
 /* ── Group / info cards ──────────────────────────────────────── */
 .group-card {
     background-color: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 0.5rem;
     margin-bottom: 0.75rem;
-    overflow: hidden;
+}
+
+/* ── Shared card-header base ────────────────────────────────── */
+.group-card-header,
+.node-header,
+.group-header {
+    background-color: var(--bg-card-header);
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+.group-card-header:hover,
+.node-header:hover,
+.group-header:hover {
+    background-color: var(--bg-card-header-hover);
 }
 
 /* Card header */
@@ -1049,13 +1059,8 @@ html.color-mode-light #footer {
     align-items: center;
     gap: 0.6rem;
     padding: 0.6rem 1rem;
-    background-color: var(--bg-card-header);
     border-bottom: 1px solid var(--border);
-    cursor: pointer;
     user-select: none;
-}
-.group-card-header:hover {
-    background-color: var(--bg-card-header-hover);
 }
 /* Blue left accent bar */
 .group-card-header::before {
@@ -1145,17 +1150,15 @@ html.color-mode-light .group-card table td {
     border-radius: 0.75rem;
     padding: 1px 8px;
 }
-/* Monospace cell */
-.group-card table td.col-mono {
-    font-family: monospace;
-    font-size: var(--font-xs);
-    color: var(--text-secondary);
-}
-/* Truncated monospace cell */
+/* Monospace cells */
+.group-card table td.col-mono,
 .group-card table td.col-mono-truncate {
     font-family: monospace;
-    font-size: var(--font-2xs);
     color: var(--text-secondary);
+}
+.group-card table td.col-mono { font-size: var(--font-xs); }
+.group-card table td.col-mono-truncate {
+    font-size: var(--font-2xs);
     max-width: 160px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1407,11 +1410,6 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 /* FEED LIST COMPONENT CSS                                            */
 /* ================================================================== */
 
-#feed-app, #feed-header, #feed-footer {
-    color: var(--text-body);
-    font-size: var(--font-base);
-}
-
 /* CSS Grid Feed List */
 .feed-list-grid {
     display: grid;
@@ -1477,11 +1475,8 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
-    border-radius: var(--radius-card);
-    overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     transition: box-shadow 0.15s ease;
-    border: 1px solid var(--border);
 }
 .node-group:hover {
     box-shadow: 0 4px 14px rgba(0,0,0,0.13);
@@ -1489,14 +1484,8 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 
 /* Node / group header */
 .node-header, .group-header {
-    background: var(--bg-card-header);
     color: var(--text-primary);
-    cursor: pointer;
-    transition: background-color 0.15s ease-in-out;
     border-right: 4px solid var(--status-color);
-}
-.node-header:hover, .group-header:hover {
-    background-color: var(--bg-card-header-hover);
 }
 .node-header h5, .group-header h5 {
     margin: 0;
@@ -1520,8 +1509,9 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 .node-feed:hover { background-color: var(--bg-chip); }
 .node-feed:last-of-type { border-bottom-width: 0; }
 
-/* Feed left-edge indicator */
-.node-feed:after {
+/* ── Shared left-accent bar (feed rows + input accordion rows) ── */
+.node-feed::before,
+.node .collapse > *::before {
     content: '';
     width: 0;
     background: var(--accent);
@@ -1532,11 +1522,12 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
     top: 0;
     transition: width .2s ease-out;
 }
-.node-feed:hover:after { width: 2px; }
+.node-feed:hover::before,
+.node .collapse > *:hover::before { width: 2px; }
 
 /* Selected feed */
 .node-feed.selected { background-color: var(--accent-bg); }
-.node-feed.selected:after { width: 4px; background: var(--accent); }
+.node-feed.selected::before { width: 4px; background: var(--accent); }
 .node-feed.selected:hover { background-color: var(--accent-bg-hover); }
 
 /* Vue collapse / arrow */
@@ -1609,7 +1600,7 @@ html.color-mode-light [class*=" icon-"] {
 }
 
 /* Filter input */
-#filter {
+.filter-input {
     margin-left: auto;
     padding: 4px 8px;
     border: 1px solid var(--border);
@@ -1621,7 +1612,7 @@ html.color-mode-light [class*=" icon-"] {
     transition: border-color 0.15s ease, box-shadow 0.15s ease;
     min-width: 120px;
 }
-#filter:focus {
+.filter-input:focus {
     border-color: var(--accent);
     box-shadow: 0 0 0 3px var(--focus-ring);
 }
