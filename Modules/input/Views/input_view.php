@@ -42,11 +42,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             <i class="icon" :class="selected.length > 0 && selected.length >= total_inputs ? 'icon-ban-circle' : 'icon-check'"></i>
             <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="app-btn input-delete" :class="{'hide': !selectMode}" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
-        <button @click="open_edit" class="app-btn input-edit" :class="{'hide': !selectMode}" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
+        <button @click="open_delete" class="app-btn input-delete" v-if="selected.length > 0" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
+        <button @click="open_edit" class="app-btn input-edit" v-if="selected.length > 0" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
         <!-- input processing configure only show if one input selected -->
         <button
-            v-if="selectMode && selected.length === 1"
+            v-if="selected.length === 1"
             @click="showInputConfigure(selected[0])"
             class="app-btn input-configure"
             :title="'<?php echo addslashes(tr('Configure Input processing')); ?>'">
@@ -55,7 +55,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <button v-if="show_clean" @click="clean_unused" class="app-btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-        <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" :class="{hide: selectMode}" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
+        <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" v-if="selected.length == 0" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
     </div>
 
     <div id="noprocesses clearfix"></div>
