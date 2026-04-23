@@ -20,7 +20,7 @@ include_once('Lib/units.php');
             <table class="table table-condensed">
                 <thead>
                     <tr>
-                        <th v-if="selectedFeedIds.length === 1"><?php echo tr('Name') ?></th>
+                        <th><?php echo tr('Name') ?></th>
                         <th><?php echo tr('Node') ?></th>
                         <th><?php echo tr('Unit') ?></th>
                         <th><?php echo tr('Public') ?></th>
@@ -29,8 +29,9 @@ include_once('Lib/units.php');
                 </thead>
                 <tbody>
                     <tr v-for="feed in selectedFeeds" :key="feed.id">
-                        <td v-if="selectedFeedIds.length === 1">
-                            <input type="text" class="input-block-level" v-model="feed.name">
+                        <td>
+                            <input v-if="selectedFeedIds.length === 1" type="text" class="input-block-level" v-model="feed.name">
+                            <span v-else class="text-muted">{{feed.name}}</span>
                         </td>
                         <td>
                             <input type="text" class="input-block-level" v-model="feed.tag">
