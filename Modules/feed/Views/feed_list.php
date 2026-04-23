@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=11;
+    $v=12;
         
     $public_username_str = "";
     if ($session['public_userid']) {
@@ -82,7 +82,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         <button class="app-btn app-btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" class="filter-input" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
+        <input type="text" name="filter" id="filter" v-model="filterText" class="filter-input" :class="{hide: selectedFeedCount > 0}" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
     </div>
 
 <!-- Vue.js Feed List Component -->
@@ -101,7 +101,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
         </div>
         -->
         <!-- Node Groups -->
-        <template v-for="(nodeFeeds, node) in nodes">
+        <template v-for="(nodeFeeds, node) in filteredNodes">
 
             <div class="node-group">
             <!-- Node Header -->

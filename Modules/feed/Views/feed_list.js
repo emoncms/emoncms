@@ -26,7 +26,8 @@ var feedApp = new Vue({
         selectedFeeds: {},
         nodesDisplay: {},
         node_time_and_colour: {},
-        feedsLoaded: false
+        feedsLoaded: false,
+        filterText: ''
     },
     computed: {
         allExpanded: function() {
@@ -81,6 +82,22 @@ var feedApp = new Vue({
         
         showNoPublicFeeds: function() {
             return this.feedsLoaded && Object.keys(this.feeds).length === 0 && public_userid;
+        },
+
+        filteredNodes: function() {
+            if (!this.filterText) return this.nodes;
+            var filterText = this.filterText.toLowerCase();
+            var result = {};
+            for (var node in this.nodes) {
+                var nodeMatch = node.toLowerCase().includes(filterText);
+                var filteredFeeds = nodeMatch ? this.nodes[node] : this.nodes[node].filter(function(feed) {
+                    return feed.name.toLowerCase().includes(filterText);
+                });
+                if (filteredFeeds.length > 0) {
+                    result[node] = filteredFeeds;
+                }
+            }
+            return result;
         }
     },
     methods: {
@@ -179,12 +196,7 @@ var feedApp = new Vue({
         },
         
         onFeedSelectionChange: function() {
-            // Hide filter when feeds are selected
-            if (this.selectedFeedCount > 0) {
-                $("#filter").hide();
-            } else {
-                $("#filter").show();
-            }
+            // handled reactively via :class binding on filter input
         },
         
         // Integrated expand/collapse functionality
@@ -327,7 +339,6 @@ var feedApp = new Vue({
 // -----------------------------------------------------------------------------
 setTimeout(update_feed_list,1);
 setInterval(update_feed_list,5000);
-filter.oninput = update_feed_list;
 
 var first_load = true;
 function update_feed_list() {
@@ -345,13 +356,10 @@ function update_feed_list() {
         // Show/hide no feeds alert - now handled by Vue
         $('#feed-loader').hide();
         
-        // Filter feeds
+        // Store all feeds unfiltered
         feeds = {};
-        filterText = filter.value.toLowerCase()
         for (var z in data) {
-            if (filterText == '' || data[z].name.toLowerCase().includes(filterText)) {
-                feeds[data[z].id] = data[z];
-            }
+            feeds[data[z].id] = data[z];
         }
 
         node_time_and_colour = {};
