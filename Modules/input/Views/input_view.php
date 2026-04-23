@@ -64,7 +64,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
         <!-- alert danger if input creation is disabled for user, click enable button to enable -->
         <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
-            <button @click="enableInputCreation" class="btn" style="float:right;">
+            <button @click="enableInputCreation" class="app-btn" style="float:right;">
                 <i class="icon icon-play" style="margin-top:2px"></i>
                 <?php echo tr('Enable Input Creation'); ?></button>
             <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
@@ -141,7 +141,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
             <div class="alert" v-else>
                 <h3 class="alert-heading mt-0"><?php echo tr('No inputs created'); ?></h3>
                 <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-                <button @click.prevent="create_device" class="btn">
+                <button @click.prevent="create_device" class="app-btn">
                     <i class="icon-plus-sign"></i> <?php echo tr('New device'); ?>
                 </button>
             </div>
@@ -150,7 +150,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
         <!-- disable input creation button, only show if input creation is not already disabled and there are existing inputs -->
         <div v-if="!input_creation_disabled && total_inputs > 0">
-            <button @click="disableInputCreation" class="btn float-end" style="margin-top:10px;">
+            <button @click="disableInputCreation" class="app-btn float-end" style="margin-top:10px;">
                 <i class="icon icon-lock" style="margin-top:2px"></i>
                 <?php echo tr('Disable further input creation'); ?></button>
         </div>

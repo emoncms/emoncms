@@ -395,7 +395,7 @@ function update_feed_list() {
                 if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
                     node_time_and_colour[feeds[z].tag] = formatted_time;
                 }
-                if (feeds[z].processList) {
+                if (feeds[z].processList && process_vue != undefined) {
                     feeds[z].processListHTML = process_vue ? process_vue.drawPreview(feeds[z].processList, feeds[z]) : '';
                 }
             }

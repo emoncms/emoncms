@@ -199,7 +199,7 @@ html.color-mode-light {
     --bg-card-header:       #eee;
     --bg-card-header-hover: #e0e0e0;
     --bg-badge:             #efefef;
-    --bg-input:             #ffffff;
+    --bg-input:             #fafafa;
     --controls-bg:          rgba(234, 234, 234, 0.92);
 
     --border:               #e0e0e0;
@@ -859,15 +859,14 @@ div#account {
     align-items: center;
     gap: 4px;
     flex-wrap: wrap;
-    background: var(--controls-bg);
     backdrop-filter: blur(6px);
-    border: 1px solid var(--border);
     border-radius: var(--radius-card);
 }
 
 .menu-top.menu-top-hide ~ * .sticky-controls,
 .menu-top.menu-top-hide ~ .sticky-controls {
     top: 0;
+
 }
 
 
@@ -1127,18 +1126,21 @@ div#account {
 .app-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.35em;
-    background-color: var(--accent-bg);
-    color: var(--accent);
-    border: 1px solid var(--accent-border);
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
     border-radius: 0.375rem;
-    padding: 0.3rem 0.85rem;
+    padding: 0 0.85rem;
+    height: 30px;
     font-size: var(--font-sm);
     font-family: inherit;
     cursor: pointer;
     transition: background-color 0.2s, color 0.2s;
-    line-height: 1.4;
+    line-height: 1;
     white-space: nowrap;
+    box-sizing: border-box;
 }
 .app-btn:hover,
 .app-btn:focus {
@@ -1147,7 +1149,8 @@ div#account {
     outline: none;
 }
 .app-btn-sm {
-    padding: 0.15rem 0.55rem;
+    padding: 0 0.55rem;
+    height: 24px;
     font-size: var(--font-xs);
 }
 .app-btn-danger {
