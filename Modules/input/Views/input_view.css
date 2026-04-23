@@ -6,8 +6,8 @@ input[type="checkbox"] { margin:0px; }
 
 @media (min-width: 768px) {
     .modal-wide{
-        width:650px;
-        margin-left:-325px
+        width:520px;
+        margin-left:-260px
     }
 }
 
