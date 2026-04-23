@@ -356,61 +356,99 @@ function update_feed_list() {
             window.location.href = "/";
             return false;
         }
-    
-        // Show/hide no feeds alert - now handled by Vue
+
         $('#feed-loader').hide();
-        
-        // Store all feeds unfiltered
-        feeds = {};
+
+        // Index incoming data by id
+        var incoming = {};
         for (var z in data) {
-            feeds[data[z].id] = data[z];
+            incoming[data[z].id] = data[z];
+        }
+
+        // Detect structural changes: feeds added/removed, or a feed moved to a different node.
+        // In-place updates are used for all other polls to avoid full list re-renders.
+        var incomingIds = Object.keys(incoming);
+        var structuralChange = !feedApp.feedsLoaded || incomingIds.length !== Object.keys(feedApp.feeds).length;
+        if (!structuralChange) {
+            for (var id in incoming) {
+                if (!feedApp.feeds[id] || feedApp.feeds[id].tag !== incoming[id].tag) {
+                    structuralChange = true;
+                    break;
+                }
+            }
         }
 
         node_time_and_colour = {};
 
-        // Get feed and node colours and formatted values
-        for (var z in feeds) {
-            var formatted_time = formatTime(feeds[z].time, feeds[z].interval);
-
-            feeds[z].color = formatted_time.color;
-            feeds[z].color_code = formatted_time.color_code;
-            feeds[z].formatted_time = formatted_time.text;
-
-            if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
-                node_time_and_colour[feeds[z].tag] = formatted_time;
+        if (structuralChange) {
+            // Full rebuild: feeds were added/removed or moved between nodes
+            feeds = {};
+            for (var z in data) {
+                feeds[data[z].id] = data[z];
             }
-        }
 
-        // get processList html
-        for (var z in feeds) {
-            if (feeds[z].processList != undefined && feeds[z].processList) {
-                feeds[z].processListHTML = process_vue ? process_vue.drawPreview(feeds[z].processList, feeds[z]) : '';
+            for (var z in feeds) {
+                var formatted_time = formatTime(feeds[z].time, feeds[z].interval);
+                feeds[z].color = formatted_time.color;
+                feeds[z].color_code = formatted_time.color_code;
+                feeds[z].formatted_time = formatted_time.text;
+                if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
+                    node_time_and_colour[feeds[z].tag] = formatted_time;
+                }
+                if (feeds[z].processList) {
+                    feeds[z].processListHTML = process_vue ? process_vue.drawPreview(feeds[z].processList, feeds[z]) : '';
+                }
             }
-        }
-        
-        // Group feeds by node
-        nodes = {};
-        for (var z in feeds) {
-            var node = feeds[z].tag;
-            if (nodes[node]==undefined) nodes[node] = [];
-            nodes[node].push(feeds[z]);
-        }
 
-        // make copy of current nodesDisplay on first load
-        let nodes_display = feedApp.nodesDisplay;
-        for (var n in nodes) {
-            if (nodes_display[n] === undefined) {
-                // First time seeing this node, expand by default
-                nodes_display[n] = true;
+            nodes = {};
+            for (var z in feeds) {
+                var node = feeds[z].tag;
+                if (nodes[node]==undefined) nodes[node] = [];
+                nodes[node].push(feeds[z]);
             }
+
+            var nodes_display = feedApp.nodesDisplay;
+            for (var n in nodes) {
+                if (nodes_display[n] === undefined) nodes_display[n] = true;
+            }
+
+            feedApp.feeds = Object.assign({}, feeds);
+            feedApp.nodes = Object.assign({}, nodes);
+            feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
+            feedApp.nodesDisplay = Object.assign({}, nodes_display);
+        } else {
+            // In-place update: patch only display fields on existing reactive feed objects.
+            // Because feedApp.feeds[id] and feedApp.nodes[tag][i] reference the same feed object,
+            // updating one updates both, and Vue surgically re-renders only the changed cells.
+            for (var id in incoming) {
+                var fresh = incoming[id];
+                var existing = feedApp.feeds[id];
+                var formatted_time = formatTime(fresh.time, fresh.interval);
+
+                existing.value    = fresh.value;
+                existing.time     = fresh.time;
+                existing.size     = fresh.size;
+                existing.public   = fresh.public;
+                existing.unit     = fresh.unit;
+                existing.name     = fresh.name;
+                existing.color    = formatted_time.color;
+                existing.color_code = formatted_time.color_code;
+                existing.formatted_time = formatted_time.text;
+
+                if (fresh.processList !== existing.processList) {
+                    existing.processList = fresh.processList;
+                    existing.processListHTML = process_vue ? process_vue.drawPreview(fresh.processList, existing) : '';
+                }
+
+                var tag = fresh.tag;
+                if (node_time_and_colour[tag]==undefined || formatted_time.color_code > node_time_and_colour[tag].color_code) {
+                    node_time_and_colour[tag] = formatted_time;
+                }
+            }
+
+            feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
         }
 
-        
-        // Update Vue.js data
-        feedApp.nodes = Object.assign({}, nodes);
-        feedApp.feeds = Object.assign({}, feeds);
-        feedApp.node_time_and_colour = Object.assign({}, node_time_and_colour);
-        feedApp.nodesDisplay = Object.assign({}, nodes_display);
         feedApp.feedsLoaded = true;
     }}); // end of ajax callback
 }// end of update_feed_list() function
