@@ -58,7 +58,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" v-if="selected.length == 0" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
     </div>
 
-    <div id="noprocesses clearfix"></div>
+    <div id="noprocesses" class="clearfix"></div>
 
     <div v-cloak>
 

@@ -70,8 +70,8 @@ function showSelectedFeeds(feed_inputs) {
     let total_virtual_feed_processes_linked = 0;
     let feedListShort = '';
 
-    for (const feedid in selected_feeds) {
-        if (!selected_feeds[feedid]) continue;
+    for (const feedid in feedApp.selectedFeeds) {
+        if (!feedApp.selectedFeeds[feedid]) continue;
         total_selected++;
         const feed = feeds[feedid];
         feedListShort += `[${feedid}] ${feed.tag}:${feed.name}, `;
@@ -227,8 +227,8 @@ function initRelativeStartDateButtons(start_time){
  */
 function getEarliestStartTime() { 
     let start_time = 0;
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid] == true) {
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid] == true) {
             // record the earliest possible start_time for all the selected feeds
             start_time = feeds[feedid].start_time > start_time ? feeds[feedid].start_time : start_time;
         }
@@ -268,10 +268,10 @@ function isSelectionValidForTrim(){
         const CASSANDRA = 10;    // Cassandra
     */
     let allowed_engines = [0,2,5,8] // array of allowed storage engines
-    for (var feedid in selected_feeds) {
+    for (var feedid in feedApp.selectedFeeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
-        if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
+        if (feedApp.selectedFeeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
             return false;
         }
     }
@@ -367,8 +367,8 @@ function enableTrim(start_time){
                     let start_time = start_date.getTime()/1000;
                     $("#feedDelete-loader").fadeIn();
                     // run the trim() function on all the selected feeds
-                    for (let feedid in selected_feeds) {
-                        if (selected_feeds[feedid]) {
+                    for (let feedid in feedApp.selectedFeeds) {
+                        if (feedApp.selectedFeeds[feedid]) {
                             let response = feed.trim(feedid, start_time);
                             updateFeedDeleteModalMessage(response);
                             if (!response.success) {
@@ -411,9 +411,9 @@ function openDeleteFeedModal(){
     // get the list of input processlists that write to feeds
     let feed_processes = getFeedProcess();
     let selected_feeds_inputs = {};
-    for (i in selected_feeds){
+    for (i in feedApp.selectedFeeds){
         // if a selected feed has an associated process id then save it into an array
-        if (selected_feeds[i] && typeof feed_processes[i] != 'undefined') {
+        if (feedApp.selectedFeeds[i] && typeof feed_processes[i] != 'undefined') {
             selected_feeds_inputs[i] = feed_processes[i];
         }
     }
@@ -439,10 +439,10 @@ function isSelectionValidForClear(){
         const CASSANDRA = 10;    // Cassandra
     */
     let allowed_engines = [0,2,5,8]; // array of allowed storage engines 
-    for (var feedid in selected_feeds) {
+    for (var feedid in feedApp.selectedFeeds) {
         engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
-        if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
+        if (feedApp.selectedFeeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
             return false;
         }
     }
@@ -471,8 +471,8 @@ function enableClear(){
                 $modal = $('#feedDeleteModal');
                 $("#feedDelete-loader").fadeIn();
 
-                for (let feedid in selected_feeds) {
-                    if (selected_feeds[feedid]) {
+                for (let feedid in feedApp.selectedFeeds) {
+                    if (feedApp.selectedFeeds[feedid]) {
                         let response = feed.clear(feedid);
                         updateFeedDeleteModalMessage(response);
                         if (!response.success) {
@@ -497,8 +497,8 @@ function disableClear(){
 
 $("#feedDelete-confirm").click(function(){
     if (confirm(tr('Are you sure you want to delete?')) == true) {
-        for (let feedid in selected_feeds) {
-            if (selected_feeds[feedid]) {
+        for (let feedid in feedApp.selectedFeeds) {
+            if (feedApp.selectedFeeds[feedid]) {
                 let response = feed.remove(feedid);
                 response = response ? response : {success:true, message: tr("Feeds Deleted")};
                 updateFeedDeleteModalMessage(response);

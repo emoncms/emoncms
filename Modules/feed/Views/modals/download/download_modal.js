@@ -6,8 +6,8 @@ function openFeedExportModal(){
     $("#export-average").data("enabled",0);
     
     var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) {
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid]==true) {
             ids.push(parseInt(feedid));
         }
     }
@@ -85,8 +85,8 @@ $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
 $("#export").click(function()
 {
     var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid]==true) ids.push(parseInt(feedid));
     }
 
     var export_start = parse_timepicker_time($("#export-start").val());
@@ -147,8 +147,8 @@ function calculate_download_size(feedcount){
     } else if (export_interval=="original") {
         // Get interval from meta data if available
         var feedid = false;
-        for (feedid in selected_feeds) {
-            if (selected_feeds[feedid]==true) break;
+        for (feedid in feedApp.selectedFeeds) {
+            if (feedApp.selectedFeeds[feedid]==true) break;
         }
         if (feeds[feedid].interval!=undefined) {
             export_interval = feeds[feedid].interval;

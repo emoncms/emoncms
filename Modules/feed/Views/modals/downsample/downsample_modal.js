@@ -16,8 +16,8 @@ function openDownsampleModal() {
     // populate downsample-feeds table 
     var interval_max = 0;
     var out = "";
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
             out += "<tr>";
             out += "<td>"+feeds[feedid].tag+"</td>";
             out += "<td>"+feeds[feedid].name+"</td>";
@@ -66,8 +66,8 @@ $("#downsample-confirm").click(function(){
 
 
         var processes = [];
-        for (var feedid in selected_feeds) {
-            if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+        for (var feedid in feedApp.selectedFeeds) {
+            if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
                 processes.push({
                     feed: feedid,
                     new_interval: interval,
@@ -95,8 +95,8 @@ $("#downsample-confirm").click(function(){
                     if (count) {
 
                         var out = "";
-                        for (var feedid in selected_feeds) {
-                            if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+                        for (var feedid in feedApp.selectedFeeds) {
+                            if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
                                 out += "<tr>";
                                 out += "<td>"+feeds[feedid].tag+"</td>";
                                 out += "<td>"+feeds[feedid].name+"</td>";

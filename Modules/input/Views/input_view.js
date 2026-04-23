@@ -1,10 +1,7 @@
 var inactive_input_timeout = 3600; // seconds of inactivity before input is considered inactive
 var devices = {};
 var inputs = {};
-var local_cache_key = 'input_nodes_display';
 var nodes_display = {};
-// clear cookie value if not in correct format
-if (Array.isArray(nodes_display)) nodes_display = {};
 
 if (DEVICE_MODULE) {
     var device_templates = {};
@@ -98,6 +95,15 @@ var app = new Vue({
                 update()
                 updaterStart(update, 5000)
             }
+        },
+        // Auto-expand collapsed nodes when a filter is active
+        filterText: function(val) {
+            if (!val) return;
+            var newDisplay = Object.assign({}, this.nodesDisplay);
+            for (var nodeid in this.filteredDevices) {
+                newDisplay[nodeid] = true;
+            }
+            Vue.set(this, 'nodesDisplay', newDisplay);
         }
     },
     methods: {
@@ -225,6 +231,10 @@ var app = new Vue({
                     ids.push(input.id);
                 });
                 this.selected = ids;
+                // Expand all nodes so selected inputs are visible
+                var expanded = {};
+                for (var nodeid in this.devices) { expanded[nodeid] = true; }
+                Vue.set(this, 'nodesDisplay', expanded);
             } else {
                 this.selected = [];
             }

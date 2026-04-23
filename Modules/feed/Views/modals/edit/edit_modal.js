@@ -4,11 +4,11 @@
 // ---------------------------------------------------------------------------------------------
 function openEditFeedModal(){
     $('#feedEditModal').modal('show');
-    var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+    var edited_feeds = $.map(feedApp.selectedFeeds, function(val,key){ return val ? key: null });
     var feedid = 0;
     // Now allows for multiple feed selection
-    for (var z in selected_feeds) {
-        if (selected_feeds[z]){
+    for (var z in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[z]){
             feedid = z;
             if (edited_feeds.length == 1) {
                 $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
@@ -57,14 +57,14 @@ $(".feed-node").on('input', function(event){
 
 $(".feed-edit-save").click(function() {
     var feedid = 0;
-    var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+    var edited_feeds = $.map(feedApp.selectedFeeds, function(val,key){ return val ? key: null });
     
     var edit_field = $(this).attr("field");
 
     var error = false;
 
-    for (var z in selected_feeds) {
-        if (selected_feeds[z]) {
+    for (var z in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[z]) {
             feedid = z; 
             
             var fields = {}

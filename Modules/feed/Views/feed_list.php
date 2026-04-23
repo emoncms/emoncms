@@ -24,7 +24,7 @@
 function format_time(time,format){
     if(!Number.isInteger(time)) return time;
     format = format || 'YYYY-MM-DD';
-    formatted_date = moment.unix(time).utc().format(format);
+    var formatted_date = moment.unix(time).utc().format(format);
     return formatted_date;
 }
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";

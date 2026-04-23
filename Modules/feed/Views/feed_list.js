@@ -7,15 +7,13 @@ if (!session_write) {
    $("#feed-footer").hide();
 }
 
-var app = {};
 var feeds = {};
 var nodes = {};
 var nodes_display = {};
 var node_time_and_colour = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
-var selected_feeds = {}; // Global scope used by edit/delete/downsample/export modals
 
-var tmp = []; for (var z in available_intervals) tmp.push(available_intervals[z]['interval']); available_intervals = tmp;
+available_intervals = available_intervals.map(function(a) { return a['interval']; });
 
 // Vue.js Feed List Application
 var feedApp = new Vue({
@@ -98,6 +96,17 @@ var feedApp = new Vue({
                 }
             }
             return result;
+        }
+    },
+    watch: {
+        filterText: function(val) {
+            if (!val) return;
+            // Auto-expand any node that has a matching feed
+            var newDisplay = Object.assign({}, this.nodesDisplay);
+            for (var node in this.filteredNodes) {
+                newDisplay[node] = true;
+            }
+            this.nodesDisplay = newDisplay;
         }
     },
     methods: {
@@ -316,19 +325,15 @@ var feedApp = new Vue({
 
         // Actions: edit, delete, downsample, export
         editFeeds: function() {
-            selected_feeds = this.selectedFeeds;
             openEditFeedModal();
         },
         deleteFeeds: function() {
-            selected_feeds = this.selectedFeeds;
             openDeleteFeedModal();
         },
         downsampleFeeds: function() {
-            selected_feeds = this.selectedFeeds;
             openDownsampleModal();
         },
         exportFeeds: function() {
-            selected_feeds = this.selectedFeeds;
             openFeedExportModal();
         }
     }
@@ -340,14 +345,13 @@ var feedApp = new Vue({
 setTimeout(update_feed_list,1);
 setInterval(update_feed_list,5000);
 
-var first_load = true;
 function update_feed_list() {
     var public_username_str = "";
     if (public_userid) public_username_str = public_username+"/";
     var requestTime = (new Date()).getTime();
 
     $.ajax({ url: path+public_username_str+"feed/list.json?meta=1", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        if( typeof app !== 'undefined') app.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+        feedApp.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
         if (data.message!=undefined && data.message=="Username or password empty") {
             window.location.href = "/";
             return false;
@@ -428,7 +432,7 @@ function buildFeedNodeList() {
 // This could be moved to a shared utility file if needed elsewhere
 function formatTime(time, interval) {
     interval = interval || 1;
-    var servertime = (new Date()).getTime() - (app.timeServerLocalOffset || 0);
+    var servertime = (new Date()).getTime() - (feedApp.timeServerLocalOffset || 0);
     time = new Date(time * 1000);
     var update = time.getTime();
 

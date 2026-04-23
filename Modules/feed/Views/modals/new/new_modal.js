@@ -40,7 +40,7 @@ $('#newfeed-engine').change(function(){
 
 $(".feed-process").click(function() {
     // There should only ever be one feed that is selected here:
-    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+    var feedid = 0; for (var z in feedApp.selectedFeeds) { if (feedApp.selectedFeeds[z]) feedid = z; }
     var contextid = feedid;
     var contextname = "";
     if (feeds[feedid].name != "") contextname = feeds[feedid].tag + " : " + feeds[feedid].name;
