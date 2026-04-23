@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=12;
+    $v=13;
         
     $public_username_str = "";
     if ($session['public_userid']) {
@@ -9,7 +9,7 @@
     }
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
+<script src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <script src="<?php echo $path; ?>Lib/moment.min.js?v=1"></script>
 
@@ -36,11 +36,11 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 <?php require "Modules/feed/Views/translate.php"; ?>
 
 <!-- feed.clear, trim, remove used by delete modal -->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 
 <link href="<?php echo $path; ?>Theme/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Theme/js/bootstrap-datetimepicker.min.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -58,28 +58,28 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 <div id="feed-app">
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div class="sticky-controls">
-        <button class="app-btn app-btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
+        <button class="app-btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
             <i class="icon" :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
         </button>
-        <button class="app-btn app-btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
+        <button class="app-btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
             <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
-        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
+        <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
         </button>
-        <button class="app-btn app-btn" :class="{hide: !selectedFeedCount || !session_write}" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
+        <button class="app-btn" v-if="selectedFeedCount > 0 && session_write" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
             <i class="icon-trash"></i>
         </button>
-        <button class="app-btn app-btn" :class="{hide: !showDownsample}" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
+        <button class="app-btn" v-if="showDownsample" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
             <i class="icon-repeat"></i>
         </button>
-        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
+        <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
             <i class="icon-download"></i>
         </button>
-        <button class="app-btn app-btn" v-if="selectedFeedCount>0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
+        <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
             <i class="icon-eye-open"></i>
         </button>
-        <button class="app-btn app-btn" :class="{hide: !showProcess}" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
+        <button class="app-btn" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
         <input type="text" name="filter" id="filter" v-model="filterText" class="filter-input" :class="{hide: selectedFeedCount > 0}" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
@@ -110,7 +110,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
                     <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <h5>{{ node }}:<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></h5>
+                <h5 class="grid-cell">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></h5>
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
@@ -173,7 +173,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 <div id="feed-loader" class="ajax-loader"></div>
 
 <!-- Main feed list javascript -->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/feed_list.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/feed_list.js?v=<?php echo $v; ?>"></script>
 
 <!----------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- Feed list ui modals -->
@@ -181,23 +181,23 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
 <!-- Delete Feed Modal -->
 <?php require "Modules/feed/Views/modals/delete/delete_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/delete/delete_modal.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/modals/delete/delete_modal.js?v=<?php echo $v; ?>"></script>
 
 <!-- Edit Feed Modal -->
 <?php require "Modules/feed/Views/modals/edit/edit_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/edit/edit_modal.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/modals/edit/edit_modal.js?v=<?php echo $v; ?>"></script>
 
 <!-- Download Feed Modal -->
 <?php require "Modules/feed/Views/modals/download/download_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/download/download_modal.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/modals/download/download_modal.js?v=<?php echo $v; ?>"></script>
 
 <!-- Import Feed Modal -->
 <?php require "Modules/feed/Views/modals/import/import_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/import/import_modal.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/modals/import/import_modal.js?v=<?php echo $v; ?>"></script>
 
 <!-- Downsample Feed Modal -->
 <?php require "Modules/feed/Views/modals/downsample/downsample_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/downsample/downsample_modal.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/Views/modals/downsample/downsample_modal.js?v=<?php echo $v; ?>"></script>
 
 <!-- New Feed Modal -->
 <?php require "Modules/feed/Views/modals/new/new_modal.php"; ?>
