@@ -421,3 +421,26 @@ function guidv4()
     // Output the 36 character UUID.
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Load JavaScript and CSS files with optional cache busting based on file modification time
+// ---------------------------------------------------------------------------------------------------------
+function load_js(string $file_path, bool $filemtime = true): void {
+    global $path;
+    $version_string = "";
+    if ($filemtime && file_exists($file_path)) {
+        $version_string = "?v=" . filemtime($file_path);
+    }
+    $safe_path = htmlspecialchars($file_path, ENT_QUOTES, 'UTF-8');
+    echo '<script src="' . $path . $safe_path . $version_string . '"></script>' . "\n";
+}
+
+function load_css(string $file_path, bool $filemtime = true): void {
+    global $path;
+    $version_string = "";
+    if ($filemtime && file_exists($file_path)) {
+        $version_string = "?v=" . filemtime($file_path);
+    }
+    $safe_path = htmlspecialchars($file_path, ENT_QUOTES, 'UTF-8');
+    echo '<link rel="stylesheet" href="' . $path . $safe_path . $version_string . '">' . "\n";
+}

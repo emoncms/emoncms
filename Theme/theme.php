@@ -46,16 +46,17 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
-    <link href="<?php echo $path; ?>Theme/css/bootstrap.css?v=4" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/css/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <?php
+    load_css("Theme/css/bootstrap.css");
+    load_css("Theme/css/emoncms-base.css");
+    load_css("Lib/menu/menu.css");
 
-    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
+    include 'Lib/menu/menu_langjs.php';
 
-    <?php include 'Lib/menu/menu_langjs.php' ?>
-
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+    load_js("Lib/jquery-3.6.0.min.js");
+    load_js("Lib/menu/menu.js");
+    load_js("Lib/misc/gettext.js");
+    ?>
 
     <script>
     var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
@@ -140,8 +141,9 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Theme/js/bootstrap.js?v=2"></script>
-    <Script type="text/javascript" src="<?php echo $path; ?>Theme/js/theme.js?v=<?php echo $v; ?>"></Script>
+    <?php load_js("Theme/js/bootstrap.js"); ?>
+    <?php load_js("Theme/js/theme.js"); ?>
+
     <script>
     (function() {
         var mode = localStorage.getItem('colormode') || 'dark';
