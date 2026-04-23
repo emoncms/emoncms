@@ -205,15 +205,7 @@ if ($route->isRouteNotDefined()) {
     if ($settings["interface"]["enable_admin_ui"]) {
         if (file_exists("Modules/setup")) {
             require "Modules/setup/setup_model.php";
-            $setup = new Setup($mysqli);
-            
-            if ($setup->status()=="unconfigured") {
-                // Provide special setup access to WIFI module functions
-                $_SESSION['setup_access'] = true;
-            } else {
-                $_SESSION['setup_access'] = false;
-            }
-            
+            $setup = new Setup($mysqli);   
             // Either show setup interface if unconfigured or if access point login
             if ($setup->status()=="unconfigured" || $route->is_ap) {
                 $settings["interface"]["default_controller"] = "setup";
