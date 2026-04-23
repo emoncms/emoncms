@@ -1,11 +1,5 @@
 
-#footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
 input[type="checkbox"] { margin:0px; }
-.controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
 
 #noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
@@ -17,102 +11,66 @@ input[type="checkbox"] { margin:0px; }
     }
 }
 
-@media (max-width: 768px) {
-    body {padding:0};
+/* ================================================================== */
+/* INPUT LIST GRID                                                     */
+/* ================================================================== */
+
+/*
+ * 7-column subgrid layout for the input list.
+ * Col 1 : 40px   — checkbox / arrow
+ * Col 2 : 2fr    — name
+ * Col 3 : 1fr    — description
+ * Col 4 : 1fr    — process list
+ * Col 5 : 100px  — last updated
+ * Col 6 : 80px   — value
+ * Col 7 : 40px   — configure / device-configure icon
+ */
+.input-list-grid {
+    display: grid;
+    grid-template-columns: 40px minmax(max-content, 2fr) minmax(max-content, 1fr) minmax(100px, 1fr) 100px 80px 40px;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0;
 }
 
-.node .node-info{
-    border-bottom: 1px solid white;
-}
-.node .node-info,
-.node .node-input {
-    position: relative;
-}
-.node .node-info::after,
-.node .node-input::after {
-    content: '';
-    width: .4em;
-    height: 100%;
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: rgba(0,0,0,.1);
-}
-.buttons{
-    padding-right: .4em;
+/* Device key / configure icon links inherit the header text colour */
+.input-list-grid .group-header > .grid-cell:nth-child(6) > a,
+.input-list-grid .group-header > .grid-cell:nth-child(7) > a {
+    color: inherit;
 }
 
-.node-info::after,
-.node-input::after {
-    background: var(--status-color)!important;
-}
-
-
-[data-col] { overflow:hidden; }
-
-[data-col="B"] { width:40px; }
-[data-col="A"] { width:200px; }
-[data-col="G"] { width:200px; }
-[data-col="F"] { width:50px; }
-[data-col="E"] { width:100px; }
-[data-col="D"] { width:100px; }
-[data-col="C"] { width:50px; }
+/* Muted icon buttons (device module not installed) */
 a.text-muted i[class*="icon-"] {
     opacity: .5;
 }
-#app .accordion {
-    margin-bottom: .3rem;
-}
-.select-mode .node-inputs .node-input {
-    cursor: pointer;
-}
+
+/* Scale up checkboxes & keep them in normal flow */
 input.checkbox-lg {
     float: none;
-}
-input.checkbox-lg,
-.select-mode .node-inputs .node-input input[type="checkbox"] {
     transform: scale(1.3);
 }
-.selected {
-    background-color: rgba(68, 179, 226, 0.8) !important;
-    background-color: #C2DBFF!important;
-}
-[v-cloak] {
-  display: none;
-}
-.position-absolute {
-    position: absolute;
+
+@media (max-width: 992px) {
+    .input-list-grid {
+        grid-template-columns: 40px minmax(max-content, 2fr) minmax(100px, 1fr) 100px 80px 40px;
+    }
+    /* hide description column */
+    .input-list-grid .grid-row > .grid-cell:nth-child(3) { display: none; }
 }
 
-/* overwrite bootstrap collapse animation */
-
-.collapse .node-input {
-    height: 0;
-    transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
-    transition-duration: .6s;
-    min-height: 0;
-    border-width: 0;
-}
-.collapse.in .node-input {
-    height: auto;
-    transition: all .2s cubic-bezier(.23,1,.32,1);
-    border-width: 1px;
-}
-.collapse {
-    height: inherit!important;
-}
-.break-all {
-    word-break: break-all;
-}
-.text-nowrap {
-    white-space: nowrap !important;
-}
-[v-cloak] {
-    visibility: hidden
+@media (max-width: 768px) {
+    .input-list-grid {
+        grid-template-columns: 40px 1fr 100px 40px;
+    }
+    /* hide description, processlist, value columns */
+    .input-list-grid .grid-row > .grid-cell:nth-child(3),
+    .input-list-grid .grid-row > .grid-cell:nth-child(4),
+    .input-list-grid .grid-row > .grid-cell:nth-child(6) { display: none; }
 }
 
-/* Moved from input_dialog */
+/* ================================================================== */
+/* MODAL FORM STYLES (edit / delete modals)                           */
+/* ================================================================== */
 
 .modal-body .form-group{
     position: relative;
@@ -150,10 +108,7 @@ input.checkbox-lg,
     float: left;
 }
 .dl-horizontal dt.text-right{
-    text-align: right 
-}
-.dl-horizontal dt{
-    float: left;
+    text-align: right
 }
 .clear-both {
     clear: both!important;

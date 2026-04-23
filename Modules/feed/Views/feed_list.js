@@ -188,6 +188,10 @@ var feedApp = new Vue({
         },
         
         // Integrated expand/collapse functionality
+        toggleNode: function(node) {
+            Vue.set(this.nodesDisplay, node, !this.nodesDisplay[node]);
+        },
+
         expandAllNodes: function(state) {
             if (typeof state == 'undefined') {
                 // Determine current state - true if all expanded
@@ -210,6 +214,46 @@ var feedApp = new Vue({
         },
         
         // Integrated select all functionality
+        nodeHasSelection: function(node) {
+            var nodeFeeds = this.nodes[node];
+            if (!nodeFeeds) return false;
+            for (var i = 0; i < nodeFeeds.length; i++) {
+                if (this.selectedFeeds[nodeFeeds[i].id]) return true;
+            }
+            return false;
+        },
+        
+        isNodeFullySelected: function(node) {
+            var nodeFeeds = this.nodes[node];
+            if (!nodeFeeds || nodeFeeds.length === 0) return false;
+            for (var i = 0; i < nodeFeeds.length; i++) {
+                if (!this.selectedFeeds[nodeFeeds[i].id]) return false;
+            }
+            return true;
+        },
+        
+        getNodeSelectedCount: function(node) {
+            var nodeFeeds = this.nodes[node];
+            if (!nodeFeeds) return 0;
+            var count = 0;
+            for (var i = 0; i < nodeFeeds.length; i++) {
+                if (this.selectedFeeds[nodeFeeds[i].id]) count++;
+            }
+            return count;
+        },
+        
+        selectAllNodeFeeds: function(node) {
+            var nodeFeeds = this.nodes[node];
+            if (!nodeFeeds) return;
+            var fullySelected = this.isNodeFullySelected(node);
+            var newSelections = Object.assign({}, this.selectedFeeds);
+            for (var i = 0; i < nodeFeeds.length; i++) {
+                newSelections[nodeFeeds[i].id] = !fullySelected;
+            }
+            this.selectedFeeds = newSelections;
+            this.onFeedSelectionChange();
+        },
+        
         selectAllFeeds: function(state) {
             if (typeof state == 'undefined') {
                 state = !this.allSelected;

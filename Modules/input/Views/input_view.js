@@ -30,27 +30,12 @@ var app = new Vue({
     el: "#app",
     data: {
         devices: {},
-        col: {
-            B: 40,  // select
-            A: 200, // name
-            G: 200, // description
-            H: 200, // processList
-            F: 50,  // schedule
-            E: 100, // time
-            D: 100, // value     
-            C: 50,  // config       
-        },
-        col_h: {
-            E: 'auto',
-            H: 'auto'
-        },
+        nodesDisplay: {},
         selected: [],
-        collapsed: [],
         paused: false,
         device_module: DEVICE_MODULE === true,
         loaded: false,
-        local_cache_key: 'input_nodes_display',
-        input_creation_disabled: false // new property
+        input_creation_disabled: false
     },
     computed: {
         total_inputs: function() {
@@ -76,7 +61,7 @@ var app = new Vue({
         }
     },
     watch: {
-        // stop updaing the list when form overlay showing
+        // stop updating the list when form overlay showing
         paused: function(newVal) {
             if (newVal === true) {
                 updaterStop()
@@ -84,30 +69,11 @@ var app = new Vue({
                 update()
                 updaterStart(update, 5000)
             }
-        },
-        collapsed: function(newVal) {
-            // cache state in cookie
-            if(!this.firstLoad) {
-                // docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
-            } else {
-                this.firstLoad = false;
-            }
         }
     },
     methods: {
-        toggleCollapse: function(event, nodeid) {
-            let index = this.collapsed.indexOf(nodeid);
-
-            if(Array.isArray(this.collapsed)) {
-                if (index === -1) {
-                    this.collapsed.push(nodeid)
-                } else {
-                    this.collapsed.splice(index, 1)
-                }
-            } else {
-                this.collapsed = [nodeid]
-            }
-
+        toggleNode: function(nodeid) {
+            Vue.set(this.nodesDisplay, nodeid, !this.nodesDisplay[nodeid]);
         },
         toggleSelected: function(event, inputid) {
             if (event.target.tagName === 'A') {
@@ -129,8 +95,8 @@ var app = new Vue({
         isSelected: function(inputid) {
             return this.selected.indexOf(inputid) > -1
         },
-        isCollapsed: function(nodeid) {
-            return this.collapsed.indexOf(nodeid) > -1
+        isExpanded: function(nodeid) {
+            return !!this.nodesDisplay[nodeid];
         },
         showInputConfigure: function(inputid) {
             var input = getInput(this.devices, inputid);
@@ -225,16 +191,6 @@ var app = new Vue({
         }
     },
     created () {
-        // load list collapsed state from previous visit
-        this.firstLoad = true;
-        /*if(docCookies.hasItem(this.local_cache_key)) {
-            var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
-            if(Array.isArray(cached_state)) {
-                this.collapsed = cached_state
-            } else {
-                this.collapsed = []
-            }
-        }*/
     },
     destroyed () {
 
@@ -264,17 +220,14 @@ var controls = new Vue({
         selected: function() {
             return app.selected
         },
-        collapsed: function () {
-            return app.collapsed
+        allCollapsed: function () {
+            for (var nodeid in app.devices) {
+                if (app.nodesDisplay[nodeid]) return false;
+            }
+            return app.total_devices > 0;
         },
         collapse_title: function () {
-            var title = ''
-            if (this.collapsed.length < this.total_devices) {
-                title += tr('Collapse');
-            } else {
-                title += tr('Expand');
-            }
-            return title;
+            return this.allCollapsed ? tr('Expand') : tr('Collapse');
         },
         checkbox_icon: function () {
             var icon = '#icon-checkbox-'
@@ -302,11 +255,12 @@ var controls = new Vue({
             }
         },
         collapseAll: function() {
-            if(app.collapsed.length < app.total_devices) {
-                app.collapsed = Object.keys(app.devices)
-            } else {
-                app.collapsed = [];
+            var expand = this.allCollapsed;
+            var newState = {};
+            for (var nodeid in app.devices) {
+                newState[nodeid] = expand;
             }
+            Vue.set(app, 'nodesDisplay', newState);
         },
         open_delete: function(event) {
             delete_input.openModal(event)
@@ -527,17 +481,7 @@ function noProcessNotification(devices){
 // ---------------------------------------------------------------------------------------------
 function draw_devices() {
 
-    max_name_length = 0
-    max_description_length = 0
-    max_time_length = 0
-    max_value_length = 0
-    
-    // This part works out the column widths based on string length of largest entry in column
     for (var nodeid in devices) {
-    
-        if (devices[nodeid].nodeid.length > max_name_length) max_name_length = devices[nodeid].nodeid.length;
-        if (devices[nodeid].description.length > max_description_length) max_description_length = devices[nodeid].description.length;
-        
         var oldest_time = 0;
         var device_oldest_input = null;
 
@@ -560,11 +504,6 @@ function draw_devices() {
             
             var value_str = list_format_value(input.value);
             input.value_str = value_str
-            
-            if (input.name.length>max_name_length) max_name_length = input.name.length;
-            if (input.description.length>max_description_length) max_description_length = input.description.length;
-            if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
-            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
         }
         if (device_oldest_input == null) {
             var fv = list_format_updated_obj(0);
@@ -575,23 +514,13 @@ function draw_devices() {
         devices[nodeid].time_value = fv.value
     }
 
-    // Conversion of string length to px width
-    app.col = {
-        B: 40,                                   // select
-        A: ((max_name_length * 8) + 30),         // name          +30
-        G: ((max_description_length * 8) + 70),  // description   +70
-        H: 200,                                  // processList
-        F: 50,                                   // schedule
-        E: ((max_time_length * 8) + 40),         // time          +40 (needs to accomodate weeks/days/hours/minutes/s)
-        D: ((max_value_length * 8) + 17),        // value         +17
-        C: 50                                    // config        
-    };
-    
-    // Column height used when hiding columns
-    app.col_h.H = 'auto'
-    app.col_h.E = 'auto'
-    
-    resize_view();
+    // Initialise nodesDisplay: new nodes start expanded, existing state is preserved
+    var currentDisplay = app.nodesDisplay || {};
+    var newDisplay = {};
+    for (var nodeid in devices) {
+        newDisplay[nodeid] = (currentDisplay[nodeid] !== undefined) ? currentDisplay[nodeid] : true;
+    }
+    app.nodesDisplay = Object.assign({}, newDisplay);
 
     Vue.set(app, 'devices', clone(devices));
     app.loaded = true;

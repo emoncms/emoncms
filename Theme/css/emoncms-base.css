@@ -442,6 +442,7 @@ ul.nav > li > [disabled] {
 .text-dark       { color: #333 !important; }
 .text-larger     { font-size: larger; }
 .text-uppercase  { text-transform: uppercase; }
+.text-nowrap     { white-space: nowrap !important; }
 .text-truncate   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* Background colours */

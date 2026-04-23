@@ -1,4 +1,4 @@
-<?php $v=35; 
+<?php $v=36; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -57,15 +57,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 </script>
 
 <div class="position-relative">
-    <div id="input-header" class="d-flex justify-content-between align-items-center">
-        <h3><?php echo tr('Inputs'); ?></h3>
-        <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a></span>
+    <div id="input-header" class="page-header">
+        <h2><?php echo tr('Inputs'); ?></h2>
+        <a id="api-help" href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a>
     </div>
 
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div v-cloak id="input-controls" class="sticky-controls" v-if="total_devices > 0">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon icon-check" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+            <i class="icon icon-check" :class="{'icon-resize-small': !allCollapsed, 'icon-resize-full': allCollapsed}"></i>
         </button>
         <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
             <svg class="icon icon-check">
@@ -102,57 +102,72 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
         <template v-if="loaded">
             <template v-if="total_devices > 0">
-                <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
-                    <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :style="{ '--status-color': device.time_color }" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
+            <div class="input-list-grid">
+                <template v-for="(device,nodeid) in devices">
+                    <div class="node-group" :class="{'select-mode': selectMode}">
 
-                        <div class="select text-center has-indicator" data-col="B">
-                            <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
-                            <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
-                        </div>
-
-                        <h5 class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">
-                            <span>{{ nodeid }}
-                                <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
-                            </span>
-                        </h5>
-                        <span class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
-                        <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
-                        <div class="buttons pull-right">
-                            <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
-                            <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px', color:device.time_color}">{{ device.time_value }}</div>
-                            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50" title="<?php echo tr('Show device key'); ?>">
-                                <i class="icon-lock"></i>
-                            </a>
-                            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure device using device template'); ?>">
-                                <i class="icon-cog"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-                        <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :style="{ '--status-color': input.time_color }" :class="[{'selected': selected.indexOf(input.id) > -1}]">
-                            <div class="select text-center" data-col="B">
-                                <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
+                        <!-- Node Header -->
+                        <div @click="toggleNode(nodeid)" class="grid-row group-header" :style="{'--status-color': device.time_color}">
+                            <!-- Col 1: Arrow / select-all checkbox -->
+                            <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(nodeid)">
+                                <span v-if="!selectMode || getDeviceInputIds(device).length == 0" class="arrow-icon" :class="[nodesDisplay[nodeid] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
+                                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg feed-select" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
                             </div>
-                            <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
-                            <div class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-                            <div class="processlist" data-col="H" :style="{width:col.H+'px', height:col_h.H}">
-                                <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
+                            <!-- Col 2: Node name -->
+                            <h5 class="grid-cell">{{ nodeid }}<small class="ml-2" v-if="getDeviceSelectedInputids(device).length > 0">&nbsp;({{ getDeviceSelectedInputids(device).length }})</small></h5>
+                            <!-- Col 3: Description -->
+                            <div class="grid-cell text-nowrap">{{ device.description }}</div>
+                            <!-- Col 4: Processlist spacer -->
+                            <div class="grid-cell"></div>
+                            <!-- Col 5: Last updated -->
+                            <div class="grid-cell text-center" :style="{color: device.time_color}">{{ device.time_value }}</div>
+                            <!-- Col 6: Device key button -->
+                            <div class="grid-cell text-center">
+                                <a @click.prevent.stop="show_device_key(device)" href="#" :class="{'text-muted': !device_module}" title="<?php echo tr('Show device key'); ?>">
+                                    <i class="icon-lock"></i>
+                                </a>
                             </div>
-                            <div class="buttons pull-right">
-                                <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                                <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', height:col_h.E, color:input.time_color}">
-                                    {{ input.time_value }}
-                                </span>
-                                <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
-                                    {{ input.value_str }}
-                                </span>
-                                <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo tr('Configure Input processing') ?>" href="#">
-                                    <i class="icon-wrench"></i>
+                            <!-- Col 7: Device configure button -->
+                            <div class="grid-cell text-center">
+                                <a @click.prevent.stop="device_configure(device)" href="#" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure device using device template'); ?>">
+                                    <i class="icon-cog"></i>
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Node Inputs (collapsible) -->
+                        <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[nodeid]}">
+                            <div @click="toggleSelected($event, input.id)" class="grid-row node-feed" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
+                                <!-- Col 1: Checkbox -->
+                                <div class="grid-cell text-center" @click.stop>
+                                    <input class="feed-select input-select" type="checkbox" :value="input.id" v-model="selected">
+                                </div>
+                                <!-- Col 2: Name -->
+                                <div class="grid-cell text-nowrap">{{ input.name }}</div>
+                                <!-- Col 3: Description -->
+                                <div class="grid-cell text-nowrap">{{ input.description }}</div>
+                                <!-- Col 4: Processlist -->
+                                <div class="grid-cell">
+                                    <div class="label-container" v-html="input.processlistHtml"></div>
+                                </div>
+                                <!-- Col 5: Last updated -->
+                                <div @click.stop class="grid-cell text-center" :style="{color: input.time_color}">{{ input.time_value }}</div>
+                                <!-- Col 6: Value -->
+                                <div @click.stop class="grid-cell text-center">{{ input.value_str }}</div>
+                                <!-- Col 7: Configure button -->
+                                <div class="grid-cell text-center" @click.stop>
+                                    <a @click.prevent="showInputConfigure(input.id)" class="cursor-pointer" title="<?php echo tr('Configure Input processing') ?>" href="#">
+                                        <i class="icon-wrench"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-            </template>
+                    <div style="height:10px; grid-column: 1 / -1"></div>
+                </template>
+            </div>
+        </template>
             <div class="alert" v-else>
                 <h3 class="alert-heading mt-0"><?php echo tr('No inputs created'); ?></h3>
                 <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>

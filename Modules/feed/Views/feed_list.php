@@ -1,7 +1,7 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=10;
+    $v=11;
         
     $public_username_str = "";
     if ($session['public_userid']) {
@@ -105,11 +105,12 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
             <div class="node-group">
             <!-- Node Header -->
-            <div :key="node" class="grid-row group-header" @click="nodesDisplay[node] = !nodesDisplay[node]" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
-                <div class="grid-cell text-center has-indicator">
-                    <i class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></i>
+            <div :key="node" class="grid-row group-header" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
+                <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">
+                    <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></span>
+                    <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <h5>{{ node }}:</h5>
+                <h5>{{ node }}:<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></h5>
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
