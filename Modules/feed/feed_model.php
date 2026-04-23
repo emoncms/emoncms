@@ -1078,7 +1078,7 @@ class Feed
             if (isset($item['unit']))   $fields['unit']   = $item['unit'];
             if (isset($item['public'])) $fields['public'] = $item['public'];
 
-            $response = $this->set_feed_fields($id, json_encode($fields));
+            $response = $this->set_feed_fields($id, json_encode($fields, JSON_UNESCAPED_UNICODE));
             $results[$id] = array('success' => $response['success'], 'message' => $response['message']);
             if ($response['success']) $any_success = true;
         }
