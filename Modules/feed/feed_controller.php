@@ -97,6 +97,10 @@ function feed_controller()
             return $feed->update_user_feeds_size($session['userid']);
         } elseif ($route->action == "buffersize" && $session['write']) {
             return $feed->get_buffer_size();
+        } elseif ($route->action == 'set-multiple' && $session['write']) {
+            if (isset($_POST['feeds'])) {
+                return $feed->set_fields_multiple($session['userid'], $_POST['feeds']);
+            }
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
         } elseif ($route->action == "fetch") {

@@ -1,55 +1,74 @@
 
+<?php
+include_once('Lib/units.php');
+?>
+<script>var feed_units = <?php echo json_encode(defined('UNITS') ? UNITS : array(), JSON_UNESCAPED_UNICODE); ?>;</script>
+
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedEditModalLabel"><?php echo tr('Edit feed'); ?></h3>
+<div id="feedEditModal" v-cloak>
+    <div :class="{hide: hidden}" class="modal" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" :aria-hidden="String(hidden)">
+        <div class="modal-header">
+            <button @click="closeModal" type="button" class="close"><span aria-hidden="true">×</span></button>
+            <h3 id="feedEditModalLabel"><?php echo tr('Edit Feed'); ?></h3>
+        </div>
+        <div class="modal-body">
+            <p><?php echo tr("Edit the selected feed fields."); ?>
+            <em class="text-muted">({{selectedFeedIds.length}} <?php echo tr('Feeds') ?>)</em>
+            </p>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th v-if="selectedFeedIds.length === 1"><?php echo tr('Name') ?></th>
+                        <th><?php echo tr('Node') ?></th>
+                        <th><?php echo tr('Unit') ?></th>
+                        <th><?php echo tr('Public') ?></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="feed in selectedFeeds" :key="feed.id">
+                        <td v-if="selectedFeedIds.length === 1">
+                            <input type="text" class="input-block-level" v-model="feed.name">
+                        </td>
+                        <td>
+                            <input type="text" class="input-block-level" v-model="feed.tag">
+                        </td>
+                        <td>
+                            <select :value="unitOther[feed.id] ? '_other' : feed.unit" @change="onUnitChange(feed, $event)">
+                                <option value=""><?php echo tr('-- select --') ?></option>
+                                <option v-for="u in units" :key="u.short" :value="u.short">{{u.long}} ({{u.short}})</option>
+                                <option value="_other"><?php echo tr('Other') ?></option>
+                            </select>
+                            <input v-if="unitOther[feed.id]" type="text" class="input-small" :value="feed.unit" @input="feed.unit = $event.target.value" placeholder="<?php echo tr('unit') ?>">
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" :checked="!!feed.public" @change="feed.public = $event.target.checked ? 1 : 0">
+                        </td>
+                        <td>
+                            <transition name="fade">
+                                <small class="text-muted" v-if="errors[feed.id]">{{ errors[feed.id] }}</small>
+                            </transition>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="ajax-loader" :class="{'hide': !loading}"></div>
+        </div>
+        <div class="modal-footer d-flex justify-content-between align-items-center">
+            <div class="position-relative">
+                <h5 class="m-0">
+                    <transition name="fade" appear>
+                        <span v-if="message">{{message}}</span>
+                    </transition>
+                </h5>
+            </div>
+            <div>
+                <button @click="closeModal" class="btn" type="button"><?php echo tr('Close'); ?></button>
+                <button class="btn btn-primary" type="button" @click="saveAll"><?php echo tr('Save'); ?></button>
+            </div>
+        </div>
     </div>
-    <div class="modal-body">
-
-        <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo tr('Name'); ?></span>
-          <input id="feed-name" type="text" style="width:250px">
-          <button class="btn btn-primary feed-edit-save" field="name">Save</button>
-        </div>
-    
-        <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo tr('Node'); ?></span>
-          <div class="autocomplete">
-              <input id="feed-node" type="text" style="width:250px">
-          </div>
-          <button class="btn btn-primary feed-edit-save" field="node">Save</button>
-        </div>
-
-        <div class="input-prepend input-append">
-          <span class="add-on" style="width:100px"><?php echo tr('Make public'); ?></span>
-          <span class="add-on" style="width:255px"><input id="feed-public" type="checkbox"></span>
-          <button class="btn btn-primary feed-edit-save" field="public">Save</button>
-        </div>
-
-        <div class="input-prepend input-append" id="edit-feed-name-div">
-          <span class="add-on" style="width:100px"><?php echo tr('Unit'); ?></span>
-          <select id="feed_unit_dropdown" style="width:auto">
-              <option value=""></option>
-              <?php
-              // add available units from units.php
-              include('Lib/units.php');
-              if (defined('UNITS')) {
-                  foreach(UNITS as $unit){
-                      printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
-                  }
-              }
-              ?>
-              <option value="_other"><?php echo tr('Other'); ?></option>
-          </select>
-          <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>       
-          <button class="btn btn-primary feed-edit-save" field="unit">Save</button>
-        </div>
-    </div>
-    <div class="modal-footer">
-        <div id="feed-edit-save-message" style="position:absolute"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
-    </div>
+    <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>
 </div>

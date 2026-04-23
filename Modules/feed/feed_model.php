@@ -1022,6 +1022,70 @@ class Feed
         }
     }
 
+    /**
+     * Update fields on multiple feeds in a single call.
+     *
+     * @param int    $userid
+     * @param string $feeds_json  JSON-encoded array of objects: {id, name?, tag?, unit?, public?}
+     * @return array {success, results: {<feedid>: {success, message}}}
+     */
+    public function set_fields_multiple($userid, $feeds_json)
+    {
+        $userid = (int) $userid;
+        $feeds = json_decode(stripslashes($feeds_json), true);
+
+        if (!is_array($feeds) || empty($feeds)) {
+            return array('success' => false, 'message' => 'Invalid input data');
+        }
+
+        $results = array();
+        $any_success = false;
+
+        foreach ($feeds as $item) {
+            $id = isset($item['id']) ? (int) $item['id'] : 0;
+
+            if ($id <= 0) {
+                $results[$id] = array('success' => false, 'message' => 'Invalid feed id');
+                continue;
+            }
+
+            if (!$this->exist($id)) {
+                $results[$id] = array('success' => false, 'message' => 'Feed does not exist');
+                continue;
+            }
+
+            $f = $this->get($id);
+            if ((int) $f['userid'] !== $userid) {
+                $results[$id] = array('success' => false, 'message' => 'Access denied');
+                continue;
+            }
+
+            // Check tag:name uniqueness if either is changing
+            if (isset($item['name']) || isset($item['tag'])) {
+                $new_name = isset($item['name']) ? $item['name'] : $f['name'];
+                $new_tag  = isset($item['tag'])  ? $item['tag']  : $f['tag'];
+                $existing = $this->exists_tag_name($userid, $new_tag, $new_name);
+                if ($existing !== false && $existing != $id) {
+                    $results[$id] = array('success' => false, 'message' => 'Tag:Name combination already exists');
+                    continue;
+                }
+            }
+
+            // Build fields subset and delegate to set_feed_fields for validation + redis
+            $fields = array();
+            if (isset($item['name']))   $fields['name']   = $item['name'];
+            if (isset($item['tag']))    $fields['tag']    = $item['tag'];
+            if (isset($item['unit']))   $fields['unit']   = $item['unit'];
+            if (isset($item['public'])) $fields['public'] = $item['public'];
+
+            $response = $this->set_feed_fields($id, json_encode($fields));
+            $results[$id] = array('success' => $response['success'], 'message' => $response['message']);
+            if ($response['success']) $any_success = true;
+        }
+
+        return array('success' => $any_success, 'results' => $results);
+    }
+
     public function set_timevalue($id, $value, $time)
     {
         if ($this->redis) {

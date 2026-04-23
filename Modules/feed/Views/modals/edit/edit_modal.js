@@ -1,122 +1,157 @@
 
-// ---------------------------------------------------------------------------------------------
-// EDIT FEED
-// ---------------------------------------------------------------------------------------------
-function openEditFeedModal(){
-    $('#feedEditModal').modal('show');
-    var edited_feeds = $.map(feedApp.selectedFeeds, function(val,key){ return val ? key: null });
-    var feedid = 0;
-    // Now allows for multiple feed selection
-    for (var z in feedApp.selectedFeeds) {
-        if (feedApp.selectedFeeds[z]){
-            feedid = z;
-            if (edited_feeds.length == 1) {
-                $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
-                $("#edit-feed-name-div").show();               
-            } else {
-                $("#edit-feed-name-div").hide();
-            }
-            $("#feed-node").val(feeds[feedid].tag);
-            var checked = false; if (feeds[feedid]['public']==1) checked = true;
-            $("#feed-public")[0].checked = checked;
-            
-            // pre-select item if already set
-            let $dropdown = $('#feed_unit_dropdown');
-            $dropdown.val(feeds[feedid].unit);
-            // set the dropdown to "other" if value not in list
-            let options = [];
-            $dropdown.find('option').each(function(key,elem){
-                options.push(elem.value);
-            })
-            if (options.indexOf(feeds[feedid].unit) == -1) {
-                $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
-                $dropdown.val('_other');
-            }
-            // show / hide "other" free text field on load and on change if "other" selected in dropdown
-            if($dropdown.val()=='_other') {
-                $dropdown.next('input').show();
-            }else{
-                $dropdown.next('input').hide();
-            }
-            $dropdown.change(function(event){
-                if(event.target.value=='_other') {
-                    $(event.target).next('input').show();
-                }else{
-                    $(event.target).next('input').hide();
-                }
+var edit_feed = new Vue({
+    el: '#feedEditModal',
+    data: {
+        hidden: true,
+        loading: false,
+        message: '',
+        errors: {},
+        localFeeds: {},
+        feedsOriginal: {},
+        unitOther: {},
+        units: typeof feed_units !== 'undefined' ? feed_units : []
+    },
+    computed: {
+        selectedFeedIds: function() {
+            var selected = feedApp.selectedFeeds;
+            return Object.keys(selected).filter(function(id) {
+                return selected[id];
             });
+        },
+        selectedFeeds: function() {
+            var localFeeds = this.localFeeds;
+            return this.selectedFeedIds
+                .map(function(id) { return localFeeds[id]; })
+                .filter(Boolean);
         }
-    }
-    
-    buildFeedNodeList();
-};
-
-$(".feed-node").on('input', function(event){
-    $('#feed-node').val($(this).val());
-});
-
-$(".feed-edit-save").click(function() {
-    var feedid = 0;
-    var edited_feeds = $.map(feedApp.selectedFeeds, function(val,key){ return val ? key: null });
-    
-    var edit_field = $(this).attr("field");
-
-    var error = false;
-
-    for (var z in feedApp.selectedFeeds) {
-        if (feedApp.selectedFeeds[z]) {
-            feedid = z; 
-            
-            var fields = {}
-
-            if (edit_field=="name" && edited_feeds.length==1) {
-                fields.name = $("#feed-name").val();
+    },
+    methods: {
+        clearErrors: function(feedid) {
+            if (typeof feedid !== 'undefined') {
+                this.$set(this.errors, feedid, '');
+            } else {
+                this.errors = {};
             }
-            
-            if (edit_field=="node") {
-                fields.tag = $("#feed-node").val();
+        },
+        onUnitChange: function(feed, event) {
+            var val = event.target.value;
+            if (val === '_other') {
+                Vue.set(this.unitOther, feed.id, true);
+            } else {
+                Vue.set(this.unitOther, feed.id, false);
+                feed.unit = val;
             }
-            
-            if (edit_field=="public") {
-                var publicfeed = 0;
-                if ($("#feed-public")[0].checked) publicfeed = 1;  
-                fields.public = publicfeed;
-            }
+        },
+        saveAll: function() {
+            this.clearErrors();
+            this.sendFields();
+        },
+        /**
+         * POST all changed fields from selectedFeeds in a single request.
+         */
+        sendFields: function() {
+            var self = this;
+            var feeds = [];
 
-            if (edit_field=="unit") {
-                var unit = $('#feed_unit_dropdown').val();
-                unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit;
-                fields.unit = unit;
-            }
-            
-            // only send changed values
-            var data = {};
-            for (f in fields) {
-                // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-                if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
-            }
-            // console.log(Object.keys(data).length);
-            // dont send ajax if nothing changed
-            if (Object.keys(data).length==0) {
-                $('#feedEditModal').modal('hide');
+            this.selectedFeeds.forEach(function(feed) {
+                var original = self.feedsOriginal[feed.id];
+                if (!original) return;
+
+                var changed = {};
+                if (self.selectedFeedIds.length === 1 && feed.name !== original.name) changed.name = feed.name;
+                if (feed.tag !== original.tag) changed.tag = feed.tag;
+                if (feed.unit !== original.unit) changed.unit = feed.unit;
+                var publicVal = feed.public ? 1 : 0;
+                if (publicVal !== (original.public ? 1 : 0)) changed.public = publicVal;
+
+                if (Object.keys(changed).length === 0) {
+                    self.$set(self.errors, feed.id, _('Nothing changed'));
+                    return;
+                }
+                changed.id = feed.id;
+                feeds.push(changed);
+            });
+
+            if (feeds.length === 0) {
+                this.message = _('Nothing changed');
                 return;
             }
-            $('#feed-edit-save-message').text('').hide();
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json'})
+
+            this.loading = true;
+            this.message = '';
+
+            $.post(path + 'feed/set-multiple.json', {feeds: JSON.stringify(feeds)})
             .done(function(response) {
-                if(response.success !== true) {
-                    // error
-                    $('#feed-edit-save-message').text(response.message).fadeIn();
-                    error = true;
+                if (response.success) {
+                    self.message = _('Saved');
                 }
+                Object.keys(response.results).forEach(function(feedid) {
+                    var result = response.results[feedid];
+                    self.$set(self.errors, feedid, result.message);
+                    if (result.success) {
+                        // Update snapshot so subsequent saves in the same session work correctly
+                        var local = self.localFeeds[feedid];
+                        if (local) {
+                            self.feedsOriginal[feedid] = {
+                                name: local.name,
+                                tag: local.tag,
+                                unit: local.unit,
+                                public: local.public
+                            };
+                        }
+                    }
+                });
+                update_feed_list();
             })
+            .fail(function() {
+                self.message = _('Save failed');
+            })
+            .always(function() {
+                self.loading = false;
+            });
+        },
+        closeModal: function() {
+            // localFeeds is modal-private, so just discard it — feedApp.feeds is untouched.
+            this.hidden = true;
+            this.localFeeds = {};
+            this.errors = {};
+            this.message = '';
+            document.removeEventListener('keydown', this.escape);
+        },
+        openModal: function() {
+            var self = this;
+            var newLocal = {};
+            var newOriginal = {};
+            var newUnitOther = {};
+            // Snapshot current values from feedApp into the modal's own copies.
+            // The template binds to localFeeds, so polls to feedApp.feeds cannot
+            // overwrite what the user is typing.
+            this.selectedFeedIds.forEach(function(id) {
+                var feed = feedApp.feeds[id];
+                if (!feed) return;
+                var copy = { id: feed.id, name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public };
+                newLocal[id] = copy;
+                newOriginal[id] = { name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public };
+                var inList = self.units.some(function(u) { return u.short === feed.unit; });
+                newUnitOther[id] = !inList && feed.unit !== '';
+            });
+            this.localFeeds = newLocal;
+            this.feedsOriginal = newOriginal;
+            this.unitOther = newUnitOther;
+            this.errors = {};
+            this.message = '';
+            this.hidden = false;
+            document.addEventListener('keydown', this.escape);
+        },
+        escape: function(event) {
+            if (event.key === 'Escape') {
+                this.closeModal();
+            }
         }
     }
-    
-    if (!error) {
-        update_feed_list();
-        $('#feedEditModal').modal('hide');
-        $('#feed-edit-save-message').text('').hide();
-    }
-    
 });
+
+// Keep backward-compatible entry point used by feedApp.editFeeds()
+function openEditFeedModal() {
+    edit_feed.openModal();
+}

@@ -428,12 +428,12 @@ function update_feed_list() {
                 existing.value    = fresh.value;
                 existing.time     = fresh.time;
                 existing.size     = fresh.size;
-                existing.public   = fresh.public;
-                existing.unit     = fresh.unit;
-                existing.name     = fresh.name;
                 existing.color    = formatted_time.color;
                 existing.color_code = formatted_time.color_code;
                 existing.formatted_time = formatted_time.text;
+                existing.public = fresh.public;
+                existing.unit   = fresh.unit;
+                existing.name   = fresh.name;
 
                 if (fresh.processList !== existing.processList) {
                     existing.processList = fresh.processList;
