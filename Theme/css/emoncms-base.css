@@ -49,7 +49,7 @@ Table of contents
     --s6: calc(var(--spacer) * 2);
 
     /* ── Typography ────────────────────────────────────────── */
-    --font-heading:    1.1rem;
+    --font-heading:    1.2rem;
     --font-subheading: 1rem;
     --font-base:       14px;
     --font-sm:         13px;
@@ -67,7 +67,7 @@ Table of contents
     --bg-card:              #282828;
     --bg-card-header:       #222;
     --bg-card-header-hover: #242424;
-    --bg-chip:              #2e2e2e;
+    --bg-card-row-hover:              #2e2e2e;
     --bg-badge:             #2a2a2a;
     --bg-input:             #2a2a2a;
     --controls-bg:          rgba(18, 18, 18, 0.92);
@@ -193,11 +193,11 @@ Table of contents
 html.color-mode-light {
     color-scheme: light;
 
-    --bg-body:              whitesmoke;
-    --bg-card:              #ffffff;
-    --bg-card-header:       #ddd;
-    --bg-card-header-hover: #ececec;
-    --bg-chip:              #efefef;
+    --bg-body:              #fff;
+    --bg-card:              #fafafa;
+    --bg-card-row-hover:    #f5f5f5;
+    --bg-card-header:       #eee;
+    --bg-card-header-hover: #e0e0e0;
     --bg-badge:             #efefef;
     --bg-input:             #ffffff;
     --controls-bg:          rgba(234, 234, 234, 0.92);
@@ -321,7 +321,6 @@ body.collapsed #wrap main.content-container {
 }
 
 .content-container {
-    max-width: 1150px;
 }
 
 .fullwidth.collapsed #wrap,
@@ -741,7 +740,7 @@ ul.nav > li > [disabled] {
     letter-spacing: 0.01em;
 }
 .page-header a {
-    font-size: var(--font-xs);
+    font-size: var(--font-base);
     color: var(--accent);
     text-decoration: none;
     opacity: 0.8;
@@ -1066,7 +1065,7 @@ div#account {
     display: inline-block;
     font-size: var(--font-2xs);
     color: var(--text-secondary);
-    background-color: var(--bg-chip);
+    background-color: var(--bg-card-row-hover);
     border: 1px solid var(--border-strong);
     border-radius: 0.75rem;
     padding: 1px 8px;
@@ -1204,7 +1203,7 @@ input[type="password"]:focus {
     width: 180px !important;
 }
 .inline-edit select {
-    background-color: var(--bg-chip);
+    background-color: var(--bg-card-row-hover);
     color: var(--text-body);
     border: 1px solid var(--border-strong);
     border-radius: 0.25rem;
@@ -1407,7 +1406,7 @@ input[type="password"]:focus {
     cursor: pointer;
     border-right: 4px solid var(--status-color);
 }
-.node-feed:hover { background-color: var(--bg-chip); }
+.node-feed:hover { background-color: var(--bg-card-row-hover); }
 .node-feed:last-of-type { border-bottom-width: 0; }
 
 /* Shared left-accent bar (feed rows + input accordion rows) */
@@ -1459,14 +1458,15 @@ input[type="password"]:focus {
     padding: 3px 7px;
     border-radius: 4px;
     white-space: nowrap;
-    color: #fff;
+    color: var(--text-secondary);
     vertical-align: middle;
+    border: 1px solid var(--border-strong);
 }
 .engine-badge .interval-sep {
     display: inline-block;
     width: 1px;
     height: 0.9em;
-    background: rgba(255,255,255,0.45);
+    background: var(--border-strong);
     vertical-align: middle;
     margin: 0 1px;
 }
@@ -1477,7 +1477,11 @@ input[type="password"]:focus {
     text-transform: none;
     opacity: 0.85;
 }
-.engine-badge.engine-fixed     { background: #2563eb; }
+/*
+.engine-badge.engine-fixed { 
+    background: #2563eb33;
+    border: 1px solid #2563eb;
+}
 .engine-badge.engine-variable  { background: #7c3aed; }
 .engine-badge.engine-mysql     { background: #d97706; }
 .engine-badge.engine-virtual   { background: #059669; }
@@ -1485,6 +1489,7 @@ input[type="password"]:focus {
 .engine-badge.engine-redis     { background: #db2777; }
 .engine-badge.engine-cassandra { background: #92400e; }
 .engine-badge.engine-other     { background: #6b7280; }
+*/
 
 /* Public / private feed icons */
 .icon-public  { color: #2e7c9e; }
