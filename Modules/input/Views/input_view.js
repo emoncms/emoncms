@@ -27,15 +27,19 @@ function updaterStart(func, interval){
 updaterStart(update, 5000);
 
 var app = new Vue({
-    el: "#app",
+    el: "#input-app",
     data: {
         devices: {},
         nodesDisplay: {},
         selected: [],
+        filterText: '',
         paused: false,
         device_module: DEVICE_MODULE === true,
         loaded: false,
-        input_creation_disabled: false
+        input_creation_disabled: false,
+        show_clean: false,
+        inactive_unconfigured_inputs: 0,
+        inactive_unconfigured_devices: 0
     },
     computed: {
         total_inputs: function() {
@@ -58,6 +62,31 @@ var app = new Vue({
         },
         selectMode: function() {
             return this.selected.length > 0
+        },
+        filteredDevices: function() {
+            if (!this.filterText) return this.devices;
+            var filterText = this.filterText.toLowerCase();
+            var result = {};
+            for (var nodeid in this.devices) {
+                var device = this.devices[nodeid];
+                var nodeidMatch = nodeid.toLowerCase().includes(filterText);
+                var filteredInputs = nodeidMatch ? device.inputs : device.inputs.filter(function(input) {
+                    return input.name.toLowerCase().includes(filterText);
+                });
+                if (filteredInputs.length > 0) {
+                    result[nodeid] = Object.assign({}, device, { inputs: filteredInputs });
+                }
+            }
+            return result;
+        },
+        allCollapsed: function() {
+            for (var nodeid in this.devices) {
+                if (this.nodesDisplay[nodeid]) return false;
+            }
+            return this.total_devices > 0;
+        },
+        collapse_title: function() {
+            return this.allCollapsed ? tr('Expand') : tr('Collapse');
         }
     },
     watch: {
@@ -188,6 +217,46 @@ var app = new Vue({
                     }
                 });
             }
+        },
+        selectAll: function() {
+            if (this.selected.length < this.total_inputs) {
+                let ids = [];
+                this.inputs.forEach(function(input){
+                    ids.push(input.id);
+                });
+                this.selected = ids;
+            } else {
+                this.selected = [];
+            }
+        },
+        collapseAll: function() {
+            var expand = this.allCollapsed;
+            var newState = {};
+            for (var nodeid in this.devices) {
+                newState[nodeid] = expand;
+            }
+            Vue.set(this, 'nodesDisplay', newState);
+        },
+        open_delete: function(event) {
+            delete_input.openModal(event);
+        },
+        open_edit: function(event) {
+            edit_input.openModal(event);
+        },
+        clean_unused: function() {
+            const inputText = this.inactive_unconfigured_inputs === 1 ? "input" : "inputs";
+            const deviceText = this.inactive_unconfigured_devices === 1 ? "device" : "devices";
+            let msg = `Are you sure you want to remove ${this.inactive_unconfigured_inputs} inactive and unconfigured ${inputText}`;
+            if (this.inactive_unconfigured_devices > 0) {
+                msg += ` and ${this.inactive_unconfigured_devices} ${deviceText}?`;
+            } else {
+                msg += "?";
+            }
+            if (confirm(msg)) {
+                $.get(path+"device/clean.json?active="+inactive_input_timeout).done(function(response) {
+                    alert(response);
+                });
+            }
         }
     },
     created () {
@@ -196,115 +265,6 @@ var app = new Vue({
 
     }
 });
-
-
-
-var controls = new Vue({
-    el: '#input-controls',
-    data: {
-        timeout: null,
-
-        // used for clean feature
-        show_clean: false,
-        inactive_unconfigured_inputs: 0,
-        inactive_unconfigured_devices: 0
-
-    },
-    computed: {
-        total_inputs: function(){
-            return app.total_inputs
-        },
-        total_devices: function(){
-            return app.total_devices
-        },
-        selected: function() {
-            return app.selected
-        },
-        allCollapsed: function () {
-            for (var nodeid in app.devices) {
-                if (app.nodesDisplay[nodeid]) return false;
-            }
-            return app.total_devices > 0;
-        },
-        collapse_title: function () {
-            return this.allCollapsed ? tr('Expand') : tr('Collapse');
-        },
-        checkbox_icon: function () {
-            var icon = '#icon-checkbox-'
-            if (this.selected.length < this.total_devices) {
-                icon += 'unchecked'
-            } else {
-                icon += 'checked'
-            }
-            return icon;
-        },
-        selectMode: function() {
-            return app.selectMode;
-        }
-    },
-    methods: {
-        selectAll: function() {
-            if(app.selected.length < this.total_inputs) {
-                let ids = [];
-                app.inputs.forEach(function(input){
-                    ids.push(input.id)
-                })
-                app.selected = ids
-            } else {
-                app.selected = [];
-            }
-        },
-        collapseAll: function() {
-            var expand = this.allCollapsed;
-            var newState = {};
-            for (var nodeid in app.devices) {
-                newState[nodeid] = expand;
-            }
-            Vue.set(app, 'nodesDisplay', newState);
-        },
-        open_delete: function(event) {
-            delete_input.openModal(event)
-        },
-        open_edit: function(event) {
-            edit_input.openModal(event)
-        },
-        showInputConfigure: function(inputid) {
-            if (inputs[inputid] !== undefined) {
-                showInputConfigure(inputs[inputid]);
-            } else {
-                alert(tr("Input not found"));
-            }
-        },
-        clean_unused: function() {
-
-            const inputText = this.inactive_unconfigured_inputs === 1 ? "input" : "inputs";
-            const deviceText = this.inactive_unconfigured_devices === 1 ? "device" : "devices";
-            
-            let msg = `Are you sure you want to remove ${this.inactive_unconfigured_inputs} inactive and unconfigured ${inputText}`;
-            
-            if (this.inactive_unconfigured_devices > 0) {
-                msg += ` and ${this.inactive_unconfigured_devices} ${deviceText}?`;
-            } else {
-                msg += "?";
-            }
-
-            if (confirm(msg)) {
-                // call device/clean.json result is plain text
-                $.get(path+"device/clean.json?active="+inactive_input_timeout).done( function(response) {
-                    alert(response);
-                });
-
-            }
-
-        }
-    },
-    watch: {
-        selectMode: function(newVal, oldVal) {
-            return newVal;
-        }
-    }
-});
-
 
 
 
@@ -535,11 +495,11 @@ function draw_devices() {
  *    relative to the most recent configured input activity
  * 2. For devices with NO configured inputs: finds inputs that are inactive relative to current time
  * 
- * Updates the controls UI to show cleanup options when inactive inputs are found.
- * 
+ * Updates the app UI to show cleanup options when inactive inputs are found.
+ *
  * @global {Object} devices - Global devices object containing all device data
  * @global {number} inactive_input_timeout - Timeout threshold in seconds for considering inputs inactive
- * @global {Object} controls - Vue component for UI controls
+ * @global {Object} app - Vue component
  */
 function prepare_device_clean() {
     let inactive_unconfigured_inputs = 0;
@@ -588,9 +548,9 @@ function prepare_device_clean() {
 
     // Show cleanup UI option if any inactive inputs were found
     if (inactive_unconfigured_inputs > 0) {
-        controls.show_clean = true;
-        controls.inactive_unconfigured_inputs = inactive_unconfigured_inputs;
-        controls.inactive_unconfigured_devices = inactive_unconfigured_devices;
+        app.show_clean = true;
+        app.inactive_unconfigured_inputs = inactive_unconfigured_inputs;
+        app.inactive_unconfigured_devices = inactive_unconfigured_devices;
     }
 }
 

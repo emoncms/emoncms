@@ -1,4 +1,4 @@
-<?php $v=36; 
+<?php $v=37; 
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 <!-- Load dependencies -->
@@ -15,8 +15,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
 <!-- used for formatting last updated time both colour and text -->
 <script src="<?php echo $path; ?>Lib/list_format_time_value.js?v=27"></script>
-<!-- js translation support -->
-<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 
 <!-- input list and edit/delete modal css -->
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
@@ -26,71 +24,43 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     var path = "<?php echo $path; ?>";
     const DEVICE_MODULE = <?php if ($device_module) echo 'true';
                             else echo 'false'; ?>;
-
-    var _user = {};
-    _user.lang = "<?php echo $_SESSION['lang']; ?>";
-
-    // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
-    /**
-     * return object of gettext translated strings
-     *
-     * @return object
-     */
-    function getTranslations() {
-        return {
-            'ID': "<?php echo tr('ID'); ?>",
-            'Value': "<?php echo tr('Value'); ?>",
-            'Time': "<?php echo tr('Time'); ?>",
-            'Updated': "<?php echo tr('Updated'); ?>",
-            'Configure your device here': "<?php echo tr('Configure your device here'); ?>",
-            'Show node key': "<?php echo tr('Show node key'); ?>",
-            'Configure device using device template': "<?php echo tr('Configure device using device template'); ?>",
-            'Configure Input processing': "<?php echo tr('Configure Input processing'); ?>",
-            'Saving': "<?php echo tr('Saving'); ?>",
-            'Collapse': "<?php echo tr('Collapse'); ?>",
-            'Expand': "<?php echo tr('Expand'); ?>",
-            'Select all %s inputs': "<?php echo tr('Select all %s inputs'); ?>",
-            'Select all': "<?php echo tr('Select all'); ?>",
-            'Please install the device module to enable this feature': "<?php echo tr('Please install the device module to enable this feature'); ?>"
-        }
-    }
 </script>
+<?php require "Modules/input/Views/translate.php"; ?>
 
-<div class="position-relative">
+<div id="input-app" class="position-relative">
     <div id="input-header" class="page-header">
         <h2><?php echo tr('Inputs'); ?></h2>
         <a id="api-help" href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a>
     </div>
 
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
-    <div v-cloak id="input-controls" class="sticky-controls" v-if="total_devices > 0">
-        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon icon-check" :class="{'icon-resize-small': !allCollapsed, 'icon-resize-full': allCollapsed}"></i>
+    <div v-cloak class="sticky-controls" v-if="total_devices > 0">
+        <button @click="collapseAll" id="expand-collapse-all" class="app-btn" :title="collapse_title">
+            <i class="icon" :class="allCollapsed ? 'icon-resize-full' : 'icon-resize-small'"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
-            <svg class="icon icon-check">
-                <use :xlink:href="checkbox_icon"></use>
-            </svg>
+        <button @click="selectAll" class="app-btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
+            <i class="icon" :class="selected.length > 0 && selected.length >= total_inputs ? 'icon-ban-circle' : 'icon-check'"></i>
             <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
-        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
+        <button @click="open_delete" class="app-btn input-delete" :class="{'hide': !selectMode}" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
+        <button @click="open_edit" class="app-btn input-edit" :class="{'hide': !selectMode}" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
         <!-- input processing configure only show if one input selected -->
         <button
             v-if="selectMode && selected.length === 1"
             @click="showInputConfigure(selected[0])"
-            class="btn input-configure"
+            class="app-btn input-configure"
             :title="'<?php echo addslashes(tr('Configure Input processing')); ?>'">
             <i class="icon-wrench"></i>
         </button>
-        <button v-if="show_clean" @click="clean_unused" class="btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
+        <button v-if="show_clean" @click="clean_unused" class="app-btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
+        <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" :class="{hide: selectMode}" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
     </div>
 
     <div id="noprocesses clearfix"></div>
 
-    <div id="app" v-cloak>
+    <div v-cloak>
 
         <!-- alert danger if input creation is disabled for user, click enable button to enable -->
         <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
@@ -103,7 +73,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <template v-if="loaded">
             <template v-if="total_devices > 0">
             <div class="input-list-grid">
-                <template v-for="(device,nodeid) in devices">
+                <template v-for="(device,nodeid) in filteredDevices">
                     <div class="node-group" :class="{'select-mode': selectMode}">
 
                         <!-- Node Header -->
@@ -184,15 +154,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                 <i class="icon icon-lock" style="margin-top:2px"></i>
                 <?php echo tr('Disable further input creation'); ?></button>
         </div>
-    </div>
-
-    <div id="input-none" class="alert alert-block hide">
-        <h4 class="alert-heading"><?php echo tr('No inputs created'); ?></h4>
-        <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-    </div>
-
-    <div id="input-footer" class="hide">
-        <button id="device-new" class="btn btn-small">&nbsp;<i class="icon-plus-sign"></i>&nbsp;<?php echo tr('New device'); ?></button>
     </div>
 
     <div id="input-loader" class="ajax-loader"></div>
