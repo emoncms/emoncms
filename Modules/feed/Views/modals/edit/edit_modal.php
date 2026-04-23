@@ -2,6 +2,11 @@
 <?php
 include_once('Lib/units.php');
 ?>
+<style>
+@media (min-width: 768px) {
+    #feedEditModal .modal { width: 680px; margin-left: -340px; }
+}
+</style>
 <script>var feed_units = <?php echo json_encode(defined('UNITS') ? UNITS : array(), JSON_UNESCAPED_UNICODE); ?>;</script>
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
