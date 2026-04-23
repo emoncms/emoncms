@@ -129,9 +129,9 @@ var edit_feed = new Vue({
             this.selectedFeedIds.forEach(function(id) {
                 var feed = feedApp.feeds[id];
                 if (!feed) return;
-                var copy = { id: feed.id, name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public };
+                var copy = { id: feed.id, name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public*1 };
                 newLocal[id] = copy;
-                newOriginal[id] = { name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public };
+                newOriginal[id] = { name: feed.name, tag: feed.tag, unit: feed.unit, public: feed.public*1 };
                 var inList = self.units.some(function(u) { return u.short === feed.unit; });
                 newUnitOther[id] = !inList && feed.unit !== '';
             });
