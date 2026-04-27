@@ -276,10 +276,12 @@ html, body {
 body {
     padding: 0;
     margin: 0;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     background-color: var(--bg-body);
     color: var(--text-body);
     font-size: var(--font-base);
 }
+
 
 :fullscreen, ::backdrop {
     background-color: var(--bg-vis-graph-color);
@@ -498,6 +500,10 @@ ul.nav > li > [disabled] {
 /* 9. UTILITIES — SPACING (margin / padding)                          */
 /* @see Bootstrap 4 documentation for usage examples                  */
 /* ================================================================== */
+
+.hide {
+  display: none;
+}
 
 /* Remove margins */
 .my-0, .mb-0, .m-0 { margin-bottom: 0 !important; }
