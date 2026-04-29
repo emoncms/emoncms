@@ -76,16 +76,20 @@
             <tr>
                 <th>Active</th>
                 <th>Channel</th>
-                <th style="width:80%">Calibration</th>
+                <th>Calibration</th>
+                <th>Phase Correction</th>
             </tr>
-            <tr v-for="(vchannel,index) in device.vchannels">
+            <tr v-for="(vchannel,index) in device.vchannels" :style="!vchannel.active ? { opacity: '0.45' } : {}">
                 <td>
                     <input type="checkbox" v-model="vchannel.active" :disabled="!connected" @change="set_vchannel(index)" />
                 </td>
                 <td>V{{ index+1 }}</td>
                 <td>
-                    <input type="text" v-model="vchannel.vcal" style="width:60px" :disabled="!connected" @change="set_vchannel(index)" />
+                    <input type="text" v-model="vchannel.vcal" style="width:60px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
                     <span class="add-on">%</span>
+                </td>
+                <td>
+                    <input type="text" v-model="vchannel.vlead" style="width:50px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
                 </td>
             </tr>
         </table>
@@ -103,24 +107,24 @@
                 <th>Power</th>
                 <th>Energy</th>
             </tr>
-            <tr v-for="(channel,index) in device.ichannels">
+            <tr v-for="(channel,index) in device.ichannels" :style="device.hardware=='emonPi3' && !channel.active ? { opacity: '0.45' } : {}">
                 <td v-if="device.hardware=='emonPi3'">
                     <input type="checkbox" v-model="channel.active" :disabled="!connected" @change="set_ical(index)" />
                 </td>
                 <td>CT {{ index+1 }}</td>
                 <td>
-                    <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected">
+                    <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)">
                         <option v-for="rating in cts_available" v-bind:value="rating">{{ rating }}A</option>
                     </select>
                 </td>
-                <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:50px" :disabled="!connected" /></td>
+                <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:50px" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)" /></td>
                 <td v-if="device.hardware=='emonPi3'">
-                    <select style="width:80px" v-model="channel.vchan1" :disabled="!connected" @change="set_ical(index)">
+                    <select style="width:80px" v-model="channel.vchan1" :disabled="!connected || !channel.active" @change="set_ical(index)">
                         <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
                 <td v-if="device.hardware=='emonPi3'">
-                    <select style="width:80px" v-model="channel.vchan2" :disabled="!connected" @change="set_ical(index)">
+                    <select style="width:80px" v-model="channel.vchan2" :disabled="!connected || !channel.active" @change="set_ical(index)">
                         <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
@@ -239,9 +243,9 @@
                 emon_library: "emonLibDB",
                 vcal: '',
                 vchannels: [
-                    {vcal: 100, active: true},
-                    {vcal: 100, active: false},
-                    {vcal: 100, active: false}
+                    {vcal: 100, active: true, vlead: 0},
+                    {vcal: 100, active: false, vlead: 0},
+                    {vcal: 100, active: false, vlead: 0}
                 ],
                 ichannels: [
                     /*
@@ -324,8 +328,9 @@
             },
             set_vchannel: function(i) {
                 let vcal = app.device.vchannels[i].vcal * 1;
+                let vlead = app.device.vchannels[i].vlead * 1;
                 let active = app.device.vchannels[i].active ? 1 : 0;
-                writeToStream("k" + (i + 1) + " " + active + " " + vcal.toFixed(3));
+                writeToStream("k" + (i + 1) + " " + active + " " + vcal.toFixed(3) + " " + vlead.toFixed(3));
                 app.changes = true;
             },
             set_radio: function() {
@@ -531,7 +536,7 @@
                     // Active (emonPi3)
                     else if (key.substring(0, 7) == "iActive") {
                         let c = key.substring(7, 9).trim();
-                        if (val == "1") {
+                        if (val == "1" || val == "on") {
                             app.device.ichannels[c - 1].active = true;
                         } else {
                             app.device.ichannels[c - 1].active = false;
@@ -561,10 +566,16 @@
                         app.device.vchannels[c - 1].vcal = val * 1;
                     }
 
+                    // vLeadX: Voltage phase correction (emonPi3)
+                    else if (key.substring(0, 5) == "vLead") {
+                        let c = key.substring(5, 6).trim();
+                        app.device.vchannels[c - 1].vlead = val * 1;
+                    }
+
                     // vActiveX (emonPi3)
                     else if (key.substring(0, 7) == "vActive") {
                         let c = key.substring(7, 8).trim();
-                        if (val == "1") {
+                        if (val == "1" || val == "on") {
                             app.device.vchannels[c - 1].active = true;
                         } else {
                             app.device.vchannels[c - 1].active = false;
