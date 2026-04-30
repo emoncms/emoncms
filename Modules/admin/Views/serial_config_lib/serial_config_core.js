@@ -334,16 +334,16 @@ function process_line(line) {
                     app.device.rfGroup = val * 1;
                 }
                 else if (key == "rfBand") {
-                    if (val.contains("433.92")) {
+                    if (val.includes("433.92")) {
                         app.device.rfBand = 3;
                     }
-                    else if (val.contains("433")) {
+                    else if (val.includes("433")) {
                         app.device.rfBand = 0;
                     }
-                    else if (val.contains("868")) {
+                    else if (val.includes("868")) {
                         app.device.rfBand = 1;
                     }
-                    else if (val.contains("915")) {
+                    else if (val.includes("915")) {
                         app.device.rfBand = 2;
                     }
                 }
