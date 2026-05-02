@@ -592,6 +592,7 @@ ul.nav > li > [disabled] {
 .px-5, .pl-5 { padding-left: var(--s5) !important; }
 .px-6, .pl-6 { padding-left: var(--s6) !important; }
 
+.text-center { text-align: center !important; }
 
 /* ================================================================== */
 /* 10. UTILITIES — DISPLAY, FLEX, SIZING                              */

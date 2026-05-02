@@ -62,7 +62,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
             <i :class="allExpanded ? 'icon-minimize' : 'icon-expand'"></i>
         </button>
         <button class="app-btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
-            <i :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
+            <i :class="allSelected ? 'icon-ban' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
         <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
@@ -77,7 +77,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
             <i class="icon-download"></i>
         </button>
         <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
-            <i class="icon-eye-open"></i>
+            <i class="icon-eye"></i>
         </button>
         <button class="app-btn" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
