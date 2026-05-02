@@ -490,6 +490,25 @@ ul.nav > li > [disabled] {
     color: inherit;
 }
 
+.alert {
+    border: 1px solid transparent;
+    border-radius: var(--radius-control);
+    padding: var(--s2) var(--s3);
+    margin-bottom: var(--s3);
+}
+
+.alert-info {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+    color: var(--accent);
+}
+
+.alert-danger {
+    background-color: rgba(213, 46, 46, 0.1);
+    border-color: rgba(213, 46, 46, 0.3);
+    color: var(--text-danger);
+}
+
 
 /* ================================================================== */
 /* 9. UTILITIES — SPACING (margin / padding)                          */

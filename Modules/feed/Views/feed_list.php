@@ -166,9 +166,9 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 </div>
 
 <div id="feed-footer">
-    <button id="refreshfeedsize" class="app-btn" ><i class="icon-refresh" ></i>&nbsp;<?php echo tr('Refresh feed size'); ?></button>
-    <button id="addnewfeed" class="app-btn" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New feed'); ?></button>
-    <button id="importdata" class="app-btn" data-toggle="modal" data-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
+    <button id="refreshfeedsize" class="app-btn" ><i class="icon-refresh-cw" ></i>&nbsp;<?php echo tr('Refresh feed size'); ?></button>
+    <button id="addnewfeed" class="app-btn" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-circle-plus" ></i>&nbsp;<?php echo tr('New feed'); ?></button>
+    <button id="importdata" class="app-btn" data-toggle="modal" data-target="#importDataModal"><i class="icon-upload" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 

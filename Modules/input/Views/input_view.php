@@ -36,7 +36,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div v-cloak class="sticky-controls" v-if="total_devices > 0">
         <button @click="collapseAll" id="expand-collapse-all" class="app-btn" :title="collapse_title">
-            <i class="icon" :class="allCollapsed ? 'icon-resize-full' : 'icon-resize-small'"></i>
+            <i class="icon" :class="allCollapsed ? 'icon-expand' : 'icon-minimize'"></i>
         </button>
         <button @click="selectAll" class="app-btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
             <i class="icon" :class="selected.length > 0 && selected.length >= total_inputs ? 'icon-ban-circle' : 'icon-check'"></i>
