@@ -1799,19 +1799,19 @@ table {
 .dtp-input {
     width: 155px;
     cursor: text;
-    background: #fff;
-    border: 1px solid #ccc;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
     border-radius: 4px;
     padding: 4px 24px 4px 6px;
     font-size: 13px;
     height: 30px;
     box-sizing: border-box;
-    color: #222;
+    color: var(--text-primary);
 }
 .dtp-input:focus {
     outline: none;
-    border-color: #4a90d9;
-    box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--focus-ring);
 }
 .dtp-input-btns {
     position: absolute;
@@ -1827,18 +1827,18 @@ table {
     border: none;
     cursor: pointer;
     font-size: 11px;
-    color: #aaa;
+    color: var(--border-strong);
     padding: 0 2px;
     line-height: 1;
 }
-.dtp-icon-btn:hover { color: #444; }
+.dtp-icon-btn:hover { color: var(--text-primary); }
 .dtp-popup {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
     z-index: 9999;
-    background: #fff;
-    border: 1px solid #ddd;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
     border-radius: 6px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.12);
     padding: 10px;
@@ -1856,16 +1856,16 @@ table {
     border: none;
     cursor: pointer;
     font-size: 18px;
-    color: #555;
+    color: var(--text-secondary);
     padding: 0 6px;
     line-height: 1;
     border-radius: 4px;
 }
-.dtp-nav:hover { background: #f0f0f0; }
+.dtp-nav:hover { background: var(--bg-card-row-hover); }
 .dtp-month-label {
     font-size: 13px;
     font-weight: 600;
-    color: #222;
+    color: var(--text-primary);
 }
 .dtp-dow-row {
     display: grid;
@@ -1875,7 +1875,7 @@ table {
 .dtp-dow {
     text-align: center;
     font-size: 11px;
-    color: #999;
+    color: var(--border-strong);
     font-weight: 600;
     padding: 2px 0;
 }
@@ -1892,14 +1892,14 @@ table {
     background: none;
     cursor: pointer;
     border-radius: 4px;
-    color: #333;
+    color: var(--text-body);
     line-height: 1;
 }
-.dtp-day:hover { background: #e8f0fe; }
-.dtp-day--other { color: #bbb; }
-.dtp-day--today { font-weight: 700; color: #1a73e8; }
+.dtp-day:hover { background: var(--accent-bg); }
+.dtp-day--other { color: var(--border-strong); }
+.dtp-day--today { font-weight: 700; color: var(--accent); }
 .dtp-day--selected {
-    background: #1a73e8 !important;
+    background: var(--accent) !important;
     color: #fff !important;
     font-weight: 600;
 }
@@ -1910,7 +1910,7 @@ table {
     gap: 4px;
     margin: 10px 0 8px;
     padding-top: 8px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
 }
 .dtp-time-group {
     display: flex;
@@ -1920,29 +1920,30 @@ table {
 }
 .dtp-t-btn {
     background: none;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 3px;
     cursor: pointer;
     font-size: 9px;
-    color: #666;
+    color: var(--text-secondary);
     padding: 1px 5px;
     line-height: 1;
 }
-.dtp-t-btn:hover { background: #f0f0f0; }
+.dtp-t-btn:hover { background: var(--bg-card-row-hover); }
 .dtp-t-input {
     width: 34px;
     text-align: center;
-    border: 1px solid #ddd;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
     border-radius: 3px;
     font-size: 13px;
     font-weight: 600;
     padding: 3px 2px;
-    color: #222;
+    color: var(--text-primary);
 }
 .dtp-colon {
     font-size: 16px;
     font-weight: 700;
-    color: #555;
+    color: var(--text-secondary);
     margin-bottom: 2px;
 }
 .dtp-footer {
@@ -1950,28 +1951,28 @@ table {
     justify-content: space-between;
     gap: 6px;
     padding-top: 8px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border);
 }
 .dtp-btn-now {
     flex: 1;
     padding: 5px;
     font-size: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 4px;
-    background: #fff;
+    background: var(--bg-input);
     cursor: pointer;
-    color: #555;
+    color: var(--text-secondary);
 }
-.dtp-btn-now:hover { background: #f5f5f5; }
+.dtp-btn-now:hover { background: var(--bg-card-row-hover); }
 .dtp-btn-apply {
     flex: 1;
     padding: 5px;
     font-size: 12px;
     border: none;
     border-radius: 4px;
-    background: #1a73e8;
+    background: var(--accent);
     color: #fff;
     cursor: pointer;
     font-weight: 600;
 }
-.dtp-btn-apply:hover { background: #1558b0; }
+.dtp-btn-apply:hover { filter: brightness(0.85); }
