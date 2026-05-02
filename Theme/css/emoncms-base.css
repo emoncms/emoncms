@@ -417,7 +417,8 @@ body.collapsed #wrap main.content-container {
     height: 1.2em;
 }
 
-.caret {
+.menu-tr .caret,
+.menu-top .caret {
     border-top-color: #fff !important;
 }
 
@@ -1320,6 +1321,282 @@ input[type="password"]:focus {
 /* 23. FEED LIST GRID                                                 */
 /* ================================================================== */
 
+/* ================================================================== */
+/* 24. BOOTSTRAP 2 COMPAT (GRAPH VIEW IN-USE STYLES)                  */
+/* ================================================================== */
+
+.help-block {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+}
+
+.caret {
+    display: inline-block;
+    width: 0;
+    height: 0;
+    vertical-align: middle;
+    border-top: 4px solid currentColor;
+    border-right: 4px solid transparent;
+    border-left: 4px solid transparent;
+    content: "";
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+    line-height: 14px;
+    vertical-align: text-top;
+    background-position: 14px 14px;
+    background-repeat: no-repeat;
+}
+
+.icon-repeat {
+    background-position: -216px -24px;
+}
+
+.icon-arrow-up {
+    background-position: -289px -96px;
+}
+
+.icon-arrow-down {
+    background-position: -312px -96px;
+}
+
+.icon-share-alt {
+    background-position: -336px -96px;
+}
+
+.icon-chevron-down {
+    background-position: -313px -119px;
+}
+
+table {
+    max-width: 100%;
+    background-color: transparent;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.table th,
+.table td {
+    padding: 8px;
+    line-height: 20px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid var(--border);
+}
+
+.table thead th {
+    vertical-align: bottom;
+}
+
+.table caption + thead tr:first-child th,
+.table caption + thead tr:first-child td,
+.table thead:first-child tr:first-child th,
+.table thead:first-child tr:first-child td {
+    border-top: 0;
+}
+
+.table tbody + tbody {
+    border-top: 2px solid var(--border);
+}
+
+.table .table {
+    background-color: var(--bg-card);
+}
+
+.table-condensed th,
+.table-condensed td {
+    padding: 4px 5px;
+}
+
+.btn {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: var(--font-sm);
+    line-height: 20px;
+    color: var(--text-body);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
+    color: var(--text-primary);
+    background-color: var(--accent-bg-hover);
+    border-color: var(--accent-border);
+    text-decoration: none;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.btn.active,
+.btn:active {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.btn.disabled,
+.btn[disabled] {
+    cursor: default;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+.input-append,
+.input-prepend {
+    display: inline-flex;
+    align-items: stretch;
+    margin-bottom: 10px;
+    font-size: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+    max-width: 100%;
+}
+
+.input-append input,
+.input-prepend input,
+.input-append select,
+.input-prepend select,
+.input-append .dropdown-menu,
+.input-prepend .dropdown-menu,
+.input-append .add-on,
+.input-prepend .add-on,
+.input-append .btn,
+.input-prepend .btn {
+    font-size: var(--font-sm);
+}
+
+.input-append input,
+.input-prepend input,
+.input-append select,
+.input-prepend select {
+    position: relative;
+    margin-bottom: 0;
+    border-radius: 0;
+    vertical-align: top;
+}
+
+.input-append input:focus,
+.input-prepend input:focus,
+.input-append select:focus,
+.input-prepend select:focus {
+    z-index: 2;
+}
+
+.input-append .add-on,
+.input-prepend .add-on {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: 30px;
+    min-width: 16px;
+    padding: 0 8px;
+    font-weight: normal;
+    line-height: 1;
+    text-align: center;
+    color: var(--text-secondary);
+    background-color: var(--bg-card-header);
+    border: 1px solid var(--border-strong);
+    box-sizing: border-box;
+}
+
+.input-append .add-on,
+.input-prepend .add-on,
+.input-append .btn,
+.input-prepend .btn,
+.input-append .btn-group > .dropdown-toggle,
+.input-prepend .btn-group > .dropdown-toggle {
+    vertical-align: top;
+    border-radius: 0;
+}
+
+.input-append .active,
+.input-prepend .active {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+}
+
+.input-prepend .add-on,
+.input-prepend .btn {
+    margin-right: -1px;
+}
+
+.input-prepend .add-on:first-child,
+.input-prepend .btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-append input,
+.input-append select,
+.input-append .btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-append input + .btn-group .btn:last-child,
+.input-append select + .btn-group .btn:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-append .add-on,
+.input-append .btn,
+.input-append .btn-group {
+    margin-left: -1px;
+}
+
+.input-append .add-on:last-child,
+.input-append .btn:last-child,
+.input-append .btn-group:last-child > .dropdown-toggle {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append input,
+.input-prepend.input-append select {
+    border-radius: 0;
+}
+
+.input-prepend.input-append input + .btn-group .btn,
+.input-prepend.input-append select + .btn-group .btn {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append .add-on:first-child,
+.input-prepend.input-append .btn:first-child {
+    margin-right: -1px;
+    border-radius: 4px 0 0 4px;
+}
+
+.input-prepend.input-append .add-on:last-child,
+.input-prepend.input-append .btn:last-child {
+    margin-left: -1px;
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append .btn-group:first-child {
+    margin-left: 0;
+}
+
 /* CSS subgrid feed list */
 .feed-list-grid {
     display: grid;
@@ -1504,3 +1781,197 @@ input[type="password"]:focus {
 /* Public / private feed icons */
 .icon-public  { color: #2e7c9e; }
 .icon-private { color: #8b8b8b; }
+
+/* ---- DateTimePicker component ---- */
+.dtp-wrap {
+    position: relative;
+    display: inline-block;
+}
+.dtp-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+.dtp-input-wrap {
+    position: relative;
+    display: inline-block;
+}
+.dtp-input {
+    width: 155px;
+    cursor: text;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 4px 24px 4px 6px;
+    font-size: 13px;
+    height: 30px;
+    box-sizing: border-box;
+    color: #222;
+}
+.dtp-input:focus {
+    outline: none;
+    border-color: #4a90d9;
+    box-shadow: 0 0 0 2px rgba(74,144,217,0.2);
+}
+.dtp-input-btns {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    gap: 1px;
+}
+.dtp-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 11px;
+    color: #aaa;
+    padding: 0 2px;
+    line-height: 1;
+}
+.dtp-icon-btn:hover { color: #444; }
+.dtp-popup {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 9999;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 10px;
+    width: 240px;
+    user-select: none;
+}
+.dtp-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.dtp-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #555;
+    padding: 0 6px;
+    line-height: 1;
+    border-radius: 4px;
+}
+.dtp-nav:hover { background: #f0f0f0; }
+.dtp-month-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #222;
+}
+.dtp-dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 2px;
+}
+.dtp-dow {
+    text-align: center;
+    font-size: 11px;
+    color: #999;
+    font-weight: 600;
+    padding: 2px 0;
+}
+.dtp-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+.dtp-day {
+    text-align: center;
+    font-size: 12px;
+    padding: 5px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    color: #333;
+    line-height: 1;
+}
+.dtp-day:hover { background: #e8f0fe; }
+.dtp-day--other { color: #bbb; }
+.dtp-day--today { font-weight: 700; color: #1a73e8; }
+.dtp-day--selected {
+    background: #1a73e8 !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+.dtp-time-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 10px 0 8px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+.dtp-time-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.dtp-t-btn {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 9px;
+    color: #666;
+    padding: 1px 5px;
+    line-height: 1;
+}
+.dtp-t-btn:hover { background: #f0f0f0; }
+.dtp-t-input {
+    width: 34px;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 2px;
+    color: #222;
+}
+.dtp-colon {
+    font-size: 16px;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 2px;
+}
+.dtp-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid #eee;
+}
+.dtp-btn-now {
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+    color: #555;
+}
+.dtp-btn-now:hover { background: #f5f5f5; }
+.dtp-btn-apply {
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    background: #1a73e8;
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+.dtp-btn-apply:hover { background: #1558b0; }
