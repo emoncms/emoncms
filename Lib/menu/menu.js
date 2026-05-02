@@ -90,7 +90,7 @@ var menu = {
             // Prepare active status
             let active = ""; if (l1==menu.active_l1) active = "active";
             // Prepare icon
-            let icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+            let icon = '<span class="icon my-icon-'+item['icon']+'"></span>';
             // Title
             if (item['name']!=undefined) {
                 let title = item['name'];
@@ -147,7 +147,7 @@ var menu = {
                 // Prepare icon
                 let icon = "";
                 if (item['icon']!=undefined) {
-                    icon = '<svg class="icon '+item['icon']+'"><use xlink:href="#icon-'+item['icon']+'"></use></svg>';
+                    icon = '<span class="icon my-icon-'+item['icon']+'"></span>';
                 }
                 
                 // Title
@@ -256,7 +256,7 @@ var menu = {
             $(".menu-text-l2").hide();
             $(".menu-title-l2 span").hide();
             var ctrl = $("#menu-l2-controls");
-            ctrl.html('<svg class="icon"><use xlink:href="#icon-expand"></use></svg>');
+            ctrl.html('<span class="icon my-icon-expand"></span>');
             ctrl.attr("title",_Tr_Menu("Expand sidebar")).removeClass("ctrl-hide").removeClass("ctrl-exp").addClass("ctrl-min");
         }
 
@@ -286,7 +286,7 @@ var menu = {
             $(".menu-text-l2").show();
             $(".menu-title-l2 span").show();
             var ctrl = $("#menu-l2-controls");
-            ctrl.html('<svg class="icon"><use xlink:href="#icon-contract"></use></svg>');
+            ctrl.html('<span class="icon my-icon-contract"></span>');
             ctrl.attr("title",_Tr_Menu("Minimise sidebar")).removeClass("ctrl-hide").removeClass("ctrl-min").addClass("ctrl-exp");
         }
 

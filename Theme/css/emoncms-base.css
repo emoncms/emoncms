@@ -248,6 +248,12 @@ html.color-mode-light .inline-edit select {
     border-color: #ccc;
 }
 
+html.color-mode-light select {
+    background-color: #ffffff;
+    color: #333;
+    border-color: #ccc;
+}
+
 html.color-mode-light input[type="text"],
 html.color-mode-light input[type="password"] {
     background-color: #ffffff;
@@ -290,7 +296,8 @@ body {
 /* Vue cloak — hide un-compiled templates */
 [v-cloak] { display: none; }
 
-svg.icon {
+svg.icon,
+span.icon {
     display: inline-block;
     width: 1em;
     height: 1em;
@@ -323,6 +330,7 @@ body.collapsed #wrap main.content-container {
 }
 
 .content-container {
+    max-width: 1150px;
 }
 
 .fullwidth.collapsed #wrap,
@@ -383,11 +391,7 @@ body.collapsed #wrap main.content-container {
     overflow-y: auto;
 }
 
-/* Nav bar items */
-.menu-tr > ul {
-    display: flex;
-    align-items: center;
-}
+/* Nav bar items — layout handled in menu.css */
 #nav-colormode-li {
     display: flex;
     align-items: stretch;
@@ -897,23 +901,12 @@ div#account {
     padding-top: 10px;
 }
 
-/* Log level dropdown, positioned inside .log */
+/* Log level toggle button, positioned inside .log */
 #log-level {
     position: absolute;
     right: .2rem;
     bottom: 0;
 }
-#log-level .dropdown-menu {
-    background: transparent;
-    border-radius: 0;
-    border: 0;
-    box-shadow: none;
-    margin: 0;
-}
-#log-level .dropdown-menu .active { font-weight: bold; }
-#log-level .dropdown-menu .btn    { border: 0; border-radius: 0; background-image: none; }
-#log-level li:first-child .btn    { border-radius: .3em .3em 0 0; }
-#log-level li:last-child .btn     { border-radius: 0 0 .3em .3em; }
 
 /* Snackbar notification (shown when log level changes) */
 #snackbar {
@@ -1184,6 +1177,24 @@ div#account {
 /* ================================================================== */
 /* 21. COMPONENTS — FORMS & INPUTS                                    */
 /* ================================================================== */
+
+/* Base select */
+select {
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: var(--font-sm);
+    font-family: inherit;
+    height: 30px;
+    box-sizing: border-box;
+    cursor: pointer;
+    outline: none;
+}
+select:focus {
+    border-color: var(--accent);
+}
 
 /* Base text inputs */
 input[type="text"],
@@ -1597,6 +1608,103 @@ table {
     margin-left: 0;
 }
 
+/* ================================================================== */
+/* 25. COMPONENTS — CONTROL GROUPS                                     */
+/* Label + input/select pairings, flex rows of controls               */
+/* ================================================================== */
+
+/* Flex row container for a set of control groups */
+.controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    margin-bottom: 0.6rem;
+}
+
+/* A label + one or more inputs/selects */
+.ctrl-group {
+    display: inline-flex;
+    align-items: stretch;
+    height: 30px;
+}
+
+/* Left-side label */
+.ctrl-label {
+    background-color: var(--bg-card-header);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-strong);
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    padding: 0 10px;
+    font-size: var(--font-sm);
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* Controls inside ctrl-group */
+.ctrl-group select,
+.ctrl-group input[type="text"],
+.ctrl-group input[type="number"] {
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0 4px 4px 0;
+    padding: 0 8px;
+    font-size: var(--font-sm);
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0;
+}
+
+.ctrl-group select:focus,
+.ctrl-group input[type="text"]:focus,
+.ctrl-group input[type="number"]:focus {
+    border-color: var(--accent);
+    z-index: 2;
+    position: relative;
+}
+
+/* Checkbox + label pairs */
+.ctrl-checkbox {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Inline action button grouping */
+.ctrl-actions {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+/* DateTimePicker inside ctrl-group: connect flush to ctrl-label */
+.ctrl-group .dtp-wrap {
+    display: inline-flex;
+    align-items: stretch;
+}
+.ctrl-group .dtp-input-row {
+    display: inline-flex;
+    align-items: stretch;
+}
+.ctrl-group .dtp-input-wrap {
+    display: inline-flex;
+    align-items: center;
+}
+.ctrl-group .dtp-input {
+    border-radius: 0 4px 4px 0;
+}
+
+
 /* CSS subgrid feed list */
 .feed-list-grid {
     display: grid;
@@ -1781,6 +1889,64 @@ table {
 /* Public / private feed icons */
 .icon-public  { color: #2e7c9e; }
 .icon-private { color: #8b8b8b; }
+
+/* ================================================================== */
+/* 26. COMPONENTS — VISUALIZATION CARD                                 */
+/* Card pattern with topbar (icon+title), optional nav row, body      */
+/* ================================================================== */
+
+.vis-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.vis-card-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-card-header);
+}
+
+.vis-card-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex: 1;
+    letter-spacing: 0.02em;
+}
+
+.vis-card-title .icon {
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+/* Optional nav/controls strip between topbar and body */
+.vis-card-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Main graph/chart area */
+.vis-card-body {
+    padding: 8px;
+}
+
+/* Padded controls/options area */
+.vis-card-controls {
+    padding: 0.75rem;
+}
+
 
 /* ---- DateTimePicker component ---- */
 .dtp-wrap {

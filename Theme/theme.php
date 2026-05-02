@@ -47,8 +47,9 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
     <?php
-    load_css("Theme/css/bootstrap.css");
+    // load_css("Theme/css/bootstrap.css");
     load_css("Theme/css/emoncms-base.css");
+    load_css("Theme/css/svg-icons.css");
     load_css("Lib/menu/menu.css");
 
     include 'Lib/menu/menu_langjs.php';
@@ -63,7 +64,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     var current_themesidebar = "dark";
     </script>
     <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
-    <?php echo $svg_icons; // THEME ICONS ?>
 
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
@@ -73,13 +73,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <div class="menu-tr"><ul>
             <li id="nav-colormode-li">
                 <button id="nav-colormode-btn" title="Toggle dark/light mode" onclick="navToggleColorMode()" aria-label="Toggle colour mode">
-                    <svg id="nav-colormode-icon" class="icon"><use id="nav-colormode-use" xlink:href="#icon-sun"></use></svg>
+                    <span id="nav-colormode-icon" class="icon my-icon-sun"></span>
                 </button>
             </li>
             <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
-                <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
+                <span class="icon my-icon-user" style="color:#fff"></span>
             <?php } else { ?>
                 <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
             <?php } ?>
@@ -87,20 +87,20 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="icon my-icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>  
                     <?php if (isset($_SESSION['adminuser'])) { ?>
-                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="icon my-icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="icon my-icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
             <li>
               <a href="<?php echo $path; ?>" title="<?php echo ctx_tr("theme_messages","Login"); ?>">
-                <div class="tr-login"><svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
+                <div class="tr-login"><span class="icon my-icon-enter enter"></span></div>
               </a>
             </li>
             <?php } ?>
@@ -141,14 +141,17 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <?php load_js("Theme/js/bootstrap.js"); ?>
+    <?php //load_js("Theme/js/bootstrap.js"); ?>
     <?php load_js("Theme/js/theme.js"); ?>
 
     <script>
     (function() {
         var mode = localStorage.getItem('colormode') || 'dark';
-        var use = document.getElementById('nav-colormode-use');
-        if (use) use.setAttribute('xlink:href', mode === 'light' ? '#icon-moon' : '#icon-sun');
+        var icon = document.getElementById('nav-colormode-icon');
+        if (icon) {
+            icon.classList.remove('my-icon-sun', 'my-icon-moon');
+            icon.classList.add(mode === 'light' ? 'my-icon-moon' : 'my-icon-sun');
+        }
     })();
     function navToggleColorMode() {
         var mode = localStorage.getItem('colormode') || 'dark';
@@ -160,13 +163,15 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         } else {
             html.classList.remove('color-mode-light');
         }
-        var use = document.getElementById('nav-colormode-use');
-        if (use) use.setAttribute('xlink:href', next === 'light' ? '#icon-moon' : '#icon-sun');
+        var icon = document.getElementById('nav-colormode-icon');
+        if (icon) {
+            icon.classList.remove('my-icon-sun', 'my-icon-moon');
+            icon.classList.add(next === 'light' ? 'my-icon-moon' : 'my-icon-sun');
+        }
     }
     </script>
 
 <!-- ICONS --------------------------------------------- -->
-
 
 <?php
     // MODULE ICONS
