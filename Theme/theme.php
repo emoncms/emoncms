@@ -73,13 +73,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <div class="menu-tr"><ul>
             <li id="nav-colormode-li">
                 <button id="nav-colormode-btn" title="Toggle dark/light mode" onclick="navToggleColorMode()" aria-label="Toggle colour mode">
-                    <span id="nav-colormode-icon" class="icon my-icon-sun"></span>
+                    <span id="nav-colormode-icon" class="icon-sun"></span>
                 </button>
             </li>
             <?php if ($session["read"]) { ?>
             <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
-                <span class="icon my-icon-user" style="color:#fff"></span>
+                <span class="icon-user" style="color:#fff"></span>
             <?php } else { ?>
                 <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
             <?php } ?>
@@ -87,20 +87,20 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="icon my-icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>  
                     <?php if (isset($_SESSION['adminuser'])) { ?>
-                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="icon my-icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="icon my-icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
             <li>
               <a href="<?php echo $path; ?>" title="<?php echo ctx_tr("theme_messages","Login"); ?>">
-                <div class="tr-login"><span class="icon my-icon-enter enter"></span></div>
+                <div class="tr-login"><span class="icon-enter enter"></span></div>
               </a>
             </li>
             <?php } ?>
@@ -149,8 +149,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         var mode = localStorage.getItem('colormode') || 'dark';
         var icon = document.getElementById('nav-colormode-icon');
         if (icon) {
-            icon.classList.remove('my-icon-sun', 'my-icon-moon');
-            icon.classList.add(mode === 'light' ? 'my-icon-moon' : 'my-icon-sun');
+            icon.classList.remove('icon-sun', 'icon-moon');
+            icon.classList.add(mode === 'light' ? 'icon-moon' : 'icon-sun');
         }
     })();
     function navToggleColorMode() {
@@ -165,8 +165,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         }
         var icon = document.getElementById('nav-colormode-icon');
         if (icon) {
-            icon.classList.remove('my-icon-sun', 'my-icon-moon');
-            icon.classList.add(next === 'light' ? 'my-icon-moon' : 'my-icon-sun');
+            icon.classList.remove('icon-sun', 'icon-moon');
+            icon.classList.add(next === 'light' ? 'icon-moon' : 'icon-sun');
         }
     }
     </script>

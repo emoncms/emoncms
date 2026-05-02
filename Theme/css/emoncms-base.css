@@ -228,16 +228,6 @@ html.color-mode-light #footer {
     color: #555;
 }
 
-/* Glyphicon sprite — white in dark mode, dark in light mode */
-[class^="icon-"],
-[class*=" icon-"] {
-    background-image: url("../img/glyphicons-halflings-white.png");
-}
-html.color-mode-light [class^="icon-"],
-html.color-mode-light [class*=" icon-"] {
-    background-image: url("../img/glyphicons-halflings.png");
-}
-
 html.color-mode-light .group-card table td {
     border-bottom-color: rgba(0,0,0,0.06);
 }
@@ -1353,38 +1343,6 @@ input[type="password"]:focus {
     content: "";
 }
 
-[class^="icon-"],
-[class*=" icon-"] {
-    display: inline-block;
-    width: 14px;
-    height: 14px;
-    margin-top: 1px;
-    line-height: 14px;
-    vertical-align: text-top;
-    background-position: 14px 14px;
-    background-repeat: no-repeat;
-}
-
-.icon-repeat {
-    background-position: -216px -24px;
-}
-
-.icon-arrow-up {
-    background-position: -289px -96px;
-}
-
-.icon-arrow-down {
-    background-position: -312px -96px;
-}
-
-.icon-share-alt {
-    background-position: -336px -96px;
-}
-
-.icon-chevron-down {
-    background-position: -313px -119px;
-}
-
 table {
     max-width: 100%;
     background-color: transparent;
@@ -1922,10 +1880,7 @@ table {
     letter-spacing: 0.02em;
 }
 
-.vis-card-title .icon {
-    color: var(--accent);
-    flex-shrink: 0;
-}
+.text-accent { color: var(--accent); }
 
 /* Optional nav/controls strip between topbar and body */
 .vis-card-nav {

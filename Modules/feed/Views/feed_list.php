@@ -59,19 +59,19 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
     <div class="sticky-controls">
         <button class="app-btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
-            <i class="icon" :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
+            <i :class="allExpanded ? 'icon-minimize' : 'icon-expand'"></i>
         </button>
         <button class="app-btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
-            <i class="icon" :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
+            <i :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
         <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
         </button>
         <button class="app-btn" v-if="selectedFeedCount > 0 && session_write" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
-            <i class="icon-trash"></i>
+            <span class="icon-trash"></span>
         </button>
         <button class="app-btn" v-if="showDownsample" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
-            <i class="icon-repeat"></i>
+            <i class="icon-downsample"></i>
         </button>
         <button class="app-btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
             <i class="icon-download"></i>
