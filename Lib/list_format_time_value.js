@@ -22,7 +22,7 @@ function list_format_updated_obj(time, interval = 1) {
     var day = hour / 24;
 
     var updated = secs.toFixed(0) + "s";
-    if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+    if ((update == 0) || (!Number.isFinite(secs))) updated = "n/a";
     else if (secs.toFixed(0) == 0) updated = "now";
     else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
     else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
