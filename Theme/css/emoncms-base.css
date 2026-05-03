@@ -283,7 +283,7 @@ body {
 }
 
 
-:fullscreen, ::backdrop {
+ ::backdrop {
     background-color: var(--bg-vis-graph-color);
 }
 
@@ -668,30 +668,6 @@ Gravatar icon in toolbar
   overflow: hidden;
 }
 
-.no-gravitar a.grav-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.15);
-  width: 32px;
-  height: 32px;
-  border: 2px solid rgba(255,255,255,0.3);
-  overflow: hidden;
-  margin: 0 6px;
-  font-size: 1.5rem;
-  transition: background-color 0.1s ease-out;
-}
-
-.no-gravitar a.grav-container:hover {
-  background: rgba(255,255,255,0.25);
-}
-
-.no-gravitar a.grav-container .icon.user {
-  width: 1.1em;
-  height: 1.1em;
-}
-
 .gravitar a.grav-container {
   display: flex;
   align-items: center;
@@ -788,16 +764,7 @@ body.collapsed #wrap main.content-container {
 /* 7. NAVIGATION BAR                                                  */
 /* ================================================================== */
 
-.menu-dashboard, .menu-left, .menu-extra, .menu-setup, .menu-right {
-    display: inherit !important;
-}
-
 /* Scrollable dropdown menus (e.g. dashboard editor) */
-.scrollable-menu {
-    height: auto;
-    max-height: 333px;
-    overflow-y: auto;
-}
 
 /* Nav bar items — layout handled in menu.css */
 #nav-colormode-li {
@@ -1192,9 +1159,6 @@ ul.nav > li > [disabled] {
 div#account {
     width: 250px;
 }
-.account-item {
-    margin-bottom: 10px;
-}
 
 /* label-container — used in various module list views */
 .label-container { padding-top: .6em; display: inline-block; min-width: 200px; }
@@ -1267,15 +1231,6 @@ div#account {
 }
 
 /* Input view — device column cells */
-.device-key,
-.device-schedule,
-.device-configure,
-.device-last-updated {
-    border-left: 1px solid #eee;
-    color: white;
-}
-.device-key:hover       { background-color: #eaeaea; }
-.device-configure:hover { background-color: #eaeaea; }
 
 /* #table used by device, input, profile, feedlist, schedule view */
 #table .accordion {
@@ -1397,14 +1352,12 @@ div#account {
 
 /* Shared card-header base */
 .group-card-header,
-.node-header,
 .group-header {
     background-color: var(--bg-card-header);
     cursor: pointer;
     transition: background-color 0.15s ease-in-out;
 }
 .group-card-header:hover,
-.node-header:hover,
 .group-header:hover {
     background-color: var(--bg-card-header-hover);
 }
@@ -2212,11 +2165,11 @@ table {
 }
 
 /* Node / group header */
-.node-header, .group-header {
+ .group-header {
     color: var(--text-primary);
     border-right: 4px solid var(--status-color);
 }
-.node-header h5, .group-header h5 {
+ .group-header h5 {
     margin: 0;
     font-weight: 600;
     font-size: var(--font-xs);
@@ -2768,11 +2721,6 @@ dialog.ec-modal .modal-footer > :first-child {
     font-size: 13px;
 }
 
-#legend .grid-container {
-    margin: 1.3em 3em 0 3.2em;
-    position: relative;
-}
-
 #legend .col {
     position: absolute;
     top: 0;
@@ -2785,57 +2733,9 @@ dialog.ec-modal .modal-footer > :first-child {
 #legend .left {
     left: 0;
 }
-
-#legend .legendColorBox {
-    display: inline-block;
-    margin-right: 0.3em;
-}
-
-#legend [data-legend-series] a {
-    color: inherit;
-    outline: none;
-}
 .legendLayer rect.background { fill: transparent; }
-#legend .legendColorBox > div > div {
-    width: 0.3em !important;
-    border-width: 0.4em !important;
-}
-#legend .faded { opacity: 0.4; }
 
 /* ---- Graph nav controls (inside vis-card-nav) ---- */
-.graph-zoom-btns {
-    display: inline-flex;
-}
-
-.graph-nav-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 32px;
-    height: 30px;
-    padding: 0 10px;
-    font-size: 1rem;
-    font-family: inherit;
-    line-height: 1;
-    background-color: var(--accent-bg);
-    color: var(--accent);
-    border: 1px solid var(--accent-border);
-    border-left: none;
-    cursor: pointer;
-    transition: background-color 0.15s;
-    box-sizing: border-box;
-}
-.graph-zoom-btns .graph-nav-btn:first-child {
-    border-left: 1px solid var(--accent-border);
-    border-radius: 4px 0 0 4px;
-}
-.graph-zoom-btns .graph-nav-btn:last-child {
-    border-radius: 0 4px 4px 0;
-}
-.graph-nav-btn:hover {
-    background-color: var(--accent-bg-hover);
-    color: var(--text-primary);
-}
 
 /* Show controls (legend/tag checkboxes) inline at nav bar end */
 #showcontrols {
@@ -2936,4 +2836,3 @@ table#feeds.table .caret {
     #graph_zoomin,
     #graph_zoomout { display: none; }
 }
-
