@@ -4,47 +4,50 @@ var last_email = ""+user_data.email
 var last_language = ""+user_data.language;
 
 var timezones = [];
-$.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
-    app.timezones = result;
-}});
 
-var app = new Vue({
-    el: '#app',
-    data: {
-        user: user_data,
-        timezones: timezones,
-        languages: languages,
-        translation_status: translation_status,
-        edit: {
-            username: false,
-            email: false,
-            password: false,
-            gravatar: false,
-            name: false,
-            location: false,
-            timezone: false,
-            language: false,
-            startingpage: false
-        },
-        password: {
-            current: "",
-            new: "",
-            repeat: ""
+var profileApp = Vue.createApp({
+    data: function() {
+        return {
+            user: user_data,
+            timezones: timezones,
+            languages: languages,
+            translation_status: translation_status,
+            edit: {
+                username: false,
+                email: false,
+                password: false,
+                gravatar: false,
+                name: false,
+                location: false,
+                timezone: false,
+                language: false,
+                startingpage: false
+            },
+            password: {
+                current: "",
+                new: "",
+                repeat: ""
+            }
         }
     },
     methods: {
+        gravatar_hash: function(value) {
+            if (typeof CryptoJS === 'undefined' || value == null) return "";
+            return CryptoJS.MD5(String(value).trim().toLowerCase()).toString();
+        },
         show_edit: function(key) {
-            app.edit[key] = true;
+            this.edit[key] = true;
         },
         save: function(key) {
-            user.set(app.user);
-            app.edit[key] = false;
+            user.set(this.user);
+            this.edit[key] = false;
             // refresh the page if the language has been changed.
-            if (app.user.language!=last_language) {
+            if (this.user.language!=last_language) {
                 window.location.href = path+"user/view";
             }
         },
         save_username: function(username) {
+            var self = this;
             if (username!=last_username) {
                 $.ajax({
                     url: path+"user/changeusername.json",
@@ -54,7 +57,7 @@ var app = new Vue({
                         if (result.success!=undefined) {
                             if (result.success) {
                                 last_username = username;
-                                app.edit.username = false;
+                                self.edit.username = false;
                             } else {
                                 alert(result.message)                        
                             }
@@ -62,10 +65,11 @@ var app = new Vue({
                     }
                 });
             } else {
-                app.edit.username = false;
+                self.edit.username = false;
             }
         },
         save_email: function(email) {
+            var self = this;
             if (email!=last_email) {
                 $.ajax({
                     url: path+"user/changeemail.json",
@@ -75,7 +79,7 @@ var app = new Vue({
                         if (result.success!=undefined) {
                             if (result.success) {
                                 last_email = email;
-                                app.edit.email = false;
+                                self.edit.email = false;
                             } else {
                                 alert(result.message)                        
                             }
@@ -83,35 +87,36 @@ var app = new Vue({
                     }
                 });
             } else {
-                app.edit.email = false;
+                self.edit.email = false;
             }
         },
         change_password: function() {
-            if (app.password.current=='') {
+            var self = this;
+            if (self.password.current=='') {
                 alert("Current password field empty");
                 return false;   
             }
-            if (app.password.new=='') {
+            if (self.password.new=='') {
                 alert("New password field empty");
                 return false;   
             }        
-            if (app.password.repeat=='') {
+            if (self.password.repeat=='') {
                 alert("Repeat password field empty");
                 return false;   
             }
-            if (app.password.new != app.password.repeat) {
+            if (self.password.new != self.password.repeat) {
                 alert(str_passwords_do_not_match);
                 return false;
             }
             $.ajax({
                 type: 'POST',
                 url: path+"user/changepassword.json",
-                data: "old="+encodeURIComponent(app.password.current)+"&new="+encodeURIComponent(app.password.new),
+                data: "old="+encodeURIComponent(self.password.current)+"&new="+encodeURIComponent(self.password.new),
                 dataType: 'json',
                 success: function(result) {
                     if (result.success!=undefined) {
                         if (result.success) {
-                            app.edit.password = false;
+                            self.edit.password = false;
                             alert(result.message)       
                         } else {
                             alert(result.message)
@@ -131,7 +136,11 @@ var app = new Vue({
             $('#modalNewApikey').modal('show');
         }
     }
-});
+}).mount('#app');
+
+$.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
+    profileApp.timezones = result;
+}});
 
 $("#confirmdelete").click(function() {
     var password = $("#delete-account-password").val();
@@ -159,7 +168,7 @@ $("#confirm_generate_apikey").click(function() {
     var type = $("#apikey_type").html();
     $.ajax({ url: path+"user/newapikey"+type+".json", dataType: 'json', success: function(result){
         if (result.success) {
-            app.user['apikey_'+type] = result[type+'_apikey'];
+            profileApp.user['apikey_'+type] = result[type+'_apikey'];
             $('#modalNewApikey').modal('hide');
         }
     }});

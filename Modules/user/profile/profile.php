@@ -10,12 +10,11 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=6;
+load_js("Modules/user/profile/md5.js");
+load_js("Lib/misc/clipboard.js");
+load_js("Modules/user/user.js");
+
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div id="app" v-cloak>
 
@@ -123,7 +122,7 @@ global $path; $v=6;
           <tr>
             <td class="col-secondary"><?php echo tr('Gravatar'); ?></td>
             <td>
-              <img v-if="!edit.gravatar" style="border: 1px solid #444; border-radius: 3px; padding:2px" :src="'https://www.gravatar.com/avatar/'+CryptoJS.MD5(user.gravatar)" />
+              <img v-if="!edit.gravatar" style="border: 1px solid #444; border-radius: 3px; padding:2px" :src="'https://www.gravatar.com/avatar/'+gravatar_hash(user.gravatar)" />
               <div v-else class="inline-edit">
                 <input type="text" style="width:220px !important" v-model="user.gravatar"/>
                 <button class="app-btn app-btn-sm" @click="save('gravatar')"><i class="icon-white icon-ok"></i></button>
@@ -289,4 +288,4 @@ var languages = <?php echo json_encode(get_available_languages_with_names()); ?>
 var translation_status = <?php echo json_encode(get_translation_status()); ?>;
 var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>
+<?php load_js("Modules/user/profile/profile.js"); ?>
