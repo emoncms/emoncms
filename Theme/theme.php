@@ -145,7 +145,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <?php //load_js("Theme/js/bootstrap.js"); ?>
     <?php load_js("Theme/js/theme.js"); ?>
 
     <script>
@@ -174,26 +173,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         }
     }
     </script>
-
-<!-- ICONS --------------------------------------------- -->
-
-<?php
-    // MODULE ICONS
-    if(!empty($menu['includes']['icons'])) :
-?>
-<svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs>
-        <?php
-        foreach($menu['includes']['icons'] as $icon):
-            echo $icon;
-        endforeach;
-        ?>
-    </defs>
-</svg>
-<?php
-    // end of module icons
-    endif;
-?>
 </body>
 </html>
 
