@@ -47,13 +47,18 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
     <?php
-    // load_css("Theme/css/bootstrap.css");
+    // Main theme CSS
     load_css("Theme/css/emoncms-base.css");
+    // Specific used icons
     load_css("Theme/css/svg-icons.css");
-    load_css("Theme/menu/menu.css");
+    // Menu Translations
     include 'Theme/menu/menu_langjs.php';
 
-    load_js("Lib/jquery-3.6.0.min.js");
+    // The main 3rd party JS libraries
+    load_js("Lib/js/jquery-4.0.0.min.js");
+    load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+    
+    // Menu and translations
     load_js("Theme/menu/menu.js");
     load_js("Lib/misc/gettext.js");
     ?>
