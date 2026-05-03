@@ -6,7 +6,7 @@ function openDownsampleModal() {
 
     console.log('openDownsampleModal called');
 
-    $('#downsampleModal').modal('show');
+    emoncmsModal.open('downsampleModal');
     $("#downsample-confirm").show();
     $(".downsample-options").show();
     $("#downsample-finish").hide();

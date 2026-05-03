@@ -406,7 +406,7 @@ function disableTrim(){
 function openDeleteFeedModal(){
     $('#feedDeleteModal #deleteFeedText').show();
     $('#feedDeleteModal #deleteVirtualFeedText').hide();
-    $('#feedDeleteModal').modal('show'); //show the delete modal
+    emoncmsModal.open('feedDeleteModal');
 
     // get the list of input processlists that write to feeds
     let feed_processes = getFeedProcess();
@@ -508,7 +508,7 @@ $("#feedDelete-confirm").click(function(){
         setTimeout(function() {
             update_feed_list();
             updaterStart(update_feed_list, 5000);
-            $('#feedDeleteModal').modal('hide');
+            emoncmsModal.close('feedDeleteModal');
         }, 5000);
     }
 });

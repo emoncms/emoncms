@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------------------
 var import_data = [];
 
-$("#importDataModal").on('shown', function(){
+document.getElementById('importDataModal').addEventListener('modal:shown', function(){
     draw_import_feed_select();
     
     for (var e in engines_hidden) {
@@ -166,7 +166,7 @@ $("#importData").click(function() {
                     alert('ERROR: '+result.message);
                 }
             }
-            $('#importDataModal').modal('hide');
+            emoncmsModal.close('importDataModal');
         }
     });
 });

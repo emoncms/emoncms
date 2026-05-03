@@ -25,7 +25,7 @@ $("#newfeed-save").click(function (){
         return false;
     } else {
         update_feed_list(); 
-        $('#newFeedNameModal').modal('hide');
+        emoncmsModal.close('newFeedNameModal');
     }
 });
 

@@ -1,9 +1,9 @@
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- NEW VIRTUAL FEED                                                                                                                              -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
+<dialog id="newFeedNameModal" class="ec-modal" aria-labelledby="newFeedNameModalLabel" data-backdrop="static" style="--modal-width: 620px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="newFeedNameModalLabel"><?php echo tr('New Feed'); ?></h3>
     </div>
     <div class="modal-body">
@@ -25,7 +25,7 @@
         </select>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+        <button class="btn" data-modal-close><?php echo tr('Cancel'); ?></button>
         <button id="newfeed-save" class="btn btn-primary"><?php echo tr('Save'); ?></button>
     </div>
-</div>
+</dialog>

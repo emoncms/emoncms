@@ -126,14 +126,16 @@ var process_vue = new Vue({
             // this.scrollto($('#processlist-ui'));
 
             // Show the process list modal
-            $("#processlistModal").modal('show');
+            emoncmsModal.open('processlistModal');
             this.adjustModal(); // Adjust the modal height
         },
 
         adjustModal: function () {
             // Adjust the height of the process list UI
-            if ($("#processlistModal").length) {
-                var h = $(window).height() - $("#processlistModal").position().top - 180;
+            var modal = document.getElementById('processlistModal');
+            if (modal) {
+                var rect = modal.getBoundingClientRect();
+                var h = window.innerHeight - rect.top - 180;
                 $("#processlist-ui").height(h);
             }
         },
@@ -183,7 +185,7 @@ var process_vue = new Vue({
         // Closes the process list modal
         // This function is called when the close button is clicked
         close: function () {
-            $("#processlistModal").modal('hide');
+            emoncmsModal.close('processlistModal');
         },
 
         // Moves a process in the list up or down

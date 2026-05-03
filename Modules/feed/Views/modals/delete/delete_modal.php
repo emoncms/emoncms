@@ -2,9 +2,9 @@
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
+<dialog id="feedDeleteModal" class="ec-modal" aria-labelledby="feedDeleteModalLabel" data-backdrop="static" style="--modal-width: 860px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="feedDeleteModalLabel"><?php echo tr('Delete feed'); ?> 
         <span id="feedDelete-message" class="label label-warning" data-default="<?php echo tr('Deleting a feed is permanent.'); ?>"><?php echo tr('Deleting a feed is permanent.'); ?></span>
         </h3>
@@ -53,6 +53,6 @@
     <div class="modal-footer">
         <div id="feeds-to-delete" class="pull-left"></div>
         <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
+        <button class="btn" data-modal-close><?php echo tr('Close'); ?></button>
     </div>
-</div>
+</dialog>

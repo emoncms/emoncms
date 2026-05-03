@@ -35,7 +35,7 @@ function openFeedExportModal(){
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
     
-    $('#feedExportModal').modal('show');
+    emoncmsModal.open('feedExportModal');
 }
 
 $('#datetimepicker1').datetimepicker({

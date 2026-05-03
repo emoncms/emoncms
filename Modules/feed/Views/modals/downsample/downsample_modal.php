@@ -4,9 +4,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- DOWN SAMPLE MODAL (list selected feeds and their intervals, enter new interval below                                                           -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="downsampleModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="downsampleModalLabel" aria-hidden="true" data-backdrop="static">
+<dialog id="downsampleModal" class="ec-modal" aria-labelledby="downsampleModalLabel" data-backdrop="static" style="--modal-width: 760px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="downsampleModalLabel"><?php echo tr('Downsample feeds'); ?></h3>
     </div>
     <div class="modal-body">
@@ -38,8 +38,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
-        <button id="downsample-finish" class="btn btn-success" data-dismiss="modal" aria-hidden="true"><?php echo tr('Finish'); ?></button>
+        <button class="btn" data-modal-close><?php echo tr('Cancel'); ?></button>
+        <button id="downsample-finish" class="btn btn-success" data-modal-close><?php echo tr('Finish'); ?></button>
         <button id="downsample-confirm" class="btn btn-primary"><?php echo tr('Down sample'); ?></button>
     </div>
-</div>
+</dialog>

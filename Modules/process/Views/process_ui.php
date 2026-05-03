@@ -16,9 +16,9 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 <script src="<?php echo $path; ?>Modules/process/process.js?v=17"></script>
 
 <div id="process_vue">
-    <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
+    <dialog id="processlistModal" class="ec-modal modal-processlist" aria-labelledby="processlistModalLabel" data-backdrop="static" style="--modal-width: 1100px;">
         <div class="modal-header">
-            <button type="button" class="close" @click="close">×</button>
+            <button type="button" class="modal-close-btn" @click="close" aria-label="Close">&times;</button>
             <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo ctx_tr('process_messages', 'process list setup'); ?></div>
         </div>
         <div class="modal-body" id="processlist-ui">
@@ -273,7 +273,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <span><?php echo ctx_tr('process_messages', 'Saved'); ?></span>
             </button>
         </div>
-    </div>
+    </dialog>
 </div>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=31"></script>

@@ -4,9 +4,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EXPORT                                                                                                                                   -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
+<dialog id="feedExportModal" class="ec-modal" aria-labelledby="feedExportModalLabel" data-backdrop="static" style="--modal-width: 760px;">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="modal-close-btn" data-modal-close aria-label="Close">&times;</button>
         <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> <?php echo tr('CSV export'); ?></h3>
     </div>
     <div class="modal-body">
@@ -65,7 +65,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     </div>
     <div class="modal-footer">
         <div id="downloadsizeplaceholder" style="float: left"><?php echo tr('Estimated download size: ');?><span id="downloadsize">0</span></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
+        <button class="btn" data-modal-close><?php echo tr('Close'); ?></button>
         <button class="btn" id="export"><?php echo tr('Export'); ?></button>
     </div>
-</div>
+</dialog>

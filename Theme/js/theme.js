@@ -28,4 +28,81 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // Native dialog modal manager used by module UIs.
+    (function initNativeModals() {
+        function updateBodyModalState() {
+            var openDialog = document.querySelector('dialog.ec-modal[open]');
+            document.body.classList.toggle('has-modal-open', !!openDialog);
+        }
+
+        function resolveDialog(target) {
+            if (!target) return null;
+            if (typeof target === 'string') {
+                var id = target.charAt(0) === '#' ? target.substring(1) : target;
+                target = document.getElementById(id);
+            }
+            if (!(target instanceof HTMLDialogElement)) return null;
+            return target;
+        }
+
+        function openModal(target) {
+            var dialog = resolveDialog(target);
+            if (!dialog || dialog.open) return;
+            dialog.showModal();
+            updateBodyModalState();
+            dialog.dispatchEvent(new CustomEvent('modal:shown'));
+        }
+
+        function closeModal(target) {
+            var dialog = resolveDialog(target);
+            if (!dialog || !dialog.open) return;
+            dialog.close();
+        }
+
+        window.emoncmsModal = {
+            open: openModal,
+            close: closeModal,
+            isOpen: function(target) {
+                var dialog = resolveDialog(target);
+                return !!(dialog && dialog.open);
+            }
+        };
+
+        document.addEventListener('click', function(e) {
+            var openBtn = e.target.closest('[data-modal-open]');
+            if (openBtn) {
+                e.preventDefault();
+                openModal(openBtn.getAttribute('data-modal-open'));
+                return;
+            }
+
+            var closeBtn = e.target.closest('[data-modal-close]');
+            if (closeBtn) {
+                e.preventDefault();
+                var parentDialog = closeBtn.closest('dialog.ec-modal');
+                if (parentDialog) closeModal(parentDialog);
+            }
+        });
+
+        document.querySelectorAll('dialog.ec-modal').forEach(function(dialog) {
+            dialog.addEventListener('click', function(e) {
+                var rect = dialog.getBoundingClientRect();
+                var isBackdropClick = (
+                    e.clientX < rect.left ||
+                    e.clientX > rect.right ||
+                    e.clientY < rect.top ||
+                    e.clientY > rect.bottom
+                );
+                if (isBackdropClick && dialog.dataset.backdrop !== 'static') {
+                    closeModal(dialog);
+                }
+            });
+
+            dialog.addEventListener('close', function() {
+                updateBodyModalState();
+                dialog.dispatchEvent(new CustomEvent('modal:hidden'));
+            });
+        });
+    })();
 });
