@@ -124,6 +124,19 @@ function showSelectedFeeds(feed_inputs) {
     $("#feedProcessList").html(feedProcessList);
 }
 
+function setTrimInputValue(date) {
+    $('#trim_start_time').val(ecDateTime.formatYmdHms(date)).trigger('change');
+}
+
+function updateRelativeButtonsFromDate(date) {
+    $('[data-relative_time]').each(function() {
+        const $btn = $(this);
+        if ($btn.data('startdate') === date.valueOf()) {
+            $btn.addClass('active').siblings().removeClass('active');
+        }
+    });
+}
+
 /**
  * show the trim start time in the date time picker and input field
  * 
@@ -133,18 +146,7 @@ function showSelectedFeeds(feed_inputs) {
  */
 function showFeedStartDate(start_time){
     let startDate = start_time==0 ? new Date() : new Date(start_time*1000);
-    $datetimepicker = $('#feed_trim_datetimepicker');
-    $datetimepicker
-        .datetimepicker({startDate: startDate}) // restrict calendar selection to the start time
-        .datetimepicker('setValue', startDate) // set the date/time picker to the start time
-        .on('changeDate', function(event){
-            // mark any matching buttons as active
-            $('[data-relative_time]').each(function(i,elem){
-                if ($(elem).data('startdate') != event.date) {
-                    $(this).removeClass('active')
-                }
-            });
-        });
+    setTrimInputValue(startDate);
 }
 
 /**
@@ -164,6 +166,8 @@ function initRelativeStartDateButtons(start_time){
 
     $('[data-relative_time]').each(function(i,v){
         $btn = $(this);
+        $btn.show().css({'font-style':'', color:''});
+        $btn.attr('title', ($btn.attr('title') || '').replace(/\s- \[.*\]$/, ''));
         // add more cases here for additional options (and also data-relative_time='xyz' in the html)
         // returns function so that the dates are calculated to when the user clicks the buttons
         switch ($btn.data('relative_time')) {
@@ -192,32 +196,30 @@ function initRelativeStartDateButtons(start_time){
             $btn.attr('title',$btn.attr('title')+' - ['+tr('Out of range')+']');
         }
     })
-    // open date picker on input focus
-    $('#trim_start_time').on('focus', function(event){ $datetimepicker.datetimepicker('show') });
+
+    $('#trim_start_time')
+        .off('change input')
+        .on('change input', function() {
+            const typedDate = ecDateTime.parseYmdHms($(this).val());
+            if (!typedDate) {
+                $('[data-relative_time]').removeClass('active');
+                return;
+            }
+            updateRelativeButtonsFromDate(typedDate);
+        });
     
-    // alter the trim date / time picker on button presses
+    // alter the trim date / time input on button presses
     $('[data-relative_time]').off('click').on('click', function(event){
         event.preventDefault();
         $btn = $(this);
         $btn.addClass('active').siblings().removeClass('active');
-        $input = $('#trim_start_time');
         // get starttime from button's data
         date = new Date($btn.data('startdate'));
         // restrict selection to the earliest possible date
         if (date < startDate) {
             date = startDate;
         }
-        // rebuild the date string from the new date object
-        Y = date.getFullYear();
-        m = (date.getMonth()+1).pad(2);
-        d = date.getDate().pad(2);
-        h = date.getHours().pad(2);
-        i = date.getMinutes().pad(2);
-        s = date.getSeconds().pad(2);
-        
-        // show date in input field - DD/MM/YYYY HH:MM:SS
-        newDateString = [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ');
-        $input.val(newDateString);
+        setTrimInputValue(date);
     });
 }
 
@@ -235,19 +237,6 @@ function getEarliestStartTime() {
     }
     return start_time;
 }
-
-/**
- * mark button as selected if chosen date in date/time picker matches
- * jQuery Event handler for datetime picker's changeDate event
- */
-$('#feed_trim_datetimepicker').on('changeDate',function(event){
-    $('[data-relative_time]').each(function(){
-        $btn = $(this);
-        if ($btn.data('startdate') == event.date.valueOf()) {
-            $btn.addClass('active').siblings().removeClass('active');
-        }
-    })
-});
 
 /**
  * returns true if trim function available for all of the selected feed engine types
@@ -341,8 +330,7 @@ function enableTrim(start_time){
     // remove any styling the disableTrim() function created
     $('#trimContainer').attr('title','').removeClass('muted')//.show()
         .find('h4').addClass('text-info').removeClass('muted').end()
-        .find('button,input').removeClass('disabled')
-        .find('input').val('');
+        .find('button,input').removeClass('disabled');
     
     // enable the confirm trim button
     $('#feedTrim-confirm')
@@ -351,10 +339,8 @@ function enableTrim(start_time){
             $modal = $('#feedDeleteModal');
             let $input = $modal.find("#trim_start_time");
             let input_date_string = $input.val();
-            // dont submit if nothing selected
-            // convert uk dd/mm/yyyy h:m:s to RFC2822 date
-            let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"));
-            let isValidDate = !isNaN(start_date.getTime()) && input_date_string != "";
+            let start_date = ecDateTime.parseYmdHms(input_date_string);
+            let isValidDate = !!start_date && input_date_string != "";
             // exit if supplied date not valid
             if (!isValidDate) {
                 $('#trim_start_time_container').addClass('error');

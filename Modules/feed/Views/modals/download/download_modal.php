@@ -15,17 +15,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         <tr>
             <td>
                 <p><b><?php echo tr('Start date & time'); ?></b></p>
-                <div id="datetimepicker1" class="input-append date">
-                    <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
-                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
-                </div>
+                <input id="export-start" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
             </td>
             <td>
                 <p><b><?php echo tr('End date & time ');?></b></p>
-                <div id="datetimepicker2" class="input-append date">
-                    <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
-                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
-                </div>
+                <input id="export-end" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
             </td>
         </tr>
         <tr>

@@ -42,30 +42,37 @@ function openFeedExportModal(){
     emoncmsModal.open('feedExportModal');
 }
 
-$('#datetimepicker1').datetimepicker({
-    language: 'en-EN'
+function getExportDate($input) {
+    return ecDateTime.parseYmdHms($input.val());
+}
+
+function setExportDate($input, date) {
+    $input.val(ecDateTime.formatYmdHms(date));
+}
+
+var now = new Date();
+var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+setExportDate($('#export-start'), today);
+setExportDate($('#export-end'), today);
+
+$('#export-start').on('change input', function() {
+    var startDate = getExportDate($('#export-start'));
+    var endDate = getExportDate($('#export-end'));
+
+    if (startDate && endDate && startDate > endDate) {
+        setExportDate($('#export-end'), startDate);
+    }
+    calculate_download_size($("#export").attr('feedcount'));
 });
 
-$('#datetimepicker2').datetimepicker({
-    language: 'en-EN',
-    useCurrent: false //Important! See issue #1075
-});
+$('#export-end').on('change input', function() {
+    var startDate = getExportDate($('#export-start'));
+    var endDate = getExportDate($('#export-end'));
 
-now = new Date();
-today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 00, 00);
-var picker1 = $('#datetimepicker1').data('datetimepicker');
-var picker2 = $('#datetimepicker2').data('datetimepicker');
-picker1.setLocalDate(today);
-picker2.setLocalDate(today);
-picker1.setEndDate(today);
-picker2.setStartDate(today);
-
-$('#datetimepicker1').on("changeDate", function (e) {
-    $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
-});
-
-$('#datetimepicker2').on("changeDate", function (e) {
-    $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
+    if (startDate && endDate && endDate < startDate) {
+        setExportDate($('#export-start'), endDate);
+    }
+    calculate_download_size($("#export").attr('feedcount'));
 });
 
 $('#export-interval').on('change', function(e) {
@@ -79,10 +86,6 @@ $('#export-interval').on('change', function(e) {
 });
 
 $('#export-interval, #export-timeformat').on('change', function(e) {
-    calculate_download_size($("#export").attr('feedcount')); 
-});
-
-$('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
@@ -183,14 +186,5 @@ function calculate_download_size(feedcount){
 }
 
 function parse_timepicker_time(timestr){
-    var tmp = timestr.split(" ");
-    if (tmp.length!=2) return false;
-
-    var date = tmp[0].split("/");
-    if (date.length!=3) return false;
-
-    var time = tmp[1].split(":");
-    if (time.length!=3) return false;
-
-    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+    return ecDateTime.toUnixSeconds(timestr);
 }

@@ -61,6 +61,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
 // feed.clear, trim, remove used by delete modal
 load_js("Modules/feed/feed.js");
+load_js("Lib/date_time.js");
 load_js("Lib/misc/autocomplete.js");
 load_css("Lib/misc/autocomplete.css");
 ?>
