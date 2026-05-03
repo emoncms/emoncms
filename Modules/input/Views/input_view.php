@@ -5,7 +5,7 @@ if ($device_module) {
     load_js("Modules/device/Views/device.js");
 }
 load_js("Modules/input/Views/input.js");
-load_js("Lib/list_format_time_value.js");
+load_js("Lib/js/list_format_time_value.js");
 load_js("Modules/feed/feed.js");
 load_css("Modules/input/Views/input_view.css");
 ?>

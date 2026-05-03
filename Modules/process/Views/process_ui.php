@@ -10,8 +10,7 @@ load_language_files(dirname(__DIR__) . '/locale', "process_messages");
 $engine_hidden = $settings["feed"]['engines_hidden'];
 if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
-load_js("Lib/misc/autocomplete.js");
-load_css("Lib/misc/autocomplete.css");
+load_js("Lib/js/autocomplete.js");
 load_css("Modules/process/Views/process_ui.css");
 load_js("Modules/process/process.js");
 

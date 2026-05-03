@@ -2658,3 +2658,282 @@ dialog.ec-modal .modal-footer > :first-child {
     color: var(--text-primary);
     background: var(--bg-card-row-hover);
 }
+
+
+.autocomplete {
+    position: relative;
+    display: inline-block;
+  }
+  .autocomplete input {
+      z-index:100;
+  }
+  .autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+    font-size: .9rem;
+  }
+  .autocomplete-items div {
+    padding: 10px;
+    cursor: pointer;
+    background-color: #fff;
+    border-bottom: 1px solid #d4d4d4;
+  }
+  .autocomplete-items div:hover {
+    /*when hovering an item:*/
+    background-color: #e9e9e9;
+  }
+  .autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+  }
+
+  /* Graph module styles */
+
+#graph-view-app { padding-top: 1rem; }
+
+#tables {
+	overflow: hidden;
+	max-height: 2000px;
+	transition: max-height 0.25s ease-in-out;
+}
+
+.tables-collapsed #tables {
+	max-height: 0;
+}
+
+.collapse-icon {
+	display: inline-block;
+	transition: transform 0.2s ease;
+}
+
+.tables-collapsed .collapse-icon {
+	transform: rotate(-90deg);
+}
+
+#feed-options-table input,
+#feed-options-table select {
+	margin-bottom: 0;
+}
+
+#placeholder {
+	width: 100%;
+	height: 100%;
+}
+
+.feed-options {
+    overflow-x: auto;
+}
+
+.feed-options #tables {
+    overflow-x: auto;
+}
+
+.feed-options-show-options,
+.feed-options-show-stats {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+/* .hide does not use !important in core styles */
+.feed-options-show-options.hide,
+.feed-options-show-stats.hide {
+    display: none !important;
+}
+
+#feed-options-table td input[type="checkbox"],
+#feed-stats-table td input[type="checkbox"] {
+    vertical-align: middle;
+    margin: 0;
+    position: relative;
+    top: -1px;
+}
+
+#tooltip {
+    z-index: 1001;
+}
+
+#legend {
+    width: 100%;
+    float: right;
+    position: relative;
+    z-index: 2;
+    font-size: 13px;
+}
+
+#legend .grid-container {
+    margin: 1.3em 3em 0 3.2em;
+    position: relative;
+}
+
+#legend .col {
+    position: absolute;
+    top: 0;
+}
+
+#legend .right {
+    right: 0.8em;
+}
+
+#legend .left {
+    left: 0;
+}
+
+#legend .legendColorBox {
+    display: inline-block;
+    margin-right: 0.3em;
+}
+
+#legend [data-legend-series] a {
+    color: inherit;
+    outline: none;
+}
+.legendLayer rect.background { fill: transparent; }
+#legend .legendColorBox > div > div {
+    width: 0.3em !important;
+    border-width: 0.4em !important;
+}
+#legend .faded { opacity: 0.4; }
+
+/* ---- Graph nav controls (inside vis-card-nav) ---- */
+.graph-zoom-btns {
+    display: inline-flex;
+}
+
+.graph-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 30px;
+    padding: 0 10px;
+    font-size: 1rem;
+    font-family: inherit;
+    line-height: 1;
+    background-color: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--accent-border);
+    border-left: none;
+    cursor: pointer;
+    transition: background-color 0.15s;
+    box-sizing: border-box;
+}
+.graph-zoom-btns .graph-nav-btn:first-child {
+    border-left: 1px solid var(--accent-border);
+    border-radius: 4px 0 0 4px;
+}
+.graph-zoom-btns .graph-nav-btn:last-child {
+    border-radius: 0 4px 4px 0;
+}
+.graph-nav-btn:hover {
+    background-color: var(--accent-bg-hover);
+    color: var(--text-primary);
+}
+
+/* Show controls (legend/tag checkboxes) inline at nav bar end */
+#showcontrols {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+}
+
+/* ---- Info panel layout ---- */
+#yaxis-left { width: 110px; }
+#yaxis-right { width: 110px; }
+.yaxis-minmax-label { width: 30px; }
+.yaxis-minmax { width: 50px !important; }
+.table { margin-bottom: 0 !important; }
+.csvoptions { width: auto; }
+
+/* Window info bar */
+.window-info {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin: 0.2rem 0 0;
+}
+
+/* Feed options group-card inside vis-card: integrate flush (no nested box) */
+.vis-card .feed-options .group-card {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+.vis-card .feed-options .group-card-header {
+    border-radius: 0;
+}
+/* Keep top border of the feed options section aligned with vis-card sections */
+.vis-card .feed-options {
+    border-top: 1px solid var(--border);
+}
+
+/* ---- Sidebar: feeds table ---- */
+#my_graphs {
+    width: 13rem;
+    overflow: hidden;
+    position: relative;
+}
+#my_graphs h4 a {
+    color: var(--l2-title);
+    display: block;
+}
+#my_graphs h4 a:hover { text-decoration: underline; }
+#my_graphs h5 { color: var(--l2-title); }
+#my_graphs input { width: 12rem; }
+#my_graphs select { width: 13rem; }
+
+table#feeds.table thead th {
+    border-top: 2px solid var(--bg-l2);
+    font-weight: normal !important;
+    color: var(--l2-title);
+    cursor: pointer;
+    transition: all .3s ease-in;
+    padding-left: 0;
+}
+table#feeds.table thead th:hover {
+    color: var(--l2-text);
+    text-decoration: underline;
+}
+table#feeds.table input[type="checkbox"] { margin: 0; }
+table#feeds.table tbody tr > * { border-color: var(--bg-l2); }
+table#feeds.table tbody tr th {
+    cursor: pointer;
+    transition: all .3s ease-in;
+    font-weight: normal;
+}
+table#feeds.table tbody tr th:hover { text-decoration: underline; }
+table#feeds.table tbody tr th.feed-title span { max-width: 9em; }
+table#feeds.table .caret {
+    border-top-color: currentColor !important;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: .4em;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 610px) {
+    #legend .col { position: relative; left: 0; }
+    #showcontrols { margin-left: 0; }
+    .alert { margin-bottom: 5px; }
+    #yaxis-left { width: 80px; }
+    #yaxis-right { width: 80px; }
+    .yaxis-minmax-label { width: 20px; }
+    .yaxis-minmax { width: 35px !important; }
+    .input-append { margin-bottom: 5px !important; }
+    .vis-card-controls { padding: 0.5rem; }
+}
+
+@media (max-width: 480px) {
+    #graph_zoomin,
+    #graph_zoomout { display: none; }
+}
+

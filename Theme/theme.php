@@ -60,7 +60,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     
     // Menu and translations
     load_js("Theme/menu/menu.js");
-    load_js("Lib/misc/gettext.js");
+    load_js("Lib/js/gettext.js");
     ?>
 
     <script>
