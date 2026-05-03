@@ -11,15 +11,17 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     </div>
     <div class="modal-body">
     <p><?php echo tr('Select the time range and interval that you wish to export: '); ?></p>
-        <table class="table">
+        <table id="feed-export-dtp-app" class="table">
         <tr>
             <td>
                 <p><b><?php echo tr('Start date & time'); ?></b></p>
-                <input id="export-start" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
+                <date-time-picker v-model="exportStart" @change="syncStart"></date-time-picker>
+                <input id="export-start" type="hidden" />
             </td>
             <td>
                 <p><b><?php echo tr('End date & time ');?></b></p>
-                <input id="export-end" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
+                <date-time-picker v-model="exportEnd" @change="syncEnd"></date-time-picker>
+                <input id="export-end" type="hidden" />
             </td>
         </tr>
         <tr>

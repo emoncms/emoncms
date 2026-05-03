@@ -25,7 +25,10 @@
                     <p><?php echo tr('Empty feed data up to') ?>:</p>
                     <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
                         <div class="controls">
-                            <input id="trim_start_time" class="input-medium" type="text" placeholder="YYYY-MM-DD HH:MM:SS" style="margin-bottom:0">
+                            <div id="feed-delete-dtp-app" style="margin-bottom:0">
+                                <date-time-picker v-model="trimStart" @change="syncTrimStart"></date-time-picker>
+                            </div>
+                            <input id="trim_start_time" type="hidden">
                             <div class="btn-group" style="margin-bottom:-4px">
                                 <button class="btn btn-mini active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
                                 <button class="btn btn-mini" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>

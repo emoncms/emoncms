@@ -5,6 +5,34 @@ function isNumeric(value) {
     return value !== null && value !== '' && Number.isFinite(Number(value));
 }
 
+var feedExportDatePickerApp = null;
+
+if (typeof Vue !== 'undefined' && typeof DateTimePicker !== 'undefined') {
+    var exportPickerRoot = document.getElementById('feed-export-dtp-app');
+    if (exportPickerRoot) {
+        var feedExportDatePickerRoot = Vue.createApp({
+            data: function() {
+                return {
+                    exportStart: '',
+                    exportEnd: ''
+                };
+            },
+            methods: {
+                syncStart: function(value) {
+                    $('#export-start').val(value).trigger('change');
+                },
+                syncEnd: function(value) {
+                    $('#export-end').val(value).trigger('change');
+                }
+            }
+        });
+
+        feedExportDatePickerRoot.component('date-time-picker', DateTimePicker);
+        feedExportDatePickerApp = feedExportDatePickerRoot.mount('#feed-export-dtp-app');
+        window.feedExportDatePickerApp = feedExportDatePickerApp;
+    }
+}
+
 function openFeedExportModal(){
     $("#export-average").parent().hide();
     $("#export-average").data("enabled",0);
@@ -47,7 +75,17 @@ function getExportDate($input) {
 }
 
 function setExportDate($input, date) {
-    $input.val(ecDateTime.formatYmdHms(date));
+    var value = ecDateTime.formatYmdHms(date);
+    $input.val(value);
+
+    if (!feedExportDatePickerApp) return;
+
+    if ($input.attr('id') === 'export-start' && feedExportDatePickerApp.exportStart !== value) {
+        feedExportDatePickerApp.exportStart = value;
+    }
+    if ($input.attr('id') === 'export-end' && feedExportDatePickerApp.exportEnd !== value) {
+        feedExportDatePickerApp.exportEnd = value;
+    }
 }
 
 var now = new Date();

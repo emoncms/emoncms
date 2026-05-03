@@ -2,6 +2,30 @@
 // DELETE FEED
 // ---------------------------------------------------------------------------------------------
 
+var feedDeleteDatePickerApp = null;
+
+if (typeof Vue !== 'undefined' && typeof DateTimePicker !== 'undefined') {
+    var deletePickerRoot = document.getElementById('feed-delete-dtp-app');
+    if (deletePickerRoot) {
+        var feedDeleteDatePickerRoot = Vue.createApp({
+            data: function() {
+                return {
+                    trimStart: ''
+                };
+            },
+            methods: {
+                syncTrimStart: function(value) {
+                    $('#trim_start_time').val(value).trigger('change');
+                }
+            }
+        });
+
+        feedDeleteDatePickerRoot.component('date-time-picker', DateTimePicker);
+        feedDeleteDatePickerApp = feedDeleteDatePickerRoot.mount('#feed-delete-dtp-app');
+        window.feedDeleteDatePickerApp = feedDeleteDatePickerApp;
+    }
+}
+
 /**
  * getFeedProcess
  * 
@@ -125,7 +149,19 @@ function showSelectedFeeds(feed_inputs) {
 }
 
 function setTrimInputValue(date) {
-    $('#trim_start_time').val(ecDateTime.formatYmdHms(date)).trigger('change');
+    var value = ecDateTime.formatYmdHms(date);
+    $('#trim_start_time').val(value).trigger('change');
+
+    if (feedDeleteDatePickerApp && feedDeleteDatePickerApp.trimStart !== value) {
+        feedDeleteDatePickerApp.trimStart = value;
+    }
+}
+
+function clearTrimInputValue() {
+    $('#trim_start_time').val('').trigger('change');
+    if (feedDeleteDatePickerApp) {
+        feedDeleteDatePickerApp.trimStart = '';
+    }
 }
 
 function updateRelativeButtonsFromDate(date) {
@@ -344,7 +380,12 @@ function enableTrim(start_time){
             // exit if supplied date not valid
             if (!isValidDate) {
                 $('#trim_start_time_container').addClass('error');
-                $input.focus();
+                var $pickerInput = $('#feed-delete-dtp-app .dtp-input');
+                if ($pickerInput.length) {
+                    $pickerInput.focus();
+                } else {
+                    $input.focus();
+                }
                 return false;
             }else{
                 if(confirm(tr('This is a new feature. Consider backing up your data before you continue. OK to continue?')) == true) {
@@ -378,8 +419,8 @@ function enableTrim(start_time){
 function disableTrim(){
     $('#trimContainer').attr('title',tr('"Trim" not available for this storage engine')).addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
-        .find('button,input').addClass('disabled')
-        .find('input').val('');
+        .find('button,input').addClass('disabled');
+    clearTrimInputValue();
     $('#feedTrim-confirm').off('click'); // remove previous click event (if it exists)
 }
 
