@@ -1586,6 +1586,44 @@ table {
     margin-left: 0;
 }
 
+.btn-primary {
+    background-color: var(--accent);
+    border: 0;
+    color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: var(--accent-hover);
+}
+
+
+.btn-warning {
+    background-color: #f0ad00;
+    color: #fff;
+    border: 0;
+}
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    background-color: #ffbf1a;
+}
+
+.btn-danger {
+    background-color: #c74848;
+    color: #fff;
+    border: 0;
+}
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active {
+    background-color: #d85555;
+}
+
+
 /* ================================================================== */
 /* 25. COMPONENTS — CONTROL GROUPS                                     */
 /* Label + input/select pairings, flex rows of controls               */

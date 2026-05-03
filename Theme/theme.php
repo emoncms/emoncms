@@ -50,12 +50,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     // load_css("Theme/css/bootstrap.css");
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/svg-icons.css");
-    load_css("Lib/menu/menu.css");
-
-    include 'Lib/menu/menu_langjs.php';
+    load_css("Theme/menu/menu.css");
+    include 'Theme/menu/menu_langjs.php';
 
     load_js("Lib/jquery-3.6.0.min.js");
-    load_js("Lib/menu/menu.js");
+    load_js("Theme/menu/menu.js");
     load_js("Lib/misc/gettext.js");
     ?>
 
