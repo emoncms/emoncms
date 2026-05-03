@@ -32,12 +32,15 @@ var input_dialog =
 	}
 }
 
-var delete_input = new Vue({
-    el: '#inputDeleteModal',
-    data: {
-        buttonLabel: _('Delete'),
-        buttonClass: 'btn-primary',
-        success: false
+var delete_input = Vue.createApp({
+    data: function() {
+        return {
+            buttonLabel: _('Delete'),
+            buttonClass: 'btn-primary',
+            success: false,
+            errors: {},
+            message: ''
+        };
     },
     computed: {
         total_inputs: function() {
@@ -67,11 +70,11 @@ var delete_input = new Vue({
                 vm.success = true
                 // wait for user to read response, then update & close modal
                 setTimeout(function() {
-                    update().done(function() {
+                    update().always(function() {
                         // remove empty devices
                         vm.removeEmptyDevices()
-                        .then(function() {
-                            // all empty devices removed
+                        .always(function() {
+                            // close even when there were no empty devices
                             vm.closeModal()
                         })
                     })
@@ -91,17 +94,18 @@ var delete_input = new Vue({
             var remove_responses = []
 
             // make list of empty devices
-            for (n in devices) {
+            for (var n in devices) {
                 let device = devices[n]
                 if(device.inputs.length === 0) {
                     empty_devices.push(device.id)
                 }
             }
             if (empty_devices.length === 0) {
-                def.reject('no empty devices');
+                def.resolve([]);
+                return def.promise();
             }
             // delete each empty device
-            for (n in empty_devices) {
+            for (var n in empty_devices) {
                 let deviceid = empty_devices[n]
                 let ajax
                 if(typeof device2 !== 'undefined') {
@@ -149,8 +153,9 @@ var delete_input = new Vue({
         openModal: function(event) {
             this.errors = {}
             this.message = ''
-            this.buttonLabel = _('Delete'),
+            this.buttonLabel = _('Delete')
             this.buttonClass = 'btn-primary'
+            this.success = false
             app.paused = true
             emoncmsModal.open('inputDeleteDialog');
             document.addEventListener("keydown", this.escape);
@@ -164,4 +169,4 @@ var delete_input = new Vue({
             }
         }
     }
-});
+}).mount('#inputDeleteModal');

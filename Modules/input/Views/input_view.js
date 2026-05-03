@@ -23,20 +23,23 @@ function updaterStart(func, interval){
 }
 updaterStart(update, 5000);
 
-var app = new Vue({
-    el: "#input-app",
-    data: {
-        devices: {},
-        nodesDisplay: {},
-        selected: [],
-        filterText: '',
-        paused: false,
-        device_module: DEVICE_MODULE === true,
-        loaded: false,
-        input_creation_disabled: false,
-        show_clean: false,
-        inactive_unconfigured_inputs: 0,
-        inactive_unconfigured_devices: 0
+var app = Vue.createApp({
+    data: function() {
+        return {
+            devices: {},
+            devicesOriginal: {},
+            nodesDisplay: {},
+            selected: [],
+            filterText: '',
+            paused: false,
+            device_module: DEVICE_MODULE === true,
+            loaded: false,
+            input_creation_disabled: false,
+            show_clean: false,
+            inactive_unconfigured_inputs: 0,
+            inactive_unconfigured_devices: 0,
+            timeServerLocalOffset: 0
+        };
     },
     computed: {
         total_inputs: function() {
@@ -103,12 +106,12 @@ var app = new Vue({
             for (var nodeid in this.filteredDevices) {
                 newDisplay[nodeid] = true;
             }
-            Vue.set(this, 'nodesDisplay', newDisplay);
+            this.nodesDisplay = newDisplay;
         }
     },
     methods: {
         toggleNode: function(nodeid) {
-            Vue.set(this.nodesDisplay, nodeid, !this.nodesDisplay[nodeid]);
+            this.nodesDisplay[nodeid] = !this.nodesDisplay[nodeid];
         },
         toggleSelected: function(event, inputid) {
             if (event.target.tagName === 'A') {
@@ -234,7 +237,7 @@ var app = new Vue({
                 // Expand all nodes so selected inputs are visible
                 var expanded = {};
                 for (var nodeid in this.devices) { expanded[nodeid] = true; }
-                Vue.set(this, 'nodesDisplay', expanded);
+                this.nodesDisplay = expanded;
             } else {
                 this.selected = [];
             }
@@ -245,7 +248,7 @@ var app = new Vue({
             for (var nodeid in this.devices) {
                 newState[nodeid] = expand;
             }
-            Vue.set(this, 'nodesDisplay', newState);
+            this.nodesDisplay = newState;
         },
         open_delete: function(event) {
             delete_input.openModal(event);
@@ -269,12 +272,8 @@ var app = new Vue({
             }
         }
     },
-    created () {
-    },
-    destroyed () {
-
     }
-});
+).mount("#input-app");
 
 
 
@@ -492,7 +491,7 @@ function draw_devices() {
     }
     app.nodesDisplay = Object.assign({}, newDisplay);
 
-    Vue.set(app, 'devices', clone(devices));
+    app.devices = clone(devices);
     app.loaded = true;
     app.devicesOriginal = clone(devices);
 }

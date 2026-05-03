@@ -1,9 +1,10 @@
-var edit_input = new Vue({
-    el: '#inputEditModal',
-    data: {
-        loading: false,
-        message: '',
-        errors: {}
+var edit_input = Vue.createApp({
+    data: function() {
+        return {
+            loading: false,
+            message: '',
+            errors: {}
+        };
     },
     computed: {
         selected: function() {
@@ -22,7 +23,7 @@ var edit_input = new Vue({
     methods: {
         clearErrors: function(inputid) {
             if (typeof inputid !== 'undefined') {
-                this.$set(this.errors, inputid, '')
+                this.errors[inputid] = '';
             } else {
                 this.errors = {}
             }
@@ -41,7 +42,7 @@ var edit_input = new Vue({
             this.selectedInputs.forEach(function(input) {
                 var original = getInput(app.devicesOriginal, input.id);
                 if (!original || input.description === original.description) {
-                    self.$set(self.errors, input.id, _('Nothing changed'));
+                    self.errors[input.id] = _('Nothing changed');
                     return;
                 }
                 inputs.push({id: input.id, description: input.description});
@@ -62,12 +63,15 @@ var edit_input = new Vue({
                 }
                 Object.keys(response.results).forEach(function(inputid) {
                     var result = response.results[inputid];
-                    self.$set(self.errors, inputid, result.message);
+                    self.errors[inputid] = result.message;
                     if (result.success) {
-                        var indexes = getInput(app.devices, inputid, true);
-                        var nodeid = indexes[0];
-                        var inputIndex = indexes[1];
-                        app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                        var numericInputId = parseInt(inputid, 10);
+                        var indexes = getInput(app.devices, numericInputId, true);
+                        if (indexes) {
+                            var nodeid = indexes[0];
+                            var inputIndex = indexes[1];
+                            app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                        }
                     }
                 });
             })
@@ -107,4 +111,4 @@ var edit_input = new Vue({
             }
         }
     }
-});
+}).mount('#inputEditModal');
