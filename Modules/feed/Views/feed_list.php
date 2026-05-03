@@ -1,7 +1,6 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=16;
         
     $public_username_str = "";
     if ($session['public_userid']) {
@@ -42,8 +41,6 @@ load_css("Lib/misc/autocomplete.css");
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED LIST VIEW                                                                                                                                   -->   
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
-
-
 
 <div id="feed-header" class="page-header">
     <h2 id="feeds-title"><?php echo tr('Feeds'); ?></h2>
@@ -168,14 +165,14 @@ load_css("Lib/misc/autocomplete.css");
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 
-<!-- Main feed list javascript -->
-<script src="<?php echo $path; ?>Modules/feed/Views/feed_list.js?v=<?php echo $v; ?>"></script>
-
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->
-<!-- Feed list ui modals -->
-<!----------------------------------------------------------------------------------------------------------------------------------------------------->
-
 <?php 
+
+// Main feed list js
+load_js("Modules/feed/Views/feed_list.js");
+
+// --------------------------------------------------------------
+// Modals
+// --------------------------------------------------------------
 
 // Delete Feed Modal
 require "Modules/feed/Views/modals/delete/delete_modal.php";
