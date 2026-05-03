@@ -3,9 +3,8 @@
 ?>
 <?php
     load_language_files("Modules/schedule/locale", "schedule_messages");
+    load_js("Modules/schedule/Views/schedule.js");
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div id="schedule-app">
 
@@ -101,15 +100,16 @@
 </div>
 
 <script>
-var scheduleApp = new Vue({
-    el: '#schedule-app',
-    data: {
-        schedules: [],
-        editingId: null,
-        editFields: { name: '', expression: '' },
-        deleteTargetId: null,
-        loading: false,
-        updater: null
+var scheduleApp = Vue.createApp({
+    data: function() {
+        return {
+            schedules: [],
+            editingId: null,
+            editFields: { name: '', expression: '' },
+            deleteTargetId: null,
+            loading: false,
+            updater: null
+        };
     },
     methods: {
         update: function() {
@@ -195,6 +195,11 @@ var scheduleApp = new Vue({
     mounted: function() {
         this.update();
         this.startUpdater(10000);
+    },
+    beforeUnmount: function() {
+        this.startUpdater(0);
     }
 });
+
+scheduleApp.mount('#schedule-app');
 </script>
