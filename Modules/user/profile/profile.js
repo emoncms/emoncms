@@ -133,19 +133,6 @@ var app = new Vue({
     }
 });
 
-//QR COde Generation
-var urlCleaned = window.location.href.replace("user/view" ,"");
-/*
-var qrcode = new QRCode(document.getElementById("qr_apikey"), {
-    text: urlCleaned + "app?readkey=" + user_data.apikey_read  + "#myelectric",
-    width: 192,
-    height: 192,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-}); //Re-designed on-board QR generation using javascript
-*/
-
 $("#confirmdelete").click(function() {
     var password = $("#delete-account-password").val();
     
