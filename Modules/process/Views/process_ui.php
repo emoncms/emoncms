@@ -9,11 +9,13 @@ load_language_files(dirname(__DIR__) . '/locale', "process_messages");
 // to the process ui javascript side of things which coverts to a js array
 $engine_hidden = $settings["feed"]['engines_hidden'];
 if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
+
+load_js("Lib/misc/autocomplete.js");
+load_css("Lib/misc/autocomplete.css");
+load_css("Modules/process/Views/process_ui.css");
+load_js("Modules/process/process.js");
+
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/process/Views/process_ui.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=17"></script>
 
 <div id="process_vue">
     <dialog id="processlistModal" class="ec-modal modal-processlist" aria-labelledby="processlistModalLabel" data-backdrop="static" style="--modal-width: 1100px;">
@@ -276,7 +278,9 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
     </dialog>
 </div>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=31"></script>
+<?php
+load_js("Modules/process/Views/process_ui.js");
+?>
 
 <script>
     process_vue.has_redis = <?php echo ($settings["redis"]["enabled"] ? '1' : '0'); ?>;
