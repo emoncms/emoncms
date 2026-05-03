@@ -57,7 +57,8 @@ load_js("Modules/process/process.js");
                     <th colspan='3'><?php echo ctx_tr('process_messages', 'Actions'); ?></th>
                 </tr>
 
-                <tr v-for="(process, index) in process_list" :key="index" v-if="processes_by_key[process.fn]">
+                <template v-for="(process, index) in process_list" :key="index">
+                <tr v-if="process && processes_by_key[process.fn]">
                     <!-- Checkbox for selecting processes -->
                     <td><div class="select text-center"><input type="checkbox" :value="index" v-model="selected_processes"></div></td>
                     <!-- Process index -->
@@ -103,10 +104,10 @@ load_js("Modules/process/process.js");
                             <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
 
                                 <span v-if="arg.type == ProcessArg.INPUTID">
-                                    <small title="Last recorded value" class="muted"><span v-if="inputs_by_id[process.args[arg_index]]">{{ inputs_by_id[process.args[arg_index]].value | lastValueFormat }} {{ inputs_by_id[process.args[arg_index]].unit }}</span></small>
+                                    <small title="Last recorded value" class="muted"><span v-if="inputs_by_id[process.args[arg_index]]">{{ lastValueFormat(inputs_by_id[process.args[arg_index]].value) }} {{ inputs_by_id[process.args[arg_index]].unit }}</span></small>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <small title="Last recorded value" class="muted"><span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].value | lastValueFormat }} {{ feeds_by_id[process.args[arg_index]].unit }}</span></small>
+                                    <small title="Last recorded value" class="muted"><span v-if="feeds_by_id[process.args[arg_index]]">{{ lastValueFormat(feeds_by_id[process.args[arg_index]].value) }} {{ feeds_by_id[process.args[arg_index]].unit }}</span></small>
                                 </span>
                             </span>
                         </span>
@@ -120,6 +121,7 @@ load_js("Modules/process/process.js");
                     <td><a title="Edit" @click="edit(index)"><i class="icon-pencil" style="cursor:pointer"></i></a></td>
                     <td><a title="Delete" @click="remove(index)"><i class="icon-trash" style="cursor:pointer"></i></a></td>
                 </tr>
+                </template>
             </table>
 
             <table class="table">
@@ -189,7 +191,9 @@ load_js("Modules/process/process.js");
                                             <!-- feeds by tag -->
                                             <option v-if="context_type==0 && Array.isArray(arg.engines) && arg.engines.length > 0" value="-1">CREATE NEW:</option>
                                             <optgroup v-for="(feeds, tag) in feeds_by_tag" :label="tag">
-                                                <option v-for="feed in feeds" :value="feed.id" v-if="feed.engine!=7">{{ feed.name }}</option>
+                                                <template v-for="feed in feeds" :key="feed.id">
+                                                    <option v-if="feed.engine!=7" :value="feed.id">{{ feed.name }}</option>
+                                                </template>
                                             </optgroup>
                                         </select>
                                         <span v-if="arg.value == -1">
