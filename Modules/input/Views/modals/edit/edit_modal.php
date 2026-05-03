@@ -1,8 +1,8 @@
 
 <div id="inputEditModal" v-cloak>
-    <div :class="{hide: hidden}" class="modal modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" :aria-hidden="String(hidden)">
+    <dialog id="inputEditDialog" class="ec-modal" aria-labelledby="inputEditModalLabel" style="--modal-width: 640px;" @close="onDialogClose">
         <div class="modal-header">
-            <button @click="closeModal" type="button" class="close"><span aria-hidden="true">×</span></button>
+            <button @click="closeModal" type="button" class="modal-close-btn" aria-label="Close">&times;</button>
             <h3 id="inputEditModalLabel"><?php echo tr('Edit Input'); ?></h3>
         </div>
         <div class="modal-body">
@@ -46,6 +46,5 @@
                 <button class="btn btn-primary" type="button" @click="saveAll"><?php echo tr('Save'); ?></button>
             </div>
         </div>
-    </div>
-    <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>
+    </dialog>
 </div>

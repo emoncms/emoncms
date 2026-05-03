@@ -1,7 +1,7 @@
 <div id="inputDeleteModal" v-cloak>
-    <div class="modal" :class="{'hide': hidden}" tabindex="-1" role="dialog" aria-labelledby="inputDeleteModalLabel" aria-hidden="true" data-backdrop="static">
+    <dialog id="inputDeleteDialog" class="ec-modal" aria-labelledby="inputDeleteModalLabel" data-backdrop="static" style="--modal-width: 720px;" @close="onDialogClose">
         <div class="modal-header">
-            <button @click="closeModal" type="button" class="close" aria-hidden="true">×</button>
+            <button @click="closeModal" type="button" class="modal-close-btn" aria-label="Close">&times;</button>
             <h3 id="inputDeleteModalLabel"><?php echo tr('Delete Input'); ?></h3>
         </div>
         <div class="modal-body">
@@ -28,6 +28,5 @@
             <button @click="closeModal" class="btn"><?php echo tr('Cancel'); ?></button>
             <button @click="confirm" class="btn" :class="buttonClass">{{buttonLabel}}</button>
         </div>
-    </div>
-    <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>
+    </dialog>
 </div>

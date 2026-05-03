@@ -1,7 +1,6 @@
 var edit_input = new Vue({
     el: '#inputEditModal',
     data: {
-        hidden: true,
         loading: false,
         message: '',
         errors: {}
@@ -80,7 +79,9 @@ var edit_input = new Vue({
             });
         },
         closeModal: function(event) {
-            this.hidden = true
+            emoncmsModal.close('inputEditDialog');
+        },
+        onDialogClose: function() {
             this.errors = {}
             this.message = ''
             // reset any unsaved description edits back to their original values
@@ -91,13 +92,13 @@ var edit_input = new Vue({
                 }
             });
             app.paused = false;
-            document.removeEventListener('keydown', this.escape)
+            document.removeEventListener('keydown', this.escape);
         },
         openModal: function(event) {
-            this.hidden = false
             this.errors = {}
             this.message = ''
-            app.paused = true
+            app.paused = true;
+            emoncmsModal.open('inputEditDialog');
             document.addEventListener("keydown", this.escape);
         },
         escape: function(event) {

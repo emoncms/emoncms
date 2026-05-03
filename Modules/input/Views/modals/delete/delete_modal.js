@@ -8,7 +8,7 @@ var input_dialog =
 	},
 	
 	'drawDelete':function(callback, row){
-		$('#inputDeleteModal').modal('show');
+        emoncmsModal.open('inputDeleteDialog');
 		$('#inputDeleteModalLabel').html('Delete Input: <b>'+input_dialog.inputid+'</b>');
 		$("#inputDelete-confirm").off('click').on('click', function(){
 			$('#inputDelete-loader').show();
@@ -22,7 +22,7 @@ var input_dialog =
 			*/
 				if (row != null) table.remove(row);
 				update();
-				$('#inputDeleteModal').modal('hide');
+                    emoncmsModal.close('inputDeleteDialog');
 				if (typeof callback === "function") {
 					callback(true);
 				}
@@ -35,7 +35,6 @@ var input_dialog =
 var delete_input = new Vue({
     el: '#inputDeleteModal',
     data: {
-        hidden: true,
         buttonLabel: _('Delete'),
         buttonClass: 'btn-primary',
         success: false
@@ -134,24 +133,26 @@ var delete_input = new Vue({
             return input.nodeid;
         },
         closeModal: function(event) {
+            emoncmsModal.close('inputDeleteDialog');
+        },
+        onDialogClose: function() {
             app.paused = false;
             // clear selection if succesfully deleted
             if (this.success) {
                 app.selected = []
             }
-            this.hidden = true
             this.errors = {}
             this.message = ''
             // remove ESC keypress event
             document.removeEventListener('keydown', this.escape)
         },
         openModal: function(event) {
-            this.hidden = false
             this.errors = {}
             this.message = ''
             this.buttonLabel = _('Delete'),
             this.buttonClass = 'btn-primary'
             app.paused = true
+            emoncmsModal.open('inputDeleteDialog');
             document.addEventListener("keydown", this.escape);
         },
         escape: function(event) {
