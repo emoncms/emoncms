@@ -49,6 +49,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <?php
     // Main theme CSS
     load_css("Theme/css/emoncms-base.css");
+    load_css("Theme/css/bootstrap4-utils.css");
     // Specific used icons
     load_css("Theme/css/svg-icons.css");
     // Menu Translations
