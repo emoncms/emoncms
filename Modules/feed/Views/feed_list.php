@@ -8,22 +8,48 @@
     }
 
     load_js("Modules/user/user.js");
-    load_js("Lib/moment.min.js");
 ?>
 
 <script>
 
 /**
- * uses moment.js to format to local time 
+ * formats a unix timestamp using native Date/Intl in UTC
  * @param int time unix epoc time
- * @param string format moment.js date formatting options
- * @see date format options - https://momentjs.com/docs/#/displaying/
+ * @param string format limited date format tokens used by feed list
  */
 function format_time(time,format){
     if(!Number.isInteger(time)) return time;
     format = format || 'YYYY-MM-DD';
-    var formatted_date = moment.unix(time).utc().format(format);
-    return formatted_date;
+
+    var locale = (typeof _user !== 'undefined' && _user && _user.lang)
+        ? String(_user.lang).replace('_', '-')
+        : (navigator.language || 'en-GB');
+    var date = new Date(time * 1000);
+
+    if (format === 'YYYY-MM-DD') {
+        var year = date.getUTCFullYear();
+        var month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        var day = String(date.getUTCDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+    }
+
+    if (format === 'LL LTS') {
+        try {
+            return new Intl.DateTimeFormat(locale, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'UTC'
+            }).format(date);
+        } catch (e) {
+            return date.toISOString().replace('T', ' ').slice(0, 19);
+        }
+    }
+
+    return date.toISOString().replace('T', ' ').slice(0, 19);
 }
 var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 var engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
