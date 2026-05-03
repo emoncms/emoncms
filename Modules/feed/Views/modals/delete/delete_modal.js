@@ -196,7 +196,7 @@ function initRelativeStartDateButtons(start_time){
     $('#trim_start_time').on('focus', function(event){ $datetimepicker.datetimepicker('show') });
     
     // alter the trim date / time picker on button presses
-    $('[data-relative_time]').click(function(event){
+    $('[data-relative_time]').off('click').on('click', function(event){
         event.preventDefault();
         $btn = $(this);
         $btn.addClass('active').siblings().removeClass('active');
@@ -346,8 +346,8 @@ function enableTrim(start_time){
     
     // enable the confirm trim button
     $('#feedTrim-confirm')
-        .unbind('click')
-        .click(function(){
+        .off('click')
+        .on('click', function(){
             $modal = $('#feedDeleteModal');
             let $input = $modal.find("#trim_start_time");
             let input_date_string = $input.val();
@@ -394,7 +394,7 @@ function disableTrim(){
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button,input').addClass('disabled')
         .find('input').val('');
-    $('#feedTrim-confirm').unbind('click'); // remove previous click event (if it exists)
+    $('#feedTrim-confirm').off('click'); // remove previous click event (if it exists)
 }
 
 /**
@@ -465,8 +465,8 @@ function enableClear(){
         .find('button').removeClass('disabled');
 
     $("#feedClear-confirm")
-        .unbind('click')
-        .click(function(){
+        .off('click')
+        .on('click', function(){
             if( confirm(tr('Are you sure you want to delete all the feeds data?')) == true ){
                 $modal = $('#feedDeleteModal');
                 $("#feedDelete-loader").fadeIn();
@@ -488,14 +488,14 @@ function enableClear(){
 }
 
 function disableClear(){
-    $("#feedClear-confirm").unbind();
+    $("#feedClear-confirm").off();
 
     $('#clearContainer').attr('title',tr('"Clear" not available for this storage engine')).addClass('muted')//.hide()
         .find('h4').removeClass('text-info').addClass('muted').end()
         .find('button').addClass('disabled');
 }
 
-$("#feedDelete-confirm").click(function(){
+$("#feedDelete-confirm").on('click', function(){
     if (confirm(tr('Are you sure you want to delete?')) == true) {
         for (let feedid in feedApp.selectedFeeds) {
             if (feedApp.selectedFeeds[feedid]) {

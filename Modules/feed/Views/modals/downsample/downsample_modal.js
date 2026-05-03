@@ -57,7 +57,7 @@ function openDownsampleModal() {
 }
 
 // downsample confirm button 
-$("#downsample-confirm").click(function(){
+$("#downsample-confirm").on('click', function(){
     if( confirm("This action is irreversible. Are you sure you want to downsample?") == true) {
         var interval = $("#downsample-interval").val();
 

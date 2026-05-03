@@ -13,7 +13,7 @@ document.getElementById('importDataModal').addEventListener('modal:shown', funct
 
 
 // Validate pasted data for import
-$("#import-textarea").change(function() {
+$("#import-textarea").on('change', function() {
 
     $("#import-alert").html("").hide();
 
@@ -108,7 +108,7 @@ function draw_import_feed_select() {
     }
 }
 
-$("#import-feed-select").change(function(){
+$("#import-feed-select").on('change', function(){
     var feedid = $(this).val();
     console.log(feedid);
     if (feedid==-1) {
@@ -118,7 +118,7 @@ $("#import-feed-select").change(function(){
     }
 });
 
-$("#import-feed-engine").change(function(){
+$("#import-feed-engine").on('change', function(){
     var engine = $(this).val();
     if (engine==5) {
         $("#import-feed-interval").show();
@@ -127,7 +127,7 @@ $("#import-feed-engine").change(function(){
     }
 });
 
-$("#importData").click(function() {    
+$("#importData").on('click', function() {
     var feedid = $("#import-feed-select").val();
     if (feedid==-1) {
         var tag = $("#import-feed-tag").val();

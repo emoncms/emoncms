@@ -7,7 +7,7 @@ for (var e in engines_hidden) {
     $('#newfeed-engine option[value='+engines_hidden[e]+']').hide();
 }
 
-$("#newfeed-save").click(function (){
+$("#newfeed-save").on('click', function (){
     var name = $('#newfeed-name').val();
     var tag = $('#newfeed-tag').val();
     var engine = $('#newfeed-engine').val();
@@ -29,7 +29,7 @@ $("#newfeed-save").click(function (){
     }
 });
 
-$('#newfeed-engine').change(function(){
+$('#newfeed-engine').on('change', function(){
     var engine = $(this).val();
     if (engine==5) {
         $('#newfeed-interval').show();
@@ -38,7 +38,7 @@ $('#newfeed-engine').change(function(){
     }
 });
 
-$(".feed-process").click(function() {
+$(".feed-process").on('click', function() {
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in feedApp.selectedFeeds) { if (feedApp.selectedFeeds[z]) feedid = z; }
     var contextid = feedid;

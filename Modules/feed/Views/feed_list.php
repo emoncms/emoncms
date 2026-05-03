@@ -1,17 +1,16 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings, $session;
-    $v=15;
+    $v=16;
         
     $public_username_str = "";
     if ($session['public_userid']) {
         $public_username_str = $session['public_username']."/";
     }
-?>
 
-<script src="<?php echo $path; ?>Modules/user/user.js"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<script src="<?php echo $path; ?>Lib/moment.min.js?v=1"></script>
+    load_js("Modules/user/user.js");
+    load_js("Lib/moment.min.js");
+?>
 
 <script>
 
@@ -33,16 +32,13 @@ var available_intervals = <?php echo json_encode(Engine::available_intervals());
 var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 
 </script>
-<?php require "Modules/feed/Views/translate.php"; ?>
+<?php require "Modules/feed/Views/translate.php"; 
 
-<!-- feed.clear, trim, remove used by delete modal -->
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
-
-<link href="<?php echo $path; ?>Theme/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-<script src="<?php echo $path; ?>Theme/js/bootstrap-datetimepicker.min.js"></script>
-<script src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-
+// feed.clear, trim, remove used by delete modal
+load_js("Modules/feed/feed.js");
+load_js("Lib/misc/autocomplete.js");
+load_css("Lib/misc/autocomplete.css");
+?>
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED LIST VIEW                                                                                                                                   -->   
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -179,30 +175,33 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 <!-- Feed list ui modals -->
 <!----------------------------------------------------------------------------------------------------------------------------------------------------->
 
-<!-- Delete Feed Modal -->
-<?php require "Modules/feed/Views/modals/delete/delete_modal.php"; ?>
-<script src="<?php echo $path; ?>Modules/feed/Views/modals/delete/delete_modal.js?v=<?php echo $v; ?>"></script>
+<?php 
 
-<!-- Edit Feed Modal -->
-<?php require "Modules/feed/Views/modals/edit/edit_modal.php"; ?>
-<script src="<?php echo $path; ?>Modules/feed/Views/modals/edit/edit_modal.js?v=<?php echo $v; ?>"></script>
+// Delete Feed Modal
+require "Modules/feed/Views/modals/delete/delete_modal.php";
+load_js("Modules/feed/Views/modals/delete/delete_modal.js");
 
-<!-- Download Feed Modal -->
-<?php require "Modules/feed/Views/modals/download/download_modal.php"; ?>
-<script src="<?php echo $path; ?>Modules/feed/Views/modals/download/download_modal.js?v=<?php echo $v; ?>"></script>
+// Edit Feed Modal
+require "Modules/feed/Views/modals/edit/edit_modal.php";
+load_js("Modules/feed/Views/modals/edit/edit_modal.js");
 
-<!-- Import Feed Modal -->
-<?php require "Modules/feed/Views/modals/import/import_modal.php"; ?>
-<script src="<?php echo $path; ?>Modules/feed/Views/modals/import/import_modal.js?v=<?php echo $v; ?>"></script>
+// Download Feed Modal
+require "Modules/feed/Views/modals/download/download_modal.php";
+load_js("Modules/feed/Views/modals/download/download_modal.js");
 
-<!-- Downsample Feed Modal -->
-<?php require "Modules/feed/Views/modals/downsample/downsample_modal.php"; ?>
-<script src="<?php echo $path; ?>Modules/feed/Views/modals/downsample/downsample_modal.js?v=<?php echo $v; ?>"></script>
+// Import Feed Modal
+require "Modules/feed/Views/modals/import/import_modal.php";
+load_js("Modules/feed/Views/modals/import/import_modal.js");
 
-<!-- New Feed Modal -->
-<?php require "Modules/feed/Views/modals/new/new_modal.php"; ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/Views/modals/new/new_modal.js?v=<?php echo $v; ?>"></script>
+// Downsample Feed Modal
+require "Modules/feed/Views/modals/downsample/downsample_modal.php";
+load_js("Modules/feed/Views/modals/downsample/downsample_modal.js");
 
-<!-- Included process ui modal from process module -->
-<?php require "Modules/process/Views/process_ui.php"; ?>
+// New Feed Modal
+require "Modules/feed/Views/modals/new/new_modal.php";
+load_js("Modules/feed/Views/modals/new/new_modal.js");
+
+// Included process ui modal from process module
+require "Modules/process/Views/process_ui.php";
+?>
 

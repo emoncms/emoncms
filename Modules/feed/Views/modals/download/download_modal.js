@@ -1,6 +1,10 @@
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
+function isNumeric(value) {
+    return value !== null && value !== '' && Number.isFinite(Number(value));
+}
+
 function openFeedExportModal(){
     $("#export-average").parent().hide();
     $("#export-average").data("enabled",0);
@@ -82,7 +86,7 @@ $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
-$("#export").click(function()
+$("#export").on('click', function()
 {
     var ids = [];
     for (var feedid in feedApp.selectedFeeds) {
@@ -161,7 +165,7 @@ function calculate_download_size(feedcount){
     var export_data_size = 7;                                                         // avg bytes per data
     
     var downloadsize = 0;
-    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
+    if (!(!isNumeric(export_start) || !isNumeric(export_end) || !isNumeric(export_interval) || export_start > export_end )) {
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
     

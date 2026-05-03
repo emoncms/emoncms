@@ -1,7 +1,7 @@
 
-var edit_feed = new Vue({
-    el: '#feedEditModal',
-    data: {
+var editFeedRoot = Vue.createApp({
+    data: function() {
+        return {
         hidden: true,
         loading: false,
         message: '',
@@ -10,6 +10,7 @@ var edit_feed = new Vue({
         feedsOriginal: {},
         unitOther: {},
         units: typeof feed_units !== 'undefined' ? feed_units : []
+        };
     },
     computed: {
         selectedFeedIds: function() {
@@ -28,7 +29,7 @@ var edit_feed = new Vue({
     methods: {
         clearErrors: function(feedid) {
             if (typeof feedid !== 'undefined') {
-                this.$set(this.errors, feedid, '');
+                this.errors[feedid] = '';
             } else {
                 this.errors = {};
             }
@@ -36,9 +37,9 @@ var edit_feed = new Vue({
         onUnitChange: function(feed, event) {
             var val = event.target.value;
             if (val === '_other') {
-                Vue.set(this.unitOther, feed.id, true);
+                this.unitOther[feed.id] = true;
             } else {
-                Vue.set(this.unitOther, feed.id, false);
+                this.unitOther[feed.id] = false;
                 feed.unit = val;
             }
         },
@@ -65,7 +66,7 @@ var edit_feed = new Vue({
                 if (publicVal !== (original.public ? 1 : 0)) changed.public = publicVal;
 
                 if (Object.keys(changed).length === 0) {
-                    self.$set(self.errors, feed.id, _('Nothing changed'));
+                    self.errors[feed.id] = _('Nothing changed');
                     return;
                 }
                 changed.id = feed.id;
@@ -87,7 +88,7 @@ var edit_feed = new Vue({
                 }
                 Object.keys(response.results).forEach(function(feedid) {
                     var result = response.results[feedid];
-                    self.$set(self.errors, feedid, result.message);
+                    self.errors[feedid] = result.message;
                     if (result.success) {
                         // Update snapshot so subsequent saves in the same session work correctly
                         var local = self.localFeeds[feedid];
@@ -150,6 +151,8 @@ var edit_feed = new Vue({
         }
     }
 });
+
+var edit_feed = editFeedRoot.mount('#feedEditModal');
 
 // Keep backward-compatible entry point used by feedApp.editFeeds()
 function openEditFeedModal() {

@@ -13,19 +13,25 @@ var nodes_display = {};
 var node_time_and_colour = {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+function isNumeric(value) {
+    return value !== null && value !== '' && Number.isFinite(Number(value));
+}
+
 available_intervals = available_intervals.map(function(a) { return a['interval']; });
 
 // Vue.js Feed List Application
-var feedApp = new Vue({
-    el: '#feed-app',
-    data: {
+var feedAppRoot = Vue.createApp({
+    data: function() {
+        return {
         nodes: {},
         feeds: {},
         selectedFeeds: {},
         nodesDisplay: {},
         node_time_and_colour: {},
         feedsLoaded: false,
-        filterText: ''
+        filterText: '',
+        timeServerLocalOffset: 0
+        };
     },
     computed: {
         allExpanded: function() {
@@ -162,7 +168,7 @@ var feedApp = new Vue({
         },
         
         formatSize: function(bytes) {
-            if (!$.isNumeric(bytes)) {
+            if (!isNumeric(bytes)) {
                 return "n/a";
             } else if (bytes < 1024) {
                 return bytes + "B";
@@ -210,7 +216,7 @@ var feedApp = new Vue({
         
         // Integrated expand/collapse functionality
         toggleNode: function(node) {
-            Vue.set(this.nodesDisplay, node, !this.nodesDisplay[node]);
+            this.nodesDisplay[node] = !this.nodesDisplay[node];
         },
 
         expandAllNodes: function(state) {
@@ -338,6 +344,8 @@ var feedApp = new Vue({
         }
     }
 });
+
+var feedApp = feedAppRoot.mount('#feed-app');
 
 // -----------------------------------------------------------------------------
 // Feed list update function
@@ -481,7 +489,7 @@ function formatTime(time, interval) {
     var day = hour / 24;
 
     var updated = secs.toFixed(0) + "s";
-    if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+    if ((update == 0) || (!isNumeric(secs))) updated = "n/a";
     else if (secs.toFixed(0) == 0) updated = "now";
     else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
     else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
@@ -525,6 +533,6 @@ function formatTime(time, interval) {
 // -----------------------------------------------------------------------------
 
 
-$("#refreshfeedsize").click(function(){
+$("#refreshfeedsize").on('click', function(){
     feedApp.refreshFeedSize();
 });
