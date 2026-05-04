@@ -556,6 +556,8 @@ span.icon {
 
 .menu-l2 .active {
   background-color:var(--bg-l2-active);
+  /* add highlight bar on the left */
+    border-left: 3px solid var(--accent);
 }
 
 .menu-text-l2 {
