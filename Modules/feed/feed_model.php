@@ -641,7 +641,7 @@ class Feed
         }
     }
 
-    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false,$dp=-1)
+    public function get_data($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unixms",$csv=false,$skipmissing=0,$limitinterval=0,$delta=false,$dp=-1,$retro=false)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) {
@@ -685,7 +685,7 @@ class Feed
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_data_combined
-        $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+        $data = $this->EngineClass($engine)->get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$retro);
 
         if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"]) && !$average && is_numeric($interval) && $csv==false) {
             // Add redisbuffer cache if available

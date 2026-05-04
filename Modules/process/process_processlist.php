@@ -900,7 +900,65 @@ class Process_ProcessList
                 "input_context" => true,
                 "virtual_feed_context" => false,
                 "description" => tr("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used every selected minutes (starting mid night) (kWh/x min)</p>")
-            )
+            ),
+            array(
+              "id_num"=>72,
+              "name"=>tr("Make Stateful"),
+              "short"=>"state",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"make_stateful",
+              "datafields"=>1,
+              "unit"=>"",
+              "group"=>tr("Virtual"),
+              "engines" => array(Engine::PHPTIMESERIES),
+              "input_context" => false,
+              "virtual_feed_context" => true,
+              "description"=>tr("<p>sources data from the selected feed. It is identical to <i>Source Data Feed</i> except that if the feed does not contain a value for a given time it will use the immediately prior value, if there is no prior value it will use the immediately next value. This creates feeds that represent the state of a system and only contain entries for state changes. This is useful for tariff data</p>")
+           ),
+           array(
+              "id_num"=>73,
+              "name"=>tr("Source Feed Delta"),
+              "short"=>"sdelta",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"source_feed_delta",
+              "datafields"=>1,
+              "unit"=>"",
+              "group"=>tr("Virtual"),
+              "input_context" => false,
+              "virtual_feed_context" => true,
+              "description"=>tr("<p>sources data from the selected feed, transforming the values at each point to a delta relative to the previous point. This is useful for calculating costs per time interval from a cumulative total.</p>")
+           ),
+           array(
+              "id_num"=>74,
+              "name"=>tr("Cost Multiplier"),
+              "short"=>"cost",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"cost_multiplier",
+              "datafields"=>1,
+              "unit"=>"",
+              "group"=>tr("Virtual"),
+              "input_context" => false,
+            "virtual_feed_context" => true,
+            "description"=>tr("<p>takes the values from the previous process in the list and multiplies them by the values in the selected feed. It treats the selected feed as a stateful feed that contains a datapoint whenever the tariff changes and the value of which at any given point in time is the most recent value prior to the time.</p>")
+           ),
+           array(
+              "id_num"=>75,
+              "name"=>tr("Standing Charges"),
+              "short"=>"standing",
+              "args" => array(
+                  array(
+                      "type"=>ProcessArg::TEXT,
+                      "name" => "Period",
+                      "desc" => tr("Either seconds or PHP DateInterval format"),
+                      "default" => "P1D"
+                  ),
+              ),
+              "function"=>"standing_charge",
+              "group"=>tr("Virtual"),
+              "input_context" => false,
+              "virtual_feed_context" => true,
+              "description"=>tr("<p>Takes an optional <a href=https://www.php.net/manual/en/dateinterval.construct.php> period parameter</a> (eg. PT8H for 8 hours). The default value is 'P1D' for a day. It then multiplies the values from the previous process in the feed by the current interval divided by the period. With input from a Stateful Source Cost Feed representing periodic standing charges it can be used to calculate the cost over any time period. Typically these charges are in a TimeSeries feed that has been made stateful using the <b>state</b> process</p>")
+           )
         );
     }
 
@@ -1946,6 +2004,131 @@ class Process_ProcessList
     }
 
 
+
+    // Fetch last present datapoint from source feed data at specified timestamp
+    // Loads full feed to data cache if it's the first time to load
+    // The same as "Source Feed" except that if the source feed does not contain
+    // data at the request time it then returns the prior value
+    public function make_stateful($feedid, $time, $value, $options)
+    {
+        $this->log->debug("make_stateful(feed=",$feedid,",time=",$time,",value=",$value,",options=",$options);
+        // If start and end are set this is a request over multiple data points
+        if (isset($options['start']) && isset($options['end'])) {
+            // Load feed to data cache if it has not yet been loaded
+            if (!isset($this->data_cache[$feedid])) {
+                // Use named parameter retro to indicate inexact lookup type for costs (see feed/engine/PHPTimeSeries.php)
+                $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],0,$options['timezone'],'unix',false,0,0,false,-1,true);
+                $this->log->debug("make_stateful() loaded to cache");
+            }
+            // Return value
+            if (isset($this->data_cache[$feedid][$options['index']])) {
+                $ret = $this->data_cache[$feedid][$options['index']][1];
+                $this->log->debug("make_stateful()cached[",$options['index'],"]=",$ret);
+                return $ret;
+            }
+        } else {
+            // This is a request for the last value only
+            $timevalue = $this->feed->get_timevalue($feedid);
+            $this->log->debug("make_stateful(): lastvalue=",$timevalue);
+            if (is_null($timevalue)) return null;
+            return $timevalue["value"];
+        }
+        return null;
+    }
+
+    // Fetch the deltas of the source feed data
+    // Loads full feed to data cache if it's the first time to load
+    // The same as "Source Feed" except that if the source feed does not contain
+    // data at the request time then return the prior value
+    public function source_feed_delta($feedid, $time, $value, $options)
+    {
+        $this->log->debug("source_feed_delta(feed=",$feedid,",time=",$time,",value=",$value,",options=",$options,")");
+        // If start and end are set this is a request over multiple data points
+        if (isset($options['start']) && isset($options['end'])) {
+            // Load feed to data cache if it has not yet been loaded
+            if (!isset($this->data_cache[$feedid])) {
+                // Use named parameter retro to indicate inexact lookup type for costs (see feed/engine/PHPTimeSeries.php)
+                $this->data_cache[$feedid] = $this->feed->get_data($feedid,$options['start']*1000,$options['end']*1000,$options['interval'],0,$options['timezone'],'unix',false,0,0,true,-1,true);
+                $this->log->debug("source_feed_delta() loaded to cache");
+            }
+            // Return value
+            if (isset($this->data_cache[$feedid][$options['index']])) {
+                $ret = $this->data_cache[$feedid][$options['index']][1];
+                $this->log->debug("source_feed_delta()cached[",$options['index'],"]=",$ret);
+                return $ret;
+            }
+        } else {
+            // @TODO This is a request for the last value only, check it plays nice with delta...
+            $timevalue = $this->feed->get_timevalue($feedid);
+            $this->log->debug("source_feed_delta(): lastvalue=",$timevalue);
+            if (is_null($timevalue)) return null;
+            return $timevalue["value"];
+        }
+        return null;
+    }
+
+    // Multiplies the incoming feed by cost data taken from the given feed
+    // Loads full feed to data cache if it's the first time to load
+    public function cost_multiplier($feedid, $time, $value, $options)
+    {
+        $this->log->debug("cost_multiplier(feed=",$feedid,",time=",$time,",value=",$value,",options=",$options,")");
+        $last = $this->make_stateful($feedid, $time, $value, $options);
+
+        if ($value===null || $last===null) return null;
+        $value = $last * $value;
+        $this->log->debug("cost_multiplier(feed=",$feedid,")=",$value);
+        return $value;
+    }
+
+    public function standing_charge($period, $time, $value, $options)
+    {
+        $this->log->debug("standing_charge(period=",var_export($period,true),",time=",$time,",value=",$value,",options=",$options,")");
+        if ($value===null || !array_key_exists('interval',$options)) return null;
+        if(empty($period)) {
+          $period_sec = 86400; // One day is the default
+          $this->log->debug("standing_charge(default period=",$period_sec, ")");
+        } elseif (is_numeric($period)) {
+          $period_sec = $period; // A number of seconds
+          $this->log->debug("standing_charge(numeric period=",$period_sec, ")");
+        } elseif (str_starts_with($period, 'P')) {
+          try {
+            $i = new DateInterval($period);
+            $period_sec = date_create('@0')->add($i)->getTimestamp();
+            $this->log->debug("standing_charge(dateinterval period=",$period_sec, ")");
+          }
+          catch (Exception $e) {
+	    $msg = $e->getMessage();
+            $this->log->error("Invalid period parameter: $msg");
+            return 0;
+          }
+        } else {
+            $this->log->error("Period parameter must begin with 'P': $period");
+            return 0;
+        }
+        switch ($options['interval']) {
+        case 'daily':
+          $fraction = 86400.0 / $period_sec;
+          break;
+        case 'weekly':
+          $fraction = (7.0 * 86400.0) / $period_sec;
+          break;
+        case 'monthly':
+          $month = date('n', $time);
+          $year = date('Y', $time);
+          $fraction =  date('t', mktime(0, 0, 0, $month, 1, $year)) * 86400.0 / $period_sec;
+          break;
+        case 'annual':
+          $year = date('Y', $time);
+          $fraction =  (365 + date('L', mktime(0, 0, 0, 1, 1, $year))) * 86400.0 / $period_sec;
+          break;
+        default:
+          $fraction = $options['interval'] / $period_sec;
+          break;
+        }
+        $value = $value * $fraction;
+        $this->log->debug("standing_charge(period=",var_export($period,true),",fraction=",$fraction,")=",$value);
+        return $value;
+    }
 
     // No longer used
     public function average($feedid, $time_now, $value)
