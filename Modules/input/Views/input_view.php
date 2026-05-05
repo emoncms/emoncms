@@ -98,7 +98,7 @@ load_css("Modules/input/Views/input_view.css");
 
                         <!-- Node Inputs (collapsible) -->
                         <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[nodeid]}">
-                            <div @click="toggleSelected($event, input.id)" class="grid-row node-feed" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
+                            <div @click="toggleSelected($event, input.id)" class="grid-row grid-row-item" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
                                 <!-- Col 1: Checkbox -->
                                 <div class="grid-cell text-center" @click.stop>
                                     <input class="feed-select input-select" type="checkbox" :value="input.id" v-model="selected">

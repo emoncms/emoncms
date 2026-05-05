@@ -145,7 +145,7 @@ load_css("Modules/feed/Views/feed_view.css");
             <!-- Node Feeds -->
             <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[node]}">
                 <div v-for="feed in nodeFeeds" :key="feed.id"
-                     class="grid-row node-feed feed-graph-link"
+                     class="grid-row grid-row-item feed-graph-link"
                      :class="{'selected': selectedFeeds[feed.id]}"
                      :style="{'--status-color': feed.color}"
                      :feedid="feed.id"

@@ -251,6 +251,7 @@
     align-items: center;
     min-height: 44px;
     cursor: default;
+    position: relative; /* supports ::before accent strip used by .grid-row-item */
 }
 
 /* Adjustments for headers inside grids */
@@ -265,21 +266,20 @@
 .grid-row.card-header > .grid-cell:first-child { padding-left: 1rem; }
 .grid-row.card-header > .grid-cell:last-child  { padding-right: 1rem; }
 
-/* Feed Rows */
-.node-feed {
+/* Feed Rows — use as .grid-row.grid-row-item; extends .grid-row with interactive states */
+.grid-row-item {
     border-top: 1px solid var(--border);
     background: var(--bg-card);
     color: var(--text-body);
-    position: relative;
     transition: background-color 0.1s ease;
     cursor: pointer;
     border-right: 4px solid var(--status-color);
 }
-.node-feed:hover { background-color: var(--bg-card-row-hover); }
-.node-feed:last-of-type { border-bottom-width: 0; }
+.grid-row-item:hover { background-color: var(--bg-card-row-hover); }
+.grid-row-item:last-of-type { border-bottom-width: 0; }
 
-/* Selection States & Accents */
-.node-feed::before,
+/* Left accent strip — shared by feed rows and collapsible children */
+.grid-row-item::before,
 .node .collapse > *::before {
     content: '';
     width: 0;
@@ -291,12 +291,12 @@
     top: 0;
     transition: width .2s ease-out;
 }
-.node-feed:hover::before,
+.grid-row-item:hover::before,
 .node .collapse > *:hover::before { width: 2px; }
 
-.node-feed.selected         { background-color: var(--accent-bg); }
-.node-feed.selected::before { width: 4px; background: var(--accent); }
-.node-feed.selected:hover   { background-color: var(--accent-bg-hover); }
+.grid-row-item.selected         { background-color: var(--accent-bg); }
+.grid-row-item.selected::before { width: 4px; background: var(--accent); }
+.grid-row-item.selected:hover   { background-color: var(--accent-bg-hover); }
 
 /* ==========================================================================
    6. INTERACTIVE ELEMENTS (ACTIONS & COLLAPSE)
