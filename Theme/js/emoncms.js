@@ -42,7 +42,7 @@ if(!document.currentScript) {
  */
 var path = (function() {
     // if [data-path] not in initial <script> tag, this file is in the /Lib directory
-    const filePath = "Lib/emoncms.js"
+    const filePath = "Theme/js/emoncms.js"
     var _path = document.currentScript.dataset.path
     /**
      * remove the filePath from given url

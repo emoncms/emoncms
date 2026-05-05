@@ -46,6 +46,12 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
+
+    <script>
+    var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
+    var current_themesidebar = "dark";
+    </script>
+
     <?php
 
     // Consider replacing this with esbuild bundler (merge + minify) in the future
@@ -76,13 +82,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     // Menu and translations
     load_js("Theme/menu/menu.js");
     load_js("Lib/js/gettext.js");
+    load_js("Theme/js/emoncms.js");
     ?>
-
-    <script>
-    var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
-    var current_themesidebar = "dark";
-    </script>
-    <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
 
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
