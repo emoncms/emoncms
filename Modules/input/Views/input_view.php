@@ -1,90 +1,61 @@
-<?php $v=31; 
+<?php 
 defined('EMONCMS_EXEC') or die('Restricted access');
-?>
-<!-- Load dependencies -->
-<?php if ($device_module) { ?>
-    <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=28"></script>
-<?php } ?>
 
-<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=26"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js?v=26"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=26"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/input/Views/input_view.css?v=<?php echo $v; ?>">
+if ($device_module) {
+    load_js("Modules/device/Views/device.js");
+}
+load_js("Modules/input/Views/input.js");
+load_js("Lib/js/list_format_time_value.js");
+load_js("Modules/feed/feed.js");
+load_css("Modules/input/Views/input_view.css");
+?>
 
 <!-- PHP code to determine if the device module is installed AND translations -->
 <script>
     var path = "<?php echo $path; ?>";
     const DEVICE_MODULE = <?php if ($device_module) echo 'true';
                             else echo 'false'; ?>;
-
-    var _user = {};
-    _user.lang = "<?php echo $_SESSION['lang']; ?>";
-
-    // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
-    /**
-     * return object of gettext translated strings
-     *
-     * @return object
-     */
-    function getTranslations() {
-        return {
-            'ID': "<?php echo tr('ID'); ?>",
-            'Value': "<?php echo tr('Value'); ?>",
-            'Time': "<?php echo tr('Time'); ?>",
-            'Updated': "<?php echo tr('Updated'); ?>",
-            'Configure your device here': "<?php echo tr('Configure your device here'); ?>",
-            'Show node key': "<?php echo tr('Show node key'); ?>",
-            'Configure device using device template': "<?php echo tr('Configure device using device template'); ?>",
-            'Configure Input processing': "<?php echo tr('Configure Input processing'); ?>",
-            'Saving': "<?php echo tr('Saving'); ?>",
-            'Collapse': "<?php echo tr('Collapse'); ?>",
-            'Expand': "<?php echo tr('Expand'); ?>",
-            'Select all %s inputs': "<?php echo tr('Select all %s inputs'); ?>",
-            'Select all': "<?php echo tr('Select all'); ?>",
-            'Please install the device module to enable this feature': "<?php echo tr('Please install the device module to enable this feature'); ?>"
-        }
-    }
 </script>
+<?php require "Modules/input/Views/translate.php"; ?>
 
-<div class="position-relative">
-    <div id="input-header" class="d-flex justify-content-between align-items-center">
-        <h3><?php echo tr('Inputs'); ?></h3>
-        <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo tr('Input API Help'); ?></a></span>
+<div id="input-app" class="position-relative">
+    <div id="input-header" class="page-header">
+        <h2><?php echo tr('Inputs'); ?></h2>
+        <a id="api-help" href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a>
     </div>
-    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
-        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
-            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div v-cloak class="sticky-controls" v-if="total_devices > 0">
+        <button @click="collapseAll" id="expand-collapse-all" class="app-btn" :title="collapse_title">
+            <i class="icon" :class="allCollapsed ? 'icon-expand' : 'icon-minimize'"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
-            <svg class="icon">
-                <use :xlink:href="checkbox_icon"></use>
-            </svg>
+        <button @click="selectAll" class="app-btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
+            <i class="icon" :class="selected.length > 0 && selected.length >= total_inputs ? 'icon-ban-circle' : 'icon-check'"></i>
             <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
-        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
+        <button @click="open_delete" class="app-btn input-delete" v-if="selected.length > 0" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
+        <button @click="open_edit" class="app-btn input-edit" v-if="selected.length > 0" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
         <!-- input processing configure only show if one input selected -->
         <button
-            v-if="selectMode && selected.length === 1"
+            v-if="selected.length === 1"
             @click="showInputConfigure(selected[0])"
-            class="btn input-configure"
+            class="app-btn input-configure"
             :title="'<?php echo addslashes(tr('Configure Input processing')); ?>'">
             <i class="icon-wrench"></i>
         </button>
-        <button v-if="show_clean" @click="clean_unused" class="btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
+        <button v-if="show_clean" @click="clean_unused" class="app-btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-
+        <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" v-if="selected.length == 0" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
     </div>
 
-    <div id="noprocesses clearfix"></div>
+    <div id="noprocesses" class="clearfix"></div>
 
-    <div id="app" v-cloak>
+    <div v-cloak>
 
         <!-- alert danger if input creation is disabled for user, click enable button to enable -->
         <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
-            <button @click="enableInputCreation" class="btn" style="float:right;">
+            <button @click="enableInputCreation" class="app-btn" style="float:right;">
                 <i class="icon icon-play" style="margin-top:2px"></i>
                 <?php echo tr('Enable Input Creation'); ?></button>
             <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
@@ -92,61 +63,76 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
         <template v-if="loaded">
             <template v-if="total_devices > 0">
-                <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
-                    <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :style="{ '--status-color': device.time_color }" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
+            <div class="card-list-grid input-list-grid">
+                <template v-for="(device,nodeid) in filteredDevices">
+                    <div class="card card-grid" :class="{'select-mode': selectMode}">
 
-                        <div class="select text-center has-indicator" data-col="B">
-                            <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
-                            <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
-                        </div>
-
-                        <h5 class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">
-                            <span>{{ nodeid }}
-                                <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
-                            </span>
-                        </h5>
-                        <span class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
-                        <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
-                        <div class="buttons pull-right">
-                            <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
-                            <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px', color:device.time_color}">{{ device.time_value }}</div>
-                            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50" title="<?php echo tr('Show device key'); ?>">
-                                <i class="icon-lock"></i>
-                            </a>
-                            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure device using device template'); ?>">
-                                <i class="icon-cog"></i>
-                            </a>
-                        </div>
-                    </div>
-                    <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-                        <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :style="{ '--status-color': input.time_color }" :class="[{'selected': selected.indexOf(input.id) > -1}]">
-                            <div class="select text-center" data-col="B">
-                                <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
+                        <!-- Node Header -->
+                        <div @click="toggleNode(nodeid)" class="grid-row card-header" :style="{'--status-color': device.time_color}">
+                            <!-- Col 1: Arrow / select-all checkbox -->
+                            <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(nodeid)">
+                                <span v-if="!selectMode || getDeviceInputIds(device).length == 0" class="collapse-icon" :class="[nodesDisplay[nodeid] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
+                                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg feed-select" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
                             </div>
-                            <div class="name text-nowrap" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
-                            <div class="description text-nowrap" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-                            <div class="processlist" data-col="H" :style="{width:col.H+'px', height:col_h.H}">
-                                <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
+                            <!-- Col 2: Node name -->
+                            <div class="grid-cell text-uppercase">{{ nodeid }}<small class="ml-2" v-if="getDeviceSelectedInputids(device).length > 0">&nbsp;({{ getDeviceSelectedInputids(device).length }})</small></div>
+                            <!-- Col 3: Description -->
+                            <div class="grid-cell text-nowrap">{{ device.description }}</div>
+                            <!-- Col 4: Processlist spacer -->
+                            <div class="grid-cell"></div>
+                            <!-- Col 5: Last updated -->
+                            <div class="grid-cell text-center" :style="{color: device.time_color}">{{ device.time_value }}</div>
+                            <!-- Col 6: Device key button -->
+                            <div class="grid-cell text-center">
+                                <a @click.prevent.stop="show_device_key(device)" href="#" :class="{'text-muted': !device_module}" title="<?php echo tr('Show device key'); ?>">
+                                    <i class="icon-lock"></i>
+                                </a>
                             </div>
-                            <div class="buttons pull-right">
-                                <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                                <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', height:col_h.E, color:input.time_color}">
-                                    {{ input.time_value }}
-                                </span>
-                                <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
-                                    {{ input.value_str }}
-                                </span>
-                                <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo tr('Configure Input processing') ?>" href="#">
-                                    <i class="icon-wrench"></i>
+                            <!-- Col 7: Device configure button -->
+                            <div class="grid-cell text-center">
+                                <a @click.prevent.stop="device_configure(device)" href="#" :class="{'text-muted': !device_module}" title="<?php echo tr('Configure device using device template'); ?>">
+                                    <i class="icon-cog"></i>
                                 </a>
                             </div>
                         </div>
+
+                        <!-- Node Inputs (collapsible) -->
+                        <div class="grid-collapsible" :class="{'is-expanded': nodesDisplay[nodeid]}">
+                            <div @click="toggleSelected($event, input.id)" class="grid-row grid-row-item" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
+                                <!-- Col 1: Checkbox -->
+                                <div class="grid-cell text-center" @click.stop>
+                                    <input class="feed-select input-select" type="checkbox" :value="input.id" v-model="selected">
+                                </div>
+                                <!-- Col 2: Name -->
+                                <div class="grid-cell text-nowrap">{{ input.name }}</div>
+                                <!-- Col 3: Description -->
+                                <div class="grid-cell text-nowrap">{{ input.description }}</div>
+                                <!-- Col 4: Processlist -->
+                                <div class="grid-cell">
+                                    <div class="label-container" v-html="input.processlistHtml"></div>
+                                </div>
+                                <!-- Col 5: Last updated -->
+                                <div @click.stop class="grid-cell text-center" :style="{color: input.time_color}">{{ input.time_value }}</div>
+                                <!-- Col 6: Value -->
+                                <div @click.stop class="grid-cell text-center">{{ input.value_str }}</div>
+                                <!-- Col 7: Configure button -->
+                                <div class="grid-cell text-center" @click.stop>
+                                    <a @click.prevent="showInputConfigure(input.id)" class="cursor-pointer" title="<?php echo tr('Configure Input processing') ?>" href="#">
+                                        <i class="icon-wrench"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
-            </template>
+                    <div style="height:10px; grid-column: 1 / -1"></div>
+                </template>
+            </div>
+        </template>
             <div class="alert" v-else>
                 <h3 class="alert-heading mt-0"><?php echo tr('No inputs created'); ?></h3>
                 <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-                <button @click.prevent="create_device" class="btn">
+                <button @click.prevent="create_device" class="app-btn">
                     <i class="icon-plus-sign"></i> <?php echo tr('New device'); ?>
                 </button>
             </div>
@@ -155,32 +141,33 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
         <!-- disable input creation button, only show if input creation is not already disabled and there are existing inputs -->
         <div v-if="!input_creation_disabled && total_inputs > 0">
-            <button @click="disableInputCreation" class="btn float-end" style="margin-top:10px;">
+            <button @click="disableInputCreation" class="app-btn float-end" style="margin-top:10px;">
                 <i class="icon icon-lock" style="margin-top:2px"></i>
                 <?php echo tr('Disable further input creation'); ?></button>
         </div>
     </div>
 
-    <div id="input-none" class="alert alert-block hide">
-        <h4 class="alert-heading"><?php echo tr('No inputs created'); ?></h4>
-        <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-    </div>
-
-    <div id="input-footer" class="hide">
-        <button id="device-new" class="btn btn-small">&nbsp;<i class="icon-plus-sign"></i>&nbsp;<?php echo tr('New device'); ?></button>
-    </div>
-
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
-<!-- Load after the main content -->
-<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php // delete and edit modals
-require "Modules/input/Views/input_dialog.php";
-?>
-<?php require "Modules/process/Views/process_ui.php"; ?>
 
-<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
-<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>
+<?php
+// Main input list javascript
+load_js("Modules/input/Views/input_view.js");
+
+// Device modal: enables configuring devices using pre-set templates
+if ($device_module) {
+    require "Modules/device/Views/device_dialog.php";
+}
+
+// Input processing modal: configure input processing
+require "Modules/process/Views/process_ui.php";
+
+// Edit input modal
+require "Modules/input/Views/modals/edit/edit_modal.php";
+load_js("Modules/input/Views/modals/edit/edit_modal.js");
+
+// Delete input modal
+require "Modules/input/Views/modals/delete/delete_modal.php";
+load_js("Modules/input/Views/modals/delete/delete_modal.js");
+?>

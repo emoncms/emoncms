@@ -1,0 +1,31 @@
+/*
+ * Feed list grid-specific columns.
+ * Shared grid container styles live in Theme/css/emoncms-base.css (.card-list-grid).
+ */
+
+.feed-list-grid {
+    grid-template-columns: 40px minmax(max-content, 2fr) 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
+}
+
+@media (max-width: 992px) {
+    .feed-list-grid {
+        grid-template-columns: 40px max-content 40px max-content minmax(80px, 1fr) 80px 100px;
+    }
+    .feed-list-grid .grid-row > .grid-cell:nth-child(6) { display: none; }
+}
+
+@media (max-width: 768px) {
+    .feed-list-grid {
+        grid-template-columns: 40px 1fr 80px 80px;
+    }
+    .feed-list-grid .grid-row > .grid-cell:nth-child(3),
+    .feed-list-grid .grid-row > .grid-cell:nth-child(4),
+    .feed-list-grid .grid-row > .grid-cell:nth-child(5) { display: none; }
+}
+
+@media (max-width: 480px) {
+    .feed-list-grid {
+        grid-template-columns: 30px 1fr 80px;
+    }
+    .feed-list-grid .grid-row > .grid-cell:nth-child(8) { display: none; }
+}

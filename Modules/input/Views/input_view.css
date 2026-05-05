@@ -1,142 +1,111 @@
 
-#footer {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
-.navbar-fixed-top {
-    margin-left: 0px;
-    margin-right: 0px;
-}
-
 input[type="checkbox"] { margin:0px; }
-.controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
 
 #noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
 
 @media (min-width: 768px) {
     .modal-wide{
-        width:650px;
-        margin-left:-325px
+        width:520px;
+        margin-left:-260px
     }
 }
 
-@media (max-width: 768px) {
-    body {padding:0};
+/* ================================================================== */
+/* INPUT LIST GRID                                                     */
+/* ================================================================== */
+
+/*
+ * 7-column subgrid layout for the input list.
+ * Col 1 : 40px   — checkbox / arrow
+ * Col 2 : 2fr    — name
+ * Col 3 : 1fr    — description
+ * Col 4 : 1fr    — process list
+ * Col 5 : 100px  — last updated
+ * Col 6 : 80px   — value
+ * Col 7 : 40px   — configure / device-configure icon
+ */
+.input-list-grid {
+    grid-template-columns: 40px minmax(max-content, 2fr) minmax(max-content, 1fr) minmax(100px, 1fr) 100px 80px 40px;
 }
 
-.node .node-info{
-    border-bottom: 1px solid white;
-}
-.node .node-info,
-.node .node-input {
-    position: relative;
-}
-.node .node-info::after,
-.node .node-input::after {
-    content: '';
-    width: .4em;
-    height: 100%;
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: rgba(0,0,0,.1);
-}
-.buttons{
-    padding-right: .4em;
+/* Device key / configure icon links inherit the header text colour */
+.input-list-grid .card-header > .grid-cell:nth-child(6) > a,
+.input-list-grid .card-header > .grid-cell:nth-child(7) > a {
+    color: inherit;
 }
 
-.node-info::after,
-.node-input::after {
-    background: var(--status-color)!important;
-}
-
-
-[data-col] { overflow:hidden; }
-
-[data-col="B"] { width:40px; }
-[data-col="A"] { width:200px; }
-[data-col="G"] { width:200px; }
-[data-col="F"] { width:50px; }
-[data-col="E"] { width:100px; }
-[data-col="D"] { width:100px; }
-[data-col="C"] { width:50px; }
+/* Muted icon buttons (device module not installed) */
 a.text-muted i[class*="icon-"] {
     opacity: .5;
 }
-#app .accordion {
-    margin-bottom: .3rem;
-}
-#input-controls {
-    top: 3.5rem;
-    z-index: 1;
-}
-#input-controls.fixed {
-    position: sticky;
-}
-#input-controls:before {
-    background: rgba(0, 0, 0, 0.5);
-    content: "";
-    position: fixed;
-    top: 3rem;
-    height: 0rem;
-    width: 100%;
-    left: 0;
-    z-index: -1;
-    margin-top: -.18em;
-    transition: .2s height, .16s opacity ease-out;
-    opacity: 0;
-}
-#input-controls.fixed:before {
-    opacity: 1;
-    height: 3.15rem;
-}
-.select-mode .node-inputs .node-input {
-    cursor: pointer;
-}
+
+/* Scale up checkboxes & keep them in normal flow */
 input.checkbox-lg {
     float: none;
-}
-input.checkbox-lg,
-.select-mode .node-inputs .node-input input[type="checkbox"] {
     transform: scale(1.3);
 }
-.selected {
-    background-color: rgba(68, 179, 226, 0.8) !important;
-    background-color: #C2DBFF!important;
+
+@media (max-width: 992px) {
+    .input-list-grid {
+        grid-template-columns: 40px minmax(max-content, 2fr) minmax(100px, 1fr) 100px 80px 40px;
+    }
+    /* hide description column */
+    .input-list-grid .grid-row > .grid-cell:nth-child(3) { display: none; }
 }
-[v-cloak] {
-  display: none;
+
+@media (max-width: 768px) {
+    .input-list-grid {
+        grid-template-columns: 40px 1fr 100px 40px;
+    }
+    /* hide description, processlist, value columns */
+    .input-list-grid .grid-row > .grid-cell:nth-child(3),
+    .input-list-grid .grid-row > .grid-cell:nth-child(4),
+    .input-list-grid .grid-row > .grid-cell:nth-child(6) { display: none; }
 }
-.position-absolute {
+
+/* ================================================================== */
+/* MODAL FORM STYLES (edit / delete modals)                           */
+/* ================================================================== */
+
+.modal-body .form-group{
+    position: relative;
+}
+.modal-body .form-group .add-on,
+.modal-body .form-group input{
+    margin-bottom: 0;
+    margin-top: .8rem
+}
+.modal-body .form-group input + label {
     position: absolute;
+    transition: all .2s ease-out;
+    left: 0.45rem;
+    opacity: 0;
+    top: 1.1rem;
 }
-
-/* overwrite bootstrap collapse animation */
-
-.collapse .node-input {
-    height: 0;
-    transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
-    transition-duration: .6s;
-    min-height: 0;
-    border-width: 0;
+.modal-body .form-group input:focus + label,
+.modal-body .form-group input:focus::placeholder{
+    color: #5b9bce;
 }
-.collapse.in .node-input {
-    height: auto;
-    transition: all .2s cubic-bezier(.23,1,.32,1);
-    border-width: 1px;
+.modal-body .form-group label.away{
+    font-size: x-small;
+    top: -.7em;
+    left: .5em;
+    opacity: 1;
 }
-.collapse {
-    height: inherit!important;
+.modal-body form.align-items-center p,
+.modal-body form.align-items-center button{
+    margin-top: .75rem;
 }
-.break-all {
-    word-break: break-all;
+.modal-footer::before, .modal-footer::after{
+    content: none
 }
-.text-nowrap {
-    white-space: nowrap !important;
+.dl-horizontal dt {
+    float: left;
 }
-[v-cloak] {
-    visibility: hidden
+.dl-horizontal dt.text-right{
+    text-align: right
+}
+.clear-both {
+    clear: both!important;
 }

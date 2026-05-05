@@ -421,3 +421,48 @@ function guidv4()
     // Output the 36 character UUID.
     return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
 }
+
+// ---------------------------------------------------------------------------------------------------------
+// Load JavaScript and CSS files with optional cache busting based on file modification time
+// ---------------------------------------------------------------------------------------------------------
+function load_js(string $file_path, bool $filemtime = true, $module = false): void {
+    global $path;
+    $version_string = "";
+    if ($filemtime && file_exists($file_path)) {
+        $version_string = "?v=" . filemtime($file_path);
+    }
+    $safe_path = htmlspecialchars($file_path, ENT_QUOTES, 'UTF-8');
+    if ($module) {
+        $module_str = 'type="module"';
+    } else {
+        $module_str = '';
+    }
+    echo '<script '.$module_str.' src="' . $path . $safe_path . $version_string . '"></script>' . "\n";
+}
+
+function load_css(string $file_path, bool $filemtime = true): void {
+    global $path;
+    $version_string = "";
+    if ($filemtime && file_exists($file_path)) {
+        $version_string = "?v=" . filemtime($file_path);
+    }
+    $safe_path = htmlspecialchars($file_path, ENT_QUOTES, 'UTF-8');
+    echo '<link rel="stylesheet" href="' . $path . $safe_path . $version_string . '">' . "\n";
+}
+
+function js_import_map(string $base, array $files): void {
+    global $path;
+    $imports = [];
+    foreach ($files as $file) {
+        $file_path = $base . $file;
+        $version_string = "";
+        if (file_exists($file_path)) {
+            $version_string = "?v=" . filemtime($file_path);
+        }
+        $specifier = $path . $file_path;
+        $url = htmlspecialchars($path . $file_path . $version_string, ENT_QUOTES, 'UTF-8');
+        $imports[$specifier] = $url;
+    }
+    $json = json_encode(['imports' => $imports]);
+    echo "<script type=\"importmap\">{$json}</script>\n";
+}
