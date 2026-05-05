@@ -2,30 +2,27 @@
    1. CORE CARD CONTAINERS
    ========================================================================== */
 
-/* Shared card base */
-.card,
-.card-grid {
+/* Card: visual container */
+.card {
     border: 1px solid var(--border-card);
     border-radius: var(--radius-card);
     overflow: hidden;
-}
-
-.card {
     background-color: var(--bg-card);
     margin-bottom: 0.75rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: box-shadow 0.15s ease;
 }
 
+.card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+}
+
+/* Grid: pure layout primitive — no visual styling */
 .card-grid {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
     margin-bottom: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
-    transition: box-shadow 0.15s ease;
-}
-
-.card-grid:hover {
-    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
 }
 
 /* ==========================================================================
@@ -146,6 +143,7 @@
     border-bottom: none;
     border-radius: 0;
     margin-bottom: 0;
+    box-shadow: none;
 }
 
 .card .feed-options .card-header {
