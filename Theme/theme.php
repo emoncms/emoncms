@@ -187,6 +187,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             icon.classList.remove('icon-sun', 'icon-moon');
             icon.classList.add(next === 'light' ? 'icon-moon' : 'icon-sun');
         }
+        window.dispatchEvent(new CustomEvent('colormodechange', { detail: { mode: next } }));
     }
     </script>
 </body>
