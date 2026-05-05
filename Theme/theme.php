@@ -47,11 +47,25 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
     <?php
+
+    // Consider replacing this with esbuild bundler (merge + minify) in the future
+
     // Main theme CSS
     load_css("Theme/css/emoncms-base.css");
+    load_css("Theme/css/menu.css");
+    load_css("Theme/css/card.css");
+    load_css("Theme/css/form.css");
+    load_css("Theme/css/modal.css");
+    load_css("Theme/css/dropdown.css");
+    load_css("Theme/css/datetimepicker.css");
+    load_css("Theme/css/autocomplete.css");
+    // Utility classes
     load_css("Theme/css/bootstrap4-utils.css");
     // Specific used icons
     load_css("Theme/css/svg-icons.css");
+
+
+
     // Menu Translations
     include 'Theme/menu/menu_langjs.php';
 

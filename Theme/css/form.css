@@ -1,0 +1,296 @@
+
+.btn {
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: var(--font-sm);
+    line-height: 20px;
+    color: var(--text-body);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border-strong);
+    border-radius: 4px;
+    transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.btn:hover,
+.btn:focus,
+.btn:active,
+.btn.active,
+.btn.disabled,
+.btn[disabled] {
+    color: var(--text-primary);
+    background-color: var(--accent-bg-hover);
+    border-color: var(--accent-border);
+    text-decoration: none;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.btn.active,
+.btn:active {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.btn.disabled,
+.btn[disabled] {
+    cursor: default;
+    opacity: 0.65;
+    box-shadow: none;
+}
+
+.input-append,
+.input-prepend {
+    display: inline-flex;
+    align-items: stretch;
+    margin-bottom: 10px;
+    font-size: 0;
+    white-space: nowrap;
+    vertical-align: middle;
+    max-width: 100%;
+}
+
+.input-append input,
+.input-prepend input,
+.input-append select,
+.input-prepend select,
+.input-append .dropdown-menu,
+.input-prepend .dropdown-menu,
+.input-append .add-on,
+.input-prepend .add-on,
+.input-append .btn,
+.input-prepend .btn {
+    font-size: var(--font-sm);
+}
+
+.input-append input,
+.input-prepend input,
+.input-append select,
+.input-prepend select {
+    position: relative;
+    margin-bottom: 0;
+    border-radius: 0;
+    vertical-align: top;
+}
+
+.input-append input:focus,
+.input-prepend input:focus,
+.input-append select:focus,
+.input-prepend select:focus {
+    z-index: 2;
+}
+
+.input-append .add-on,
+.input-prepend .add-on {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    height: 30px;
+    min-width: 16px;
+    padding: 0 8px;
+    font-weight: normal;
+    line-height: 1;
+    text-align: center;
+    color: var(--text-secondary);
+    background-color: var(--bg-card-header);
+    border: 1px solid var(--border-strong);
+    box-sizing: border-box;
+}
+
+.input-append .add-on,
+.input-prepend .add-on,
+.input-append .btn,
+.input-prepend .btn,
+.input-append .btn-group > .dropdown-toggle,
+.input-prepend .btn-group > .dropdown-toggle {
+    vertical-align: top;
+    border-radius: 0;
+}
+
+.input-append .active,
+.input-prepend .active {
+    background-color: var(--accent-bg);
+    border-color: var(--accent-border);
+}
+
+.input-prepend .add-on,
+.input-prepend .btn {
+    margin-right: -1px;
+}
+
+.input-prepend .add-on:first-child,
+.input-prepend .btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-append input,
+.input-append select,
+.input-append .btn:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.input-append input + .btn-group .btn:last-child,
+.input-append select + .btn-group .btn:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-append .add-on,
+.input-append .btn,
+.input-append .btn-group {
+    margin-left: -1px;
+}
+
+.input-append .add-on:last-child,
+.input-append .btn:last-child,
+.input-append .btn-group:last-child > .dropdown-toggle {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append input,
+.input-prepend.input-append select {
+    border-radius: 0;
+}
+
+.input-prepend.input-append input + .btn-group .btn,
+.input-prepend.input-append select + .btn-group .btn {
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append .add-on:first-child,
+.input-prepend.input-append .btn:first-child {
+    margin-right: -1px;
+    border-radius: 4px 0 0 4px;
+}
+
+.input-prepend.input-append .add-on:last-child,
+.input-prepend.input-append .btn:last-child {
+    margin-left: -1px;
+    border-radius: 0 4px 4px 0;
+}
+
+.input-prepend.input-append .btn-group:first-child {
+    margin-left: 0;
+}
+
+.btn-primary {
+    background-color: var(--accent);
+    border: 0;
+    color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active {
+    background-color: var(--accent-hover);
+}
+
+
+.btn-warning {
+    background-color: #f0ad00;
+    color: #fff;
+    border: 0;
+}
+.btn-warning:hover,
+.btn-warning:focus,
+.btn-warning:active,
+.btn-warning.active {
+    background-color: #ffbf1a;
+}
+
+.btn-danger {
+    background-color: #c74848;
+    color: #fff;
+    border: 0;
+}
+.btn-danger:hover,
+.btn-danger:focus,
+.btn-danger:active,
+.btn-danger.active {
+    background-color: #d85555;
+}
+
+
+
+.app-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35em;
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.375rem;
+    padding: 0 0.85rem;
+    height: 30px;
+    font-size: var(--font-sm);
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    line-height: 1;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+.app-btn:hover,
+.app-btn:focus {
+    background-color: var(--accent-bg-hover);
+    color: #fff;
+    outline: none;
+}
+.app-btn-sm {
+    padding: 0 0.55rem;
+    height: 24px;
+    font-size: var(--font-xs);
+}
+.app-btn-danger {
+    background-color: rgba(200, 60, 60, 0.12);
+    color: #e06060;
+    border-color: rgba(200, 60, 60, 0.3);
+}
+.app-btn-danger:hover,
+.app-btn-danger:focus {
+    background-color: rgba(200, 60, 60, 0.25);
+    color: #ff8080;
+}
+
+
+/* Base select */
+select {
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: var(--font-sm);
+    font-family: inherit;
+    height: 30px;
+    box-sizing: border-box;
+    cursor: pointer;
+    outline: none;
+}
+select:focus {
+    border-color: var(--accent);
+}
+
+/* Base text inputs */
+input[type="text"],
+input[type="password"] {
+    background-color: var(--bg-input);
+    color: var(--text-body);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.25rem;
+    padding: 0 8px;
+    font-size: var(--font-sm);
+    height: 30px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: none;
+}
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: var(--accent);
+}

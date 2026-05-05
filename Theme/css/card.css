@@ -1,0 +1,306 @@
+
+/* Shared card base */
+.card,
+.card-grid {
+    border: 1px solid var(--border-card);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
+.card {
+    background-color: var(--bg-card);
+    margin-bottom: 0.75rem;
+}
+
+/* Shared card-header base */
+.card-header {
+    background-color: var(--bg-card-header);
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out;
+}
+.card-header:hover {
+    background-color: var(--bg-card-header-hover);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+    user-select: none;
+}
+/* Blue left accent bar — opt-in element, place inside .card-header like an icon */
+.card-header .card-accent {
+    display: block;
+    width: 3px;
+    height: 1.1em;
+    border-radius: 2px;
+    background-color: var(--accent);
+    flex-shrink: 0;
+}
+.card-header .card-name {
+    font-weight: 600;
+    font-size: var(--font-sm);
+    color: var(--text-primary);
+    flex: 1;
+    letter-spacing: 0.02em;
+}
+.card-header .card-badge {
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    background-color: var(--bg-badge);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.75rem;
+    padding: 1px 8px;
+}
+.card-header .card-updated {
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+.card-header .collapse-icon {
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    transition: color 0.2s;
+    flex-shrink: 0;
+}
+.card-header:hover .collapse-icon { color: var(--accent); }
+
+/* Inner table */
+.card table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+.card table th {
+    padding: 5px 12px;
+    font-size: var(--font-2xs);
+    font-weight: normal;
+    color: var(--text-secondary);
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-card-header);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card table td {
+    padding: 9px 12px;
+    color: var(--text-body);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    vertical-align: middle;
+}
+.card table tr:last-child td { border-bottom: none; }
+.card table tbody tr:hover td { background-color: var(--accent-row-hover); }
+
+/* Column variants */
+.card table td.col-secondary { color: var(--text-secondary); }
+.card table td.col-primary   { color: var(--text-primary); font-weight: 500; }
+
+/* Chip / pill badge cell */
+.card table td.col-chip span {
+    display: inline-block;
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    background-color: var(--bg-card-row-hover);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.75rem;
+    padding: 1px 8px;
+}
+
+/* Monospace cells */
+.card table td.col-mono,
+.card table td.col-mono-truncate {
+    font-family: monospace;
+    color: var(--text-secondary);
+}
+.card table td.col-mono { font-size: var(--font-xs); }
+.card table td.col-mono-truncate {
+    font-size: var(--font-2xs);
+    max-width: 160px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Updated / action column alignment */
+.card table th.col-updated,
+.card table td.col-updated { text-align: right; white-space: nowrap; }
+.card table th.col-action,
+.card table td.col-action  { width: 24px; text-align: center; padding: 9px 6px; }
+
+/* Row action icon — visible on row hover */
+.row-action {
+    cursor: pointer;
+    color: transparent;
+    transition: color 0.15s;
+}
+.card table tbody tr:hover .row-action { color: var(--text-secondary); }
+.row-action:hover { color: var(--accent) !important; }
+
+/* Settings table column widths */
+.card table col.col-w-label  { width: 200px; }
+.card table col.col-w-action { width: 32px; }
+.card table col.col-w-btn    { width: 130px; }
+
+/* Responsive overrides */
+@media (max-width: 576px) {
+    .card table col.col-w-label { width: 90px; }
+}
+
+/* Top bar for cards — icon + title header bar (alternative to card-header) */
+.card-topbar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-card-header);
+}
+
+/* Title text within card-topbar */
+.card-topbar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: var(--font-sm);
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex: 1;
+    letter-spacing: 0.02em;
+}
+
+/* Optional nav/controls strip — flexible row for controls */
+.card-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Main content area within card */
+.card-body {
+    padding: 8px;
+}
+
+/* Padded controls/options area within card */
+.card-controls {
+    padding: 0.75rem;
+}
+
+
+/* Feed options card inside card: integrate flush (no nested box) */
+.card .feed-options .card {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+.card .feed-options .card-header {
+    border-radius: 0;
+}
+/* Keep top border of the feed options section aligned with card sections */
+.card .feed-options {
+    border-top: 1px solid var(--border);
+}
+
+
+/* Node group card */
+.card-grid {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    margin-bottom: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    transition: box-shadow 0.15s ease;
+}
+.card-grid:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+}
+
+/* Feed row */
+.node-feed {
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-body);
+    position: relative;
+    transition: background-color 0.1s ease;
+    cursor: pointer;
+    border-right: 4px solid var(--status-color);
+}
+.node-feed:hover { background-color: var(--bg-card-row-hover); }
+.node-feed:last-of-type { border-bottom-width: 0; }
+
+/* Shared left-accent bar (feed rows + input accordion rows) */
+.node-feed::before,
+.node .collapse > *::before {
+    content: '';
+    width: 0;
+    background: var(--accent);
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width .2s ease-out;
+}
+.node-feed:hover::before,
+.node .collapse > *:hover::before { width: 2px; }
+
+/* Selected feed */
+.node-feed.selected         { background-color: var(--accent-bg); }
+.node-feed.selected::before { width: 4px; background: var(--accent); }
+.node-feed.selected:hover   { background-color: var(--accent-bg-hover); }
+
+/* Vue collapse / arrow */
+.arrow-icon {
+    transition: transform 0.3s ease;
+    color: var(--status-color);
+    opacity: 0.7;
+}
+.vue-collapsible-content {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-in-out;
+}
+.vue-collapsible-content.is-expanded { max-height: 2000px; }
+
+
+/* Shared list-grid container (feed + input lists) */
+.card-list-grid {
+    display: grid;
+    width: 100%;
+    box-sizing: border-box;
+    contain: layout style;
+    gap: 0;
+}
+
+.grid-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 44px;
+    cursor: default;
+}
+
+/* Grid-based card headers: avoid double-padding from .card-header + .grid-cell */
+.grid-row.card-header {
+    padding: 0;
+    gap: 0;
+}
+.grid-row.card-header > .grid-cell {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+.grid-row.card-header > .grid-cell:first-child { padding-left: 1rem; }
+.grid-row.card-header > .grid-cell:last-child { padding-right: 1rem; }
