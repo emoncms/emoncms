@@ -90,36 +90,6 @@
     color: var(--accent); 
 }
 
-/* Alternative Topbar & Nav */
-.card-topbar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-    background-color: var(--bg-card-header);
-}
-
-.card-topbar-title {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    font-size: var(--font-sm);
-    font-weight: 600;
-    color: var(--text-secondary);
-    flex: 1;
-    letter-spacing: 0.02em;
-}
-
-.card-nav {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.35rem 0.5rem;
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--border);
-}
-
 /* ==========================================================================
    3. BODY & LAYOUT SECTIONS
    ========================================================================== */
@@ -276,9 +246,8 @@
 .grid-row-item:hover { background-color: var(--bg-card-row-hover); }
 .grid-row-item:last-of-type { border-bottom-width: 0; }
 
-/* Left accent strip — shared by feed rows and collapsible children */
-.grid-row-item::before,
-.node .collapse > *::before {
+/* Left accent strip */
+.grid-row-item::before {
     content: '';
     width: 0;
     background: var(--accent);
@@ -289,8 +258,7 @@
     top: 0;
     transition: width .2s ease-out;
 }
-.grid-row-item:hover::before,
-.node .collapse > *:hover::before { width: 2px; }
+.grid-row-item:hover::before { width: 2px; }
 
 .grid-row-item.selected         { background-color: var(--accent-bg); }
 .grid-row-item.selected::before { width: 4px; background: var(--accent); }
@@ -306,17 +274,18 @@
     color: transparent;
     transition: color 0.15s;
 }
+.grid-row-item:hover .row-action,
 .card table tbody tr:hover .row-action { color: var(--text-secondary); }
 .row-action:hover { color: var(--accent) !important; }
 
-/* Vue Collapse Indicators */
-.arrow-icon {
+/* Collapse Indicators */
+.collapse-icon {
     transition: transform 0.3s ease;
     color: var(--status-color);
     opacity: 0.7;
 }
 
-.vue-collapsible-content {
+.grid-collapsible {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: subgrid;
@@ -324,7 +293,7 @@
     overflow: hidden;
     transition: max-height 0.2s ease-in-out;
 }
-.vue-collapsible-content.is-expanded { max-height: 2000px; }
+.grid-collapsible.is-expanded { max-height: 2000px; }
 
 /* ==========================================================================
    7. RESPONSIVE OVERRIDES

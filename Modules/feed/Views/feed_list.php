@@ -128,7 +128,7 @@ load_css("Modules/feed/Views/feed_view.css");
             <!-- Node Header -->
             <div :key="node" class="grid-row card-header text-uppercase" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">
-                    <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></span>
+                    <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="collapse-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
                 <div class="grid-cell">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
@@ -143,7 +143,7 @@ load_css("Modules/feed/Views/feed_view.css");
             </div>
 
             <!-- Node Feeds -->
-            <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[node]}">
+            <div class="grid-collapsible" :class="{'is-expanded': nodesDisplay[node]}">
                 <div v-for="feed in nodeFeeds" :key="feed.id"
                      class="grid-row grid-row-item feed-graph-link"
                      :class="{'selected': selectedFeeds[feed.id]}"

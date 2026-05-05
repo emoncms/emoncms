@@ -71,7 +71,7 @@ load_css("Modules/input/Views/input_view.css");
                         <div @click="toggleNode(nodeid)" class="grid-row card-header" :style="{'--status-color': device.time_color}">
                             <!-- Col 1: Arrow / select-all checkbox -->
                             <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(nodeid)">
-                                <span v-if="!selectMode || getDeviceInputIds(device).length == 0" class="arrow-icon" :class="[nodesDisplay[nodeid] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
+                                <span v-if="!selectMode || getDeviceInputIds(device).length == 0" class="collapse-icon" :class="[nodesDisplay[nodeid] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
                                 <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg feed-select" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
                             </div>
                             <!-- Col 2: Node name -->
@@ -97,7 +97,7 @@ load_css("Modules/input/Views/input_view.css");
                         </div>
 
                         <!-- Node Inputs (collapsible) -->
-                        <div class="vue-collapsible-content" :class="{'is-expanded': nodesDisplay[nodeid]}">
+                        <div class="grid-collapsible" :class="{'is-expanded': nodesDisplay[nodeid]}">
                             <div @click="toggleSelected($event, input.id)" class="grid-row grid-row-item" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
                                 <!-- Col 1: Checkbox -->
                                 <div class="grid-cell text-center" @click.stop>
