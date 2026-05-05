@@ -34,8 +34,8 @@ input[type="checkbox"] { margin:0px; }
 }
 
 /* Device key / configure icon links inherit the header text colour */
-.input-list-grid .group-header > .grid-cell:nth-child(6) > a,
-.input-list-grid .group-header > .grid-cell:nth-child(7) > a {
+.input-list-grid .card-header > .grid-cell:nth-child(6) > a,
+.input-list-grid .card-header > .grid-cell:nth-child(7) > a {
     color: inherit;
 }
 

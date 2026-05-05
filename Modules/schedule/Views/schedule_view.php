@@ -18,7 +18,7 @@
         <p><?php echo ctx_tr('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
     </div>
 
-    <div v-if="schedules.length" class="group-card">
+    <div v-if="schedules.length" class="card">
         <table>
             <thead>
                 <tr>

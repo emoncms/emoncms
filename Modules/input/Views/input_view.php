@@ -65,17 +65,17 @@ load_css("Modules/input/Views/input_view.css");
             <template v-if="total_devices > 0">
             <div class="input-list-grid">
                 <template v-for="(device,nodeid) in filteredDevices">
-                    <div class="node-group" :class="{'select-mode': selectMode}">
+                    <div class="card card-grid-group" :class="{'select-mode': selectMode}">
 
                         <!-- Node Header -->
-                        <div @click="toggleNode(nodeid)" class="grid-row group-header" :style="{'--status-color': device.time_color}">
+                        <div @click="toggleNode(nodeid)" class="grid-row card-header" :style="{'--status-color': device.time_color}">
                             <!-- Col 1: Arrow / select-all checkbox -->
                             <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(nodeid)">
                                 <span v-if="!selectMode || getDeviceInputIds(device).length == 0" class="arrow-icon" :class="[nodesDisplay[nodeid] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
                                 <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg feed-select" :checked="isFullySelected(device)" :title="'<?php echo addslashes(tr("Select all %s inputs")); ?>'.replace('%s',getDeviceInputIds(device).length)">
                             </div>
                             <!-- Col 2: Node name -->
-                            <h5 class="grid-cell">{{ nodeid }}<small class="ml-2" v-if="getDeviceSelectedInputids(device).length > 0">&nbsp;({{ getDeviceSelectedInputids(device).length }})</small></h5>
+                            <div class="grid-cell text-uppercase">{{ nodeid }}<small class="ml-2" v-if="getDeviceSelectedInputids(device).length > 0">&nbsp;({{ getDeviceSelectedInputids(device).length }})</small></div>
                             <!-- Col 3: Description -->
                             <div class="grid-cell text-nowrap">{{ device.description }}</div>
                             <!-- Col 4: Processlist spacer -->

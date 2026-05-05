@@ -123,14 +123,14 @@ load_js("Lib/js/autocomplete.js");
         <!-- Node Groups -->
         <template v-for="(nodeFeeds, node) in filteredNodes">
 
-            <div class="node-group">
+            <div class="card card-grid-group">
             <!-- Node Header -->
-            <div :key="node" class="grid-row group-header" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
+            <div :key="node" class="grid-row card-header text-uppercase" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">
                     <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="arrow-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']" style="transition: transform 0.3s ease;"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <h5 class="grid-cell">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></h5>
+                <div class="grid-cell">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>

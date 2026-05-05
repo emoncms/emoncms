@@ -23,9 +23,10 @@ load_js("Modules/user/user.js");
     </div>
 
     <!-- ── Account card ───────────────────────────────────── -->
-    <div class="group-card">
-      <div class="group-card-header">
-        <span class="group-name"><?php echo tr('Account'); ?></span>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-accent"></span>
+        <span class="card-name"><?php echo tr('Account'); ?></span>
       </div>
       <table>
         <colgroup>
@@ -108,9 +109,10 @@ load_js("Modules/user/user.js");
     </div>
 
     <!-- ── Profile card ───────────────────────────────────── -->
-    <div class="group-card">
-      <div class="group-card-header">
-        <span class="group-name"><?php echo tr('Profile'); ?></span>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-accent"></span>
+        <span class="card-name"><?php echo tr('Profile'); ?></span>
       </div>
       <table>
         <colgroup>
@@ -198,9 +200,10 @@ load_js("Modules/user/user.js");
 </div><!-- end Vue #app -->
 
 <!-- ── Appearance card (non-Vue) ──────────────────────── -->
-  <div class="group-card">
-    <div class="group-card-header">
-      <span class="group-name"><?php echo tr('Appearance'); ?></span>
+  <div class="card">
+    <div class="card-header">
+      <span class="card-accent"></span>
+      <span class="card-name"><?php echo tr('Appearance'); ?></span>
     </div>
     <table>
       <colgroup>
