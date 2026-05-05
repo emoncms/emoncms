@@ -26,11 +26,7 @@ input[type="checkbox"] { margin:0px; }
  * Col 7 : 40px   — configure / device-configure icon
  */
 .input-list-grid {
-    display: grid;
     grid-template-columns: 40px minmax(max-content, 2fr) minmax(max-content, 1fr) minmax(100px, 1fr) 100px 80px 40px;
-    width: 100%;
-    box-sizing: border-box;
-    gap: 0;
 }
 
 /* Device key / configure icon links inherit the header text colour */

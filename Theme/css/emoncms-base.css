@@ -1023,7 +1023,7 @@ div#account {
 
 /* Shared card base */
 .card,
-.card-grid-group {
+.card-grid {
     border: 1px solid var(--border-card);
     border-radius: var(--radius-card);
     overflow: hidden;
@@ -1773,10 +1773,9 @@ table {
 }
 
 
-/* CSS subgrid feed list */
-.feed-list-grid {
+/* Shared list-grid container (feed + input lists) */
+.card-list-grid {
     display: grid;
-    grid-template-columns: 40px minmax(max-content, 2fr) 40px max-content 80px minmax(max-content, 1fr) 80px 100px;
     width: 100%;
     box-sizing: border-box;
     contain: layout style;
@@ -1792,26 +1791,17 @@ table {
     cursor: default;
 }
 
-@media (max-width: 992px) {
-    .feed-list-grid {
-        grid-template-columns: 40px max-content 40px max-content minmax(80px, 1fr) 80px 100px;
-    }
-    .grid-row > .grid-cell:nth-child(6) { display: none; }
+/* Grid-based card headers: avoid double-padding from .card-header + .grid-cell */
+.grid-row.card-header {
+    padding: 0;
+    gap: 0;
 }
-@media (max-width: 768px) {
-    .feed-list-grid {
-        grid-template-columns: 40px 1fr 80px 80px;
-    }
-    .grid-row > .grid-cell:nth-child(3),
-    .grid-row > .grid-cell:nth-child(4),
-    .grid-row > .grid-cell:nth-child(5) { display: none; }
+.grid-row.card-header > .grid-cell {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
 }
-@media (max-width: 480px) {
-    .feed-list-grid {
-        grid-template-columns: 30px 1fr 80px;
-    }
-    .grid-row > .grid-cell:nth-child(8) { display: none; }
-}
+.grid-row.card-header > .grid-cell:first-child { padding-left: 1rem; }
+.grid-row.card-header > .grid-cell:last-child { padding-right: 1rem; }
 
 .feed-header {
     background: var(--bg-card-header);
@@ -1834,7 +1824,7 @@ table {
 }
 
 /* Node group card */
-.card-grid-group {
+.card-grid {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -1842,16 +1832,8 @@ table {
     box-shadow: 0 2px 8px rgba(0,0,0,0.10);
     transition: box-shadow 0.15s ease;
 }
-.card-grid-group:hover {
+.card-grid:hover {
     box-shadow: 0 4px 14px rgba(0,0,0,0.13);
-}
-
-/* Node / group header */
-.card-grid-group > .card-header {
-    color: var(--text-primary);
-    border-right: 4px solid var(--status-color);
-    gap: 0;
-    padding: 0;
 }
 
 /* Feed row */

@@ -64,6 +64,7 @@ load_js("Modules/feed/feed.js");
 load_js("Lib/js/date_time.js");
 load_js("Lib/js/DateTimePicker.js");
 load_js("Lib/js/autocomplete.js");
+load_css("Modules/feed/Views/feed_view.css");
 ?>
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED LIST VIEW                                                                                                                                   -->   
@@ -106,7 +107,7 @@ load_js("Lib/js/autocomplete.js");
     </div>
 
 <!-- Vue.js Feed List Component -->
-    <div v-if="nodes && Object.keys(nodes).length > 0" class="feed-list-grid">
+    <div v-if="nodes && Object.keys(nodes).length > 0" class="card-list-grid feed-list-grid">
         <!-- Header Row -->
         <!--
         <div class="grid-row feed-header">
@@ -123,7 +124,7 @@ load_js("Lib/js/autocomplete.js");
         <!-- Node Groups -->
         <template v-for="(nodeFeeds, node) in filteredNodes">
 
-            <div class="card card-grid-group">
+            <div class="card card-grid">
             <!-- Node Header -->
             <div :key="node" class="grid-row card-header text-uppercase" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">

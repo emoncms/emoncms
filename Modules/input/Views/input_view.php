@@ -63,9 +63,9 @@ load_css("Modules/input/Views/input_view.css");
 
         <template v-if="loaded">
             <template v-if="total_devices > 0">
-            <div class="input-list-grid">
+            <div class="card-list-grid input-list-grid">
                 <template v-for="(device,nodeid) in filteredDevices">
-                    <div class="card card-grid-group" :class="{'select-mode': selectMode}">
+                    <div class="card card-grid" :class="{'select-mode': selectMode}">
 
                         <!-- Node Header -->
                         <div @click="toggleNode(nodeid)" class="grid-row card-header" :style="{'--status-color': device.time_color}">
