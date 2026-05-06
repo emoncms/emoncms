@@ -1,4 +1,4 @@
-dialog.ec-modal.modal-processlist {
+dialog.ec-modal.modal-processlist[open] {
     width: min(98vw, 1700px);
     height: 94vh;
     max-height: 94vh;

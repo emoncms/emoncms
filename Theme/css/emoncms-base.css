@@ -211,6 +211,35 @@ ul.nav > li > [disabled] { opacity: .2 !important; }
 div#account { width: 250px; }
 .label-container { padding-top: .6em; display: inline-block; min-width: 200px; }
 
+/* -- Bootstrap 2 label compatibility -- */
+.label {
+    display: inline-block;
+    padding: 1px 4px 3px 4px;
+    font-size: 11.844px;
+    font-weight: bold;
+    line-height: 14px;
+    color: #fff;
+    vertical-align: baseline;
+    white-space: nowrap;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    background-color: #999;
+    border-radius: 3px;
+    text-decoration: none;
+}
+a.label:hover,
+a.label:focus { color: #fff; text-decoration: none; cursor: pointer; }
+.label:empty  { display: none; }
+.label-success  { background-color: #468847; }
+.label-success[href] { background-color: #356635; }
+.label-warning  { background-color: #f89406; }
+.label-warning[href] { background-color: #c67605; }
+.label-important { background-color: #b94a48; }
+.label-important[href] { background-color: #953b39; }
+.label-info     { background-color: #3a87ad; }
+.label-info[href] { background-color: #2d6987; }
+.label-inverse  { background-color: #333; }
+.label-inverse[href] { background-color: #1a1a1a; }
+
 /* -- Login (Vue 3) -- */
 body.body-login {
     min-height: 100vh;
@@ -417,6 +446,9 @@ table { max-width: 100%; background-color: transparent; border-collapse: collaps
 .table .table { background-color: var(--bg-card); }
 .table-condensed th, .table-condensed td { padding: 4px 5px; }
 .table { margin-bottom: 0 !important; }
+
+
+
 
 /* ==========================================================================
    11. RESPONSIVE BREAKPOINTS
