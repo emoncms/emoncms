@@ -17,21 +17,15 @@ global $path, $settings;
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
 
-<div id="login-app" v-cloak class="d-flex align-items-start justify-content-center pb-3" style="padding-top: 10vh;">
-    <section class="card w-100" aria-label="<?php echo tr('Account login'); ?>" style="max-width: 400px;">
+<div id="login-app" v-cloak class="d-flex align-items-start justify-content-center pb-3" style="padding-top: 5vh;">
+    <section class="card w-100" aria-label="<?php echo tr('Account login'); ?>" style="max-width: 320px;">
         <div class="card-body p-4">
-            <img class="d-block img-fluid mb-3 mw-256" src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
+            <img class="d-block img-fluid mb-2 mw-256" src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
 
             <form autocomplete="on" @submit.prevent="submitPrimary">
-                <header class="mb-3">
-                    <!--<h1 class="mt-0 mb-1">{{ modeTitle }}</h1>-->
-                    <p v-if="mode === 'login'" class="mb-0 text-secondary"><?php echo tr('Sign in to continue'); ?></p>
-                    <p v-else-if="mode === 'register'" class="mb-0 text-secondary"><?php echo tr('Create your account'); ?></p>
-                    <p v-else class="mb-0 text-secondary"><?php echo tr('Recover your account'); ?></p>
-                </header>
 
                 <div v-if="mode === 'register'" class="mb-2">
-                    <label for="email-input" class="d-block mb-1 text-secondary"><?php echo tr('Email'); ?></label>
+                    <label for="email-input" class="d-block mb-1"><?php echo tr('Email'); ?></label>
                     <input
                         class="w-100"
                         id="email-input"
@@ -44,7 +38,7 @@ global $path, $settings;
                 </div>
 
                 <div class="mb-2">
-                    <label for="username-input" class="d-block mb-1 text-secondary"><?php echo tr('Username'); ?></label>
+                    <label for="username-input" class="d-block mb-1"><?php echo tr('Username'); ?></label>
                     <input
                         class="w-100"
                         id="username-input"
@@ -58,7 +52,7 @@ global $path, $settings;
 
                 <div v-if="mode !== 'reset'" class="mb-2">
                     <div class="d-flex align-items-center justify-content-between mb-1 flex-wrap gap-1">
-                        <label for="password-input" class="mb-0 text-secondary"><?php echo tr('Password'); ?></label>
+                        <label for="password-input" class="mb-0 "><?php echo tr('Password'); ?></label>
                         <a
                             v-if="mode === 'login' && passwordResetEnabled"
                             href="#"
@@ -77,7 +71,7 @@ global $path, $settings;
                 </div>
 
                 <div v-if="mode === 'register'" class="mb-2">
-                    <label for="confirm-password-input" class="d-block mb-1 text-secondary"><?php echo tr('Confirm password'); ?></label>
+                    <label for="confirm-password-input" class="d-block mb-1"><?php echo tr('Confirm password'); ?></label>
                     <input
                         class="w-100"
                         id="confirm-password-input"
@@ -91,7 +85,7 @@ global $path, $settings;
 
                 <div v-if="mode === 'reset'" class="pt-2 mt-2 border-top">
                     <div class="mb-2">
-                        <label for="reset-username-input" class="d-block mb-1 text-secondary"><?php echo tr('Existing account name'); ?></label>
+                        <label for="reset-username-input" class="d-block mb-1 "><?php echo tr('Existing account name'); ?></label>
                         <input
                             class="w-100"
                             id="reset-username-input"
@@ -104,7 +98,7 @@ global $path, $settings;
                     </div>
 
                     <div class="mb-2">
-                        <label for="reset-email-input" class="d-block mb-1 text-secondary"><?php echo tr('Account email address'); ?></label>
+                        <label for="reset-email-input" class="d-block mb-1 "><?php echo tr('Account email address'); ?></label>
                         <input
                             class="w-100"
                             id="reset-email-input"
@@ -130,7 +124,7 @@ global $path, $settings;
                 </div>
 
                 <div v-if="mode === 'login' && rememberMeEnabled" class="mt-2">
-                    <label class="d-flex align-items-center gap-1 mb-0 text-secondary">
+                    <label class="d-flex align-items-center gap-1 mb-0 ">
                         <input v-model="form.rememberme" type="checkbox" autocomplete="off" />
                         <span><?php echo tr('Remember me'); ?></span>
                     </label>
@@ -140,7 +134,7 @@ global $path, $settings;
                     <button v-if="mode === 'login'" class="btn btn-primary" type="submit"><?php echo tr('Login'); ?></button>
                     <button v-if="mode === 'register'" class="btn btn-primary" type="submit"><?php echo tr('Register'); ?></button>
                     <button v-if="mode === 'reset'" class="btn btn-primary" type="submit"><?php echo tr('Recover'); ?></button>
-
+                    <span v-if="mode === 'login' && allowRegister"><?php echo tr('or'); ?></span>
                     <a v-if="mode === 'login' && allowRegister" href="#" @click.prevent="switchMode('register')"><?php echo tr('register'); ?></a>
                     <a v-if="mode === 'register'" href="#" @click.prevent="switchMode('login')"><?php echo tr('login'); ?></a>
                     <a v-if="mode === 'reset'" href="#" @click.prevent="switchMode('login')"><?php echo tr('login'); ?></a>

@@ -46,6 +46,7 @@
     --text-muted:           #444;
 
     --accent:               #44b3e2;
+    --accent-hover:         #44b3e2;
     --accent-bg:            rgba(68, 179, 226, 0.1);
     --accent-bg-hover:      rgba(68, 179, 226, 0.22);
     --accent-row-hover:     rgba(68, 179, 226, 0.05);
