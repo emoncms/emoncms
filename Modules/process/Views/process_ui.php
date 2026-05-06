@@ -50,7 +50,7 @@ load_js("Modules/process/process.js");
                     <th></th>
                     <th><?php echo ctx_tr('process_messages', 'Order'); ?></th>
                     <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Process'); ?></th>
-                    <th style="text-align:right;opacity:.8" title="<?php echo ctx_tr('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-question-sign"></i></th>
+                    <th style="text-align:right;opacity:.8" title="<?php echo ctx_tr('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-circle-help"></i></th>
                     <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Arguments'); ?></th>
                     <th style="width:20%; text-align:right;"><span class="hidden-md"><?php echo ctx_tr('process_messages', 'Latest'); ?></span></th>
                     <th colspan='3'><?php echo ctx_tr('process_messages', 'Actions'); ?></th>
@@ -74,14 +74,14 @@ load_js("Modules/process/process.js");
                         <span v-if="processes_by_key[process.fn].args">
                             <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
                                 <span v-if="arg.type == ProcessArg.VALUE">
-                                    <span class="muted" title="Value"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
+                                    <span class="muted" title="Value"><i class="icon-pencil"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.TEXT">
-                                    <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
+                                    <span class="muted" title="Text"><i class="icon-pencil"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.INPUTID">
                                     <span class="muted" title="Input">
-                                        <i class="icon-edit"></i> 
+                                        <i class="icon-pencil"></i> 
                                         <span v-if="inputs_by_id[process.args[arg_index]]">
                                             {{ inputs_by_id[process.args[arg_index]].nodeid }}: {{ inputs_by_id[process.args[arg_index]].name }} 
                                             <span v-if="inputs_by_id[process.args[arg_index]].description">({{ inputs_by_id[process.args[arg_index]].description }})</span>
@@ -89,7 +89,7 @@ load_js("Modules/process/process.js");
                                     </span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
+                                    <span class="muted" title="Feed"><i class="icon-list"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.SCHEDULEID">
                                     <span class="muted" title="Schedule"><i class="icon-calendar"></i> <span v-if="schedules[process.args[arg_index]]">{{ schedules[process.args[arg_index]].name }}</span></span>
@@ -146,14 +146,14 @@ load_js("Modules/process/process.js");
 
                             <span v-if="arg.type == ProcessArg.VALUE">
                                 <div class="input-prepend">
-                                    <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-question-sign" :title="arg.desc" v-if="arg.desc"></i></span>
+                                    <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-circle-help" :title="arg.desc" v-if="arg.desc"></i></span>
                                     <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo ctx_tr('process_messages', 'Type value...'); ?>" />
                                 </div>
                             </span>
 
                             <span v-if="arg.type == ProcessArg.TEXT">
                                 <div class="input-prepend">
-                                    <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
+                                    <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-circle-help" :title="arg.desc"></i></span>
                                     <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo ctx_tr('process_messages', 'Type text...'); ?>" />
                                 </div>
                             </span>

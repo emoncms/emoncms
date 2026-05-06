@@ -124,7 +124,7 @@ function showSelectedFeeds(feed_inputs) {
     if (total_selected === 1) {
         total_summary += `<h5>${feedListShort}</h5>`;
     } else {
-        total_summary += `<h5 title="${feedListShort}">`+total_selected+' '+tr('feeds selected')+`<i class="icon icon-question-sign"></i></h5>`;
+        total_summary += `<h5 title="${feedListShort}">`+total_selected+' '+tr('feeds selected')+`<i class="icon icon-circle-help"></i></h5>`;
     }
 
     // Compose the combined message
