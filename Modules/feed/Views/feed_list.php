@@ -77,7 +77,7 @@ load_css("Modules/feed/Views/feed_view.css");
 </div>
 
 <div id="feed-app">
-    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; left: 0; right: 0; pointer-events: none;"></div>
     <div class="sticky-controls">
         <button class="app-btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
             <i :class="allExpanded ? 'icon-minimize' : 'icon-expand'"></i>

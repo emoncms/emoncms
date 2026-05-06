@@ -24,7 +24,7 @@ load_css("Modules/input/Views/input_view.css");
         <a id="api-help" href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a>
     </div>
 
-    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; width: 100%; pointer-events: none;"></div>
+    <div class="sticky-sentinel" style="height: 1px; position: absolute; top: 45px; left: 0; right: 0; pointer-events: none;"></div>
     <div v-cloak class="sticky-controls" v-if="total_devices > 0">
         <button @click="collapseAll" id="expand-collapse-all" class="app-btn" :title="collapse_title">
             <i class="icon" :class="allCollapsed ? 'icon-expand' : 'icon-minimize'"></i>
