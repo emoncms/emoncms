@@ -8,13 +8,14 @@ body.has-modal-open {
 }
 
 dialog.ec-modal {
-    border: 1px solid var(--border-card);
+    /*border: 1px solid var(--border-card);*/
+    border:0px;
     border-radius: 10px;
     padding: 0;
     width: min(92vw, var(--modal-width, 640px));
     max-width: none;
     max-height: min(86vh, 880px);
-    background: var(--bg-card);
+    background: var(--bg-body);
     color: var(--text-body);
     box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
     overflow: hidden;
@@ -28,10 +29,10 @@ dialog.ec-modal::backdrop {
 dialog.ec-modal .modal-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
     gap: .75rem;
     padding: .8rem 1rem;
-    background: var(--bg-card-header);
+    background: var(--bg-body);
     border-bottom: 1px solid var(--border);
 }
 
@@ -40,6 +41,15 @@ dialog.ec-modal .modal-header h3 {
     font-size: 1rem;
     line-height: 1.3;
     color: var(--text-primary);
+}
+
+dialog.ec-modal .modal-header h1,
+dialog.ec-modal .modal-header h2,
+dialog.ec-modal .modal-header h3,
+dialog.ec-modal .modal-header h4,
+dialog.ec-modal .modal-header .modal-title,
+dialog.ec-modal .modal-header .process-header-title {
+    order: 1;
 }
 
 dialog.ec-modal .modal-body {
@@ -76,6 +86,8 @@ dialog.ec-modal .modal-footer > :first-child {
     align-items: center;
     justify-content: center;
     border-radius: 4px;
+    order: 2;
+    margin-left: auto;
 }
 
 .modal-close-btn:hover {

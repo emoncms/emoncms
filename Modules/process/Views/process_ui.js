@@ -129,17 +129,41 @@ var process_vue = Vue.createApp({
 
             // Show the process list modal
             emoncmsModal.open('processlistModal');
-            this.adjustModal(); // Adjust the modal height
+            // Wait for the modal to render before measuring available body space.
+            this.$nextTick(() => {
+                requestAnimationFrame(() => {
+                    this.adjustModal();
+                });
+            });
         },
 
         adjustModal: function () {
-            // Adjust the height of the process list UI
             var modal = document.getElementById('processlistModal');
-            if (modal) {
-                var rect = modal.getBoundingClientRect();
-                var h = window.innerHeight - rect.top - 180;
-                $("#processlist-ui").height(h);
+            var body = document.getElementById('processlist-ui');
+            if (!modal || !body) return;
+
+            var header = modal.querySelector('.modal-header');
+            var footer = modal.querySelector('.modal-footer');
+            var headerHeight = header ? header.getBoundingClientRect().height : 0;
+            var footerHeight = footer ? footer.getBoundingClientRect().height : 0;
+            var modalHeight = modal.clientHeight || modal.getBoundingClientRect().height;
+            var viewportTarget = Math.floor(window.innerHeight * 0.94);
+
+            // On first paint modalHeight can be briefly under-reported.
+            if (!modalHeight || modalHeight < Math.floor(viewportTarget * 0.75)) {
+                modalHeight = viewportTarget;
             }
+
+            // #processlist-ui uses content-box sizing; subtract vertical padding
+            // so the rendered body area (content + padding) fits inside the modal.
+            var bodyStyles = window.getComputedStyle(body);
+            var bodyPaddingTop = parseFloat(bodyStyles.paddingTop) || 0;
+            var bodyPaddingBottom = parseFloat(bodyStyles.paddingBottom) || 0;
+
+            var available = modalHeight - headerHeight - footerHeight - bodyPaddingTop - bodyPaddingBottom;
+            var bodyHeight = Math.max(160, Math.floor(available));
+
+            body.style.height = bodyHeight + 'px';
         },
 
         scrollto: function (scrollTo) {
@@ -677,6 +701,16 @@ var process_vue = Vue.createApp({
         }
     }
 }).mount('#process_vue');
+
+var processlistModal = document.getElementById('processlistModal');
+if (processlistModal) {
+    processlistModal.addEventListener('modal:shown', function () {
+        process_vue.adjustModal();
+        requestAnimationFrame(function () {
+            process_vue.adjustModal();
+        });
+    });
+}
 
 // Fetch the process list from the server
 process_api.list(function (processes) {

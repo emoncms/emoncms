@@ -62,27 +62,27 @@
 /* -- Navbar/Menu Themes -- */
 .theme-standard, .theme-blue {
     --bg-menu-top: #44b3e2; --bg-menu-top-hover: #007eb3; --bg-menu-top-active: #209ed3;
-    --bg-body-login: #1d8dbc; --bg-menu-tr: #1d8dbc; --bg-menu-tr-hover: #1d8dbc;
+    --bg-menu-tr: #1d8dbc; --bg-menu-tr-hover: #1d8dbc;
 }
 .theme-black {
     --bg-menu-top: #555; --bg-menu-top-hover: #666; --bg-menu-top-active: #444;
-    --bg-body-login: #333; --bg-menu-tr: #333; --bg-menu-tr-hover: #333;
+    --bg-menu-tr: #333; --bg-menu-tr-hover: #333;
 }
 .theme-sun {
     --bg-menu-top: #ffbe14; --bg-menu-top-hover: #F9D10B; --bg-menu-top-active: #f7a90c;
-    --bg-body-login: #f7a90c; --bg-menu-tr: #f7a90c; --bg-menu-tr-hover: #f7a90c;
+    --bg-menu-tr: #f7a90c; --bg-menu-tr-hover: #f7a90c;
 }
 .theme-yellow2 {
     --bg-menu-top: #dfc72d; --bg-menu-top-hover: #AFA041; --bg-menu-top-active: #C8B328;
-    --bg-body-login: #C8B328; --bg-menu-tr: #C8B328; --bg-menu-tr-hover: #C8B328;
+    --bg-menu-tr: #C8B328; --bg-menu-tr-hover: #C8B328;
 }
 .theme-copper {
     --bg-menu-top: #e97b00; --bg-menu-top-hover: #FF8600; --bg-menu-top-active: #d16e00;
-    --bg-body-login: #d16e00; --bg-menu-tr: #d16e00; --bg-menu-tr-hover: #d16e00;
+    --bg-menu-tr: #d16e00; --bg-menu-tr-hover: #d16e00;
 }
 .theme-green {
     --bg-menu-top: #4eaa05; --bg-menu-top-hover: #55B806; --bg-menu-top-active: #469904;
-    --bg-body-login: #469904; --bg-menu-tr: #469904; --bg-menu-tr-hover: #469904;
+    --bg-menu-tr: #469904; --bg-menu-tr-hover: #469904;
 }
 
 /* -- Sidebar Themes -- */
@@ -210,8 +210,14 @@ ul.nav > li > [disabled] { opacity: .2 !important; }
 
 div#account { width: 250px; }
 .label-container { padding-top: .6em; display: inline-block; min-width: 200px; }
-.body-login { background-color: var(--bg-body-login); }
-#login-form input[type="text"], #login-form input[type="password"] { width: 94%; }
+
+/* -- Login (Vue 3) -- */
+body.body-login {
+    min-height: 100vh;
+    background-color: var(--bg-body);
+}
+
+.body-login .container-fluid { padding: 0 !important; }
 
 /* ==========================================================================
    6. SHARED COMPONENTS (Log, Snackbar, Badges)

@@ -214,7 +214,17 @@
     background-color: #d85555;
 }
 
-
+.btn-success {
+    background-color: #5cb85c;
+    color: #fff;
+    border: 0;
+}
+.btn-success:hover,
+.btn-success:focus,
+.btn-success:active,
+.btn-success.active {
+    background-color: #67c667;
+}
 
 .app-btn {
     display: inline-flex;

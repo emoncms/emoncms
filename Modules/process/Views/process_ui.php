@@ -17,7 +17,7 @@ load_js("Modules/process/process.js");
 ?>
 
 <div id="process_vue">
-    <dialog id="processlistModal" class="ec-modal modal-processlist" aria-labelledby="processlistModalLabel" data-backdrop="static" style="--modal-width: 1100px;">
+    <dialog id="processlistModal" class="ec-modal modal-processlist" aria-labelledby="processlistModalLabel" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="modal-close-btn" @click="close" aria-label="Close">&times;</button>
             <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo ctx_tr('process_messages', 'process list setup'); ?></div>
