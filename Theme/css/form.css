@@ -288,6 +288,7 @@ select:focus {
 
 /* Base text inputs */
 input[type="text"],
+input[type="email"],
 input[type="password"] {
     background-color: var(--bg-input);
     color: var(--text-body);

@@ -17,14 +17,14 @@ global $path, $settings;
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
 
-<div id="login-app" v-cloak class="d-flex align-items-start justify-content-center min-vh-100 pb-3" style="padding-top: 10vh;">
-    <section class="card w-100 mw-400" aria-label="<?php echo tr('Account login'); ?>">
+<div id="login-app" v-cloak class="d-flex align-items-start justify-content-center pb-3" style="padding-top: 10vh;">
+    <section class="card w-100" aria-label="<?php echo tr('Account login'); ?>" style="max-width: 400px;">
         <div class="card-body p-4">
-            <img class="d-block img-fluid mx-auto mb-3 mw-256" src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
+            <img class="d-block img-fluid mb-3 mw-256" src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
 
             <form autocomplete="on" @submit.prevent="submitPrimary">
                 <header class="mb-3">
-                    <h1 class="mt-0 mb-1">{{ modeTitle }}</h1>
+                    <!--<h1 class="mt-0 mb-1">{{ modeTitle }}</h1>-->
                     <p v-if="mode === 'login'" class="mb-0 text-secondary"><?php echo tr('Sign in to continue'); ?></p>
                     <p v-else-if="mode === 'register'" class="mb-0 text-secondary"><?php echo tr('Create your account'); ?></p>
                     <p v-else class="mb-0 text-secondary"><?php echo tr('Recover your account'); ?></p>
@@ -345,4 +345,7 @@ document.body.classList.add("body-login");
 
     app.mount("#login-app");
 })();
+
+
+$("body").css("background-color", "#1d8dbc");
 </script>
