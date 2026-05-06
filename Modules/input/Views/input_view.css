@@ -29,12 +29,6 @@ input[type="checkbox"] { margin:0px; }
     grid-template-columns: 40px minmax(max-content, 2fr) minmax(max-content, 1fr) minmax(100px, 1fr) 100px 80px 40px;
 }
 
-/* Device key / configure icon links inherit the header text colour */
-.input-list-grid .card-header > .grid-cell:nth-child(6) > a,
-.input-list-grid .card-header > .grid-cell:nth-child(7) > a {
-    color: inherit;
-}
-
 /* Muted icon buttons (device module not installed) */
 a.text-muted i[class*="icon-"] {
     opacity: .5;

@@ -20,6 +20,18 @@
     vertical-align: -0.15em;
 }
 
+/* Icon-only links should inherit surrounding text colour, not default link/visited palette */
+a:not(.text-muted):has(> [class^="icon-"]:only-child),
+a:not(.text-muted):has(> [class*=" icon-"]:only-child),
+a:not(.text-muted):has(> [class^="icon-"]:only-child):visited,
+a:not(.text-muted):has(> [class*=" icon-"]:only-child):visited,
+a:not(.text-muted):has(> [class^="icon-"]:only-child):hover,
+a:not(.text-muted):has(> [class*=" icon-"]:only-child):hover,
+a:not(.text-muted):has(> [class^="icon-"]:only-child):focus,
+a:not(.text-muted):has(> [class*=" icon-"]:only-child):focus {
+    color: inherit;
+}
+
 .icon-sun {
     -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 22c-3.313 0-6-2.688-6-6s2.688-6 6-6 6 2.688 6 6-2.688 6-6 6zM14.688 4.688v-2.688h2.625v2.688h-2.625zM14.688 30v-2.688h2.625v2.688h-2.625zM4.688 14.688h-2.688v2.625h2.688v-2.625zM30 14.688h-2.688v2.625h2.688v-2.625zM7.313 6.438l-1.875-1.875-1.875 1.875 1.875 1.875zM28.438 27.563l-1.875-1.875-1.875 1.875 1.875 1.875zM25.563 6.438l1.875-1.875-1.875-1.875-1.875 1.875zM4.438 27.563l1.875-1.875-1.875-1.875-1.875 1.875z'/></svg>");
     mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 22c-3.313 0-6-2.688-6-6s2.688-6 6-6 6 2.688 6 6-2.688 6-6 6zM14.688 4.688v-2.688h2.625v2.688h-2.625zM14.688 30v-2.688h2.625v2.688h-2.625zM4.688 14.688h-2.688v2.625h2.688v-2.625zM30 14.688h-2.688v2.625h2.688v-2.625zM7.313 6.438l-1.875-1.875-1.875 1.875 1.875 1.875zM28.438 27.563l-1.875-1.875-1.875 1.875 1.875 1.875zM25.563 6.438l1.875-1.875-1.875-1.875-1.875 1.875zM4.438 27.563l1.875-1.875-1.875-1.875-1.875 1.875z'/></svg>");
@@ -329,6 +341,11 @@
     mask-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ban-icon lucide-ban"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>');
 }
 
+.icon-ban-circle {
+    -webkit-mask-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ban-icon lucide-ban"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>');
+    mask-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-ban-icon lucide-ban"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>');
+}
+
 .icon-check {
     -webkit-mask-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>');
     mask-image: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-icon lucide-check"><path d="M20 6 9 17l-5-5"/></svg>');
@@ -381,6 +398,11 @@
 
 .icon-circle-plus {
     --icon-path: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-plus-icon lucide-circle-plus"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>');
+    -webkit-mask-image: var(--icon-path); mask-image: var(--icon-path);
+}
+
+.icon-plus-sign {
+    --icon-path: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus-icon lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>');
     -webkit-mask-image: var(--icon-path); mask-image: var(--icon-path);
 }
 
