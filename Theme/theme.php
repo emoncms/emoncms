@@ -97,7 +97,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
                 </button>
             </li>
             <?php if ($session["read"]) { ?>
-            <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
+            <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravatar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
             <?php if (!$session["gravatar"]) { ?>
                 <span class="icon-user" style="color:#fff"></span>
             <?php } else { ?>

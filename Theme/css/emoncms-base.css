@@ -147,12 +147,19 @@ svg.icon, span.icon {
 
 /* -- Gravatar UI -- */
 .img-circle { border-radius: 50%; overflow: hidden; }
-.gravitar a.grav-container {
-    display: flex; align-items: center; border-radius: 50%;
-    overflow: hidden; padding: 6px; font-size: 1.5rem;
+.gravatar a.grav-container {
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    overflow: hidden; padding: 0; width: 2.8rem; height: 2.8rem; font-size: 1.5rem;
     transition: background-color 0.1s ease-out;
 }
-.gravitar a.grav-container:hover { background: var(--bg-menu-top-hover); }
+.gravatar a.grav-container:hover { background: var(--bg-menu-top-hover); }
+.no-gravatar a.grav-container {
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    overflow: hidden; padding: 0; width: 2.8rem; height: 2.8rem; font-size: 1.5rem;
+    transition: background-color 0.1s ease-out;
+    background: rgba(255,255,255,0.1);
+}
+.no-gravatar a.grav-container:hover { background: var(--bg-menu-top-hover); }
 a.grav-container img.grav {
     max-height: 1.2em; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
 }
