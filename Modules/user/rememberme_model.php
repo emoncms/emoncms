@@ -278,22 +278,22 @@ class Rememberme {
             return self::TRIPLET_NOT_FOUND;
         }
 
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$hashed_persistentToken);
         if (!$stmt->execute()) {
             $this->log->warn("findTriplet sql fail");
         }
-        $stmt->bind_result($sha1_token);
+        $stmt->bind_result($hashed_token);
         $stmt->fetch();
         $stmt->close();
 
-        // sha1 of token match: triplet found
-        if (hash_equals($sha1_token, sha1($cookieValues->token))) {
+        // sha256 of token match: triplet found
+        if (hash_equals($hashed_token, hash('sha256', $cookieValues->token))) {
             $this->log->info("findTriplet TRIPLET_FOUND");
             return self::TRIPLET_FOUND;
 
         // false will occur when there are no entries
-        } elseif ($sha1_token==false) {
+        } elseif ($hashed_token==false) {
             $this->log->info("findTriplet TRIPLET_NOT_FOUND");
             return self::TRIPLET_NOT_FOUND;
 
@@ -317,10 +317,10 @@ class Rememberme {
             return false;
         }
 
-        $sha1_token = sha1($cookieValues->token);
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
+        $hashed_token = hash('sha256', $cookieValues->token);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
 
-        $stmt->bind_param("isss",$cookieValues->userid,$sha1_token,$sha1_persistentToken,$date);
+        $stmt->bind_param("isss",$cookieValues->userid,$hashed_token,$hashed_persistentToken,$date);
         if ($stmt->execute()) {
             $stmt->close();
             return true;
@@ -343,8 +343,8 @@ class Rememberme {
             return false;
         }
 
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$hashed_persistentToken);
         if ($stmt->execute()) {
             $this->log->info("cleanTriplet success");
             $this->cleanExpiredTriplets($cookieValues->userid);
