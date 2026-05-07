@@ -47,7 +47,7 @@ class Rememberme {
     // ---------------------------------------------------------------------------------------------------------
     public function setCookie($content,$expire)
     {
-        $this->log->info("setCookie: $content $expire");
+        $this->log->info("setCookie: $expire");
 
         if (is_https()) {
             $this->secure = true;
@@ -288,7 +288,7 @@ class Rememberme {
         $stmt->close();
 
         // sha1 of token match: triplet found
-        if ($sha1_token==sha1($cookieValues->token)) {
+        if (hash_equals($sha1_token, sha1($cookieValues->token))) {
             $this->log->info("findTriplet TRIPLET_FOUND");
             return self::TRIPLET_FOUND;
 
@@ -368,8 +368,10 @@ class Rememberme {
         $stmt->bind_param("i",$userid);
 
         if ($stmt->execute()) {
+            $stmt->close();
             return true;
         } else {
+            $stmt->close();
             $this->log->warn("cleanAllTriplets sql fail");
             return false;
         }
