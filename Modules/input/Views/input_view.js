@@ -275,7 +275,17 @@ var app = Vue.createApp({
     }
 ).mount("#input-app");
 
-
+// Ctrl+K focuses the input filter
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'k') {
+        var input = document.getElementById('input-filter');
+        if (input) {
+            e.preventDefault();
+            input.focus();
+            input.select();
+        }
+    }
+});
 
 /**
  * Clones a variable, creates a new variable as a copy of original

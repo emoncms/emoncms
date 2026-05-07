@@ -20,6 +20,10 @@
 .text-nowrap     { white-space: nowrap !important; }
 .text-truncate   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+.text-mono {
+    font-family: var(--font-mono);
+}
+
 /* Background colours */
 .bg-dark        { background: #333 !important; }
 .bg-primary     { background: #44b3e2 !important; }

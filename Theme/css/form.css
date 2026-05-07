@@ -305,3 +305,17 @@ input[type="text"]:focus,
 input[type="password"]:focus {
     border-color: var(--accent);
 }
+
+/* Legacy Bootstrap 2 sizing helpers used in module templates */
+.input-block-level {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.input-small {
+    width: 90px;
+    max-width: 100%;
+    box-sizing: border-box;
+}

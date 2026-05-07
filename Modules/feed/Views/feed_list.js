@@ -30,7 +30,8 @@ var feedAppRoot = Vue.createApp({
         node_time_and_colour: {},
         feedsLoaded: false,
         filterText: '',
-        timeServerLocalOffset: 0
+        timeServerLocalOffset: 0,
+        session_write: typeof session_write !== 'undefined' ? !!session_write : false
         };
     },
     computed: {
@@ -347,6 +348,18 @@ var feedAppRoot = Vue.createApp({
 
 var feedApp = feedAppRoot.mount('#feed-app');
 
+// Ctrl+K focuses the feed filter input
+document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'k') {
+        var input = document.getElementById('filter');
+        if (input) {
+            e.preventDefault();
+            input.focus();
+            input.select();
+        }
+    }
+});
+
 // -----------------------------------------------------------------------------
 // Feed list update function
 // -----------------------------------------------------------------------------
@@ -493,8 +506,8 @@ function formatTime(time, interval) {
     else if (secs.toFixed(0) == 0) updated = "now";
     else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
     else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
-    else if (day > 2) updated = day.toFixed(0) + " days";
-    else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+    else if (day > 2) updated = day.toFixed(0) + "d ago";
+    else if (hour > 2) updated = hour.toFixed(0) + "h ago";
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
 
     secs = Math.abs(secs);

@@ -87,16 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.querySelectorAll('dialog.ec-modal').forEach(function(dialog) {
             dialog.addEventListener('click', function(e) {
-                var rect = dialog.getBoundingClientRect();
-                var isBackdropClick = (
-                    e.clientX < rect.left ||
-                    e.clientX > rect.right ||
-                    e.clientY < rect.top ||
-                    e.clientY > rect.bottom
-                );
-                if (isBackdropClick && dialog.dataset.backdrop !== 'static') {
-                    closeModal(dialog);
-                }
+                // Intentionally do not close on backdrop click.
+                // This prevents accidental dismissal while editing forms in modals.
             });
 
             dialog.addEventListener('close', function() {

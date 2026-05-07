@@ -103,7 +103,16 @@ load_css("Modules/feed/Views/feed_view.css");
         <button class="app-btn" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" v-model="filterText" class="filter-input" :class="{hide: selectedFeedCount > 0}" placeholder="<?php echo tr('Filter feeds') ?>" style="margin-bottom:0">
+        <div class="filter-wrap" :class="{hide: selectedFeedCount > 0}">
+            <span class="filter-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"></circle>
+                    <path d="M11 11l3 3" stroke-linecap="round"></path>
+                </svg>
+            </span>
+            <input type="text" name="filter" id="filter" v-model="filterText" class="filter-input" placeholder="<?php echo tr('Filter feeds') ?>">
+            <span class="filter-shortcut">⌘K</span>
+        </div>
     </div>
 
 <!-- Vue.js Feed List Component -->
@@ -126,12 +135,12 @@ load_css("Modules/feed/Views/feed_view.css");
 
             <div class="card card-grid">
             <!-- Node Header -->
-            <div :key="node" class="grid-row card-header text-uppercase" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
+            <div :key="node" class="grid-row card-header" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
                 <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">
                     <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="collapse-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <div class="grid-cell">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
+                <div class="grid-cell card-name">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell"></div>
                 <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
@@ -159,11 +168,11 @@ load_css("Modules/feed/Views/feed_view.css");
                     <div class="grid-cell text-center">
                         <i :class="feed.public == 1 ? 'icon-globe icon-public' : 'icon-lock icon-private'"></i>
                     </div>
-                    <div class="grid-cell" v-html="formatEngine(feed.engine, feed.interval)"></div>
-                    <div class="grid-cell text-center text-muted">{{ formatSize(feed.size) }}</div>
-                    <div class="grid-cell text-left" v-html="feed.processListHTML"></div>
-                    <div class="grid-cell text-center" v-html="formatValue(feed.value, feed.unit)"></div>
-                    <div class="grid-cell text-center" :style="{color: feed.color}">
+                    <div class="grid-cell text-mono" v-html="formatEngine(feed.engine, feed.interval)"></div>
+                    <div class="grid-cell text-center text-muted text-mono">{{ formatSize(feed.size) }}</div>
+                    <div class="grid-cell text-left text-mono" v-html="feed.processListHTML"></div>
+                    <div class="grid-cell text-center text-mono" v-html="formatValue(feed.value, feed.unit)"></div>
+                    <div class="grid-cell text-center text-mono" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
                     </div>
                 </div>

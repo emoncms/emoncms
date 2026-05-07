@@ -20,6 +20,8 @@
     --font-xs:         12px;
     --font-2xs:        12px;
 
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
     /* -- Radii -- */
     --radius-card:    8px;
     --radius-control: 6px;
@@ -54,7 +56,55 @@
     --focus-ring:           rgba(68, 179, 226, 0.2);
 
     --bg-vis-graph-color:   rgba(255,255,255,0);
+
+    --color-cat-default: #44b3e2;
 }
+
+/* -- Light Mode Overrides -- */
+html.color-mode-light {
+    color-scheme: light;
+    --bg-body: #fff; 
+    --bg-card: #fafafa; 
+    --bg-card-header: #eee; 
+    --bg-card-header-hover: #e0e0e0;
+    --bg-card-row-hover: #f5f5f5;
+    --bg-badge: #efefef;
+    --bg-input: #fafafa; 
+    --controls-bg: rgba(234, 234, 234, 0.92);
+
+    --border: #e0e0e0; 
+    --border-card: #e0e0e0; 
+    --border-strong: #c0c0c0;
+
+    --text-primary: #000; 
+    --text-body: #000; 
+    --text-secondary: #555; 
+    --text-muted: #bbb;
+
+    --accent: #2a8fc7; 
+    --accent-hover: #2a8fc7;
+    --accent-bg: rgba(42, 143, 199, 0.10);
+    --accent-bg-hover: rgba(42, 143, 199, 0.20); 
+    --accent-row-hover: rgba(42, 143, 199, 0.05);
+    --accent-border: rgba(42, 143, 199, 0.35); 
+    --focus-ring: rgba(42, 143, 199, 0.2);
+
+    --bg-vis-graph-color: rgba(255,255,255,0);
+}
+html.color-mode-light body { background-color: var(--bg-body); }
+html.color-mode-light #footer { background-color: #e4e6e8; color: #555; }
+html.color-mode-light .card table td { border-bottom-color: rgba(0,0,0,0.06); }
+html.color-mode-light .inline-edit select,
+html.color-mode-light select,
+html.color-mode-light input[type="text"],
+html.color-mode-light input[type="password"] {
+    background-color: #ffffff; color: #333; border-color: #ccc;
+}
+html.color-mode-light .mode-toggle-btn:hover:not(.active) {
+    background-color: rgba(0,0,0,0.05); color: var(--text-primary);
+}
+
+
 
 /* ==========================================================================
    2. THEMING & COLOR MODES
@@ -98,30 +148,7 @@
     --l3-text:#333; --l3-title: #333; --l3-text-active:#000; --l3-text-hover:#000;
 }
 
-/* -- Light Mode Overrides -- */
-html.color-mode-light {
-    color-scheme: light;
-    --bg-body: #fff; --bg-card: #fafafa; --bg-card-row-hover: #f5f5f5;
-    --bg-card-header: #eee; --bg-card-header-hover: #e0e0e0; --bg-badge: #efefef;
-    --bg-input: #fafafa; --controls-bg: rgba(234, 234, 234, 0.92);
-    --border: #e0e0e0; --border-card: #e0e0e0; --border-strong: #c0c0c0;
-    --text-primary: #111; --text-body: #333; --text-secondary: #555; --text-muted: #bbb;
-    --accent: #2a8fc7; --accent-bg: rgba(42, 143, 199, 0.10);
-    --accent-bg-hover: rgba(42, 143, 199, 0.20); --accent-row-hover: rgba(42, 143, 199, 0.05);
-    --accent-border: rgba(42, 143, 199, 0.35); --focus-ring: rgba(42, 143, 199, 0.2);
-}
-html.color-mode-light body { background-color: var(--bg-body); }
-html.color-mode-light #footer { background-color: #e4e6e8; color: #555; }
-html.color-mode-light .card table td { border-bottom-color: rgba(0,0,0,0.06); }
-html.color-mode-light .inline-edit select,
-html.color-mode-light select,
-html.color-mode-light input[type="text"],
-html.color-mode-light input[type="password"] {
-    background-color: #ffffff; color: #333; border-color: #ccc;
-}
-html.color-mode-light .mode-toggle-btn:hover:not(.active) {
-    background-color: rgba(0,0,0,0.05); color: var(--text-primary);
-}
+
 
 /* ==========================================================================
    3. BASE & RESET
@@ -297,6 +324,17 @@ body.body-login {
 .icon-private { color: #8b8b8b; }
 .text-accent { color: var(--accent); }
 
+
+.cat-dot { 
+    width: 8px; 
+    height: 8px; 
+    border-radius: 50%;
+    
+    background: var(--cat, var(--color-cat-default));
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--cat, var(--color-cat-default)) 18%, transparent); 
+    display: inline-block;
+}
+
 /* ==========================================================================
    7. FORMS & CONTROLS
    ========================================================================== */
@@ -354,7 +392,54 @@ body.body-login {
     background-color: var(--bg-input); color: var(--text-body); font-size: var(--font-sm);
     outline: none; transition: border-color 0.15s ease, box-shadow 0.15s ease; min-width: 120px;
 }
-.filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--focus-ring); }
+.filter-input:focus { border-color: var(--accent); }
+
+.filter-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    padding: 4px 10px;
+    background-color: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    min-width: 200px;
+    max-width: 360px;
+}
+.filter-wrap:focus-within {
+    border-color: var(--accent);
+    background-color: var(--accent-bg);
+}
+.filter-wrap .filter-icon {
+    flex: none;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+}
+.filter-wrap .filter-input {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-body);
+    font-size: var(--font-sm);
+    outline: none;
+    min-width: 0;
+}
+.filter-wrap .filter-shortcut {
+    flex: none;
+    font-family: monospace;
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    padding: 1px 5px;
+    border: 1px solid var(--border-strong);
+    border-radius: 3px;
+    background-color: var(--bg-badge);
+    white-space: nowrap;
+    pointer-events: none;
+}
 
 .mode-toggle { display: inline-flex; border: 1px solid var(--border-strong); border-radius: 0.375rem; overflow: hidden; }
 .mode-toggle-btn { padding: 0.2rem 0.75rem; font-size: var(--font-xs); color: var(--text-secondary); background: transparent; border: none; cursor: pointer; transition: background-color 0.15s; line-height: 1.6; }

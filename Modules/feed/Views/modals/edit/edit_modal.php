@@ -4,7 +4,24 @@ include_once('Lib/units.php');
 ?>
 <style>
 @media (min-width: 768px) {
-    #feedEditModal .modal { width: 680px; margin-left: -340px; }
+    #feedEditDialog { --modal-width: 680px; }
+}
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.modal-header h3 {
+    margin: 0;
+}
+.modal-header .card-badge {
+    font-size: var(--font-2xs);
+    color: var(--text-secondary);
+    background-color: var(--bg-badge);
+    border: 1px solid var(--border-strong);
+    border-radius: 0.75rem;
+    padding: 1px 8px;
+    margin: 0;
 }
 </style>
 <script>var feed_units = <?php echo json_encode(defined('UNITS') ? UNITS : array(), JSON_UNESCAPED_UNICODE); ?>;</script>
@@ -13,15 +30,17 @@ include_once('Lib/units.php');
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedEditModal" v-cloak>
-    <div :class="{hide: hidden}" class="modal" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" :aria-hidden="String(hidden)">
+    <dialog id="feedEditDialog" class="ec-modal" aria-labelledby="feedEditModalLabel" @close="onDialogClose">
         <div class="modal-header">
-            <button @click="closeModal" type="button" class="close"><span aria-hidden="true">×</span></button>
-            <h3 id="feedEditModalLabel"><?php echo tr('Edit Feed'); ?></h3>
+            <button @click="closeModal" type="button" class="modal-close-btn" aria-label="Close">&times;</button>
+            <h3 id="feedEditModalLabel">
+                <span v-if="selectedFeedIds.length==1"><?php echo tr('Edit Feed'); ?></span>
+                <span v-else><?php echo tr('Edit Feeds'); ?></span>
+                <span class="card-badge">{{ selectedFeedIds.length }} selected</span>
+            </h3>
+
         </div>
         <div class="modal-body">
-            <p><?php echo tr("Edit the selected feed fields."); ?>
-            <em class="text-muted">({{selectedFeedIds.length}} <?php echo tr('Feeds') ?>)</em>
-            </p>
             <table class="table table-condensed">
                 <thead>
                     <tr>
@@ -42,7 +61,7 @@ include_once('Lib/units.php');
                             <input type="text" class="input-block-level" v-model="feed.tag">
                         </td>
                         <td>
-                            <select :value="unitOther[feed.id] ? '_other' : feed.unit" @change="onUnitChange(feed, $event)">
+                            <select class="input-block-level" :value="unitOther[feed.id] ? '_other' : feed.unit" @change="onUnitChange(feed, $event)">
                                 <option value=""><?php echo tr('-- select --') ?></option>
                                 <option v-for="u in units" :key="u.short" :value="u.short">{{u.long}} ({{u.short}})</option>
                                 <option value="_other"><?php echo tr('Other') ?></option>
@@ -75,6 +94,5 @@ include_once('Lib/units.php');
                 <button class="btn btn-primary" type="button" @click="saveAll"><?php echo tr('Save'); ?></button>
             </div>
         </div>
-    </div>
-    <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>
+    </dialog>
 </div>

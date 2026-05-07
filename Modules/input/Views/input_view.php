@@ -46,7 +46,16 @@ load_css("Modules/input/Views/input_view.css");
         <button v-if="show_clean" @click="clean_unused" class="app-btn pull-right" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-        <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" v-if="selected.length == 0" placeholder="<?php echo tr('Filter inputs') ?>" style="margin-bottom:0">
+        <div class="filter-wrap" v-if="selected.length == 0">
+            <span class="filter-icon">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px;" aria-hidden="true">
+                    <circle cx="7" cy="7" r="5"></circle>
+                    <path d="M11 11l3 3" stroke-linecap="round"></path>
+                </svg>
+            </span>
+            <input type="text" name="filter" id="input-filter" v-model="filterText" class="filter-input" placeholder="<?php echo tr('Filter inputs') ?>">
+            <span class="filter-shortcut">⌘K</span>
+        </div>
     </div>
 
     <div id="noprocesses" class="clearfix"></div>

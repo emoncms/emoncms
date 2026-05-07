@@ -2,7 +2,6 @@
 var editFeedRoot = Vue.createApp({
     data: function() {
         return {
-        hidden: true,
         loading: false,
         message: '',
         errors: {},
@@ -112,9 +111,13 @@ var editFeedRoot = Vue.createApp({
             });
         },
         closeModal: function() {
-            // localFeeds is modal-private, so just discard it — feedApp.feeds is untouched.
-            this.hidden = true;
+            emoncmsModal.close('feedEditDialog');
+        },
+        onDialogClose: function() {
+            // localFeeds is modal-private, so just discard it - feedApp.feeds is untouched.
             this.localFeeds = {};
+            this.feedsOriginal = {};
+            this.unitOther = {};
             this.errors = {};
             this.message = '';
             document.removeEventListener('keydown', this.escape);
@@ -141,7 +144,7 @@ var editFeedRoot = Vue.createApp({
             this.unitOther = newUnitOther;
             this.errors = {};
             this.message = '';
-            this.hidden = false;
+            emoncmsModal.open('feedEditDialog');
             document.addEventListener('keydown', this.escape);
         },
         escape: function(event) {
