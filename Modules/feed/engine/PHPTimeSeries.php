@@ -288,9 +288,10 @@ class PHPTimeSeries implements engine_methods
      * @param integer $csv pipe output as csv
      * @param integer $skipmissing skip null datapoints
      * @param integer $limitinterval limit interval to feed interval
+     * @param integer $retro Normally false(0). When true(1) propagates the last value
      * @return void or array
      */
-    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         $id = (int) $id;
         $start = (int) $start;
@@ -362,7 +363,7 @@ class PHPTimeSeries implements engine_methods
 
         // Get starting position
         if ($average) {
-            $start_dp = $this->binarysearch($fh,$time,$npoints);
+            $start_dp = $this->binarysearch($fh,$time,$npoints,false,$retro);
             if ($start_dp==-1) {
                 $start_dp = array($npoints);
             }
@@ -385,7 +386,8 @@ class PHPTimeSeries implements engine_methods
 
             if (!$average) {
                 // returns nearest datapoint that is >= search time
-                $result = $this->binarysearch($fh,$time,$npoints);
+                // or <= search time depending on $retro
+                $result = $this->binarysearch($fh,$time,$npoints,false,$retro);
                 if ($result!=-1) {
                     // check that datapoint is within interval
                     if ($result[1]<$div_end) {
@@ -554,50 +556,70 @@ class PHPTimeSeries implements engine_methods
         return array("success"=>true);
     }
 
-
-    // returns nearest datapoint that is >= search time
-    private function binarysearch($fh,$time,$npoints,$exact=false)
+    // When the exact parameter is true this returns the datapoint that
+    // corresponds to the time parameter.
+    // When the exact parameter is false it returns the nearest datapoint
+    // that is >= (when retro is false) or <= (when retro is true) the time parameter.
+    private function binarysearch($fh,$time,$npoints,$exact=false,$retro=false)
     {
         // Binary search works by finding the file midpoint and then asking if
         // the datapoint we want is in the first half or the second half
         // it then finds the mid point of the half it was in and asks which half
-        // of this new range its in, until it narrows down on the value.
-        // This approach usuall finds the datapoint you want in around 20
-        // itterations compared to the brute force method which may need to
-        // go through the whole file that may be millions of lines to find a
-        // datapoint.
+        // of this new range it's in, until it narrows down on the value.
+        // This approach finds the datapoint you want in log2(N) tries
+        // where N is the number of datapoints. Thus it will take at most 20
+        // iterations to find a datapoint within a million datapoint file.
+        // Compare this to the brute force method which may need to
+        // go through millions of lines in the whole file to find a datapoint.
 
-        // 30 here is our max number of itterations
-        // the position should usually be found within
-        // 20 itterations.
+        $this->log->debug("binarysearch(time=",$time,",npoints=",$npoints,",exact=",$exact,",retro=",$retro,")");
 
         if ($npoints==0) return -1;
-        $start = -1; $end = $npoints-1;
+        $start = 0; $end = $npoints-1; $mid = -2; $last_mid = -2; $ret = -1; $dp = null;
 
-        for ($i=0; $i<30; $i++)
+        while ($end - $start > 0)
         {
             $mid = $start + ceil(($end-$start)*0.5);
-            if ($mid<0) {
-                print "ERROR: mid<0 should not happen\n";
+
+            if ($mid == $last_mid) { // stuck between two indices, flip and force loop termination
+                $mid = ($start + $end) - $mid;
+                $start = $end = $mid;
             }
+            $last_mid = $mid;
 
-            fseek($fh,$mid*9);
-            $dp = @unpack("x/Itime/fvalue",fread($fh,9));
+            fseek($fh, $mid*9);
+            $dp = @unpack("x/Itime/fvalue", fread($fh,9));
 
-            if ($dp['time']==$time) {
-                return array($mid,$dp['time'],$dp['value']);
-            }
-
-            if (($end-$start)==1) {
-                if (!$exact && $dp['time']>$time) {
-                    return array($mid,$dp['time'],$dp['value']);
-                }
+            if ($dp['time'] == $time) break;
+            if ($dp['time'] > $time) $end = $mid; else $start = $mid;
+        }
+        if ($dp['time'] != $time) {
+            if ($exact) {
+                $this->log->debug("binarysearch(exact)=notfound");
                 return -1;
             }
-
-            if ($time>$dp['time']) $start = $mid; else $end = $mid;
+            if ((!$retro && ($dp['time'] > $time)) || ($retro && ($dp['time'] < $time)))
+                $this->log->debug("binarysearch()=inexact match");
+            elseif ($retro && ($dp['time'] > $time) && ($mid > 0)) {
+                $this->log->debug("binarysearch()=inexact match returning previous dp");
+                $mid -= 1;
+                fseek($fh, $mid*9);
+                $dp = @unpack("x/Itime/fvalue", fread($fh,9));
+            }
+            elseif (!$retro && ($dp['time'] < $time) && ($mid < $npoints-1)) {
+                $this->log->debug("binarysearch()=inexact match returning next dp");
+                $mid += 1;
+                fseek($fh,$mid*9);
+                $dp = @unpack("x/Itime/fvalue",fread($fh,9));
+            }
+            else {
+                $this->log->debug("binarysearch()=no inexact match");
+                return -1;
+            }
         }
-        return -1;
+        $ret = array($mid,$dp['time'],$dp['value']);
+        $this->log->debug("binarysearch()=",$ret);
+        return $ret;
     }
 
     /**

@@ -90,7 +90,7 @@ class VirtualFeed implements engine_methods
         $row = $result->fetch_array();
         $userid = $row['userid'];
 
-        // Lets instantiate a new class of process so we can run many proceses recursively without interference
+        // Lets instantiate a new class of process so we can run many processes recursively without interference
         global $session,$user;
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($userid));
@@ -103,7 +103,7 @@ class VirtualFeed implements engine_methods
     }
 
     // Executes virtual feed processlist for each timestamp in range
-    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($feedid,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         $feedid = (int) $feedid;
         $skipmissing = (int) $skipmissing;
@@ -128,7 +128,7 @@ class VirtualFeed implements engine_methods
             $notime = true;
         }
 
-        // Lets instantiate a new class of process so we can run many proceses recursively without interference
+        // Lets instantiate a new class of process so we can run many processes recursively without interference
         require_once "Modules/process/process_model.php";
         $process = new Process($this->mysqli,$this->input,$this->feed,$timezone);
 

@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+#
+# A utility to manage PHPTimeSeries feeds in EmonCMS
+# Nick Townsend, January 2023
+#
+require 'fileutils'
+require 'json'
+require 'net/http'
+require 'optparse'
+require 'optparse/date'
+require 'ostruct'
+require 'pathname'
+require 'resolv'
+require 'time'
+
+ARGV.each do |file|
+
+  raise "File #{file} doesn't exist!" unless File.readable? file
+  puts "Processing file #{file}..."
+  File.open(file,'rb') do |f|
+    while !f.eof()
+      bits = f.read(9).unpack("cVf")
+      time = Time.at(bits[1])
+      cost = bits[2].round(4)
+      puts "#{time.iso8601}: Value=#{cost}"
+    end
+  end
+
+end
+
+def fileupdate
+
+  feeds.each do |feed_name, feed_id|
+    file = Pathname.new(opts.data_dir) + "feed_#{feed_id}.MYD"
+
+    raise "File #{file} doesn't exist!" unless File.readable? file
+    puts "Processing file #{file}..."
+    File.open(file,'ab+') do |f|
+      f.write([0, time.to_i, costs[feed_name].round(4)].pack("cVf")) 
+      puts "#{time.iso8601}: Value=#{costs[feed_name].round(4)}"
+    end
+  end
+
+end
+

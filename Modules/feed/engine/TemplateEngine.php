@@ -120,7 +120,7 @@ class TemplateEngine implements engine_methods
      *
      * please note that unix timestamps should be expressed in ms cause coming from the js
      *
-     * It is important that the response to this function adheers to the convention outlined below so that data can then be used consistently within the rest of the emoncms application.
+     * It is important that the response to this function adheres to the convention outlined below so that data can then be used consistently within the rest of the emoncms application.
      *
      * The request defines the timestamps and number of datapoints that should be returned rather than necessarily the exact timestamp of the recorded data
      * It is the goal of the function below to find the closest data point/s that represent the request timestamp/interval.
@@ -130,7 +130,7 @@ class TemplateEngine implements engine_methods
      *
      * While there are applications where returning the exact timestamp of the recorded data is important, this is currently outside of the design goals of the emoncms application.
     */
-    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1)
+    public function get_data_combined($id,$start,$end,$interval,$average=0,$timezone="UTC",$timeformat="unix",$csv=false,$skipmissing=0,$limitinterval=1,$retro=false)
     {
         $id = (int) $id;
         $skipmissing = (int) $skipmissing;

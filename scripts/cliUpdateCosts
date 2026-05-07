@@ -1,0 +1,91 @@
+#!/usr/bin/env ruby
+#
+# A utility to manage PHPTimeSeries feeds in EmonCMS
+# Nick Townsend, January 2023
+#
+require 'fileutils'
+require 'json'
+require 'net/http'
+require 'optparse'
+require 'optparse/date'
+require 'ostruct'
+require 'pathname'
+require 'resolv'
+require 'time'
+
+opts = OpenStruct.new(dry_run: true, 
+                      server: 'emoncms.equinox.sendium.net',
+                      apikey: '02ea0b84761b0f95f860f0fb4ca67cd4' )
+feeds = {gas: 67, electricity: 68, gas_daily: 69, electricity_daily: 70}
+costlist = [
+  {time: Time.parse('Jan 1, 2020 08:00am'), gas: 0.0, electricity: 0.0, gas_daily: 0.0, electricity_daily: 0.0},
+  {time: Time.parse('Feb 1, 2020 08:00am'), gas: 2.92, electricity: 15.43, gas_daily: 18.08, electricity_daily: 18.08},
+  {time: Time.parse('May 1, 2020 08:00am'), gas: 2.92, electricity: 21.61, gas_daily: 18.08, electricity_daily: 25.66},
+  {time: Time.parse('May 1, 2022 08:00am'), gas: 7.47, electricity: 28.41, gas_daily: 27.22, electricity_daily: 51.62},
+  {time: Time.parse('Nov 1, 2022 08:00am'), gas: 10.42, electricity: 33.86, gas_daily: 28.48, electricity_daily: 52.64},
+  {time: Time.parse('May 15, 2025 08:00am'), gas: 6.24, electricity: 24.01, gas_daily: 27.79, electricity_daily: 53.02}
+]
+
+module M
+  refine Float do
+    def to_json(*)
+      '%.4f' % self
+    end
+  end
+
+  refine Hash do
+    def to_json
+      "{" + map { |k, v| k.to_s.dump + ":" + v.to_json }.join(",") + "}"
+    end
+  end
+
+end
+
+using M
+
+OptionParser.new do |o|
+  o.banner = "Add new tariff entries to EmonCMS\nUsage: #{o.program_name} [options] update..."
+  o.on('-d', '--[no-]dryrun [FLAG]', TrueClass, "Dry run (#{opts.dry_run})" ) do |d|
+    opts.dry_run = d.nil? ? true: d
+  end
+  o.on('-k', '--apikey APIKEY', "The EmonCMS web server API key (#{opts.apikey})" ) do |apikey|
+    opts.apikey = apikey
+  end
+  o.on('-s', '--server SERVER', "The EmonCMS web server (#{opts.server})" ) do |server|
+    address = Resolv.getaddress(server)
+    raise "Server #{server} not found!" unless address
+    opts.server = address
+  end
+  o.on( '-?', '--help', 'Display this screen' ) do
+    puts o
+    exit
+  end
+    
+  begin
+    o.parse!
+  rescue
+    STDERR.puts $!
+    STDERR.puts o
+    exit 1
+  end
+end
+
+costlist[1..-1].each do |costs|
+  timestamp = costs.delete(:time)
+  raise "No timestamp in cost array!" unless timestamp
+  puts "Time is: #{timestamp.ctime}"
+  costs.transform_values!{|v| v *= 0.01}
+  jcost = costs.to_json
+  query =  %Q(/input/post?time=#{timestamp.to_i}&node=UnitCosts&fulljson=#{jcost}&apikey=#{opts.apikey})
+  puts "Query: #{query}"
+  if opts.dry_run
+    puts "Dry run only"
+  else
+    response = Net::HTTP.get(opts.server, query)
+    if response.empty?
+      puts "There was no response, it failed"
+    else
+      puts "Success: #{response}"
+    end
+  end
+end

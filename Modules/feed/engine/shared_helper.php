@@ -173,9 +173,10 @@ interface engine_methods {
      * @param integer $csv pipe output as csv
      * @param integer $skipmissing skip null datapoints
      * @param integer $limitinterval limit interval to feed interval
+     * @param integer $retro Normally false(0). When true(1) propagates the last value 
      * @return void or array
      */
-    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval);
+    public function get_data_combined($feedid,$start,$end,$interval,$average,$timezone,$timeformat,$csv,$skipmissing,$limitinterval,$retro);
 
     /**
      * delete all past data for a feed. keeping all the feed settings the same
