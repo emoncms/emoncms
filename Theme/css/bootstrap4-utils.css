@@ -16,6 +16,7 @@
 .text-exporting  { color: #2ed52e !important; }
 .text-dark       { color: #333 !important; }
 .text-larger     { font-size: larger; }
+.text-sm    { font-size: .92em !important; }
 .text-uppercase  { text-transform: uppercase; }
 .text-nowrap     { white-space: nowrap !important; }
 .text-truncate   { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -194,6 +195,10 @@
 .px-6, .pl-6 { padding-left: var(--s6) !important; }
 
 .text-center { text-align: center !important; }
+.text-left   { text-align: left !important; }
+.text-right  { text-align: right !important; }
+
+.text-muted { color: var(--text-muted) !important; }
 
 /* ================================================================== */
 /* 10. UTILITIES — DISPLAY, FLEX, SIZING                              */

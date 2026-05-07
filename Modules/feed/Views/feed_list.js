@@ -184,11 +184,6 @@ var feedAppRoot = Vue.createApp({
             }
         },
         
-        formatValue: function(value, unit) {
-            if (unit == undefined) unit = "";
-            return this.formatValueDynamic(value) + ' ' + unit;
-        },
-        
         formatValueDynamic: function(value) {
             if (value == null) return "NULL";
             value = parseFloat(value);

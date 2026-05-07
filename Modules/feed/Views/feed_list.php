@@ -171,7 +171,7 @@ load_css("Modules/feed/Views/feed_view.css");
                     <div class="grid-cell text-mono" v-html="formatEngine(feed.engine, feed.interval)"></div>
                     <div class="grid-cell text-center text-muted text-mono">{{ formatSize(feed.size) }}</div>
                     <div class="grid-cell text-left text-mono" v-html="feed.processListHTML"></div>
-                    <div class="grid-cell text-center text-mono" v-html="formatValue(feed.value, feed.unit)"></div>
+                    <div class="grid-cell text-right text-mono">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
                     <div class="grid-cell text-center text-mono" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
                     </div>

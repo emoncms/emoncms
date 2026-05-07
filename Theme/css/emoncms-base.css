@@ -45,7 +45,7 @@
     --text-primary:         #ddd;
     --text-body:            #ddd;
     --text-secondary:       #ddd;
-    --text-muted:           #444;
+    --text-muted:           #aaa;
 
     --accent:               #44b3e2;
     --accent-hover:         #44b3e2;
@@ -79,7 +79,7 @@ html.color-mode-light {
     --text-primary: #000; 
     --text-body: #000; 
     --text-secondary: #555; 
-    --text-muted: #bbb;
+    --text-muted: #666;
 
     --accent: #2a8fc7; 
     --accent-hover: #2a8fc7;
