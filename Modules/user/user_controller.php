@@ -48,7 +48,13 @@ function user_controller()
             
             if(!is_null($ref)){
                 $decoded_ref = urldecode(base64_decode($ref));
-                $referrer = filter_var($decoded_ref, FILTER_VALIDATE_URL) ? htmlentities($decoded_ref) : '';
+                $parsed = parse_url($decoded_ref);
+                // Only allow relative paths (no scheme, no host)
+                if (!isset($parsed['scheme']) && !isset($parsed['host']) && isset($parsed['path'])) {
+                    $referrer = htmlspecialchars($decoded_ref, ENT_QUOTES, 'UTF-8');
+                } else {
+                    $referrer = '';
+                }
             } else {
                 $referrer="";
             }
