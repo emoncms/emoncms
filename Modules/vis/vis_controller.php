@@ -168,7 +168,7 @@
     {
         if ($route->subaction == 'get') {
             $result = $multigraph->get(get('id'),$session['userid']);
-        } elseif ($route->subaction == 'getlist') {
+        } elseif ($route->subaction == 'getlist' && $session['read']) {
             $result = $multigraph->getlist($session['userid']);
         } elseif ($session['write']) {
             if ($route->subaction == 'new') {
