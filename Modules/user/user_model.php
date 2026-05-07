@@ -352,10 +352,10 @@ class User
         $result = $stmt->fetch();
         $stmt->close();
         
-        // exit if user does not exist
-        if (!$result || $id<1) return array('success'=>false, 'message'=>tr("Username does not exist"));
+        // exit if user does not exist, normalize to same message as invalid verification key to prevent username enumeration
+        if (!$result || $id<1) return array('success'=>true, 'message'=>tr("Email verification email sent, please check your inbox"));
         // exit if account is already verified
-        if ($email_verified) return array('success'=>false, 'message'=>tr("Email already verified"));
+        if ($email_verified) return array('success'=>true, 'message'=>tr("Email verification email sent, please check your inbox"));
         
         // Create new verification key
         $verification_key = generate_secure_key(32);
