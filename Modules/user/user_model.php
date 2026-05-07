@@ -153,6 +153,7 @@ class User
 
     public function get_uuid($userid)
     {       
+        $userid = (int) $userid;
         // return unique id associated to user and generate if missing
         $request = "SELECT uuid FROM users WHERE `id` = '$userid'";
         try {
@@ -432,6 +433,7 @@ class User
             return array('success'=>false, 'message'=>tr("Username does not exist"));
         }
         
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$userid'");
         if (!$result) return array('success'=>false, 'message'=>tr("Database error"));
         
