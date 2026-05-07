@@ -13,8 +13,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 load_js("Modules/user/profile/md5.js");
 load_js("Lib/misc/clipboard.js");
 load_js("Modules/user/user.js");
-
 ?>
+
+<style>
+  .content-container { max-width: 1150px; }
+</style>
 
 <div id="app" v-cloak>
 

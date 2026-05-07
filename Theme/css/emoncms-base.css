@@ -202,7 +202,6 @@ a.grav-container:hover img.grav { border-color: rgba(255,255,255,0.7); }
     padding-bottom: 2rem !important; box-sizing: border-box;
 }
 body.collapsed #wrap main.content-container { margin-left: auto; margin-right: auto; }
-.content-container { max-width: 1150px; }
 .fullwidth.collapsed #wrap, .fullwidth.collapsed #footer { margin-left: 0 !important; }
 
 .container-fluid { padding: 0 10px; }
