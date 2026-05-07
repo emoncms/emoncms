@@ -136,6 +136,7 @@ function user_controller()
                 if ($mode=="permanentdelete") {
                     if (isset($_POST['password'])) {
                         // Check password
+                        $userid = (int) $userid;
                         $query_result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
                         $row = $query_result->fetch_object();
                         $hash = hash('sha256', $row->salt . hash('sha256', $_POST['password']));
