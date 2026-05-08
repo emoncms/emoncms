@@ -840,7 +840,7 @@ class User
         if (strlen($_timezone) < 3 || strlen($_timezone) > 50) return false;
         
         // timezone character check
-        if (!preg_match('/^[\w\-./_]+$/', $_timezone)) return false;
+        if (!preg_match('/^[\w\-.\/_]+$/', $_timezone)) return false;
 
         // whitelist check against supported PHP timezones
         foreach (DateTimeZone::listIdentifiers() as $timezone) {
