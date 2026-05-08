@@ -35,7 +35,7 @@ $schema['users'] = array(
 
 $schema['rememberme'] = array(
     'userid' => array('type' => 'int'),
-    'token' => array('type' => 'varchar(40)'),
-    'persistentToken' => array('type' => 'varchar(40)'),
+    'token' => array('type' => 'varchar(64)'),
+    'persistentToken' => array('type' => 'varchar(64)'),
     'expire' => array('type' => 'datetime')
 );

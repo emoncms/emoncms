@@ -321,7 +321,14 @@ class Rememberme {
         $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
 
         $stmt->bind_param("isss",$cookieValues->userid,$hashed_token,$hashed_persistentToken,$date);
-        if ($stmt->execute()) {
+        try {
+            $result = $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            $this->log->warn("storeTriplet sql fail: " . $e->getMessage() . " - database schema may need updating");
+            $stmt->close();
+            return false;
+        }
+        if ($result) {
             $stmt->close();
             return true;
         } else {

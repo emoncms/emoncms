@@ -515,7 +515,7 @@ class User
                 if ($remembermecheck==true) {
                     if (!$this->rememberme->createCookie($userData->id)) {
                         $this->logout();
-                        return array('success'=>false, 'message'=>tr("Error creating rememberme cookie, try login without rememberme"));
+                        return array('success'=>false, 'message'=>tr("Error creating rememberme cookie, try login without rememberme and then a database update"));
                     }
                 } else {
                     $this->rememberme->clearCookie();
