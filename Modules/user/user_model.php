@@ -51,8 +51,8 @@ class User
     {
         $session = array();
         
-        // 1. Only allow alphanumeric characters
-        // if (!ctype_alnum($apikey_in)) return $session;
+        // 1. Only allow hexadecimal characters (keys are produced by bin2hex)
+        if (!ctype_xdigit($apikey_in)) return $session;
         
         // 2. Only allow 32 character length
         if (strlen($apikey_in)!=32) return array();
@@ -140,7 +140,7 @@ class User
     public function get_id_from_apikey($apikey_in) 
     {
         if (strlen($apikey_in)!=32) return false;
-        // if (!ctype_alnum($apikey_in)) return false;
+        if (!ctype_xdigit($apikey_in)) return false;
         
         $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE apikey_read=? OR apikey_write=?");
         $stmt->bind_param("ss",$apikey_in,$apikey_in);
@@ -327,8 +327,9 @@ class User
         $stmt->bind_param("ssssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write, $timezone, $uuid);
         if (!$stmt->execute()) {
             $error = $this->mysqli->error;
+            $this->log->error("register: failed to create user username:$username error:$error");
             $stmt->close();
-            return array('success'=>false, 'message'=>tr("Error creating user, mysql error: ").$error);
+            return array('success'=>false, 'message'=>tr("Error creating user"));
         }
 
         // Make the first user an admin
