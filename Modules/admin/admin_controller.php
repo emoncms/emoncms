@@ -157,13 +157,13 @@ function admin_controller()
 
     if ($route->action == 'shutdown') {
         $route->format = 'text';
-        shell_exec('sudo shutdown -h now 2>&1');
+        $admin->shutdown_system();
         return "System halt in progress";
     }
 
     if ($route->action == 'reboot') {
         $route->format = 'text';
-        shell_exec('sudo shutdown -r now 2>&1');
+        $admin->reboot_system();
         return "System reboot in progress";
     }
 
@@ -186,9 +186,9 @@ function admin_controller()
         if (isset($_POST['argument'])) {
             $argument = $_POST['argument'];
             if ($argument == 'ro'){
-                passthru('rpi-ro');
+                $admin->set_filesystem_ro();
             } elseif ($argument == 'rw'){
-                passthru('rpi-rw');
+                $admin->set_filesystem_rw();
             }
         }
         return array('success'=>false, 'message'=>"Missing argument");
@@ -352,7 +352,7 @@ function admin_controller()
 
         // if branch is not in available branches, check that it is not the current branch
         if (!in_array($branch,$components[$module]["branches_available"])) {
-            $current_branch = @exec("git -C " . escapeshellarg($module_path) . " rev-parse --abbrev-ref HEAD");
+            $current_branch = $admin->get_current_git_branch($module_path);
             if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");
         }
 
@@ -383,10 +383,7 @@ function admin_controller()
     if ($route->action == 'serialmonitor') {
         if ($route->subaction == 'running') {
             $route->format = "text";
-            @exec('pidof -x start.sh', $exec);
-            $pid = False;
-            if (isset($exec[0])) $pid = $exec[0];
-            return $pid;
+            return $admin->serialmonitor_pid();
         }
         if ($route->subaction == 'start') {
             $route->format = "json";

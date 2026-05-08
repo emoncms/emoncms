@@ -218,7 +218,7 @@ class Admin
         $status = array();
 
         foreach ($service_status as $line) {
-            $parts = explode('=', $line);
+            $parts = explode('=', $line, 2);
             $status[$parts[0]] = $parts[1];
         }
 
@@ -290,7 +290,7 @@ class Admin
 
         $cpuinfo = false;
         if (@is_readable('/usr/bin/lscpu')) {
-            $data = $this->lscpu();
+            $data = $this->lscpu() ?: [];
             foreach ($data as $line) {
                 if (strpos($line, ':') !== false) {
                     list($key, $val) = explode(":", $line);
@@ -509,7 +509,7 @@ class Admin
         $output = array();
         if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
             //return $partitions;
-            $output = $this->df_data();
+            $output = $this->df_data() ?: [];
         } else {
             if (!$output = $this->df()) {
                 return $partitions;
@@ -1100,5 +1100,33 @@ class Admin
     {
         $result = $this->which($command);
         return !empty(trim($result));
+    }
+
+    // --- Public shell commands called from the controller ---
+
+    public function shutdown_system() {
+        shell_exec('sudo shutdown -h now 2>&1');
+    }
+
+    public function reboot_system() {
+        shell_exec('sudo shutdown -r now 2>&1');
+    }
+
+    public function set_filesystem_ro() {
+        passthru('rpi-ro');
+    }
+
+    public function set_filesystem_rw() {
+        passthru('rpi-rw');
+    }
+
+    public function get_current_git_branch($path) {
+        return @exec("git -C " . escapeshellarg($path) . " rev-parse --abbrev-ref HEAD");
+    }
+
+    public function serialmonitor_pid() {
+        $output = [];
+        @exec('pidof -x start.sh', $output);
+        return isset($output[0]) ? $output[0] : false;
     }
 }
