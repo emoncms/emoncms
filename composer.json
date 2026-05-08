@@ -8,7 +8,8 @@
     },
     "require-dev": {
         "php-parallel-lint/php-parallel-lint": "^1.2.0",
-        "squizlabs/php_codesniffer": "3.13.2"
+        "squizlabs/php_codesniffer": "3.13.2",
+        "phpunit/phpunit": "^10.0"
     },
     "scripts": {
         "fix": "phpcbf -p .",
@@ -17,6 +18,14 @@
         "test": [
             "composer lint",
             "composer phpcs"
+        ],
+        "phpunit": "phpunit --configuration tests/phpunit.xml",
+        "phpunit-integration": "phpunit --configuration tests/phpunit.integration.xml",
+        "phpunit-feature": "phpunit --configuration tests/phpunit.feature.xml",
+        "phpunit-all": [
+            "@phpunit",
+            "@phpunit-integration",
+            "@phpunit-feature"
         ]
     },
     "license": "AGPL-3.0-or-later",

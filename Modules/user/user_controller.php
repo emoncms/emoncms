@@ -47,10 +47,9 @@ function user_controller()
             }
             
             if(!is_null($ref)){
-                $decoded_ref = urldecode(base64_decode($ref));
-                $referrer = filter_var($decoded_ref, FILTER_VALIDATE_URL) ? htmlentities($decoded_ref) : '';
+                $referrer = htmlspecialchars($user->validate_referrer(urldecode(base64_decode($ref))), ENT_QUOTES, 'UTF-8');
             } else {
-                $referrer="";
+                $referrer = '';
             }
             // load login template with the above parameters
             return view("Modules/user/login_block.php", array(
@@ -61,8 +60,11 @@ function user_controller()
                 'v' => 3
             ));
         }
-        if ($route->action == 'view' && $session['write']) return view("Modules/user/profile/profile.php", array());
-          
+        if ($route->action == 'view' && $session['write']) {
+            return view("Modules/user/profile/profile.php", array(
+            ));
+        }
+        
         if ($route->action == 'logout') {
             // decode url parameters
             $next = $path;
@@ -70,7 +72,13 @@ function user_controller()
             $msg = get('msg');
             $message = isset($msg) ? htmlspecialchars(urldecode($msg)) : '';
             $ref = get('ref');
-            $referrer = isset($ref) ? htmlspecialchars(urldecode(base64_decode(get('ref')))) : '';
+            
+            // Validate referrer to prevent open redirect (scheme/host not allowed)
+            if(!is_null($ref)){
+                $referrer = $user->validate_referrer(urldecode(base64_decode($ref)));
+            } else {
+                $referrer = '';
+            }
             
             // encode url parameters to pass through to login page
             $msg = urlencode($message);
@@ -84,10 +92,28 @@ function user_controller()
             header('Location: '.$next);
             exit();
         }
-        
-        if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
-            $verify = $user->verify_email($_GET['email'], $_GET['key']);
-            return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
+
+        if ($route->action == 'verify' && $settings['interface']['email_verification'] && isset($_GET['key'])) {
+            // On first registration the user will not be logged in
+            // a message is returned on the login page with the result of the verification process
+            if (!$session['read']) {
+                $verify = $user->verify_email(get('key', true));
+                return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister, 'verify'=>$verify, 'message'=>'', 'referrer'=>''));
+
+            // If the user is logged in already it means they changed their email and are verifying the new email address
+            // in this case we show the profile page with a message about the result of the verification process
+            } else if ($session['write']) {
+                $verify = $user->verify_email(get('key', true));
+                
+                if ($verify['success']) {
+                    if (isset($verify['userid']) && $verify['userid'] == $session['userid']) {
+                        $session['emailverified'] = 1;
+                        $_SESSION['emailverified'] = 1;
+                    }
+                }
+                
+                return view("Modules/user/profile/profile.php",array());
+            }
         }
     }
 
@@ -136,6 +162,7 @@ function user_controller()
                 if ($mode=="permanentdelete") {
                     if (isset($_POST['password'])) {
                         // Check password
+                        $userid = (int) $userid;
                         $query_result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
                         $row = $query_result->fetch_object();
                         $hash = hash('sha256', $row->salt . hash('sha256', $_POST['password']));

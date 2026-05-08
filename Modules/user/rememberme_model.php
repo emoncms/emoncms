@@ -47,7 +47,7 @@ class Rememberme {
     // ---------------------------------------------------------------------------------------------------------
     public function setCookie($content,$expire)
     {
-        $this->log->info("setCookie: $content $expire");
+        $this->log->info("setCookie: $expire");
 
         if (is_https()) {
             $this->secure = true;
@@ -278,24 +278,32 @@ class Rememberme {
             return self::TRIPLET_NOT_FOUND;
         }
 
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$hashed_persistentToken);
         if (!$stmt->execute()) {
             $this->log->warn("findTriplet sql fail");
         }
-        $stmt->bind_result($sha1_token);
-        $stmt->fetch();
+        $hashed_token = null;
+        $stmt->bind_result($hashed_token);
+        $fetched = $stmt->fetch();
         $stmt->close();
 
-        // sha1 of token match: triplet found
-        if ($sha1_token==sha1($cookieValues->token)) {
-            $this->log->info("findTriplet TRIPLET_FOUND");
-            return self::TRIPLET_FOUND;
-
-        // false will occur when there are no entries
-        } elseif ($sha1_token==false) {
+        // fetch() returns true when a row was found, null when no rows exist
+        if ($fetched !== true) {
             $this->log->info("findTriplet TRIPLET_NOT_FOUND");
             return self::TRIPLET_NOT_FOUND;
+        }
+
+        // Row found but token is null or empty — legacy (pre-sha256) or corrupt session
+        if ($hashed_token === null || $hashed_token === "") {
+            $this->log->info("findTriplet: Legacy or null token found, invalidating session");
+            return self::TRIPLET_INVALID;
+        }
+
+        // sha256 of token match: triplet found
+        if (hash_equals((string)$hashed_token, hash('sha256', (string)$cookieValues->token))) {
+            $this->log->info("findTriplet TRIPLET_FOUND");
+            return self::TRIPLET_FOUND;
 
         // token does not match query token
         } else {
@@ -317,11 +325,18 @@ class Rememberme {
             return false;
         }
 
-        $sha1_token = sha1($cookieValues->token);
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
+        $hashed_token = hash('sha256', $cookieValues->token);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
 
-        $stmt->bind_param("isss",$cookieValues->userid,$sha1_token,$sha1_persistentToken,$date);
-        if ($stmt->execute()) {
+        $stmt->bind_param("isss",$cookieValues->userid,$hashed_token,$hashed_persistentToken,$date);
+        try {
+            $result = $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            $this->log->warn("storeTriplet sql fail: " . $e->getMessage() . " - database schema may need updating");
+            $stmt->close();
+            return false;
+        }
+        if ($result) {
             $stmt->close();
             return true;
         } else {
@@ -343,8 +358,8 @@ class Rememberme {
             return false;
         }
 
-        $sha1_persistentToken = sha1($cookieValues->persistentToken);
-        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
+        $hashed_persistentToken = hash('sha256', $cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$hashed_persistentToken);
         if ($stmt->execute()) {
             $this->log->info("cleanTriplet success");
             $this->cleanExpiredTriplets($cookieValues->userid);
@@ -368,8 +383,10 @@ class Rememberme {
         $stmt->bind_param("i",$userid);
 
         if ($stmt->execute()) {
+            $stmt->close();
             return true;
         } else {
+            $stmt->close();
             $this->log->warn("cleanAllTriplets sql fail");
             return false;
         }

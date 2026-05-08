@@ -1,46 +1,70 @@
-# emonCMS tests
+# Tests
 
-We run the tests using Jasmine (testing framework for JavaScript), Selenium server (for interactions with browsers) and WebdriverIO (webdriver bindings for JavaScript)
-Only the test files are included here. In order to run them locally you need to do the setup below.
+Three PHPUnit suites covering different layers of the application.
 
-## Set up
+## Requirements
 
-To install all dependencies
-`npm install`
+- PHP 8.x with the `curl` and `mysqli` extensions
+- MySQL running with the `emoncms` database set up
+- The emoncms app served at `http://localhost/original` (for Feature tests only)
+- Composer dependencies installed:
+  ```
+  php composer.phar install
+  ```
 
-To install selenium stand alone server
-`./node_modules/.bin/selenium-standalone install`
+## Suites
 
-To install the webdrivers, download:
- - The [most recent ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/home)
- - The [most recent GeckoDriver for Firefox] (https://github.com/mozilla/geckodriver/releases)
+| Suite | What it tests | Needs DB | Needs HTTP |
+|---|---|---|---|
+| Unit | Pure logic, input validation, no I/O | No | No |
+| Integration | Model methods against the real database | Yes | No |
+| Feature | JSON API endpoints over real HTTP | Yes | Yes |
 
-Include their location in your PATH environment variable (/etc/environment)
+## Running
 
-## To run the tests
-First start the selenium server
-`./node_modules/.bin/selenium-standalone start`
+```bash
+# Unit only (fast, no infrastructure required)
+php vendor/bin/phpunit --configuration tests/phpunit.xml
 
-Run the all tests in `./specs` except `emonCMS-travis-setup.js`
-`./node_modules/.bin/wdio wdio.conf.js`
+# Integration (requires MySQL)
+php vendor/bin/phpunit --configuration tests/phpunit.integration.xml
 
-Run then tests in headless mode:
-`HEADLESS=true ./node_modules/.bin/wdio wdio.conf.js`
+# Feature / API (requires MySQL + running web server)
+php vendor/bin/phpunit --configuration tests/phpunit.feature.xml
 
-Run the test with debug info:
-`DEBUG=true ./node_modules/.bin/wdio wdio.conf.js`
+# Via composer scripts
+php composer.phar run phpunit
+php composer.phar run phpunit-integration
+php composer.phar run phpunit-feature
 
-By default tests are run in Chrome, to use Firefox:
-`BROWSER=firefox ./node_modules/.bin/wdio wdio.conf.js`
+# All suites in one command
+php vendor/bin/phpunit --configuration tests/phpunit.xml && \
+php vendor/bin/phpunit --configuration tests/phpunit.integration.xml && \
+php vendor/bin/phpunit --configuration tests/phpunit.feature.xml
 
-## Specs
-These tests are to be run locally or as part of the Script job in Travis
+# Or via composer
+php composer.phar run phpunit-all
 
-## emonCMS users for the tests
-The Travis build sets up a new emonCMS installation. It creates its own emonCMS users and they are the ones used in the tests during the Script job. They are in `./Lib/travis_login_details.js`. To run emonCMS tests with this users we have added the environmental variable to the wdio command `TRAVIS=true` in the Script job in the Travis build
+# All suites with per-test output
+php composer.phar run phpunit-all -- --testdox
+```
 
-For running the tests in a existing emonCMS installations (local machine or staging server) the tests users need to exist already because we cannot rely on the availability of the Register option. The test users are in `./Lib/login_details_for_an_existing_installation.js`. This file is .gitignored. The structure of the file is the same than `./Lib/travis_login_details.js`
+## Configuration
 
-# Credits
-This test suite setup, "emonCMS-travis-setup" and "emonCMS-first-login" specifications have been developed by [Carbon Co-op](https://carbon.coop/)
-We hope this will be useful and extended by the community
+**Database** credentials are read from `settings.ini` (`[sql]` section) — no test-specific config needed.
+
+**Feature test base URL** defaults to `http://localhost/emoncms`. Override with an environment variable:
+```bash
+EMONCMS_BASE_URL=http://myserver/emoncms php vendor/bin/phpunit --configuration tests/phpunit.feature.xml
+```
+
+**Rate limiting** must be disabled for the Feature and Integration suites to run reliably. Ensure `settings.ini` contains:
+```ini
+[interface]
+disable_rate_limiting = true
+```
+This setting defaults to `false` in `default-settings.ini` and should never be enabled in production.
+
+## Test data
+
+Integration and Feature tests create users with the prefix `phpunittest` / `feat` respectively and delete them after each suite runs. The database is left clean after a successful run.

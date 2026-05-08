@@ -350,7 +350,7 @@ class Feed
     // Update single feed size
     public function update_feed_size($feedid) {
         $feedid = (int) $feedid;
-        $size = $this->get_feed_size($feedid);
+        $size = (int) $this->get_feed_size($feedid);
         $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
         if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
         return $size;
@@ -1341,6 +1341,7 @@ class Feed
     /* Redis helpers */
     private function load_to_redis($userid)
     {
+        $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
         {
@@ -1370,6 +1371,7 @@ class Feed
 
     private function load_feed_to_redis($id)
     {
+        $id = (int) $id;
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();
         if (!$row) {
@@ -1404,6 +1406,7 @@ class Feed
     /* Other helpers */
     private function get_engine($feedid)
     {
+        $feedid = (int) $feedid;
         if ($this->redis) {
             $engine = $this->redis->hget("feed:$feedid",'engine');
         } else {
