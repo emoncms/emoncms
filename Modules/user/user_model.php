@@ -431,30 +431,33 @@ class User
 
     public function login($username, $password, $remembermecheck, $referrer='')
     {
+        // Rate limit login attempts to prevent brute force attacks. Limit to 10 attempts in 15 minutes.
         if ($this->is_rate_limited('login', 10, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
 
+        // Basic checks
         $remembermecheck = (int) $remembermecheck;
-
         if (!$username || !$password) return array('success'=>false, 'message'=>tr("Username or password empty"));
 
         $result = $this->is_valid_username($username);
         if (!$result['success']) return $result;
 
+        // Dont go further if username does not exist.
         if (!$userid = $this->get_id($username)) {
             $this->log->error("Login: Username does not exist username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
         
+        // Fetch the user
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$userid'");
         if (!$result) return array('success'=>false, 'message'=>tr("Database error"));
-        
         $userData = $result->fetch_object();
         
+        // If email verification is required and email is not verified then dont allow login
         if ($this->email_verification && isset($userData->email_verified) && !$userData->email_verified) return array('success'=>false, 'message'=>tr("Please verify email address"));
         
+        // Check password
         $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-
         if ($hash != $userData->password)
         {
             $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
