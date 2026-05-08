@@ -29,7 +29,7 @@ if ($GLOBALS['test_mysqli']->connect_errno) {
 
 // Base URL of the running emoncms instance – override with env var if needed.
 $GLOBALS['feature_base_url'] = rtrim(
-    getenv('EMONCMS_BASE_URL') ?: 'http://localhost/original',
+    getenv('EMONCMS_BASE_URL') ?: 'http://localhost/emoncms',
     '/'
 );
 
