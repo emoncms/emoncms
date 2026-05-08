@@ -581,7 +581,11 @@ class Input
                 if ($this->redis) {
                     $this->redis->hset("input:$inputid",'processList',$processlist_after);
                 }
-                $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
+                $inputid_int = (int) $inputid;
+                $stmt = $this->mysqli->prepare("UPDATE input SET processList = ? WHERE id=?");
+                $stmt->bind_param("si", $processlist_after, $inputid_int);
+                $stmt->execute();
+                $stmt->close();
                 $out .= "processlist for input $inputid changed from $current_processlist to $processlist_after\n";
             }
         }
