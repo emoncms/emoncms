@@ -512,83 +512,45 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // Users
     // ----------------------------------------------------------------------------------------
+
+    // Load admin model
+    require_once "Modules/admin/AdminUserModel.php";
+    $admin_model = new AdminUserModel($mysqli, $user);
+
+    // Admin user list view
+    if ($route->action == 'users') {
+        $route->format = 'html';
+        return view("Modules/admin/Views/userlist_view.php", array());
+    }
+
+    // Switch to another user by id (admin only)
     if ($route->action == 'setuser') {
-        $_SESSION['userid'] = intval(get('id'));
-        
-        $u = $user->get($_SESSION['userid']);
-        $_SESSION['username'] = $u->username;
-        $_SESSION['gravatar'] = $u->gravatar;
-        
-        header("Location: ../user/view");
-        // stop any other code from running once http header sent
-        exit();
+        $admin_model->setUser(get("id",true));
     }
 
+    // Switch to another user by feedid (admin only)
+    if ($route->action == 'setuserfeed') {
+        $admin_model->setUserFeed(get("feedid", true));
+    }
+
+    // Get total number of users (admin only)
     if ($route->action == 'numberofusers') {
-        $route->format = "text";
-        $result = $mysqli->query("SELECT COUNT(*) FROM users");
-        $row = $result->fetch_array();
-        return (int) $row[0];
+        $route->format = 'text';
+        return $admin_model->numberOfUsers();
     }
 
+    // Get paginated list of users (admin only)
     if ($route->action == 'userlist') {
         $route->format = 'json';
-        $limit = "";
-        if (isset($_GET['page']) && isset($_GET['perpage'])) {
-            $page = (int) $_GET['page'];
-            $perpage = (int) $_GET['perpage'];
-            $offset = $page * $perpage;
-            $limit = "LIMIT $perpage OFFSET $offset";
-        }
-
-        $orderby = "id";
-        if (isset($_GET['orderby'])) {
-            if ($_GET['orderby']=="id") $orderby = "id";
-            if ($_GET['orderby']=="username") $orderby = "username";
-            if ($_GET['orderby']=="email") $orderby = "email";
-            if ($_GET['orderby']=="email_verified") $orderby = "email_verified";
-        }
-
-        $order = "DESC";
-        if (isset($_GET['order'])) {
-            if ($_GET['order']=="decending") $order = "DESC";
-            if ($_GET['order']=="ascending") $order = "ASC";
-        }
-
-        $search = false;
-        $searchstr = "";
-        if (isset($_GET['search'])) {
-            $search = $_GET['search'];
-            $search_out = preg_replace('/[^\p{N}\p{L}_\s\-@.]/u','',$search);
-            if ($search_out!=$search || $search=="") {
-                $search = false;
-            }
-            if ($search!==false) $searchstr = "WHERE username LIKE '%$search%' OR email LIKE '%$search%'";
-        }
-
-        $data = array();
-        $result = $mysqli->query("SELECT id,username,email,email_verified FROM users $searchstr ORDER BY $orderby $order ".$limit);
-
-        while ($row = $result->fetch_object()) {
-            $data[] = $row;
-            $userid = (int) $row->id;
-            $result1 = $mysqli->query("SELECT * FROM feeds WHERE `userid`='$userid'");
-            $row->feeds = $result1->num_rows;
-
-        }
-        return $data;
+        return $admin_model->userList(
+            get("page"),
+            get("perpage"),
+            get("orderby"),
+            get("order"),
+            get("search")
+        );
     }
 
-    if ($route->action == 'setuserfeed' && $session['write']) {
-        $route->format = 'json';
-        $feedid = (int) get("id");
-        $result = $mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
-        $row = $result->fetch_object();
-        $userid = $row->userid;
-        $_SESSION['userid'] = $userid;
-        header("Location: ../user/view");
-        return false;
-    }
 
     return EMPTY_ROUTE;
 }
