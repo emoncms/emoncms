@@ -885,8 +885,11 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = (int) $userid;
-        $timezone = preg_replace('/[^\w\-.\\/_]/','',$timezone);
-        
+
+        if (!$this->timezone_valid($timezone)) {
+            return array('success'=>false, 'message'=>"Invalid timezone");
+        }
+
         $stmt = $this->mysqli->prepare("UPDATE users SET timezone = ? WHERE id = ?");
         $stmt->bind_param("si", $timezone, $userid);
         $stmt->execute();
@@ -1038,6 +1041,13 @@ class User
         if (!$this->redis) return false;
 
         $ip = get_client_ip_env();
+        if (empty($ip)) {
+            // REMOTE_ADDR is missing or invalid (e.g. CLI, misconfigured proxy).
+            // Skip rate limiting rather than writing to a shared key-less bucket.
+            $this->log->warn("Rate limit skipped: empty IP for action:{$action}");
+            return false;
+        }
+
         $key = "ratelimit:{$action}:" . $ip;
         $attempts = $this->redis->incr($key);
         if ($attempts === 1) {
