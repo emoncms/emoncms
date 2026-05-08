@@ -19,7 +19,9 @@
             "composer lint",
             "composer phpcs"
         ],
-        "phpunit": "phpunit"
+        "phpunit": "phpunit --configuration tests/phpunit.xml",
+        "phpunit-integration": "phpunit --configuration tests/phpunit.integration.xml",
+        "phpunit-feature": "phpunit --configuration tests/phpunit.feature.xml"
     },
     "license": "AGPL-3.0-or-later",
     "require": {
