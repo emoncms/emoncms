@@ -295,13 +295,9 @@ function admin_controller()
     if ($route->action == 'update-log') {
         $route->format = "text";
         if (file_exists($admin->update_logfile())) {
-            ob_start();
-            passthru("cat " . $admin->update_logfile());
-            return trim(ob_get_clean());
+            return trim(file_get_contents($admin->update_logfile()));
         } elseif (file_exists($admin->old_update_logfile())) {
-            ob_start();
-            passthru("cat " . $admin->old_update_logfile());
-            return trim(ob_get_clean());
+            return trim(file_get_contents($admin->old_update_logfile()));
         } else {
             $route->format = "json";
             return array('success'=>false, 'message'=>$admin->update_logfile()." does not exist");

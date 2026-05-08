@@ -367,9 +367,9 @@ class Admin
             'mem_info' => $meminfo,
             'partitions' => $this->disk_list(),
             'component_summary' => $component_summary,
-            'git_branch' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-            'git_URL' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
-            'git_describe' => $this->exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
+            'git_branch' => $this->exec("git -C " . escapeshellarg(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))) . " branch --contains HEAD"),
+            'git_URL' => $this->exec("git -C " . escapeshellarg(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))) . " ls-remote --get-url origin"),
+            'git_describe' => $this->exec("git -C " . escapeshellarg(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))) . " describe")
         );
     }
 
@@ -482,7 +482,7 @@ class Admin
 
         if ($git_info) {
             foreach ($components as $name => $component) {
-                $path = $component["path"];
+                $path = escapeshellarg($component["path"]);
                 $components[$name]["describe"] = $this->exec("git -C $path describe");
                 $components[$name]["branch"] = str_replace("* ", "", $this->exec("git -C $path rev-parse --abbrev-ref HEAD"));
                 $components[$name]["local_changes"] = $this->exec("git -C $path diff-index -G. HEAD --");
@@ -557,7 +557,7 @@ class Admin
                 if (!file_exists("/.dockerenv")) {
                     if ($this->is_command_available('iostat')) {
                         ob_start();
-                        @passthru("iostat -o JSON -k $filesystem 2>/dev/null");
+                        @passthru("iostat -o JSON -k " . escapeshellarg($filesystem) . " 2>/dev/null");
                         $output = trim(ob_get_clean());
                         if (!empty($output)) {
                             $stats = json_decode($output, true);
@@ -590,16 +590,26 @@ class Admin
                         $partition_name = end($elements);
                     }
                     if ($partition_name) {
-                        $sectors_read = $this->exec("awk '/$partition_name/ {print $6}' /proc/diskstats");
-                        $sectors_written = $this->exec("awk '/$partition_name/ {print $10}' /proc/diskstats");
-                        if ($sectors_read == null || $sectors_written == null) {
+                        $sectors_read = null;
+                        $sectors_written = null;
+                        if (@is_readable('/proc/diskstats')) {
+                            foreach (explode("\n", file_get_contents('/proc/diskstats')) as $dline) {
+                                $dparts = preg_split('/\s+/', trim($dline));
+                                if (isset($dparts[2]) && $dparts[2] === $partition_name) {
+                                    $sectors_read    = isset($dparts[5]) ? (int)$dparts[5] : null;
+                                    $sectors_written = isset($dparts[9]) ? (int)$dparts[9] : null;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($sectors_read === null || $sectors_written === null) {
                             $partition_name = false;
                         }
 
-                        if ($sectors_read != null) {
+                        if ($sectors_read !== null) {
                             $bytes_read = $sectors_read * 512;
                         }
-                        if ($sectors_written != null) {
+                        if ($sectors_written !== null) {
                             $bytes_written = $sectors_written * 512;
                         }
                     }
@@ -773,9 +783,11 @@ class Admin
             }
             $rpi_info['cputemp'] = number_format((int) $this->exec('cat /sys/class/thermal/thermal_zone0/temp') / 1000, '2', '.', '') . "&degC";
 
-            // Use 'which' to find vcgencmd location, fallback to default path
-            $vcgencmd_path = $this->exec('which vcgencmd 2>/dev/null') ?: '/opt/vc/bin/vcgencmd';
-            $rpi_info['gputemp'] = $this->exec($vcgencmd_path . ' measure_temp');
+            // Use 'which' to find vcgencmd location, validate against known paths
+            $vcgencmd_known_paths = array('/usr/bin/vcgencmd', '/usr/local/bin/vcgencmd', '/opt/vc/bin/vcgencmd');
+            $vcgencmd_which = trim((string)$this->exec('which vcgencmd 2>/dev/null'));
+            $vcgencmd_path = in_array($vcgencmd_which, $vcgencmd_known_paths, true) ? $vcgencmd_which : '/opt/vc/bin/vcgencmd';
+            $rpi_info['gputemp'] = $this->exec(escapeshellarg($vcgencmd_path) . ' measure_temp');
 
             if (strpos($rpi_info['gputemp'], 'temp=') !== false) {
                 $rpi_info['gputemp'] = str_replace("temp=", "", $rpi_info['gputemp']);
