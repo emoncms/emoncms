@@ -47,16 +47,9 @@ function user_controller()
             }
             
             if(!is_null($ref)){
-                $decoded_ref = urldecode(base64_decode($ref));
-                $parsed = parse_url($decoded_ref);
-                // Only allow relative paths (no scheme, no host)
-                if (!isset($parsed['scheme']) && !isset($parsed['host']) && isset($parsed['path'])) {
-                    $referrer = htmlspecialchars($decoded_ref, ENT_QUOTES, 'UTF-8');
-                } else {
-                    $referrer = '';
-                }
+                $referrer = htmlspecialchars($user->validate_referrer(urldecode(base64_decode($ref))), ENT_QUOTES, 'UTF-8');
             } else {
-                $referrer="";
+                $referrer = '';
             }
             // load login template with the above parameters
             return view("Modules/user/login_block.php", array(
@@ -77,16 +70,9 @@ function user_controller()
             $message = isset($msg) ? htmlspecialchars(urldecode($msg)) : '';
             $ref = get('ref');
             
-            // Validate referrer using same logic as login section (prevent open redirect/XSS)
+            // Validate referrer to prevent open redirect (scheme/host not allowed)
             if(!is_null($ref)){
-                $decoded_ref = urldecode(base64_decode($ref));
-                $parsed = parse_url($decoded_ref);
-                // Only allow relative paths (no scheme, no host)
-                if (!isset($parsed['scheme']) && !isset($parsed['host']) && isset($parsed['path'])) {
-                    $referrer = $decoded_ref;  // Store as-is, don't htmlspecialchars here
-                } else {
-                    $referrer = '';
-                }
+                $referrer = $user->validate_referrer(urldecode(base64_decode($ref)));
             } else {
                 $referrer = '';
             }

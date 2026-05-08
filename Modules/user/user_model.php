@@ -511,7 +511,10 @@ class User
             
             if ($this->redis) $this->redis->hmset("user:".$userData->id,array('apikey_write'=>$userData->apikey_write));
 
-            if(!empty($referrer)) $userData->startingpage = urldecode($referrer);
+            $safe_referrer = $this->validate_referrer($referrer);
+            if ($safe_referrer !== '') {
+                $userData->startingpage = $safe_referrer;
+            }
             return array('success'=>true, 'message'=>tr("Login successful"), 'startingpage'=>$userData->startingpage);
         }
     }
@@ -1088,6 +1091,34 @@ class User
         } else {
             return array('success'=>true);
         }
+    }
+
+    /**
+     * Validate a referrer string, returning it if it is a safe relative path,
+     * or an empty string if it contains a scheme or host (open-redirect prevention).
+     *
+     * @param  string $referrer  Raw referrer value (not yet URL-decoded)
+     * @return string            Safe relative path, or '' if invalid
+     */
+    public function validate_referrer($referrer)
+    {
+        if (empty($referrer)) return '';
+
+        // Prevent oversized payloads
+        if (strlen($referrer) > 2000) return '';
+
+        $decoded = urldecode($referrer);
+
+        // Reject backslashes: some browsers normalise \\ to / which can turn
+        // /\example.com into //example.com (a protocol-relative redirect)
+        if (strpos($decoded, '\\') !== false) return '';
+
+        // Only allow relative paths — no scheme (http://) and no host
+        $parsed = parse_url($decoded);
+        if (!isset($parsed['scheme']) && !isset($parsed['host']) && isset($parsed['path'])) {
+            return $decoded;
+        }
+        return '';
     }
 }
 
