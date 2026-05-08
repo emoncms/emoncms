@@ -658,7 +658,9 @@ class User
                 return array('success'=>false, 'message'=>"Password reset disabled");
             }
         } else {
-            return array('success'=>false, 'message'=>"Invalid username or email");
+            // Return the same response as a successful send to prevent username/email enumeration
+            $this->log->info("passwordreset: no account matched username:$username emailto:$emailto ip:".get_client_ip_env());
+            return array('success'=>true, 'message'=>"Password recovery email sent!");
         }
     }
 
