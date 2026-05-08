@@ -721,7 +721,7 @@ class Admin
         }
         // add the rpi details
         $rpi_info['model'] = "Unknown";
-        if (@is_readable('/proc/cpuinfo') || true) {
+        if (@is_readable('/proc/cpuinfo')) {
             //load model information
             $rpi_revision = array();
             if (@is_readable(__DIR__ . "/pi-model.json")) {
@@ -736,14 +736,9 @@ class Admin
             }
             //get cpu info
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
-            $rpi_info = [
-                'rev' => '',
-                'sn' => '',
-                'model' => '',
-            ];
 
             // If matches are found, map them correctly
-            if (!empty($matches)) {
+            if (!empty($matches[1])) {
                 foreach ($matches[1] as $index => $key) {
                     $key = strtolower($key); // Normalize keys to lowercase
                     if ($key === 'revision') {
@@ -757,20 +752,20 @@ class Admin
             }
 
             //build model string
-            if (!empty($rpi_revision[$rpi_info['rev']]) || 1) {
-                $empty_model = array_map(function ($n) {
-                    return '';
-                }, array_flip(explode(',', 'Model,Revision,RAM,Manufacturer,currentfs')));
-                $model_info = !empty($rpi_revision[$rpi_info['rev']]) ? $rpi_revision[$rpi_info['rev']] : $empty_model;
+            $empty_model = array_map(function ($n) {
+                return '';
+            }, array_flip(explode(',', 'Model,Revision,RAM,Manufacturer')));
+            $model_info = !empty($rpi_revision[$rpi_info['rev']]) ? $rpi_revision[$rpi_info['rev']] : $empty_model;
+            $model = !empty($model_info['Model']) ? $model_info['Model'] : '';
+            if (!empty($model)) {
                 $rpi_info['model'] = "Raspberry Pi ";
-                $model = !empty($model_info['Model']) ? $model_info['Model'] : 'N/A';
                 if (ctype_digit($model[0])) { //Raspberry Pi >= 2
                     $ver = $model[0];
                     $model = substr($model, 1);
                     $rpi_info['model'] .= $ver . " Model " . $model;
                 } elseif (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
                     $rpi_info['model'] .= " Compute Module";
-                    if (ctype_digit($model[2]) && $model[2] > 1) {
+                    if (isset($model[2]) && ctype_digit($model[2]) && $model[2] > 1) {
                         $rpi_info['model'] .= " " . $model[2];
                     }
                 } else { //Raspberry Pi
