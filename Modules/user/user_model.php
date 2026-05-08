@@ -166,8 +166,8 @@ class User
         if ($row = $result->fetch_object()) {
             if (!($row->uuid)) {
                 $uuid = guidv4();
-                $stmt = $this->mysqli->prepare("UPDATE users set uuid = ?");
-                $stmt->bind_param("s", $uuid);
+                $stmt = $this->mysqli->prepare("UPDATE users SET uuid = ? WHERE id = ?");
+                $stmt->bind_param("si", $uuid, $userid);
                 if (!$stmt->execute()) {
                     $error = $this->mysqli->error;
                     $this->log->error($error);
