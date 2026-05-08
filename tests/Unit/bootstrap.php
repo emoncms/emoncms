@@ -28,6 +28,7 @@ $GLOBALS['settings'] = [
         'level'    => 2,
     ],
     'ui_read_only_mode' => false,
+    'disable_rate_limiting' => false,
 ];
 
 // Helper functions used by user_model.php that normally live in core.php.

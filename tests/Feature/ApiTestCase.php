@@ -95,6 +95,80 @@ abstract class ApiTestCase extends TestCase
         return $this->decodeJson($body, "POST $path");
     }
 
+    /**
+     * Send a POST request and return both the decoded JSON body and the raw
+     * response headers, keyed by lower-case header name.
+     * Multi-value headers (e.g. Set-Cookie) are returned as arrays.
+     *
+     * @return array{body: mixed, headers: array<string, string|string[]>}
+     */
+    protected function postRaw(string $path, array $fields = [], array $params = []): array
+    {
+        $url = static::$baseUrl . $path;
+        if ($params) {
+            $url .= '?' . http_build_query($params);
+        }
+
+        $responseHeaders = [];
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => false, // don't follow so we see Set-Cookie on the login response
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => http_build_query($fields),
+            CURLOPT_COOKIEFILE     => $this->cookieJar,
+            CURLOPT_COOKIEJAR      => $this->cookieJar,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
+            CURLOPT_HEADERFUNCTION => function ($ch, string $headerLine) use (&$responseHeaders): int {
+                $trimmed = trim($headerLine);
+                if (str_contains($trimmed, ':')) {
+                    [$name, $value] = explode(':', $trimmed, 2);
+                    $name  = strtolower(trim($name));
+                    $value = trim($value);
+                    if (isset($responseHeaders[$name])) {
+                        $responseHeaders[$name] = (array) $responseHeaders[$name];
+                        $responseHeaders[$name][] = $value;
+                    } else {
+                        $responseHeaders[$name] = $value;
+                    }
+                }
+                return strlen($headerLine);
+            },
+        ]);
+
+        $body = curl_exec($ch);
+        $this->assertNotFalse($body, "POST $path failed: " . curl_error($ch));
+        curl_close($ch);
+
+        $decoded = json_decode($body, true); // null for non-JSON (redirects etc.)
+
+        return ['body' => $decoded, 'headers' => $responseHeaders];
+    }
+
+    /**
+     * Return all Set-Cookie header values from a postRaw() response as an
+     * associative array of cookie-name => cookie-value (the part before ';').
+     *
+     * @param array<string, string|string[]> $headers
+     * @return array<string, string>
+     */
+    protected function parseCookies(array $headers): array
+    {
+        $setCookie = $headers['set-cookie'] ?? [];
+        $setCookie = (array) $setCookie;
+
+        $cookies = [];
+        foreach ($setCookie as $line) {
+            $parts = explode(';', $line);
+            $pair  = explode('=', trim($parts[0]), 2);
+            if (count($pair) === 2) {
+                $cookies[trim($pair[0])] = trim($pair[1]);
+            }
+        }
+        return $cookies;
+    }
+
     private function decodeJson(string $body, string $context): mixed
     {
         $decoded = json_decode($body, true);

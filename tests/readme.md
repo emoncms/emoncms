@@ -33,9 +33,9 @@ php vendor/bin/phpunit --configuration tests/phpunit.integration.xml
 php vendor/bin/phpunit --configuration tests/phpunit.feature.xml
 
 # Via composer scripts
-php composer.phar phpunit
-php composer.phar phpunit-integration
-php composer.phar phpunit-feature
+php composer.phar run phpunit
+php composer.phar run phpunit-integration
+php composer.phar run phpunit-feature
 
 # All suites in one command
 php vendor/bin/phpunit --configuration tests/phpunit.xml && \
@@ -43,7 +43,10 @@ php vendor/bin/phpunit --configuration tests/phpunit.integration.xml && \
 php vendor/bin/phpunit --configuration tests/phpunit.feature.xml
 
 # Or via composer
-php composer.phar phpunit-all
+php composer.phar run phpunit-all
+
+# All suites with per-test output
+php composer.phar run phpunit-all -- --testdox
 ```
 
 ## Configuration
