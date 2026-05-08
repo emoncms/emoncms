@@ -1080,7 +1080,7 @@ class Admin
     }
 
     private function which($command) {
-        return $this->exec("which $command 2>/dev/null");
+        return $this->exec("which " . escapeshellarg($command) . " 2>/dev/null");
     }
 
     private function iostat($filesystem) {

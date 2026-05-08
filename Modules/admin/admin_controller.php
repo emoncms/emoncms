@@ -30,6 +30,9 @@ function admin_controller()
     // --------------------------------------------------------------------------------------------
     if ($route->action == 'db' && ($session['admin'] || $settings['updatelogin']===true)) {
         $route->format = 'html';
+        if (!$session['admin'] && $settings['updatelogin']===true) {
+            $log->warn("DB schema update accessed via updatelogin bypass (not an admin session). Set updatelogin to false in settings after update is complete.");
+        }
         $applychanges = false;
         if (isset($_GET['apply']) && $_GET['apply']==true) {
             $applychanges = true;
@@ -218,7 +221,7 @@ function admin_controller()
         } else {
             $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
         }
-        return $admin->runService($update_script, escapeshellarg($type) . " " . escapeshellarg($firmware_key) . " " . escapeshellarg($serial_port) . ">" . $admin->update_logfile());
+        return $admin->runService($update_script, escapeshellarg($type) . " " . escapeshellarg($firmware_key) . " " . escapeshellarg($serial_port) . ">" . escapeshellarg($admin->update_logfile()));
     }
 
     if ($route->action == 'update-firmware') {
@@ -235,7 +238,7 @@ function admin_controller()
         if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
 
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        return $admin->runService($update_script, escapeshellarg($serial_port) . " " . escapeshellarg($firmware_key) . ">" . $admin->update_logfile());
+        return $admin->runService($update_script, escapeshellarg($serial_port) . " " . escapeshellarg($firmware_key) . ">" . escapeshellarg($admin->update_logfile()));
     }
 
 
@@ -291,7 +294,7 @@ function admin_controller()
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
         // provide port, custom, filename, baudrate, core, autoreset - all parameters are escaped for shell safety
-        return $admin->runService($update_script, escapeshellarg($port) . " custom " . escapeshellarg($safe_filename) . " " . escapeshellarg($baud_rate) . " " . escapeshellarg($core) . " " . escapeshellarg($autoreset) . ">" . $admin->update_logfile());
+        return $admin->runService($update_script, escapeshellarg($port) . " custom " . escapeshellarg($safe_filename) . " " . escapeshellarg($baud_rate) . " " . escapeshellarg($core) . " " . escapeshellarg($autoreset) . ">" . escapeshellarg($admin->update_logfile()));
     }
 
     if ($route->action == 'update-log') {
@@ -357,7 +360,7 @@ function admin_controller()
         }
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . $admin->update_logfile());
+        return $admin->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . escapeshellarg($admin->update_logfile()));
     }
 
     if ($route->action == 'components-update-all' && $session['write']) {
@@ -374,7 +377,7 @@ function admin_controller()
         if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");
 
         $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, escapeshellarg($branch) . ">" . $admin->update_logfile());
+        return $admin->runService($script, escapeshellarg($branch) . ">" . escapeshellarg($admin->update_logfile()));
     }
 
     // ----------------------------------------------------------------------------------------
