@@ -377,7 +377,7 @@ class User
         
         // Send verification email
         global $path;
-        $verification_link = $path."user/verify?email=".urlencode($email)."&key=$verification_key";
+        $verification_link = $path."user/verify?key=$verification_key";
         
         // $this->redis->rpush("emailqueue",json_encode(array(
         //    "emailto"=>$email,
@@ -401,15 +401,13 @@ class User
         return array('success'=>true, 'message'=>tr("Email verification email sent, please check your inbox"));
     }
     
-    public function verify_email($email,$verification_key)
+    public function verify_email($verification_key)
     {
-        $result = $this->is_valid_email($email);
-        if (!$result['success']) return $result;
-
         if (strlen($verification_key)!=64) return array('success'=>false, 'message'=>tr("Invalid verification key"));
+        if (!ctype_xdigit($verification_key)) return array('success'=>false, 'message'=>tr("Invalid verification key"));
         
-        $stmt = $this->mysqli->prepare("SELECT id,email_verified FROM users WHERE email=? AND verification_key=?");
-        $stmt->bind_param("ss",$email,$verification_key);
+        $stmt = $this->mysqli->prepare("SELECT id,email_verified FROM users WHERE verification_key=?");
+        $stmt->bind_param("s",$verification_key);
         $stmt->execute();
         $stmt->bind_result($id,$email_verified);
         $result = $stmt->fetch();

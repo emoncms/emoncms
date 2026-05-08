@@ -91,7 +91,7 @@ function user_controller()
         }
         
         if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
-            $verify = $user->verify_email(get('email',true), get('key',true));
+            $verify = $user->verify_email(get('key',true));
             return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
     }
