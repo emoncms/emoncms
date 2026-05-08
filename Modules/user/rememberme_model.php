@@ -283,19 +283,27 @@ class Rememberme {
         if (!$stmt->execute()) {
             $this->log->warn("findTriplet sql fail");
         }
+        $hashed_token = null;
         $stmt->bind_result($hashed_token);
-        $stmt->fetch();
+        $fetched = $stmt->fetch();
         $stmt->close();
 
-        // sha256 of token match: triplet found
-        if (hash_equals($hashed_token, hash('sha256', $cookieValues->token))) {
-            $this->log->info("findTriplet TRIPLET_FOUND");
-            return self::TRIPLET_FOUND;
-
-        // false will occur when there are no entries
-        } elseif ($hashed_token==false) {
+        // fetch() returns true when a row was found, null when no rows exist
+        if ($fetched !== true) {
             $this->log->info("findTriplet TRIPLET_NOT_FOUND");
             return self::TRIPLET_NOT_FOUND;
+        }
+
+        // Row found but token is null or empty — legacy (pre-sha256) or corrupt session
+        if ($hashed_token === null || $hashed_token === "") {
+            $this->log->info("findTriplet: Legacy or null token found, invalidating session");
+            return self::TRIPLET_INVALID;
+        }
+
+        // sha256 of token match: triplet found
+        if (hash_equals((string)$hashed_token, hash('sha256', (string)$cookieValues->token))) {
+            $this->log->info("findTriplet TRIPLET_FOUND");
+            return self::TRIPLET_FOUND;
 
         // token does not match query token
         } else {
