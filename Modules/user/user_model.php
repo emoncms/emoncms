@@ -638,14 +638,18 @@ class User
                 $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
                 $result = $email->send();
                 if (!$result['success']) {
-                    return array('success'=>false, 'message'=>$result['message']);
                     $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
+                    return array('success'=>false, 'message'=>$result['message']);
                 } else {
                     $this->log->info("Email sent to $emailto");
-                    // Save password and salt
+                    // Save password and salt only after email is confirmed sent
                     $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
                     $stmt->bind_param("ssi", $password, $salt, $userid);
-                    $stmt->execute();
+                    if (!$stmt->execute()) {
+                        $this->log->error("passwordreset: failed to save new password for userid:$userid error:" . $this->mysqli->error);
+                        $stmt->close();
+                        return array('success'=>false, 'message'=>"Error saving new password");
+                    }
                     $stmt->close();
                     return array('success'=>true, 'message'=>"Password recovery email sent!");
                 }                
