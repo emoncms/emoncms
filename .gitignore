@@ -26,3 +26,7 @@ Modules/*/
 !Modules/vis/
 
 /vendor/
+/composer.phar
+.phpunit.result.cache
+
+/audits/

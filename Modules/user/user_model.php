@@ -23,6 +23,7 @@ class User
     public $appname;
 
     private $ui_read_only_mode = false;
+    private $disable_rate_limiting = false;
 
     public function __construct($mysqli,$redis)
     {
@@ -32,6 +33,7 @@ class User
         $this->email_verification = $settings["interface"]["email_verification"];
         $this->appname = $settings["interface"]["appname"];
         $this->ui_read_only_mode = isset($settings["ui_read_only_mode"]) ? $settings["ui_read_only_mode"] : false;
+        $this->disable_rate_limiting = !empty($settings["interface"]["disable_rate_limiting"]);
 
         $this->mysqli = $mysqli;
 
@@ -1051,6 +1053,7 @@ class User
      */
     private function is_rate_limited($action, $limit, $window)
     {
+        if ($this->disable_rate_limiting) return false;
         if (!$this->redis) return false;
 
         $ip = get_client_ip_env();
