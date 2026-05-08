@@ -60,8 +60,11 @@ function user_controller()
                 'v' => 3
             ));
         }
-        if ($route->action == 'view' && $session['write']) return view("Modules/user/profile/profile.php", array());
-          
+        if ($route->action == 'view' && $session['write']) {
+            return view("Modules/user/profile/profile.php", array(
+            ));
+        }
+        
         if ($route->action == 'logout') {
             // decode url parameters
             $next = $path;
@@ -89,10 +92,28 @@ function user_controller()
             header('Location: '.$next);
             exit();
         }
-        
-        if ($route->action == 'verify' && $settings["interface"]["email_verification"] && !$session['read'] && isset($_GET['key'])) { 
-            $verify = $user->verify_email(get('key',true));
-            return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
+
+        if ($route->action == 'verify' && $settings['interface']['email_verification'] && isset($_GET['key'])) {
+            // On first registration the user will not be logged in
+            // a message is returned on the login page with the result of the verification process
+            if (!$session['read']) {
+                $verify = $user->verify_email(get('key', true));
+                return view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister, 'verify'=>$verify, 'message'=>'', 'referrer'=>''));
+
+            // If the user is logged in already it means they changed their email and are verifying the new email address
+            // in this case we show the profile page with a message about the result of the verification process
+            } else if ($session['write']) {
+                $verify = $user->verify_email(get('key', true));
+                
+                if ($verify['success']) {
+                    if (isset($verify['userid']) && $verify['userid'] == $session['userid']) {
+                        $session['emailverified'] = 1;
+                        $_SESSION['emailverified'] = 1;
+                    }
+                }
+                
+                return view("Modules/user/profile/profile.php",array());
+            }
         }
     }
 

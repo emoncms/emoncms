@@ -22,6 +22,8 @@ class User
     private $log;
     public $appname;
 
+    private $ui_read_only_mode = false;
+
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
@@ -29,6 +31,7 @@ class User
         $this->enable_rememberme = $settings["interface"]["enable_rememberme"];
         $this->email_verification = $settings["interface"]["email_verification"];
         $this->appname = $settings["interface"]["appname"];
+        $this->ui_read_only_mode = isset($settings["ui_read_only_mode"]) ? $settings["ui_read_only_mode"] : false;
 
         $this->mysqli = $mysqli;
 
@@ -108,7 +111,7 @@ class User
             $session['username'] = $username;
             $session['gravatar'] = '';
             $session['public_userid'] = 0;
-            $session['public_username'] = "";     
+            $session['public_username'] = "";
             if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
             return $session;
         }
@@ -129,7 +132,7 @@ class User
             $session['username'] = $username;
             $session['gravatar'] = '';
             $session['public_userid'] = 0;
-            $session['public_username'] = "";       
+            $session['public_username'] = "";
             if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
             return $session;
         }
@@ -283,12 +286,21 @@ class User
         $session['public_userid'] = 0;
         $session['public_username'] = "";
 
+        // Read only mode
+        if ($this->ui_read_only_mode) {
+            if (!$session['admin'] && $session['write']) $session['write'] = 0;
+        }
+
         return $session;
     }
 
 
     public function register($username, $password, $email, $timezone)
     {
+        if ($this->ui_read_only_mode) {
+            return array('success'=>false, 'message'=>tr("System is in read-only mode"));
+        }
+
         if ($this->is_rate_limited('register', 5, 600)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
 
         // Input validation, sanitisation and error reporting
@@ -412,20 +424,23 @@ class User
         $stmt->bind_result($id,$email_verified);
         $result = $stmt->fetch();
         $stmt->close();
+        $userid = (int) $id;
         
-        if ($result && $id>0) {
-            if ($email_verified==0) {
-                $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='1' WHERE id=?");
-                $stmt->bind_param("i",$id);
-                $stmt->execute();
-                $stmt->close();
-                return array('success'=>true, 'message'=>"Email verified");
-            } else {
-                return array('success'=>false, 'message'=>"Email already verified");
-            }
-        }
+        // Exit if verification key is invalid or user does not exist, normalize to same message as already verified to prevent enumeration
+        if (!$result || $userid<1) return array('success'=>false, 'message'=>tr("Invalid verification key"));
         
-        return array('success'=>false, 'message'=>"Invalid email or verification key");
+        // If email is already verified then exit with error
+        if ($email_verified) return array('success'=>false, 'message'=>tr("Email already verified"));
+
+        // Else if we are here: verification key is valid, email is not yet verified, so verify email
+        $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='1' WHERE id=?");
+        $stmt->bind_param("i",$userid);
+        $stmt->execute();
+        $stmt->close();
+
+        // Return success message
+        return array('success'=>true, 'message'=>"Email verified", "userid"=>$id);
+
     }
 
     public function login($username, $password, $remembermecheck, $referrer='')
