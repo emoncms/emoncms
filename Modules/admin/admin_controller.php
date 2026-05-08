@@ -279,12 +279,14 @@ function admin_controller()
         // Generate safe filename using timestamp and random string
         $safe_filename = 'firmware_' . time() . '_' . bin2hex(random_bytes(8)) . '.hex';
         $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$safe_filename;
-        
-        // write uploaded file contents using fopen
-        if (file_exists("/opt/openenergymonitor/data/firmware/upload")) {
-            $fp = fopen($tmpfile, 'w');
-            fwrite($fp, file_get_contents($file['tmp_name']));
-            fclose($fp);
+
+        // Use move_uploaded_file() which verifies the file originated from an HTTP upload
+        // and performs an atomic move, unlike fopen/fwrite which bypass that check
+        if (!is_dir("/opt/openenergymonitor/data/firmware/upload")) {
+            return array('success' => false, 'message' => "Firmware upload directory does not exist");
+        }
+        if (!move_uploaded_file($file['tmp_name'], $tmpfile)) {
+            return array('success' => false, 'message' => "Failed to save uploaded firmware file");
         }
         
         $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";

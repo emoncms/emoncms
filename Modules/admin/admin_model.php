@@ -151,8 +151,7 @@ class Admin
         if ($this->settings['redis']['enabled']) {
             $redis_info = $this->redis->info();
             $redis_info['dbSize'] = $this->redis->dbSize();
-            $phpRedisPattern = 'Redis Version =>';
-            $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '" . $phpRedisPattern . "'"), strlen($phpRedisPattern));
+            $redis_info['phpRedis'] = phpversion('redis') ?: '';
             $pipRedisPattern = "Version: ";
             $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
         }
@@ -256,10 +255,8 @@ class Admin
             $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
             return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
         } else {
-            $this->log->warn("runService() Redis not enabled. Trying PHP execution '$script $attributes'");
-            $result = $this->exec("$script $attributes");
-            $this->log->info("runService() PHP exec returned '$result'");
-            return array('success' => true, 'message' => "$result");
+            $this->log->error("runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
+            return array('success' => false, 'message' => "Redis is required to run service commands");
         }
     }
 
