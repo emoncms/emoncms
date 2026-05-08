@@ -153,7 +153,7 @@ class Admin
             $redis_info['dbSize'] = $this->redis->dbSize();
             $redis_info['phpRedis'] = phpversion('redis') ?: '';
             $pipRedisPattern = "Version: ";
-            $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+            $redis_info['pipRedis'] = "";
         }
 
         return array(
@@ -212,12 +212,12 @@ class Admin
             return array();
         }
 
-        if (!$exec = $this->exec_service_status($name)) {
+        if (!$service_status = $this->service_status($name)) {
             return array();
         }
         $status = array();
 
-        foreach ($exec as $line) {
+        foreach ($service_status as $line) {
             $parts = explode('=', $line);
             $status[$parts[0]] = $parts[1];
         }
@@ -290,7 +290,7 @@ class Admin
 
         $cpuinfo = false;
         if (@is_readable('/usr/bin/lscpu')) {
-            $data = $this->exec_lscpu();
+            $data = $this->lscpu();
             foreach ($data as $line) {
                 if (strpos($line, ':') !== false) {
                     list($key, $val) = explode(":", $line);
@@ -334,12 +334,12 @@ class Admin
             'cpu_info' => $cpuinfo,
             'machine' => $this->get_machine(),
             'ip' => server('SERVER_ADDR'),
-            'uptime' => $this->exec_uptime(),
+            'uptime' => $this->uptime(),
             'http_server' => $_SERVER['SERVER_SOFTWARE'],
             'php' => PHP_VERSION,
             'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-            'run_user' => $this->exec_whoami(),
-            'run_group' => $this->exec_id_groups(),
+            'run_user' => $this->whoami(),
+            'run_group' => $this->id_groups(),
             'script_owner' => (function_exists('get_current_user') ? get_current_user() : 'n/a'),
             'db_server' => $this->settings['sql']['server'],
             'db_ip' => gethostbyname($this->settings['sql']['server']),
@@ -364,9 +364,9 @@ class Admin
             'mem_info' => $meminfo,
             'partitions' => $this->disk_list(),
             'component_summary' => $component_summary,
-            'git_branch' => $this->exec_git_branch(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
-            'git_URL' => $this->exec_git_remote_url(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
-            'git_describe' => $this->exec_git_describe(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')))
+            'git_branch' => $this->git_branch(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
+            'git_URL' => $this->git_remote_url(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
+            'git_describe' => $this->git_describe(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')))
         );
     }
 
@@ -377,27 +377,27 @@ class Admin
         $board = "";
         $bios = "";
 
-        $res = $this->exec_dmi_board_vendor();
+        $res = $this->dmi_board_vendor();
         if (trim($res) != "") {
             $machine_string = trim($res);
         }
 
-        $res = $this->exec_dmi_product_name();
+        $res = $this->dmi_product_name();
         if (trim($res) != "") {
             $product = trim($res);
         }
 
-        $res = $this->exec_dmi_board_name();
+        $res = $this->dmi_board_name();
         if (trim($res) != "") {
             $board = trim($res);
         }
 
-        $res = $this->exec_dmi_bios_version();
+        $res = $this->dmi_bios_version();
         if (trim($res) != "") {
             $bios = trim($res);
         }
 
-        $res = $this->exec_dmi_bios_date();
+        $res = $this->dmi_bios_date();
         if (trim($res) != "") {
             $bios = trim($bios . " " . trim($res));
         }
@@ -480,10 +480,10 @@ class Admin
         if ($git_info) {
             foreach ($components as $name => $component) {
                 $path = $component["path"];
-                $components[$name]["describe"] = $this->exec_git_describe($path);
-                $components[$name]["branch"] = str_replace("* ", "", $this->exec_git_abbrev_ref($path));
-                $components[$name]["local_changes"] = $this->exec_git_local_changes($path);
-                $components[$name]["url"] = $this->exec_git_remote_url($path);
+                $components[$name]["describe"] = $this->git_describe($path);
+                $components[$name]["branch"] = str_replace("* ", "", $this->git_abbrev_ref($path));
+                $components[$name]["local_changes"] = $this->git_local_changes($path);
+                $components[$name]["url"] = $this->git_remote_url($path);
 
                 if (!in_array($components[$name]["branch"], $components[$name]["branches_available"])) {
                     $components[$name]["branches_available"][] = $components[$name]["branch"];
@@ -509,9 +509,9 @@ class Admin
         $output = array();
         if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
             //return $partitions;
-            $output = $this->exec_df_data();
+            $output = $this->df_data();
         } else {
-            if (!$output = $this->exec_df()) {
+            if (!$output = $this->df()) {
                 return $partitions;
             }
         }
@@ -553,12 +553,7 @@ class Admin
 
                 if (!file_exists("/.dockerenv")) {
                     if ($this->is_command_available('iostat')) {
-                        ob_start();
-                        @passthru("iostat -o JSON -k " . escapeshellarg($filesystem) . " 2>/dev/null");
-                        $output = trim(ob_get_clean());
-                        if (!empty($output)) {
-                            $stats = json_decode($output, true);
-                        }
+                        $stats = $this->iostat($filesystem);
                     }
                 }
 
@@ -773,13 +768,13 @@ class Admin
                 }
                 $rpi_info['model'] .= " Rev " . $model_info['Revision'] . " - " . $model_info['RAM'] . " (" . $model_info['Manufacturer'] . ")";
             }
-            $rpi_info['cputemp'] = number_format((int) $this->exec_cpu_temp() / 1000, '2', '.', '') . "&degC";
+            $rpi_info['cputemp'] = number_format((int) $this->cpu_temp() / 1000, '2', '.', '') . "&degC";
 
             // Use 'which' to find vcgencmd location, validate against known paths
             $vcgencmd_known_paths = array('/usr/bin/vcgencmd', '/usr/local/bin/vcgencmd', '/opt/vc/bin/vcgencmd');
-            $vcgencmd_which = trim((string)$this->exec_which_vcgencmd());
+            $vcgencmd_which = trim((string)$this->which_vcgencmd());
             $vcgencmd_path = in_array($vcgencmd_which, $vcgencmd_known_paths, true) ? $vcgencmd_which : '/opt/vc/bin/vcgencmd';
-            $rpi_info['gputemp'] = $this->exec_gpu_temp($vcgencmd_path);
+            $rpi_info['gputemp'] = $this->gpu_temp($vcgencmd_path);
 
             if (strpos($rpi_info['gputemp'], 'temp=') !== false) {
                 $rpi_info['gputemp'] = str_replace("temp=", "", $rpi_info['gputemp']);
@@ -812,9 +807,9 @@ class Admin
         } else {
             if (@file_exists('/usr/sbin/mosquitto')) {
                 if (file_exists("/.dockerenv")) {
-                    $v = $this->exec_mosquitto_version_docker();
+                    $v = $this->mosquitto_version_docker();
                 } else {
-                    $v = $this->exec_mosquitto_version();
+                    $v = $this->mosquitto_version();
                 }
             }
         }
@@ -942,10 +937,10 @@ class Admin
     public function get_fs_state()
     {
         $currentfs = "read-only";
-        $resexec = $this->exec_mount();
+        $mount_result = $this->mount();
         $matches = null;
         // hardcoded partition to raspberrypi only
-        preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n", $resexec), $matches);
+        preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n", $mount_result), $matches);
         if (!empty($matches)) {
             $currentfs = "read-write";
         }
@@ -992,100 +987,107 @@ class Admin
 
     // --- Named exec helpers: every shell command used by this class is listed here ---
 
-    private function exec_service_status($name) {
+    private function service_status($name) {
         return $this->exec_array('systemctl show ' . $name . ' | grep State');
     }
 
-    private function exec_lscpu() {
+    private function lscpu() {
         return $this->exec_array('lscpu');
     }
 
-    private function exec_uptime() {
+    private function uptime() {
         return $this->exec('uptime');
     }
 
-    private function exec_whoami() {
+    private function whoami() {
         return $this->exec('whoami');
     }
 
-    private function exec_id_groups() {
+    private function id_groups() {
         return $this->exec('id -Gn');
     }
 
-    private function exec_git_describe($path) {
+    private function git_describe($path) {
         return $this->exec("git -C " . escapeshellarg($path) . " describe");
     }
 
-    private function exec_git_abbrev_ref($path) {
+    private function git_abbrev_ref($path) {
         return $this->exec("git -C " . escapeshellarg($path) . " rev-parse --abbrev-ref HEAD");
     }
 
-    private function exec_git_branch($path) {
+    private function git_branch($path) {
         return $this->exec("git -C " . escapeshellarg($path) . " branch --contains HEAD");
     }
 
-    private function exec_git_local_changes($path) {
+    private function git_local_changes($path) {
         return $this->exec("git -C " . escapeshellarg($path) . " diff-index -G. HEAD --");
     }
 
-    private function exec_git_remote_url($path) {
+    private function git_remote_url($path) {
         return $this->exec("git -C " . escapeshellarg($path) . " ls-remote --get-url origin");
     }
 
-    private function exec_dmi_board_vendor() {
+    private function dmi_board_vendor() {
         return $this->exec('cat /sys/devices/virtual/dmi/id/board_vendor 2>/dev/null');
     }
 
-    private function exec_dmi_product_name() {
+    private function dmi_product_name() {
         return $this->exec('cat /sys/devices/virtual/dmi/id/product_name 2>/dev/null');
     }
 
-    private function exec_dmi_board_name() {
+    private function dmi_board_name() {
         return $this->exec('cat /sys/devices/virtual/dmi/id/board_name 2>/dev/null');
     }
 
-    private function exec_dmi_bios_version() {
+    private function dmi_bios_version() {
         return $this->exec('cat /sys/devices/virtual/dmi/id/bios_version 2>/dev/null');
     }
 
-    private function exec_dmi_bios_date() {
+    private function dmi_bios_date() {
         return $this->exec('cat /sys/devices/virtual/dmi/id/bios_date 2>/dev/null');
     }
 
-    private function exec_df() {
+    private function df() {
         return $this->exec_array('df -B 1 -x squashfs');
     }
 
-    private function exec_df_data() {
+    private function df_data() {
         return $this->exec_array('df -B 1 /data');
     }
 
-    private function exec_cpu_temp() {
+    private function cpu_temp() {
         return $this->exec('cat /sys/class/thermal/thermal_zone0/temp');
     }
 
-    private function exec_which_vcgencmd() {
+    private function which_vcgencmd() {
         return $this->exec('which vcgencmd 2>/dev/null');
     }
 
-    private function exec_gpu_temp($vcgencmd_path) {
+    private function gpu_temp($vcgencmd_path) {
         return $this->exec(escapeshellarg($vcgencmd_path) . ' measure_temp');
     }
 
-    private function exec_mosquitto_version_docker() {
+    private function mosquitto_version_docker() {
         return $this->exec('/usr/sbin/mosquitto -h | grep version');
     }
 
-    private function exec_mosquitto_version() {
+    private function mosquitto_version() {
         return $this->exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\'');
     }
 
-    private function exec_mount() {
+    private function mount() {
         return $this->exec_array('mount');
     }
 
-    private function exec_which($command) {
+    private function which($command) {
         return $this->exec("which $command 2>/dev/null");
+    }
+
+    private function iostat($filesystem) {
+        ob_start();
+        @passthru("iostat -o JSON -k " . escapeshellarg($filesystem) . " 2>/dev/null");
+        $output = trim(ob_get_clean());
+        return !empty($output) ? json_decode($output, true) : null;
     }
 
     /**
@@ -1096,7 +1098,7 @@ class Admin
      */
     private function is_command_available($command)
     {
-        $result = $this->exec_which($command);
+        $result = $this->which($command);
         return !empty(trim($result));
     }
 }
