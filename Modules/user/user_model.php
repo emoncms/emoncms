@@ -35,7 +35,7 @@ class User
 
         $this->mysqli = $mysqli;
 
-        require "Modules/user/rememberme_model.php";
+        require_once "Modules/user/rememberme_model.php";
         $this->rememberme = new Rememberme($mysqli);
 
         $this->redis = $redis;
