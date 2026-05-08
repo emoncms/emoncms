@@ -1045,16 +1045,24 @@ class Process_ProcessList
 
     public function update_feed_data($id, $time, $value)
     {
-        $time = $this->getstartday($time);
+        $id = (int) $id;
+        $value = (float) $value;
+        $time = (int) $this->getstartday($time);
 
-        $feedname = "feed_" . trim($id) . "";
-        $result = $this->mysqli->query("SELECT time FROM $feedname WHERE `time` = '$time'");
+        $feedname = "feed_" . $id;
+        $result = $this->mysqli->query("SELECT time FROM `$feedname` WHERE `time` = '$time'");
         $row = $result->fetch_array();
 
         if (!$row) {
-            $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
+            $stmt = $this->mysqli->prepare("INSERT INTO `$feedname` (time,data) VALUES (?,?)");
+            $stmt->bind_param("id", $time, $value);
+            $stmt->execute();
+            $stmt->close();
         } else {
-            $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
+            $stmt = $this->mysqli->prepare("UPDATE `$feedname` SET data = ? WHERE `time` = ?");
+            $stmt->bind_param("di", $value, $time);
+            $stmt->execute();
+            $stmt->close();
         }
         return $value;
     }
@@ -1933,8 +1941,8 @@ class Process_ProcessList
             $time = $this->getstartday($time);
         }
 
-        $feedname = "feed_" . trim($id) . "";
-        $result = $this->mysqli->query("SELECT data FROM $feedname WHERE `time` = '$time'");
+        $feedname = "feed_" . (int) $id;
+        $result = $this->mysqli->query("SELECT data FROM `$feedname` WHERE `time` = '$time'");
         if ($result != null) {
             $row = $result->fetch_array();
         }
