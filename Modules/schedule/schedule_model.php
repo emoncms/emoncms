@@ -88,8 +88,15 @@ class Schedule
     public function create($userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO schedule (`userid`,`name`,`expression`,`timezone`, `public`) VALUES ('$userid','New Schedule','','".$this->timezone."',0)");
-        return $this->mysqli->insert_id;
+        $stmt = $this->mysqli->prepare("INSERT INTO schedule (`userid`,`name`,`expression`,`timezone`, `public`) VALUES (?,?,?,?,0)");
+        $name = 'New Schedule';
+        $expression = '';
+        $timezone = $this->timezone;
+        $stmt->bind_param("isss", $userid, $name, $expression, $timezone);
+        $stmt->execute();
+        $id = $this->mysqli->insert_id;
+        $stmt->close();
+        return $id;
     }
 
     public function delete($id)
