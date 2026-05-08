@@ -729,14 +729,36 @@ feed.list(function (feeds) {
 
 // Schedule Select List
 $.ajax({
-    url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
+    url: path + "schedule/list.json",
+    dataType: 'json',
+    async: true,
+    success: function (result) {
+        // If schedule module is missing, API can return:
+        // {"success":false,"message":"406 Not Acceptable. Route not found"}
+        if (result && result.success === false) {
+            process_vue.schedules = {};
+            return;
+        }
+
         // Schedule list by ID
         var schedules = {};
-        for (z in result) {
-            schedules[result[z].id] = result[z];
+        if (Array.isArray(result)) {
+            for (let z = 0; z < result.length; z++) {
+                schedules[result[z].id] = result[z];
+            }
         }
 
         process_vue.schedules = schedules;
+    },
+    error: function (xhr) {
+        // Gracefully continue when schedule route/module is unavailable.
+        process_vue.schedules = {};
+        if (!xhr || xhr.status !== 406) {
+            console.warn('Failed to load schedules');
+        }
+    },
+    complete: function () {
+        // Continue app initialization regardless of schedule availability.
         process_vue.initprogress();
     }
 });
