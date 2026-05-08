@@ -442,7 +442,7 @@ class User
 
         if (!$userid = $this->get_id($username)) {
             $this->log->error("Login: Username does not exist username:$username ip:".get_client_ip_env());
-            return array('success'=>false, 'message'=>tr("Username does not exist"));
+            return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
         
         $userid = (int) $userid;
@@ -458,7 +458,7 @@ class User
         if ($hash != $userData->password)
         {
             $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
-            return array('success'=>false, 'message'=>tr("Incorrect password"));
+            return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
         else
         {
@@ -561,6 +561,8 @@ class User
 
     public function change_password($userid, $old, $new)
     {
+        if ($this->is_rate_limited('changepassword', 5, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+
         $userid = (int) $userid;
 
         $result = $this->is_valid_password($old);
