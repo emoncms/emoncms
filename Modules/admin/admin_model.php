@@ -109,12 +109,22 @@ class Admin
     public function full_system_information()
     {
         global $emoncms_version;
-        // create array of installed services
-        $services = array();
-        $system = $this->system_information();
 
-        foreach ($system['services'] as $key => $value) {
-            if (!empty($system['services'][$key])) {    // If the service was found on this system
+        // ========== DATA GATHERING - Database & System Basics ==========
+        $result = $this->mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
+        $db = $result->fetch_array();
+
+        @list($os_name, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
+        $script_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+
+        // ========== SERVICES - Gather and Structure Service Status ==========
+        $services = array();
+        foreach ($this->get_services_list() as $service) {
+            $services[$service] = $this->getServiceStatus("$service.service");
+        }
+
+        foreach ($services as $key => $value) {
+            if (!empty($value)) {    // If the service was found on this system
                 // Populate service status fields
                 $services[$key] = array(
                     'loadstate' => ucfirst($value['LoadState']),
@@ -140,14 +150,12 @@ class Admin
             }
         }
 
-        // sorts conveniently showing active first
         asort($services);
 
         // Hide mqtt_input if not found
         if (isset($services['mqtt_input']) && $services['mqtt_input']['loadstate'] == 'Not-found') {
             unset($services['mqtt_input']);
         }
-
 
         // add custom messages for feedwriter service
         if (isset($services['feedwriter'])) {
@@ -158,99 +166,101 @@ class Admin
             $services['feedwriter']['text'] .= $message;
         }
 
-        $ram_info = $this->get_ram($system['mem_info']);
-        $disk_info = $this->get_mountpoints($system['partitions']);
-        $php_modules = $this->php_modules($system['php_modules']);
-        $redis_info = $this->redis_info();
-        $mqtt_version = $this->mqtt_version();
-        $rpi_info = $this->get_rpi_info();
-
-        // Keep only system fields required by the admin view and markdown export.
-        $system_view = array(
-            'date' => $system['date'],
-            'system' => $system['system'],
-            'kernel' => $system['kernel'],
-            'host' => $system['host'],
-            'cpu_info' => $system['cpu_info'],
-            'machine' => $system['machine'],
-            'ip' => $system['ip'],
-            'uptime' => $system['uptime'],
-            'http_server' => $system['http_server'],
-            'php' => $system['php'],
-            'zend' => $system['zend'],
-            'run_user' => $system['run_user'],
-            'run_group' => $system['run_group'],
-            'script_owner' => $system['script_owner'],
-            'db_server' => $system['db_server'],
-            'db_ip' => $system['db_ip'],
-            'db_version' => $system['db_version'],
-            'db_stat' => $system['db_stat'],
-            'db_date' => $system['db_date'],
-            'redis_server' => $system['redis_server'],
-            'mqtt_server' => $system['mqtt_server'],
-            'mqtt_ip' => $system['mqtt_ip'],
-            'mqtt_port' => $system['mqtt_port'],
-            'hostbyaddress' => $system['hostbyaddress'],
-            'http_proto' => $system['http_proto'],
-            'http_mode' => $system['http_mode'],
-            'http_port' => $system['http_port'],
-            'git_branch' => $system['git_branch'],
-            'git_URL' => $system['git_URL'],
-            'git_describe' => $system['git_describe']
+        // ========== SYSTEM INFORMATION SECTION - Initialize ==========
+        $markdown_sections = array(
+            'System Information' => array()
         );
 
-        $host_text = $system_view['host'] . ' | ' . $system_view['hostbyaddress'] . ' | (' . $system_view['ip'] . ')';
+        // ========== EMONCMS SECTION ==========
+        $component_summary = array();
+        $components = $this->component_list(false);
+        foreach ($components as $component) {
+            $component_summary[] = $component["name"] . " v" . $component["version"];
+        }
 
-        $markdown_sections = array(
-            'System Information' => array(
-                'Emoncms' => array(
-                    'Version' => $emoncms_version,
-                    'Git URL' => $system_view['git_URL'],
-                    'Git Branch' => $system_view['git_branch'],
-                    'Git Describe' => $system_view['git_describe'],
-                    'Components' => $system['component_summary']
-                ),
-                'Server' => array(
-                    'Machine' => $system_view['machine'],
-                    'CPU' => $system_view['cpu_info'],
-                    'OS' => $system_view['system'] . ' ' . $system_view['kernel'],
-                    'Host' => $host_text,
-                    'Date' => $system_view['date'],
-                    'Uptime' => $system_view['uptime']
-                ),
-                'Memory' => array(
-                    'RAM' => array(
-                        'Used' => $ram_info['percent'] . '%',
-                        'Total' => $ram_info['total'],
-                        'Used Value' => $ram_info['used'],
-                        'Free' => $ram_info['free']
-                    ),
-                    'Swap' => array(
-                        'Used' => isset($ram_info['swap']['percent']) ? $ram_info['swap']['percent'] . '%' : '0%',
-                        'Total' => isset($ram_info['swap']['total']) ? $ram_info['swap']['total'] : '',
-                        'Used Value' => isset($ram_info['swap']['used']) ? $ram_info['swap']['used'] : '',
-                        'Free' => isset($ram_info['swap']['free']) ? $ram_info['swap']['free'] : ''
-                    )
-                ),
-                'Disk' => array(),
-                'HTTP' => array(
-                    'Server' => $system_view['http_server'] . ' ' . $system_view['http_proto'] . ' ' . $system_view['http_mode'] . ' ' . $system_view['http_port']
-                ),
-                'MySQL' => array(
-                    'Version' => $system_view['db_version'],
-                    'Host' => $system_view['db_server'] . ' (' . $system_view['db_ip'] . ')',
-                    'Date' => $system_view['db_date'],
-                    'Stats' => $system_view['db_stat']
-                ),
-                'PHP' => array(
-                    'Version' => $system_view['php'] . ' (Zend Version ' . $system_view['zend'] . ')',
-                    'Run user' => 'User: ' . $system_view['run_user'] . ' Group: ' . $system_view['run_group'] . ' Script Owner: ' . $system_view['script_owner'],
-                    'Modules' => array_map(function ($module) use ($system_view) {
-                        return str_replace('v' . $system_view['php'], '', $module);
-                    }, $php_modules)
-                )
+        $markdown_sections['System Information']['Emoncms'] = array(
+            'Version' => $emoncms_version,
+            'Git URL' => $this->git_remote_url($script_path),
+            'Git Branch' => $this->git_branch($script_path),
+            'Git Describe' => $this->git_describe($script_path),
+            'Components' => implode(" | ", $component_summary)
+        );
+
+        // ========== SERVER SECTION ==========
+        $cpuinfo = false;
+        if (@is_readable('/usr/bin/lscpu')) {
+            $data = $this->lscpu() ?: [];
+            foreach ($data as $line) {
+                if (strpos($line, ':') !== false) {
+                    list($key, $val) = explode(":", $line);
+                    $key = trim($key);
+                    $val = trim($val);
+                    if ($key == "Socket(s)") {
+                        $cpuinfo .= $val . ' Sockets(s) | ';
+                    }
+                    if ($key == "Core(s) per socket") {
+                        $cpuinfo .= $val . ' Core(s) | ';
+                    }
+                    if ($key == "Thread(s) per core") {
+                        $cpuinfo .= $val . ' Threads(s) | ';
+                    }
+                    if ($key == "Model name") {
+                        $cpuinfo .= $val . ' | ';
+                    }
+                    if ($key == "CPU MHz") {
+                        $cpuinfo .= $val . 'MHz | ';
+                    }
+                    if ($key == "BogoMIPS") {
+                        $cpuinfo .= $val . 'MIPS | ';
+                    }
+                }
+            }
+        }
+
+        $host_text = $host . ' | ' . @gethostbyaddr(gethostbyname($host)) . ' | (' . server('SERVER_ADDR') . ')';
+
+        $markdown_sections['System Information']['Server'] = array(
+            'Machine' => $this->get_machine(),
+            'CPU' => $cpuinfo,
+            'OS' => $os_name . ' ' . $kernel,
+            'Host' => $host_text,
+            'Date' => date('Y-m-d H:i:s T'),
+            'Uptime' => $this->uptime()
+        );
+
+        // ========== MEMORY SECTION ==========
+        $meminfo = false;
+        if (@is_readable('/proc/meminfo')) {
+            $data = explode("\n", file_get_contents("/proc/meminfo"));
+            $meminfo = array();
+            foreach ($data as $line) {
+                if (strpos($line, ':') !== false) {
+                    list($key, $val) = explode(":", $line);
+                    $meminfo[$key] = 1024 * floatval(trim(str_replace(' kB', '', $val)));
+                }
+            }
+        }
+
+        $ram_info = $this->get_ram($meminfo);
+        $markdown_sections['System Information']['Memory'] = array(
+            'RAM' => array(
+                'Used' => $ram_info['percent'] . '%',
+                'Total' => $ram_info['total'],
+                'Used Value' => $ram_info['used'],
+                'Free' => $ram_info['free']
+            ),
+            'Swap' => array(
+                'Used' => isset($ram_info['swap']['percent']) ? $ram_info['swap']['percent'] . '%' : '0%',
+                'Total' => isset($ram_info['swap']['total']) ? $ram_info['swap']['total'] : '',
+                'Used Value' => isset($ram_info['swap']['used']) ? $ram_info['swap']['used'] : '',
+                'Free' => isset($ram_info['swap']['free']) ? $ram_info['swap']['free'] : ''
             )
         );
+
+        // ========== DISK SECTION ==========
+        $partitions = $this->disk_list();
+        $disk_info = $this->get_mountpoints($partitions);
+        $markdown_sections['System Information']['Disk'] = array();
 
         foreach ($disk_info as $disk) {
             $markdown_sections['System Information']['Disk'][$disk['mountpoint']] = array(
@@ -264,24 +274,56 @@ class Admin
             );
         }
 
+        // ========== HTTP SECTION ==========
+        $markdown_sections['System Information']['HTTP'] = array(
+            'Server' => $_SERVER['SERVER_SOFTWARE'] . ' ' . $_SERVER['SERVER_PROTOCOL'] . ' ' . $_SERVER['GATEWAY_INTERFACE'] . ' ' . $_SERVER['SERVER_PORT']
+        );
+
+        // ========== MYSQL SECTION ==========
+        $markdown_sections['System Information']['MySQL'] = array(
+            'Version' => $this->mysqli->server_info,
+            'Host' => $this->settings['sql']['server'] . ' (' . gethostbyname($this->settings['sql']['server']) . ')',
+            'Date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
+            'Stats' => $this->mysqli->stat()
+        );
+
+        // ========== PHP SECTION ==========
+        $php_version = PHP_VERSION;
+        $loaded_php_modules = get_loaded_extensions();
+        $php_modules = $this->php_modules($loaded_php_modules);
+
+        $markdown_sections['System Information']['PHP'] = array(
+            'Version' => $php_version . ' (Zend Version ' . (function_exists('zend_version') ? zend_version() : 'n/a') . ')',
+            'Run user' => 'User: ' . $this->whoami() . ' Group: ' . $this->id_groups() . ' Script Owner: ' . (function_exists('get_current_user') ? get_current_user() : 'n/a'),
+            'Modules' => array_map(function ($module) use ($php_version) {
+                return str_replace('v' . $php_version, '', $module);
+            }, $php_modules)
+        );
+
+        // ========== REDIS SECTION (Optional) ==========
         if ($this->settings['redis']['enabled']) {
+            $redis_info = $this->redis_info();
             $markdown_sections['System Information']['Redis'] = array(
                 'Redis Server' => isset($redis_info['redis_version']) ? $redis_info['redis_version'] : '',
                 'PHP Redis' => isset($redis_info['phpRedis']) ? $redis_info['phpRedis'] : '',
                 'Python Redis' => isset($redis_info['pipRedis']) ? $redis_info['pipRedis'] : '',
-                'Host' => $system_view['redis_server'],
+                'Host' => $this->settings['redis']['host'] . ":" . $this->settings['redis']['port'],
                 'Size' => (isset($redis_info['dbSize']) ? $redis_info['dbSize'] : 0) . ' keys (' . (isset($redis_info['used_memory_human']) ? $redis_info['used_memory_human'] : '') . ')',
                 'Uptime' => (isset($redis_info['uptime_in_days']) ? $redis_info['uptime_in_days'] : 0) . ' days'
             );
         }
 
+        // ========== MQTT SECTION (Optional) ==========
         if ($this->settings['mqtt']['enabled']) {
+            $mqtt_version = $this->mqtt_version();
             $markdown_sections['System Information']['MQTT Server'] = array(
                 'Version' => 'Mosquitto ' . $mqtt_version,
-                'Host' => $system_view['mqtt_server'] . ':' . $system_view['mqtt_port'] . ' (' . $system_view['mqtt_ip'] . ')'
+                'Host' => $this->settings['mqtt']['host'] . ':' . $this->settings['mqtt']['port'] . ' (' . gethostbyname($this->settings['mqtt']['host']) . ')'
             );
         }
 
+        // ========== PI SECTION (Optional - Raspberry Pi Only) ==========
+        $rpi_info = $this->get_rpi_info();
         $has_pi_data = false;
         foreach ($rpi_info as $value) {
             if (!empty($value)) {
@@ -304,15 +346,19 @@ class Admin
             $markdown_sections['System Information']['Pi'] = $pi_section;
         }
 
+        // ========== CLIENT INFORMATION SECTION ==========
+        $client_information = array(
+            'Browser' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
+            'IP' => server('REMOTE_ADDR'),
+            'Forwarded IP' => server('HTTP_X_FORWARDED_FOR'),
+            'Client Hostname' => gethostbyaddr(server('REMOTE_ADDR'))
+        );
+
+        // ========== RETURN STRUCTURED DATA ==========
         return array(
             'Services' => $services,
             "System Information" => $markdown_sections['System Information'],
-            "Client Information" => array(
-                'Browser' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '',
-                'IP' => server('REMOTE_ADDR'),
-                'Forwarded IP' => server('HTTP_X_FORWARDED_FOR'),
-                'Client Hostname' => gethostbyaddr(server('REMOTE_ADDR'))
-            )
+            "Client Information" => $client_information
         );
     }
 
@@ -401,116 +447,6 @@ class Admin
             $this->log->error("runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
             return array('success' => false, 'message' => "Redis is required to run service commands");
         }
-    }
-
-    /**
-     * Retrieve server information
-     *
-     * @return array
-     */
-    public function system_information()
-    {
-        $result = $this->mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
-        $db = $result->fetch_array();
-
-        @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-
-        $services = array();
-        foreach ($this->get_services_list() as $service) {
-            $services[$service] = $this->getServiceStatus("$service.service");
-        }
-        $meminfo = false;
-        if (@is_readable('/proc/meminfo')) {
-            $data = explode("\n", file_get_contents("/proc/meminfo"));
-            $meminfo = array();
-            foreach ($data as $line) {
-                if (strpos($line, ':') !== false) {
-                    list($key, $val) = explode(":", $line);
-                    $meminfo[$key] = 1024 * floatval(trim(str_replace(' kB', '', $val)));
-                }
-            }
-        }
-
-        $cpuinfo = false;
-        if (@is_readable('/usr/bin/lscpu')) {
-            $data = $this->lscpu() ?: [];
-            foreach ($data as $line) {
-                if (strpos($line, ':') !== false) {
-                    list($key, $val) = explode(":", $line);
-                    $key = trim($key);
-                    $val = trim($val);
-                    if ($key == "Socket(s)") {
-                        $cpuinfo .= $val . ' Sockets(s) | ';
-                    }
-                    if ($key == "Core(s) per socket") {
-                        $cpuinfo .= $val . ' Core(s) | ';
-                    }
-                    if ($key == "Thread(s) per core") {
-                        $cpuinfo .= $val . ' Threads(s) | ';
-                    }
-                    if ($key == "Model name") {
-                        $cpuinfo .= $val . ' | ';
-                    }
-                    if ($key == "CPU MHz") {
-                        $cpuinfo .= $val . 'MHz | ';
-                    }
-                    if ($key == "BogoMIPS") {
-                        $cpuinfo .= $val . 'MIPS | ';
-                    }
-                }
-            }
-        }
-
-        // Component summary
-        $component_summary = array();
-        $components = $this->component_list(false);
-        foreach ($components as $component) {
-            $component_summary[] = $component["name"] . " v" . $component["version"];
-        }
-        $component_summary = implode(" | ", $component_summary);
-
-        return array(
-            'date' => date('Y-m-d H:i:s T'),
-            'system' => $system,
-            'kernel' => $kernel,
-            'host' => $host,
-            'cpu_info' => $cpuinfo,
-            'machine' => $this->get_machine(),
-            'ip' => server('SERVER_ADDR'),
-            'uptime' => $this->uptime(),
-            'http_server' => $_SERVER['SERVER_SOFTWARE'],
-            'php' => PHP_VERSION,
-            'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-            'run_user' => $this->whoami(),
-            'run_group' => $this->id_groups(),
-            'script_owner' => (function_exists('get_current_user') ? get_current_user() : 'n/a'),
-            'db_server' => $this->settings['sql']['server'],
-            'db_ip' => gethostbyname($this->settings['sql']['server']),
-            'db_version' => $this->mysqli->server_info,
-            'db_stat' => $this->mysqli->stat(),
-            'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
-
-            'redis_server' => $this->settings['redis']['host'] . ":" . $this->settings['redis']['port'],
-            'redis_ip' => gethostbyname($this->settings['redis']['host']),
-
-            'services' => $services,
-
-            'mqtt_server' => $this->settings['mqtt']['host'],
-            'mqtt_ip' => gethostbyname($this->settings['mqtt']['host']),
-            'mqtt_port' => $this->settings['mqtt']['port'],
-
-            'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
-            'http_proto' => $_SERVER['SERVER_PROTOCOL'],
-            'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
-            'http_port' => $_SERVER['SERVER_PORT'],
-            'php_modules' => get_loaded_extensions(),
-            'mem_info' => $meminfo,
-            'partitions' => $this->disk_list(),
-            'component_summary' => $component_summary,
-            'git_branch' => $this->git_branch(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
-            'git_URL' => $this->git_remote_url(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'))),
-            'git_describe' => $this->git_describe(substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')))
-        );
     }
 
     private function get_machine()
