@@ -77,7 +77,7 @@ function admin_controller()
     // System information view
     if ($route->action == 'info') {
         $route->format = 'html';
-        return view("Modules/admin/Views/system_info_view.php", $admin->full_system_information());
+        return view("Modules/admin/info/system_info_view.php", $admin->full_system_information());
     }
 
     // System information JSON endpoint (used by Vue interface and external tooling)

@@ -451,49 +451,20 @@ class Admin
 
     private function get_machine()
     {
-        $machine_string = "";
-        $product = "";
-        $board = "";
-        $bios = "";
+        $vendor  = trim((string) $this->dmi_board_vendor());
+        $product = trim((string) $this->dmi_product_name());
+        $board   = trim((string) $this->dmi_board_name());
+        $bios    = trim(trim((string) $this->dmi_bios_version()) . ' ' . trim((string) $this->dmi_bios_date()));
 
-        $res = $this->dmi_board_vendor();
-        if (trim($res) != "") {
-            $machine_string = trim($res);
-        }
+        $machine = $vendor;
+        if ($product !== '') $machine .= " $product";
+        if ($board !== '')   $machine .= "/$board";
+        if ($bios !== '')    $machine .= ", BIOS $bios";
 
-        $res = $this->dmi_product_name();
-        if (trim($res) != "") {
-            $product = trim($res);
-        }
+        if ($machine === '') return '';
 
-        $res = $this->dmi_board_name();
-        if (trim($res) != "") {
-            $board = trim($res);
-        }
-
-        $res = $this->dmi_bios_version();
-        if (trim($res) != "") {
-            $bios = trim($res);
-        }
-
-        $res = $this->dmi_bios_date();
-        if (trim($res) != "") {
-            $bios = trim($bios . " " . trim($res));
-        }
-
-        if ($product != "") {
-            $machine_string .= " " . $product;
-        }
-        if ($board != "") {
-            $machine_string .= "/" . $board;
-        }
-        if ($bios != "") {
-            $machine_string .= ", BIOS " . $bios;
-        }
-        if ($machine_string != "") {
-            $machine_string = trim(preg_replace("/^\/,?/", "", preg_replace("/ ?(To be filled by O\.E\.M\.|System manufacturer|System Product Name|Not Specified|Default string) ?/i", "", $machine_string)));
-        }
-        return $machine_string;
+        $junk = '/ ?(To be filled by O\.E\.M\.|System manufacturer|System Product Name|Not Specified|Default string) ?/i';
+        return trim(preg_replace('/^\/,?/', '', preg_replace($junk, '', $machine)));
     }
 
     public function components_available()
@@ -524,138 +495,129 @@ class Admin
      */
     public function disk_list()
     {
-        $partitions = array();
-        // Fetch partition information from df command
-        // I would have used disk_free_space() and disk_total_space() here but
-        // there appears to be no way to get a list of partitions in PHP?
-        $output = array();
-        if (file_exists("/.dockerenv") && file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
-            //return $partitions;
+        $in_docker = file_exists('/.dockerenv');
+
+        if ($in_docker && file_exists('/opt/openenergymonitor/emoncms_pre.sh')) {
             $output = $this->df_data() ?: [];
         } else {
             if (!$output = $this->df()) {
-                return $partitions;
+                return [];
             }
         }
+
+        $partitions = [];
         foreach ($output as $line) {
-            $columns = array();
-            foreach (explode(' ', $line) as $column) {
-                $column = trim($column);
-                if ($column != '') {
-                    $columns[] = $column;
-                }
+            // Skip header row (7 columns) and blank lines; data rows have 6
+            $columns = array_values(array_filter(array_map('trim', explode(' ', $line))));
+            if (count($columns) !== 6) {
+                continue;
             }
 
-            // Only process 6 column rows
-            // (This has the bonus of ignoring the first row which is 7)
-            if (count($columns) == 6) {
-                $filesystem = $columns[0];
-                $partition = $columns[5];
-                $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
-                $partitions[$partition]['Partition']['text'] = $partition;
-                $partitions[$partition]['FileSystem']['text'] = $filesystem;
-                if (is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3])) {
-                    $partitions[$partition]['Size']['value'] = $columns[1];
-                    $partitions[$partition]['Free']['value'] = $columns[3];
-                    $partitions[$partition]['Used']['value'] = $columns[2];
-                } else {
-                    // Fallback if we don't get numerical values
-                    $partitions[$partition]['Size']['text'] = $columns[1];
-                    $partitions[$partition]['Used']['text'] = $columns[2];
-                    $partitions[$partition]['Free']['text'] = $columns[3];
-                }
+            $filesystem = $columns[0];
+            $partition  = $columns[5];
 
-                $partition_name = false;
-                $bytes_read = 0;
-                $bytes_written = 0;
-                $readload = 0;
-                $writeload = 0;
-                $loadtime = 0;
-                $stats = null;
+            $partitions[$partition]['Temporary']['bool']  = in_array($filesystem, ['tmpfs', 'devtmpfs']);
+            $partitions[$partition]['Partition']['text']  = $partition;
+            $partitions[$partition]['FileSystem']['text'] = $filesystem;
 
-                if (!file_exists("/.dockerenv")) {
-                    if ($this->is_command_available('iostat')) {
-                        $stats = $this->iostat($filesystem);
-                    }
-                }
+            if (is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3])) {
+                $partitions[$partition]['Size']['value'] = $columns[1];
+                $partitions[$partition]['Used']['value'] = $columns[2];
+                $partitions[$partition]['Free']['value'] = $columns[3];
+            } else {
+                $partitions[$partition]['Size']['text'] = $columns[1];
+                $partitions[$partition]['Used']['text'] = $columns[2];
+                $partitions[$partition]['Free']['text'] = $columns[3];
+            }
 
-                if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
-                    $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
-                    $partition_name = $disk["disk_device"];
-                    $readload = round($disk["kB_read/s"] * 1024); // convert to bytes (used if no redis is available)
-                    $writeload = round($disk["kB_wrtn/s"] * 1024); // convert to bytes (used if no redis is available)
-                    $bytes_read = round($disk["kB_read"] * 1024); // convert to bytes
-                    $bytes_written = round($disk["kB_wrtn"] * 1024); // convert to bytes
-                    $loadtime = -1; // -1 = since reboot
-                } else {
-                    // ALTERNATIVE: When iostats not available, use hard coded partitions, only works on raspberrypi.
-                    // translate partition mount point to mmcblk0pX based name
-                    if ($partition == "/boot") {
-                        $partition_name = "mmcblk0p1";
-                    } elseif ($partition == "/") {
-                        $partition_name = "mmcblk0p2";
-                    } elseif ($partition == "/var/opt/emoncms") {
-                        $partition_name = "mmcblk0p3";
-                    } elseif ($partition == "/home/pi/data") {
-                        $partition_name = "mmcblk0p3";
-                    }
-                    if (file_exists("/.dockerenv")) {
-                        $elements = explode("/", $filesystem);
-                        $partition_name = end($elements);
-                    }
-                    if ($partition_name) {
-                        $sectors_read = null;
-                        $sectors_written = null;
-                        if (@is_readable('/proc/diskstats')) {
-                            foreach (explode("\n", file_get_contents('/proc/diskstats')) as $dline) {
-                                $dparts = preg_split('/\s+/', trim($dline));
-                                if (isset($dparts[2]) && $dparts[2] === $partition_name) {
-                                    $sectors_read    = isset($dparts[5]) ? (int)$dparts[5] : null;
-                                    $sectors_written = isset($dparts[9]) ? (int)$dparts[9] : null;
-                                    break;
-                                }
-                            }
-                        }
-                        if ($sectors_read === null || $sectors_written === null) {
-                            $partition_name = false;
-                        }
+            [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime]
+                = $this->resolve_disk_stats($filesystem, $partition, $in_docker);
 
-                        if ($sectors_read !== null) {
-                            $bytes_read = $sectors_read * 512;
-                        }
-                        if ($sectors_written !== null) {
-                            $bytes_written = $sectors_written * 512;
-                        }
-                    }
-                }
-                if ($this->redis && $partition_name) {
-                    // with redis we can calculate average since disk_stats_reset() from BO, else it works with iostats avg kB_wrtn/s since boot
-                    $last_bytes_written = 0;
-                    if ($this->redis->exists("diskstats:starttime") && $this->redis->exists("diskstats:$partition_name:read") && $this->redis->exists("diskstats:$partition_name:write")) {
-                        $last_bytes_read = $this->redis->get("diskstats:$partition_name:read");
-                        $last_bytes_written = $this->redis->get("diskstats:$partition_name:write");
-                        $last_time = $this->redis->get("diskstats:starttime");
-                        $elapsed = time() - $last_time;
-                        if ($elapsed > 0) {
-                            $readload = ($bytes_read - $last_bytes_read) / $elapsed;
-                            $writeload = ($bytes_written - $last_bytes_written) / $elapsed;
-                        }
-                        $loadtime = $elapsed;
-                    } else {
-                        $this->redis->set("diskstats:$partition_name:read", $bytes_read);
-                        $this->redis->set("diskstats:$partition_name:write", $bytes_written);
-                        $this->redis->set("diskstats:starttime", time());
-                        $readload = 0;
-                        $writeload = 0;
-                        $loadtime = 0;
-                    }
-                }
-                $partitions[$partition]['ReadLoad']['value'] = $readload;
-                $partitions[$partition]['WriteLoad']['value'] = $writeload;
-                $partitions[$partition]['LoadTime']['value'] = $loadtime;
+            if ($this->redis && $partition_name) {
+                [$readload, $writeload, $loadtime] = $this->redis_disk_load($partition_name, $bytes_read, $bytes_written);
+            }
+
+            $partitions[$partition]['ReadLoad']['value']  = $readload;
+            $partitions[$partition]['WriteLoad']['value'] = $writeload;
+            $partitions[$partition]['LoadTime']['value']  = $loadtime;
+        }
+
+        return $partitions;
+    }
+
+    private function resolve_disk_stats(string $filesystem, string $partition, bool $in_docker): array
+    {
+        $partition_name = false;
+        $bytes_read = $bytes_written = $readload = $writeload = $loadtime = 0;
+
+        if (!$in_docker && $this->is_command_available('iostat')) {
+            $stats = $this->iostat($filesystem);
+            if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
+                $disk          = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
+                $partition_name = $disk['disk_device'];
+                $readload       = round($disk['kB_read/s'] * 1024);
+                $writeload      = round($disk['kB_wrtn/s'] * 1024);
+                $bytes_read     = round($disk['kB_read'] * 1024);
+                $bytes_written  = round($disk['kB_wrtn'] * 1024);
+                $loadtime = -1;
+                return [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime];
             }
         }
-        return $partitions;
+
+        // Fallback: map mount points to mmcblk0pX device names (Raspberry Pi only)
+        $mount_map = [
+            '/boot'            => 'mmcblk0p1',
+            '/'                => 'mmcblk0p2',
+            '/var/opt/emoncms' => 'mmcblk0p3',
+            '/home/pi/data'    => 'mmcblk0p3',
+        ];
+        $partition_name = $mount_map[$partition] ?? false;
+
+        if ($in_docker) {
+            $parts = explode('/', $filesystem);
+            $partition_name = end($parts);
+        }
+
+        if ($partition_name && @is_readable('/proc/diskstats')) {
+            $sectors_read = $sectors_written = null;
+            foreach (explode("\n", file_get_contents('/proc/diskstats')) as $dline) {
+                $dparts = preg_split('/\s+/', trim($dline));
+                if (isset($dparts[2]) && $dparts[2] === $partition_name) {
+                    $sectors_read    = isset($dparts[5]) ? (int)$dparts[5] : null;
+                    $sectors_written = isset($dparts[9]) ? (int)$dparts[9] : null;
+                    break;
+                }
+            }
+            if ($sectors_read === null || $sectors_written === null) {
+                $partition_name = false;
+            } else {
+                $bytes_read    = $sectors_read * 512;
+                $bytes_written = $sectors_written * 512;
+            }
+        } elseif ($partition_name) {
+            $partition_name = false;
+        }
+
+        return [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime];
+    }
+
+    private function redis_disk_load(string $partition_name, int $bytes_read, int $bytes_written): array
+    {
+        if ($this->redis->exists("diskstats:starttime") &&
+            $this->redis->exists("diskstats:$partition_name:read") &&
+            $this->redis->exists("diskstats:$partition_name:write")) {
+            $last_bytes_read    = $this->redis->get("diskstats:$partition_name:read");
+            $last_bytes_written = $this->redis->get("diskstats:$partition_name:write");
+            $elapsed = time() - $this->redis->get("diskstats:starttime");
+            $readload  = $elapsed > 0 ? ($bytes_read - $last_bytes_read) / $elapsed : 0;
+            $writeload = $elapsed > 0 ? ($bytes_written - $last_bytes_written) / $elapsed : 0;
+            return [$readload, $writeload, $elapsed];
+        }
+
+        $this->redis->set("diskstats:$partition_name:read", $bytes_read);
+        $this->redis->set("diskstats:$partition_name:write", $bytes_written);
+        $this->redis->set("diskstats:starttime", time());
+        return [0, 0, 0];
     }
 
 
