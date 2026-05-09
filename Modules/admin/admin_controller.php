@@ -80,47 +80,6 @@ function admin_controller()
         return view("Modules/admin/Views/admin_main_view.php", $admin->full_system_information());
     }
 
-    // System update view
-    if ($route->action == 'update' && $route->subaction == '') {
-        $route->format = 'html';
-        require_once "Modules/admin/update/UpdateModel.php";
-        $update_model = new UpdateModel($settings, $redis);
-        return view("Modules/admin/update/update_view.php", array(
-            'update_log_filename'=> $update_model->update_logfile(),
-            'serial_ports'=>$update_model->listSerialPorts(),
-            'firmware_available'=>$update_model->firmware_available()
-        ));
-    }
-
-    // System components view
-    if ($route->action == 'component' && $route->subaction == '') {
-        $route->format = 'html';
-        require_once "Modules/admin/components/ComponentsModel.php";
-        $components_model = new ComponentsModel($settings, $redis);
-        return view("Modules/admin/components/components_view.php", array(
-            "components" => $components_model->component_list()
-        ));
-    }
-
-    // Serial monitor / serial config views
-    if ($route->action == 'serial' && $route->subaction == '') {
-        $route->format = 'html';
-        require_once "Modules/admin/serial/SerialModel.php";
-        $serial_model = new SerialModel($settings, $redis);
-        return view("Modules/admin/serial/serialmonitor_view.php", array(
-            'serial_ports' => $serial_model->listSerialPorts()
-        ));
-    }
-
-    if ($route->action == 'serial' && $route->subaction == 'config') {
-        $route->format = 'html';
-        require_once "Modules/admin/serial/SerialModel.php";
-        $serial_model = new SerialModel($settings, $redis);
-        return view("Modules/admin/serial/serial_config_view.php", array(
-            'serial_ports' => $serial_model->listSerialPorts()
-        ));
-    }
-
     // Emoncms log view
     if ($route->action == 'log') {
         $route->format = 'html';
@@ -279,10 +238,20 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // System update
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'update' && $route->subaction != '') {
-        $route->format = "json";
+    if ($route->action == 'update') {
         require_once "Modules/admin/update/UpdateModel.php";
         $update_model = new UpdateModel($settings, $redis);
+
+        if ($route->subaction == '') {
+            $route->format = 'html';
+            return view("Modules/admin/update/update_view.php", array(
+                'update_log_filename'=> $update_model->update_logfile(),
+                'serial_ports'=>$update_model->listSerialPorts(),
+                'firmware_available'=>$update_model->firmware_available()
+            ));
+        }
+
+        $route->format = "json";
 
         if ($route->subaction == 'start') {
             if (!isset($_POST['type']))         return array('success'=>false, 'message'=>"missing parameter: type");
@@ -324,23 +293,49 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // Component manager
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'component' && $route->subaction != '' && $session['write']) {
-        $route->format = "json";
+    if ($route->action == 'component') {
         require_once "Modules/admin/components/ComponentsModel.php";
         $components_model = new ComponentsModel($settings, $redis);
+
+        if ($route->subaction == '') {
+            $route->format = 'html';
+            return view("Modules/admin/components/components_view.php", array(
+                "components" => $components_model->component_list()
+            ));
+        }
+
+        if ($session['write']) {
+        $route->format = "json";
 
         if ($route->subaction == 'list')       return $components_model->component_list(true);
         if ($route->subaction == 'available')  return $components_model->components_available();
         if ($route->subaction == 'update')     return $components_model->update_component(get('module', true), get('branch', true));
         if ($route->subaction == 'update-all') return $components_model->update_all_components(get('branch', true));
+        }
     }
 
     // ----------------------------------------------------------------------------------------
     // Serial monitor
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'serial' && $route->subaction != '' && $route->subaction != 'config') {
+    if ($route->action == 'serial') {
         require_once "Modules/admin/serial/SerialModel.php";
         $serial_model = new SerialModel($settings, $redis);
+
+        if ($route->subaction == '') {
+            $route->format = 'html';
+            return view("Modules/admin/serial/serial_config_view.php", array(
+                'serial_ports' => $serial_model->listSerialPorts(),
+                'show_config'  => false
+            ));
+        }
+
+        if ($route->subaction == 'config') {
+            $route->format = 'html';
+            return view("Modules/admin/serial/serial_config_view.php", array(
+                'serial_ports' => $serial_model->listSerialPorts(),
+                'show_config'  => true
+            ));
+        }
 
         if ($route->subaction == 'running') {
             $route->format = "text";
