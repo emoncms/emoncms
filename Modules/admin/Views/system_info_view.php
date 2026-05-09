@@ -130,14 +130,14 @@ $_js_translations = array(
 	</dl>
 
 	<template v-for="section in serverSections">
-		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ section.title }}</h4>
+		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr(section.title) }}</h4>
 		<dl class="row">
 			<template v-for="row in section.rows">
-				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate'" @click="copyRow(row, $event)">{{ row.title }}</dt>
+				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate'" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd :class="row.valueClass || 'col-sm-10 col-8 border-box px-1'" @click="copyRow(row, $event)">
 					<template v-if="row.type === 'text'">{{ row.value }}</template>
 					<template v-if="row.type === 'progress'">
-						<h5 class="m-0">{{ row.label }}</h5>
+						<h5 class="m-0">{{ tr(row.label) }}</h5>
 						<div class="progress progress-info mb-0"><div class="bar" :style="{ width: row.width + '%' }"></div></div>
 						<dl class="inline">
 							<template v-for="item in row.summary">
@@ -171,10 +171,10 @@ $_js_translations = array(
 
 	<h3 class="mt-1 mb-0">{{ tr('Client Information') }}</h3>
 	<template v-for="section in clientSections">
-		<h4 v-if="section.title" class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ section.title }}</h4>
+		<h4 v-if="section.title" class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr(section.title) }}</h4>
 		<dl class="row">
 			<template v-for="row in section.rows">
-				<dt class="col-sm-2 col-4 text-truncate" @click="copyRow(row, $event)">{{ row.title }}</dt>
+				<dt class="col-sm-2 col-4 text-truncate" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd class="col-sm-10 col-8 border-box px-1" @click="copyRow(row, $event)">{{ row.value }}</dd>
 			</template>
 		</dl>
