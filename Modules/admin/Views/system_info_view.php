@@ -130,7 +130,10 @@ $_js_translations = array(
 	</dl>
 
 	<template v-for="section in serverSections">
-		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr(section.title) }}</h4>
+		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1 d-flex justify-content-between align-items-center">
+			<span>{{ tr(section.title) }}</span>
+			<button v-if="section.title === 'Disk'" class="btn btn-info btn-small" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
+		</h4>
 		<dl class="row">
 			<template v-for="row in section.rows">
 				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate'" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
@@ -150,19 +153,8 @@ $_js_translations = array(
 						<ul :id="row.listId || null" :class="{ 'list-columns': row.columns }"><li v-for="item in row.items" :key="item">{{ item }}</li></ul>
 					</template>
 					<template v-if="row.type === 'redis-size'">
-						<span id="redisused">{{ redisUsedText }}</span>
+						<span id="redisused">{{ row.value }}</span>
 						<button id="redisflush" class="btn btn-info btn-small pull-right" @click="redisFlush">{{ tr('Flush') }}</button>
-					</template>
-					<template v-if="row.type === 'disk-reset'">
-						<span id="add-on"></span>
-						<button id="resetdiskstats" class="btn btn-info btn-small pull-right" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
-					</template>
-					<template v-if="row.type === 'pi-model'">
-						<span>{{ row.value }}</span>
-						<div style="float:right">
-							<button class="btn btn-warning btn-small mr-1" @click="rebootPi">{{ tr('Reboot') }}</button>
-							<button class="btn btn-danger btn-small" @click="haltPi">{{ tr('Shutdown') }}</button>
-						</div>
 					</template>
 				</dd>
 			</template>
@@ -179,6 +171,12 @@ $_js_translations = array(
 			</template>
 		</dl>
 	</template>
+
+	<div class="well mt-4">
+		<h4 class="text-info text-uppercase">{{ tr('Pi Control') }}</h4>
+		<button type="button" class="btn btn-warning mr-2" @click="rebootPi" :disabled="loading">{{ tr('Reboot') }}</button>
+		<button type="button" class="btn btn-danger" @click="haltPi" :disabled="loading">{{ tr('Shutdown') }}</button>
+	</div>
 </div>
 
 <div id="snackbar" class=""></div>
@@ -206,7 +204,7 @@ function snackbar(text) {
 	el.className = 'show';
 	setTimeout(function() {
 		el.className = el.className.replace('show', '');
-	}, 3000);
+	}, 3000); // SNACKBAR_TIMEOUT
 }
 
 function legacyCopyTextToClipboard(text, message) {
@@ -254,7 +252,9 @@ new Vue({
 	el: '#new-system-info',
 	data: {
 		info: { Services: {}, 'System Information': {}, 'Client Information': {} },
-		loading: false
+		loading: false,
+		serviceActionInProgress: false,
+		SNACKBAR_TIMEOUT: 3000
 	},
 	mounted: function() {
 		// Keys with spaces are not reliably available via PHP extract() in views,
@@ -279,53 +279,61 @@ new Vue({
 		tr: tr,
 		toRows: function(sectionData, sectionTitle) {
 			var rows = [];
+			var isRedisSection = (sectionTitle || '').toLowerCase() === 'redis';
 			if (!sectionData || typeof sectionData !== 'object' || Array.isArray(sectionData)) {
 				return rows;
 			}
 			for (var key in sectionData) {
 				if (!sectionData.hasOwnProperty(key)) continue;
 				var value = sectionData[key];
-				if (value && typeof value === 'object' && !Array.isArray(value) && typeof value['Used'] === 'string' && value['Used'].indexOf('%') !== -1) {
-					rows.push(this.toProgressRow(key, value));
+
+				// Redis size/keys row
+				if (isRedisSection && (key === 'Size' || key === 'keys') && typeof value === 'string') {
+					rows.push({ type: 'redis-size', title: key, value: value });
 					continue;
 				}
+
+				// Progress row (object with a %-based Used field)
+				if (value && typeof value === 'object' && !Array.isArray(value) && typeof value['Used'] === 'string' && value['Used'].indexOf('%') !== -1) {
+					var usedPercent = value['Used'];
+					var width = parseFloat(usedPercent.replace('%', ''));
+					if (isNaN(width)) width = 0;
+					var summary = [
+						{ k: tr('Total'), v: value['Total'] || '' },
+						{ k: tr('Used'),  v: value['Used Value'] || '' },
+						{ k: tr('Free'),  v: value['Free'] || '' }
+					];
+					if (value['Read Load'])  summary.push({ k: tr('Read Load'),  v: value['Read Load'] });
+					if (value['Write Load']) summary.push({ k: tr('Write Load'), v: value['Write Load'] });
+					if (value['Load Time'])  summary.push({ k: tr('Load Time'),  v: value['Load Time'] });
+					rows.push({
+						type: 'progress',
+						title: key,
+						label: sprintf(tr('Used: %s%%'), usedPercent.replace('%', '')),
+						width: width,
+						summary: summary
+					});
+					continue;
+				}
+
+				// List row (array of strings)
 				if (Array.isArray(value)) {
 					rows.push({ type: 'list', title: key, items: value, columns: value.length > 8 });
+
+				// Object row (plain object): render as "k: v | k: v" text
 				} else if (value && typeof value === 'object') {
-					rows.push({ type: 'text', title: key, value: this.objectToPipeText(value) });
+					var parts = [];
+					for (var prop in value) {
+						if (value.hasOwnProperty(prop)) parts.push(prop + ': ' + value[prop]);
+					}
+					rows.push({ type: 'text', title: key, value: parts.join(' | ') });
+
+				// Text row (string or other primitive)
 				} else {
 					rows.push({ type: 'text', title: key, value: value || '' });
 				}
 			}
 			return rows;
-		},
-		toProgressRow: function(title, data) {
-			var usedPercent = typeof data['Used'] === 'string' ? data['Used'] : '';
-			var width = parseFloat(usedPercent.replace('%', ''));
-			if (isNaN(width)) width = 0;
-			var summary = [
-				{ k: tr('Total'), v: data['Total'] || '' },
-				{ k: tr('Used'), v: data['Used Value'] || '' },
-				{ k: tr('Free'), v: data['Free'] || '' }
-			];
-			if (data['Read Load']) summary.push({ k: tr('Read Load'), v: data['Read Load'] });
-			if (data['Write Load']) summary.push({ k: tr('Write Load'), v: data['Write Load'] });
-			if (data['Load Time']) summary.push({ k: tr('Load Time'), v: data['Load Time'] });
-			return {
-				type: 'progress',
-				title: title,
-				label: sprintf(tr('Used: %s%%'), usedPercent.replace('%', '')),
-				width: width,
-				summary: summary
-			};
-		},
-		objectToPipeText: function(obj) {
-			var parts = [];
-			for (var key in obj) {
-				if (!obj.hasOwnProperty(key)) continue;
-				parts.push(key + ': ' + obj[key]);
-			}
-			return parts.join(' | ');
 		},
 		copyRow: function(row, evt) {
 			if (evt && evt.target && evt.target.tagName === 'BUTTON') {
@@ -335,7 +343,7 @@ new Vue({
 				return;
 			}
 			var title = row.title || '';
-			var value = this.getRowTextValue(row);
+			var value = this.rowToText(row);
 			if (!title || !value) {
 				return;
 			}
@@ -376,9 +384,18 @@ new Vue({
 				});
 		},
 		serviceAction: function(name, action) {
+			var self = this;
+			if (self.serviceActionInProgress) {
+				return;
+			}
+			self.serviceActionInProgress = true;
 			fetch(adminPath + 'service/' + action + '?name=' + encodeURIComponent(name), { credentials: 'same-origin' })
-				.then(function(res) { return res.json(); })
+				.then(function(res) {
+					if (!res.ok) throw new Error('http');
+					return res.json();
+				})
 				.then(function(result) {
+					self.serviceActionInProgress = false;
 					if (result.reauth) {
 						window.location.reload(true);
 						return;
@@ -386,49 +403,44 @@ new Vue({
 					setTimeout(function() {
 						window.location.reload();
 					}, 1000);
+				})
+				.catch(function(err) {
+					self.serviceActionInProgress = false;
+					snackbar(tr('Refresh failed'));
 				});
 		},
-		buildMarkdown: function(sections) {
-			var out = [];
-			for (var i = 0; i < sections.length; i++) {
-				if (sections[i].title) {
-					out.push('## ' + sections[i].title);
-				}
-				var rows = sections[i].rows;
-				for (var r = 0; r < rows.length; r++) {
-					var row = rows[r];
-					var value = this.getRowTextValue(row);
-					if (value === '') continue;
-					out.push(' - **' + row.title + '**: ' + value);
-				}
-				out.push('');
-			}
-			return out.join('\n').trim();
-		},
-		getRowTextValue: function(row) {
+		rowToText: function(row) {
 			if (row.type === 'text' || !row.type) return row.value || '';
 			if (row.type === 'list') return (row.items || []).join(', ');
 			if (row.type === 'progress') {
-				var summary = row.summary || [];
-				var pairs = [];
-				for (var i = 0; i < summary.length; i++) {
-					pairs.push(summary[i].k + ': ' + summary[i].v);
-				}
+				var pairs = (row.summary || []).map(function(s) { return s.k + ': ' + s.v; });
 				return row.label + ' | ' + pairs.join(' | ');
 			}
 			return '';
 		},
-		markdownToText: function(md) {
-			return md
-				.replace(/^## (.+)$/mg, '\n$1\n-----------------------')
-				.replace(/^ - \*\*([^*]+)\*\*: /mg, '\t$1:\t')
-				.replace(/\*\*/g, '')
-				.replace(/\n{3,}/g, '\n\n')
-				.trim();
+		buildClipboardText: function(sections, format) {
+			// format: 'markdown' or 'plain'
+			var out = [];
+			for (var i = 0; i < sections.length; i++) {
+				var title = sections[i].title;
+				if (title) {
+					out.push(format === 'markdown' ? '## ' + title : '\n' + title + '\n-----------------------');
+				}
+				var rows = sections[i].rows;
+				for (var r = 0; r < rows.length; r++) {
+					var value = this.rowToText(rows[r]);
+					if (value === '') continue;
+					out.push(format === 'markdown'
+						? ' - **' + rows[r].title + '**: ' + value
+						: '\t' + rows[r].title + ':\t' + value);
+				}
+				out.push('');
+			}
+			return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 		},
 		copyAsMarkdown: function() {
-			var server = this.buildMarkdown(this.serverSections);
-			var client = this.buildMarkdown(this.clientSections);
+			var server = this.buildClipboardText(this.serverSections, 'markdown');
+			var client = this.buildClipboardText(this.clientSections, 'markdown');
 			var md = '<details><summary>' + tr('System Information') + '</summary>\n\n' +
 				'# ' + tr('System Information') + '\n' + server + '\n</details>\n\n' +
 				'<details><summary>' + tr('Client Information') + '</summary>\n\n' +
@@ -436,11 +448,99 @@ new Vue({
 			copyTextToClipboard(md, tr('Server info copied to clipboard as Markdown [text/markdown]'));
 		},
 		copyAsText: function() {
-			var server = this.markdownToText(this.buildMarkdown(this.serverSections));
-			var client = this.markdownToText(this.buildMarkdown(this.clientSections));
+			var server = this.buildClipboardText(this.serverSections, 'plain');
+			var client = this.buildClipboardText(this.clientSections, 'plain');
 			var txt = tr('System Information') + '\n-----------------------\n' + server + '\n\n' +
 				tr('Client Information') + '\n-----------------------\n' + client;
 			copyTextToClipboard(txt, tr('Server info copied to clipboard as Text [text/plain]'));
+		},
+		redisFlush: function() {
+			if (!confirm('Are you sure you want to flush all Redis data?')) {
+				return;
+			}
+			var self = this;
+			fetch(adminPath + 'redis-flush', { credentials: 'same-origin' })
+				.then(function(res) {
+					if (!res.ok) throw new Error('http');
+					return res.json();
+				})
+				.then(function(result) {
+					if (result.reauth) {
+						window.location.reload(true);
+						return;
+					}
+					self.refresh();
+				})
+				.catch(function() {
+					snackbar(tr('Refresh failed'));
+				});
+		},
+		resetDiskStats: function() {
+			if (!confirm('Are you sure you want to reset disk stats?')) {
+				return;
+			}
+			var self = this;
+			fetch(adminPath + 'reset-disk-stats', { credentials: 'same-origin' })
+				.then(function(res) {
+					if (!res.ok) throw new Error('http');
+					return res.json();
+				})
+				.then(function(result) {
+					if (result.reauth) {
+						window.location.reload(true);
+						return;
+					}
+					self.refresh();
+				})
+				.catch(function() {
+					snackbar(tr('Refresh failed'));
+				});
+		},
+		haltPi: function() {
+			if (!confirm(tr('Please confirm you wish to shutdown your Pi, please wait 30 secs before disconnecting the power...'))) {
+				return;
+			}
+			var self = this;
+			self.loading = true;
+			fetch(adminPath + 'halt', { credentials: 'same-origin' })
+				.then(function(res) {
+					if (!res.ok) throw new Error('http');
+					return res.json();
+				})
+				.then(function(result) {
+					if (result.reauth) {
+						window.location.reload(true);
+						return;
+					}
+					snackbar('Pi shutting down...');
+				})
+				.catch(function() {
+					self.loading = false;
+					snackbar(tr('Refresh failed'));
+				});
+		},
+		rebootPi: function() {
+			if (!confirm(tr('Please confirm you wish to reboot your Pi, this will take approximately 30 secs to complete...'))) {
+				return;
+			}
+			var self = this;
+			self.loading = true;
+			fetch(adminPath + 'reboot', { credentials: 'same-origin' })
+				.then(function(res) {
+					if (!res.ok) throw new Error('http');
+					return res.json();
+				})
+				.then(function(result) {
+					if (result.reauth) {
+						window.location.reload(true);
+						return;
+					}
+					snackbar('Pi rebooting...');
+				})
+				.catch(function() {
+					self.loading = false;
+					snackbar(tr('Refresh failed'));
+				});
 		}
 	}
 });
