@@ -321,19 +321,10 @@ function admin_controller()
         require_once "Modules/admin/serial/SerialModel.php";
         $serial_model = new SerialModel($settings, $redis);
 
-        if ($route->subaction == '') {
-            $route->format = 'html';
-            return view("Modules/admin/serial/serial_config_view.php", array(
-                'serial_ports' => $serial_model->listSerialPorts(),
-                'show_config'  => false
-            ));
-        }
-
         if ($route->subaction == 'config') {
             $route->format = 'html';
             return view("Modules/admin/serial/serial_config_view.php", array(
-                'serial_ports' => $serial_model->listSerialPorts(),
-                'show_config'  => true
+                'serial_ports' => $serial_model->listSerialPorts()
             ));
         }
 

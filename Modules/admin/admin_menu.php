@@ -27,12 +27,6 @@ if ($session["write"] && $session["admin"]) {
                 "order"=>1, 
                 "icon"=>"input"
             ),
-            "firmware"=>array(
-                "name"=>tr("Serial Monitor"),
-                "href"=>"admin/serial", 
-                "order"=>1, 
-                "icon"=>"input"
-            ),
             "serialconfig"=>array(
                 "name"=>tr("Serial Config"),
                 "href"=>"admin/serial/config", 
