@@ -56,6 +56,8 @@ listItem;
     }
 
 ?>
+<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
 
 <div class="admin-container">
