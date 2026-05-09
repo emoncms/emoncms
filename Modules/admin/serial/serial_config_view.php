@@ -1,6 +1,6 @@
 <?php global $path; ?>
 <script src="<?php echo $path; ?>Lib/vue.min.js"></script>
-<script src="<?php echo $path; ?>Modules/admin/Views/serial_config_lib/serial_config_core.js"></script>
+<script src="<?php echo $path; ?>Modules/admin/serial/serial_config_lib/serial_config_core.js"></script>
 <link rel="stylesheet" href="<?php echo $path ?>Modules/admin/static/admin_styles.css?v=1">
 <style>
     #emonhub-running-notice,
@@ -58,7 +58,7 @@
                 $("#log").html("");
                 $.ajax({
                     type: "POST",
-                    url: path + "admin/serialmonitor/start",
+                    url: path + "admin/serial/start",
                     data: "baudrate=" + app.baudrate + "&serialport=" + app.serialport,
                     async: true,
                     dataType: "json",
@@ -80,7 +80,7 @@
             stop: function() {
                 $("#log").html("");
                 $.ajax({
-                    url: path + "admin/serialmonitor/stop",
+                    url: path + "admin/serial/stop",
                     async: true,
                     dataType: "json",
                     success: function(result) {
@@ -106,7 +106,7 @@
     function writeToStream(cmd) {
         $.ajax({
             type: 'POST',
-            url: path + "admin/serialmonitor/cmd",
+            url: path + "admin/serial/cmd",
             data: "cmd=" + encodeURIComponent(cmd),
             async: true,
             dataType: "json",
@@ -123,7 +123,7 @@
 
     function update_log() {
         $.ajax({
-            url: path + "admin/serialmonitor/log",
+            url: path + "admin/serial/log",
             async: true,
             dataType: "text",
             success: function(result) {
@@ -157,7 +157,7 @@
 
     function is_running() {
         $.ajax({
-            url: path + "admin/serialmonitor/running",
+            url: path + "admin/serial/running",
             async: true,
             dataType: "text",
             success: function(pid) {

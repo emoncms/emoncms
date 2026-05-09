@@ -52,7 +52,7 @@ $("#logreply-bound").slideDown();
 
 function update_log() {
     $.ajax({ 
-        url: path+"admin/serialmonitor/log", 
+        url: path+"admin/serial/log", 
         async: true, 
         dataType: "text", 
         success: function(result) {
@@ -77,7 +77,7 @@ function update_log() {
 
 function is_running() {
     $.ajax({ 
-        url: path+"admin/serialmonitor/running", 
+        url: path+"admin/serial/running", 
         async: true, 
         dataType: "text", 
         success: function(pid) {
@@ -146,7 +146,7 @@ $("#start").click(function() {
 
     $.ajax({ 
         type: "POST",
-        url: path+"admin/serialmonitor/start", 
+        url: path+"admin/serial/start", 
         data: "baudrate="+baudrate+"&serialport="+serialport,
         async: true, 
         dataType: "json", 
@@ -167,7 +167,7 @@ $("#start").click(function() {
 $("#stop").click(function() {
     $("#log").html("");
     $.ajax({ 
-        url: path+"admin/serialmonitor/stop", 
+        url: path+"admin/serial/stop", 
         async: true, 
         dataType: "json", 
         success: function(result) {
@@ -195,20 +195,14 @@ $("#cmd").on('keyup', function (e) {
 });
 
 function send_cmd(cmd) {
-    // $("#log").html("");
     $.ajax({ 
         type: 'POST',
-        url: path+"admin/serialmonitor/cmd",
+        url: path+"admin/serial/cmd",
         data: "cmd="+encodeURIComponent(cmd), 
         async: true, 
         dataType: "json", 
         success: function(result) {
             if (result.reauth == true) { window.location.reload(true); }
-            if (result.success == false)  { 
-                // $("#log").append("<text style='color:red;'>" + result.message + "</text>\n");
-            } else {
-                // $("#log").append(htmlEntities(result.message) + "\n");
-            }
         } 
     });
 }

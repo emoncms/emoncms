@@ -102,19 +102,22 @@ function admin_controller()
         ));
     }
 
-    // Firmware view
-    if ($route->action == 'serial') {
+    // Serial monitor / serial config views
+    if ($route->action == 'serial' && $route->subaction == '') {
         $route->format = 'html';
-        return view("Modules/admin/Views/serialmonitor_view.php", array(
-            'serial_ports'=>$admin->listSerialPorts()
+        require_once "Modules/admin/serial/SerialModel.php";
+        $serial_model = new SerialModel($settings, $redis);
+        return view("Modules/admin/serial/serialmonitor_view.php", array(
+            'serial_ports' => $serial_model->listSerialPorts()
         ));
     }
 
-    // Firmware view
-    if ($route->action == 'serconfig') {
+    if ($route->action == 'serial' && $route->subaction == 'config') {
         $route->format = 'html';
-        return view("Modules/admin/Views/serial_config_view.php", array(
-            'serial_ports'=>$admin->listSerialPorts()
+        require_once "Modules/admin/serial/SerialModel.php";
+        $serial_model = new SerialModel($settings, $redis);
+        return view("Modules/admin/serial/serial_config_view.php", array(
+            'serial_ports' => $serial_model->listSerialPorts()
         ));
     }
 
@@ -201,120 +204,6 @@ function admin_controller()
         return array('success'=>false, 'message'=>"Missing argument");
     }
 
-    // ----------------------------------------------------------------------------------------
-    // System update
-    // ----------------------------------------------------------------------------------------
-    if ($route->action == 'update' && $route->subaction != '') {
-        $route->format = "json";
-        require_once "Modules/admin/update/UpdateModel.php";
-        $update_model = new UpdateModel($settings, $redis);
-
-        if ($route->subaction == 'start') {
-            if (!isset($_POST['type']))         return array('success'=>false, 'message'=>"missing parameter: type");
-            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
-            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
-            return $update_model->update_start($_POST['type'], $_POST['serial_port'], $_POST['firmware_key']);
-        }
-
-        if ($route->subaction == 'firmware') {
-            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
-            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
-            return $update_model->update_firmware($_POST['serial_port'], $_POST['firmware_key']);
-        }
-
-        if ($route->subaction == 'firmware-upload') {
-            if (!isset($_POST['port']))             return array('success'=>false, 'message'=>"missing parameter: port");
-            if (!isset($_POST['baud_rate']))        return array('success'=>false, 'message'=>"missing parameter: baud_rate");
-            if (!isset($_POST['core']))             return array('success'=>false, 'message'=>"missing parameter: core");
-            if (!isset($_POST['autoreset']))        return array('success'=>false, 'message'=>"missing parameter: autoreset");
-            if (!isset($_FILES['custom_firmware'])) return array('success'=>false, 'message'=>"missing parameter: custom_firmware");
-            return $update_model->upload_custom_firmware($_POST['port'], $_POST['baud_rate'], $_POST['core'], $_POST['autoreset'], $_FILES['custom_firmware']);
-        }
-
-        if ($route->subaction == 'log') {
-            $log_content = $update_model->get_update_log();
-            if ($log_content === false) {
-                $route->format = "json";
-                return array('success'=>false, 'message'=>$update_model->update_logfile()." does not exist");
-            }
-            $route->format = "text";
-            return $log_content;
-        }
-
-        if ($route->subaction == 'log-download') {
-            $update_model->download_update_log();
-        }
-    }
-
-    // ----------------------------------------------------------------------------------------
-    // Component manager
-    // ----------------------------------------------------------------------------------------
-    if ($route->action == 'component' && $route->subaction != '' && $session['write']) {
-        $route->format = "json";
-        require_once "Modules/admin/components/ComponentsModel.php";
-        $components_model = new ComponentsModel($settings, $redis);
-
-        if ($route->subaction == 'list')       return $components_model->component_list(true);
-        if ($route->subaction == 'available')  return $components_model->components_available();
-        if ($route->subaction == 'update')     return $components_model->update_component(get('module', true), get('branch', true));
-        if ($route->subaction == 'update-all') return $components_model->update_all_components(get('branch', true));
-    }
-
-    // ----------------------------------------------------------------------------------------
-    // Firmware
-    // ----------------------------------------------------------------------------------------
-    if ($route->action == 'serialmonitor') {
-        if ($route->subaction == 'running') {
-            $route->format = "text";
-            return $admin->serialmonitor_pid();
-        }
-        if ($route->subaction == 'start') {
-            $route->format = "json";
-
-            if (!isset($_POST['serialport'])) return array('success'=>false, 'message'=>"missing parameter: serialport");
-            if (!isset($_POST['baudrate'])) return array('success'=>false, 'message'=>"missing parameter: baudrate");
-            $serialport = $_POST['serialport'];
-            $baudrate = (int) $_POST['baudrate'];
-
-            if (!in_array($serialport,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"invalid serial port");
-            if (!in_array($baudrate,array(9600,38400,115200))) return array('success'=>false, 'message'=>"invalid baud rate");
-
-            $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
-            return $admin->runService($script, escapeshellarg($baudrate) . " /dev/" . escapeshellarg($serialport));
-        }
-        if ($route->subaction == 'stop') {
-            $route->format = "json";
-            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-            $redis->rpush("serialmonitor","exit");
-            return array('success'=>true,  'message'=>"serialmonitor stop command sent");
-        }
-        if ($route->subaction == 'log') {
-            if (!$redis) {
-                $route->format = "json";
-                return array('success'=>false, 'message'=>"Redis not enabled");
-            }
-            $route->format = "text";
-            $out = "";
-            while($redis->llen('serialmonitor-log')) {
-                $out .= $redis->lpop('serialmonitor-log')."\n";
-            }
-            return $out;
-        }
-        if ($route->subaction == 'cmd') {
-            $route->format = "json";
-            if (!$redis) return array('success'=>false, 'message'=>"Redis not enabled");
-            $cmd = "";
-            if (isset($_GET['cmd'])) $cmd = $_GET['cmd'];
-            if (isset($_POST['cmd'])) $cmd = $_POST['cmd'];
-            if ($cmd!="") {
-                $redis->rpush("serialmonitor",$cmd);
-                return array('success'=>true, 'message'=>"serialmonitor cmd sent: $cmd");
-            } else {
-                return array('success'=>false, 'message'=>"no command");
-            }
-
-        }
-    }
 
     // ----------------------------------------------------------------------------------------
     // Emoncms log
@@ -385,6 +274,104 @@ function admin_controller()
           echo $line;
         } //End PHP replacement for Tail
         return trim(ob_get_clean());
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // System update
+    // ----------------------------------------------------------------------------------------
+    if ($route->action == 'update' && $route->subaction != '') {
+        $route->format = "json";
+        require_once "Modules/admin/update/UpdateModel.php";
+        $update_model = new UpdateModel($settings, $redis);
+
+        if ($route->subaction == 'start') {
+            if (!isset($_POST['type']))         return array('success'=>false, 'message'=>"missing parameter: type");
+            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
+            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
+            return $update_model->update_start($_POST['type'], $_POST['serial_port'], $_POST['firmware_key']);
+        }
+
+        if ($route->subaction == 'firmware') {
+            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
+            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
+            return $update_model->update_firmware($_POST['serial_port'], $_POST['firmware_key']);
+        }
+
+        if ($route->subaction == 'firmware-upload') {
+            if (!isset($_POST['port']))             return array('success'=>false, 'message'=>"missing parameter: port");
+            if (!isset($_POST['baud_rate']))        return array('success'=>false, 'message'=>"missing parameter: baud_rate");
+            if (!isset($_POST['core']))             return array('success'=>false, 'message'=>"missing parameter: core");
+            if (!isset($_POST['autoreset']))        return array('success'=>false, 'message'=>"missing parameter: autoreset");
+            if (!isset($_FILES['custom_firmware'])) return array('success'=>false, 'message'=>"missing parameter: custom_firmware");
+            return $update_model->upload_custom_firmware($_POST['port'], $_POST['baud_rate'], $_POST['core'], $_POST['autoreset'], $_FILES['custom_firmware']);
+        }
+
+        if ($route->subaction == 'log') {
+            $log_content = $update_model->get_update_log();
+            if ($log_content === false) {
+                $route->format = "json";
+                return array('success'=>false, 'message'=>$update_model->update_logfile()." does not exist");
+            }
+            $route->format = "text";
+            return $log_content;
+        }
+
+        if ($route->subaction == 'log-download') {
+            $update_model->download_update_log();
+        }
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // Component manager
+    // ----------------------------------------------------------------------------------------
+    if ($route->action == 'component' && $route->subaction != '' && $session['write']) {
+        $route->format = "json";
+        require_once "Modules/admin/components/ComponentsModel.php";
+        $components_model = new ComponentsModel($settings, $redis);
+
+        if ($route->subaction == 'list')       return $components_model->component_list(true);
+        if ($route->subaction == 'available')  return $components_model->components_available();
+        if ($route->subaction == 'update')     return $components_model->update_component(get('module', true), get('branch', true));
+        if ($route->subaction == 'update-all') return $components_model->update_all_components(get('branch', true));
+    }
+
+    // ----------------------------------------------------------------------------------------
+    // Serial monitor
+    // ----------------------------------------------------------------------------------------
+    if ($route->action == 'serial' && $route->subaction != '' && $route->subaction != 'config') {
+        require_once "Modules/admin/serial/SerialModel.php";
+        $serial_model = new SerialModel($settings, $redis);
+
+        if ($route->subaction == 'running') {
+            $route->format = "text";
+            return $serial_model->serialmonitor_pid();
+        }
+        if ($route->subaction == 'start') {
+            $route->format = "json";
+            if (!isset($_POST['serialport'])) return array('success'=>false, 'message'=>"missing parameter: serialport");
+            if (!isset($_POST['baudrate']))   return array('success'=>false, 'message'=>"missing parameter: baudrate");
+            return $serial_model->start($_POST['serialport'], (int) $_POST['baudrate']);
+        }
+        if ($route->subaction == 'stop') {
+            $route->format = "json";
+            return $serial_model->stop();
+        }
+        if ($route->subaction == 'log') {
+            $log_content = $serial_model->getLog();
+            if ($log_content === false) {
+                $route->format = "json";
+                return array('success'=>false, 'message'=>"Redis not enabled");
+            }
+            $route->format = "text";
+            return $log_content;
+        }
+        if ($route->subaction == 'cmd') {
+            $route->format = "json";
+            $cmd = "";
+            if (isset($_GET['cmd']))  $cmd = $_GET['cmd'];
+            if (isset($_POST['cmd'])) $cmd = $_POST['cmd'];
+            return $serial_model->sendCmd($cmd);
+        }
     }
 
     // ----------------------------------------------------------------------------------------

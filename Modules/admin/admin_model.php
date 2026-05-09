@@ -21,6 +21,7 @@ class Admin
 
     private $emoncms_logfile;
     private $update_model_instance = null;
+    private $serial_model_instance = null;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -59,6 +60,15 @@ class Admin
     public function get_services_list()
     {
         return array('emonhub', 'mqtt_input', 'emoncms_mqtt', 'feedwriter', 'service-runner', 'emonPiLCD', 'redis-server', 'mosquitto', 'demandshaper', 'emoncms_sync');
+    }
+
+    private function serial_model()
+    {
+        if ($this->serial_model_instance === null) {
+            require_once "Modules/admin/serial/SerialModel.php";
+            $this->serial_model_instance = new SerialModel($this->settings, $this->redis);
+        }
+        return $this->serial_model_instance;
     }
 
     public function listSerialPorts()
@@ -1069,8 +1079,6 @@ class Admin
     }
 
     public function serialmonitor_pid() {
-        $output = [];
-        @exec('pidof -x start.sh', $output);
-        return isset($output[0]) ? $output[0] : false;
+        return $this->serial_model()->serialmonitor_pid();
     }
 }
