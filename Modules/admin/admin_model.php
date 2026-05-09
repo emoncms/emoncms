@@ -20,8 +20,7 @@ class Admin
     private $log;
 
     private $emoncms_logfile;
-    private $update_logfile;
-    private $old_update_logfile;
+    private $update_model_instance = null;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -31,8 +30,6 @@ class Admin
         $this->log = new EmonLogger(__FILE__);
 
         $this->emoncms_logfile = $settings['log']['location'] . "/emoncms.log";
-        $this->update_logfile = $settings['log']['location'] . "/update.log";
-        $this->old_update_logfile = $settings['log']['location'] . "/emonpiupdate.log";
     }
 
     public function emoncms_logfile()
@@ -42,12 +39,21 @@ class Admin
 
     public function update_logfile()
     {
-        return $this->update_logfile;
+        return $this->update_model()->update_logfile();
     }
 
     public function old_update_logfile()
     {
-        return $this->old_update_logfile;
+        return $this->update_model()->old_update_logfile();
+    }
+
+    private function update_model()
+    {
+        if ($this->update_model_instance === null) {
+            require_once "Modules/admin/update/UpdateModel.php";
+            $this->update_model_instance = new UpdateModel($this->settings, $this->redis);
+        }
+        return $this->update_model_instance;
     }
 
     public function get_services_list()
@@ -81,13 +87,7 @@ class Admin
 
     public function firmware_available()
     {
-        $localfile = $this->settings['openenergymonitor_dir'] . "/EmonScripts/firmware_available.json";
-        if ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/master/firmware_available.json?v=" . time())) {
-            return json_decode($response);
-        } elseif (file_exists($localfile)) {
-            return json_decode(file_get_contents($localfile));
-        }
-        return array('success' => false, 'message' => "Can't get firmware available file");
+        return $this->update_model()->firmware_available();
     }
 
     /**
@@ -432,7 +432,7 @@ class Admin
     private function components_model()
     {
         if ($this->components_model_instance === null) {
-            require_once "Modules/admin/ComponentsModel.php";
+            require_once "Modules/admin/components/ComponentsModel.php";
             $this->components_model_instance = new ComponentsModel($this->settings, $this->redis);
         }
         return $this->components_model_instance;

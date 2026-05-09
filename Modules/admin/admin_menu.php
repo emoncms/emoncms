@@ -23,7 +23,7 @@ if ($session["write"] && $session["admin"]) {
             ),
             "components"=>array(
                 "name"=>tr("Components"),
-                "href"=>"admin/components", 
+                "href"=>"admin/component", 
                 "order"=>1, 
                 "icon"=>"input"
             ),

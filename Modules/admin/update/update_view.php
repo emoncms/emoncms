@@ -135,7 +135,7 @@ global $settings;
                 <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo tr('Auto refresh'); ?>
                 </button>
-                <a href="<?php echo $path; ?>admin/update-log-download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
+                <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
                 <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
             <?php // } ?>
         </div>
@@ -199,7 +199,7 @@ $(".update").click(function() {
 
     $.ajax({
         type: "POST",
-        url: path+"admin/update-start",
+        url: path+"admin/update/start",
         data: "type="+type+"&serial_port="+serial_port+"&firmware_key="+firmware_key,
         async: true,
         dataType: "json",
@@ -272,7 +272,7 @@ $("#custom_firmware").change(function(){
     // just submit the file
     $.ajax({
         type: "POST",
-        url: path+"admin/upload-custom-firmware",
+        url: path+"admin/update/firmware-upload",
         data: formData,
         async: true,
         cache: false,
@@ -321,7 +321,7 @@ $("#update-firmware").click(function() {
 
     $.ajax({
         type: "POST",
-        url: path+"admin/update-firmware",
+        url: path+"admin/update/firmware",
         data: "serial_port="+serial_port+"&firmware_key="+firmware_key,
         async: true,
         dataType: "json",
@@ -346,7 +346,7 @@ $('[data-dismiss="log"]').click(function(event){
 })
 getUpdateLog();
 function getUpdateLog() {
-  $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/update/log", async: true, dataType: "text", success: function(result)
     {
         var isjson = true;
         try {

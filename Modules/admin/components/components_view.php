@@ -83,7 +83,7 @@ var app = new Vue({
 
 function component_update(name,branch) {
     $.ajax({                                      
-        url: path+'admin/component-update',                         
+        url: path+'admin/component/update',                         
         async: true, 
         data: "module="+name+"&branch="+branch,
         dataType: 'json',
@@ -103,7 +103,7 @@ function component_update(name,branch) {
 
 function update_all_components(branch) {
     $.ajax({                                      
-        url: path+'admin/components-update-all',
+        url: path+'admin/component/update-all',
         async: true,        
         data: "branch="+branch,
         dataType: 'json',
@@ -147,7 +147,7 @@ function refresh_updateLog(result){
 }
 
 function getUpdateLog() {
-  $.ajax({ url: path+"admin/update-log", async: true, dataType: "text", success: function(result)
+  $.ajax({ url: path+"admin/update/log", async: true, dataType: "text", success: function(result)
     {
         var isjson = true;
         try {

@@ -81,21 +81,23 @@ function admin_controller()
     }
 
     // System update view
-    if ($route->action == 'update') {
+    if ($route->action == 'update' && $route->subaction == '') {
         $route->format = 'html';
-        return view("Modules/admin/Views/update_view.php", array(
-            'update_log_filename'=> $admin->update_logfile(),
-            'serial_ports'=>$admin->listSerialPorts(),
-            'firmware_available'=>$admin->firmware_available()
+        require_once "Modules/admin/update/UpdateModel.php";
+        $update_model = new UpdateModel($settings, $redis);
+        return view("Modules/admin/update/update_view.php", array(
+            'update_log_filename'=> $update_model->update_logfile(),
+            'serial_ports'=>$update_model->listSerialPorts(),
+            'firmware_available'=>$update_model->firmware_available()
         ));
     }
 
     // System components view
-    if ($route->action == 'components') {
+    if ($route->action == 'component' && $route->subaction == '') {
         $route->format = 'html';
-        require_once "Modules/admin/ComponentsModel.php";
+        require_once "Modules/admin/components/ComponentsModel.php";
         $components_model = new ComponentsModel($settings, $redis);
-        return view("Modules/admin/Views/components_view.php", array(
+        return view("Modules/admin/components/components_view.php", array(
             "components" => $components_model->component_list()
         ));
     }
@@ -202,162 +204,60 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // System update
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'update-start') {
+    if ($route->action == 'update' && $route->subaction != '') {
         $route->format = "json";
-        if (!isset($_POST['type'])) return array('success'=>false,'message'=>"missing parameter: type");
-        if (!isset($_POST['serial_port'])) return array('success'=>false, 'message'=>"missing parameter: serial_port");
-        if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
+        require_once "Modules/admin/update/UpdateModel.php";
+        $update_model = new UpdateModel($settings, $redis);
 
-        $type = $_POST['type'];
-        if (!in_array($type,array("all","emoncms"))) return array('success'=>false, 'message'=>"Invalid update type");
-
-        $serial_port = $_POST['serial_port'];
-        if (!in_array($serial_port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
-
-        $firmware_key = $_POST['firmware_key'];
-        $firmware_available = $admin->firmware_available();
-        if (!isset($firmware_available->$firmware_key) && $firmware_key!="none") return array('success'=>false, 'message'=>"invalid firmware");
-
-        if (file_exists($settings['openenergymonitor_dir']."/EmonScripts")) {
-            $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/service-runner-update.sh";
-        } else {
-            $update_script = $settings['openenergymonitor_dir']."/emonpi/service-runner-update.sh";
+        if ($route->subaction == 'start') {
+            if (!isset($_POST['type']))         return array('success'=>false, 'message'=>"missing parameter: type");
+            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
+            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
+            return $update_model->update_start($_POST['type'], $_POST['serial_port'], $_POST['firmware_key']);
         }
-        return $admin->runService($update_script, escapeshellarg($type) . " " . escapeshellarg($firmware_key) . " " . escapeshellarg($serial_port) . ">" . escapeshellarg($admin->update_logfile()));
-    }
 
-    if ($route->action == 'update-firmware') {
-        $route->format = "json";
-
-        if (!isset($_POST['serial_port'])) return array('success'=>false, 'message'=>"missing parameter: serial_port");
-        if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
-
-        $serial_port = $_POST['serial_port'];
-        if (!in_array($serial_port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
-
-        $firmware_key = $_POST['firmware_key'];
-        $firmware_available = $admin->firmware_available();
-        if (!isset($firmware_available->$firmware_key)) return array('success'=>false, 'message'=>"Invalid firmware");
-
-        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        return $admin->runService($update_script, escapeshellarg($serial_port) . " " . escapeshellarg($firmware_key) . ">" . escapeshellarg($admin->update_logfile()));
-    }
-
-
-    if ($route->action == 'upload-custom-firmware') {
-        $route->format = "json";
-
-        if (!isset($_POST['port'])) return array('success'=>false, 'message'=>"missing parameter: port");
-        if (!isset($_POST['baud_rate'])) return array('success'=>false, 'message'=>"missing parameter: baud_rate");
-        if (!isset($_POST['core'])) return array('success'=>false, 'message'=>"missing parameter: core");
-        if (!isset($_POST['autoreset'])) return array('success'=>false, 'message'=>"missing parameter: autoreset");
-        if (!isset($_FILES['custom_firmware'])) return array('success'=>false, 'message'=>"missing parameter: custom_firmware");
-
-        $port = $_POST['port'];
-        $baud_rate = $_POST['baud_rate'];
-        $core = $_POST['core'];
-        $autoreset = $_POST['autoreset'];
-
-        $file = $_FILES['custom_firmware'];
-
-        if (!in_array($port,$admin->listSerialPorts())) return array('success'=>false, 'message'=>"Invalid serial port");
-
-        // Validate baud_rate (must be numeric)
-        if (!is_numeric($baud_rate) || $baud_rate <= 0) return array('success'=>false, 'message'=>"Invalid baud rate");
-
-        // Validate core (alphanumeric with allowed special chars only)
-        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $core)) return array('success'=>false, 'message'=>"Invalid core");
-
-        // Validate autoreset (alphanumeric with allowed special chars only)
-        if (!preg_match('/^[a-zA-Z0-9_-]+$/', $autoreset)) return array('success'=>false, 'message'=>"Invalid autoreset");
-
-        // Generate secure filename instead of using user-provided name
-        $original_filename = $file['name'];
-        // Extract only the last extension and validate against allowed extensions
-        // First sanitize the filename by removing potential shell metacharacters
-        $clean_filename = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($original_filename));
-        $filename_parts = explode('.', $clean_filename);
-        $file_extension = end($filename_parts);
-        // Only allow hex files
-        if (strtolower($file_extension) !== 'hex' && strtolower($file_extension) !== 'bin') return array('success'=>false, 'message'=>"Only .hex or .bin files are allowed");
-        
-        // Generate safe filename using timestamp and random string
-        $safe_filename = 'firmware_' . time() . '_' . bin2hex(random_bytes(8)) . '.hex';
-        $tmpfile = "/opt/openenergymonitor/data/firmware/upload/".$safe_filename;
-
-        // Use move_uploaded_file() which verifies the file originated from an HTTP upload
-        // and performs an atomic move, unlike fopen/fwrite which bypass that check
-        if (!is_dir("/opt/openenergymonitor/data/firmware/upload")) {
-            return array('success' => false, 'message' => "Firmware upload directory does not exist");
+        if ($route->subaction == 'firmware') {
+            if (!isset($_POST['serial_port']))  return array('success'=>false, 'message'=>"missing parameter: serial_port");
+            if (!isset($_POST['firmware_key'])) return array('success'=>false, 'message'=>"missing parameter: firmware_key");
+            return $update_model->update_firmware($_POST['serial_port'], $_POST['firmware_key']);
         }
-        if (!move_uploaded_file($file['tmp_name'], $tmpfile)) {
-            return array('success' => false, 'message' => "Failed to save uploaded firmware file");
-        }
-        
-        $update_script = $settings['openenergymonitor_dir']."/EmonScripts/update/atmega_firmware_upload.sh";
-        // provide port, custom, filename, baudrate, core, autoreset - all parameters are escaped for shell safety
-        return $admin->runService($update_script, escapeshellarg($port) . " custom " . escapeshellarg($safe_filename) . " " . escapeshellarg($baud_rate) . " " . escapeshellarg($core) . " " . escapeshellarg($autoreset) . ">" . escapeshellarg($admin->update_logfile()));
-    }
 
-    if ($route->action == 'update-log') {
-        $route->format = "text";
-        if (file_exists($admin->update_logfile())) {
-            return trim(file_get_contents($admin->update_logfile()));
-        } elseif (file_exists($admin->old_update_logfile())) {
-            return trim(file_get_contents($admin->old_update_logfile()));
-        } else {
-            $route->format = "json";
-            return array('success'=>false, 'message'=>$admin->update_logfile()." does not exist");
+        if ($route->subaction == 'firmware-upload') {
+            if (!isset($_POST['port']))             return array('success'=>false, 'message'=>"missing parameter: port");
+            if (!isset($_POST['baud_rate']))        return array('success'=>false, 'message'=>"missing parameter: baud_rate");
+            if (!isset($_POST['core']))             return array('success'=>false, 'message'=>"missing parameter: core");
+            if (!isset($_POST['autoreset']))        return array('success'=>false, 'message'=>"missing parameter: autoreset");
+            if (!isset($_FILES['custom_firmware'])) return array('success'=>false, 'message'=>"missing parameter: custom_firmware");
+            return $update_model->upload_custom_firmware($_POST['port'], $_POST['baud_rate'], $_POST['core'], $_POST['autoreset'], $_FILES['custom_firmware']);
         }
-    }
 
-    if ($route->action == 'update-log-download') {
-        header("Content-Type: application/octet-stream");
-        header("Content-Transfer-Encoding: Binary");
-        header("Content-disposition: attachment; filename=\"" . basename($admin->update_logfile()) . "\"");
-        header("Pragma: no-cache");
-        header("Expires: 0");
-        flush();
-        if (file_exists($admin->update_logfile())) {
-            ob_start();
-            readfile($admin->update_logfile());
-            echo(trim(ob_get_clean()));
-        } elseif (file_exists($admin->old_update_logfile())) {
-            ob_start();
-            readfile($admin->old_update_logfile());
-            echo(trim(ob_get_clean()));
-        } else {
-            echo($admin->update_logfile() . " does not exist!");
+        if ($route->subaction == 'log') {
+            $log_content = $update_model->get_update_log();
+            if ($log_content === false) {
+                $route->format = "json";
+                return array('success'=>false, 'message'=>$update_model->update_logfile()." does not exist");
+            }
+            $route->format = "text";
+            return $log_content;
         }
-        exit;
+
+        if ($route->subaction == 'log-download') {
+            $update_model->download_update_log();
+        }
     }
 
     // ----------------------------------------------------------------------------------------
     // Component manager
     // ----------------------------------------------------------------------------------------
-    if (in_array($route->action, array('components-installed', 'components-available', 'component-update', 'components-update-all')) && $session['write']) {
+    if ($route->action == 'component' && $route->subaction != '' && $session['write']) {
         $route->format = "json";
-        require_once "Modules/admin/ComponentsModel.php";
+        require_once "Modules/admin/components/ComponentsModel.php";
         $components_model = new ComponentsModel($settings, $redis);
-    }
 
-    if ($route->action == 'components-installed' && $session['write']) {
-        return $components_model->component_list(true);
-    }
-
-    if ($route->action == 'components-available' && $session['write']) {
-        return $components_model->components_available();
-    }
-
-    if ($route->action == 'component-update' && $session['write']) {
-        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module");
-        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch");
-        return $components_model->update_component($_GET['module'], $_GET['branch']);
-    }
-
-    if ($route->action == 'components-update-all' && $session['write']) {
-        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch");
-        return $components_model->update_all_components($_GET['branch']);
+        if ($route->subaction == 'list')       return $components_model->component_list(true);
+        if ($route->subaction == 'available')  return $components_model->components_available();
+        if ($route->subaction == 'update')     return $components_model->update_component(get('module', true), get('branch', true));
+        if ($route->subaction == 'update-all') return $components_model->update_all_components(get('branch', true));
     }
 
     // ----------------------------------------------------------------------------------------
