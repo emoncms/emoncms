@@ -77,28 +77,13 @@ function admin_controller()
     // System information view
     if ($route->action == 'info') {
         $route->format = 'html';
-        return view("Modules/admin/Views/admin_main_view.php", $admin->full_system_information());
+        return view("Modules/admin/Views/system_info_view.php", $admin->full_system_information());
     }
 
     // System information JSON endpoint (used by Vue interface and external tooling)
     if ($route->action == 'systeminfo') {
         $route->format = 'json';
-        $data = $admin->full_system_information();
-        // Strip HTML markup from service text fields
-        foreach ($data['services'] as $key => &$svc) {
-            $svc['text'] = strip_tags($svc['text']);
-        }
-        unset($svc);
-        // Decode HTML entities (e.g. &degC) so the JSON is clean UTF-8
-        if (!empty($data['rpi_info']['cputemp'])) {
-            $data['rpi_info']['cputemp'] = html_entity_decode($data['rpi_info']['cputemp'], ENT_HTML5, 'UTF-8');
-        }
-        // Limit redis_info to only the fields the UI needs
-        if (!empty($data['redis_info'])) {
-            $allowed = array_flip(['redis_version', 'pipRedis', 'phpRedis', 'dbSize', 'used_memory_human', 'uptime_in_days']);
-            $data['redis_info'] = array_intersect_key($data['redis_info'], $allowed);
-        }
-        return $data;
+        return $admin->full_system_information();
     }
 
     // Emoncms log view

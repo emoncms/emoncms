@@ -74,6 +74,13 @@ dl dt{
   padding-left: .25em;
   box-sizing: border-box;
 }
+ul.list-columns {
+    column-count: 4;
+    column-gap: 1em;
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
 aside,
 section,
 dt,
