@@ -86,6 +86,14 @@ function admin_controller()
         return $admin->full_system_information();
     }
 
+    // System information JSON test endpoint using class-based provider
+    if ($route->action == 'systeminfotest') {
+        require_once "Modules/admin/info/sysinfo.php";
+        $route->format = 'json';
+        $systemInfo = new SystemInfo($mysqli, $redis);
+        return $systemInfo->getSystemInfo();
+    }
+
     // Emoncms log view
     if ($route->action == 'log') {
         $route->format = 'html';
