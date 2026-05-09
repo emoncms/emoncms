@@ -419,80 +419,23 @@ class Admin
 
     public function components_available()
     {
-        $localfile = $this->settings['openenergymonitor_dir'] . "/EmonScripts/components_available.json";
-        if (file_exists($localfile)) {
-            return json_decode(file_get_contents($localfile));
-        } elseif ($response = @file_get_contents("https://raw.githubusercontent.com/openenergymonitor/EmonScripts/stable/components_available.json")) {
-            return json_decode($response);
-        } else {
-            return array('success' => false, 'message' => "Can't get components available file");
-        }
+        return $this->components_model()->components_available();
     }
 
     public function component_list($git_info = true)
     {
-        $emoncms_path = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
+        return $this->components_model()->component_list($git_info);
+    }
 
-        $components = array();
+    private $components_model_instance = null;
 
-        // Emoncms core
-        if (file_exists($emoncms_path . "/version.json")) {                           // JSON Version informatmion exists
-            $json = json_decode(file_get_contents($emoncms_path . "/version.json"));  // Get JSON version information
-            if (isset($json->version) && $json->version != "") {
-                $name = "emoncms";
-                $components[$name] = array(
-                    "name" => ucfirst(isset($json->name) ? $json->name : $name),
-                    "version" => $json->version,
-                    "path" => $emoncms_path,                                                    // Where it's currently installed
-                    "target_location" => isset($json->location) ? $json->location : $emoncms_path,  // Where to install new modules
-                    "branches_available" => isset($json->branches_available) ? $json->branches_available : array(),
-                    "requires" => isset($json->requires) ? $json->requires : array()
-                );
-            }
+    private function components_model()
+    {
+        if ($this->components_model_instance === null) {
+            require_once "Modules/admin/ComponentsModel.php";
+            $this->components_model_instance = new ComponentsModel($this->settings, $this->redis);
         }
-
-        foreach (array("$emoncms_path/Modules", $this->settings['emoncms_dir'] . "/modules", $this->settings['openenergymonitor_dir']) as $path) {
-            $directories = glob("$path/*", GLOB_ONLYDIR);                                         // Use glob to get all the folder names only
-
-            foreach ($directories as $module_fullpath) {                                           // loop through the folders
-                if (!is_link($module_fullpath)) {
-                    $fullpath_parts = explode("/", $module_fullpath);
-                    $name = $fullpath_parts[count($fullpath_parts) - 1];
-
-                    if (file_exists($module_fullpath . "/module.json")) {                           // JSON Version informatmion exists
-                        $json = json_decode(file_get_contents($module_fullpath . "/module.json"));  // Get JSON version information
-
-                        if (isset($json->version) && $json->version != "") {
-                            $components[$name] = array(
-                                "name" => ucfirst(isset($json->name) ? $json->name : $name),
-                                "version" => $json->version,
-                                "path" => $module_fullpath,                                         // Where it's currently installed
-                                "target_location" => isset($json->location) ? $json->location : $path,  // Where to install new modules
-                                "branches_available" => isset($json->branches_available) ? $json->branches_available : array(),
-                                "requires" => isset($json->requires) ? $json->requires : array()
-                            );
-                        }
-                    }
-                }
-            }
-        }
-
-        if ($git_info) {
-            foreach ($components as $name => $component) {
-                $path = $component["path"];
-                $components[$name]["describe"] = $this->git_describe($path);
-                $components[$name]["branch"] = str_replace("* ", "", $this->git_abbrev_ref($path));
-                $components[$name]["local_changes"] = $this->git_local_changes($path);
-                $components[$name]["url"] = $this->git_remote_url($path);
-
-                if (!in_array($components[$name]["branch"], $components[$name]["branches_available"])) {
-                    $components[$name]["branches_available"][] = $components[$name]["branch"];
-                }
-            }
-        }
-
-
-        return $components;
+        return $this->components_model_instance;
     }
 
     /**
@@ -1120,8 +1063,9 @@ class Admin
         passthru('rpi-rw');
     }
 
-    public function get_current_git_branch($path) {
-        return @exec("git -C " . escapeshellarg($path) . " rev-parse --abbrev-ref HEAD");
+    public function get_current_git_branch($path)
+    {
+        return $this->components_model()->get_current_git_branch($path);
     }
 
     public function serialmonitor_pid() {

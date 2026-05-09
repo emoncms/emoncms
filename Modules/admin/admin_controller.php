@@ -93,8 +93,10 @@ function admin_controller()
     // System components view
     if ($route->action == 'components') {
         $route->format = 'html';
+        require_once "Modules/admin/ComponentsModel.php";
+        $components_model = new ComponentsModel($settings, $redis);
         return view("Modules/admin/Views/components_view.php", array(
-            "components"=>$admin->component_list()
+            "components" => $components_model->component_list()
         ));
     }
 
@@ -333,51 +335,29 @@ function admin_controller()
     // ----------------------------------------------------------------------------------------
     // Component manager
     // ----------------------------------------------------------------------------------------
-    if ($route->action == 'components-installed' && $session['write']) {
+    if (in_array($route->action, array('components-installed', 'components-available', 'component-update', 'components-update-all')) && $session['write']) {
         $route->format = "json";
-        return $admin->component_list(true);
+        require_once "Modules/admin/ComponentsModel.php";
+        $components_model = new ComponentsModel($settings, $redis);
+    }
+
+    if ($route->action == 'components-installed' && $session['write']) {
+        return $components_model->component_list(true);
     }
 
     if ($route->action == 'components-available' && $session['write']) {
-        $route->format = "json";
-        return $admin->components_available();
+        return $components_model->components_available();
     }
 
     if ($route->action == 'component-update' && $session['write']) {
-        $route->format = "json";
-
-        $components = $admin->component_list(false);
-
-        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module"); else $module = $_GET['module'];
-        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-        if (!isset($components[$module])) return array('success'=>false, 'message'=>"Invalid module");
-        $module_path = $components[$module]["path"];
-
-        // if branch is not in available branches, check that it is not the current branch
-        if (!in_array($branch,$components[$module]["branches_available"])) {
-            $current_branch = $admin->get_current_git_branch($module_path);
-            if ($branch!=$current_branch) return array('success'=>false, 'message'=>"Invalid branch");
-        }
-
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_component.sh";
-        return $admin->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . escapeshellarg($admin->update_logfile()));
+        if (!isset($_GET['module'])) return array('success'=>false, 'message'=>"missing parameter: module");
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch");
+        return $components_model->update_component($_GET['module'], $_GET['branch']);
     }
 
     if ($route->action == 'components-update-all' && $session['write']) {
-        $route->format = "json";
-        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch"); else $branch = $_GET['branch'];
-
-        // Validate branch
-        $available_branches = array();
-        foreach ($admin->component_list(false) as $c) {
-            foreach ($c["branches_available"] as $b) {
-                if (!in_array($b,$available_branches)) $available_branches[] = $b;
-            }
-        }
-        if (!in_array($branch,$available_branches)) return array('success'=>false, 'message'=>"Invalid branch");
-
-        $script = $settings['openenergymonitor_dir']."/EmonScripts/update/update_all_components.sh";
-        return $admin->runService($script, escapeshellarg($branch) . ">" . escapeshellarg($admin->update_logfile()));
+        if (!isset($_GET['branch'])) return array('success'=>false, 'message'=>"missing parameter: branch");
+        return $components_model->update_all_components($_GET['branch']);
     }
 
     // ----------------------------------------------------------------------------------------
