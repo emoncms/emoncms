@@ -100,6 +100,7 @@ function view($filepath, array $args = array())
     $args['path'] = $path;
     $content = '';
     if (file_exists($filepath)) {
+        unset($args['filepath']);
         extract($args);
         ob_start();
         include "$filepath";
