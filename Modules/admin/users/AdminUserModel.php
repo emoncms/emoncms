@@ -28,7 +28,11 @@ Class AdminUserModel
     public function setUserFeed($feedid)
     {
         $feedid = (int) $feedid;
-        $result = $this->mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
+        $stmt = $this->mysqli->prepare("SELECT userid FROM feeds WHERE id=?");
+        if (!$stmt) return;
+        $stmt->bind_param("i", $feedid);
+        $stmt->execute();
+        $result = $stmt->get_result();
         if (!$result) return;
         $row = $result->fetch_object();
         if (!$row) return;

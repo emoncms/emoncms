@@ -31,7 +31,7 @@ function admin_controller()
             $log->warn("DB schema update accessed via updatelogin bypass (not an admin session). Set updatelogin to false in settings after update is complete.");
         }
         $applychanges = false;
-        if (isset($_GET['apply']) && $_GET['apply']==true) {
+        if (isset($_GET['apply']) && $_GET['apply'] === 'true') {
             $applychanges = true;
         }
         require_once "Lib/dbschemasetup.php";
@@ -241,7 +241,7 @@ function admin_controller()
             $log_content = $update_model->get_update_log();
             if ($log_content === false) {
                 $route->format = "json";
-                return array('success'=>false, 'message'=>$update_model->update_logfile()." does not exist");
+                return array('success'=>false, 'message'=>"Update log does not exist");
             }
             $route->format = "text";
             return $log_content;

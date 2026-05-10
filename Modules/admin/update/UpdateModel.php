@@ -126,7 +126,7 @@ class UpdateModel
         if (!in_array($port, $this->listSerialPorts())) {
             return array('success' => false, 'message' => "Invalid serial port");
         }
-        if (!is_numeric($baud_rate) || $baud_rate <= 0) {
+        if (!in_array((int)$baud_rate, [300, 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600], true)) {
             return array('success' => false, 'message' => "Invalid baud rate");
         }
         if (!preg_match('/^[a-zA-Z0-9_-]+$/', $core)) {
@@ -141,6 +141,11 @@ class UpdateModel
         $file_extension = strtolower(end($filename_parts));
         if ($file_extension !== 'hex' && $file_extension !== 'bin') {
             return array('success' => false, 'message' => "Only .hex or .bin files are allowed");
+        }
+
+        $max_size = 2 * 1024 * 1024; // 2 MB
+        if ($file['size'] > $max_size) {
+            return array('success' => false, 'message' => "Firmware file exceeds maximum allowed size (2 MB)");
         }
 
         if (!is_dir(self::FIRMWARE_UPLOAD_DIR)) {
@@ -206,7 +211,7 @@ class UpdateModel
             readfile($logfile);
             echo trim(ob_get_clean());
         } else {
-            echo $this->update_logfile . " does not exist!";
+            echo "Update log does not exist";
         }
         exit;
     }

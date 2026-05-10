@@ -90,7 +90,7 @@ class LogModel
         }
 
         if (!file_exists($this->emoncms_logfile)) {
-            return array('success' => false, 'message' => $this->emoncms_logfile . " does not exist");
+            return array('success' => false, 'message' => "Log file does not exist");
         }
 
         $lines = $this->read_file($this->emoncms_logfile, $num_lines);

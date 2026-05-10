@@ -22,7 +22,7 @@ class ServiceModel
 	{
 		$output = false;
 		if (function_exists('exec')) {
-			@exec('systemctl show ' . $name . ' | grep State', $output);
+			@exec('systemctl show ' . escapeshellarg($name) . ' | grep State', $output);
 		}
 		return $output;
 	}
@@ -79,6 +79,11 @@ class ServiceModel
 			return array('success' => false, 'message' => "Invalid action '$action'");
 		}
 
+		$service_name = str_replace('.service', '', $name);
+		if (!in_array($service_name, $this->getServicesList(), true)) {
+			return array('success' => false, 'message' => "Invalid service '$service_name'");
+		}
+
 		$script = __DIR__ . '/../../../scripts/service-action.sh';
 		return $this->runService($script, "$name $action");
 	}
@@ -89,7 +94,7 @@ class ServiceModel
 			if ($this->log) {
 				$this->log->error("runService() Script not found '$script' attributes=$attributes");
 			}
-			return array('success' => false, 'message' => "File not found '$script' attributes=$attributes");
+			return array('success' => false, 'message' => "Service action script not found");
 		}
 
 		if ($this->redis) {

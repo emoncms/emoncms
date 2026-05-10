@@ -80,7 +80,7 @@ class SerialModel
         if (!$this->redis) return array('success' => false, 'message' => "Redis not enabled");
         if ($cmd === "") return array('success' => false, 'message' => "no command");
         $this->redis->rpush("serialmonitor", $cmd);
-        return array('success' => true, 'message' => "serialmonitor cmd sent: $cmd");
+        return array('success' => true, 'message' => "serialmonitor cmd sent");
     }
 
     private function runService($script, $attributes)
