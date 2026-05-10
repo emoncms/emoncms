@@ -90,7 +90,7 @@ function admin_controller()
     if ($route->action == 'systeminfotest') {
         require_once "Modules/admin/info/sysinfo.php";
         $route->format = 'json';
-        $systemInfo = new SystemInfo($mysqli, $redis);
+        $systemInfo = new SystemInfo($mysqli, $redis, $settings);
         return $systemInfo->getSystemInfo();
     }
 
