@@ -29,7 +29,7 @@ if ($session["write"] && $session["admin"]) {
             ),
             "serialconfig"=>array(
                 "name"=>tr("Serial Config"),
-                "href"=>"admin/serial/config", 
+                "href"=>"admin/serial", 
                 "order"=>1, 
                 "icon"=>"input"
             ),

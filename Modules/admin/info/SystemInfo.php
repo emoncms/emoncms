@@ -364,7 +364,7 @@ class SystemInfo
 
     // ── Pi ───────────────────────────────────────────────────────────────────
 
-    private function is_Pi()
+    public function is_Pi()
     {
         if (@file_exists('/proc/device-tree/model')) {
             $model = @file_get_contents('/proc/device-tree/model');
