@@ -167,7 +167,7 @@ function admin_controller()
         // Log view
         if ($route->subaction == '') {
             $log_levels = $log->levels();
-            return view("Modules/admin/Views/emoncms_log_view.php", array(
+            return view("Modules/admin/log/emoncms_log_view.php", array(
                 'log_enabled' => $logModel->is_enabled(),
                 'emoncms_logfile' => $logModel->emoncms_logfile(),
                 'log_levels' => $log_levels,
@@ -337,11 +337,11 @@ function admin_controller()
     // Admin user list view
     if ($route->action == 'users') {
         $route->format = 'html';
-        return view("Modules/admin/Views/userlist_view.php", array());
+        return view("Modules/admin/users/userlist_view.php", array());
     }
 
     // Load admin model
-    require_once "Modules/admin/AdminUserModel.php";
+    require_once "Modules/admin/users/AdminUserModel.php";
     $admin_model = new AdminUserModel($mysqli, $user);
 
     // Switch to another user by id (admin only)
@@ -374,4 +374,3 @@ function admin_controller()
 
     return EMPTY_ROUTE;
 }
-
