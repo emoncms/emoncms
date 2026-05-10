@@ -77,21 +77,28 @@ function admin_controller()
     // System information view
     if ($route->action == 'info') {
         $route->format = 'html';
-        return view("Modules/admin/info/system_info_view.php", $admin->full_system_information());
+        return view("Modules/admin/info/system_info_view.php", array());
     }
 
     // System information JSON endpoint (used by Vue interface and external tooling)
-    if ($route->action == 'systeminfo') {
+    if ($route->action == 'systeminfoold') {
         $route->format = 'json';
         return $admin->full_system_information();
     }
 
     // System information JSON test endpoint using class-based provider
-    if ($route->action == 'systeminfotest') {
+    if ($route->action == 'systeminfo') {
+        
         require_once "Modules/admin/info/sysinfo.php";
         $route->format = 'json';
         $systemInfo = new SystemInfo($mysqli, $redis, $settings);
-        return $systemInfo->getSystemInfo();
+        $result = $systemInfo->getSystemInfo();
+
+        require_once "Modules/admin/info/Services.php";
+        $services = new Services($redis, $log, $settings);
+        $result['Services'] = $services->getServices();
+
+        return $result;
     }
 
     // Emoncms log view

@@ -1,11 +1,4 @@
 <?php
-/**
- * sysinfo.php
- * Compiles Emoncms-style system information JSON.
- * Usage: include this file and call (new SystemInfo($mysqli, $redis))->getSystemInfo(),
- *        or hit it directly
- *        for a JSON response.
- */
 
 class SystemInfo
 {
@@ -31,13 +24,6 @@ class SystemInfo
             return dirname($_SERVER['SCRIPT_FILENAME']);
         }
         return dirname(__DIR__, 3);
-    }
-
-    // ── Services ─────────────────────────────────────────────────────────────
-
-    public function get_services_list()
-    {
-        return array('emonhub', 'mqtt_input', 'emoncms_mqtt', 'feedwriter', 'service-runner', 'emonPiLCD', 'redis-server', 'mosquitto', 'demandshaper', 'emoncms_sync');
     }
 
     private function exec($cmd)
@@ -81,81 +67,6 @@ class SystemInfo
     private function which($command)
     {
         return $this->exec('which ' . escapeshellarg($command) . ' 2>/dev/null');
-    }
-
-    private function getServiceStatus(string $name): array
-    {
-        $service_name = str_replace('.service', '', $name);
-
-        if (file_exists('/.dockerenv')) {
-            if (file_exists('/opt/openenergymonitor/emoncms_pre.sh')) {
-                $container_services = array('emoncms_mqtt', 'feedwriter', 'service-runner', 'redis-server', 'mosquitto', 'emoncms_sync');
-                if (in_array($service_name, $container_services, true)) {
-                    return array(
-                        'loadstate' => 'Loaded',
-                        'state' => 'Active',
-                        'text' => 'Running',
-                        'running' => true,
-                        'unitfilestate' => 'container',
-                        'cssClass' => 'success',
-                    );
-                }
-            }
-
-            return array();
-        }
-
-        if (!in_array($service_name, $this->get_services_list(), true)) {
-            return array();
-        }
-
-        $props = array('LoadState', 'ActiveState', 'SubState', 'UnitFileState');
-        $cmd = 'systemctl show ' . escapeshellarg($name) . ' -p ' . implode(' -p ', $props) . ' 2>/dev/null';
-
-        $raw = shell_exec($cmd) ?? '';
-        $data = [];
-        foreach (explode("\n", trim($raw)) as $line) {
-            [$k, $v] = array_pad(explode('=', $line, 2), 2, '');
-            $data[$k] = $v;
-        }
-
-        $load    = $data['LoadState'] ?? 'not-found';
-        $state   = $data['ActiveState'] ?? 'inactive';
-        $sub     = $data['SubState'] ?? '';
-        $unit    = $data['UnitFileState'] ?? '';
-
-        $running = ($load === 'loaded' && $state === 'active' && $sub === 'running');
-
-        if ($load === 'not-found' || $load === 'masked') {
-            return [
-                'loadstate' => 'Not-found',
-                'state' => 'Inactive',
-                'text' => 'Not found or not installed',
-                'running' => false,
-                'unitfilestate' => false,
-                'cssClass' => 'masked',
-            ];
-        }
-
-        return [
-            'loadstate' => ucfirst($load),
-            'state' => ucfirst($state),
-            'text' => $running ? ucfirst($sub) : trim($load . ' ' . $state . ' ' . $sub),
-            'running' => $running,
-            'unitfilestate' => $unit ?: false,
-            'cssClass' => $running ? 'success' : 'danger',
-        ];
-    }
-
-    private function getServices(): array
-    {
-        $services = $this->get_services_list();
-
-        $out = [];
-        foreach ($services as $svc) {
-            $out[$svc] = $this->getServiceStatus($svc);
-        }
-        return $out;
     }
 
     // ── Emoncms ──────────────────────────────────────────────────────────────
@@ -955,7 +866,7 @@ class SystemInfo
         }
 
         return array(
-            'Services' => $this->getServices(),
+            'Services' => false, // added in controller.
             'System Information' => $system_information,
             'Client Information' => $this->getClientInfo(),
         );

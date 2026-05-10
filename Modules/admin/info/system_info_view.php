@@ -110,21 +110,21 @@ $_js_translations = array(
 	<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr('Services') }}</h4>
 	<dl class="row">
 		<template v-for="(svc, key) in info.Services">
-			<dt class="col-sm-2 col-4 text-truncate" @click="copyServiceRow(key, svc, $event)"><span :class="'badge badge-' + svc.cssClass"></span> {{ key }}</dt>
+			<dt class="col-sm-2 col-4 text-truncate" @click="copyServiceRow(key, svc, $event)"><span :class="'badge badge-' + serviceCssClass(svc)"></span> {{ key }}</dt>
 			<dd class="col-sm-10 col-8 border-box px-1" @click="copyServiceRow(key, svc, $event)">
-				<template v-if="svc.loadstate === 'Loaded'">
-					<strong>{{ svc.state }}</strong> {{ svc.text }}
+				<template v-if="isServiceLoaded(svc)">
+					<strong>{{ svc.state }}</strong> {{ serviceText(svc) }}
 					<div class="btn-group" role="group" style="float:right">
 						<template v-if="svc.unitfilestate !== 'container'">
-							<button v-if="svc.unitfilestate !== 'disabled' && svc.state !== 'Active'" class="btn btn-small btn-success" @click="serviceAction(key, 'start')">Start</button>
-							<button v-if="svc.state === 'Active'" class="btn btn-small btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
-							<button v-if="svc.state === 'Active'" class="btn btn-small btn-warning" @click="serviceAction(key, 'restart')">Restart</button>
+							<button v-if="svc.unitfilestate !== 'disabled' && !isServiceActive(svc)" class="btn btn-small btn-success" @click="serviceAction(key, 'start')">Start</button>
+							<button v-if="isServiceActive(svc)" class="btn btn-small btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
+							<button v-if="isServiceActive(svc)" class="btn btn-small btn-warning" @click="serviceAction(key, 'restart')">Restart</button>
 							<button v-if="svc.unitfilestate === 'disabled'" class="btn btn-small btn-primary" @click="serviceAction(key, 'enable')">Enable</button>
-							<button v-else-if="svc.state !== 'Active'" class="btn btn-small btn-inverse" @click="serviceAction(key, 'disable')">Disable</button>
+							<button v-else-if="!isServiceActive(svc)" class="btn btn-small btn-inverse" @click="serviceAction(key, 'disable')">Disable</button>
 						</template>
 					</div>
 				</template>
-				<template v-else>{{ svc.text }}</template>
+				<template v-else>{{ serviceText(svc) }}</template>
 			</dd>
 		</template>
 	</dl>
@@ -277,6 +277,37 @@ new Vue({
 	},
 	methods: {
 		tr: tr,
+		isServiceLoaded: function(svc) {
+			return (svc && svc.loadstate === 'Loaded');
+		},
+		isServiceActive: function(svc) {
+			return (svc && svc.state === 'Active');
+		},
+		isServiceRunning: function(svc) {
+			return this.isServiceLoaded(svc) && this.isServiceActive(svc) && (svc.substate === 'Running');
+		},
+		serviceCssClass: function(svc) {
+			if (!svc) return 'masked';
+			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') return 'masked';
+			return this.isServiceRunning(svc) ? 'success' : 'danger';
+		},
+		serviceText: function(svc) {
+			if (!svc) return '';
+			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') {
+				return 'Not found or not installed';
+			}
+			var parts = [];
+			if (svc.substate) {
+				parts.push(svc.substate);
+			}
+			if (svc.note) {
+				parts.push('- ' + svc.note);
+			}
+			if (parts.length > 0) {
+				return parts.join(' ');
+			}
+			return [svc.loadstate || '', svc.state || ''].join(' ').trim();
+		},
 		toRows: function(sectionData, sectionTitle) {
 			var rows = [];
 			var isRedisSection = (sectionTitle || '').toLowerCase() === 'redis';
@@ -356,7 +387,7 @@ new Vue({
 			if (!svc) {
 				return;
 			}
-			var value = svc.loadstate === 'Loaded' ? ((svc.state || '') + ' ' + (svc.text || '')).trim() : (svc.text || '');
+			var value = this.isServiceLoaded(svc) ? ((svc.state || '') + ' ' + this.serviceText(svc)).trim() : this.serviceText(svc);
 			if (!value) {
 				return;
 			}

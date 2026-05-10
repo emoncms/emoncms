@@ -22,6 +22,7 @@ class Admin
     private $emoncms_logfile;
     private $update_model_instance = null;
     private $serial_model_instance = null;
+    private $services_model_instance = null;
 
     public function __construct($mysqli, $redis, $settings)
     {
@@ -57,9 +58,18 @@ class Admin
         return $this->update_model_instance;
     }
 
+    private function services_model()
+    {
+        if ($this->services_model_instance === null) {
+            require_once "Modules/admin/info/Services.php";
+            $this->services_model_instance = new Services($this->redis, $this->log, $this->settings);
+        }
+        return $this->services_model_instance;
+    }
+
     public function get_services_list()
     {
-        return array('emonhub', 'mqtt_input', 'emoncms_mqtt', 'feedwriter', 'service-runner', 'emonPiLCD', 'redis-server', 'mosquitto', 'demandshaper', 'emoncms_sync');
+        return $this->services_model()->get_services_list();
     }
 
     private function serial_model()
@@ -125,32 +135,19 @@ class Admin
 
         foreach ($services as $key => $value) {
             if (!empty($value)) {    // If the service was found on this system
-                // Populate service status fields
+                $loadState = isset($value['LoadState']) ? $value['LoadState'] : 'not-found';
+                $activeState = isset($value['ActiveState']) ? $value['ActiveState'] : 'inactive';
+                $subState = isset($value['SubState']) ? $value['SubState'] : '';
+
+                // Keep service status payload minimal and let the view derive labels/styles.
                 $services[$key] = array(
-                    'loadstate' => ucfirst($value['LoadState']),
-                    'state' => ucfirst($value['ActiveState']),
-                    'text' => ucfirst($value['SubState']),
-                    'running' => $value['SubState'] === 'running',
+                    'loadstate' => ucfirst($loadState),
+                    'state' => ucfirst($activeState),
+                    'substate' => ucfirst($subState),
                     'unitfilestate' => isset($value['UnitFileState']) ? $value['UnitFileState'] : false
                 );
-
-                // Set 'cssClass' based on service's configuration and current status
-                if ($value['LoadState'] === 'masked') {          // Check if service is masked (installed, but configured not to run)
-                    $services[$key]['cssClass'] = 'masked';
-                    $services[$key]['text'] = 'Masked';
-                } elseif ($value['LoadState'] === 'not-found') { // not installed
-                    $services[$key]['cssClass'] = 'masked';
-                    $services[$key]['text'] = 'Not found or not installed';
-                } elseif ($value['SubState'] === 'running') {    // If not masked, check if service is running
-                    $services[$key]['cssClass'] = 'success';
-                } else {                                       // Assume service is in danger
-                    $services[$key]['cssClass'] = 'danger';
-                    $services[$key]['text'] = $value['LoadState'] . " " . $value['ActiveState'] . " " . $value['SubState'];
-                }
             }
         }
-
-        asort($services);
 
         // Hide mqtt_input if not found
         if (isset($services['mqtt_input']) && $services['mqtt_input']['loadstate'] == 'Not-found') {
@@ -159,11 +156,11 @@ class Admin
 
         // add custom messages for feedwriter service
         if (isset($services['feedwriter'])) {
-            $message = "";
-            if ($services['feedwriter']['running']) {
-                $message = ' - sleep ' . $this->settings['feed']['redisbuffer']['sleep'] . 's';
+            $substate = strtolower(isset($services['feedwriter']['substate']) ? $services['feedwriter']['substate'] : '');
+            $state = strtolower(isset($services['feedwriter']['state']) ? $services['feedwriter']['state'] : '');
+            if ($state === 'active' && $substate === 'running') {
+                $services['feedwriter']['note'] = 'sleep ' . $this->settings['feed']['redisbuffer']['sleep'] . 's';
             }
-            $services['feedwriter']['text'] .= $message;
         }
 
         // ========== SYSTEM INFORMATION SECTION - Initialize ==========
@@ -370,83 +367,17 @@ class Admin
      */
     public function getServiceStatus($name)
     {
-        // Validate service name
-        // remove .service from name
-        $service_name = str_replace('.service', '', $name);
-        if (file_exists("/.dockerenv")) {
-            if (file_exists("/opt/openenergymonitor/emoncms_pre.sh")) {
-                $container_services = [
-                    "emoncms_mqtt",
-                    "feedwriter",
-                    "service-runner",
-                    "redis-server",
-                    "mosquitto",
-                    "emoncms_sync"
-                ];
-                if (in_array($service_name, $container_services)) {
-                    return [
-                        "LoadState" => "loaded",
-                        "ActiveState" => "active",
-                        "SubState" => "running",
-                        "UnitFileState" => "container",
-                    ];
-                } else {
-                    return [];
-                }
-            } else {
-                return [];
-            }
-        }
-        if (!in_array($service_name, $this->get_services_list())) {
-            return array();
-        }
-
-        if (!$service_status = $this->service_status($name)) {
-            return array();
-        }
-        $status = array();
-
-        foreach ($service_status as $line) {
-            $parts = explode('=', $line, 2);
-            $status[$parts[0]] = $parts[1];
-        }
-
-        $return = array();
-        $keys = array("LoadState", "ActiveState", "SubState", "UnitFileState");
-        foreach ($keys as $key) {
-            if (isset($status[$key])) {
-                $return[$key] = $status[$key];
-            }
-        }
-        return $return;
+        return $this->services_model()->getServiceStatus($name);
     }
 
     public function setService($name, $action)
     {
-        // $action = start | stop | restart | enable | disable
-        if (!in_array($action, array('start', 'stop', 'restart', 'enable', 'disable'))) {
-            return array('success' => false, 'message' => "Invalid action '$action'");
-        }
-
-        $script = __DIR__ . "/../../scripts/service-action.sh";
-        return $this->runService($script, "$name $action");
+        return $this->services_model()->setService($name, $action);
     }
 
     public function runService($script, $attributes)
     {
-
-        if (!file_exists($script)) {
-            $this->log->error("runService() Script not found '$script' attributes=$attributes");
-            return array('success' => false, 'message' => "File not found '$script' attributes=$attributes");
-        }
-        if ($this->redis) {
-            $this->redis->rpush("service-runner", "$script $attributes");
-            $this->log->info("runService() service-runner trigger sent for '$script $attributes'");
-            return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
-        } else {
-            $this->log->error("runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
-            return array('success' => false, 'message' => "Redis is required to run service commands");
-        }
+        return $this->services_model()->runService($script, $attributes);
     }
 
     private function get_machine()
@@ -987,10 +918,6 @@ class Admin
     }
 
     // --- Named exec helpers: every shell command used by this class is listed here ---
-
-    private function service_status($name) {
-        return $this->exec_array('systemctl show ' . $name . ' | grep State');
-    }
 
     private function lscpu() {
         return $this->exec_array('lscpu');
