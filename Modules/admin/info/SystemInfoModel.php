@@ -744,7 +744,7 @@ class SystemInfoModel
         }
     }
 
-    private function redisDiskLoad(string $partition_name, int $bytes_read, int $bytes_written): array
+    private function redisDiskLoad(string $partition_name, int|float $bytes_read, int|float $bytes_written): array
     {
         if ($this->redis->exists("diskstats:starttime") &&
             $this->redis->exists("diskstats:$partition_name:read") &&
