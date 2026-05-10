@@ -135,20 +135,27 @@ class SystemInfoModel
     {
         global $emoncms_version;
 
-        $components = $this->components_model->component_list(false);
+        $components = $this->components_model->component_list(true);
 
         $component_summary = array();
         foreach ($components as $component) {
             $component_summary[] = $component['name'] . ' v' . $component['version'];
         }
 
-        return [
+        $emoncms_info = [
             'Version' => $emoncms_version,
-            'Git URL' => $components['emoncms']['url'] ?? '',
-            'Git Branch' => $components['emoncms']['branch'] ?? '',
-            'Git Describe' => $components['emoncms']['describe'] ?? '',
-            'Components' => implode(' | ', $component_summary),
         ];
+
+        // Add git properties from the emoncms component if available
+        if (isset($components['emoncms'])) {
+            $emoncms_info['Git URL'] = $components['emoncms']['url'] ?? '';
+            $emoncms_info['Git Branch'] = $components['emoncms']['branch'] ?? '';
+            $emoncms_info['Git Describe'] = $components['emoncms']['describe'] ?? '';
+        }
+
+        $emoncms_info['Components'] = implode(' | ', $component_summary);
+
+        return $emoncms_info;
     }
 
     // ── Server ───────────────────────────────────────────────────────────────
