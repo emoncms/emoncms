@@ -20,9 +20,6 @@ function admin_controller()
         return array('success'=>false, 'content'=>'', 'reauth'=>true, 'message'=>"Admin re-authentication required");
     }
 
-    require_once "Modules/admin/admin_model.php";
-    $admin = new Admin($settings);
-
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -37,7 +34,6 @@ function admin_controller()
         if (isset($_GET['apply']) && $_GET['apply']==true) {
             $applychanges = true;
         }
-
         require_once "Lib/dbschemasetup.php";
         $updates = array(array(
             'title'=>"Database schema",
@@ -70,6 +66,14 @@ function admin_controller()
 
     // Everything beyond this point requires an admin session as it will otherwise fail the above check
 
+    require_once "Modules/admin/admin_model.php";
+    require_once "Modules/admin/info/Services.php";
+    require_once "Modules/admin/info/SystemInfo.php";
+
+    $admin = new Admin($settings);
+    $services = new Services($redis, $log, $settings);
+    $systemInfo = new SystemInfo($mysqli, $redis, $settings);
+
     // ----------------------------------------------------------------------------------------
     // Load html pages
     // ----------------------------------------------------------------------------------------
@@ -82,14 +86,8 @@ function admin_controller()
 
     // System information JSON test endpoint using class-based provider
     if ($route->action == 'systeminfo') {
-        
-        require_once "Modules/admin/info/SystemInfo.php";
         $route->format = 'json';
-        $systemInfo = new SystemInfo($mysqli, $redis, $settings);
         $result = $systemInfo->getSystemInfo();
-
-        require_once "Modules/admin/info/Services.php";
-        $services = new Services($redis, $log, $settings);
         $result['Services'] = $services->getServices();
 
         return $result;
@@ -126,16 +124,16 @@ function admin_controller()
             return array('success'=>false, 'message'=>"Missing name parameter");
         }
         $name = $_GET['name'];
-        if (!in_array($name,$admin->get_services_list())) {
+        if (!in_array($name,$services->get_services_list())) {
             return array('success'=>false, 'message'=>"Invalid service");
         }
 
-        if ($route->subaction == 'status') return $admin->getServiceStatus("$name.service");
-        if ($route->subaction == 'start') return $admin->setService("$name.service",'start');
-        if ($route->subaction == 'stop') return $admin->setService("$name.service",'stop');
-        if ($route->subaction == 'restart') return $admin->setService("$name.service",'restart');
-        if ($route->subaction == 'disable') return $admin->setService("$name.service",'disable');
-        if ($route->subaction == 'enable') return $admin->setService("$name.service",'enable');
+        if ($route->subaction == 'status') return $services->getServiceStatus("$name.service");
+        if ($route->subaction == 'start') return $services->setService("$name.service",'start');
+        if ($route->subaction == 'stop') return $services->setService("$name.service",'stop');
+        if ($route->subaction == 'restart') return $services->setService("$name.service",'restart');
+        if ($route->subaction == 'disable') return $services->setService("$name.service",'disable');
+        if ($route->subaction == 'enable') return $services->setService("$name.service",'enable');
         return array('success'=>false, 'message'=>"Unknown subaction");
     }
 
@@ -163,7 +161,7 @@ function admin_controller()
 
     if ($route->action == 'resetdiskstats') {
         $route->format = 'json';
-        return $admin->disk_stats_reset();
+        return $systemInfo->disk_stats_reset();
     }
 
     if ($route->action == 'fs') {
@@ -420,3 +418,4 @@ function admin_controller()
 
     return EMPTY_ROUTE;
 }
+
