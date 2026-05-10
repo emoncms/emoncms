@@ -1,6 +1,6 @@
 <?php
 
-class SystemInfo
+class SystemInfoModel
 {
 
     private $mysqli;

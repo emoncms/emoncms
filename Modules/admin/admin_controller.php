@@ -67,12 +67,12 @@ function admin_controller()
     // Everything beyond this point requires an admin session as it will otherwise fail the above check
 
     require_once "Modules/admin/log/LogModel.php";
-    require_once "Modules/admin/info/Services.php";
-    require_once "Modules/admin/info/SystemInfo.php";
+    require_once "Modules/admin/info/ServiceModel.php";
+    require_once "Modules/admin/info/SystemInfoModel.php";
 
     $logModel = new LogModel($settings);
-    $services = new Services($redis, $log, $settings);
-    $systemInfo = new SystemInfo($mysqli, $redis, $settings);
+    $services = new ServiceModel($redis, $log, $settings);
+    $systemInfo = new SystemInfoModel($mysqli, $redis, $settings);
 
     // ----------------------------------------------------------------------------------------
     // System commands
@@ -144,7 +144,7 @@ function admin_controller()
             return array('success'=>false, 'message'=>"Missing name parameter");
         }
         $name = $_GET['name'];
-        if (!in_array($name,$services->get_services_list())) {
+        if (!in_array($name,$services->getServicesList())) {
             return array('success'=>false, 'message'=>"Invalid service");
         }
 

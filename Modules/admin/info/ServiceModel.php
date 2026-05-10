@@ -1,6 +1,6 @@
 <?php
 
-class Services
+class ServiceModel
 {
 	private $redis;
 	private $log;
@@ -13,12 +13,12 @@ class Services
 		$this->settings = $settings;
 	}
 
-	public function get_services_list()
+	public function getServicesList()
 	{
 		return array('emonhub', 'mqtt_input', 'emoncms_mqtt', 'feedwriter', 'service-runner', 'emonPiLCD', 'redis-server', 'mosquitto', 'demandshaper', 'emoncms_sync');
 	}
 
-	private function service_status($name)
+	private function serviceStatus($name)
 	{
 		$output = false;
 		if (function_exists('exec')) {
@@ -48,11 +48,11 @@ class Services
 			return array();
 		}
 
-		if (!in_array($service_name, $this->get_services_list(), true)) {
+		if (!in_array($service_name, $this->getServicesList(), true)) {
 			return array();
 		}
 
-		if (!$service_status = $this->service_status($name)) {
+		if (!$service_status = $this->serviceStatus($name)) {
 			return array();
 		}
 		$status = array();
@@ -109,7 +109,7 @@ class Services
 	public function getServices(): array
 	{
 		$services = array();
-		foreach ($this->get_services_list() as $service) {
+		foreach ($this->getServicesList() as $service) {
 			$status = $this->getServiceStatus("$service.service");
 
 			// Skip if empty
