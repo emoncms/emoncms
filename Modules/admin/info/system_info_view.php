@@ -81,7 +81,6 @@ $_js_translations = array(
 );
 ?>
 
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Modules/admin/static/admin_styles.css?v=2">
 
 <div id="new-system-info" class="admin-container">
@@ -109,7 +108,7 @@ $_js_translations = array(
 
 	<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr('Services') }}</h4>
 	<dl class="row">
-		<template v-for="(svc, key) in info.Services">
+		<template v-for="(svc, key) in info.Services" :key="key">
 			<dt class="col-sm-2 col-4 text-truncate" @click="copyServiceRow(key, svc, $event)"><span :class="'badge badge-' + serviceCssClass(svc)"></span> {{ key }}</dt>
 			<dd class="col-sm-10 col-8 border-box px-1" @click="copyServiceRow(key, svc, $event)">
 				<template v-if="isServiceLoaded(svc)">
@@ -129,13 +128,13 @@ $_js_translations = array(
 		</template>
 	</dl>
 
-	<template v-for="section in serverSections">
+	<template v-for="section in serverSections" :key="section.title">
 		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1 d-flex justify-content-between align-items-center">
 			<span>{{ tr(section.title) }}</span>
 			<button v-if="section.title === 'Disk'" class="btn btn-info btn-small" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
 		</h4>
 		<dl class="row">
-			<template v-for="row in section.rows">
+			<template v-for="row in section.rows" :key="row.title">
 				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate'" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd :class="row.valueClass || 'col-sm-10 col-8 border-box px-1'" @click="copyRow(row, $event)">
 					<template v-if="row.type === 'text'">{{ row.value }}</template>
@@ -143,9 +142,9 @@ $_js_translations = array(
 						<h5 class="m-0">{{ tr(row.label) }}</h5>
 						<div class="progress progress-info mb-0"><div class="bar" :style="{ width: row.width + '%' }"></div></div>
 						<dl class="inline">
-							<template v-for="item in row.summary">
-								<dt class="pl-0" :key="item.k + '-k'">{{ item.k }}</dt>
-								<dd :key="item.k + '-v'">{{ item.v }}</dd>
+							<template v-for="item in row.summary" :key="item.k">
+								<dt class="pl-0">{{ item.k }}</dt>
+								<dd>{{ item.v }}</dd>
 							</template>
 						</dl>
 					</template>
@@ -162,10 +161,10 @@ $_js_translations = array(
 	</template>
 
 	<h3 class="mt-1 mb-0">{{ tr('Client Information') }}</h3>
-	<template v-for="section in clientSections">
+	<template v-for="section in clientSections" :key="section.title || 'client'">
 		<h4 v-if="section.title" class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr(section.title) }}</h4>
 		<dl class="row">
-			<template v-for="row in section.rows">
+			<template v-for="row in section.rows" :key="row.title">
 				<dt class="col-sm-2 col-4 text-truncate" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd class="col-sm-10 col-8 border-box px-1" @click="copyRow(row, $event)">{{ row.value }}</dd>
 			</template>
@@ -248,13 +247,14 @@ function copyTextToClipboard(text, message) {
 	legacyCopyTextToClipboard(text, message);
 }
 
-new Vue({
-	el: '#new-system-info',
-	data: {
-		info: { Services: {}, 'System Information': {}, 'Client Information': {} },
-		loading: false,
-		serviceActionInProgress: false,
-		SNACKBAR_TIMEOUT: 3000
+Vue.createApp({
+	data() {
+		return {
+			info: { Services: {}, 'System Information': {}, 'Client Information': {} },
+			loading: false,
+			serviceActionInProgress: false,
+			SNACKBAR_TIMEOUT: 3000
+		};
 	},
 	mounted: function() {
 		// Keys with spaces are not reliably available via PHP extract() in views,
@@ -574,5 +574,5 @@ new Vue({
 				});
 		}
 	}
-});
+}).mount('#new-system-info');
 </script>
