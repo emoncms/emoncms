@@ -99,7 +99,7 @@ class UpdateModel
             escapeshellarg($type) . " " .
             escapeshellarg($firmware_key) . " " .
             escapeshellarg($serial_port) . ">" .
-            escapeshellarg($this->update_logfile)
+            $this->update_logfile
         );
     }
 
@@ -117,7 +117,7 @@ class UpdateModel
         return $this->runService($script,
             escapeshellarg($serial_port) . " " .
             escapeshellarg($firmware_key) . ">" .
-            escapeshellarg($this->update_logfile)
+            $this->update_logfile
         );
     }
 
@@ -166,7 +166,7 @@ class UpdateModel
             escapeshellarg($baud_rate) . " " .
             escapeshellarg($core) . " " .
             escapeshellarg($autoreset) . ">" .
-            escapeshellarg($this->update_logfile)
+            $this->update_logfile
         );
     }
 
