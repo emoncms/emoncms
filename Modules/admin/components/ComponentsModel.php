@@ -104,7 +104,7 @@ class ComponentsModel
                 $components[$name]["local_changes"] = $this->git_local_changes($path);
                 $components[$name]["url"] = $this->git_remote_url($path);
 
-                if (!in_array($components[$name]["branch"], $components[$name]["branches_available"])) {
+                if ($components[$name]["branch"] !== '' && !in_array($components[$name]["branch"], $components[$name]["branches_available"])) {
                     $components[$name]["branches_available"][] = $components[$name]["branch"];
                 }
             }
@@ -115,7 +115,7 @@ class ComponentsModel
 
     public function get_current_git_branch($path)
     {
-        return @exec("git -C " . escapeshellarg($path) . " rev-parse --abbrev-ref HEAD");
+        return $this->git_abbrev_ref($path);
     }
 
     // -------------------------------------------------------------------------
@@ -192,23 +192,49 @@ class ComponentsModel
         return $output;
     }
 
+    private function exec_git($path, $git_cmd)
+    {
+        if (!function_exists("exec")) {
+            $this->log->warn("ComponentsModel::exec_git() PHP exec() is disabled");
+            return '';
+        }
+
+        if (!is_dir($path)) {
+            $this->log->warn("ComponentsModel::exec_git() invalid path '$path'");
+            return '';
+        }
+
+        $cmd = "git -c " . escapeshellarg("safe.directory=$path") . " -C " . escapeshellarg($path) . " " . $git_cmd . " 2>&1";
+        $output = array();
+        $exit_code = 0;
+        @exec($cmd, $output, $exit_code);
+
+        $result = trim(implode("\n", $output));
+        if ($exit_code !== 0) {
+            $this->log->warn("ComponentsModel::exec_git() command failed exit_code=$exit_code path='$path' cmd='$git_cmd' output='" . $result . "'");
+            return '';
+        }
+
+        return $result;
+    }
+
     private function git_describe($path)
     {
-        return $this->exec("git -C " . escapeshellarg($path) . " describe");
+        return $this->exec_git($path, "describe");
     }
 
     private function git_abbrev_ref($path)
     {
-        return $this->exec("git -C " . escapeshellarg($path) . " rev-parse --abbrev-ref HEAD");
+        return $this->exec_git($path, "rev-parse --abbrev-ref HEAD");
     }
 
     private function git_local_changes($path)
     {
-        return $this->exec("git -C " . escapeshellarg($path) . " diff-index -G. HEAD --");
+        return $this->exec_git($path, "diff-index -G. HEAD --");
     }
 
     private function git_remote_url($path)
     {
-        return $this->exec("git -C " . escapeshellarg($path) . " ls-remote --get-url origin");
+        return $this->exec_git($path, "ls-remote --get-url origin");
     }
 }
