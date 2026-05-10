@@ -141,7 +141,7 @@ class ComponentsModel
         }
 
         $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/update_component.sh";
-        return $this->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . escapeshellarg($this->update_logfile));
+        return $this->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . $this->update_logfile);
     }
 
     public function update_all_components($branch)
@@ -160,7 +160,7 @@ class ComponentsModel
         }
 
         $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/update_all_components.sh";
-        return $this->runService($script, escapeshellarg($branch) . ">" . escapeshellarg($this->update_logfile));
+        return $this->runService($script, escapeshellarg($branch) . ">" . $this->update_logfile);
     }
 
     // -------------------------------------------------------------------------
