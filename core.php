@@ -62,9 +62,13 @@ function get_application_path($manual_domain = false)
 
 function db_check($mysqli, $database)
 {
-    $result = $mysqli->query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
-    $row = $result->fetch_array();
-    return $row['0'] > 0;
+    $stmt = $mysqli->prepare("SELECT count(table_schema) FROM information_schema.tables WHERE table_schema = ?");
+    $stmt->bind_param("s", $database);
+    $stmt->execute();
+    $stmt->bind_result($count);
+    $stmt->fetch();
+    $stmt->close();
+    return $count > 0;
 }
 
 function controller($controller_name)
@@ -96,6 +100,7 @@ function view($filepath, array $args = array())
     $args['path'] = $path;
     $content = '';
     if (file_exists($filepath)) {
+        unset($args['filepath']);
         extract($args);
         ob_start();
         include "$filepath";

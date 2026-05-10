@@ -1,0 +1,167 @@
+.admin-container {
+      margin-top:10px;
+}
+.content-container {
+    max-width:1150px;
+}
+.border-top{
+    border-color: #dee2e6;
+}
+select{
+    width: auto;
+}
+table tr td.buttons { text-align: right;}
+table tr td.subinfo { border-color:transparent;}
+
+.badge-danger{
+    background-color: #DC3545;
+}
+.badge-masked{
+    background-color: #808080;
+}
+section {
+    position: relative;
+}
+aside.collapse {
+    border-top-width: 0;
+}
+aside.collapse.in {
+    border-top-width: 1px;
+}
+dl {
+    margin: 0
+}
+dl dt,dl dd{
+    border-top: 1px solid #ddd;
+    padding: .2em 0;
+}
+dl dt:first-child, dl dt:first-child + dd,
+dl > dl dt:first-child, dl > dl dt:first-child + dd{
+    border-top: 0px solid #ddd;
+}
+dl dd:last-child{
+    padding-bottom: 1em;
+}
+dl.inline > * {
+    display: inline-block;
+    border: 0px solid transparent;
+}
+dl.inline > dd {
+    margin: 0 1em 0 0.3em;
+}
+.admin .row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin: 0;
+}
+
+.label:empty, .badge:empty {
+    display: inline-block;
+    padding: 1.2em 0 0 1.2em;
+    vertical-align: middle;
+}
+.caret {
+    border-top-color: currentColor!important;
+}
+.dropdown-menu-right{
+    right: 0!important;
+    left: initial;
+}
+
+dl dt{
+  padding-left: .25em;
+  box-sizing: border-box;
+}
+ul.list-columns {
+    column-count: 4;
+    column-gap: 1em;
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+aside,
+section,
+dt,
+dd{
+    transition: background-color .2s ease-out;
+}
+aside:hover,
+section:hover,
+dt:hover,
+dd:hover,
+dt:hover + dd{
+    background-color: #F9F9F9;
+}
+dt:hover,
+dd:hover{
+    cursor: pointer;
+}
+pre.small {
+    height: 3.33em;
+    overflow: auto;
+}
+pre.small [data-dismiss="log"]{
+    display: none;
+}
+.overflow-hidden {
+    overflow: hidden;
+}
+.border-box{
+    box-sizing: border-box;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
+}
+@media (min-width: 480px) {
+    .dropdown-backdrop {
+        display:none!important;
+    }
+}
+
+ul#php-modules {
+    list-style-type: none;
+    margin: 0;
+    columns: 4;
+    -webkit-columns: 4;
+    -moz-columns: 4;
+}
+ul#php-modules li {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (max-width: 800px) {
+    ul#php-modules {
+        columns: 3;
+        -webkit-columns: 3;
+        -moz-columns: 3;
+    }
+}
+
+@media (max-width: 575px) {
+    ul#php-modules {
+        columns: 2;
+        -webkit-columns: 2;
+        -moz-columns: 2;
+    }
+}
+
+@media (max-width: 480px) {
+    ul#php-modules {
+        columns: 1;
+        -webkit-columns: 1;
+        -moz-columns: 1;
+    }
+}
+
+

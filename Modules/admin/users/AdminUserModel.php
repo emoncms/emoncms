@@ -1,6 +1,6 @@
 <?php
 
-Class AdminModel
+Class AdminUserModel
 {
     private $mysqli;
     private $user;
@@ -13,12 +13,13 @@ Class AdminModel
 
     public function setUser($id)
     {
+        $u = $this->user->get((int) $id);
+        if (!$u) return;
+
         $_SESSION['userid'] = (int) $id;
-        
-        $u = $this->user->get($_SESSION['userid']);
         $_SESSION['username'] = $u->username;
         $_SESSION['gravatar'] = $u->gravatar;
-        
+
         header("Location: ../user/view");
         // stop any other code from running once http header sent
         exit();
@@ -26,10 +27,18 @@ Class AdminModel
 
     public function setUserFeed($feedid)
     {
-        $feedid = (int) get("id");
-        $result = $this->mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
+        $feedid = (int) $feedid;
+        $stmt = $this->mysqli->prepare("SELECT userid FROM feeds WHERE id=?");
+        if (!$stmt) return;
+        $stmt->bind_param("i", $feedid);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if (!$result) return;
         $row = $result->fetch_object();
-        $userid = $row->userid;
+        if (!$row) return;
+        $userid = (int) $row->userid;
+        $u = $this->user->get($userid);
+        if (!$u) return;
         $_SESSION['userid'] = $userid;
         header("Location: ../user/view");
         // stop any other code from running once http header sent

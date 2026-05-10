@@ -9,6 +9,36 @@ if ($session["write"] && $session["admin"]) {
         'order' => 13,
 
         "l3"=>array(
+            "info"=>array(
+                "name"=>tr("System Info"),
+                "href"=>"admin/info", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "update"=>array(
+                "name"=>tr("Update"),
+                "href"=>"admin/update", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "components"=>array(
+                "name"=>tr("Components"),
+                "href"=>"admin/component", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "serialconfig"=>array(
+                "name"=>tr("Serial Config"),
+                "href"=>"admin/serial", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
+            "log"=>array(
+                "name"=>tr("Emoncms Log"),
+                "href"=>"admin/log", 
+                "order"=>1, 
+                "icon"=>"input"
+            ),
             "users"=>array(
                 "name"=>tr("Users"),
                 "href"=>"admin/users", 

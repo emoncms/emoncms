@@ -145,15 +145,17 @@ class Route
         }
         $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
 
-        // allow for method to be added as post variable
-        if (post('_method')=='DELETE') {
-            $this->method = 'DELETE';
-        } elseif (post('_method')=='PUT') {
-            $this->method = 'PUT';
-        } elseif (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        // whitelist HTTP methods, default to GET
+        if (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
+
         } elseif ($requestMethod === 'OPTIONS') {
             // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
+            // Note: Allow-Methods is currently GET-only, but authenticated write calls via
+            // apikey in the URL (/input/post?apikey=xxx) are "simple" POST requests that
+            // bypass CORS preflight entirely, so this restriction is not a full control.
+            // Consider adding POST here to make the policy consistent with actual capability:
+            //   header('Access-Control-Allow-Methods: GET, POST');
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Headers: Authorization');
             header('Access-Control-Allow-Methods: GET');
