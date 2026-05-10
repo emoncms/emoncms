@@ -139,7 +139,8 @@ class SystemInfoModel
 
         $component_summary = array();
         foreach ($components as $component) {
-            $component_summary[] = $component['name'] . ' v' . $component['version'];
+            $tag = !empty($component['local_changes']) ? ' [LC]' : '';
+            $component_summary[] = $component['name'] . ' v' . $component['version'] . $tag;
         }
 
         $emoncms_info = [
