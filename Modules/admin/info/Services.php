@@ -111,6 +111,8 @@ class Services
 		$services = array();
 		foreach ($this->get_services_list() as $service) {
 			$status = $this->getServiceStatus("$service.service");
+
+			// Skip if empty
 			if (empty($status)) {
 				$services[$service] = array();
 				continue;
@@ -119,6 +121,8 @@ class Services
 			$loadState = isset($status['LoadState']) ? $status['LoadState'] : 'not-found';
 			$activeState = isset($status['ActiveState']) ? $status['ActiveState'] : 'inactive';
 			$subState = isset($status['SubState']) ? $status['SubState'] : '';
+
+			// Keep service status payload minimal and let the view derive labels/styles.
 			$services[$service] = array(
 				'loadstate' => ucfirst($loadState),
 				'state' => ucfirst($activeState),
@@ -127,10 +131,12 @@ class Services
 			);
 		}
 
+		// Hide mqtt_input if not found
 		if (isset($services['mqtt_input']) && isset($services['mqtt_input']['loadstate']) && $services['mqtt_input']['loadstate'] == 'Not-found') {
 			unset($services['mqtt_input']);
 		}
 
+		// add custom messages for feedwriter service
 		if (isset($services['feedwriter'])) {
 			$substate = strtolower(isset($services['feedwriter']['substate']) ? $services['feedwriter']['substate'] : '');
 			$state = strtolower(isset($services['feedwriter']['state']) ? $services['feedwriter']['state'] : '');

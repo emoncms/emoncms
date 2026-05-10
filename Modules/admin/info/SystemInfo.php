@@ -15,17 +15,6 @@ class SystemInfo
         $this->settings = $settings;
     }
 
-    private function rootPath(): string
-    {
-        if (defined('EMONCMS_ROOT') && EMONCMS_ROOT) {
-            return EMONCMS_ROOT;
-        }
-        if (!empty($_SERVER['SCRIPT_FILENAME'])) {
-            return dirname($_SERVER['SCRIPT_FILENAME']);
-        }
-        return dirname(__DIR__, 3);
-    }
-
     private function exec($cmd)
     {
         $output = false;
@@ -94,15 +83,9 @@ class SystemInfo
 
     private function getEmoncmsInfo(): array
     {
-        $dir = $this->rootPath();
+        global $emoncms_version;
 
-        $version = $GLOBALS['emoncms_version'] ?? 'unknown';
-        if ($version === 'unknown' && file_exists($dir . '/version.json')) {
-            $json = json_decode(file_get_contents($dir . '/version.json'), true);
-            if (!empty($json['version'])) {
-                $version = $json['version'];
-            }
-        }
+        $dir = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
 
         $git_url = $git_branch = $git_describe = '';
         if (is_dir("$dir/.git")) {
@@ -117,7 +100,7 @@ class SystemInfo
         }
 
         return [
-            'Version' => $version,
+            'Version' => $emoncms_version,
             'Git URL' => $git_url,
             'Git Branch' => $git_branch,
             'Git Describe' => $git_describe,
@@ -294,33 +277,8 @@ class SystemInfo
             if ($result) {
                 $db = $result->fetch_array();
                 $info['Date'] = $db['datetime'] . ' (UTC ' . $db['timezone'] . ')';
-            } else {
-                $info['Date'] = gmdate('Y-m-d H:i:s') . ' (UTC ' . date('P') . ')';
             }
-
-            $status = array();
-            $result = mysqli_query($this->mysqli, 'SHOW STATUS');
-            if ($result) {
-                while ($row = mysqli_fetch_row($result)) {
-                    $status[$row[0]] = $row[1];
-                }
-                mysqli_free_result($result);
-            }
-
-            $uptime = (int)($status['Uptime'] ?? 0);
-            $threads = (int)($status['Threads_connected'] ?? 0);
-            $questions = (int)($status['Questions'] ?? 0);
-            $slow = (int)($status['Slow_queries'] ?? 0);
-            $opens = (int)($status['Opened_tables'] ?? 0);
-            $open = (int)($status['Open_tables'] ?? 0);
-            $qps = $uptime > 0 ? number_format($questions / $uptime, 3) : '0.000';
-
-            $info['Stats'] = 'Uptime: ' . $uptime . '  Threads: ' . $threads . '  Questions: ' . $questions . '  '
-                           . 'Slow queries: ' . $slow . '  Opens: ' . $opens . '  Open tables: ' . $open . '  '
-                           . 'Queries per second avg: ' . $qps;
-        } else {
-            $info['Date'] = gmdate('Y-m-d H:i:s') . ' UTC';
-            $info['Stats'] = 'unavailable';
+            $info['Stats'] = $this->mysqli->stat() ?: 'unavailable';
         }
 
         return $info;
@@ -372,7 +330,7 @@ class SystemInfo
 
     // ── MQTT ─────────────────────────────────────────────────────────────────
 
-    private function mqtt_version()
+    private function getMqttVersion()
     {
         $v = '?';
         if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
@@ -399,7 +357,7 @@ class SystemInfo
         $port = $this->settings['mqtt']['port'] ?? '1883';
 
         return array(
-            'Version' => 'Mosquitto ' . $this->mqtt_version(),
+            'Version' => 'Mosquitto ' . $this->getMqttVersion(),
             'Host' => $host . ':' . $port . ' (' . gethostbyname($host) . ')',
         );
     }
@@ -512,24 +470,17 @@ class SystemInfo
 
     private function get_machine()
     {
-        $vendor = trim((string)$this->readDmi('board_vendor'));
+        $vendor  = trim((string)$this->readDmi('board_vendor'));
         $product = trim((string)$this->readDmi('product_name'));
-        $board = trim((string)$this->readDmi('board_name'));
-        $bios = trim(trim((string)$this->readDmi('bios_version')) . ' ' . trim((string)$this->readDmi('bios_date')));
+        $board   = trim((string)$this->readDmi('board_name'));
+        $bios    = trim(trim((string)$this->readDmi('bios_version')) . ' ' . trim((string)$this->readDmi('bios_date')));
 
         $machine = $vendor;
-        if ($product !== '') {
-            $machine .= ' ' . $product;
-        }
-        if ($board !== '') {
-            $machine .= '/' . $board;
-        }
-        if ($bios !== '') {
-            $machine .= ', BIOS ' . $bios;
-        }
-        if ($machine === '') {
-            return '';
-        }
+        if ($product !== '') $machine .= " $product";
+        if ($board !== '')   $machine .= "/$board";
+        if ($bios !== '')    $machine .= ", BIOS $bios";
+
+        if ($machine === '') return '';
 
         $junk = '/ ?(To be filled by O\.E\.M\.|System manufacturer|System Product Name|Not Specified|Default string) ?/i';
         return trim(preg_replace('/^\/,?/', '', preg_replace($junk, '', $machine)));
@@ -550,31 +501,36 @@ class SystemInfo
         return $currentfs;
     }
 
-    private function disk_list()
+    /**
+     * return array of mounted partitions
+     *
+     * @return array
+     */
+    public function disk_list()
     {
         $in_docker = file_exists('/.dockerenv');
 
         if ($in_docker && file_exists('/opt/openenergymonitor/emoncms_pre.sh')) {
-            $output = $this->df_data() ?: array();
+            $output = $this->df_data() ?: [];
         } else {
-            $output = $this->df();
-            if (!$output) {
-                return array();
+            if (!$output = $this->df()) {
+                return [];
             }
         }
 
-        $partitions = array();
+        $partitions = [];
         foreach ($output as $line) {
+            // Skip header row (7 columns) and blank lines; data rows have 6
             $columns = array_values(array_filter(array_map('trim', explode(' ', $line))));
             if (count($columns) !== 6) {
                 continue;
             }
 
             $filesystem = $columns[0];
-            $partition = $columns[5];
+            $partition  = $columns[5];
 
-            $partitions[$partition]['Temporary']['bool'] = in_array($filesystem, array('tmpfs', 'devtmpfs'), true);
-            $partitions[$partition]['Partition']['text'] = $partition;
+            $partitions[$partition]['Temporary']['bool']  = in_array($filesystem, ['tmpfs', 'devtmpfs']);
+            $partitions[$partition]['Partition']['text']  = $partition;
             $partitions[$partition]['FileSystem']['text'] = $filesystem;
 
             if (is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3])) {
@@ -587,15 +543,16 @@ class SystemInfo
                 $partitions[$partition]['Free']['text'] = $columns[3];
             }
 
-            [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime] = $this->resolve_disk_stats($filesystem, $partition, $in_docker);
+            [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime]
+                = $this->resolve_disk_stats($filesystem, $partition, $in_docker);
 
             if ($this->redis && $partition_name) {
                 [$readload, $writeload, $loadtime] = $this->redis_disk_load($partition_name, $bytes_read, $bytes_written);
             }
 
-            $partitions[$partition]['ReadLoad']['value'] = $readload;
+            $partitions[$partition]['ReadLoad']['value']  = $readload;
             $partitions[$partition]['WriteLoad']['value'] = $writeload;
-            $partitions[$partition]['LoadTime']['value'] = $loadtime;
+            $partitions[$partition]['LoadTime']['value']  = $loadtime;
         }
 
         return $partitions;
@@ -662,7 +619,6 @@ class SystemInfo
         }
         return $mounts;
     }
-
     private function resolve_disk_stats(string $filesystem, string $partition, bool $in_docker): array
     {
         $partition_name = false;
@@ -671,23 +627,24 @@ class SystemInfo
         if (!$in_docker && $this->is_command_available('iostat')) {
             $stats = $this->iostat($filesystem);
             if (isset($stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0])) {
-                $disk = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
+                $disk          = $stats['sysstat']['hosts'][0]['statistics'][0]['disk'][0];
                 $partition_name = $disk['disk_device'];
-                $readload = round($disk['kB_read/s'] * 1024);
-                $writeload = round($disk['kB_wrtn/s'] * 1024);
-                $bytes_read = round($disk['kB_read'] * 1024);
-                $bytes_written = round($disk['kB_wrtn'] * 1024);
+                $readload       = round($disk['kB_read/s'] * 1024);
+                $writeload      = round($disk['kB_wrtn/s'] * 1024);
+                $bytes_read     = round($disk['kB_read'] * 1024);
+                $bytes_written  = round($disk['kB_wrtn'] * 1024);
                 $loadtime = -1;
-                return array($partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime);
+                return [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime];
             }
         }
 
-        $mount_map = array(
-            '/boot' => 'mmcblk0p1',
-            '/' => 'mmcblk0p2',
+        // Fallback: map mount points to mmcblk0pX device names (Raspberry Pi only)
+        $mount_map = [
+            '/boot'            => 'mmcblk0p1',
+            '/'                => 'mmcblk0p2',
             '/var/opt/emoncms' => 'mmcblk0p3',
-            '/home/pi/data' => 'mmcblk0p3',
-        );
+            '/home/pi/data'    => 'mmcblk0p3',
+        ];
         $partition_name = $mount_map[$partition] ?? false;
 
         if ($in_docker) {
@@ -700,7 +657,7 @@ class SystemInfo
             foreach (explode("\n", file_get_contents('/proc/diskstats')) as $dline) {
                 $dparts = preg_split('/\s+/', trim($dline));
                 if (isset($dparts[2]) && $dparts[2] === $partition_name) {
-                    $sectors_read = isset($dparts[5]) ? (int)$dparts[5] : null;
+                    $sectors_read    = isset($dparts[5]) ? (int)$dparts[5] : null;
                     $sectors_written = isset($dparts[9]) ? (int)$dparts[9] : null;
                     break;
                 }
@@ -708,42 +665,66 @@ class SystemInfo
             if ($sectors_read === null || $sectors_written === null) {
                 $partition_name = false;
             } else {
-                $bytes_read = $sectors_read * 512;
+                $bytes_read    = $sectors_read * 512;
                 $bytes_written = $sectors_written * 512;
             }
         } elseif ($partition_name) {
             $partition_name = false;
         }
 
-        return array($partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime);
+        return [$partition_name, $bytes_read, $bytes_written, $readload, $writeload, $loadtime];
+    }
+
+    public function disk_stats_reset()
+    {
+        if ($this->redis) {
+            $prefix = $this->redis->getOption(Redis::OPT_PREFIX);
+            $this->redis->del(
+                array_map(
+                    function ($key) use ($prefix) {
+                        return preg_replace("/^{$prefix}/", '', $key);
+                    },
+                    $this->redis->keys('diskstats*')
+                )
+            );
+            return array('success' => true);
+        } else {
+            return array('success' => false, 'message' => "Redis not enabled");
+        }
     }
 
     private function redis_disk_load(string $partition_name, int $bytes_read, int $bytes_written): array
     {
-        if ($this->redis->exists('diskstats:starttime') &&
-            $this->redis->exists('diskstats:' . $partition_name . ':read') &&
-            $this->redis->exists('diskstats:' . $partition_name . ':write')) {
-            $last_bytes_read = $this->redis->get('diskstats:' . $partition_name . ':read');
-            $last_bytes_written = $this->redis->get('diskstats:' . $partition_name . ':write');
-            $elapsed = time() - $this->redis->get('diskstats:starttime');
-            $readload = $elapsed > 0 ? ($bytes_read - $last_bytes_read) / $elapsed : 0;
+        if ($this->redis->exists("diskstats:starttime") &&
+            $this->redis->exists("diskstats:$partition_name:read") &&
+            $this->redis->exists("diskstats:$partition_name:write")) {
+            $last_bytes_read    = $this->redis->get("diskstats:$partition_name:read");
+            $last_bytes_written = $this->redis->get("diskstats:$partition_name:write");
+            $elapsed = time() - $this->redis->get("diskstats:starttime");
+            $readload  = $elapsed > 0 ? ($bytes_read - $last_bytes_read) / $elapsed : 0;
             $writeload = $elapsed > 0 ? ($bytes_written - $last_bytes_written) / $elapsed : 0;
-            return array($readload, $writeload, $elapsed);
+            return [$readload, $writeload, $elapsed];
         }
 
-        $this->redis->set('diskstats:' . $partition_name . ':read', $bytes_read);
-        $this->redis->set('diskstats:' . $partition_name . ':write', $bytes_written);
-        $this->redis->set('diskstats:starttime', time());
-        return array(0, 0, 0);
+        $this->redis->set("diskstats:$partition_name:read", $bytes_read);
+        $this->redis->set("diskstats:$partition_name:write", $bytes_written);
+        $this->redis->set("diskstats:starttime", time());
+        return [0, 0, 0];
     }
 
-    private function php_modules($_modules)
+    /**
+     * return an array of all installed php modules
+     *
+     * @param [type] $_modules
+     * @return array
+     */
+    public function php_modules($_modules)
     {
-        natcasesort($_modules);
-        $modules = array();
-        foreach ($_modules as $extension) {
-            $module_version = phpversion($extension);
-            $modules[] = $module_version ? $extension . ' v' . $module_version : $extension;
+        natcasesort($_modules);// sort case insensitive
+        $modules = [];// empty list
+        foreach ($_modules as $ver => $extension) {
+            $module_version = phpversion($extension);// returns false if no version information
+            $modules[] = $module_version ? "$extension v$module_version" : $extension; // show version if available
         }
         return $modules;
     }
@@ -797,7 +778,9 @@ class SystemInfo
         return !empty(trim($result));
     }
 
-    private function get_client_info(): array
+    // ── Client ───────────────────────────────────────────────────────────────
+
+    private function getClientInfo(): array
     {
         $ip = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
         $fwd = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? null;
@@ -810,13 +793,6 @@ class SystemInfo
             'Forwarded IP' => $fwd,
             'Client Hostname' => $host,
         );
-    }
-
-    // ── Client ───────────────────────────────────────────────────────────────
-
-    private function getClientInfo(): array
-    {
-        return $this->get_client_info();
     }
 
     // ── Assemble ─────────────────────────────────────────────────────────────

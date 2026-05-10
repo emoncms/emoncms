@@ -21,7 +21,7 @@ function admin_controller()
     }
 
     require_once "Modules/admin/admin_model.php";
-    $admin = new Admin($mysqli, $redis, $settings);
+    $admin = new Admin($settings);
 
     // --------------------------------------------------------------------------------------------
     // Allow for special admin session if updatelogin property is set to true in settings.php
@@ -80,16 +80,10 @@ function admin_controller()
         return view("Modules/admin/info/system_info_view.php", array());
     }
 
-    // System information JSON endpoint (used by Vue interface and external tooling)
-    if ($route->action == 'systeminfoold') {
-        $route->format = 'json';
-        return $admin->full_system_information();
-    }
-
     // System information JSON test endpoint using class-based provider
     if ($route->action == 'systeminfo') {
         
-        require_once "Modules/admin/info/sysinfo.php";
+        require_once "Modules/admin/info/SystemInfo.php";
         $route->format = 'json';
         $systemInfo = new SystemInfo($mysqli, $redis, $settings);
         $result = $systemInfo->getSystemInfo();
