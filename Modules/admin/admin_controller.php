@@ -68,11 +68,13 @@ function admin_controller()
 
     require_once "Modules/admin/log/LogModel.php";
     require_once "Modules/admin/info/ServiceModel.php";
+    require_once "Modules/admin/components/ComponentsModel.php";
     require_once "Modules/admin/info/SystemInfoModel.php";
 
     $logModel = new LogModel($settings);
+    $components_model = new ComponentsModel($settings, $redis);
     $services = new ServiceModel($redis, $log, $settings);
-    $systemInfo = new SystemInfoModel($mysqli, $redis, $settings);
+    $systemInfo = new SystemInfoModel($mysqli, $redis, $settings, $components_model);
 
     // ----------------------------------------------------------------------------------------
     // System commands
@@ -254,8 +256,6 @@ function admin_controller()
     // Component manager
     // ----------------------------------------------------------------------------------------
     if ($route->action == 'component') {
-        require_once "Modules/admin/components/ComponentsModel.php";
-        $components_model = new ComponentsModel($settings, $redis);
 
         // Component manager view
         if ($route->subaction == '') {

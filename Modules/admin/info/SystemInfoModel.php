@@ -6,13 +6,14 @@ class SystemInfoModel
     private $mysqli;
     private $redis;
     private $settings;
-    private $components_model_instance = null;
+    private $components_model = null;
 
-    public function __construct($mysqli = null, $redis = null, array $settings = [])
+    public function __construct($mysqli = null, $redis = null, array $settings = [], $components_model = null)
     {
         $this->mysqli = $mysqli;
         $this->redis = $redis;
         $this->settings = $settings;
+        $this->components_model = $components_model;
     }
 
     // ── Shell Commands ───────────────────────────────────────────────────────
@@ -130,50 +131,22 @@ class SystemInfoModel
 
     // ── Emoncms ──────────────────────────────────────────────────────────────
 
-    private function componentsModel()
-    {
-        if ($this->components_model_instance === null) {
-            if (empty($this->settings)) {
-                return null;
-            }
-            require_once "Modules/admin/components/ComponentsModel.php";
-            $this->components_model_instance = new ComponentsModel($this->settings, $this->redis);
-        }
-        return $this->components_model_instance;
-    }
-
-    private function componentList($git_info = true)
-    {
-        $components_model = $this->componentsModel();
-        if (!$components_model) {
-            return array();
-        }
-        return $components_model->component_list($git_info);
-    }
-
     private function getEmoncmsInfo(): array
     {
         global $emoncms_version;
 
-        $dir = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/'));
-
-        $git_url = $git_branch = $git_describe = '';
-        if (is_dir("$dir/.git")) {
-            $git_url = $this->gitRemoteUrl($dir);
-            $git_branch = $this->gitBranch($dir);
-            $git_describe = $this->gitDescribe($dir);
-        }
+        $components = $this->components_model->component_list(false);
 
         $component_summary = array();
-        foreach ($this->componentList(false) as $component) {
+        foreach ($components as $component) {
             $component_summary[] = $component['name'] . ' v' . $component['version'];
         }
 
         return [
             'Version' => $emoncms_version,
-            'Git URL' => $git_url,
-            'Git Branch' => $git_branch,
-            'Git Describe' => $git_describe,
+            'Git URL' => $components['emoncms']['url'] ?? '',
+            'Git Branch' => $components['emoncms']['branch'] ?? '',
+            'Git Describe' => $components['emoncms']['describe'] ?? '',
             'Components' => implode(' | ', $component_summary),
         ];
     }
