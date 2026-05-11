@@ -15,19 +15,42 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+/**
+ * Returns true if the TCP connection originates from a trusted proxy —
+ * i.e. localhost or a private (RFC 1918) address. This means forwarded
+ * headers (X-Forwarded-Host, X-Forwarded-Proto, etc.) were set by a local
+ * process such as nginx, a Dataplicity/ngrok tunnel agent, or Home Assistant
+ * ingress — not injected by a remote attacker.
+ */
+function is_trusted_proxy()
+{
+    $remote = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+    if ($remote === '127.0.0.1' || $remote === '::1') {
+        return true;
+    }
+    // FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE causes
+    // filter_var to return false for private/reserved ranges, true for public.
+    // So a private/loopback address returns false here, meaning is_trusted_proxy() = true.
+    return filter_var(
+        $remote,
+        FILTER_VALIDATE_IP,
+        FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE
+    ) === false;
+}
+
 function is_https()
 {
     // Detect if we are running HTTPS or proxied HTTPS
     if (server('HTTPS') == 'on') {
         // Web server is running native HTTPS
         return true;
-    } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
-        // Web server is running behind a proxy which is running HTTPS
+    } elseif (is_trusted_proxy() && server('HTTP_X_FORWARDED_PROTO') == "https") {
+        // Web server is running behind a trusted local proxy which is running HTTPS
         return true;
-    } elseif (server('HTTP_X_FORWARDED_PORT') == 443) {
-        // Web server is running behind a proxy which is running HTTPS
+    } elseif (is_trusted_proxy() && server('HTTP_X_FORWARDED_PORT') == 443) {
+        // Web server is running behind a trusted local proxy which is running HTTPS
         return true;
-    } elseif (request_header('HTTP_X_FORWARDED_PROTO') == "https") {
+    } elseif (is_trusted_proxy() && request_header('HTTP_X_FORWARDED_PROTO') == "https") {
         return true;
     }
     return false;
@@ -45,7 +68,10 @@ function get_application_path($manual_domain = false)
         return "$proto://".$manual_domain."/";
     }
 
-    if (isset($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+    if (isset($_SERVER['HTTP_X_FORWARDED_HOST']) && is_trusted_proxy()) {
+        // X-Forwarded-Host is only trusted when the connection comes from a local
+        // proxy (localhost or LAN), e.g. nginx, Dataplicity, ngrok, HA ingress.
+        // A remote attacker cannot spoof this as their REMOTE_ADDR will be public.
         $filepath = "$proto://" . server('HTTP_X_FORWARDED_HOST');
         if (isset($_SERVER['HTTP_X_INGRESS_PATH'])) {
             // web server is running in ingress mode in home assistant
