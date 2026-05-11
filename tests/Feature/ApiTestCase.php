@@ -122,7 +122,7 @@ abstract class ApiTestCase extends TestCase
             CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
             CURLOPT_HEADERFUNCTION => function ($ch, string $headerLine) use (&$responseHeaders): int {
                 $trimmed = trim($headerLine);
-                if (str_contains($trimmed, ':')) {
+                if (strpos($trimmed, ':') !== false) {
                     [$name, $value] = explode(':', $trimmed, 2);
                     $name  = strtolower(trim($name));
                     $value = trim($value);
