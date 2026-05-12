@@ -54,8 +54,7 @@ class SerialModel
         if (!in_array($baudrate, array(9600, 38400, 115200))) {
             return array('success' => false, 'message' => "invalid baud rate");
         }
-        $script = "/var/www/emoncms/scripts/serialmonitor/start.sh";
-        return $this->runService($script, escapeshellarg($baudrate) . " /dev/" . escapeshellarg($serialport));
+        return $this->pushAction("serialmonitor-start", [(string)$baudrate, "/dev/" . $serialport]);
     }
 
     public function stop()
@@ -83,18 +82,15 @@ class SerialModel
         return array('success' => true, 'message' => "serialmonitor cmd sent");
     }
 
-    private function runService($script, $attributes)
+    private function pushAction(string $action, array $args, ?string $log = null): array
     {
-        if (!file_exists($script)) {
-            $this->log->error("SerialModel::runService() Script not found '$script' attributes=$attributes");
-            return array('success' => false, 'message' => "File not found '$script'");
-        }
         if ($this->redis) {
-            $this->redis->rpush("service-runner", "$script $attributes");
-            $this->log->info("SerialModel::runService() service-runner trigger sent for '$script $attributes'");
-            return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
+            $payload = json_encode(['run' => $action, 'args' => $args, 'log' => $log]);
+            $this->redis->rpush("service-runner", $payload);
+            $this->log->info("SerialModel::pushAction() service-runner trigger sent for action '$action'");
+            return array('success' => true, 'message' => "service-runner trigger sent for action '$action'");
         } else {
-            $this->log->error("SerialModel::runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
+            $this->log->error("SerialModel::pushAction() Redis not enabled. Cannot execute action '$action' safely.");
             return array('success' => false, 'message' => "Redis is required to run service commands");
         }
     }
