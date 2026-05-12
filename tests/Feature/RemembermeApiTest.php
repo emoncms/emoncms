@@ -99,7 +99,9 @@ class RemembermeApiTest extends ApiTestCase
     // Tests
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_with_rememberme_returns_success(): void
     {
         $response = $this->loginViaHttp(1);
@@ -107,7 +109,9 @@ class RemembermeApiTest extends ApiTestCase
         $this->assertTrue($response['body']['success'] ?? false, 'Login should succeed');
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_with_rememberme_sets_cookie_in_response_headers(): void
     {
         $response = $this->loginViaHttp(1);
@@ -121,7 +125,9 @@ class RemembermeApiTest extends ApiTestCase
         $this->assertNotEmpty($cookies['EMONCMS_REMEMBERME'], 'Cookie value should not be empty');
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_without_rememberme_does_not_set_cookie(): void
     {
         $response = $this->loginViaHttp(0);
@@ -134,7 +140,9 @@ class RemembermeApiTest extends ApiTestCase
         );
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_with_rememberme_creates_database_entry(): void
     {
         $this->loginViaHttp(1);
@@ -142,7 +150,9 @@ class RemembermeApiTest extends ApiTestCase
         $this->assertSame(1, $this->countDbTriplets(), 'Exactly one rememberme row should exist after login');
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function logout_removes_rememberme_database_entry(): void
     {
         // Login with rememberme so a DB row is created.

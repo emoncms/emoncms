@@ -13,7 +13,9 @@ abstract class ApiTestCase extends TestCase
     protected static string $baseUrl;
     protected static mysqli $mysqli;
 
-    /** CookieJar file path — shared within a test class so session persists. */
+    /**
+ * CookieJar file path — shared within a test class so session persists. 
+*/
     private string $cookieJar;
 
     public static function setUpBeforeClass(): void

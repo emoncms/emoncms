@@ -22,7 +22,9 @@ class UserApiTest extends ApiTestCase
     // POST /user/register.json
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_creates_a_new_user(): void
     {
         $username = $this->uniqueUsername();
@@ -37,7 +39,9 @@ class UserApiTest extends ApiTestCase
         $this->assertGreaterThan(0, $result['userid'] ?? 0);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_rejects_duplicate_username(): void
     {
         $username = $this->uniqueUsername();
@@ -56,7 +60,9 @@ class UserApiTest extends ApiTestCase
         $this->assertStringContainsStringIgnoringCase('exists', $second['message']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_rejects_invalid_email(): void
     {
         $username = $this->uniqueUsername();
@@ -70,7 +76,9 @@ class UserApiTest extends ApiTestCase
         $this->assertFalse($result['success']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_rejects_short_password(): void
     {
         $username = $this->uniqueUsername();
@@ -88,7 +96,9 @@ class UserApiTest extends ApiTestCase
     // POST /user/auth.json  (credential → API keys)
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function auth_returns_api_keys_for_valid_credentials(): void
     {
         $username = $this->uniqueUsername();
@@ -108,7 +118,9 @@ class UserApiTest extends ApiTestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $result['apikey_read']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function auth_fails_with_wrong_password(): void
     {
         $username = $this->uniqueUsername();
@@ -127,7 +139,9 @@ class UserApiTest extends ApiTestCase
         $this->assertFalse($result['success'] ?? true);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function auth_fails_for_nonexistent_user(): void
     {
         $result = $this->post('/user/auth.json', [
@@ -142,7 +156,9 @@ class UserApiTest extends ApiTestCase
     // POST /user/login.json  (session-based auth)
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_succeeds_with_correct_credentials(): void
     {
         $username = $this->uniqueUsername();
@@ -163,7 +179,9 @@ class UserApiTest extends ApiTestCase
         $this->assertTrue($result['success'] ?? false, $result['message'] ?? json_encode($result));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_fails_with_wrong_password(): void
     {
         $username = $this->uniqueUsername();
@@ -203,7 +221,9 @@ class UserApiTest extends ApiTestCase
         return $this->auth($username, $password);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function gettimezone_returns_utc_for_new_user(): void
     {
         $keys = $this->registerAndAuth();
@@ -213,7 +233,9 @@ class UserApiTest extends ApiTestCase
         $this->assertSame('UTC', $result);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function gettimezones_returns_array_containing_utc(): void
     {
         // gettimezones is public — no auth needed.
@@ -225,7 +247,9 @@ class UserApiTest extends ApiTestCase
         $this->assertContains('Europe/London', $ids);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function changepassword_allows_login_with_new_password(): void
     {
         $username = $this->uniqueUsername();
@@ -262,7 +286,9 @@ class UserApiTest extends ApiTestCase
         $this->assertTrue($newAuth['success'] ?? false);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function changepassword_requires_write_apikey(): void
     {
         $keys = $this->registerAndAuth();
@@ -277,7 +303,9 @@ class UserApiTest extends ApiTestCase
         $this->assertFalse($result['success'] ?? $result ?? true);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getuuid_returns_uuid_string(): void
     {
         $keys = $this->registerAndAuth();
@@ -292,7 +320,9 @@ class UserApiTest extends ApiTestCase
         );
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function unauthenticated_request_to_protected_endpoint_returns_no_data(): void
     {
         // Without a valid apikey the endpoint returns false/null or a plain-text

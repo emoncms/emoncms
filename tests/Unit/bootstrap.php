@@ -33,7 +33,8 @@ $GLOBALS['settings'] = [
 
 // Helper functions used by user_model.php that normally live in core.php.
 if (!function_exists('tr')) {
-    function tr($text) { return $text; }
+    function tr($text) {
+ return $text; }
 }
 if (!function_exists('generate_secure_key')) {
     function generate_secure_key($length) {
@@ -49,10 +50,12 @@ if (!function_exists('guidv4')) {
     }
 }
 if (!function_exists('get_client_ip_env')) {
-    function get_client_ip_env() { return '127.0.0.1'; }
+    function get_client_ip_env() {
+ return '127.0.0.1'; }
 }
 if (!function_exists('is_https')) {
-    function is_https() { return false; }
+    function is_https() {
+ return false; }
 }
 
 // Load the classes needed by User's constructor.
