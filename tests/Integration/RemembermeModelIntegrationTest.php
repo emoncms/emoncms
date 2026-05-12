@@ -89,7 +89,9 @@ class RemembermeModelIntegrationTest extends TestCase
     // storeTriplet() — stores hashed values in the database
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function storeTriplet_inserts_row_into_database(): void
     {
         $cv = $this->makeCookieValues();
@@ -99,7 +101,9 @@ class RemembermeModelIntegrationTest extends TestCase
         $this->assertSame(1, $this->countTriplets());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function storeTriplet_hashes_token_before_storing(): void
     {
         $cv = $this->makeCookieValues();
@@ -118,7 +122,9 @@ class RemembermeModelIntegrationTest extends TestCase
     // findTriplet()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function findTriplet_returns_found_for_valid_triplet(): void
     {
         $cv = $this->makeCookieValues();
@@ -129,7 +135,9 @@ class RemembermeModelIntegrationTest extends TestCase
         $this->assertSame(Rememberme::TRIPLET_FOUND, $result);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function findTriplet_returns_invalid_when_token_does_not_match(): void
     {
         $cv = $this->makeCookieValues();
@@ -144,7 +152,9 @@ class RemembermeModelIntegrationTest extends TestCase
         $this->assertSame(Rememberme::TRIPLET_INVALID, $result);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function findTriplet_returns_not_found_for_missing_entry(): void
     {
         $cv = $this->makeCookieValues();
@@ -159,7 +169,9 @@ class RemembermeModelIntegrationTest extends TestCase
     // cleanTriplet() via cookieIsValid() / findTriplet() after clean
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function cleanTriplet_removes_entry_from_database(): void
     {
         $cv = $this->makeCookieValues();
@@ -175,7 +187,9 @@ class RemembermeModelIntegrationTest extends TestCase
     // cleanAllTriplets()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function cleanAllTriplets_removes_all_triplets_for_user(): void
     {
         // Store two separate triplets.
@@ -192,7 +206,9 @@ class RemembermeModelIntegrationTest extends TestCase
     // cookieIsValid() — public method, uses $_COOKIE superglobal
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function cookieIsValid_returns_true_when_cookie_matches_db(): void
     {
         $cv = $this->makeCookieValues();
@@ -203,7 +219,9 @@ class RemembermeModelIntegrationTest extends TestCase
         $this->assertTrue($this->rememberme->cookieIsValid($cv->userid));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function cookieIsValid_returns_false_when_token_is_tampered(): void
     {
         $cv = $this->makeCookieValues();
@@ -219,7 +237,9 @@ class RemembermeModelIntegrationTest extends TestCase
         $this->assertFalse($this->rememberme->cookieIsValid($cv->userid));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function cookieIsValid_returns_false_when_no_db_entry_exists(): void
     {
         $cv = $this->makeCookieValues();

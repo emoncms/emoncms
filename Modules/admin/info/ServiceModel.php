@@ -84,29 +84,22 @@ class ServiceModel
 			return array('success' => false, 'message' => "Invalid service '$service_name'");
 		}
 
-		$script = __DIR__ . '/../../../scripts/service-action.sh';
-		return $this->runService($script, "$name $action");
+		return $this->pushAction("service-action", [$name, $action]);
 	}
 
-	public function runService($script, $attributes)
+	private function pushAction(string $action, array $args, ?string $log = null): array
 	{
-		if (!file_exists($script)) {
-			if ($this->log) {
-				$this->log->error("runService() Script not found '$script' attributes=$attributes");
-			}
-			return array('success' => false, 'message' => "Service action script not found");
-		}
-
 		if ($this->redis) {
-			$this->redis->rpush('service-runner', "$script $attributes");
+			$payload = json_encode(['run' => $action, 'args' => $args, 'log' => $log]);
+			$this->redis->rpush('service-runner', $payload);
 			if ($this->log) {
-				$this->log->info("runService() service-runner trigger sent for '$script $attributes'");
+				$this->log->info("ServiceModel::pushAction() service-runner trigger sent for action '$action'");
 			}
-			return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
+			return array('success' => true, 'message' => "service-runner trigger sent for action '$action'");
 		}
 
 		if ($this->log) {
-			$this->log->error("runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
+			$this->log->error("ServiceModel::pushAction() Redis not enabled. Cannot execute action '$action' safely.");
 		}
 		return array('success' => false, 'message' => 'Redis is required to run service commands');
 	}

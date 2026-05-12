@@ -48,7 +48,7 @@ function admin_controller()
         ));
 
         $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
-        return view("Modules/admin/Views/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
+        return view("Modules/admin/update/mysql_update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
     }
 
     // --------------------------------------------------------------------------------------------

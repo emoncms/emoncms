@@ -46,7 +46,9 @@ class RemembermeModelTest extends TestCase
     // getCookieName()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieName_returns_expected_value(): void
     {
         $this->assertSame(self::COOKIE_NAME, $this->rememberme->getCookieName());
@@ -56,7 +58,9 @@ class RemembermeModelTest extends TestCase
     // loginTokenWasInvalid()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function loginTokenWasInvalid_is_false_on_fresh_instance(): void
     {
         $this->assertFalse($this->rememberme->loginTokenWasInvalid());
@@ -66,34 +70,44 @@ class RemembermeModelTest extends TestCase
     // getCookieValues() — called via Reflection
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_when_cookie_absent(): void
     {
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_for_empty_cookie(): void
     {
         $_COOKIE[self::COOKIE_NAME] = '';
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_when_only_two_parts(): void
     {
         $_COOKIE[self::COOKIE_NAME] = '123|' . $this->validToken();
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_for_non_integer_userid(): void
     {
         $_COOKIE[self::COOKIE_NAME] = 'notanint|' . $this->validToken() . '|' . $this->validToken();
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_for_invalid_token_format(): void
     {
         // Token contains a non-hex character (Z).
@@ -102,7 +116,9 @@ class RemembermeModelTest extends TestCase
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_for_invalid_persistent_token_format(): void
     {
         $badToken = str_repeat('Z', 32);
@@ -110,7 +126,9 @@ class RemembermeModelTest extends TestCase
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_false_for_short_token(): void
     {
         // 31 chars — one short of the required 32.
@@ -119,7 +137,9 @@ class RemembermeModelTest extends TestCase
         $this->assertFalse($this->callGetCookieValues());
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_returns_object_for_valid_cookie(): void
     {
         $token      = $this->validToken();
@@ -134,7 +154,9 @@ class RemembermeModelTest extends TestCase
         $this->assertSame($persistent, $result->persistentToken);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function getCookieValues_accepts_cookie_with_extra_pipe_in_value(): void
     {
         // The implementation uses explode(..., 3) so a | inside the persistent

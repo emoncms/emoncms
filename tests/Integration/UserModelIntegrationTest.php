@@ -17,7 +17,9 @@ use PHPUnit\Framework\TestCase;
  */
 class UserModelIntegrationTest extends TestCase
 {
-    /** Prefix applied to every test username to avoid collisions. */
+    /**
+ * Prefix applied to every test username to avoid collisions. 
+*/
     private const TEST_PREFIX = 'phpunittest';
 
     private static mysqli $mysqli;
@@ -80,7 +82,9 @@ class UserModelIntegrationTest extends TestCase
     // register()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_creates_user_in_database(): void
     {
         $username = $this->uniqueUsername();
@@ -91,7 +95,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame((int) $result['userid'], (int) $this->user->get_id($username));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_returns_api_keys(): void
     {
         $username = $this->uniqueUsername();
@@ -104,7 +110,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $result['apikey_write']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function register_rejects_duplicate_username(): void
     {
         $username = $this->uniqueUsername();
@@ -119,7 +127,9 @@ class UserModelIntegrationTest extends TestCase
     // login()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_succeeds_with_correct_credentials(): void
     {
         $username = $this->uniqueUsername();
@@ -130,7 +140,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertTrue($result['success']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_fails_with_wrong_password(): void
     {
         $username = $this->uniqueUsername();
@@ -141,7 +153,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertStringContainsStringIgnoringCase('incorrect', $result['message']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function login_fails_for_nonexistent_user(): void
     {
         $result = $this->user->login($this->uniqueUsername(), 'SomePass1!', false);
@@ -152,7 +166,9 @@ class UserModelIntegrationTest extends TestCase
     // change_password()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function change_password_allows_login_with_new_password(): void
     {
         $username = $this->uniqueUsername();
@@ -172,7 +188,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertTrue($newLogin['success']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function change_password_fails_with_incorrect_old_password(): void
     {
         $username = $this->uniqueUsername();
@@ -186,7 +204,9 @@ class UserModelIntegrationTest extends TestCase
     // get_apikeys_from_login()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_apikeys_from_login_returns_correct_keys(): void
     {
         $username = $this->uniqueUsername();
@@ -199,7 +219,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame($reg['apikey_write'], $auth['apikey_write']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_apikeys_from_login_fails_with_wrong_password(): void
     {
         $username = $this->uniqueUsername();
@@ -213,7 +235,9 @@ class UserModelIntegrationTest extends TestCase
     // apikey_session()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function apikey_session_returns_write_session_for_write_key(): void
     {
         $username = $this->uniqueUsername();
@@ -225,7 +249,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame(1, $session['read']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function apikey_session_returns_read_only_session_for_read_key(): void
     {
         $username = $this->uniqueUsername();
@@ -237,7 +263,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame(0, $session['write']);
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function apikey_session_returns_empty_for_invalid_key(): void
     {
         // A well-formed but non-existent key.
@@ -250,7 +278,9 @@ class UserModelIntegrationTest extends TestCase
     // get_username() / get_email()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_username_returns_registered_username(): void
     {
         $username = $this->uniqueUsername();
@@ -259,7 +289,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame($username, $this->user->get_username($reg['userid']));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_email_returns_registered_email(): void
     {
         $username = $this->uniqueUsername();
@@ -272,7 +304,9 @@ class UserModelIntegrationTest extends TestCase
     // get_apikey_read() / get_apikey_write()
     // -------------------------------------------------------------------------
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_apikey_read_matches_registration_key(): void
     {
         $username = $this->uniqueUsername();
@@ -281,7 +315,9 @@ class UserModelIntegrationTest extends TestCase
         $this->assertSame($reg['apikey_read'], $this->user->get_apikey_read($reg['userid']));
     }
 
-    /** @test */
+    /**
+ * @test 
+*/
     public function get_apikey_write_matches_registration_key(): void
     {
         $username = $this->uniqueUsername();

@@ -13,7 +13,9 @@ abstract class ApiTestCase extends TestCase
     protected static string $baseUrl;
     protected static mysqli $mysqli;
 
-    /** CookieJar file path — shared within a test class so session persists. */
+    /**
+ * CookieJar file path — shared within a test class so session persists. 
+*/
     private string $cookieJar;
 
     public static function setUpBeforeClass(): void
@@ -122,7 +124,7 @@ abstract class ApiTestCase extends TestCase
             CURLOPT_HTTPHEADER     => ['Content-Type: application/x-www-form-urlencoded'],
             CURLOPT_HEADERFUNCTION => function ($ch, string $headerLine) use (&$responseHeaders): int {
                 $trimmed = trim($headerLine);
-                if (str_contains($trimmed, ':')) {
+                if (strpos($trimmed, ':') !== false) {
                     [$name, $value] = explode(':', $trimmed, 2);
                     $name  = strtolower(trim($name));
                     $value = trim($value);
