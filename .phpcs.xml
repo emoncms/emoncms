@@ -61,6 +61,7 @@
 		<exclude name="Generic.Metrics.NestingLevel.TooHigh"/>
 		<exclude name="Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps"/>
 		<exclude name="Generic.NamingConventions.CamelCapsFunctionName.ScopeNotCamelCaps"/>
+		<exclude name="Generic.NamingConventions.AbstractClassNamePrefix.Missing"/>
 		<exclude name="Generic.NamingConventions.InterfaceNameSuffix.Missing"/>
 		<exclude name="Generic.PHP.CharacterBeforePHPOpeningTag.Found"/>
 		<exclude name="Generic.PHP.ClosingPHPTag.NotFound"/>
@@ -84,4 +85,5 @@
 	<arg name="extensions" value="php"/>
 	<arg name="encoding" value="UTF-8"/>
 	<exclude-pattern type="relative">^(vendor|Lib)/*</exclude-pattern>
+	<exclude-pattern type="relative">^Modules/dashboard/AntiXSS/*</exclude-pattern>
 </ruleset>

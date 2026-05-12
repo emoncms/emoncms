@@ -1,6 +1,6 @@
 <?php
 
-Class AdminUserModel
+class AdminUserModel
 {
     private $mysqli;
     private $user;
