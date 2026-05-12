@@ -89,18 +89,11 @@ class UpdateModel
             return array('success' => false, 'message' => "Invalid firmware");
         }
 
-        if (file_exists($this->settings['openenergymonitor_dir'] . "/EmonScripts")) {
-            $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/service-runner-update.sh";
-        } else {
-            $script = $this->settings['openenergymonitor_dir'] . "/emonpi/service-runner-update.sh";
-        }
+        $action = file_exists($this->settings['openenergymonitor_dir'] . "/EmonScripts")
+            ? "emoncms-update"
+            : "emoncms-update-legacy";
 
-        return $this->runService($script,
-            escapeshellarg($type) . " " .
-            escapeshellarg($firmware_key) . " " .
-            escapeshellarg($serial_port) . ">" .
-            $this->update_logfile
-        );
+        return $this->pushAction($action, [$type, $firmware_key, $serial_port], "update");
     }
 
     public function update_firmware($serial_port, $firmware_key)
@@ -113,12 +106,7 @@ class UpdateModel
             return array('success' => false, 'message' => "Invalid firmware");
         }
 
-        $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/atmega_firmware_upload.sh";
-        return $this->runService($script,
-            escapeshellarg($serial_port) . " " .
-            escapeshellarg($firmware_key) . ">" .
-            $this->update_logfile
-        );
+        return $this->pushAction("firmware-upload", [$serial_port, $firmware_key], "update");
     }
 
     public function upload_custom_firmware($port, $baud_rate, $core, $autoreset, $file)
@@ -159,15 +147,7 @@ class UpdateModel
             return array('success' => false, 'message' => "Failed to save uploaded firmware file");
         }
 
-        $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/atmega_firmware_upload.sh";
-        return $this->runService($script,
-            escapeshellarg($port) . " custom " .
-            escapeshellarg($safe_filename) . " " .
-            escapeshellarg($baud_rate) . " " .
-            escapeshellarg($core) . " " .
-            escapeshellarg($autoreset) . ">" .
-            $this->update_logfile
-        );
+        return $this->pushAction("firmware-upload", [$port, "custom", $safe_filename, (string)$baud_rate, $core, $autoreset], "update");
     }
 
     // -------------------------------------------------------------------------
@@ -220,18 +200,15 @@ class UpdateModel
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private function runService($script, $attributes)
+    private function pushAction(string $action, array $args, ?string $log = null): array
     {
-        if (!file_exists($script)) {
-            $this->log->error("UpdateModel::runService() Script not found '$script' attributes=$attributes");
-            return array('success' => false, 'message' => "File not found '$script'");
-        }
         if ($this->redis) {
-            $this->redis->rpush("service-runner", "$script $attributes");
-            $this->log->info("UpdateModel::runService() service-runner trigger sent for '$script $attributes'");
-            return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
+            $payload = json_encode(['run' => $action, 'args' => $args, 'log' => $log]);
+            $this->redis->rpush("service-runner", $payload);
+            $this->log->info("UpdateModel::pushAction() service-runner trigger sent for action '$action'");
+            return array('success' => true, 'message' => "service-runner trigger sent for action '$action'");
         } else {
-            $this->log->error("UpdateModel::runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
+            $this->log->error("UpdateModel::pushAction() Redis not enabled. Cannot execute action '$action' safely.");
             return array('success' => false, 'message' => "Redis is required to run service commands");
         }
     }

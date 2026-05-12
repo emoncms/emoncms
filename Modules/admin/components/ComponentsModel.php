@@ -140,8 +140,7 @@ class ComponentsModel
             }
         }
 
-        $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/update_component.sh";
-        return $this->runService($script, escapeshellarg($module_path) . " " . escapeshellarg($branch) . ">" . $this->update_logfile);
+        return $this->pushAction("component-update", [$module_path, $branch], "update");
     }
 
     public function update_all_components($branch)
@@ -159,26 +158,22 @@ class ComponentsModel
             return array('success' => false, 'message' => "Invalid branch");
         }
 
-        $script = $this->settings['openenergymonitor_dir'] . "/EmonScripts/update/update_all_components.sh";
-        return $this->runService($script, escapeshellarg($branch) . ">" . $this->update_logfile);
+        return $this->pushAction("components-update", [$branch], "update");
     }
 
     // -------------------------------------------------------------------------
     // Private helpers
     // -------------------------------------------------------------------------
 
-    private function runService($script, $attributes)
+    private function pushAction(string $action, array $args, ?string $log = null): array
     {
-        if (!file_exists($script)) {
-            $this->log->error("ComponentsModel::runService() Script not found '$script' attributes=$attributes");
-            return array('success' => false, 'message' => "File not found '$script'");
-        }
         if ($this->redis) {
-            $this->redis->rpush("service-runner", "$script $attributes");
-            $this->log->info("ComponentsModel::runService() service-runner trigger sent for '$script $attributes'");
-            return array('success' => true, 'message' => "service-runner trigger sent for '$script $attributes'");
+            $payload = json_encode(['run' => $action, 'args' => $args, 'log' => $log]);
+            $this->redis->rpush("service-runner", $payload);
+            $this->log->info("ComponentsModel::pushAction() service-runner trigger sent for action '$action'");
+            return array('success' => true, 'message' => "service-runner trigger sent for action '$action'");
         } else {
-            $this->log->error("ComponentsModel::runService() Redis not enabled. Cannot execute '$script $attributes' safely.");
+            $this->log->error("ComponentsModel::pushAction() Redis not enabled. Cannot execute action '$action' safely.");
             return array('success' => false, 'message' => "Redis is required to run service commands");
         }
     }
