@@ -33,11 +33,15 @@ SCRIPT_WHITELIST = {
     "components-update":     f"{_EMON_DIR}/EmonScripts/update/update_all_components.sh",
     "service-action":        f"{_EMONCMS_DIR}/scripts/service-action.sh",
     "serialmonitor-start":   f"{_EMONCMS_DIR}/scripts/serialmonitor/start.sh",
+    "sync-run":              "/opt/emoncms/modules/sync/emoncms-sync.sh",
+    "postprocess-run":       "/opt/emoncms/modules/postprocess/postprocess.sh",
 }
 
 # Hardcoded whitelist: log name -> absolute log file path.
 LOG_WHITELIST = {
     "update": f"{_LOG_DIR}/update.log",
+    "sync":        f"{_LOG_DIR}/sync.log",
+    "postprocess": f"{_LOG_DIR}/postprocess.log",
 }
 
 _EXPECTED_ARG_COUNT = {
@@ -49,6 +53,8 @@ _EXPECTED_ARG_COUNT = {
     "components-update":     1,    # e.g. ["stable"]
     "service-action":        2,    # e.g. ["emonhub.service", "restart"]
     "serialmonitor-start":   2,    # e.g. ["115200", "/dev/ttyUSB0"]
+    "sync-run":              0,    # no args
+    "postprocess-run":       0,    # no args
 }
 
 def _validate_args(action: str, args: list) -> bool:
