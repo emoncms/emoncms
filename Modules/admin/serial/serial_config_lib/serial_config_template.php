@@ -36,8 +36,7 @@
                 <th><?php echo _('Calibration'); ?></th>
                 <th>Phase Correction</th>
             </tr>
-            <tr v-for="(vchannel,index) in device.vchannels"
- :style="!vchannel.active ? { opacity: '0.45' } : {}">
+            <tr v-for="(vchannel,index) in device.vchannels" :key="index" :style="!vchannel.active ? { opacity: '0.45' } : {}">
                 <td>
                     <input type="checkbox" v-model="vchannel.active" :disabled="!connected" @change="set_vchannel(index)" />
                 </td>
@@ -67,26 +66,25 @@
                 <th><?php echo _('Power'); ?></th>
                 <th><?php echo _('Energy'); ?></th>
             </tr>
-            <tr v-for="(channel,index) in device.ichannels"
- :style="device.hardware=='emonPi3' && !channel.active ? { opacity: '0.45' } : {}">
+            <tr v-for="(channel,index) in device.ichannels" :key="index" :style="device.hardware=='emonPi3' && !channel.active ? { opacity: '0.45' } : {}">
                 <td v-if="device.hardware=='emonPi3'">
                     <input type="checkbox" v-model="channel.active" :disabled="!connected" @change="set_ical(index)" />
                 </td>
                 <td>CT {{ index+1 }}</td>
                 <td>
                     <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)">
-                        <option v-for="rating in cts_available" v-bind:value="rating">{{ rating }}A</option>
+                        <option v-for="rating in cts_available" :key="rating" v-bind:value="rating">{{ rating }}A</option>
                     </select>
                 </td>
                 <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:50px" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)" /></td>
                 <td v-if="device.hardware=='emonPi3'">
                     <select style="width:80px" v-model="channel.vchan1" :disabled="!connected || !channel.active" @change="set_ical(index)">
-                        <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
+                        <option v-for="vchan in [1,2,3]" :key="vchan" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
                 <td v-if="device.hardware=='emonPi3'">
                     <select style="width:80px" v-model="channel.vchan2" :disabled="!connected || !channel.active" @change="set_ical(index)">
-                        <option v-for="vchan in [1,2,3]" v-bind:value="vchan">{{ vchan }}</option>
+                        <option v-for="vchan in [1,2,3]" :key="vchan" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
                 <td>{{ channel.power }}</td>

@@ -9,16 +9,17 @@ load_language_files(dirname(__DIR__) . '/locale', "process_messages");
 // to the process ui javascript side of things which coverts to a js array
 $engine_hidden = $settings["feed"]['engines_hidden'];
 if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
+
+load_js("Lib/js/autocomplete.js");
+load_css("Modules/process/Views/process_ui.css");
+load_js("Modules/process/process.js");
+
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/process/Views/process_ui.css?v=<?php echo $v; ?>">
-<script src="<?php echo $path; ?>Modules/process/process.js?v=17"></script>
 
 <div id="process_vue">
-    <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
+    <dialog id="processlistModal" class="ec-modal modal-processlist" aria-labelledby="processlistModalLabel" data-backdrop="static">
         <div class="modal-header">
-            <button type="button" class="close" @click="close">×</button>
+            <button type="button" class="modal-close-btn" @click="close" aria-label="Close">&times;</button>
             <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo ctx_tr('process_messages', 'process list setup'); ?></div>
         </div>
         <div class="modal-body" id="processlist-ui">
@@ -49,13 +50,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                     <th></th>
                     <th><?php echo ctx_tr('process_messages', 'Order'); ?></th>
                     <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Process'); ?></th>
-                    <th style="text-align:right;opacity:.8" title="<?php echo ctx_tr('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-question-sign"></i></th>
+                    <th style="text-align:right;opacity:.8" title="<?php echo ctx_tr('process_messages', 'Hover over the short names below to get the full description'); ?>"><i class="icon icon-circle-help"></i></th>
                     <th style="width:40%;"><?php echo ctx_tr('process_messages', 'Arguments'); ?></th>
                     <th style="width:20%; text-align:right;"><span class="hidden-md"><?php echo ctx_tr('process_messages', 'Latest'); ?></span></th>
                     <th colspan='3'><?php echo ctx_tr('process_messages', 'Actions'); ?></th>
                 </tr>
 
-                <tr v-for="(process, index) in process_list" :key="index" v-if="processes_by_key[process.fn]">
+                <template v-for="(process, index) in process_list" :key="index">
+                <tr v-if="process && processes_by_key[process.fn]">
                     <!-- Checkbox for selecting processes -->
                     <td><div class="select text-center"><input type="checkbox" :value="index" v-model="selected_processes"></div></td>
                     <!-- Process index -->
@@ -72,14 +74,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                         <span v-if="processes_by_key[process.fn].args">
                             <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
                                 <span v-if="arg.type == ProcessArg.VALUE">
-                                    <span class="muted" title="Value"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
+                                    <span class="muted" title="Value"><i class="icon-pencil"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.TEXT">
-                                    <span class="muted" title="Text"><i class="icon-edit"></i> {{ process.args[arg_index] }}</span>
+                                    <span class="muted" title="Text"><i class="icon-pencil"></i> {{ process.args[arg_index] }}</span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.INPUTID">
                                     <span class="muted" title="Input">
-                                        <i class="icon-edit"></i> 
+                                        <i class="icon-pencil"></i> 
                                         <span v-if="inputs_by_id[process.args[arg_index]]">
                                             {{ inputs_by_id[process.args[arg_index]].nodeid }}: {{ inputs_by_id[process.args[arg_index]].name }} 
                                             <span v-if="inputs_by_id[process.args[arg_index]].description">({{ inputs_by_id[process.args[arg_index]].description }})</span>
@@ -87,7 +89,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                     </span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <span class="muted" title="Feed"><i class="icon-list-alt"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
+                                    <span class="muted" title="Feed"><i class="icon-list"></i> <span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].tag }}: {{ feeds_by_id[process.args[arg_index]].name }}</span></span>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.SCHEDULEID">
                                     <span class="muted" title="Schedule"><i class="icon-calendar"></i> <span v-if="schedules[process.args[arg_index]]">{{ schedules[process.args[arg_index]].name }}</span></span>
@@ -101,10 +103,10 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                             <span v-for="(arg, arg_index) in processes_by_key[process.fn].args" :key="arg_index">
 
                                 <span v-if="arg.type == ProcessArg.INPUTID">
-                                    <small title="Last recorded value" class="muted"><span v-if="inputs_by_id[process.args[arg_index]]">{{ inputs_by_id[process.args[arg_index]].value | lastValueFormat }} {{ inputs_by_id[process.args[arg_index]].unit }}</span></small>
+                                    <small title="Last recorded value" class="muted"><span v-if="inputs_by_id[process.args[arg_index]]">{{ lastValueFormat(inputs_by_id[process.args[arg_index]].value) }} {{ inputs_by_id[process.args[arg_index]].unit }}</span></small>
                                 </span>
                                 <span v-if="arg.type == ProcessArg.FEEDID">
-                                    <small title="Last recorded value" class="muted"><span v-if="feeds_by_id[process.args[arg_index]]">{{ feeds_by_id[process.args[arg_index]].value | lastValueFormat }} {{ feeds_by_id[process.args[arg_index]].unit }}</span></small>
+                                    <small title="Last recorded value" class="muted"><span v-if="feeds_by_id[process.args[arg_index]]">{{ lastValueFormat(feeds_by_id[process.args[arg_index]].value) }} {{ feeds_by_id[process.args[arg_index]].unit }}</span></small>
                                 </span>
                             </span>
                         </span>
@@ -118,6 +120,7 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                     <td><a title="Edit" @click="edit(index)"><i class="icon-pencil" style="cursor:pointer"></i></a></td>
                     <td><a title="Delete" @click="remove(index)"><i class="icon-trash" style="cursor:pointer"></i></a></td>
                 </tr>
+                </template>
             </table>
 
             <table class="table">
@@ -143,14 +146,14 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
 
                             <span v-if="arg.type == ProcessArg.VALUE">
                                 <div class="input-prepend">
-                                    <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-question-sign" :title="arg.desc" v-if="arg.desc"></i></span>
+                                    <span class="add-on value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-circle-help" :title="arg.desc" v-if="arg.desc"></i></span>
                                     <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo ctx_tr('process_messages', 'Type value...'); ?>" />
                                 </div>
                             </span>
 
                             <span v-if="arg.type == ProcessArg.TEXT">
                                 <div class="input-prepend">
-                                    <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
+                                    <span class="add-on text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-circle-help" :title="arg.desc"></i></span>
                                     <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo ctx_tr('process_messages', 'Type text...'); ?>" />
                                 </div>
                             </span>
@@ -187,7 +190,9 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                                             <!-- feeds by tag -->
                                             <option v-if="context_type==0 && Array.isArray(arg.engines) && arg.engines.length > 0" value="-1">CREATE NEW:</option>
                                             <optgroup v-for="(feeds, tag) in feeds_by_tag" :label="tag">
-                                                <option v-for="feed in feeds" :value="feed.id" v-if="feed.engine!=7">{{ feed.name }}</option>
+                                                <template v-for="feed in feeds" :key="feed.id">
+                                                    <option v-if="feed.engine!=7" :value="feed.id">{{ feed.name }}</option>
+                                                </template>
                                             </optgroup>
                                         </select>
                                         <span v-if="arg.value == -1">
@@ -273,10 +278,12 @@ if (is_array($engine_hidden)) $engine_hidden = json_encode($engine_hidden);
                 <span><?php echo ctx_tr('process_messages', 'Saved'); ?></span>
             </button>
         </div>
-    </div>
+    </dialog>
 </div>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=31"></script>
+<?php
+load_js("Modules/process/Views/process_ui.js");
+?>
 
 <script>
     process_vue.has_redis = <?php echo ($settings["redis"]["enabled"] ? '1' : '0'); ?>;

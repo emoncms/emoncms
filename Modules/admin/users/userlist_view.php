@@ -2,265 +2,273 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path;
 ?>
-<link rel="stylesheet" href="<?php echo $path ?>Modules/admin/static/admin_styles.css?v=1">
 <style>
-    .afeed {
-        color: #00aa00;
-        font-weight: bold;
+    [v-cloak] { display: none; }
+    .userlist-controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
+    .userlist-controls label {
+        font-size: var(--font-sm);
+        color: var(--text-secondary);
+        margin-right: 0.25rem;
+    }
+    .pagination-bar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+    .pagination-bar a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 28px;
+        height: 26px;
+        padding: 0 6px;
+        border: 1px solid var(--border-strong);
+        border-radius: 0.25rem;
+        font-size: var(--font-xs);
+        color: var(--text-secondary);
+        text-decoration: none;
+        background: var(--bg-input);
+        transition: background-color 0.15s, color 0.15s;
+    }
+    .pagination-bar a:hover { background: var(--bg-card-row-hover); color: var(--text-primary); }
+    .pagination-bar a.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .ec-modal { --modal-width: 380px; }
 </style>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+<div id="userlist-app" v-cloak>
 
-<div class="admin-container">
-    <h2><?php echo tr("Users"); ?></h2>
-
-    <p><?php echo tr("Number of users:"); ?> <span id="numberofusers"></span></p>
-
-    <div class="pagination">
-        <ul>
-        </ul>
+    <div class="page-header">
+        <h2><?php echo tr("Users"); ?></h2>
     </div>
 
-    <div class="input-prepend">
-        <span class="add-on"><?php echo tr("Order by"); ?></span>
-        <select id="orderby" style="width:150px">
-            <option value="id" selected><?php echo tr("Id"); ?></option>
-            <option value="username"><?php echo tr("Username"); ?></option>
-            <option value="email"><?php echo tr("Email"); ?></option>
-            <option value="email_verified"><?php echo tr("Email Verified"); ?></option>
-        </select>
+    <!-- Users card -->
+    <div class="card">
 
-        <select id="order" style="width:120px">
-            <option value="ascending" selected><?php echo tr("Ascending"); ?></option>
-            <option value="decending"><?php echo tr("Descending"); ?></option>
-        </select>
-    </div>
+        <!-- Card header -->
+        <div class="card-header" style="cursor:default">
+            <span class="card-accent"></span>
+            <span class="card-name"><?php echo tr("Users"); ?></span>
+            <span class="card-badge">{{ numberOfUsers }}</span>
+            <button class="app-btn app-btn-sm" style="margin-left:auto" @click="openAddUserModal">
+                <i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?>
+            </button>
+        </div>
 
-    <div class="input-prepend input-append" style="padding-left:20px">
-        <span class="add-on"><?php echo tr("User search"); ?></span>
-        <input id="user-search-key" type="text" />
-        <button class="btn" id="user-search"><?php echo tr("Search"); ?></button>
-    </div>
+        <!-- Controls -->
+        <div class="card-controls">
+            <div class="userlist-controls">
+                <div style="display:flex; align-items:center; gap:0.4rem;">
+                    <label><?php echo tr("Order by"); ?></label>
+                    <select v-model="orderby" @change="fetchUsers">
+                        <option value="id"><?php echo tr("Id"); ?></option>
+                        <option value="username"><?php echo tr("Username"); ?></option>
+                        <option value="email"><?php echo tr("Email"); ?></option>
+                        <option value="email_verified"><?php echo tr("Email Verified"); ?></option>
+                    </select>
+                    <select v-model="order" @change="fetchUsers">
+                        <option value="ascending"><?php echo tr("Ascending"); ?></option>
+                        <option value="descending"><?php echo tr("Descending"); ?></option>
+                    </select>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.4rem; margin-left:1rem;">
+                    <label><?php echo tr("Search"); ?></label>
+                    <input v-model="searchKey" type="text" @keyup.enter="search" style="width:180px" />
+                    <button class="app-btn app-btn-sm" @click="search"><?php echo tr("Search"); ?></button>
+                </div>
+            </div>
+        </div>
 
-    <div class="input-prepend input-append" style="float:right">
-        <button class="btn" id="open-add-user-modal"><i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?></button>
-    </div>
+        <!-- Pagination (top) -->
+        <div class="card-controls" v-if="numberOfPages > 1">
+            <div class="pagination-bar">
+                <a href="#" v-for="p in numberOfPages" :key="p" :class="{ active: p === currentPage }" @click.prevent="goToPage(p)">{{ p }}</a>
+            </div>
+        </div>
 
-    <table class="table">
-        <tr>
-            <th><?php echo tr("Edit"); ?></th>
-            <th><?php echo tr("Id"); ?></th>
-            <th><?php echo tr("Username"); ?></th>
-            <th><?php echo tr("Email"); ?></th>
-            <th><?php echo tr("Feeds"); ?></th>
-        </tr>
-        <tbody id="users"></tbody>
-    </table>
+        <!-- User table -->
+        <table>
+            <colgroup>
+                <col style="width:60px">
+                <col>
+                <col>
+                <col>
+                <col style="width:70px">
+                <col style="width:80px">
+            </colgroup>
+            <thead>
+                <tr>
+                    <th><?php echo tr("Id"); ?></th>
+                    <th><?php echo tr("Username"); ?></th>
+                    <th><?php echo tr("Email"); ?></th>
+                    <th><?php echo tr("Verified"); ?></th>
+                    <th><?php echo tr("Feeds"); ?></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="user in users" :key="user.id">
+                    <td class="col-secondary">{{ user.id }}</td>
+                    <td class="col-primary">{{ user.username }}</td>
+                    <td class="col-secondary">{{ user.email }}</td>
+                    <td class="col-secondary"><span v-if="user.email_verified" title="<?php echo tr('Email verified'); ?>" style="color:var(--success)"><i class="icon icon-check"></i></span><span v-else></span></td>
+                    <td class="col-secondary">{{ user.feeds }}</td>
+                    <td><a class="btn" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
+                </tr>
+            </tbody>
+        </table>
 
-    <div class="pagination">
-        <ul>
-        </ul>
-    </div>
+        <!-- Pagination (bottom) -->
+        <div class="card-controls" v-if="numberOfPages > 1">
+            <div class="pagination-bar">
+                <a href="#" v-for="p in numberOfPages" :key="p" :class="{ active: p === currentPage }" @click.prevent="goToPage(p)">{{ p }}</a>
+            </div>
+        </div>
 
-    <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-    <!-- FEED EXPORT                                                                                                                                   -->
-    <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-    <div id="addNewUserModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="addNewUserModalLabel" aria-hidden="true" data-backdrop="static" style="width:300px">
+    </div><!-- end .card -->
+
+    <!-- Add new user modal -->
+    <dialog class="ec-modal" ref="addUserDialog" @click.self="closeAddUserModal">
         <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="addNewUserModalLabel">Add new user</h3>
+            <h3><?php echo tr("Add new user"); ?></h3>
+            <button type="button" class="modal-close-btn" @click="closeAddUserModal" aria-label="Close">×</button>
         </div>
         <div class="modal-body">
-
             <p>
-                <lable>Username:</label><br>
-                    <input id="new-username" type="text" style="width:250px" />
+                <label><?php echo tr("Username"); ?></label>
+                <input v-model="newUser.username" type="text" style="width:100%;box-sizing:border-box" />
             </p>
             <p>
-                <lable>Password:</label><br>
-                    <input id="new-password" type="text" style="width:250px" />
+                <label><?php echo tr("Password"); ?></label>
+                <input v-model="newUser.password" type="password" style="width:100%;box-sizing:border-box" />
             </p>
             <p>
-                <lable>Email:</label><br>
-                    <input id="new-email" type="text" style="width:250px" />
+                <label><?php echo tr("Email"); ?></label>
+                <input v-model="newUser.email" type="text" style="width:100%;box-sizing:border-box" />
             </p>
-
-            <div class="alert alert-error" id="add-user-error" style="display:none"></div>
-
+            <div class="alert alert-danger" v-if="addUserError">{{ addUserError }}</div>
         </div>
         <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Close'); ?></button>
-            <button class="btn btn-info" id="add-user"><?php echo tr('Add user'); ?></button>
+            <button class="btn" @click="closeAddUserModal"><?php echo tr('Close'); ?></button>
+            <button class="btn" @click="addUser"><?php echo tr('Add user'); ?></button>
         </div>
-    </div>
+    </dialog>
 
 </div>
 
 <script>
-    var users = {};
+(function () {
+    var USERS_PER_PAGE = 250;
 
-    var admin = {
-
-        'numberofusers': function() {
-            var result = 0;
-            $.ajax({
-                url: path + "admin/numberofusers.json",
-                dataType: 'text',
-                async: false,
-                success: function(data) {
-                    result = data;
-                }
-            });
-            return result;
+    var app = Vue.createApp({
+        data: function () {
+            return {
+                users: [],
+                numberOfUsers: 0,
+                currentPage: 1,
+                orderby: 'id',
+                order: 'ascending',
+                searchKey: '',
+                searchq: false,
+                newUser: { username: '', password: '', email: '' },
+                addUserError: ''
+            };
         },
 
-        'userlist': function(page, perpage, orderby, order, searchq) {
-            console.log("userlist: " + page + " " + perpage + " " + orderby + " " + searchq);
-            var searchstr = "";
-            if (searchq != false) searchstr = "&search=" + encodeURIComponent(searchq);
-            var result = {};
-            $.ajax({
-                url: path + "admin/userlist.json?page=" + (page - 1) + "&perpage=" + perpage + "&orderby=" + orderby + "&order=" + order + searchstr,
-                dataType: 'json',
-                async: false,
-                success: function(data) {
-                    result = data;
-                }
-            });
-            return result;
-        }
-    }
-
-    // -------------------------------------------------------------------------------------------
-
-    var number_of_users = admin.numberofusers();
-    var users_per_page = 250;
-    var number_of_pages = Math.ceil(number_of_users / users_per_page);
-    var orderby = "id";
-    var page = 1;
-    var order = "ascending";
-    var searchq = false;
-
-    var out = "";
-    for (var z = 0; z < number_of_pages; z++) {
-        out += '<li><a class="pageselect" href="#">' + (z + 1) + '</a></li>';
-    }
-    $(".pagination").find("ul").html(out);
-    $("#numberofusers").html(number_of_users);
-
-    users = admin.userlist(page, 250, orderby, order, searchq);
-    table_draw();
-
-    $(".pagination").on("click", ".pageselect", function() {
-        page = $(this).html();
-        users = admin.userlist(page, 250, orderby, order, searchq);
-        table_draw();
-    });
-
-    $("#orderby").change(function() {
-        orderby = $(this).val();
-        users = admin.userlist(page, 250, orderby, order, searchq);
-        table_draw();
-    });
-
-    $("#order").change(function() {
-        order = $(this).val();
-        users = admin.userlist(page, 250, orderby, order, searchq);
-        table_draw();
-    });
-
-    $("#user-search").click(function() {
-        searchq = $("#user-search-key").val();
-        users = admin.userlist(page, 250, orderby, order, searchq);
-        table_draw();
-    });
-
-    function table_draw() {
-        var out = "";
-        for (var z in users) {
-
-            var email_verified = users[z].email_verified * 1;
-
-            if (email_verified) {
-                out += "<tr style='background-color:rgba(0,255,0,0.2)'>";
-            } else {
-                out += "<tr>";
+        computed: {
+            numberOfPages: function () {
+                return Math.ceil(this.numberOfUsers / USERS_PER_PAGE);
             }
-            out += "<td><a class=\"btn btn-info btn-sm\" href='../admin/setuser?id=" + users[z].id + "'><?php echo tr('view'); ?></a></td>";
-            out += "<td>" + users[z].id + "</td>";
-            out += "<td>" + users[z].username + "</td>";
-            out += "<td>" + users[z].email + "</td>";
-            out += "<td>" + users[z].feeds + "</td>";
-            out += "</tr>";
-        }
-        $("#users").html(out);
-    }
+        },
 
-    function printdate(timestamp) {
-        var date = new Date();
+        mounted: function () {
+            this.fetchNumberOfUsers();
+            this.fetchUsers();
+        },
 
-        var date = new Date(timestamp);
-        var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-        var year = date.getFullYear();
-        var month = months[date.getMonth()];
-        var day = date.getDate();
-
-        var minutes = date.getMinutes();
-        if (minutes < 10) minutes = "0" + minutes;
-
-        var datestr = date.getHours() + ":" + minutes + " " + day + " " + month + " " + year;
-        if (timestamp == 0) datestr = "";
-        return datestr;
-    };
-
-    $("#open-add-user-modal").click(function() {
-        $("#add-user-error").hide();
-        $('#addNewUserModal').modal('show');
-    });
-
-    $("#add-user").click(function() {
-        var username = $("#new-username").val();
-        var password = $("#new-password").val();
-        var email = $("#new-email").val();
-
-        // Set user timezone automatically using current browser timezone
-        var user_timezone = 'UTC';
-        if (Intl != undefined) {
-            user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(user_timezone);
-        }
-
-        $.ajax({
-            type: "POST",
-            url: path + "user/register.json",
-            data: {
-                username: encodeURIComponent(username),
-                password: encodeURIComponent(password),
-                email: encodeURIComponent(email), 
-                timezone: encodeURIComponent(user_timezone)
+        methods: {
+            fetchNumberOfUsers: function () {
+                var self = this;
+                fetch(path + 'admin/numberofusers.json')
+                    .then(function (r) { return r.text(); })
+                    .then(function (data) { self.numberOfUsers = parseInt(data, 10) || 0; });
             },
-            dataType: 'json',
-            async: false,
-            success: function(result) {
-                if (result.success == undefined) {
-                    $("#add-user-error").html(result);
-                    $("#add-user-error").show();
-                    return;
-                } else {
-                    if (result.success) {
-                        $('#addNewUserModal').modal('hide');
-                        users = admin.userlist(page, 250, orderby, order, searchq);
-                        table_draw();
-                        return;
-                    } else {
-                        $("#add-user-error").html(result.message);
-                        $("#add-user-error").show();
-                        return;
-                    }
+
+            fetchUsers: function () {
+                var self = this;
+                var searchstr = self.searchq ? '&search=' + encodeURIComponent(self.searchq) : '';
+                var url = path + 'admin/userlist.json'
+                    + '?page=' + (self.currentPage - 1)
+                    + '&perpage=' + USERS_PER_PAGE
+                    + '&orderby=' + self.orderby
+                    + '&order=' + self.order
+                    + searchstr;
+                fetch(url)
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) { self.users = data || []; });
+            },
+
+            goToPage: function (p) {
+                this.currentPage = p;
+                this.fetchUsers();
+            },
+
+            search: function () {
+                this.searchq = this.searchKey || false;
+                this.currentPage = 1;
+                this.fetchUsers();
+            },
+
+            openAddUserModal: function () {
+                this.newUser = { username: '', password: '', email: '' };
+                this.addUserError = '';
+                this.$refs.addUserDialog.showModal();
+            },
+
+            closeAddUserModal: function () {
+                this.$refs.addUserDialog.close();
+            },
+
+            addUser: function () {
+                var self = this;
+                var user_timezone = 'UTC';
+                if (typeof Intl !== 'undefined') {
+                    user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
                 }
+
+                var body = new URLSearchParams({
+                    username: encodeURIComponent(self.newUser.username),
+                    password: encodeURIComponent(self.newUser.password),
+                    email: encodeURIComponent(self.newUser.email),
+                    timezone: encodeURIComponent(user_timezone)
+                });
+
+                fetch(path + 'user/register.json', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: body.toString()
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (result) {
+                    if (result.success === undefined) {
+                        self.addUserError = result;
+                    } else if (result.success) {
+                        self.$refs.addUserDialog.close();
+                        self.fetchNumberOfUsers();
+                        self.fetchUsers();
+                    } else {
+                        self.addUserError = result.message;
+                    }
+                });
             }
-        });
+        }
     });
+
+    app.mount('#userlist-app');
+}());
 </script>

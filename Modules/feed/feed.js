@@ -4,6 +4,7 @@ var feed = {
     apikey: false,
     public_userid: 0,
     public_username: "",
+    timeBaseScale: 1,
     
     apikeystr: function() {
         if (feed.apikey) {
@@ -357,12 +358,12 @@ var feed = {
     },
     
     populate_timestamps: function(values, start, interval) {
-        var intervalms = interval*1000;
-        var time = Math.floor(start/intervalms)*intervalms;
+        var scaled_interval = interval * this.timeBaseScale;
+        var time = Math.floor(start/scaled_interval)*scaled_interval;
         var with_time = [];
         for (var z in values) {
             with_time.push([time,values[z]]);
-            time += intervalms;
+            time += scaled_interval;
         }
         return with_time;
     } 

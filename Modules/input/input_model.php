@@ -183,6 +183,59 @@ class Input
         }
     }
 
+    /**
+     * Update the description of multiple inputs in a single call.
+     *
+     * @param int    $userid
+     * @param string $inputs_json  JSON-encoded array of {id, description} objects
+     * @return array {success, results: {<inputid>: {success, message}}}
+     */
+    public function set_descriptions_multiple($userid, $inputs_json)
+    {
+        $userid = (int) $userid;
+        $inputs = json_decode(stripslashes($inputs_json), true);
+
+        if (!is_array($inputs) || empty($inputs)) {
+            return array('success' => false, 'message' => 'Invalid input data');
+        }
+
+        $results = array();
+        $any_success = false;
+
+        foreach ($inputs as $item) {
+            $id = isset($item['id']) ? (int) $item['id'] : 0;
+            $description = isset($item['description']) ? (string) $item['description'] : '';
+
+            if ($id <= 0) {
+                $results[$id] = array('success' => false, 'message' => 'Invalid input id');
+                continue;
+            }
+
+            if (!$this->belongs_to_user($userid, $id)) {
+                $results[$id] = array('success' => false, 'message' => 'Access denied');
+                continue;
+            }
+
+            if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u', '', $description) !== $description) {
+                $results[$id] = array('success' => false, 'message' => 'Invalid characters in description');
+                continue;
+            }
+
+            $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
+            $stmt->bind_param("si", $description, $id);
+            if ($stmt->execute()) {
+                if ($this->redis) $this->redis->hset("input:$id", 'description', $description);
+                $results[$id] = array('success' => true, 'message' => 'Description updated');
+                $any_success = true;
+            } else {
+                $results[$id] = array('success' => false, 'message' => 'Update failed');
+            }
+            $stmt->close();
+        }
+
+        return array('success' => $any_success, 'results' => $results);
+    }
+
     public function set_node_input_descriptions($userid,$nodeid,$names)
     {
         $names = explode(",",$names);
