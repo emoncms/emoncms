@@ -63,9 +63,9 @@
 /* -- Light Mode Overrides -- */
 html.color-mode-light {
     color-scheme: light;
-    --bg-body: #fff; 
-    --bg-card: #f0f0f0; 
-    --bg-card-header: #e0e0e0; 
+    --bg-body: whitesmoke;
+    --bg-card: #fff; 
+    --bg-card-header: #e8e8e8; 
     --bg-card-header-hover: #e0e0e0;
     --bg-card-row-hover: #f5f5f5;
     --bg-badge: #efefef;
@@ -139,7 +139,7 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 /* -- Sidebar Themes -- */
 .sidebar-dark {
     --bg-l2: #333; --l2-border: #444; --l2-title: #ccc; --l2-text: #fff;
-    --bg-l2-active:#222; --bg-l2-hover:#444; --bg-l3:#222; --l3-border:#333;
+    --bg-l2-active:#282828; --bg-l2-hover:#444; --bg-l3:#222; --l3-border:#333;
     --l3-text:#999; --l3-title: #ccc; --l3-text-active:#fff; --l3-text-hover:#fff;
 }
 .sidebar-light {

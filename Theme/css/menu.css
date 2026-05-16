@@ -148,11 +148,11 @@
 
 .menu-title-l2 {
   text-indent: 1rem;
-  padding: 1em 0 0.75em 0;
+  padding: 1em 0 1em 0;
   margin: 0;
   text-transform: capitalize;
   color: var(--l2-title);
-  /*border-bottom: 1px solid var(--l2-border);*/
+  border-bottom: 1px solid var(--l2-border);
   height:18px;
 }
 
@@ -173,7 +173,7 @@
 
 .menu-l2 li div {
   text-decoration: none;
-  color: #94a3b6;
+  color: #ccc;
   display: block;
   padding: 0.94rem;
   cursor:pointer;
