@@ -501,9 +501,9 @@ function formatTime(time, interval) {
     else if (secs.toFixed(0) == 0) updated = "now";
     else if (day > 365 && delta > 0) updated = time.toLocaleDateString("en-GB",{year:"numeric", month:"short"});
     else if (day > 31 && delta > 0) updated = time.toLocaleDateString("en-GB",{month:"short", day:"numeric"});
-    else if (day > 2) updated = day.toFixed(0) + "d ago";
-    else if (hour > 2) updated = hour.toFixed(0) + "h ago";
-    else if (secs > 180) updated = mins.toFixed(0) + " mins";
+    else if (day > 2) updated = day.toFixed(0) + "d";
+    else if (hour > 2) updated = hour.toFixed(0) + "h";
+    else if (secs > 180) updated = mins.toFixed(0) + "m";
 
     secs = Math.abs(secs);
 
@@ -526,10 +526,10 @@ function formatTime(time, interval) {
 
     var colours = [
         "rgb(60,135,170)",  // 0: blue
-        "rgb(50,200,50)",   // 1: green
+        "rgb(40, 148, 40)",   // 1: green
         "rgb(240,180,20)",  // 2: yellow
         "rgb(255,125,20)",  // 3: orange
-        "rgb(255,0,0)",     // 4: red
+        "rgb(213, 21, 0)",     // 4: red
         "rgb(150,150,150)", // 5: grey
     ];
 

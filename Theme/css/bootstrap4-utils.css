@@ -95,58 +95,77 @@
 
 /* ================================================================== */
 /* 9. UTILITIES — SPACING (margin / padding)                          */
-/* @see Bootstrap 4 documentation for usage examples                  */
+/* @see Tailwind CSS documentation for usage examples                 */
 /* ================================================================== */
 
 .hide {
   display: none;
 }
 
-/* Remove margins */
-.my-0, .mb-0, .m-0 { margin-bottom: 0 !important; }
-.my-0, .mt-0, .m-0 { margin-top: 0 !important; }
-.mx-0, .ml-0, .m-0 { margin-left: 0 !important; }
-.mx-0, .mr-0, .m-0 { margin-right: 0 !important; }
+@layer utilities {
+  /* Margin utilities */
+  .m-0 { margin: 0 !important; }
+  .my-0 { margin-top: 0 !important; margin-bottom: 0 !important; }
+  .mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+  .mt-0 { margin-top: 0 !important; }
+  .mb-0 { margin-bottom: 0 !important; }
+  .ml-0 { margin-left: 0 !important; }
+  .mr-0 { margin-right: 0 !important; }
 
-/* Margin shorthands */
-.m-1 { padding: var(--s1); }
-.m-2 { padding: var(--s2); }
-.m-3 { padding: var(--s3); }
-.m-4 { padding: var(--s4); }
-.m-5 { padding: var(--s5); }
-.m-6 { padding: var(--s6); }
+  /* Margin shorthands */
+  .m-1 { margin: var(--s1) !important; }
+  .m-2 { margin: var(--s2) !important; }
+  .m-3 { margin: var(--s3) !important; }
+  .m-4 { margin: var(--s4) !important; }
+  .m-5 { margin: var(--s5) !important; }
+  .m-6 { margin: var(--s6) !important; }
 
-/* Margin top */
-.my-1, .mt-1 { margin-top: var(--s1) !important; }
-.my-2, .mt-2 { margin-top: var(--s2) !important; }
-.my-3, .mt-3 { margin-top: var(--s3) !important; }
-.my-4, .mt-4 { margin-top: var(--s4) !important; }
-.my-5, .mt-5 { margin-top: var(--s5) !important; }
-.my-6, .mt-6 { margin-top: var(--s6) !important; }
+  /* Margin top */
+  .mt-1 { margin-top: var(--s1) !important; }
+  .mt-2 { margin-top: var(--s2) !important; }
+  .mt-3 { margin-top: var(--s3) !important; }
+  .mt-4 { margin-top: var(--s4) !important; }
+  .mt-5 { margin-top: var(--s5) !important; }
+  .mt-6 { margin-top: var(--s6) !important; }
 
-/* Margin right */
-.mx-1, .mr-1 { margin-right: var(--s1) !important; }
-.mx-2, .mr-2 { margin-right: var(--s2) !important; }
-.mx-3, .mr-3 { margin-right: var(--s3) !important; }
-.mx-4, .mr-4 { margin-right: var(--s4) !important; }
-.mx-5, .mr-5 { margin-right: var(--s5) !important; }
-.mx-6, .mr-6 { margin-right: var(--s6) !important; }
+  .my-1 { margin-top: var(--s1) !important; margin-bottom: var(--s1) !important; }
+  .my-2 { margin-top: var(--s2) !important; margin-bottom: var(--s2) !important; }
+  .my-3 { margin-top: var(--s3) !important; margin-bottom: var(--s3) !important; }
+  .my-4 { margin-top: var(--s4) !important; margin-bottom: var(--s4) !important; }
+  .my-5 { margin-top: var(--s5) !important; margin-bottom: var(--s5) !important; }
+  .my-6 { margin-top: var(--s6) !important; margin-bottom: var(--s6) !important; }
 
-/* Margin bottom */
-.my-1, .mb-1 { margin-bottom: var(--s1) !important; }
-.my-2, .mb-2 { margin-bottom: var(--s2) !important; }
-.my-3, .mb-3 { margin-bottom: var(--s3) !important; }
-.my-4, .mb-4 { margin-bottom: var(--s4) !important; }
-.my-5, .mb-5 { margin-bottom: var(--s5) !important; }
-.my-6, .mb-6 { margin-bottom: var(--s6) !important; }
+  /* Margin right */
+  .mr-1 { margin-right: var(--s1) !important; }
+  .mr-2 { margin-right: var(--s2) !important; }
+  .mr-3 { margin-right: var(--s3) !important; }
+  .mr-4 { margin-right: var(--s4) !important; }
+  .mr-5 { margin-right: var(--s5) !important; }
+  .mr-6 { margin-right: var(--s6) !important; }
 
-/* Margin left */
-.mx-1, .ml-1 { margin-left: var(--s1) !important; }
-.mx-2, .ml-2 { margin-left: var(--s2) !important; }
-.mx-3, .ml-3 { margin-left: var(--s3) !important; }
-.mx-4, .ml-4 { margin-left: var(--s4) !important; }
-.mx-5, .ml-5 { margin-left: var(--s5) !important; }
-.mx-6, .ml-6 { margin-left: var(--s6) !important; }
+  .mx-1 { margin-left: var(--s1) !important; margin-right: var(--s1) !important; }
+  .mx-2 { margin-left: var(--s2) !important; margin-right: var(--s2) !important; }
+  .mx-3 { margin-left: var(--s3) !important; margin-right: var(--s3) !important; }
+  .mx-4 { margin-left: var(--s4) !important; margin-right: var(--s4) !important; }
+  .mx-5 { margin-left: var(--s5) !important; margin-right: var(--s5) !important; }
+  .mx-6 { margin-left: var(--s6) !important; margin-right: var(--s6) !important; }
+
+  /* Margin bottom */
+  .mb-1 { margin-bottom: var(--s1) !important; }
+  .mb-2 { margin-bottom: var(--s2) !important; }
+  .mb-3 { margin-bottom: var(--s3) !important; }
+  .mb-4 { margin-bottom: var(--s4) !important; }
+  .mb-5 { margin-bottom: var(--s5) !important; }
+  .mb-6 { margin-bottom: var(--s6) !important; }
+
+  /* Margin left */
+  .ml-1 { margin-left: var(--s1) !important; }
+  .ml-2 { margin-left: var(--s2) !important; }
+  .ml-3 { margin-left: var(--s3) !important; }
+  .ml-4 { margin-left: var(--s4) !important; }
+  .ml-5 { margin-left: var(--s5) !important; }
+  .ml-6 { margin-left: var(--s6) !important; }
+}
 
 /* Remove padding */
 .py-0, .pb-0, .p-0 { padding-bottom: 0 !important; }

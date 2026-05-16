@@ -152,7 +152,7 @@
   margin: 0;
   text-transform: capitalize;
   color: var(--l2-title);
-  border-bottom: 1px solid var(--l2-border);
+  /*border-bottom: 1px solid var(--l2-border);*/
   height:18px;
 }
 
@@ -163,7 +163,7 @@
 }
 
 .menu-l2 li {
-  border-bottom: 1px solid var(--l2-border);
+  /*border-bottom: 1px solid var(--l2-border);*/
   overflow:hidden;  
 }
 
@@ -173,7 +173,7 @@
 
 .menu-l2 li div {
   text-decoration: none;
-  color: var(--l2-text);
+  color: #94a3b6;
   display: block;
   padding: 0.94rem;
   cursor:pointer;
@@ -190,6 +190,7 @@
   background-color:var(--bg-l2-active);
   /* add highlight bar on the left */
     border-left: 3px solid var(--accent);
+    color:#fff;
 }
 
 .menu-text-l2 {

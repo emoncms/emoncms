@@ -4,17 +4,17 @@
 
 /* Card: visual container */
 .card {
-    border: 1px solid var(--border-card);
+    /*border: 1px solid var(--border-card);*/
     border-radius: var(--radius-card);
     overflow: hidden;
     background-color: var(--bg-card);
-    margin-bottom: 0.75rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+    margin-bottom: 0.5rem;
+    /*box-shadow: 0 2px 8px rgba(0,0,0,0.10);*/
     transition: box-shadow 0.15s ease;
 }
 
 .card:hover {
-    box-shadow: 0 4px 14px rgba(0,0,0,0.13);
+    /*box-shadow: 0 4px 14px rgba(0,0,0,0.13);*/
 }
 
 /* Grid: pure layout primitive — no visual styling */
@@ -22,7 +22,7 @@
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
-    margin-bottom: 0;
+    /*margin-bottom: 0;*/
 }
 
 /* ==========================================================================
@@ -241,7 +241,7 @@
     color: var(--text-body);
     transition: background-color 0.1s ease;
     cursor: pointer;
-    border-right: 4px solid var(--status-color);
+    /*border-right: 4px solid var(--status-color);*/
 }
 .grid-row-item:hover { background-color: var(--bg-card-row-hover); }
 .grid-row-item:last-of-type { border-bottom-width: 0; }
@@ -263,6 +263,23 @@
 .grid-row-item.selected         { background-color: var(--accent-bg); }
 .grid-row-item.selected::before { width: 4px; background: var(--accent); }
 .grid-row-item.selected:hover   { background-color: var(--accent-bg-hover); }
+
+
+.card-indicator {
+    display: inline-block;
+    width: 4px;
+    height: 1.8em;
+    background-color: var(--status-color);
+    flex-shrink: 0;
+    margin-right:1px;
+    vertical-align: middle;
+}
+
+.row-value {
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
 
 /* ==========================================================================
    6. INTERACTIVE ELEMENTS (ACTIONS & COLLAPSE)

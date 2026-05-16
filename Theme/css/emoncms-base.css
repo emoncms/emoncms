@@ -15,7 +15,7 @@
     /* -- Typography -- */
     --font-heading:    1.2rem;
     --font-subheading: 1rem;
-    --font-base:       14px;
+    --font-base:       16px;
     --font-sm:         13px;
     --font-xs:         12px;
     --font-2xs:        12px;
@@ -64,8 +64,8 @@
 html.color-mode-light {
     color-scheme: light;
     --bg-body: #fff; 
-    --bg-card: #fafafa; 
-    --bg-card-header: #eee; 
+    --bg-card: #f0f0f0; 
+    --bg-card-header: #e0e0e0; 
     --bg-card-header-hover: #e0e0e0;
     --bg-card-row-hover: #f5f5f5;
     --bg-badge: #efefef;
@@ -112,7 +112,7 @@ html.color-mode-light .mode-toggle-btn:hover:not(.active) {
 
 /* -- Navbar/Menu Themes -- */
 .theme-standard, .theme-blue {
-    --bg-menu-top: #44b3e2; --bg-menu-top-hover: #007eb3; --bg-menu-top-active: #209ed3;
+    --bg-menu-top: #4ba9c8; --bg-menu-top-hover: #4498b3; --bg-menu-top-active: #4498b3;
     --bg-menu-tr: #1d8dbc; --bg-menu-tr-hover: #1d8dbc;
 }
 .theme-black {

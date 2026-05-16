@@ -172,8 +172,9 @@ load_css("Modules/feed/Views/feed_view.css");
                     <div class="grid-cell text-center text-muted text-mono">{{ formatSize(feed.size) }}</div>
                     <div class="grid-cell text-left text-mono" v-html="feed.processListHTML"></div>
                     <div class="grid-cell text-right text-mono">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
-                    <div class="grid-cell text-center text-mono" :style="{color: feed.color}">
+                    <div class="grid-cell text-right text-mono row-value" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
+                        <div class="card-indicator" :style="{'--status-color': feed.color}"></div>
                     </div>
                 </div>
             </div>

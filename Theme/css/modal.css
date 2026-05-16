@@ -14,7 +14,6 @@ dialog.ec-modal {
     padding: 0;
     width: min(92vw, var(--modal-width, 640px));
     max-width: none;
-    max-height: min(86vh, 880px);
     background: var(--bg-body);
     color: var(--text-body);
     box-shadow: 0 20px 55px rgba(0, 0, 0, 0.45);
@@ -55,7 +54,6 @@ dialog.ec-modal .modal-header .process-header-title {
 dialog.ec-modal .modal-body {
     padding: 1rem;
     overflow: auto;
-    max-height: calc(86vh - 130px);
 }
 
 dialog.ec-modal .modal-footer {
