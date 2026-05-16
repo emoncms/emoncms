@@ -357,12 +357,11 @@ var feed = {
     },
     
     populate_timestamps: function(values, start, interval) {
-        var intervalms = interval*1000;
-        var time = Math.floor(start/intervalms)*intervalms;
+        var time = Math.floor(start/interval)*interval;
         var with_time = [];
         for (var z in values) {
             with_time.push([time,values[z]]);
-            time += intervalms;
+            time += interval;
         }
         return with_time;
     } 

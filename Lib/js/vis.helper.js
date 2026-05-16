@@ -85,21 +85,21 @@ var view =
 
   'timewindow':function(time)
   {
-    this.start = ((new Date()).getTime())-(3600000*24*time);    //Get start time
-    this.end = (new Date()).getTime();    //Get end time
+    let now = this.now();
+    this.start = now - (3600*24*time);    // Get start time
+    this.end = now;                       // Get end time
   },
 
   'calc_interval':function(npoints=600, min_interval=5)
   {
-    var interval = Math.round(((this.end - this.start)*0.001)/npoints);
+    var interval = Math.round((this.end - this.start)/npoints);
     var outinterval = this.round_interval(interval);
     
     if (outinterval<min_interval) outinterval = min_interval;
     if (!this.fixinterval) this.interval = outinterval;
     
-    var intervalms = this.interval*1000;
-    this.start = Math.floor(this.start / intervalms) * intervalms;
-    this.end = Math.ceil(this.end / intervalms) * intervalms;
+    this.start = Math.floor(this.start / this.interval) * this.interval;
+    this.end = Math.ceil(this.end / this.interval) * this.interval;
   },
   
   'round_interval':function(interval)
@@ -136,7 +136,7 @@ var view =
   'now':function()
   {
     var date = new Date();
-    return date.getTime();
+    return date.getTime()*0.001;
   }
 }
 
