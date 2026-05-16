@@ -3,6 +3,8 @@
 // handles zooming and panning of time based data
 var view =
 {
+  timeBaseScale: 1, // 1 for seconds, 1000 for milliseconds
+
   start:0,
   end:0,
   first_data:0,
@@ -86,20 +88,27 @@ var view =
   'timewindow':function(time)
   {
     let now = this.now();
-    this.start = now - (3600*24*time);    // Get start time
-    this.end = now;                       // Get end time
+    this.start = now - (3600*24*time*this.timeBaseScale);    // Get start time
+    this.end = now;                                          // Get end time
   },
 
   'calc_interval':function(npoints=600, min_interval=5)
   {
-    var interval = Math.round((this.end - this.start)/npoints);
+    var start = this.start / this.timeBaseScale;
+    var end = this.end / this.timeBaseScale;
+
+    // Calculation in seconds
+    var interval = Math.round((end-start)/npoints);
     var outinterval = this.round_interval(interval);
     
     if (outinterval<min_interval) outinterval = min_interval;
     if (!this.fixinterval) this.interval = outinterval;
     
-    this.start = Math.floor(this.start / this.interval) * this.interval;
-    this.end = Math.ceil(this.end / this.interval) * this.interval;
+    start = Math.floor(start / this.interval) * this.interval;
+    end = Math.ceil(end / this.interval) * this.interval;
+
+    this.start = start * this.timeBaseScale;
+    this.end = end * this.timeBaseScale;
   },
   
   'round_interval':function(interval)
@@ -136,7 +145,7 @@ var view =
   'now':function()
   {
     var date = new Date();
-    return date.getTime()*0.001;
+    return (date.getTime() * 0.001) * this.timeBaseScale;
   }
 }
 
