@@ -35,6 +35,9 @@ SCRIPT_WHITELIST = {
     "serialmonitor-start":   f"{_EMONCMS_DIR}/scripts/serialmonitor/start.sh",
     "sync-run":              "/opt/emoncms/modules/sync/emoncms-sync.sh",
     "postprocess-run":       "/opt/emoncms/modules/postprocess/postprocess.sh",
+    "backup-export":         "/opt/emoncms/modules/backup/emoncms-export.sh",
+    "backup-import":         "/opt/emoncms/modules/backup/emoncms-import.sh",
+    "backup-usb-import":     "/opt/emoncms/modules/backup/usb-import.sh",
 }
 
 # Hardcoded whitelist: log name -> absolute log file path.
@@ -42,6 +45,9 @@ LOG_WHITELIST = {
     "update": f"{_LOG_DIR}/update.log",
     "sync":        f"{_LOG_DIR}/sync.log",
     "postprocess": f"{_LOG_DIR}/postprocess.log",
+    "exportbackup": f"{_LOG_DIR}/exportbackup.log",
+    "importbackup": f"{_LOG_DIR}/importbackup.log",
+    "usbimport":    f"{_LOG_DIR}/usbimport.log",
 }
 
 _EXPECTED_ARG_COUNT = {
@@ -55,6 +61,9 @@ _EXPECTED_ARG_COUNT = {
     "serialmonitor-start":   2,    # e.g. ["115200", "/dev/ttyUSB0"]
     "sync-run":              0,    # no args
     "postprocess-run":       0,    # no args
+    "backup-export":         0,    # no args
+    "backup-import":         0,    # no args
+    "backup-usb-import":     0,    # no args
 }
 
 def _validate_args(action: str, args: list) -> bool:
