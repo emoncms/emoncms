@@ -93,6 +93,10 @@ function input_controller()
             if (isset($_GET['node']) && isset($_GET['names'])) {
                  return $input->set_node_input_descriptions($session['userid'],$_GET['node'],$_GET['names']);
             }
+        } elseif ($route->action == 'set-descriptions') {
+            if (isset($_POST['inputs'])) {
+                return $input->set_descriptions_multiple($session['userid'], $_POST['inputs']);
+            }
         } elseif (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid"))) {
             if ($route->action == 'set') {
                 return $input->set_fields(get('inputid'),get('fields'));

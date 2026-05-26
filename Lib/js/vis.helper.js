@@ -1,0 +1,313 @@
+// view class
+// used by emoncms visualisations
+// handles zooming and panning of time based data
+var view =
+{
+  timeBaseScale: 1, // 1 for seconds, 1000 for milliseconds
+
+  start:0,
+  end:0,
+  first_data:0,
+  pan_speed:0.2,
+  limit_x:true,
+  
+  // Used by multigraph
+  'ymin':null,
+  'ymax':null,
+  'y2min':null,
+  'y2max':null,
+  'datetimepicker_previous':null,
+  // ---
+
+  'fullscreen':function ()
+  {
+    var ctrl = $("#graph-fullscreen");
+    if (document.fullscreenElement) {
+      ctrl.html("<i class='icon-resize-full'></i>");
+      ctrl.attr("title", "Restore").removeClass("graph-min").addClass("graph-exp");
+      document.exitFullscreen();
+    } else {
+      ctrl.html("<i class='icon-resize-small'></i>");
+      ctrl.attr("title", "Expand").removeClass("graph-exp").addClass("graph-min");
+      $('body').get(0).requestFullscreen().catch(err => {
+        alert(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+      });
+    }
+  },
+
+  'zoomout':function ()
+  {
+    var time_window = this.end - this.start;
+    var middle = this.start + time_window / 2;
+    time_window = time_window * 2;
+    
+    this.start = middle - (time_window/2);
+    this.end = middle + (time_window/2);
+    
+    if (this.limit_x && this.start<this.first_data) {
+        this.start = this.first_data;
+    }
+    
+    if (this.limit_x && this.end>this.now()) {
+        this.end = this.now();
+    }
+  },
+
+  'zoomin':function ()
+  {
+    var time_window = this.end - this.start;
+    var middle = this.start + time_window / 2;
+    time_window = time_window * 0.5;
+    this.start = middle - (time_window/2);
+    this.end = middle + (time_window/2);
+  },
+
+  'panright':function ()
+  {
+    var time_window = this.end - this.start;
+    var shiftsize = time_window * view.pan_speed;
+    var now = this.now();
+    if (this.end + shiftsize > now && this.limit_x) {
+      shiftsize = now - this.end;
+    }
+    this.start += shiftsize;
+    this.end += shiftsize;
+  },
+
+  'panleft':function ()
+  {
+    var time_window = this.end - this.start;
+    var shiftsize = time_window * view.pan_speed;
+    if (this.start - shiftsize < this.first_data && this.limit_x) {
+      shiftsize = this.start - this.first_data;
+    }
+    this.start -= shiftsize;
+    this.end -= shiftsize;
+  },
+
+  'timewindow':function(time)
+  {
+    let now = this.now();
+    this.start = now - (3600*24*time*this.timeBaseScale);    // Get start time
+    this.end = now;                                          // Get end time
+  },
+
+  'calc_interval':function(npoints=600, min_interval=5)
+  {
+    var start = this.start / this.timeBaseScale;
+    var end = this.end / this.timeBaseScale;
+
+    // Calculation in seconds
+    var interval = Math.round((end-start)/npoints);
+    var outinterval = this.round_interval(interval);
+    
+    if (outinterval<min_interval) outinterval = min_interval;
+    if (!this.fixinterval) this.interval = outinterval;
+    
+    start = Math.floor(start / this.interval) * this.interval;
+    end = Math.ceil(end / this.interval) * this.interval;
+
+    this.start = start * this.timeBaseScale;
+    this.end = end * this.timeBaseScale;
+  },
+  
+  'round_interval':function(interval)
+  {
+      var outinterval = 5;
+      if (interval>5) outinterval = 5;
+      if (interval>10) outinterval = 10;
+      if (interval>15) outinterval = 15;
+      if (interval>20) outinterval = 20;
+      if (interval>30) outinterval = 30;
+      if (interval>60) outinterval = 60;
+      if (interval>120) outinterval = 120;
+      if (interval>180) outinterval = 180;
+      if (interval>300) outinterval = 300;
+      if (interval>600) outinterval = 600;
+      if (interval>900) outinterval = 900;
+      if (interval>1200) outinterval = 1200;
+      if (interval>1800) outinterval = 1800;
+      if (interval>3600*1) outinterval = 3600*1;
+      if (interval>3600*2) outinterval = 3600*2;
+      if (interval>3600*3) outinterval = 3600*3;
+      if (interval>3600*4) outinterval = 3600*4;
+      if (interval>3600*5) outinterval = 3600*5;
+      if (interval>3600*6) outinterval = 3600*6;
+      if (interval>3600*12) outinterval = 3600*12;
+      if (interval>3600*24) outinterval = 3600*24;
+      if (interval>3600*36) outinterval = 3600*36;
+      if (interval>3600*48) outinterval = 3600*48;
+      if (interval>3600*72) outinterval = 3600*72;
+
+      return outinterval;
+  },
+
+  'now':function()
+  {
+    var date = new Date();
+    return (date.getTime() * 0.001) * this.timeBaseScale;
+  }
+}
+
+// Process feed data, returns stats:
+// returns minval, maxval, diff, mean, stdev, time_elapsed, kwh, npoints, npointsnull
+// used by graph module and myheatpump app
+function stats(data)
+{
+    var sum = 0;
+    var i=0;
+    var minval = 0;
+    var maxval = 0;
+    var npoints = 0;
+    var npointsnull = 0;
+    
+    var start_time = -1;
+    var end_time = 0;
+    
+    var val = null;
+    for (var z in data)
+    {
+        var val = data[z][1];                        // 1) only calculated based on present values
+        // if (data[z][1]!=null) val = data[z][1];   // 2) if value is missing use last value
+        
+        if (val!=null) 
+        {
+            if (i==0) {
+                maxval = val;
+                minval = val;
+            }
+            if (val>maxval) maxval = val;
+            if (val<minval) minval = val;
+            sum += val;
+            i++;
+            
+            if (start_time==-1) start_time = data[z][0]
+            end_time = data[z][0]
+        }
+        if (data[z][1]==null) npointsnull++;
+
+        npoints ++;
+    }
+    var mean = sum / i;
+    sum = 0, i=0;
+    for (z in data)
+    {
+        sum += (data[z][1] - mean) * (data[z][1] - mean);
+        i++;
+    }
+    var stdev = Math.sqrt(sum / i);
+    
+    var time_elapsed = end_time - start_time;
+    
+    var kwh = (mean*time_elapsed*0.001)/3600000.0
+    
+    return {
+        "minval":minval,
+        "maxval":maxval,
+        "diff":maxval-minval,
+        "mean":mean,
+        "stdev":stdev,
+        "time_elapsed":time_elapsed,
+        "kwh":kwh,
+        "npointsnull":npointsnull,
+        "npoints":npoints    
+    }
+}
+
+// http://stackoverflow.com/questions/901115/how-can-i-get-query-string-values/901144#901144
+var urlParams;
+(window.onpopstate = function () {
+    var match,
+        pl = /\+/g, // Regex for replacing addition symbol with a space
+        search = /([^&=]+)=?([^&]*)/g,
+        decode = function (s) { return decodeURIComponent(s.replace(pl, " ")); },
+        query = window.location.search.substring(1);
+
+    urlParams = {};
+    while (match = search.exec(query))
+       urlParams[decode(match[1])] = decode(match[2]);
+})();
+
+// Creates a tooltip for use with flot graphs
+function tooltip(x, y, contents, bgColour, borderColour="rgb(255, 221, 221)")
+{
+    var offset = 10; // use higher values for a little spacing between `x,y` and tooltip
+    var elem = $('<div id="tooltip">' + contents + '</div>').css({
+        position: 'absolute',
+        color: "#000",
+        display: 'none',
+        'font-weight':'bold',
+        border: '1px solid '+borderColour,
+        padding: '2px',
+        'background-color': bgColour,
+        opacity: '0.8',
+        'text-align': 'left'
+    }).appendTo("body").fadeIn(200);
+
+    var windowWidth = $(window).width();
+    var elemWidth = elem.width();
+    var elemHeight = elem.height();
+    
+    // Determine horizontal position based on cursor position
+    var elemX;
+    if (x < windowWidth / 2) {
+        // Near left edge: position tooltip to the right of cursor
+        elemX = x + offset;
+    } else {
+        // Near right edge: position tooltip to the left of cursor
+        elemX = x - elemWidth - offset;
+    }
+    
+    // Ensure tooltip doesn't go off screen
+    if (elemX < 0) { elemX = 0; }
+    if (elemX + elemWidth > windowWidth) { elemX = windowWidth - elemWidth; }
+    
+    // Position tooltip above cursor
+    var elemY = y - elemHeight - offset;
+    if (elemY < 0) { elemY = 0; }
+    
+    elem.css({
+        top: elemY,
+        left: elemX
+    });
+}
+
+// Take a time string in the format "dd/mm/yyyy hh:mm:ss" and return a unix timestamp
+function parse_timepicker_time(timestr){
+    // Check for date and time parts
+    var tmp = timestr.split(" ");
+    if (tmp.length!=2) return false;
+    // Split date
+    var date = tmp[0].split("/");
+    if (date.length!=3) return false;
+    // Split time
+    var time = tmp[1].split(":");
+    if (time.length!=3) return false;
+    // Convert to unix timestamp
+    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+}
+
+
+// USED BY THE GRAPH MODULE 
+// Provided for compatibility
+function parseTimepickerTime(timestr){
+  return parse_timepicker_time(timestr);
+}
+
+// Convert a unix timestamp into a date string of format: Mon Jan 01, 00:00
+// Used for tooltips
+function tooltip_date(time_ms){
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+    var d = new Date(time_ms);
+    var date = days[d.getDay()]+", "+months[d.getMonth()]+" "+d.getDate();
+    
+    var h = d.getHours();
+    if (h<10) h = "0"+h;
+    var m = d.getMinutes();
+    if (m<10) m = "0"+m;
+    var time = h+":"+m;
+
+    return date+", "+time;
+}

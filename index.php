@@ -381,8 +381,6 @@ if ($route->format == 'json') {
 
         $output['menu'] = $menu;
 
-        $output['svg_icons'] = view("Theme/svg_icons.svg", array());
-
         // add css class names to <body> tag based on controller's options
         $output['page_classes'][] = $route->controller;
 

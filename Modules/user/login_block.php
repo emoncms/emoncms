@@ -15,308 +15,331 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 global $path, $settings;
 
 ?>
-<style>
-  .main {
-    max-width: 320px;
-    padding: 10px;
-  }
-  
-  .content-container { max-width:340px; }
-  
-  .container-fluid { padding:0px !important; }
-
-  #login-form { margin:0;}
-  
-</style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
-<br>
 
+<div id="login-app" v-cloak class="d-flex align-items-start justify-content-center pb-3" style="padding-top: 5vh;">
+    <section class="card w-100" aria-label="<?php echo tr('Account login'); ?>" style="max-width: 320px;">
+        <div class="card-body p-4">
+            <img class="d-block img-fluid mb-2 mw-256" src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
 
+            <form autocomplete="on" @submit.prevent="submitPrimary">
 
+                <div v-if="mode === 'register'" class="mb-2">
+                    <label for="email-input" class="d-block mb-1"><?php echo tr('Email'); ?></label>
+                    <input
+                        class="w-100"
+                        id="email-input"
+                        ref="emailInput"
+                        v-model.trim="form.email"
+                        type="email"
+                        autocomplete="email"
+                        required
+                    />
+                </div>
 
-<div class="main">
-  <div class="well">
-    <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
-        
-    <div class="login-container">
-        <form id="login-form" autocomplete="on" onsubmit="return false;">
-            <div id="loginblock">
-                <div class="form-group register-item" style="display:none">
-                    <label><?php echo tr('Email'); ?>
-                        <input type="text" name="email" tabindex="1" autocomplete="email"/>
+                <div class="mb-2">
+                    <label for="username-input" class="d-block mb-1"><?php echo tr('Username'); ?></label>
+                    <input
+                        class="w-100"
+                        id="username-input"
+                        ref="usernameInput"
+                        v-model.trim="form.username"
+                        type="text"
+                        autocomplete="username"
+                        required
+                    />
+                </div>
+
+                <div v-if="mode !== 'reset'" class="mb-2">
+                    <div class="d-flex align-items-center justify-content-between mb-1 flex-wrap gap-1">
+                        <label for="password-input" class="mb-0 "><?php echo tr('Password'); ?></label>
+                        <a
+                            v-if="mode === 'login' && passwordResetEnabled"
+                            href="#"
+                            @click.prevent="switchMode('reset')"
+                        ><?php echo tr('Forgot password?'); ?></a>
+                    </div>
+                    <input
+                        class="w-100"
+                        id="password-input"
+                        ref="passwordInput"
+                        v-model="form.password"
+                        type="password"
+                        :autocomplete="mode === 'register' ? 'new-password' : 'current-password'"
+                        required
+                    />
+                </div>
+
+                <div v-if="mode === 'register'" class="mb-2">
+                    <label for="confirm-password-input" class="d-block mb-1"><?php echo tr('Confirm password'); ?></label>
+                    <input
+                        class="w-100"
+                        id="confirm-password-input"
+                        ref="confirmPasswordInput"
+                        v-model="form.confirmPassword"
+                        type="password"
+                        autocomplete="new-password"
+                        required
+                    />
+                </div>
+
+                <div v-if="mode === 'reset'" class="pt-2 mt-2 border-top">
+                    <div class="mb-2">
+                        <label for="reset-username-input" class="d-block mb-1 "><?php echo tr('Existing account name'); ?></label>
+                        <input
+                            class="w-100"
+                            id="reset-username-input"
+                            ref="resetUsernameInput"
+                            v-model.trim="reset.username"
+                            type="text"
+                            autocomplete="username"
+                            required
+                        />
+                    </div>
+
+                    <div class="mb-2">
+                        <label for="reset-email-input" class="d-block mb-1 "><?php echo tr('Account email address'); ?></label>
+                        <input
+                            class="w-100"
+                            id="reset-email-input"
+                            ref="resetEmailInput"
+                            v-model.trim="reset.email"
+                            type="email"
+                            autocomplete="email"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <div v-if="loginMessage.text" class="alert" :class="loginMessage.success ? 'alert-success' : 'alert-error'">
+                    <div>{{ loginMessage.text }}</div>
+                    <div v-if="loginMessage.resend" class="d-flex align-items-center flex-wrap gap-2 mt-2">
+                        <button class="btn" type="button" @click="resendVerify"><?php echo tr('Resend'); ?></button>
+                        <span><?php echo tr('Click to resend verification email'); ?></span>
+                    </div>
+                </div>
+
+                <div v-if="resetMessage.text" class="alert" :class="resetMessage.success ? 'alert-success' : 'alert-error'">
+                    {{ resetMessage.text }}
+                </div>
+
+                <div v-if="mode === 'login' && rememberMeEnabled" class="mt-2">
+                    <label class="d-flex align-items-center gap-1 mb-0 ">
+                        <input v-model="form.rememberme" type="checkbox" autocomplete="off" />
+                        <span><?php echo tr('Remember me'); ?></span>
                     </label>
                 </div>
 
-                <div class="form-group">
-                    <label><?php echo tr('Username'); ?>
-                        <input type="text" tabindex="2" autocomplete="username" name="username"  />
-                    </label>
+                <div class="d-flex align-items-center flex-wrap gap-2 mt-3">
+                    <button v-if="mode === 'login'" class="btn btn-primary" type="submit"><?php echo tr('Login'); ?></button>
+                    <button v-if="mode === 'register'" class="btn btn-primary" type="submit"><?php echo tr('Register'); ?></button>
+                    <button v-if="mode === 'reset'" class="btn btn-primary" type="submit"><?php echo tr('Recover'); ?></button>
+                    <span v-if="mode === 'login' && allowRegister"><?php echo tr('or'); ?></span>
+                    <a v-if="mode === 'login' && allowRegister" href="#" @click.prevent="switchMode('register')"><?php echo tr('register'); ?></a>
+                    <a v-if="mode === 'register'" href="#" @click.prevent="switchMode('login')"><?php echo tr('login'); ?></a>
+                    <a v-if="mode === 'reset'" href="#" @click.prevent="switchMode('login')"><?php echo tr('login'); ?></a>
                 </div>
 
-                <div class="form-group">
-                    <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
-                    <label><?php echo tr('Password'); ?>
-                        <input type="password" tabindex="3" autocomplete="current-password" name="password" />
-                    </label>
-                </div>
-
-                <div class="form-group register-item" style="display:none">
-                    <label><?php echo tr('Confirm password'); ?>
-                        <input id="confirm-password" type="password" name="confirm-password" tabindex="4" autocomplete="new-password"/>
-                    </label>
-                </div>
-
-                <div id="loginmessage"></div>
-
-                <div class="form-group login-item">
-                    <?php if ($settings["interface"]["enable_rememberme"]) { ?>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off"><?php echo '&nbsp;'.tr('Remember me'); ?>
-                            </label>
-                        </div>
-                    <?php } ?>
-                    <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo tr('Login'); ?></button>
-                    <?php if ($allowusersregister) { echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                        <a id="register-link" href="#"><?php echo tr('register'); ?></a>
-                    <?php } ?>
-                </div>
-
-                <div class="form-group register-item" style="display:none">
-                    <button id="register" class="btn btn-primary" type="button"><?php echo tr('Register'); ?></button>
-                    <?php echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                    <a id="cancel-link" href="#"><?php echo tr('login'); ?></a>
-                </div>
-
-            </div>
-
-            <div id="passwordresetblock" class="collapse">
-                <div class="form-group">
-                    <label>Existing account name
-                        <input id="passwordreset-username" type="text" autocomplete="username"/>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label>Account email address
-                        <input id="passwordreset-email" type="text" autocomplete="email"/>
-                    </label>
-                </div>
-                <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
-                <?php echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                <a id="passwordreset-link-cancel" href="#"><?php echo tr('login'); ?></a>
-            </div>
-            <div id="passwordresetmessage"></div>
-            <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
-            <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
-        </form>
-    </div>
-  </div>
+                <p class="mt-2 mb-0"><small class="muted"><?php echo $message ?></small></p>
+            </form>
+        </div>
+    </section>
 </div>
 
 <script>
 "use strict";
 
 menu.disable();
+document.body.classList.add("body-login");
 
-var verify = <?php echo json_encode($verify); ?>;
-var register_open = false;
-$("body").addClass("body-login");
-
-if (verify.success!=undefined) {
-    if (verify.success) {
-        $("#loginmessage").html("<div class='alert alert-success'> "+verify.message+"</div>");
-    } else {
-        $("#loginmessage").html("<div class='alert alert-error'> "+verify.message+"</div>");
-    }
-}
-
-var passwordreset = "<?php echo $settings['interface']['enable_password_reset']; ?>";
-$(document).ready(function() {
-    if (!passwordreset) $("#passwordreset-link").hide();
-});
-
-$("#passwordreset-link").on("click", function(){
-    $("#passwordresetblock").collapse('show');
-    $("#loginblock").collapse('hide');
-    $("#passwordresetmessage").html("");
-});
-
-$("#passwordreset-link-cancel").on("click", function(){
-    $("#passwordresetblock").collapse('hide');
-    $("#loginblock").collapse('show');
-    $("#loginmessage").html("");
-});
-
-$("#passwordreset-submit").click(function(){
-    var username = $("#passwordreset-username").val();
-    var email = $("#passwordreset-email").val();
-
-    if (email==="" || username==="") {
-        $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>Please enter username and email address</div>");
-    } else {
-        var result = user.passwordreset(username,email);
-        if (result.success===true) {
-            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-success'>"+result.message+"</div>");
-            $("#passwordresetblock").hide();
-        } else {
-            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>"+result.message+"</div>");
+(function () {
+    var appConfig = {
+        verify: <?php echo json_encode($verify); ?>,
+        allowRegister: <?php echo json_encode((bool) $allowusersregister); ?>,
+        passwordResetEnabled: <?php echo json_encode((bool) $settings['interface']['enable_password_reset']); ?>,
+        rememberMeEnabled: <?php echo json_encode((bool) $settings['interface']['enable_rememberme']); ?>,
+        referrer: <?php echo json_encode($referrer); ?>,
+        i18n: {
+            login: <?php echo json_encode(tr('Login')); ?>,
+            register: <?php echo json_encode(tr('Register')); ?>,
+            recover: <?php echo json_encode(tr('Recover')); ?>,
+            passwordsNoMatch: <?php echo json_encode(tr('Passwords do not match')); ?>,
+            usernameEmailRequired: <?php echo json_encode(tr('Please enter username and email address')); ?>
         }
-    }
-});
+    };
 
-$("#register-link").click(function(){
-    $(".login-item").hide();
-    $(".register-item").show();
-    $("#loginmessage").html("");
-    register_open = true;
-    $(this).trigger('registration:shown')
-    if (passwordreset) $("#passwordreset-link").hide();
-    return false;
-});
-
-$("#cancel-link").click(function(){
-    $(".login-item").show();
-    $(".register-item").hide();
-    $("#loginmessage").html("");
-    register_open = false;
-    $(this).trigger('registration:hidden')
-    if (passwordreset) $("#passwordreset-link").show();
-    return false;
-});
-
-$('input').on('keypress', function(e) {
-    //login or register when pressing enter
-    if (e.which == 13) {
-        e.preventDefault();
-        if ( register_open ) {
-            register();
-        } else {
-            login();
-        }
-    }
-});
-
-$('#login').click(function() { login(); });
-$('#register').click(function() { register(); });
-
-$("#loginmessage").on("click", ".resend-verify", function(){ resend_verify(); });
-
-function login(){
-    var username = $("input[name='username']").val();
-    var password = $("input[name='password']").val();
-    var referrer = $("input[name='referrer']").val();
-    var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
-
-    var result = user.login(username,password,rememberme,referrer);
-
-    if (result.success==undefined) {
-        $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
-        return false;
-    
-    } else {
-        if (result.success)
-        {
-            var href = result.hasOwnProperty('startingpage') ? path+result.startingpage: path; 
-            window.location.href = href;
-            return true;
-        }
-        else
-        {
-            if (result.message=="Please verify email address") {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"<br><br><button class='btn resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
-            } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
-            }
-            return false;
-        }
-    }
-}
-
-function register(){
-    var username = $("input[name='username']").val();
-    var password = $("input[name='password']").val();
-    var confirmpassword = $("input[name='confirm-password']").val();
-    var email = $("input[name='email']").val();
-
-    if (password != confirmpassword)
-    {
-        $("#loginmessage").html("<div class='alert alert-error'>Passwords do not match</div>");
-    }
-    else
-    {
-        // Set user timezone automatically using current browser timezone
-        var user_timezone = 'UTC';
-        if (Intl!=undefined) {
-            user_timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            console.log(user_timezone);
-        }
-            
-        var result = user.register(username,password,email,user_timezone);
-
-        if (result.success==undefined) {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
-            return false;
-        
-        } else {
-            if (result.success) {
-                if (result.verifyemail) {
-                    $(".login-item").show();
-                    $(".register-item").hide();
-                    $("#loginmessage").html("");
-                    register_open = false;
-                    $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
-                } else {
-                    login();
+    var app = Vue.createApp({
+        data: function () {
+            return {
+                mode: "login",
+                allowRegister: appConfig.allowRegister,
+                passwordResetEnabled: appConfig.passwordResetEnabled,
+                rememberMeEnabled: appConfig.rememberMeEnabled,
+                referrer: appConfig.referrer,
+                i18n: appConfig.i18n,
+                form: {
+                    email: "",
+                    username: "",
+                    password: "",
+                    confirmPassword: "",
+                    rememberme: false
+                },
+                reset: {
+                    username: "",
+                    email: ""
+                },
+                loginMessage: {
+                    text: "",
+                    success: false,
+                    resend: false
+                },
+                resetMessage: {
+                    text: "",
+                    success: false
                 }
-                
-            } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            };
+        },
+        computed: {
+            modeTitle: function () {
+                if (this.mode === "register") return this.i18n.register;
+                if (this.mode === "reset") return this.i18n.recover;
+                return this.i18n.login;
+            }
+        },
+        mounted: function () {
+            if (appConfig.verify && appConfig.verify.success !== undefined) {
+                this.setLoginMessage(!!appConfig.verify.success, appConfig.verify.message || "", false);
+            }
+            this.focusPrimaryInput();
+        },
+        methods: {
+            switchMode: function (mode) {
+                this.mode = mode;
+                this.loginMessage.text = "";
+                this.loginMessage.resend = false;
+                this.resetMessage.text = "";
+
+                if (mode === "reset") {
+                    this.reset.username = this.form.username;
+                    this.reset.email = this.form.email;
+                }
+
+                this.focusPrimaryInput();
+            },
+            setLoginMessage: function (success, message, resend) {
+                this.loginMessage.success = success;
+                this.loginMessage.text = message || "";
+                this.loginMessage.resend = !!resend;
+            },
+            setResetMessage: function (success, message) {
+                this.resetMessage.success = success;
+                this.resetMessage.text = message || "";
+            },
+            submitPrimary: function () {
+                if (this.mode === "register") {
+                    this.register();
+                    return;
+                }
+                if (this.mode === "reset") {
+                    this.passwordReset();
+                    return;
+                }
+                this.login();
+            },
+            login: function () {
+                var result = user.login(this.form.username, this.form.password, this.form.rememberme ? 1 : 0, this.referrer);
+
+                if (result.success === undefined) {
+                    this.setLoginMessage(false, String(result), false);
+                    return;
+                }
+
+                if (result.success) {
+                    var href = Object.prototype.hasOwnProperty.call(result, "startingpage") ? path + result.startingpage : path;
+                    window.location.href = href;
+                    return;
+                }
+
+                if (result.message === "Please verify email address") {
+                    this.setLoginMessage(false, result.message, true);
+                } else {
+                    this.setLoginMessage(false, result.message || "", false);
+                }
+            },
+            register: function () {
+                if (this.form.password !== this.form.confirmPassword) {
+                    this.setLoginMessage(false, this.i18n.passwordsNoMatch, false);
+                    return;
+                }
+
+                var timezone = "UTC";
+                if (typeof Intl !== "undefined" && Intl.DateTimeFormat) {
+                    timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || timezone;
+                }
+
+                var result = user.register(this.form.username, this.form.password, this.form.email, timezone);
+
+                if (result.success === undefined) {
+                    this.setLoginMessage(false, String(result), false);
+                    return;
+                }
+
+                if (result.success) {
+                    if (result.verifyemail) {
+                        this.switchMode("login");
+                        this.setLoginMessage(true, result.message || "", false);
+                    } else {
+                        this.login();
+                    }
+                    return;
+                }
+
+                this.setLoginMessage(false, result.message || "", false);
+            },
+            passwordReset: function () {
+                if (this.reset.username === "" || this.reset.email === "") {
+                    this.setResetMessage(false, this.i18n.usernameEmailRequired);
+                    return;
+                }
+
+                var result = user.passwordreset(this.reset.username, this.reset.email);
+                if (result.success === true) {
+                    this.setResetMessage(true, result.message || "");
+                    return;
+                }
+                this.setResetMessage(false, (result && result.message) ? result.message : "");
+            },
+            resendVerify: function () {
+                var vm = this;
+                $.ajax({
+                    url: path + "user/resend-verify.json",
+                    data: "&username=" + encodeURIComponent(vm.form.username),
+                    dataType: "json",
+                    success: function (result) {
+                        vm.setLoginMessage(!!result.success, result.message || "", false);
+                    }
+                });
+            },
+            focusPrimaryInput: function () {
+                var vm = this;
+                this.$nextTick(function () {
+                    var target;
+                    if (vm.mode === "register") {
+                        target = vm.$refs.emailInput || vm.$refs.usernameInput;
+                    } else if (vm.mode === "reset") {
+                        target = vm.$refs.resetUsernameInput;
+                    } else {
+                        target = vm.$refs.usernameInput;
+                    }
+                    if (target && target.focus) target.focus();
+                });
             }
         }
-    }
-}
-
-function resend_verify()
-{
-    var username = $("input[name='username']").val();
-    
-    $.ajax({
-      url: path+"user/resend-verify.json",
-      data: "&username="+encodeURIComponent(username),
-      dataType: "json",
-      success: function(result) {
-         if (result.success) {
-             $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
-         } else {
-             $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
-         }
-      } 
     });
-}
 
-$(function() {
-    focusFirst()
-    $(document).on('registration:shown registration:hidden',focusFirst)
-    $("#passwordresetblock").on('hidden',focusFirst)
-    $("#passwordresetblock").on('shown', function(event){
-        focusFirst(event, '#passwordreset-username')
-    })
-})
-/**
- * set focus on first input element
- * @param {TouchEvent|MouseEvent|jQuery.Event} event
- * @param {string} selector
- * @return void
- */
-function focusFirst(event,selector) {
-    var elem
-    if(!event) event = {type:'none'}
-    if(!selector) {
-        elem = $(':text:visible').first()
-    } else {
-        elem = $(selector).first()
-    }
-    if(!elem || !elem.hasOwnProperty('length') || elem.length === 0) return
-    elem.focus()
-}
+    app.mount("#login-app");
+})();
+
+
+$("body").css("background-color", "#1d8dbc");
 </script>

@@ -60,6 +60,10 @@ class Schedule
         $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `expression`, `timezone`, `public`, CASE `userid` WHEN '$userid' THEN '1' ELSE '0' END AS `own` FROM schedule WHERE (userid = '$userid' OR public = '1')");
         while ($row = (array)$result->fetch_object())
         {
+            // typecast
+            $row['id'] = (int) $row['id'];
+            $row['userid'] = (int) $row['userid'];
+            $row['public'] = (bool) $row['public'];
             $schedules[] = $row;
         }
         return $schedules;

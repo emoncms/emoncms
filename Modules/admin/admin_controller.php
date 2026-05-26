@@ -14,8 +14,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $settings, $mysqli, $session, $route, $redis, $path, $log, $user;
+    global $mysqli, $session, $route, $user, $settings, $redis, $log, $path;
 
+    // Must be an admin
+    if (!$session['admin']) {
+        return array('success'=>false, 'content'=>'', 'reauth'=>true, 'message'=>"Admin re-authentication required");
+    }
+
+    // Must have write access
     if (!$session['write']) {
         return array('success'=>false, 'content'=>'', 'reauth'=>true, 'message'=>"Admin re-authentication required");
     }
@@ -346,12 +352,12 @@ function admin_controller()
 
     // Switch to another user by id (admin only)
     if ($route->action == 'setuser') {
-        $admin_model->setUser(get('id',true));
+        $admin_model->setUser(get("id",true));
     }
 
     // Switch to another user by feedid (admin only)
     if ($route->action == 'setuserfeed') {
-        $admin_model->setUserFeed(get('feedid', true));
+        $admin_model->setUserFeed(get("feedid", true));
     }
 
     // Get total number of users (admin only)
@@ -364,11 +370,11 @@ function admin_controller()
     if ($route->action == 'userlist') {
         $route->format = 'json';
         return $admin_model->userList(
-            get('page'),
-            get('perpage'),
-            get('orderby'),
-            get('order'),
-            get('search')
+            get("page"),
+            get("perpage"),
+            get("orderby"),
+            get("order"),
+            get("search")
         );
     }
 
