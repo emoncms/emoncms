@@ -9,6 +9,93 @@ http://openenergymonitor.org
 
 */
 
+:root {
+
+ /* -- Spacing -- */
+    --spacer: 1rem;
+    --s1: calc(var(--spacer) * .25);
+    --s2: calc(var(--spacer) * .5);
+    --s3: var(--spacer);
+    --s4: calc(var(--spacer) * 1.25);
+    --s5: calc(var(--spacer) * 1.5);
+    --s6: calc(var(--spacer) * 2);
+
+    /* -- Typography -- */
+    --font-heading:    1.2rem;
+    --font-subheading: 1rem;
+    --font-base:       16px;
+    --font-sm:         13px;
+    --font-xs:         12px;
+    --font-2xs:        12px;
+
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+    /* -- Radii -- */
+    --radius-card:    8px;
+    --radius-control: 6px;
+
+    color-scheme: dark;
+
+    /* -- Dark theme design tokens (default) -- */
+    --bg-body:              #1e1e1e;
+    --bg-card:              #282828;
+    --bg-card-header:       #222;
+    --bg-card-header-hover: #242424;
+    --bg-card-row-hover:    #2e2e2e;
+    --bg-badge:             #2a2a2a;
+    --bg-input:             #2a2a2a;
+    --controls-bg:          rgba(18, 18, 18, 0.92);
+
+    --border:               #333;
+    --border-card:          #333;
+    --border-strong:        #666;
+
+    --text-primary:         #ddd;
+    --text-body:            #ddd;
+    --text-secondary:       #ddd;
+    --text-muted:           #aaa;
+
+    --accent:               #44b3e2;
+    --accent-hover:         #44b3e2;
+    --accent-bg:            rgba(68, 179, 226, 0.1);
+    --accent-bg-hover:      rgba(68, 179, 226, 0.22);
+    --accent-row-hover:     rgba(68, 179, 226, 0.05);
+    --accent-border:        rgba(68, 179, 226, 0.3);
+    --focus-ring:           rgba(68, 179, 226, 0.2);
+
+    --bg-vis-graph-color:   rgba(255,255,255,0);
+
+    --color-cat-default: #44b3e2;
+
+    color-scheme: light;
+    --bg-body: whitesmoke;
+    --bg-card: #fff; 
+    --bg-card-header: #e8e8e8; 
+    --bg-card-header-hover: #e0e0e0;
+    --bg-card-row-hover: #f5f5f5;
+    --bg-badge: #efefef;
+    --bg-input: #fafafa; 
+    --controls-bg: rgba(234, 234, 234, 0.92);
+
+    --border: #e0e0e0; 
+    --border-card: #e0e0e0; 
+    --border-strong: #c0c0c0;
+
+    --text-primary: #000; 
+    --text-body: #000; 
+    --text-secondary: #555; 
+    --text-muted: #666;
+
+    --accent: #2a8fc7; 
+    --accent-hover: #2a8fc7;
+    --accent-bg: rgba(42, 143, 199, 0.10);
+    --accent-bg-hover: rgba(42, 143, 199, 0.20); 
+    --accent-row-hover: rgba(42, 143, 199, 0.05);
+    --accent-border: rgba(42, 143, 199, 0.35); 
+    --focus-ring: rgba(42, 143, 199, 0.2);
+
+    --bg-vis-graph-color: rgba(255,255,255,0);
+}
 
 /* ------------------------------ */
 /* Colour schemes */

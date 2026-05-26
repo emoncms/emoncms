@@ -46,22 +46,34 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     <meta name="twitter:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
     <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/menu/menu.css?v=<?php echo $v; ?>" rel="stylesheet">
-
-    <?php include 'Lib/menu/menu_langjs.php' ?>
-
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/menu/menu.js?v=<?php echo $v; ?>"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 
     <script>
     var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
     var current_themesidebar = "dark";
     </script>
-    <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
+
+    <?php 
+
+    // Consider replacing this with esbuild bundler (merge + minify) in the future
+    load_css("Lib/bootstrap/css/bootstrap.min.css");
+    load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
+    load_css("Theme/emoncms-base.css");
+    load_css("Lib/menu/menu.css");
+    load_css("Theme/css/card.css");
+
+    // Menu Translations
+    include 'Lib/menu/menu_langjs.php';
+
+    // The main 3rd party JS libraries
+    load_js("Lib/jquery-3.6.0.min.js");
+    load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+
+    // Menu and translations
+    load_js("Lib/menu/menu.js");
+    load_js("Lib/misc/gettext.js");
+    load_js("Lib/emoncms.js");
+    ?>
+
     <?php echo $svg_icons; // THEME ICONS ?>
 
 </head>
@@ -135,7 +147,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js?v=2"></script>
+    <?php load_js("Lib/bootstrap/js/bootstrap.js"); ?>
 
 <!-- ICONS --------------------------------------------- -->
 
