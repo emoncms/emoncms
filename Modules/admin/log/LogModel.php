@@ -99,7 +99,7 @@ class LogModel
             $content .= $line;
         }
 
-        return array('success' => true, 'content' => $content);
+        return array('success' => true, 'log' => $content);
     }
 
     /**

@@ -26,7 +26,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                 <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo tr('Auto refresh'); ?>
                 </button>
-                <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
+                <a href="<?php echo $path; ?>admin/log/download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
                 <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
             <?php } ?>
         </div>
@@ -98,7 +98,7 @@ function refresh_log(result){
             clearInterval(emoncms_log_interval);
             $container = $("#logreply");
             if (data.success) {
-                output_logfile(data.content, $container);
+                output_logfile(data.log, $container);
             } else {
                 $container.text(data.message);
                 $container.css('color', 'red');
