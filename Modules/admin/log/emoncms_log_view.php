@@ -97,8 +97,12 @@ function refresh_log(result){
         if (data.success != undefined)  { 
             clearInterval(emoncms_log_interval);
             $container = $("#logreply");
-            $container.text(data.message);
-            $container.css('color', 'red');
+            if (data.success) {
+                output_logfile(data.content, $container);
+            } else {
+                $container.text(data.message);
+                $container.css('color', 'red');
+            }
             scrollable = $container.parent('pre')[0];
             if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
         }
@@ -120,7 +124,7 @@ function output_logfile(result, $container){
 getLog();
 // use the api to get the latest value from the logfile
 function getLog() {
-  $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: refresh_log });
+  $.ajax({ url: path+"admin/log/get", async: true, dataType: "text", success: refresh_log });
 }
 
 // auto refresh the updates logfile
