@@ -71,9 +71,6 @@
                         } else {
                             $("#log").append(htmlEntities(result.message) + "\n");
                         }
-                        setTimeout(function() {
-                            is_running();
-                        }, 500);
                     }
                 });
             },
@@ -92,9 +89,6 @@
                         } else {
                             $("#log").append(htmlEntities(result.message) + "\n");
                         }
-                        setTimeout(function() {
-                            is_running();
-                        }, 500);
                     }
                 });
             }
@@ -166,6 +160,7 @@
                     $(".start-options").hide();
                     $(".send-cmd").show();
                     app.connected = true;
+                    is_running_last_state = true;
 
                     if (!app.config_received) {
                         wait_for_config_interval = setTimeout(function() {
@@ -175,11 +170,13 @@
                         }, 2000);
                     }
                 } else {
-                    clearInterval(updates_is_running);
+                    if (is_running_last_state !== false) {
+                        $("#log").append("Serialmonitor service is not running, click start to start!\n");
+                    }
+                    is_running_last_state = false;
                     $(".start-options").show();
                     $("#stop").hide();
                     $(".send-cmd").hide();
-                    $("#log").append("Serialmonitor service is not running, click start to start!\n");
                     app.connected = false;
                 }
             }
@@ -230,6 +227,7 @@
     updates_is_emonhub_running = setInterval(is_emonhub_running, 2000);
 
     var wait_for_config_interval;
+    var is_running_last_state = null;
     is_running();
     var updates_is_running;
     updates_is_running = setInterval(is_running, 2000);
