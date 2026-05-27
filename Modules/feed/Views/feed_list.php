@@ -116,11 +116,11 @@ load_css("Modules/feed/Views/feed_view.css");
     </div>
 
 <!-- Vue.js Feed List Component -->
-    <div v-if="nodes && Object.keys(nodes).length > 0" class="card-list-grid feed-list-grid">
+    <div v-if="nodes && Object.keys(nodes).length > 0" class="group-list feed-list-grid">
         <!-- Header Row -->
         <!--
         <div class="grid-row feed-header">
-            <div class="grid-cell"></div>
+            <div class="grid-cell"></div>minmax(max-content, 1fr)
             <div class="grid-cell">Name</div>
             <div class="grid-cell text-center">Public</div>
             <div class="grid-cell">Engine</div>
@@ -133,48 +133,51 @@ load_css("Modules/feed/Views/feed_view.css");
         <!-- Node Groups -->
         <template v-for="(nodeFeeds, node) in filteredNodes">
 
-            <div class="card card-grid">
+            <div class="group-list-group">
             <!-- Node Header -->
-            <div :key="node" class="grid-row card-header" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
-                <div class="grid-cell text-center has-indicator" @click.stop="toggleNode(node)">
-                    <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="collapse-icon" :class="[nodesDisplay[node] ? 'icon-chevron-down' : 'icon-chevron-right']"></span>
+            <div :key="node" class="group-list-header" @click="toggleNode(node)" :class="{'collapsed': !nodesDisplay[node]}" :style="{'--status-color': node_time_and_colour[node].color}">
+                <div data-col="select" class="group-list-cell text-center has-indicator" @click.stop="toggleNode(node)">
+                    <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="group-list-chevron"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <div class="grid-cell card-name">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell"></div>
-                <div class="grid-cell text-center" :style="{color: node_time_and_colour[node].color}">
+                <div data-col="name" class="group-list-cell group-list-name">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
+                <div data-col="public" class="group-list-cell"></div>
+                <div data-col="engine" class="group-list-cell"></div>
+                <div data-col="size" class="group-list-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
+                <div data-col="process" class="group-list-cell"></div>
+                <div data-col="spacer" class="group-list-cell"></div>
+                <div data-col="value" class="group-list-cell"></div>
+                <div data-col="updated" class="group-list-cell text-center" :style="{color: node_time_and_colour[node].color}">
                     {{ node_time_and_colour[node].text }}
                 </div>
             </div>
 
             <!-- Node Feeds -->
-            <div class="grid-collapsible" :class="{'is-expanded': nodesDisplay[node]}">
-                <div v-for="feed in nodeFeeds" :key="feed.id"
-                     class="grid-row grid-row-item feed-graph-link"
+            <div class="group-list-rows" :class="{'is-expanded': nodesDisplay[node]}">
+                <div class="group-list-rows-inner">
+                    <div v-for="feed in nodeFeeds" :key="feed.id"
+                     class="group-list-row feed-graph-link"
                      :class="{'selected': selectedFeeds[feed.id]}"
                      :style="{'--status-color': feed.color}"
                      :feedid="feed.id"
                      :title="getFeedTooltip(feed)"
                      @click="openFeedGraph(feed.id)">
 
-                    <div class="grid-cell text-center" @click.stop>
+                    <div data-col="select" class="group-list-cell text-center" @click.stop>
                         <input class="feed-select" type="checkbox" :feedid="feed.id" v-model="selectedFeeds[feed.id]" @change="onFeedSelectionChange">
                     </div>
-                    <div class="grid-cell">{{ feed.name }}</div>
-                    <div class="grid-cell text-center">
+                    <div data-col="name" class="group-list-cell">{{ feed.name }}</div>
+                    <div data-col="public" class="group-list-cell text-center">
                         <i :class="feed.public == 1 ? 'icon-globe icon-public' : 'icon-lock icon-private'"></i>
                     </div>
-                    <div class="grid-cell text-mono" v-html="formatEngine(feed.engine, feed.interval)"></div>
-                    <div class="grid-cell text-center text-muted text-mono">{{ formatSize(feed.size) }}</div>
-                    <div class="grid-cell text-left text-mono" v-html="feed.processListHTML"></div>
-                    <div class="grid-cell text-right text-mono">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
-                    <div class="grid-cell text-right text-mono row-value" :style="{color: feed.color}">
+                    <div data-col="engine" class="group-list-cell text-mono" v-html="formatEngine(feed.engine, feed.interval)"></div>
+                    <div data-col="size" class="group-list-cell text-center text-muted text-mono">{{ formatSize(feed.size) }}</div>
+                    <div data-col="process" class="group-list-cell text-left text-mono" v-html="feed.processListHTML"></div>
+                    <div data-col="spacer" class="group-list-cell"></div>
+                    <div data-col="value" class="group-list-cell text-right text-mono">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
+                    <div data-col="updated" class="group-list-cell text-right text-mono group-list-value" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
-                        <div class="card-indicator" :style="{'--status-color': feed.color}"></div>
+                        <div class="group-list-indicator" :style="{'--status-color': feed.color}"></div>
                     </div>
                 </div>
             </div>

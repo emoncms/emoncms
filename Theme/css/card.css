@@ -17,14 +17,6 @@
     /*box-shadow: 0 4px 14px rgba(0,0,0,0.13);*/
 }
 
-/* Grid: pure layout primitive — no visual styling */
-.card-grid {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    /*margin-bottom: 0;*/
-}
-
 /* ==========================================================================
    2. HEADERS & NAVIGATION
    ========================================================================== */
@@ -201,87 +193,6 @@
 .card table col.col-w-btn    { width: 130px; }
 
 /* ==========================================================================
-   5. GRID & FEED LISTS (NODE SYSTEM)
-   ========================================================================== */
-
-.card-list-grid {
-    display: grid;
-    width: 100%;
-    box-sizing: border-box;
-    contain: layout style;
-    gap: 0;
-}
-
-.grid-row {
-    display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: subgrid;
-    align-items: center;
-    min-height: 44px;
-    cursor: default;
-    position: relative; /* supports ::before accent strip used by .grid-row-item */
-}
-
-/* Adjustments for headers inside grids */
-.grid-row.card-header {
-    padding: 0;
-    gap: 0;
-}
-.grid-row.card-header > .grid-cell {
-    padding-top: 0.6rem;
-    padding-bottom: 0.6rem;
-}
-.grid-row.card-header > .grid-cell:first-child { padding-left: 1rem; }
-.grid-row.card-header > .grid-cell:last-child  { padding-right: 1rem; }
-
-/* Feed Rows — use as .grid-row.grid-row-item; extends .grid-row with interactive states */
-.grid-row-item {
-    border-top: 1px solid var(--border);
-    background: var(--bg-card);
-    color: var(--text-body);
-    transition: background-color 0.1s ease;
-    cursor: pointer;
-    /*border-right: 4px solid var(--status-color);*/
-}
-.grid-row-item:hover { background-color: var(--bg-card-row-hover); }
-.grid-row-item:last-of-type { border-bottom-width: 0; }
-
-/* Left accent strip */
-.grid-row-item::before {
-    content: '';
-    width: 0;
-    background: var(--accent);
-    height: 100%;
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    transition: width .2s ease-out;
-}
-.grid-row-item:hover::before { width: 2px; }
-
-.grid-row-item.selected         { background-color: var(--accent-bg); }
-.grid-row-item.selected::before { width: 4px; background: var(--accent); }
-.grid-row-item.selected:hover   { background-color: var(--accent-bg-hover); }
-
-
-.card-indicator {
-    display: inline-block;
-    width: 4px;
-    height: 1.8em;
-    background-color: var(--status-color);
-    flex-shrink: 0;
-    margin-right:1px;
-    vertical-align: middle;
-}
-
-.row-value {
-    align-items: center;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-/* ==========================================================================
    6. INTERACTIVE ELEMENTS (ACTIONS & COLLAPSE)
    ========================================================================== */
 
@@ -291,7 +202,6 @@
     color: transparent;
     transition: color 0.15s;
 }
-.grid-row-item:hover .row-action,
 .card table tbody tr:hover .row-action { color: var(--text-secondary); }
 .row-action:hover { color: var(--accent) !important; }
 
@@ -301,16 +211,6 @@
     color: var(--status-color);
     opacity: 0.7;
 }
-
-.grid-collapsible {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: subgrid;
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.2s ease-in-out;
-}
-.grid-collapsible.is-expanded { max-height: 2000px; }
 
 /* ==========================================================================
    7. RESPONSIVE OVERRIDES

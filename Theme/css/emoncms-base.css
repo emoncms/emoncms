@@ -515,8 +515,6 @@ table#feeds.table tbody tr th.feed-title span { max-width: 9em; }
 table#feeds.table .caret { border-top-color: currentColor !important; display: inline-block; vertical-align: middle; margin-right: .4em; }
 
 .feed-header { background: var(--bg-card-header); font-weight: bold; border-bottom: 1px solid var(--border); }
-.grid-cell { padding: 6px 10px; overflow: hidden; white-space: nowrap; min-width: 0; }
-.grid-cell.text-center, .grid-cell.text-left { font-variant-numeric: tabular-nums; }
 .feed-select { accent-color: var(--accent); cursor: pointer; }
 
 /* ==========================================================================

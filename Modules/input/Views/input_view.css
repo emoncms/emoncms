@@ -16,18 +16,35 @@ input[type="checkbox"] { margin:0px; }
 /* ================================================================== */
 
 /*
- * 7-column subgrid layout for the input list.
- * Col 1 : 40px   — checkbox / arrow
- * Col 2 : 2fr    — name
- * Col 3 : 1fr    — description
- * Col 4 : 1fr    — process list
- * Col 5 : 100px  — last updated
- * Col 6 : 80px   — value
- * Col 7 : 40px   — configure / device-configure icon
+ * 8-column subgrid layout for the input list.
+ * Col 1 : 40px        — checkbox / arrow
+ * Col 2 : max-content — name
+ * Col 3 : max-content — description  (hideable)
+ * Col 4 : max-content — process list (hideable)
+ * Col 5 : 1fr         — spacer (flexible gap)
+ * Col 6 : max-content — last updated (hideable)
+ * Col 7 : max-content — value        (hideable)
+ * Col 8 : 40px        — configure icon
  */
 .input-list-grid {
-    grid-template-columns: 40px minmax(max-content, 2fr) minmax(max-content, 1fr) minmax(100px, 1fr) 100px 80px 40px;
+    grid-template-columns: 40px max-content max-content max-content 1fr max-content max-content 40px;
 }
+
+/* ── Dynamic column hiding (driven by ResizeObserver in input_view.js) ── */
+.input-list-grid[data-hide-description] [data-col="description"] { display: none; }
+.input-list-grid[data-hide-process]     [data-col="process"]     { display: none; }
+.input-list-grid[data-hide-value]       [data-col="value"]       { display: none; }
+.input-list-grid[data-hide-updated]     [data-col="updated"]     { display: none; }
+
+/* ── Explicit column placement (keeps cells anchored when siblings are hidden) ── */
+.input-list-grid [data-col="select"]      { grid-column: 1; }
+.input-list-grid [data-col="name"]        { grid-column: 2; }
+.input-list-grid [data-col="description"] { grid-column: 3; }
+.input-list-grid [data-col="process"]     { grid-column: 4; }
+.input-list-grid [data-col="spacer"]      { grid-column: 5; }
+.input-list-grid [data-col="updated"]     { grid-column: 6; }
+.input-list-grid [data-col="value"]       { grid-column: 7; }
+.input-list-grid [data-col="configure"]   { grid-column: 8; }
 
 /* Muted icon buttons (device module not installed) */
 a.text-muted i[class*="icon-"] {
@@ -38,24 +55,6 @@ a.text-muted i[class*="icon-"] {
 input.checkbox-lg {
     float: none;
     transform: scale(1.3);
-}
-
-@media (max-width: 992px) {
-    .input-list-grid {
-        grid-template-columns: 40px minmax(max-content, 2fr) minmax(100px, 1fr) 100px 80px 40px;
-    }
-    /* hide description column */
-    .input-list-grid .grid-row > .grid-cell:nth-child(3) { display: none; }
-}
-
-@media (max-width: 768px) {
-    .input-list-grid {
-        grid-template-columns: 40px 1fr 100px 40px;
-    }
-    /* hide description, processlist, value columns */
-    .input-list-grid .grid-row > .grid-cell:nth-child(3),
-    .input-list-grid .grid-row > .grid-cell:nth-child(4),
-    .input-list-grid .grid-row > .grid-cell:nth-child(6) { display: none; }
 }
 
 /* ================================================================== */

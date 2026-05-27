@@ -60,6 +60,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/menu.css");
     load_css("Theme/css/card.css");
+    load_css("Theme/css/group-list.css");
     load_css("Theme/css/form.css");
     load_css("Theme/css/modal.css");
     load_css("Theme/css/dropdown.css");

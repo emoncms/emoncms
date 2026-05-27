@@ -1,0 +1,158 @@
+/* ==========================================================================
+   GROUP LIST — Collapsible subgrid grouped data list
+   Use for: feed list, input list, or any grouped node/tag UI.
+   ========================================================================== */
+
+/* ── 1. Outer grid container ─────────────────────────────────────── */
+.group-list {
+    display: grid;
+    width: 100%;
+    box-sizing: border-box;
+    contain: layout style;
+    gap: 0;
+}
+
+/* ── 2. Per-group subgrid wrapper ────────────────────────────────── */
+.group-list-group {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+}
+
+/* ── 3. Group header row ─────────────────────────────────────────── */
+.group-list-header {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 44px;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    gap: 0;
+    background-color: var(--bg-card-header);
+    user-select: none;
+    transition: background-color 0.15s ease-in-out;
+}
+.group-list-header:hover {
+    background-color: var(--bg-card-header-hover);
+}
+.group-list-header > .group-list-cell {
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+}
+.group-list-header > .group-list-cell:first-child { padding-left: 1rem; }
+.group-list-header > .group-list-cell:last-child  { padding-right: 1rem; }
+
+/* Header node/tag name */
+.group-list-header .group-list-name {
+    font-weight: 600;
+    font-size: var(--font-sm, 0.875rem);
+    color: var(--text-primary);
+    letter-spacing: 0.02em;
+}
+
+/* ── 4. Collapsible rows wrapper (accordion outer) ───────────────── */
+.group-list-rows {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.35s ease;
+}
+.group-list-rows.is-expanded { grid-template-rows: 1fr; }
+
+/* ── 5. Inner wrapper — required for grid-template-rows animation ── */
+.group-list-rows-inner {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    min-height: 0;
+}
+
+/* ── 6. Individual data row ──────────────────────────────────────── */
+.group-list-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 44px;
+    cursor: pointer;
+    position: relative;
+    border-top: 1px solid var(--border);
+    background: var(--bg-card);
+    color: var(--text-body);
+    transition: background-color 0.1s ease;
+}
+.group-list-row:hover { background-color: var(--bg-card-row-hover); }
+.group-list-row:last-of-type { border-bottom-width: 0; }
+
+/* Left accent strip */
+.group-list-row::before {
+    content: '';
+    width: 0;
+    background: var(--accent);
+    height: 100%;
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 0.2s ease-out;
+}
+.group-list-row:hover::before { width: 2px; }
+
+.group-list-row.selected         { background-color: var(--accent-bg); }
+.group-list-row.selected::before { width: 4px; background: var(--accent); }
+.group-list-row.selected:hover   { background-color: var(--accent-bg-hover); }
+
+/* ── 7. Cell ─────────────────────────────────────────────────────── */
+.group-list-cell {
+    padding: 6px 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+.group-list-cell.text-center,
+.group-list-cell.text-left { font-variant-numeric: tabular-nums; }
+
+/* ── 8. Row action icons (show on row hover) ─────────────────────── */
+.group-list-row:hover .row-action { color: var(--text-secondary); }
+
+/* ── 9. Inline status indicator bar ─────────────────────────────── */
+.group-list-indicator {
+    display: inline-block;
+    width: 4px;
+    height: 1.8em;
+    background-color: var(--status-color);
+    flex-shrink: 0;
+    margin-right: 1px;
+    vertical-align: middle;
+}
+
+/* ── 10. Value cell styling ──────────────────────────────────────── */
+.group-list-value {
+    align-items: center;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+/* ── 11. Rotating chevron indicator ─────────────────────────────── */
+.group-list-header [data-col="select"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.group-list-chevron {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid var(--text-secondary, #666);
+    border-top: 2px solid var(--text-secondary, #666);
+    transform: rotate(45deg);
+    transition: transform 0.35s ease;
+    flex-shrink: 0;
+}
+.group-list-group:has(.group-list-rows.is-expanded) > .group-list-header .group-list-chevron {
+    transform: rotate(135deg);
+}

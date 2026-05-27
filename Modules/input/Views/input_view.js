@@ -109,6 +109,34 @@ var app = Vue.createApp({
             this.nodesDisplay = newDisplay;
         }
     },
+    mounted: function() {
+        var self = this;
+        var observerSetup = false;
+        this.$watch('loaded', function(val) {
+            if (!val || observerSetup) return;
+            observerSetup = true;
+            self.$nextTick(function() {
+                var grid = document.querySelector('.input-list-grid');
+                if (!grid) return;
+                var hidePriority = ['description', 'process', 'value', 'updated'];
+                var raf = null;
+                var ro = new ResizeObserver(function() {
+                    if (raf) cancelAnimationFrame(raf);
+                    raf = requestAnimationFrame(function() {
+                        raf = null;
+                        hidePriority.forEach(function(col) { grid.removeAttribute('data-hide-' + col); });
+                        var header = grid.querySelector('.group-list-header');
+                        if (!header) return;
+                        for (var i = 0; i < hidePriority.length; i++) {
+                            if (header.scrollWidth <= grid.clientWidth) break;
+                            grid.setAttribute('data-hide-' + hidePriority[i], '');
+                        }
+                    });
+                });
+                ro.observe(grid);
+            });
+        });
+    },
     methods: {
         toggleNode: function(nodeid) {
             this.nodesDisplay[nodeid] = !this.nodesDisplay[nodeid];

@@ -116,6 +116,43 @@ var feedAppRoot = Vue.createApp({
             this.nodesDisplay = newDisplay;
         }
     },
+    mounted: function() {
+        var self = this;
+        var observerSetup = false;
+
+        // Feeds load asynchronously; wait until the grid is in the DOM before observing.
+        this.$watch('feedsLoaded', function(val) {
+            if (!val || observerSetup) return;
+            observerSetup = true;
+
+            self.$nextTick(function() {
+                var grid = document.querySelector('.feed-list-grid');
+                if (!grid) return;
+
+                var hidePriority = ['size', 'engine', 'public', 'process', 'value', 'updated'];
+                var raf = null;
+                var ro = new ResizeObserver(function() {
+                    if (raf) cancelAnimationFrame(raf);
+                    raf = requestAnimationFrame(function() {
+                        raf = null;
+                        // Reset all hidden columns first
+                        hidePriority.forEach(function(col) { grid.removeAttribute('data-hide-' + col); });
+
+                        var header = grid.querySelector('.group-list-header');
+                        if (!header) return;
+
+                        // Hide columns one by one (lowest priority first) until content fits
+                        for (var i = 0; i < hidePriority.length; i++) {
+                            if (header.scrollWidth <= grid.clientWidth) break;
+                            grid.setAttribute('data-hide-' + hidePriority[i], '');
+                        }
+                    });
+                });
+
+                ro.observe(grid);
+            });
+        });
+    },
     methods: {
         
         getNodeSize: function(nodeFeeds) {
