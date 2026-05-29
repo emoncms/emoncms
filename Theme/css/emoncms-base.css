@@ -1,17 +1,9 @@
-/*
-All Emoncms code is released under the GNU Affero General Public License.
-See COPYRIGHT.txt and LICENSE.txt.
-
----------------------------------------------------------------------
-Emoncms - open source energy visualisation
-Part of the OpenEnergyMonitor project:
-http://openenergymonitor.org
-
-*/
+/* ==========================================================================
+   1. DESIGN TOKENS & VARIABLES
+   ========================================================================== */
 
 :root {
-
- /* -- Spacing -- */
+    /* -- Spacing -- */
     --spacer: 1rem;
     --s1: calc(var(--spacer) * .25);
     --s2: calc(var(--spacer) * .5);
@@ -184,8 +176,10 @@ http://openenergymonitor.org
   --l3-text-active:#000;
   --l3-text-hover:#000;
 }
-/* ------------------------------ */
 
+/* ==========================================================================
+   3. BASE & RESET
+   ========================================================================== */
 
 html,body{
     height: initial!important;
@@ -195,6 +189,28 @@ html,body{
 :fullscreen, ::backdrop {
     background-color: var(--bg-vis-graph-color);
 }
+
+/* -- Gravatar UI -- */
+.img-circle { border-radius: 50%; overflow: hidden; }
+.gravatar a.grav-container {
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    overflow: hidden; padding: 0; width: 2.8rem; height: 2.8rem; font-size: 1.5rem;
+    transition: background-color 0.1s ease-out;
+}
+.gravatar a.grav-container:hover { background: var(--bg-menu-top-hover); }
+.no-gravatar a.grav-container {
+    display: flex; align-items: center; justify-content: center; border-radius: 50%;
+    overflow: hidden; padding: 0; width: 2.8rem; height: 2.8rem; font-size: 1.5rem;
+    transition: background-color 0.1s ease-out;
+    background: rgba(255,255,255,0.1);
+}
+.no-gravatar a.grav-container:hover { background: var(--bg-menu-top-hover); }
+a.grav-container img.grav {
+    max-height: 1.2em; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
+}
+a.grav-container:hover img.grav { border-color: rgba(255,255,255,0.7); }
+
+
 
 #wrap{
   min-height: calc(100vh - 5.4rem)!important;

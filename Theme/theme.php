@@ -66,6 +66,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     load_css("Theme/css/autocomplete.css");
     // Utility classes
     load_css("Theme/css/bootstrap4-utils.css");
+    // Specific used icons
+    load_css("Theme/css/svg-icons.css");
+
+
 
     // Menu Translations
     include 'Theme/menu/menu_langjs.php';
@@ -79,8 +83,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     load_js("Theme/js/emoncms.js");
     ?>
 
-    <?php echo $svg_icons; // THEME ICONS ?>
-
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
@@ -88,30 +90,32 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <div class="menu-l1"><ul></ul></div>
             <div class="menu-tr"><ul>
             <?php if ($session["read"]) { ?>
-            <li class="<?php echo $session["gravatar"]?'':'no-'; ?>gravitar dropdown"><a id="user-dropdown" href="#" title="<?php echo $session["username"]." ".($session['admin']?'(Admin)':'')?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
-            <?php if (!$session["gravatar"]) { ?>
-                <svg class="icon user" style="color:#fff"><use xlink:href="#icon-user"></use></svg>
-            <?php } else { ?>
-                <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
-            <?php } ?>
-            </a>
+
+            <li class="<?php echo $session["gravatar"] ? '' : 'no-'; ?>gravatar dropdown">
+                <a id="user-dropdown" href="#" title="<?php echo $session["username"] . " " . ($session['admin'] ? '(Admin)' : ''); ?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
+                    <?php if (!$session["gravatar"]) { ?>
+                        <span class="svg-icon-user" style="color:#fff"></span>
+                    <?php } else { ?>
+                        <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
+                    <?php } ?>
+                </a>
 
                 <ul class="dropdown-menu pull-right" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-user"></use></svg> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="svg-icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>  
                     <?php if (isset($_SESSION['adminuser'])) { ?>
-                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
                     <li class="divider"><a href="#"></a></li>
                     <?php } ?>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><svg class="icon"><use xlink:href="#icon-logout"></use></svg> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
             <li>
               <a href="<?php echo $path; ?>" title="<?php echo ctx_tr("theme_messages","Login"); ?>">
-                <div class="tr-login"><svg class="icon enter"><use xlink:href="#icon-enter"></use></svg></div>
+                <div class="tr-login"><span class="svg-icon-enter enter"></span></div>
               </a>
             </li>
             <?php } ?>
@@ -153,27 +157,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     </div>
 
     <?php load_js("Lib/bootstrap/js/bootstrap.js"); ?>
-
-<!-- ICONS --------------------------------------------- -->
-
-
-<?php
-    // MODULE ICONS
-    if(!empty($menu['includes']['icons'])) :
-?>
-<svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <defs>
-        <?php
-        foreach($menu['includes']['icons'] as $icon):
-            echo $icon;
-        endforeach;
-        ?>
-    </defs>
-</svg>
-<?php
-    // end of module icons
-    endif;
-?>
 </body>
 </html>
 
