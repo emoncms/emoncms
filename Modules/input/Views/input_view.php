@@ -48,7 +48,7 @@ load_css("Modules/input/Views/input_view.css");
         <button v-if="show_clean" @click="clean_unused" class="btn pull-right ml-3" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
-        <input type="text" name="filter" id="input-filter" v-model="filterText" :class="{hide: selected.length > 0}" placeholder="<?php echo tr('Filter inputs') ?>">
+        <input type="text" name="filter" id="input-filter" v-model="filterText" v-show="selected.length === 0" placeholder="<?php echo tr('Filter inputs') ?>">
     </div>
 
     <div id="noprocesses" class="clearfix"></div>

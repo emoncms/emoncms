@@ -106,7 +106,7 @@ load_css("Modules/feed/Views/feed_view.css");
         <button class="btn" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" v-model="filterText" :class="{hide: selectedFeedCount > 0}" placeholder="<?php echo tr('Filter feeds') ?>">
+        <input type="text" name="filter" id="filter" v-model="filterText" v-show="selectedFeedCount === 0" placeholder="<?php echo tr('Filter feeds') ?>">
     </div>
 
 <!-- Vue.js Feed List Component -->
