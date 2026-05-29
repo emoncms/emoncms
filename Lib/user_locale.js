@@ -16,7 +16,8 @@
     }
     // match supported locales with momentjs file names
     user.locale = momentjs_locales.hasOwnProperty(user.lang) ? momentjs_locales[user.lang] : 'en-gb'
-    // load the moment js locale file for the user's language
+    // load the moment js locale file for the user's language (only if moment.js is present)
+    if (typeof moment === 'undefined') return;
     var script = document.createElement('script');
     script.src = path + "Lib/momentjs-locales/%s.js".replace("%s", user.locale);
     script.id = '__user_loaded_locale';

@@ -21,9 +21,10 @@ var argtypes = {
     5: { name: "Schedule", cssClass: 'label-warning', title: '{longText}: {schedule.name}' }
 };
 
-var process_vue = new Vue({
-    el: '#process_vue',
-    data: {
+var process_vue = Vue.createApp({
+    data: function () {
+        return {
+            ProcessArg: ProcessArg,
 
         context_type: 0,
         has_redis: 0, // Flag to indicate if Redis is available (1) or not (0)
@@ -63,8 +64,9 @@ var process_vue = new Vue({
 
         init_done: 4, // Counter for initialization progress
 
-        add_edit_mode: 'add', // Mode of the process list (add or edit)
-        edit_index: -1, // Index of the process being edited (if any)
+            add_edit_mode: 'add', // Mode of the process list (add or edit)
+            edit_index: -1, // Index of the process being edited (if any)
+        };
     },
 
     methods: {
@@ -120,7 +122,7 @@ var process_vue = new Vue({
             }
 
             // Fetch the processes that are relevant to the context type
-            Vue.set(process_vue, 'context_only_processes_by_group', process_api.by_group(process_api.filter_for_context(this.processes_by_key, this.context_type)));
+            this.context_only_processes_by_group = process_api.by_group(process_api.filter_for_context(this.processes_by_key, this.context_type));
 
             this.processSelectChange(); // Trigger the process select change to update the UI
             // this.scrollto($('#processlist-ui'));
@@ -249,7 +251,7 @@ var process_vue = new Vue({
                         args[i].new_feed_table_name = ''; // Default feed table name
                     }
                 }
-                Vue.set(process_vue, 'args', args);
+                this.args = args;
                 return;
             }
 
@@ -309,7 +311,25 @@ var process_vue = new Vue({
             }
 
             // Set the Vue args data
-            Vue.set(process_vue, 'args', args);
+            this.args = args;
+        },
+
+        lastValueFormat: function (value) {
+            if (value === undefined || value === null || value === '') return '-';
+
+            // if not a number, return as is
+            if (isNaN(value)) return value;
+
+            // if less than 30 return 2 dp
+            // if less than 1000 return 1 dp
+            // if greater than 1000 return 0 dp
+            if (value < 30) {
+                return parseFloat(value).toFixed(2);
+            } else if (value < 1000) {
+                return parseFloat(value).toFixed(1);
+            } else {
+                return parseFloat(value).toFixed(0);
+            }
         },
 
         // Handles the process add action
@@ -653,53 +673,56 @@ var process_vue = new Vue({
             }
             return badges;
         }
-    },
-    filters: {
-        lastValueFormat: function (value) {
-            if (value === undefined || value === null || value === '') return '-';
-
-            // if not a number, return as is
-            if (isNaN(value)) return value;
-
-            // if less than 30 return 2 dp
-            // if less than 1000 return 1 dp
-            // if greater than 1000 return 0 dp
-            if (value < 30) {
-                return parseFloat(value).toFixed(2);
-            } else if (value < 1000) {
-                return parseFloat(value).toFixed(1);
-            } else {
-                return parseFloat(value).toFixed(0);
-            }
-        }
     }
-});
+}).mount('#process_vue');
 
 // Fetch the process list from the server
 process_api.list(function (processes) {
     // Store the processes in the Vue instance
-    Vue.set(process_vue, 'processes_by_key', processes);
+    process_vue.processes_by_key = processes;
     process_vue.initprogress();
 });
 
 // Fetch the feeds from the server and organize them by tag and ID
 feed.list(function (feeds) {
-    Vue.set(process_vue, 'feeds_by_tag', feed.by_tag(feeds));
-    Vue.set(process_vue, 'feeds_by_id', feed.by_id(feeds));
+    process_vue.feeds_by_tag = feed.by_tag(feeds);
+    process_vue.feeds_by_id = feed.by_id(feeds);
 
     process_vue.initprogress();
 });
 
 // Schedule Select List
 $.ajax({
-    url: path + "schedule/list.json", dataType: 'json', async: true, success: function (result) {
-        // Schedule list by ID
-        var schedules = {};
-        for (z in result) {
-            schedules[result[z].id] = result[z];
+    url: path + "schedule/list.json",
+    dataType: 'json',
+    async: true,
+    success: function (result) {
+        // If schedule module is missing, API can return:
+        // {"success":false,"message":"406 Not Acceptable. Route not found"}
+        if (result && result.success === false) {
+            process_vue.schedules = {};
+            return;
         }
 
-        Vue.set(process_vue, 'schedules', schedules);
+        // Schedule list by ID
+        var schedules = {};
+        if (Array.isArray(result)) {
+            for (let z = 0; z < result.length; z++) {
+                schedules[result[z].id] = result[z];
+            }
+        }
+
+        process_vue.schedules = schedules;
+    },
+    error: function (xhr) {
+        // Gracefully continue when schedule route/module is unavailable.
+        process_vue.schedules = {};
+        if (!xhr || xhr.status !== 406) {
+            console.warn('Failed to load schedules');
+        }
+    },
+    complete: function () {
+        // Continue app initialization regardless of schedule availability.
         process_vue.initprogress();
     }
 });
@@ -714,7 +737,7 @@ $.ajax({
         inputs.forEach(input => {
             inputs_by_id[input.id] = input;
         });
-        Vue.set(process_vue, 'inputs_by_id', inputs_by_id);
+        process_vue.inputs_by_id = inputs_by_id;
 
         // Input list by node
         let inputs_by_node = {};
@@ -723,8 +746,8 @@ $.ajax({
             if (!inputs_by_node[node]) inputs_by_node[node] = [];
             inputs_by_node[node].push(input);
         });
-        Vue.set(process_vue, 'inputs', inputs);
-        Vue.set(process_vue, 'inputs_by_node', inputs_by_node);
+        process_vue.inputs = inputs;
+        process_vue.inputs_by_node = inputs_by_node;
         process_vue.initprogress();
     }
 });

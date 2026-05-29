@@ -223,7 +223,8 @@ class SystemInfoModel
 
     private function parseMeminfo(): array
     {
-        $raw = file_get_contents('/proc/meminfo') ?: '';
+        $raw = is_readable('/proc/meminfo') ? file_get_contents('/proc/meminfo') : '';
+        if ($raw === false) $raw = '';
         $mem = [];
         foreach (explode("\n", $raw) as $line) {
             if (preg_match('/^(\w+):\s+(\d+)/', $line, $m)) {

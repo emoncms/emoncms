@@ -1,8 +1,9 @@
 <?php 
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path;
+load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+
 ?>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <h3><?php echo tr('Components'); ?></h3>
 
@@ -29,7 +30,7 @@ global $path;
       <th><?php echo tr('Branch'); ?></th>
       <th></th>
     </tr>
-    <tr v-for="item, key in components">
+    <tr v-for="(item, key) in components" :key="key">
       <td>{{ item.name }}<br>
         <span style="font-size:12px"><b><?php echo tr('URL:'); ?></b> <a :href="item.url">{{ item.url }}</a></span><br>
         <span style="font-size:12px"><b><?php echo tr('Installed path:'); ?></b> {{ item.path }}</span>
@@ -42,7 +43,7 @@ global $path;
       </td>
       <td v-if="item.local_changes==''">
         <select v-model="item.branch" @change="switch_branch(key)">
-          <option v-for="branch in item.branches_available">{{ branch }}</option>
+          <option v-for="branch in item.branches_available" :key="branch">{{ branch }}</option>
         </select>
       </td>
       <td v-else>{{ item.branch }}</td>
@@ -57,12 +58,13 @@ var components = <?php echo json_encode($components); ?>;
 
 var log_end = "";
 
-var app = new Vue({
-    el: '#app',
-    data: {
-        all_custom: false,
-        custom_branch: "",
-        components: components
+var app = Vue.createApp({
+    data() {
+        return {
+            all_custom: false,
+            custom_branch: "",
+            components: components
+        };
     },
     methods: {
         switch_branch: function(name) {
@@ -79,7 +81,7 @@ var app = new Vue({
             update_all_components(branch)
         }
     }
-});
+}).mount('#app');
 
 function component_update(name,branch) {
     $.ajax({                                      

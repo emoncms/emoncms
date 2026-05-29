@@ -4,9 +4,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- IMPORT DATA                                                                                                                                    -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="importDataModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="importDataModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="importDataModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="importDataModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="importDataModalLabel"><?php echo tr('Import Data'); ?></h3>
     </div>
     <div class="modal-body">

@@ -2,7 +2,10 @@
 /**
  * Downsample modal
  */
-$(".feed-downsample").click(function(){
+function openDownsampleModal() {
+
+    console.log('openDownsampleModal called');
+
     $('#downsampleModal').modal('show');
     $("#downsample-confirm").show();
     $(".downsample-options").show();
@@ -13,8 +16,8 @@ $(".feed-downsample").click(function(){
     // populate downsample-feeds table 
     var interval_max = 0;
     var out = "";
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
             out += "<tr>";
             out += "<td>"+feeds[feedid].tag+"</td>";
             out += "<td>"+feeds[feedid].name+"</td>";
@@ -51,10 +54,10 @@ $(".feed-downsample").click(function(){
             $("#downsample-interval option[value='300']").prop('selected', true);
         }
     });
-});
+}
 
 // downsample confirm button 
-$("#downsample-confirm").click(function(){
+$("#downsample-confirm").on('click', function(){
     if( confirm("This action is irreversible. Are you sure you want to downsample?") == true) {
         var interval = $("#downsample-interval").val();
 
@@ -63,8 +66,8 @@ $("#downsample-confirm").click(function(){
 
 
         var processes = [];
-        for (var feedid in selected_feeds) {
-            if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+        for (var feedid in feedApp.selectedFeeds) {
+            if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
                 processes.push({
                     feed: feedid,
                     new_interval: interval,
@@ -92,8 +95,8 @@ $("#downsample-confirm").click(function(){
                     if (count) {
 
                         var out = "";
-                        for (var feedid in selected_feeds) {
-                            if (selected_feeds[feedid] == true && feeds[feedid].engine == 5) {
+                        for (var feedid in feedApp.selectedFeeds) {
+                            if (feedApp.selectedFeeds[feedid] == true && feeds[feedid].engine == 5) {
                                 out += "<tr>";
                                 out += "<td>"+feeds[feedid].tag+"</td>";
                                 out += "<td>"+feeds[feedid].name+"</td>";

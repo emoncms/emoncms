@@ -1,13 +1,19 @@
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
-$(".feed-download").click(function(){
+function isNumeric(value) {
+    return value !== null && value !== '' && Number.isFinite(Number(value));
+}
+
+
+
+function openFeedExportModal(){
     $("#export-average").parent().hide();
     $("#export-average").data("enabled",0);
     
     var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) {
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid]==true) {
             ids.push(parseInt(feedid));
         }
     }
@@ -36,32 +42,67 @@ $(".feed-download").click(function(){
     calculate_download_size(ids.length);
     
     $('#feedExportModal').modal('show');
+
+    // Initialise Bootstrap 2 datetimepickers once
+    var pickerOptions = { pickDate: true, pickTime: true, pickSeconds: true, format: 'yyyy-MM-dd hh:mm:ss' };
+    if (!$('#export-start-dtp').data('datetimepicker')) {
+        $('#export-start-dtp').datetimepicker(pickerOptions);
+        $('#export-start-dtp').on('changeDate', function(e) {
+            if (!e.date) return;
+            var endDate = getExportDate($('#export-end'));
+            if (endDate && e.date > endDate) {
+                setExportDate($('#export-end'), e.date);
+            }
+            calculate_download_size($("#export").attr('feedcount'));
+        });
+    }
+    if (!$('#export-end-dtp').data('datetimepicker')) {
+        $('#export-end-dtp').datetimepicker(pickerOptions);
+        $('#export-end-dtp').on('changeDate', function(e) {
+            if (!e.date) return;
+            var startDate = getExportDate($('#export-start'));
+            if (startDate && e.date < startDate) {
+                setExportDate($('#export-start'), e.date);
+            }
+            calculate_download_size($("#export").attr('feedcount'));
+        });
+    }
+}
+
+function getExportDate($input) {
+    return ecDateTime.parseYmdHms($input.val());
+}
+
+function setExportDate($input, date) {
+    var value = ecDateTime.formatYmdHms(date);
+    $input.val(value);
+    var picker = $input.closest('.input-append.date').data('datetimepicker');
+    if (picker) picker.setValue(value);
+}
+
+var now = new Date();
+var today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0);
+setExportDate($('#export-start'), today);
+setExportDate($('#export-end'), today);
+
+$('#export-start').on('change input', function() {
+    var startDate = getExportDate($('#export-start'));
+    var endDate = getExportDate($('#export-end'));
+
+    if (startDate && endDate && startDate > endDate) {
+        setExportDate($('#export-end'), startDate);
+    }
+    calculate_download_size($("#export").attr('feedcount'));
 });
 
-$('#datetimepicker1').datetimepicker({
-    language: 'en-EN'
-});
+$('#export-end').on('change input', function() {
+    var startDate = getExportDate($('#export-start'));
+    var endDate = getExportDate($('#export-end'));
 
-$('#datetimepicker2').datetimepicker({
-    language: 'en-EN',
-    useCurrent: false //Important! See issue #1075
-});
-
-now = new Date();
-today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 00, 00);
-var picker1 = $('#datetimepicker1').data('datetimepicker');
-var picker2 = $('#datetimepicker2').data('datetimepicker');
-picker1.setLocalDate(today);
-picker2.setLocalDate(today);
-picker1.setEndDate(today);
-picker2.setStartDate(today);
-
-$('#datetimepicker1').on("changeDate", function (e) {
-    $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
-});
-
-$('#datetimepicker2').on("changeDate", function (e) {
-    $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
+    if (startDate && endDate && endDate < startDate) {
+        setExportDate($('#export-start'), endDate);
+    }
+    calculate_download_size($("#export").attr('feedcount'));
 });
 
 $('#export-interval').on('change', function(e) {
@@ -78,15 +119,11 @@ $('#export-interval, #export-timeformat').on('change', function(e) {
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
-$('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
-    calculate_download_size($("#export").attr('feedcount')); 
-});
-
-$("#export").click(function()
+$("#export").on('click', function()
 {
     var ids = [];
-    for (var feedid in selected_feeds) {
-        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+    for (var feedid in feedApp.selectedFeeds) {
+        if (feedApp.selectedFeeds[feedid]==true) ids.push(parseInt(feedid));
     }
 
     var export_start = parse_timepicker_time($("#export-start").val());
@@ -147,8 +184,8 @@ function calculate_download_size(feedcount){
     } else if (export_interval=="original") {
         // Get interval from meta data if available
         var feedid = false;
-        for (feedid in selected_feeds) {
-            if (selected_feeds[feedid]==true) break;
+        for (feedid in feedApp.selectedFeeds) {
+            if (feedApp.selectedFeeds[feedid]==true) break;
         }
         if (feeds[feedid].interval!=undefined) {
             export_interval = feeds[feedid].interval;
@@ -161,7 +198,7 @@ function calculate_download_size(feedcount){
     var export_data_size = 7;                                                         // avg bytes per data
     
     var downloadsize = 0;
-    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
+    if (!(!isNumeric(export_start) || !isNumeric(export_end) || !isNumeric(export_interval) || export_start > export_end )) {
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
     
@@ -179,14 +216,5 @@ function calculate_download_size(feedcount){
 }
 
 function parse_timepicker_time(timestr){
-    var tmp = timestr.split(" ");
-    if (tmp.length!=2) return false;
-
-    var date = tmp[0].split("/");
-    if (date.length!=3) return false;
-
-    var time = tmp[1].split(":");
-    if (time.length!=3) return false;
-
-    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+    return ecDateTime.toUnixSeconds(timestr);
 }

@@ -1,5 +1,8 @@
-<?php global $path; ?>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+<?php 
+defined('EMONCMS_EXEC') or die('Restricted access');
+global $path; 
+load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+?>
 <script src="<?php echo $path; ?>Modules/admin/serial/serial_config_lib/serial_config_core.js"></script>
 <link rel="stylesheet" href="<?php echo $path ?>Modules/admin/static/admin_styles.css?v=1">
 <style>
@@ -50,9 +53,10 @@
     const log = document.getElementById("log");
     var buffer = "";
 
-    var app = new Vue({
-        el: '#app',
-        data: Object.assign({}, serialConfigData),
+    var app = Vue.createApp({
+        data() {
+            return Object.assign({}, serialConfigData);
+        },
         methods: Object.assign({}, serialConfigMethods, {
             start: function() {
                 $("#log").html("");
@@ -93,7 +97,7 @@
                 });
             }
         })
-    });
+    }).mount('#app');
 
     populate_channels(6);
 

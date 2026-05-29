@@ -1,0 +1,87 @@
+/*
+ * Feed list grid-specific columns.
+ * Shared grid container styles live in Theme/css/group-list.css (.group-list).
+ * Column visibility is controlled dynamically by ResizeObserver via data-hide-* attributes.
+ */
+
+/* ── Feed controls toolbar ───────────────────────────────────────── */
+.feed-controls-sentinel {
+    height: 0;
+    visibility: hidden;
+}
+.feed-controls {
+    position: sticky;
+    top: 46px;
+    z-index: 100;
+    background: #fff;
+    padding: 6px 0;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.feed-controls.is-sticky {
+    background: transparent;
+    box-shadow: none;
+}
+.feed-controls.is-sticky::before {
+    content: '';
+    position: fixed;
+    top: 46px;
+    left: 0;
+    width: 100vw;
+    height: 44px;
+    background: #209ed3;
+    z-index: -1;
+}
+.feed-controls .btn {
+    margin-right: 4px;
+}
+#filter {
+    float: right;
+}
+
+/* ── Engine badges ───────────────────────────────────────────────── */
+.engine-badge {
+    display: inline-block;
+    padding: 1px 5px;
+    font-size: 11px;
+    font-weight: bold;
+    border-radius: 3px;
+    background: #e0e0e0;
+    color: #333;
+    white-space: nowrap;
+}
+.engine-fixed    { background: #d9edf7; color: #31708f; }
+.engine-variable { background: #dff0d8; color: #3c763d; }
+.engine-mysql    { background: #fcf8e3; color: #8a6d3b; }
+.engine-virtual  { background: #f5e6ff; color: #7b3fa0; }
+.engine-memory   { background: #fde0e0; color: #a94442; }
+.engine-redis    { background: #ffe8d6; color: #b05000; }
+.interval-sep { display: inline-block; width: 3px; }
+.interval-tag { font-size: 10px; opacity: 0.8; }
+
+
+.text-sm   { font-size: 11px; }
+
+.feed-list-grid {
+    grid-template-columns: 40px max-content max-content max-content max-content max-content 1fr max-content max-content;
+}
+
+/* ── Dynamic column hiding (driven by ResizeObserver in feed_list.js) ── */
+.feed-list-grid[data-hide-size]    [data-col="size"]    { display: none; }
+.feed-list-grid[data-hide-engine]  [data-col="engine"]  { display: none; }
+.feed-list-grid[data-hide-public]  [data-col="public"]  { display: none; }
+.feed-list-grid[data-hide-process] [data-col="process"] { display: none; }
+.feed-list-grid[data-hide-value]   [data-col="value"]   { display: none; }
+.feed-list-grid[data-hide-updated] [data-col="updated"] { display: none; }
+
+/* ── Explicit column placement (keeps cells anchored when siblings are hidden) ── */
+.feed-list-grid [data-col="select"]  { grid-column: 1; }
+.feed-list-grid [data-col="name"]    { grid-column: 2; }
+.feed-list-grid [data-col="public"]  { grid-column: 3; }
+.feed-list-grid [data-col="engine"]  { grid-column: 4; }
+.feed-list-grid [data-col="size"]    { grid-column: 5; }
+.feed-list-grid [data-col="process"] { grid-column: 6; }
+.feed-list-grid [data-col="spacer"]  { grid-column: 7; }
+.feed-list-grid [data-col="value"]   { grid-column: 8; }
+.feed-list-grid [data-col="updated"] { grid-column: 9; }
+

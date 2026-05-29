@@ -1,0 +1,157 @@
+/* ==========================================================================
+   GROUP LIST — Collapsible subgrid grouped data list
+   Styling adapted from 7.html to Bootstrap 2 flat colours.
+   Use for: feed list, input list, or any grouped node/tag UI.
+   ========================================================================== */
+
+/* ── 1. Outer grid container ─────────────────────────────────────── */
+.group-list {
+    display: grid;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0;
+}
+
+/* ── 2. Per-group subgrid wrapper ────────────────────────────────── */
+.group-list-group {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+}
+
+/* ── 3. Group header row ─────────────────────────────────────────── */
+.group-list-header {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 41px;
+    cursor: pointer;
+    position: relative;
+    padding: 0;
+    gap: 0;
+    background: #ddd;
+    user-select: none;
+    border-bottom: 1px solid #fff;
+    transition: background-color 0.15s ease-in-out;
+}
+.group-list-header:hover {
+    background: #e3e3e3;
+}
+
+/* Header node/tag name */
+.group-list-header .group-list-name {
+    font-weight: bold;
+    font-size: 13px;
+    color: #333;
+}
+
+/* ── 4. Collapsible rows wrapper (accordion outer) ───────────────── */
+.group-list-rows {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.35s ease;
+}
+.group-list-rows.is-expanded { grid-template-rows: 1fr; }
+
+/* ── 5. Inner wrapper — required for grid-template-rows animation ── */
+.group-list-rows-inner {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    min-height: 0;
+}
+
+/* ── 6. Individual data row ──────────────────────────────────────── */
+.group-list-row {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+    align-items: center;
+    min-height: 41px;
+    cursor: pointer;
+    position: relative;
+    border-bottom: 1px solid #fff;
+    background: #f0f0f0;
+    color: #333;
+    transition: background-color 0.1s ease;
+}
+.group-list-row:hover { background-color: #f5f5f5; }
+
+/* Left accent strip — scales in on hover */
+.group-list-row::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0;
+    width: 3px; height: 100%;
+    background-color: #44b3e2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.2s ease-out;
+}
+.group-list-row:hover::before { transform: scaleX(1); }
+
+/* Selected row */
+.group-list-row.selected         { background-color: #d9edf7; }
+.group-list-row.selected::before { transform: scaleX(1); }
+.group-list-row.selected:hover   { background-color: #c4e3f3; }
+
+/* ── 7. Right-side status colour stripe ──────────────────────────── */
+.group-list-header::after,
+.group-list-row::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0;
+    width: 4px; height: 100%;
+    background-color: var(--status-color, #ccc);
+}
+
+/* ── 8. Cell ─────────────────────────────────────────────────────── */
+.group-list-cell {
+    padding: 6px 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    min-width: 0;
+}
+
+/* ── 9. Inline status indicator bar (inside updated cell) ────────── */
+.group-list-indicator {
+    display: inline-block;
+    width: 4px;
+    height: 1.4em;
+    background-color: var(--status-color, #ccc);
+    flex-shrink: 0;
+    margin-right: 1px;
+    vertical-align: middle;
+}
+
+/* ── 10. Value cell styling ──────────────────────────────────────── */
+.group-list-value {
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* ── 11. Chevron indicator in header select cell ─────────────────── */
+.group-list-header [data-col="select"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.group-list-chevron {
+    display: block;
+    width: 6px; height: 6px;
+    border-right: 2px solid #666;
+    border-top:   2px solid #666;
+    transform: rotate(45deg);
+    transition: transform 0.35s ease;
+    flex-shrink: 0;
+}
+/* Rotate chevron when node is expanded (header does NOT have .collapsed) */
+.group-list-header:not(.collapsed) .group-list-chevron {
+    transform: rotate(135deg);
+}

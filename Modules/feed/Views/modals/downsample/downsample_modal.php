@@ -4,9 +4,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- DOWN SAMPLE MODAL (list selected feeds and their intervals, enter new interval below                                                           -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
-<div id="downsampleModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="downsampleModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="downsampleModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="downsampleModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3 id="downsampleModalLabel"><?php echo tr('Downsample feeds'); ?></h3>
     </div>
     <div class="modal-body">

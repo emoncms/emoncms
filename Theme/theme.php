@@ -57,16 +57,17 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     // Consider replacing this with esbuild bundler (merge + minify) in the future
     load_css("Lib/bootstrap/css/bootstrap.min.css");
     load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
-    load_css("Theme/emoncms-base.css");
-    load_css("Lib/menu/menu.css");
+    load_css("Theme/css/emoncms-base.css");
+    load_css("Theme/css/autocomplete.css");
     load_css("Theme/css/card.css");
+    load_css("Theme/css/group-list.css");
+    load_css("Lib/menu/menu.css");
 
     // Menu Translations
     include 'Lib/menu/menu_langjs.php';
 
     // The main 3rd party JS libraries
     load_js("Lib/jquery-3.6.0.min.js");
-    load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
     // Menu and translations
     load_js("Lib/menu/menu.js");
