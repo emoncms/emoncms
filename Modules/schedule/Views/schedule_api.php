@@ -2,9 +2,6 @@
 <?php
     load_language_files(dirname(__DIR__).'/locale', "schedule_messages");
 ?>
-<style>
-  a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
-</style>
 
 <h2><?php echo ctx_tr('schedule_messages','Schedule API'); ?></h2>
 <h3><?php echo ctx_tr('schedule_messages','Apikey authentication'); ?></h3>
@@ -38,44 +35,3 @@
     <tr><td><?php echo ctx_tr('schedule_messages','Update schedule'); ?></td><td><a href="<?php echo $path; ?>schedule/set.json?id=0&fields={%22expression%22:%22Mon-Fri|00:00-23:59%22}"><?php echo $path; ?>schedule/set.json?id=0&fields={"expression":"Mon-Fri|00:00-23:59"}</a></td></tr>
     <tr><td><?php echo ctx_tr('schedule_messages','Test the expression'); ?></td><td><a href="<?php echo $path; ?>schedule/test.json?id=1"><?php echo $path; ?>schedule/test.json?id=1</a></td></tr>
 </table>
-
-<a class="anchor" id="expression"></a> 
-<h3><?php echo ctx_tr('schedule_messages','Expression documentation'); ?></h3>
-<p><?php echo ctx_tr('schedule_messages','Expression is used to specify active range.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Granularity is day light saving time, month, day, week day, hour and minute.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Expression is built mixing basic blocks with operation characters. An hour is always required. All other basic blocks are optional and can be mixed on the same expression to build complex schedule rules. Ranges must be ordered older-newer. White spaces are ignored and can be ommited.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Timezone of expression is the same of the user account that created or edited it. If the expression is public, timezones conversions are automatic taken in account between owner and user.'); ?></p>
-<p><b><?php echo ctx_tr('schedule_messages','Basic blocks:'); ?></b></p>
-<pre>
-           <b>Summer</b> or <b>Winter</b> =>  Day light saving time period
-                      <b>mm/dd</b> =>  Month and day in numeric format with leading zero
-<b>Mon Tue Wed Thu Fri Sat Sun</b> =>  Week day 3 letters english
-                      <b>hh:mm</b> =>  Hour in 24hrs format and minute with leading zero
-</pre>
-<p><b><?php echo ctx_tr('schedule_messages','Operation characters:'); ?></b></p>
-<pre>
-                         <b>-</b> => Range
-                         <b>,</b> => Addition
-                         <b>|</b> => Granularity separator
-</pre>
-
-<p><b><?php echo ctx_tr('schedule_messages','Expression examples:'); ?></b></p>
-<pre>
-'12:00-23:59'
-'Mon-Fri | 00:00-23:59'
-'Summer | Mon-Fri | 00:00-23:59'
-'Winter | Mon-Fri | 00:00-23:59'
-'Winter | Mon-Fri | 09:00-09:59, Summer | Mon-Fri | 08:00-08:59'
-'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
-'12/25 | 00:00-23:59'
-'12/01 - 12/31 | Sat,Sun | 09:00-11:59, 13:00-19:59'
-'01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:14, 18:00-22:29, Thu | 18:00-22:44'
-
-'Mon-Fri|00:00-06:59, Sat|00:00-09:29,13:00-18:29,22:00-23:59, Sun|00:00-23:59'    <- Weekly Winter Empty 
-'Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Sat|09:30-12:59,18:30-21:59'         <- Weekly Winter Full
-'Mon-Fri|09:30-11:59,18:30-20:59'                                                  <- Weekly Winter Top
-       
-'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty 
-'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
-'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
-</pre>

@@ -31,8 +31,7 @@ function schedule_controller()
             if ($schedule->exist($scheduleid)) // if the feed exists
             {
                 $scheduleget = $schedule->get($scheduleid);
-                // if public or belongs to user
-                if ($session['read'] && ($scheduleget['public'] || ($session['userid']>0 && $scheduleget['userid']==$session['userid'])))
+                if ($session['read'] && $session['userid']>0 && $scheduleget['userid']==$session['userid'])
                 {
                     if ($route->action == "get") $result = $scheduleget;
                     if ($route->action == "expression") $result = $schedule->get_expression($scheduleid);

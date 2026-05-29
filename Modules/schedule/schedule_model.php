@@ -57,9 +57,11 @@ class Schedule
         $userid = (int) $userid;
         $schedules = array();
 
-        $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `expression`, `timezone`, `public`, CASE `userid` WHEN '$userid' THEN '1' ELSE '0' END AS `own` FROM schedule WHERE (userid = '$userid' OR public = '1')");
+        $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `expression`, `timezone` FROM schedule WHERE userid = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
+            $row['id'] = (int) $row['id'];
+            $row['userid'] = (int) $row['userid'];
             $schedules[] = $row;
         }
         return $schedules;
@@ -88,7 +90,7 @@ class Schedule
     public function create($userid)
     {
         $userid = intval($userid);
-        $stmt = $this->mysqli->prepare("INSERT INTO schedule (`userid`,`name`,`expression`,`timezone`, `public`) VALUES (?,?,?,?,0)");
+        $stmt = $this->mysqli->prepare("INSERT INTO schedule (`userid`,`name`,`expression`,`timezone`) VALUES (?,?,?,?)");
         $name = 'New Schedule';
         $expression = '';
         $timezone = $this->timezone;
@@ -122,15 +124,6 @@ class Schedule
             if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in schedule name');
             $stmt = $this->mysqli->prepare("UPDATE schedule SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
-            if ($stmt->execute()) $success = true;
-            $stmt->close();
-        }
-
-        if (isset($fields->public)) {
-            $public = (int) $fields->public;
-            if ($public>0) $public = 1;
-            $stmt = $this->mysqli->prepare("UPDATE schedule SET public = ? WHERE id = ?");
-            $stmt->bind_param("ii",$public,$id);
             if ($stmt->execute()) $success = true;
             $stmt->close();
         }
