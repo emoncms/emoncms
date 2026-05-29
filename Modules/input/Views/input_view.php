@@ -161,6 +161,16 @@ load_css("Modules/input/Views/input_view.css");
 (function() {
     var sentinel = document.querySelector('.input-controls-sentinel');
     if (!sentinel || !('IntersectionObserver' in window)) return;
+
+    // Sync --feed-top to navbar height (0 when hidden on mobile scroll)
+    var nav = document.querySelector('.menu-top');
+    function updateFeedTop() {
+        document.documentElement.style.setProperty('--feed-top', (nav && !nav.classList.contains('menu-top-hide') ? nav.offsetHeight : 0) + 'px');
+    }
+    if (nav) new MutationObserver(updateFeedTop).observe(nav, { attributes: true, attributeFilter: ['class'] });
+    updateFeedTop();
+
+    // Toggle is-sticky class when controls scroll behind the navbar
     new IntersectionObserver(function(entries) {
         var controls = document.querySelector('.input-controls');
         if (controls) controls.classList.toggle('is-sticky', !entries[0].isIntersecting);

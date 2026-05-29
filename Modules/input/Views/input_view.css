@@ -10,23 +10,24 @@ input[type="checkbox"] { margin:0px; }
 .input-controls-sentinel { height: 0; visibility: hidden; }
 .input-controls {
     position: sticky;
-    top: 46px;
+    top: var(--feed-top, 46px);
     z-index: 100;
     background: #fff;
     padding: 6px 0;
     margin-bottom: 10px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, top 0.3s ease-out;
 }
 .input-controls.is-sticky { background: transparent; box-shadow: none; }
 .input-controls.is-sticky::before {
     content: '';
     position: fixed;
-    top: 46px;
+    top: var(--feed-top, 46px);
     left: 0;
     width: 100vw;
     height: 44px;
     background: #209ed3;
     z-index: -1;
+    transition: top 0.3s ease-out;
 }
 .input-controls .btn { margin-right: 4px; }
 #input-filter { float: right; }
