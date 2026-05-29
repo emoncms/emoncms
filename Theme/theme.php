@@ -15,7 +15,7 @@ load_language_files("Theme/locale", "theme_messages");
 
 $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
-$v = 42;
+$v = 55;
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -52,27 +52,29 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     var current_themesidebar = "dark";
     </script>
 
-    <?php 
+    <?php
 
     // Consider replacing this with esbuild bundler (merge + minify) in the future
+
+    // Main theme CSS
     load_css("Lib/bootstrap/css/bootstrap.min.css");
     load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
     load_css("Theme/css/emoncms-base.css");
-    load_css("Theme/css/autocomplete.css");
+    load_css("Theme/css/menu.css");
     load_css("Theme/css/card.css");
     load_css("Theme/css/group-list.css");
-    load_css("Lib/menu/menu.css");
+    load_css("Theme/css/autocomplete.css");
 
     // Menu Translations
-    include 'Lib/menu/menu_langjs.php';
+    include 'Theme/menu/menu_langjs.php';
 
     // The main 3rd party JS libraries
     load_js("Lib/jquery-3.6.0.min.js");
 
     // Menu and translations
-    load_js("Lib/menu/menu.js");
-    load_js("Lib/misc/gettext.js");
-    load_js("Lib/emoncms.js");
+    load_js("Theme/menu/menu.js");
+    load_js("Lib/js/gettext.js");
+    load_js("Theme/js/emoncms.js");
     ?>
 
     <?php echo $svg_icons; // THEME ICONS ?>
