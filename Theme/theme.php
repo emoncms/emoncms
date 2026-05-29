@@ -64,6 +64,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     load_css("Theme/css/card.css");
     load_css("Theme/css/group-list.css");
     load_css("Theme/css/autocomplete.css");
+    // Utility classes
+    load_css("Theme/css/bootstrap4-utils.css");
 
     // Menu Translations
     include 'Theme/menu/menu_langjs.php';
