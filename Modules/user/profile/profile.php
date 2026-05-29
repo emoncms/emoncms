@@ -10,14 +10,13 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path; $v=4;
+load_css("Modules/user/profile/profile.css");
+load_js("Modules/user/profile/md5.js");
+load_js("Lib/js/clipboard.js");
+load_js("Lib/js/qrcode.js");
+load_js("Modules/user/user.js");
+load_js("Lib/vue.min.js");
 ?>
-<link href="<?php echo $path; ?>Modules/user/profile/profile.css?v=<?php echo $v; ?>" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <div id="app" v-cloak>
   <h3><?php echo tr('My Account'); ?></h3>
@@ -261,4 +260,4 @@ var languages = <?php echo json_encode(get_available_languages_with_names()); ?>
 var translation_status = <?php echo json_encode(get_translation_status()); ?>;
 var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/profile.js?v=<?php echo $v; ?>"></script>
+<?php load_js("Modules/user/profile/profile.js"); ?>
