@@ -39,11 +39,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <meta name="twitter:description" content="Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data.">
         <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
-        <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+        <?php
+        load_css("Lib/bootstrap/css/bootstrap.min.css");
+        load_css("Theme/css/emoncms-base.css?v=".$v);
+        load_js("Lib/js/jquery-3.6.0.min.js");
+        load_js("Lib/js/gettext.js?v=".$v);
+        ?>
         
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>       
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
         <script>
         var current_themecolor = "<?php echo $settings["interface"]["themecolor"]; ?>";
         var current_themesidebar = "dark";
@@ -55,7 +57,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         var session_read = <?php echo $session['read']; ?>;    
         
         </script>
-        <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
+        <?php load_js("Theme/js/emoncms.js"); ?>
     </head>
     <body>
         <div>
