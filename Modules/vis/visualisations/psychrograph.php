@@ -25,7 +25,7 @@ var flot2='<script language="javascript" type="text/javascript" src="'+path+'Lib
 var flot3='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/jquery.flot.togglelegend.min.js"><\/script>';
 var flot4='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/jquery.flot.time.min.js"><\/script>';
 var flot5='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/jquery.flot.stack.min.js"><\/script>';
-var flot6='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/jquery.flot.canvas.js"><\/script>';
+var flot6='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/jquery.flot.canvas.min.js"><\/script>';
 var flot7='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/plugin/saveAsImage/lib/base64.js"><\/script>';
 var flot8='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/plugin/saveAsImage/lib/canvas2image.js"><\/script>';
 var flot9='<script language="javascript" type="text/javascript" src="'+path+'Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"><\/script>';
