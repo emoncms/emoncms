@@ -23,8 +23,8 @@
     --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
 
     /* -- Radii -- */
-    --radius-card:    0px;
-    --radius-control: 0px;
+    --radius-card:    4px;
+    --radius-control: 4px;
 
     color-scheme: dark;
 
