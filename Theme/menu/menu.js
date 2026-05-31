@@ -29,10 +29,9 @@ var menu = {
     // ------------------------------------------------------------------    
     init: function(obj,public_username) {
         menu.init_time = new Date().getTime()
-    
-        var q_parts = q.split("#");
-        q_parts = q.split("?");
-        q_parts = q_parts[0].split("/");
+
+        var q_base = q.split("#")[0].split("?")[0];
+        var q_parts = q_base.split("/");
         var controller = false; 
         if (public_username) {
             if (q_parts[1]!=undefined) controller = q_parts[0]+"/"+q_parts[1];
@@ -213,6 +212,14 @@ var menu = {
             menu.log("draw_l3: show_l3");
             menu.show_l3();
         }
+    },
+
+    has_l3: function (l1, l2) {
+        if (l1 && l2 && menu.obj[l1] && menu.obj[l1]['l2']!=undefined && menu.obj[l1]['l2'][l2]!=undefined && menu.obj[l1]['l2'][l2]['l3']!=undefined) {
+            return true;
+        }
+
+        return l1===menu.active_l1 && l2===menu.active_l2 && $(".menu-l3").children().not("ul").length>0;
     },
     
     hide_menu_top: function () {
@@ -433,7 +440,7 @@ var menu = {
                     menu.min_l2();
                     menu.auto_hide = true;
                     menu.draw_l2();
-                    if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                    if (menu.has_l3(menu.active_l1, menu.active_l2)) {
                         menu.show_l3();
                     }
                     else { 
@@ -445,7 +452,7 @@ var menu = {
                     // same l1 menu clicked
                     menu.auto_hide = false;
                     if (!menu.l2_visible) {
-                        if (item['l2'][menu.active_l2] != undefined && item['l2'][menu.active_l2]['l3']!=undefined) {
+                        if (menu.has_l3(menu.active_l1, menu.active_l2)) {
                             menu.log("l1 click: min_l2 & show_l3");
                             menu.min_l2();
                             menu.show_l3();
@@ -478,7 +485,7 @@ var menu = {
             // Set active class to current menu
             $(".menu-l2 li div[l2="+menu.active_l2+"]").addClass("active");
             // If no sub menu then menu item is a direct link
-            if (item['l3']!=undefined) {
+            if (menu.has_l3(menu.active_l1, menu.active_l2)) {
                 menu.mode = 'manual'
                 menu.auto_hide = false;
                 if (is_active && menu.active_l2 && !menu.l3_visible) {
@@ -537,12 +544,11 @@ var menu = {
             subaction: false
         }
         
-        var q_parts = q.split("#");
-        q_parts = q_parts[0].split("/");
+        var q_parts = q.split("#")[0].split("?")[0].split("/");
         
         if (q_parts[0]!=undefined) route.controller = q_parts[0];
-        if (q_parts[1]!=undefined) route.action = q_parts[0];
-        if (q_parts[2]!=undefined) route.subaction = q_parts[0];
+        if (q_parts[1]!=undefined) route.action = q_parts[1];
+        if (q_parts[2]!=undefined) route.subaction = q_parts[2];
                 
         return route
     },
