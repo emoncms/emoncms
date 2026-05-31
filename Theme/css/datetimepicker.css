@@ -1,0 +1,262 @@
+
+/* ---- DateTimePicker component ---- */
+.dtp-wrap {
+    position: relative;
+    display: inline-block;
+}
+.dtp-input-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+.dtp-input-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: stretch;
+}
+.dtp-input {
+    width: 155px;
+    cursor: text;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 20px;
+    height: 30px;
+    box-sizing: border-box;
+    color: var(--text-primary);
+}
+.dtp-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--focus-ring);
+}
+.dtp-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #000;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+.dtp-icon-btn:hover { color: #000; }
+
+.dtp-icon-btn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+.dtp-add-on {
+    margin-left: -1px;
+    min-width: 28px;
+    height: 30px;
+    padding: 0 6px;
+    line-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 4px 4px 0;
+    box-sizing: border-box;
+}
+
+/* Bootstrap uses .input-prepend .add-on; keep dtp add-on locked to input height */
+.input-prepend .dtp-add-on,
+.input-append .dtp-add-on {
+    height: 30px;
+    padding: 0 6px;
+    line-height: 20px;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* Connect flush with Bootstrap .input-prepend .add-on */
+.input-prepend .dtp-input {
+    margin-bottom: 0;
+    vertical-align: top;
+    border-left: none;
+    border-radius: 0;
+}
+
+.input-prepend .dtp-wrap,
+.input-prepend .dtp-input-wrap {
+    font-size: 14px;
+    vertical-align: top;
+}
+
+/* Keep DateTimePicker host aligned with Bootstrap input groups in any context */
+.input-prepend > date-time-picker,
+.input-prepend > .dtp-wrap,
+.input-append > date-time-picker,
+.input-append > .dtp-wrap {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.input-prepend > .add-on,
+.input-append > .add-on {
+    height: 30px;
+    line-height: 20px;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+}
+
+.input-prepend .dtp-input,
+.input-append .dtp-input {
+    height: 30px;
+    line-height: 20px;
+    box-sizing: border-box;
+}
+.dtp-popup {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    z-index: 9999;
+    background: var(--bg-card);
+    border: 1px solid var(--border-card);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    padding: 10px;
+    width: 240px;
+    user-select: none;
+}
+.dtp-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.dtp-nav {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-secondary);
+    padding: 0 6px;
+    line-height: 1;
+    border-radius: 4px;
+}
+.dtp-nav:hover { background: var(--bg-card-row-hover); }
+.dtp-month-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+.dtp-dow-row {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    margin-bottom: 2px;
+}
+.dtp-dow {
+    text-align: center;
+    font-size: 11px;
+    color: var(--border-strong);
+    font-weight: 600;
+    padding: 2px 0;
+}
+.dtp-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+.dtp-day {
+    text-align: center;
+    font-size: 12px;
+    padding: 5px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 4px;
+    color: var(--text-body);
+    line-height: 1;
+}
+.dtp-day:hover { background: var(--accent-bg); }
+.dtp-day--other { color: var(--border-strong); }
+.dtp-day--today { font-weight: 700; color: var(--accent); }
+.dtp-day--selected {
+    background: var(--accent) !important;
+    color: #fff !important;
+    font-weight: 600;
+}
+.dtp-time-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 10px 0 8px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+.dtp-time-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+.dtp-t-btn {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 9px;
+    color: var(--text-secondary);
+    padding: 1px 5px;
+    line-height: 1;
+}
+.dtp-t-btn:hover { background: var(--bg-card-row-hover); }
+.dtp-t-input {
+    width: 34px;
+    text-align: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 3px 2px;
+    color: var(--text-primary);
+}
+.dtp-colon {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
+}
+.dtp-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+.dtp-btn-now {
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: var(--bg-input);
+    cursor: pointer;
+    color: var(--text-secondary);
+}
+.dtp-btn-now:hover { background: var(--bg-card-row-hover); }
+.dtp-btn-apply {
+    flex: 1;
+    padding: 5px;
+    font-size: 12px;
+    border: none;
+    border-radius: 4px;
+    background: var(--accent);
+    color: #fff;
+    cursor: pointer;
+    font-weight: 600;
+}
+.dtp-btn-apply:hover { filter: brightness(0.85); }
