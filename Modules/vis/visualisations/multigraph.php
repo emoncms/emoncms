@@ -19,7 +19,12 @@ document.write('<!--[if IE]><script language="javascript" type="text/javascript"
 
 //srcScripts includes all the needed js libraries
 var srcScripts = [];
-srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.selection.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.touch.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.time.min.js");
+srcScripts.push(path+"Lib/flot/date.format.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.canvas.min.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
 srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
 srcScripts.push(path+"Modules/feed/feed.js?v=10");
