@@ -9,7 +9,7 @@
     _user.lang = "<?php echo $lang; ?>";
 </script>
 
-<?php load_js("Lib/user_locale.js"); ?>
+<?php load_js("Lib/js/user_locale.js"); ?>
 <script>
 // @todo: standardise these translations functions, also used in admin_main_view.php and input_view.php
 /**
