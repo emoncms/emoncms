@@ -139,7 +139,7 @@
     text-transform: uppercase;
     letter-spacing: 0.06em;
     border-bottom: 1px solid var(--border);
-    background-color: var(--bg-card-header);
+    background-color: #eee;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
