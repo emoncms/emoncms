@@ -11,7 +11,6 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 load_css("Modules/user/profile/profile.css");
-load_js("Modules/user/profile/md5.js");
 load_js("Lib/js/clipboard.js");
 load_js("Lib/js/qrcode.js");
 load_js("Modules/user/user.js");
@@ -95,7 +94,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
     <tr>
       <td class="muted"><?php echo tr('Gravatar'); ?></td>
       <td>
-        <img v-if="!edit.gravatar" style="border: 1px solid #ccc; padding:2px" :src="'https://www.gravatar.com/avatar/'+CryptoJS.MD5(user.gravatar)" />      
+        <img v-if="!edit.gravatar" style="border: 1px solid #ccc; padding:2px" :src="gravatarUrl" />      
         <div v-else class="input-append">
           <input type="text" style="width:220px" v-model="user.gravatar"/>
           <button class="btn" @click="save('gravatar')"><i class="icon-ok"></i></button>

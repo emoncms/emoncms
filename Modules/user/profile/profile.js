@@ -29,9 +29,33 @@ var app = Vue.createApp({
             current: "",
             new: "",
             repeat: ""
-        }
+        },
+        gravatarHash: ''
     }; },
+    computed: {
+        gravatarUrl: function() {
+            return 'https://www.gravatar.com/avatar/' + this.gravatarHash;
+        }
+    },
+    watch: {
+        'user.gravatar': function(val) {
+            this._updateGravatarHash(val);
+        }
+    },
+    mounted: function() {
+        this._updateGravatarHash(this.user.gravatar);
+    },
     methods: {
+        _updateGravatarHash: function(email) {
+            var self = this;
+            var normalized = (email || '').trim().toLowerCase();
+            var encoded = new TextEncoder().encode(normalized);
+            crypto.subtle.digest('SHA-256', encoded).then(function(buf) {
+                self.gravatarHash = Array.from(new Uint8Array(buf))
+                    .map(function(b) { return b.toString(16).padStart(2, '0'); })
+                    .join('');
+            });
+        },
         show_edit: function(key) {
             app.edit[key] = true;
         },
