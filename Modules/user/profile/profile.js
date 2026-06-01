@@ -8,9 +8,8 @@ $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, succ
     app.timezones = result;
 }});
 
-var app = new Vue({
-    el: '#app',
-    data: {
+var app = Vue.createApp({
+    data() { return {
         user: user_data,
         timezones: timezones,
         languages: languages,
@@ -31,7 +30,7 @@ var app = new Vue({
             new: "",
             repeat: ""
         }
-    },
+    }; },
     methods: {
         show_edit: function(key) {
             app.edit[key] = true;
@@ -131,7 +130,7 @@ var app = new Vue({
             $('#modalNewApikey').modal('show');
         }
     }
-});
+}).mount('#app');
 
 //QR COde Generation
 var urlCleaned = window.location.href.replace("user/view" ,"");

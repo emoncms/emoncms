@@ -15,7 +15,7 @@ load_js("Modules/user/profile/md5.js");
 load_js("Lib/js/clipboard.js");
 load_js("Lib/js/qrcode.js");
 load_js("Modules/user/user.js");
-load_js("Lib/vue.min.js");
+load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 ?>
 
 <div id="app" v-cloak>

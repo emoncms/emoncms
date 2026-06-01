@@ -27,7 +27,7 @@ if ($session['write']) {
 
 load_language_files("Lib/locale","lib_messages");
 ?>
-<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
+<?php load_js("Lib/js/vue.global.prod-3.5.22.min.js"); ?>
 <style>[v-cloak] { display: none; }</style>
 
 <h3><?php echo $title; ?></h3>
@@ -156,9 +156,8 @@ for (var i in api) {
 // ---------------------------------------------------------------------
 // Vue.js definition
 // ---------------------------------------------------------------------
-var app = new Vue({
-    el: '#app',
-    data: {
+var app = Vue.createApp({
+    data() { return {
         api:api,
         api_options: api_options,
         nodes: nodes,
@@ -166,7 +165,7 @@ var app = new Vue({
         selected_feed: selected_feed,
         auth_visible: false,
         public_userid: public_userid
-    },
+    }; },
     methods: {
        update: function() {
            build_url();
@@ -189,7 +188,7 @@ var app = new Vue({
        
        }
     }
-});
+}).mount('#app');
 
 // ---------------------------------------------------------------------
 // Build URL and get response
