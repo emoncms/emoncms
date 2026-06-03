@@ -215,7 +215,7 @@ var ScheduleExprBuilder = {
 
         parseExpression: function(expr) {
             var self = this;
-            var pieces = expr.split(',').map(function(p) { return p.trim(); }).filter(Boolean);
+            var pieces = expr.split(/,\s+/).map(function(p) { return p.trim(); }).filter(Boolean);
             var rules = [];
             var cur = [];
 
