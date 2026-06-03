@@ -89,6 +89,41 @@
             </div>
         </div>
     </div>
+
+    <div v-if="testResult !== null" class="modal show" tabindex="-1" role="dialog" style="display:block;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" @click="closeTest" aria-hidden="true">×</button>
+                    <h3>Test: {{ testResult.name }}</h3>
+                </div>
+                <div class="modal-body">
+                    <div style="text-align:center;padding:12px 0 20px;">
+                        <div :style="testResult.active ? 'color:#3a3' : 'color:#aaa'"
+                             style="font-size:26px;font-weight:bold;line-height:1.2;">
+                            {{ testResult.active ? '● Active' : '○ Inactive' }}
+                        </div>
+                        <div style="color:#999;font-size:12px;margin-top:4px;">at time of test</div>
+                    </div>
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:12px;color:#666;margin-bottom:4px;">Expression</div>
+                        <code style="display:block;padding:6px 8px;background:#f5f5f5;border:1px solid #e0e0e0;border-radius:3px;word-break:break-all;">{{ testResult.expression }}</code>
+                    </div>
+                    <div v-if="testResult.evaluatedAt" style="margin-bottom:12px;">
+                        <div style="font-size:12px;color:#666;margin-bottom:4px;">Evaluated at</div>
+                        <div style="font-size:13px;">{{ testResult.evaluatedAt }}</div>
+                    </div>
+                    <details style="margin-top:4px;">
+                        <summary style="cursor:pointer;font-size:12px;color:#888;user-select:none;">Debug output</summary>
+                        <pre style="font-size:11px;margin-top:8px;max-height:220px;overflow-y:auto;background:#f8f8f8;padding:8px;border:1px solid #e0e0e0;border-radius:3px;white-space:pre-wrap;word-break:break-word;">{{ testResult.debug }}</pre>
+                    </details>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @click="closeTest"><?php echo ctx_tr('schedule_messages','Close'); ?></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -409,6 +444,7 @@ var scheduleApp = Vue.createApp({
             editingId: null,
             editFields: { name: '', expression: '' },
             deleteTargetId: null,
+            testResult: null,
             loading: false,
             updater: null
         };
@@ -474,9 +510,22 @@ var scheduleApp = Vue.createApp({
             $.ajax({ url: path + "schedule/create.json", success: function(data) { self.update(); } });
         },
         testSchedule: function(s) {
-            console.log(s);
             var result = schedule.test(s.id);
-            alert("Schedule expression returned '" + result.result + "'.\n\nDetails:\n" + result.debug);
+            var lines = {};
+            var re = /^(\w+) =(.+)$/mg, m;
+            while ((m = re.exec(result.debug || '')) !== null) lines[m[1]] = m[2].trim();
+            this.testResult = {
+                name: s.name,
+                active: result.result,
+                expression: lines.Expression || s.expression,
+                evaluatedAt: lines.HrMin || '',
+                debug: result.debug || ''
+            };
+            this.startUpdater(0);
+        },
+        closeTest: function() {
+            this.testResult = null;
+            this.startUpdater(10000);
         }
     },
     mounted: function() {
