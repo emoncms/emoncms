@@ -7,58 +7,77 @@
     load_js("Modules/schedule/Views/schedule.js");
 ?>
 
+<style>
+.sb-wrap { font-size:13px; }
+.sb-rule { border:1px solid #ddd; padding:10px 12px; margin-bottom:8px; border-radius:4px; background:#fafafa; }
+.sb-rule-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+.sb-rule-header strong { font-size:12px; color:#555; text-transform:uppercase; letter-spacing:.04em; }
+.sb-row { display:flex; align-items:flex-start; margin-bottom:8px; gap:8px; }
+.sb-label { min-width:56px; color:#666; font-size:12px; padding-top:4px; flex-shrink:0; }
+.sb-day-btn { padding:2px 5px !important; font-size:12px !important; min-width:30px; margin:1px; line-height:1.4; }
+.sb-presets { margin-left:6px; }
+.sb-presets .btn { padding:2px 6px !important; font-size:11px !important; margin:1px; }
+.sb-hint { color:#aaa; font-size:11px; margin-left:6px; }
+.sb-preview { margin:8px 0 4px; padding:5px 8px; background:#f0f0f0; border-radius:3px; font-family:monospace; font-size:12px; word-break:break-all; color:#333; border:1px solid #e0e0e0; }
+.sb-add-rule { margin-bottom:4px; font-size:12px; padding:3px 8px !important; }
+.sb-mode-toggle { margin-top:6px; }
+.sb-time-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
+.sb-time-row input[type="time"] { width:115px; padding:3px 5px; font-size:13px; }
+.sb-time-remove { padding:1px 5px !important; font-size:12px !important; line-height:1.4; }
+</style>
+
 <div id="schedule-app">
 
     <a href="api" style="float:right"><?php echo ctx_tr('schedule_messages','Schedule API'); ?></a>
 
     <h3><?php echo ctx_tr('schedule_messages','Schedules'); ?></h3>
 
-    <details class="schedule-expr-details well" :open="loaded && !schedules.length">
-        <summary><b v-if="!schedules.length"><?php echo ctx_tr('schedule_messages','No schedules yet'); ?></b><b v-else><?php echo ctx_tr('schedule_messages','Expression reference'); ?></b></summary>
-        <div class="schedule-expr-body mt-3">
-            <div v-if="!schedules.length">
-                <p><?php echo ctx_tr('schedule_messages','A schedule defines an active time range using an expression — for example <b>Mon-Fri | 09:00-17:00</b> for weekday office hours, or <b>Summer | 00:00-23:59</b> for an entire season.'); ?></p>
-                <p><?php echo ctx_tr('schedule_messages','Once created, a schedule can be assigned to an Input or Feed Processlist to control when that process runs. Click <b>New schedule</b> below to get started.'); ?></p>
-                <hr style="border-color:inherit;opacity:0.4">
-            </div>
-            <p><?php echo ctx_tr('schedule_messages','Granularity is day light saving time, month, day, week day, hour and minute.'); ?></p>
-            <p><?php echo ctx_tr('schedule_messages','Expression is built mixing basic blocks with operation characters. An hour is always required. All other basic blocks are optional and can be mixed on the same expression to build complex schedule rules. Ranges must be ordered older-newer. White spaces are ignored and can be ommited.'); ?></p>
-            <p><?php echo ctx_tr('schedule_messages','Timezone of expression is the same as the user account that created or edited it.'); ?></p>
-            <p><b><?php echo ctx_tr('schedule_messages','Basic blocks:'); ?></b></p>
-            <pre>
-            <b>Summer</b> or <b>Winter</b> =>  Day light saving time period
-            <b>mm/dd</b> =>  Month and day in numeric format with leading zero
-            <b>Mon Tue Wed Thu Fri Sat Sun</b> =>  Week day 3 letters english
-            <b>hh:mm</b> =>  Hour in 24hrs format and minute with leading zero
-            </pre>
-            <p><b><?php echo ctx_tr('schedule_messages','Operation characters:'); ?></b></p>
-            <pre>
-            <b>-</b> => Range
-            <b>,</b> => Addition
-            <b>|</b> => Granularity separator
-            </pre>
-            <p><b><?php echo ctx_tr('schedule_messages','Expression examples:'); ?></b></p>
-            <pre>
-            '12:00-23:59'
-            'Mon-Fri | 00:00-23:59'
-            'Summer | Mon-Fri | 00:00-23:59'
-            'Winter | Mon-Fri | 00:00-23:59'
-            'Winter | Mon-Fri | 09:00-09:59, Summer | Mon-Fri | 08:00-08:59'
-            'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
-            '12/25 | 00:00-23:59'
-            '12/01 - 12/31 | Sat,Sun | 09:00-11:59, 13:00-19:59'
-            '01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:14, 18:00-22:29, Thu | 18:00-22:44'
+<details class="schedule-expr-details well" :open="loaded && !schedules.length">
+<summary><b v-if="!schedules.length"><?php echo ctx_tr('schedule_messages','No schedules yet'); ?></b><b v-else><?php echo ctx_tr('schedule_messages','Expression reference'); ?></b></summary>
+<div class="schedule-expr-body mt-3">
+<div v-if="!schedules.length">
+<p><?php echo ctx_tr('schedule_messages','A schedule defines an active time range using an expression — for example <b>Mon-Fri | 09:00-17:00</b> for weekday office hours, or <b>Summer | 00:00-23:59</b> for an entire season.'); ?></p>
+<p><?php echo ctx_tr('schedule_messages','Once created, a schedule can be assigned to an Input or Feed Processlist to control when that process runs. Click <b>New schedule</b> below to get started.'); ?></p>
+<hr style="border-color:inherit;opacity:0.4">
+</div>
+<p><?php echo ctx_tr('schedule_messages','Granularity is day light saving time, month, day, week day, hour and minute.'); ?></p>
+<p><?php echo ctx_tr('schedule_messages','Expression is built mixing basic blocks with operation characters. An hour is always required. All other basic blocks are optional and can be mixed on the same expression to build complex schedule rules. Ranges must be ordered older-newer. White spaces are ignored and can be ommited.'); ?></p>
+<p><?php echo ctx_tr('schedule_messages','Timezone of expression is the same as the user account that created or edited it.'); ?></p>
+<p><b><?php echo ctx_tr('schedule_messages','Basic blocks:'); ?></b></p>
+<pre>
+<b>Summer</b> or <b>Winter</b> =>  Day light saving time period
+<b>mm/dd</b> =>  Month and day in numeric format with leading zero
+<b>Mon Tue Wed Thu Fri Sat Sun</b> =>  Week day 3 letters english
+<b>hh:mm</b> =>  Hour in 24hrs format and minute with leading zero
+</pre>
+<p><b><?php echo ctx_tr('schedule_messages','Operation characters:'); ?></b></p>
+<pre>
+<b>-</b> => Range
+<b>,</b> => Addition
+<b>|</b> => Granularity separator
+</pre>
+<p><b><?php echo ctx_tr('schedule_messages','Expression examples:'); ?></b></p>
+<pre>
+'12:00-23:59'
+'Mon-Fri | 00:00-23:59'
+'Summer | Mon-Fri | 00:00-23:59'
+'Winter | Mon-Fri | 00:00-23:59'
+'Winter | Mon-Fri | 09:00-09:59, Summer | Mon-Fri | 08:00-08:59'
+'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
+'12/25 | 00:00-23:59'
+'12/01 - 12/31 | Sat,Sun | 09:00-11:59, 13:00-19:59'
+'01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:14, 18:00-22:29, Thu | 18:00-22:44'
 
-            'Mon-Fri|00:00-06:59, Sat|00:00-09:29,13:00-18:29,22:00-23:59, Sun|00:00-23:59'    <- Weekly Winter Empty
-            'Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Sat|09:30-12:59,18:30-21:59'         <- Weekly Winter Full
-            'Mon-Fri|09:30-11:59,18:30-20:59'                                                  <- Weekly Winter Top
+'Mon-Fri|00:00-06:59, Sat|00:00-09:29,13:00-18:29,22:00-23:59, Sun|00:00-23:59'    <- Weekly Winter Empty
+'Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Sat|09:30-12:59,18:30-21:59'         <- Weekly Winter Full
+'Mon-Fri|09:30-11:59,18:30-20:59'                                                  <- Weekly Winter Top
 
-            'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty
-            'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
-            'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
-            </pre>
-        </div>
-    </details>
+'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty
+'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
+'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
+</pre>
+</div>
+</details>
 
 
     <div v-if="schedules.length" class="">
@@ -76,7 +95,7 @@
                     <span v-else>{{ s.name }}</span>
                 </td>
                 <td>
-                    <input v-if="editingId === s.id" type="text" v-model="editFields.expression" />
+                    <schedule-expr-builder v-if="editingId === s.id" v-model="editFields.expression"></schedule-expr-builder>
                     <span v-else>{{ s.expression }}</span>
                 </td>
                 <td>
@@ -120,6 +139,274 @@
 </div>
 
 <script>
+var SCHED_DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+var ScheduleExprBuilder = {
+    name: 'ScheduleExprBuilder',
+    props: { modelValue: String },
+    emits: ['update:modelValue'],
+
+    data: function() {
+        return {
+            DAYS: SCHED_DAYS,
+            rules: [this.emptyRule()],
+            customMode: false,
+            customExpr: '',
+            parseError: false
+        };
+    },
+
+    computed: {
+        expression: function() {
+            if (this.customMode) return this.customExpr;
+            return this.buildExpression();
+        }
+    },
+
+    watch: {
+        modelValue: {
+            immediate: true,
+            handler: function(val) {
+                if ((val || '') !== this.expression) this.load(val || '');
+            }
+        },
+        expression: function(val) {
+            this.$emit('update:modelValue', val);
+        }
+    },
+
+    methods: {
+        emptyRule: function() {
+            return { dst: '', weekdays: [], times: [{ from: '', to: '' }] };
+        },
+
+        buildExpression: function() {
+            var self = this;
+            var parts = this.rules.map(function(rule) {
+                var segs = [];
+                if (rule.dst) segs.push(rule.dst);
+                var de = self.daysToExpr(rule.weekdays);
+                if (de) segs.push(de);
+                var te = rule.times
+                    .filter(function(t) { return t.from && t.to; })
+                    .map(function(t) { return t.from + '-' + t.to; })
+                    .join(',');
+                if (!te) return null;
+                return (segs.length ? segs.join('|') + '|' : '') + te;
+            }).filter(Boolean);
+            return parts.join(', ');
+        },
+
+        daysToExpr: function(days) {
+            if (!days.length || days.length === 7) return '';
+            var self = this;
+            var idx = days.map(function(d) { return self.DAYS.indexOf(d); })
+                         .filter(function(i) { return i !== -1; })
+                         .sort(function(a, b) { return a - b; });
+            var cont = idx.every(function(v, i, a) { return i === 0 || v === a[i-1] + 1; });
+            if (cont && idx.length >= 2) return this.DAYS[idx[0]] + '-' + this.DAYS[idx[idx.length-1]];
+            return idx.map(function(i) { return self.DAYS[i]; }).join(',');
+        },
+
+        load: function(expr) {
+            if (!expr.trim()) {
+                this.customMode = false;
+                this.rules = [this.emptyRule()];
+                return;
+            }
+            var rules = this.parseExpression(expr);
+            if (!rules) {
+                this.customMode = true;
+                this.customExpr = expr;
+                return;
+            }
+            this.customMode = false;
+            this.rules = rules.length ? rules : [this.emptyRule()];
+        },
+
+        parseExpression: function(expr) {
+            var self = this;
+            var pieces = expr.split(',').map(function(p) { return p.trim(); }).filter(Boolean);
+            var rules = [];
+            var cur = [];
+
+            function startsNewRule(p) {
+                return p.indexOf('|') !== -1 || /^(Summer|Winter|Mon|Tue|Wed|Thu|Fri|Sat|Sun)/i.test(p);
+            }
+
+            for (var i = 0; i < pieces.length; i++) {
+                var p = pieces[i];
+                if (startsNewRule(p) && cur.length) {
+                    var r = self.parseSegment(cur.join(','));
+                    if (!r) return null;
+                    rules.push(r);
+                    cur = [p];
+                } else {
+                    cur.push(p);
+                }
+            }
+            if (cur.length) {
+                var r = self.parseSegment(cur.join(','));
+                if (!r) return null;
+                rules.push(r);
+            }
+            return rules;
+        },
+
+        parseSegment: function(seg) {
+            var self = this;
+            var parts = seg.split('|').map(function(p) { return p.trim(); });
+            var i = 0, dst = '', weekdays = [];
+
+            if (/^(Summer|Winter)$/i.test(parts[i] || '')) { dst = parts[i++]; }
+            if (/\d{1,2}\/\d{1,2}/.test(parts[i] || '')) return null; // date filter not supported in builder
+            if (/^(Mon|Tue|Wed|Thu|Fri|Sat|Sun)/i.test(parts[i] || '')) {
+                weekdays = self.expandWeekdays(parts[i++]);
+            }
+
+            var times = (parts[i] || '').split(',').map(function(t) {
+                var m = t.trim().match(/^(\d{2}:\d{2})-(\d{2}:\d{2})$/);
+                return m ? { from: m[1], to: m[2] } : null;
+            }).filter(Boolean);
+
+            if (!times.length) return null;
+            return { dst: dst, weekdays: weekdays, times: times };
+        },
+
+        expandWeekdays: function(expr) {
+            var self = this;
+            var days = [];
+            expr.split(',').forEach(function(part) {
+                var p = part.trim();
+                if (p.indexOf('-') !== -1) {
+                    var sides = p.split('-');
+                    var si = self.DAYS.indexOf(sides[0].trim());
+                    var ei = self.DAYS.indexOf(sides[1].trim());
+                    if (si !== -1 && ei !== -1) {
+                        for (var j = si; j <= ei; j++) days.push(self.DAYS[j]);
+                    }
+                } else if (self.DAYS.indexOf(p) !== -1) {
+                    days.push(p);
+                }
+            });
+            return days;
+        },
+
+        toggleDay: function(rule, day) {
+            var i = rule.weekdays.indexOf(day);
+            if (i === -1) rule.weekdays.push(day);
+            else rule.weekdays.splice(i, 1);
+        },
+
+        setDays: function(rule, preset) {
+            if (preset === 'all')      rule.weekdays = this.DAYS.slice();
+            else if (preset === 'weekdays') rule.weekdays = ['Mon','Tue','Wed','Thu','Fri'];
+            else if (preset === 'weekend')  rule.weekdays = ['Sat','Sun'];
+            else                       rule.weekdays = [];
+        },
+
+        addTime: function(rule)       { rule.times.push({ from: '', to: '' }); },
+        removeTime: function(rule, i) { rule.times.splice(i, 1); },
+        addRule: function()           { this.rules.push(this.emptyRule()); },
+        removeRule: function(i)       { this.rules.splice(i, 1); },
+
+        switchToCustom: function() {
+            this.customExpr = this.expression;
+            this.customMode = true;
+            this.parseError = false;
+        },
+
+        switchToBuilder: function() {
+            var rules = this.parseExpression(this.customExpr);
+            if (!rules) { this.parseError = true; return; }
+            this.parseError = false;
+            this.customMode = false;
+            this.rules = rules.length ? rules : [this.emptyRule()];
+        }
+    },
+
+    template: `
+        <div class="sb-wrap">
+            <template v-if="!customMode">
+                <div v-for="(rule, ri) in rules" :key="ri" class="sb-rule">
+                    <div class="sb-rule-header">
+                        <strong>Rule {{ ri + 1 }}</strong>
+                        <button v-if="rules.length > 1" @click="removeRule(ri)"
+                                class="btn btn-danger" style="padding:1px 7px;font-size:12px;">Remove</button>
+                    </div>
+
+                    <div class="sb-row">
+                        <span class="sb-label">Season</span>
+                        <select v-model="rule.dst" class="input-small" style="margin-bottom:0;">
+                            <option value="">Any season</option>
+                            <option value="Summer">Summer (DST on)</option>
+                            <option value="Winter">Winter (DST off)</option>
+                        </select>
+                    </div>
+
+                    <div class="sb-row">
+                        <span class="sb-label">Days</span>
+                        <div>
+                            <button v-for="day in DAYS" :key="day"
+                                    @click="toggleDay(rule, day)"
+                                    :class="['btn', 'sb-day-btn', rule.weekdays.includes(day) ? 'btn-primary' : '']">
+                                {{ day.slice(0,2) }}
+                            </button>
+                            <span class="sb-presets">
+                                <button @click="setDays(rule,'all')"      class="btn">All</button>
+                                <button @click="setDays(rule,'weekdays')" class="btn">M–F</button>
+                                <button @click="setDays(rule,'weekend')"  class="btn">S–S</button>
+                                <button @click="setDays(rule,'none')"     class="btn">Clear</button>
+                            </span>
+                            <span class="sb-hint" v-if="!rule.weekdays.length">none = any day</span>
+                        </div>
+                    </div>
+
+                    <div class="sb-row">
+                        <span class="sb-label" style="padding-top:5px;">Times</span>
+                        <div>
+                            <div v-for="(t, ti) in rule.times" :key="ti" class="sb-time-row">
+                                <input type="time" v-model="t.from">
+                                <span style="color:#888;">–</span>
+                                <input type="time" v-model="t.to">
+                                <button v-if="rule.times.length > 1" @click="removeTime(rule, ti)"
+                                        class="btn btn-danger sb-time-remove">×</button>
+                            </div>
+                            <button @click="addTime(rule)" class="btn" style="padding:2px 8px;font-size:12px;margin-top:2px;">
+                                + Add time range
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:6px;">
+                    <button @click="addRule" class="btn sb-add-rule">+ Add rule</button>
+                </div>
+
+                <div class="sb-preview">{{ expression || '(set times above to build expression)' }}</div>
+            </template>
+
+            <template v-else>
+                <div style="margin-bottom:4px;">
+                    <input type="text" v-model="customExpr"
+                           style="width:100%;box-sizing:border-box;"
+                           placeholder="e.g. Mon-Fri | 09:00-17:00">
+                </div>
+                <div v-if="parseError" style="color:#c00;font-size:11px;margin-bottom:2px;">
+                    Expression too complex to convert to builder view.
+                </div>
+            </template>
+
+            <div class="sb-mode-toggle">
+                <a href="#" @click.prevent="customMode ? switchToBuilder() : switchToCustom()"
+                   style="font-size:11px;color:#888;">
+                    {{ customMode ? '← Use builder' : 'Custom expression →' }}
+                </a>
+            </div>
+        </div>
+    `
+};
+
 var scheduleApp = Vue.createApp({
     data: function() {
         return {
@@ -207,5 +494,6 @@ var scheduleApp = Vue.createApp({
     }
 });
 
+scheduleApp.component('schedule-expr-builder', ScheduleExprBuilder);
 scheduleApp.mount('#schedule-app');
 </script>
