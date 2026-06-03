@@ -31,54 +31,7 @@
     <a href="api" style="float:right"><?php echo ctx_tr('schedule_messages','Schedule API'); ?></a>
 
     <h3><?php echo ctx_tr('schedule_messages','Schedules'); ?></h3>
-
-<details class="schedule-expr-details well" :open="loaded && !schedules.length">
-<summary><b v-if="!schedules.length"><?php echo ctx_tr('schedule_messages','No schedules yet'); ?></b><b v-else><?php echo ctx_tr('schedule_messages','Expression reference'); ?></b></summary>
-<div class="schedule-expr-body mt-3">
-<div v-if="!schedules.length">
-<p><?php echo ctx_tr('schedule_messages','A schedule defines an active time range using an expression — for example <b>Mon-Fri | 09:00-17:00</b> for weekday office hours, or <b>Summer | 00:00-23:59</b> for an entire season.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Once created, a schedule can be assigned to an Input or Feed Processlist to control when that process runs. Click <b>New schedule</b> below to get started.'); ?></p>
-<hr style="border-color:inherit;opacity:0.4">
-</div>
-<p><?php echo ctx_tr('schedule_messages','Granularity is day light saving time, month, day, week day, hour and minute.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Expression is built mixing basic blocks with operation characters. An hour is always required. All other basic blocks are optional and can be mixed on the same expression to build complex schedule rules. Ranges must be ordered older-newer. White spaces are ignored and can be ommited.'); ?></p>
-<p><?php echo ctx_tr('schedule_messages','Timezone of expression is the same as the user account that created or edited it.'); ?></p>
-<p><b><?php echo ctx_tr('schedule_messages','Basic blocks:'); ?></b></p>
-<pre>
-<b>Summer</b> or <b>Winter</b> =>  Day light saving time period
-<b>mm/dd</b> =>  Month and day in numeric format with leading zero
-<b>Mon Tue Wed Thu Fri Sat Sun</b> =>  Week day 3 letters english
-<b>hh:mm</b> =>  Hour in 24hrs format and minute with leading zero
-</pre>
-<p><b><?php echo ctx_tr('schedule_messages','Operation characters:'); ?></b></p>
-<pre>
-<b>-</b> => Range
-<b>,</b> => Addition
-<b>|</b> => Granularity separator
-</pre>
-<p><b><?php echo ctx_tr('schedule_messages','Expression examples:'); ?></b></p>
-<pre>
-'12:00-23:59'
-'Mon-Fri | 00:00-23:59'
-'Summer | Mon-Fri | 00:00-23:59'
-'Winter | Mon-Fri | 00:00-23:59'
-'Winter | Mon-Fri | 09:00-09:59, Summer | Mon-Fri | 08:00-08:59'
-'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
-'12/25 | 00:00-23:59'
-'12/01 - 12/31 | Sat,Sun | 09:00-11:59, 13:00-19:59'
-'01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:14, 18:00-22:29, Thu | 18:00-22:44'
-
-'Mon-Fri|00:00-06:59, Sat|00:00-09:29,13:00-18:29,22:00-23:59, Sun|00:00-23:59'    <- Weekly Winter Empty
-'Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Sat|09:30-12:59,18:30-21:59'         <- Weekly Winter Full
-'Mon-Fri|09:30-11:59,18:30-20:59'                                                  <- Weekly Winter Top
-
-'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty
-'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
-'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
-</pre>
-</div>
-</details>
-
+    <p style="color:#666;"><?php echo ctx_tr('schedule_messages','Schedules define active time windows that can be assigned to Input or Feed process lists to control when those processes run.'); ?></p>
 
     <div v-if="schedules.length" class="">
         <table class="table table-striped">
@@ -152,7 +105,8 @@ var ScheduleExprBuilder = {
             rules: [this.emptyRule()],
             customMode: false,
             customExpr: '',
-            parseError: false
+            parseError: false,
+            showHelp: false
         };
     },
 
@@ -387,10 +341,13 @@ var ScheduleExprBuilder = {
             </template>
 
             <template v-else>
-                <div style="margin-bottom:4px;">
+                <div style="display:flex;margin-bottom:4px;">
                     <input type="text" v-model="customExpr"
-                           style="width:100%;box-sizing:border-box;"
+                           style="flex:1;min-width:0;margin-bottom:0;border-radius:3px 0 0 3px;"
                            placeholder="e.g. Mon-Fri | 09:00-17:00">
+                    <button @click="showHelp=true" class="btn"
+                            style="border-left:0;border-radius:0 3px 3px 0;"
+                            title="Expression reference"><i class="icon icon-info-sign"></i></button>
                 </div>
                 <div v-if="parseError" style="color:#c00;font-size:11px;margin-bottom:2px;">
                     Expression too complex to convert to builder view.
@@ -402,6 +359,43 @@ var ScheduleExprBuilder = {
                    style="font-size:11px;color:#888;">
                     {{ customMode ? '← Use builder' : 'Custom expression →' }}
                 </a>
+            </div>
+
+            <div v-if="showHelp" class="modal show" tabindex="-1" role="dialog" style="display:block;">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" @click="showHelp=false" aria-hidden="true">×</button>
+                            <h3>Expression reference</h3>
+                        </div>
+                        <div class="modal-body">
+                            <p>Granularity is day light saving time, month, day, week day, hour and minute.</p>
+                            <p>An expression is built by mixing basic blocks with operation characters. An hour range is always required. All other blocks are optional and can be mixed to build complex rules. Ranges must be ordered older-to-newer. White spaces are ignored.</p>
+                            <p>Timezone is that of the user account that created or last edited the schedule.</p>
+                            <p><b>Basic blocks:</b></p>
+                            <pre style="font-size:12px;"><b>Summer</b> or <b>Winter</b>          Day light saving time period
+<b>mm/dd</b>                    Month and day (numeric, leading zero)
+<b>Mon Tue Wed Thu Fri Sat Sun</b>  Week day (3-letter English)
+<b>hh:mm</b>                    Hour in 24-hour format and minute (leading zero)</pre>
+                            <p><b>Operation characters:</b></p>
+                            <pre style="font-size:12px;"><b>-</b>   Range
+<b>,</b>   Addition
+<b>|</b>   Granularity separator</pre>
+                            <p><b>Examples:</b></p>
+                            <pre style="font-size:12px;">'12:00-23:59'
+'Mon-Fri | 00:00-23:59'
+'Summer | Mon-Fri | 00:00-23:59'
+'Winter | Mon-Fri | 09:00-09:59, Summer | Mon-Fri | 08:00-08:59'
+'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
+'12/25 | 00:00-23:59'
+'12/01 - 12/31 | Sat,Sun | 09:00-11:59, 13:00-19:59'
+'01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:14, 18:00-22:29, Thu | 18:00-22:44'</pre>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" @click="showHelp=false">Close</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `
