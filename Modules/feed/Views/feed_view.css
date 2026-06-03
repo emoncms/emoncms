@@ -64,7 +64,7 @@
 .text-sm   { font-size: 11px; }
 
 .feed-list-grid {
-    grid-template-columns: 40px max-content max-content max-content max-content max-content 1fr max-content max-content;
+    grid-template-columns: 40px max-content max-content max-content max-content max-content 1fr max-content max-content max-content;
 }
 
 /* ── Dynamic column hiding (driven by ResizeObserver in feed_list.js) ── */
@@ -83,6 +83,7 @@
 .feed-list-grid [data-col="size"]    { grid-column: 5; }
 .feed-list-grid [data-col="process"] { grid-column: 6; }
 .feed-list-grid [data-col="spacer"]  { grid-column: 7; }
-.feed-list-grid [data-col="value"]   { grid-column: 8; }
-.feed-list-grid [data-col="updated"] { grid-column: 9; }
+.feed-list-grid [data-col="sync"]    { grid-column: 8; }
+.feed-list-grid [data-col="value"]   { grid-column: 9; }
+.feed-list-grid [data-col="updated"] { grid-column: 10; }
 

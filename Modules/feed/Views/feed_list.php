@@ -168,6 +168,9 @@ load_css("Modules/feed/Views/feed_view.css");
                     <div data-col="size" class="group-list-cell text-center text-muted">{{ formatSize(feed.size) }}</div>
                     <div data-col="process" class="group-list-cell text-left" v-html="feed.processListHTML"></div>
                     <div data-col="spacer" class="group-list-cell"></div>
+                    <div data-col="sync" class="group-list-cell text-center" v-if="feed.sync_status" @click.stop>
+                        <span :class="'sync-badge sync-' + feed.sync_status">{{ feed.sync_label }}</span>
+                    </div>
                     <div data-col="value" class="group-list-cell text-right">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
                     <div data-col="updated" class="group-list-cell text-center" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
@@ -224,6 +227,14 @@ load_css("Modules/feed/Views/feed_view.css");
 
 // Main feed list js
 load_js("Modules/feed/Views/feed_list.js");
+
+// Sync module integration (adds an upload status column to the feed list).
+// Loaded only when the sync module is installed; all logic is self-contained
+// in the sync module and registers via the generic feedListPlugins hook.
+if (file_exists("Modules/sync/sync_model.php")) {
+    load_js("Modules/sync/sync_integration.js");
+    load_css("Modules/sync/sync_integration.css");
+}
 
 // --------------------------------------------------------------
 // Modals

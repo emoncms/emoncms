@@ -503,6 +503,15 @@ function update_feed_list() {
         }
 
         feedApp.feedsLoaded = true;
+
+        // Allow external modules (e.g. sync) to decorate feeds with extra
+        // column data. Plugins register via window.feedListPlugins.push({decorate}).
+        if (window.feedListPlugins) {
+            for (var pi = 0; pi < window.feedListPlugins.length; pi++) {
+                try { window.feedListPlugins[pi].decorate(feedApp.feeds); } catch(e) {}
+            }
+        }
+        document.dispatchEvent(new CustomEvent('feedlist:updated'));
     }}); // end of ajax callback
 }// end of update_feed_list() function
 
