@@ -82,7 +82,7 @@ $_js_translations = array(
 );
 ?>
 
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/admin/static/admin_styles.css?v=2">
+<link rel="stylesheet" href="<?php echo $path; ?>Modules/admin/static/admin_styles.css?v=3">
 
 <div id="new-system-info" class="admin-container">
 	<?php if (PHP_VERSION_ID < 70300) { ?>
@@ -107,6 +107,12 @@ $_js_translations = array(
 		</div>
 	</div>
 
+	<div v-if="!hasLoaded" class="system-info-loading">
+		<div class="system-info-spinner"></div>
+		<div>{{ tr('Loading...') }}</div>
+	</div>
+
+	<template v-if="hasLoaded">
 	<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr('Services') }}</h4>
 	<dl class="row">
 		<template v-for="(svc, key) in info.Services" :key="key">
@@ -170,6 +176,7 @@ $_js_translations = array(
 				<dd class="col-sm-10 col-8 border-box px-1" @click="copyRow(row, $event)">{{ row.value }}</dd>
 			</template>
 		</dl>
+	</template>
 	</template>
 
 	<div class="well mt-4">
@@ -253,6 +260,7 @@ Vue.createApp({
 		return {
 			info: { Services: {}, 'System Information': {}, 'Client Information': {} },
 			loading: false,
+			hasLoaded: false,
 			serviceActionInProgress: false,
 			SNACKBAR_TIMEOUT: 3000
 		};
@@ -409,6 +417,7 @@ Vue.createApp({
 					}
 					self.info = data;
 					self.loading = false;
+					self.hasLoaded = true;
 				})
 				.catch(function() {
 					self.loading = false;
@@ -534,7 +543,7 @@ Vue.createApp({
 			}
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'halt', { credentials: 'same-origin' })
+			fetch(adminPath + 'shutdown', { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
