@@ -132,7 +132,27 @@ function admin_controller()
         $route->format = 'json';
         $result = $systemInfo->getSystemInfo();
         $result['Services'] = $services->getServices();
+
+        // Write system info to redis cache
+        if ($redis) {
+            $redis->setex('admin:systeminfo', 3600, json_encode($result));
+        }
         return $result;
+    }
+
+    // Quick load from cache
+    if ($route->action == 'systeminfocached') {
+        $route->format = 'json';
+        if ($redis) {
+            $cached = $redis->get('admin:systeminfo');
+            if ($cached) {
+                return json_decode($cached, true);
+            } else {
+                return array('success'=>false, 'message'=>"No cached system info available");
+            }
+        } else {
+            return array('success'=>false, 'message'=>"Redis not enabled");
+        }
     }
 
     // ----------------------------------------------------------------------------------------

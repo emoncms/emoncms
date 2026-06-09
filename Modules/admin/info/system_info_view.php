@@ -268,7 +268,12 @@ Vue.createApp({
 	mounted: function() {
 		// Keys with spaces are not reliably available via PHP extract() in views,
 		// so load the canonical JSON payload once the page mounts.
-		this.refresh();
+		this.refresh(true);
+		// next tick refresh not from cache
+		this.$nextTick(function() {
+			this.refresh(false);
+		});
+		
 	},
 	computed: {
 		serverSections: function() {
@@ -402,10 +407,16 @@ Vue.createApp({
 			}
 			copyTextToClipboard(name + ': ' + value, tr('Copied to clipboard'));
 		},
-		refresh: function() {
+		refresh: function(from_cache = false) {
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'systeminfo', { credentials: 'same-origin' })
+
+			var action = "systeminfo";
+			if (from_cache) {
+				action = "systeminfocached";
+			}
+
+			fetch(adminPath + action, { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
