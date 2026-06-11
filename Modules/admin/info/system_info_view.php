@@ -262,6 +262,7 @@ Vue.createApp({
 			loading: false,
 			hasLoaded: false,
 			serviceActionInProgress: false,
+			shuttingDown: false,
 			SNACKBAR_TIMEOUT: 3000
 		};
 	},
@@ -432,7 +433,11 @@ Vue.createApp({
 				})
 				.catch(function() {
 					self.loading = false;
-					snackbar(tr('Refresh failed'));
+					// Stay silent once a shutdown/reboot has been initiated,
+					// as the Pi becoming unreachable is expected.
+					if (!self.shuttingDown) {
+						snackbar(tr('Refresh failed'));
+					}
 				});
 		},
 		serviceAction: function(name, action) {
@@ -564,6 +569,7 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
+					self.shuttingDown = true;
 					snackbar('Pi shutting down...');
 				})
 				.catch(function() {
@@ -587,6 +593,7 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
+					self.shuttingDown = true;
 					snackbar('Pi rebooting...');
 				})
 				.catch(function() {
