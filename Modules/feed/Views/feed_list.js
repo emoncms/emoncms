@@ -129,7 +129,7 @@ var feedAppRoot = Vue.createApp({
                 var grid = document.querySelector('.feed-list-grid');
                 if (!grid) return;
 
-                var hidePriority = ['size', 'engine', 'public', 'process', 'value', 'updated'];
+                var hidePriority = ['size', 'engine', 'public', 'process', 'updated'];
                 var raf = null;
                 var ro = new ResizeObserver(function() {
                     if (raf) cancelAnimationFrame(raf);

@@ -118,7 +118,7 @@ var app = Vue.createApp({
             self.$nextTick(function() {
                 var grid = document.querySelector('.input-list-grid');
                 if (!grid) return;
-                var hidePriority = ['description', 'process', 'value', 'updated'];
+                var hidePriority = ['description', 'process', 'updated', 'value'];
                 var raf = null;
                 var ro = new ResizeObserver(function() {
                     if (raf) cancelAnimationFrame(raf);
