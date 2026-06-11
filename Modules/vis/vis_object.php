@@ -108,15 +108,5 @@
             array('fill',ctx_tr('vis_messages','fill'),7,1),
             array('depth',ctx_tr('vis_messages','depth'),7,3),
             array('npoints',ctx_tr('vis_messages','data points'),7,800)
-        )),
-		
-        // --------------------------------------------------------------------------------
-        // psychrographic diagrams to appreciate summer confort
-        // --------------------------------------------------------------------------------
-        'psychrograph' => array ('label'=>ctx_tr('vis_messages','Psychrometric Diagram'), 'action'=>'psychrograph', 'options'=>array(
-            array('mid',ctx_tr('vis_messages','mid'),8),
-            array('hrtohabs',ctx_tr('vis_messages','% to abso.'),4, 1),
-            array('givoni',ctx_tr('vis_messages','givoni style?'),4)
-        ))
-        // --------------------------------------------------------------------------------     
+        ))    
     );
