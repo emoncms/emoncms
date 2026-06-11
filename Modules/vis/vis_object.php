@@ -90,10 +90,6 @@
             array('mid',ctx_tr('vis_messages','mid'),8)
         )),
         
-        'editor'=> array('label'=>ctx_tr('vis_messages','Editor'), 'options'=>array(
-            array('feedid',ctx_tr('vis_messages','feed'),1)
-        )),
-        
         // --------------------------------------------------------------------------------
         // Not currently available on emoncms.org
         // --------------------------------------------------------------------------------     
