@@ -35,6 +35,17 @@
     width:150px;
 }
 
+label {
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+input[type='checkbox'] {
+    margin: 0 5px 0 0;
+    flex-shrink: 0;
+}
+
 .table td:nth-child(1) {
     width:200px;
 }

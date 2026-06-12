@@ -187,6 +187,12 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
     </td>
   </tr>
+  <tr>
+    <td class="muted"><?php echo tr('Archived features'); ?></td>
+    <td>
+      <label><input type="checkbox" id="show-archived"> <?php echo tr('Show archived features (e.g. Visualization)'); ?></label>
+    </td>
+  </tr>
 </table>
 
 <div style="background-color:#f0f0f0; padding:20px; max-width:360px">

@@ -215,6 +215,14 @@ $(".sidebarcolor").click(function() {
     $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
     localStorage.setItem('themesidebar', themesidebar);
     $(".sidebarcolor[name='"+current_themesidebar+"']").removeClass("color-box-active"); 
-    $(".sidebarcolor[name='"+themesidebar+"']").addClass("color-box-active"); 
+    $(".sidebarcolor[name='"+themesidebar+"']").addClass("color-box-active");
     current_themesidebar = themesidebar
+});
+
+// Archived features toggle, used in conjunction with code in Theme/menu/menu.js
+$("#show-archived").prop("checked", localStorage.getItem('show_archived') === 'true');
+$("#show-archived").change(function() {
+    localStorage.setItem('show_archived', this.checked ? 'true' : 'false');
+    // Reload page
+    window.location.reload();
 });

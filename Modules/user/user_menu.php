@@ -3,6 +3,7 @@ global $session;
 if ($session["write"]) {
     $menu["setup"]["l2"]['user'] = array("name"=>tr('My Account'),"href"=>"user/view", "order"=>12, "icon"=>"user");
 }
+
 /*
 global $session;
 

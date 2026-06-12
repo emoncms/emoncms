@@ -234,7 +234,7 @@ class SystemInfoModel
         return $mem;
     }
 
-    private function formatBytes(int $bytes, int $decimals = 2): string
+    private function formatBytes(float $bytes, int $decimals = 2): string
     {
         $units = ['B', 'KB', 'MB', 'GB', 'TB'];
         $i = 0;
@@ -247,7 +247,7 @@ class SystemInfoModel
 
     private function formatSize($bytes)
     {
-        return $this->formatBytes((int)$bytes);
+        return $this->formatBytes((float)$bytes);
     }
 
     private function getMemoryInfo(): array

@@ -48,6 +48,9 @@ var menu = {
             }
         }
 
+        // Remove archived menu items unless the user has opted to show them
+        menu.apply_archived();
+
         // Detect l1 route on first load
         for (var l1 in menu.obj) {
             if (menu.obj[l1]['l2']!=undefined) {
@@ -537,6 +540,23 @@ var menu = {
         });
     },
     
+    // Remove menu items flagged with archived=true unless the user has enabled
+    // 'show_archived' in localStorage (set from the user profile page)
+    apply_archived: function() {
+        var show = false;
+        if (typeof localStorage !== 'undefined') {
+            show = (localStorage.getItem('show_archived') === 'true');
+        }
+        if (show) return;
+        for (var l1 in menu.obj) {
+            if (menu.obj[l1]['archived']) { delete menu.obj[l1]; continue; }
+            if (menu.obj[l1]['l2'] == undefined) continue;
+            for (var l2 in menu.obj[l1]['l2']) {
+                if (menu.obj[l1]['l2'][l2]['archived']) delete menu.obj[l1]['l2'][l2];
+            }
+        }
+    },
+
     route: function(q) {
         var route = {
             controller: false,
