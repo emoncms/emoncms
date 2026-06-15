@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you believe you have found a security vulnerability, please report it privately by email to Trystan Lea at trystanlea@openenergymonitor.org.
+If you believe you have found a security vulnerability, please report it privately by email to trystanlea@openenergymonitor.org.
 
 Please include as much detail as possible so the issue can be reproduced and assessed quickly, such as:
 

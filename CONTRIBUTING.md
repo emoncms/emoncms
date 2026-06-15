@@ -35,3 +35,10 @@ The next step is a more substantial refactoring of Emoncms styling, moving from 
 - Making it easier for users to migrate feeds stored as PHPTimeSeries and MysqlTimeSeries over to PHPFina (fixed interval).
 
 - Carefull staged refinement of Emoncms css, there is a lot of cusom css, a fair bit of it is duplicated, we need to carefully extract common css and create an emoncms specific css framework.
+
+---
+
+Please feel free to get in touch:
+
+hello@openenergymonitor.zendesk.com (Trystan, Glyn and Gwil)
+or: trystanlea@openenergymonitor.org
