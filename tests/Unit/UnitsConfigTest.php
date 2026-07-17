@@ -5,8 +5,8 @@ use PHPUnit\Framework\TestCase;
 class UnitsConfigTest extends TestCase
 {
     /**
- * @test 
-*/
+     * @test
+     */
     public function units_list_includes_new_mwh_mi_km_units(): void
     {
         include_once 'Lib/units.php';
