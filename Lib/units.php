@@ -8,6 +8,7 @@ $config['units'] = array(
     array("short" => "W", "long" => "Watt"),
     array("short" => "kW", "long" => "Kilowatt"),
     array("short" => "kWh", "long" => "Kilowatt Hour"),
+    array("short" => "MWh", "long" => "Megawatt Hour"),
     array("short" => "Wh", "long" => "Watt-Hour"),
     array("short" => "V", "long" => "Volt"),
     array("short" => "VA", "long" => "Volt-Ampere"),
@@ -24,6 +25,8 @@ $config['units'] = array(
     array("short" => "ppm", "long" => "Parts per million"),
     array("short" => "µg/m³", "long" => "micro grams per m3"),
     array("short" => "m³", "long" => "m3"),
+    array("short" => "km", "long" => "Kilometre"),
+    array("short" => "mi", "long" => "Mile"),
     array("short" => "m³/h", "long" => "m3/hr"),
     array("short" => "l/m", "long" => "liters/minute"),
     array("short" => "l/h", "long" => "liters/hour")
