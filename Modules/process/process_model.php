@@ -9,6 +9,7 @@
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
+require_once "core.php";
 
 class ProcessError {
     const NONE = 0;
@@ -32,16 +33,16 @@ class Process
     public $proc_initialvalue;  // save the input value at beginning of the processes list execution
     public $proc_skip_next;     // skip execution of next process in process list
     public $proc_goto;          // goto step in process list
-    
+
     public $runtime_error = ProcessError::NONE;  // Errors that occured at runtime
-    
+
     private $log;
     private $modules_functions = array();
-    
+
     private $process_list = array();
     public $process_map = array();
     public $process_map_reverse = array(); // Reverse map for process ids to process keys
-    
+
     public function __construct($mysqli,$input,$feed,$timezone)
     {
         $this->mysqli = $mysqli;
@@ -49,9 +50,9 @@ class Process
         $this->feed = $feed;
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
-        
+
         $this->process_list = $this->get_process_list(); // Load modules modules
-    
+
         // Build map of processids where set
         $this->process_map = array();
         foreach ($this->process_list as $k=>$v) {
@@ -88,7 +89,7 @@ class Process
         static $list = array(); // Array to hold the cache
 
         if (empty($list) || empty($this->modules_functions)) {     // Cache it now
-            $list=$this->load_modules();  
+            $list=$this->load_modules();
 
             // Convert singular arg definitions to args array (this could be removed by hard-coding this in the process list)
             $list = $this->convert_arg_structure($list);
@@ -126,10 +127,10 @@ class Process
 
             // processkey may be an id or a module function name
             $processkey = $inputprocess[0];
-            
+
             // Map ids to process key names
             if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
-            
+
             // Check if processkey exists in the process list
             if (!isset($process_list[$processkey])) {
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
@@ -155,12 +156,12 @@ class Process
             } else {
                 $args = null;
             }
-            
+
             $process_function = $processkey;
             $value = $this->$process_function($args,$time,$value,$options); // execute process function
-            
+
             if ($this->proc_skip_next) {
-                $this->proc_skip_next = false; 
+                $this->proc_skip_next = false;
                 $this->proc_goto++;
             }
 
@@ -184,7 +185,7 @@ class Process
                             require_once "Modules/task/task_model.php";
                             $this->task = new Task($this->mysqli, $redis, null);
                             $this->task->set_processlist($session['userid'], $options['sourceid'], "process__error_found:0," . $processList);
-                            
+
                         }
                     */
                 }
@@ -200,27 +201,27 @@ class Process
 
         // Always load the process module processes first
         $modules = array("process");
-        
+
         // Scan all other modules for process lists
-        $dir = scandir("Modules");        
+        $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
             $module = $dir[$i];
             if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {
                 if ($module!="process") $modules[] = $module;
             }
         }
-        
+
         // Load processes from selected modules
         for ($i=0; $i<count($modules); $i++) {
             $class = $this->get_module_class($modules[$i]);
             if ($class != null) {
-                
+
                 $mod_process_list = $class->process_list();
-                
+
                 foreach($mod_process_list as $k => $v) {
                     $processkey = strtolower($modules[$i]."__".$v['function']);
                     $list[$processkey] = $v; // set list key as "module__function"
-                    //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
+                    //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
                 }
             }
         }
@@ -231,7 +232,7 @@ class Process
         /*
             magic function __call (above) MUST BE USED with this.
             Load additional processlist module files.
-            Looks in the folder Modules/modulename/ for a file modulename_processlist.php 
+            Looks in the folder Modules/modulename/ for a file modulename_processlist.php
             (module_name all lowercase but class Modulename_ProcessList in php file that is with upper case first letter)
         */
         $module_file = "Modules/".$module_name."/".$module_name."_processlist.php";
@@ -284,7 +285,7 @@ class Process
                     }
 
                     $process['args'] = array($singular_arg);
-                    
+
                 } else {
                     // If no 'argtype', initialize 'args' as an empty array
                     $process['args'] = array();
@@ -297,7 +298,7 @@ class Process
 
     /**
      * 2. Filter the process list to only include processes that are valid for the given context type.
-     * 
+     *
      * @param array $process_list The list of processes to filter.
      * @param int $context_type The context type (0 for input, 1 for virtual feed).
      * @return array The filtered list of valid processes.
@@ -334,7 +335,7 @@ class Process
 
     /**
      * Validate a process list for a given user and context type.
-     * 
+     *
      * @param int $userid The user ID.
      * @param int $id The ID of the input or feed.
      * @param string $processlist The process list to validate.
@@ -407,7 +408,7 @@ class Process
 
     /**
      * Helper method for validate_processlist: Validate an argument against its type.
-     * 
+     *
      * @param int $userid The user ID.
      * @param mixed $arg The argument to validate.
      * @param int $arg_type The type of the argument (ProcessArg constants).
@@ -461,7 +462,7 @@ class Process
 
     /**
      * Helper method for validate_arg: Check if the user has access to the specified table and id.
-     * 
+     *
      * @param string $table_name The name of the table (feeds, input, schedule).
      * @param int $userid The user ID.
      * @param int $id The ID to check.
@@ -554,7 +555,7 @@ class Process
      * Encode a process list to a string.
      * Example input: [{fn: 'process__log_to_feed_join', args: ['2095', '4']}, {fn: 'schedule__if_not_schedule_zero', args: ['3']}]
      * Returns a string like "process__log_to_feed_join:2095,4:schedule__if_not_schedule_zero:3".
-     * 
+     *
      * @param array $process_list The list of processes to encode.
      * @return string The encoded process list as a string.
      */
@@ -577,7 +578,7 @@ class Process
 
     /**
      * Fetch referenced inputs and feeds in input process list
-     * 
+     *
      * @param string $processList The process list string to analyze.
      * @return array An array containing referenced input and feed IDs: array("inputs"=>array(...), "feeds"=>array(...))
      */
@@ -598,10 +599,10 @@ class Process
 
             // processkey may be an id or a module function name
             $processkey = $inputprocess[0];
-            
+
             // Map ids to process key names
             if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
-            
+
             // Check if processkey exists in the process list
             if (!isset($process_list[$processkey])) {
                 $this->log->error("get_referenced_entities() Processor '".$processkey."' does not exists. Module missing?");
@@ -626,7 +627,7 @@ class Process
                 for ($j=0; $j<count($args); $j++) {
                     if (isset($process_info['args'][$j]) && isset($process_info['args'][$j]['type'])) {
                         $arg_type = $process_info['args'][$j]['type'];
-                        
+
                         if ($arg_type == ProcessArg::INPUTID) {
                             $input_id = (int) $args[$j];
                             if ($input_id > 0 && !in_array($input_id, $referenced_inputs)) {
