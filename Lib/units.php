@@ -22,6 +22,8 @@ $config['units'] = array(
     array("short" => "pulses", "long" => "Pulses"),
     array("short" => "dB", "long" => "Decibel"),
     array("short" => "hPa", "long" => "Hectopascal"),
+    array("short" => "bar", "long" => "Bar"),
+    array("short" => "psi", "long" => "Pounds per Square Inch"),
     array("short" => "ppm", "long" => "Parts per million"),
     array("short" => "µg/m³", "long" => "micro grams per m3"),
     array("short" => "m³", "long" => "m3"),
