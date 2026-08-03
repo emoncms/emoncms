@@ -21,5 +21,7 @@ class UnitsConfigTest extends TestCase
         $this->assertSame('Megawatt Hour', $unitsByShort['MWh'] ?? null);
         $this->assertSame('Kilometre', $unitsByShort['km'] ?? null);
         $this->assertSame('Mile', $unitsByShort['mi'] ?? null);
+        $this->assertSame('Bar', $unitsByShort['bar'] ?? null);
+        $this->assertSame('Pounds per Square Inch', $unitsByShort['psi'] ?? null);
     }
 }
