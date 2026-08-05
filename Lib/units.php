@@ -27,6 +27,7 @@ $config['units'] = array(
     array("short" => "ppm", "long" => "Parts per million"),
     array("short" => "µg/m³", "long" => "micro grams per m3"),
     array("short" => "m³", "long" => "m3"),
+    array("short" => "L", "long" => "Liters"),
     array("short" => "km", "long" => "Kilometre"),
     array("short" => "mi", "long" => "Mile"),
     array("short" => "m³/h", "long" => "m3/hr"),
