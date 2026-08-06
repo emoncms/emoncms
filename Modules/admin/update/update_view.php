@@ -3,6 +3,39 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 global $settings; 
 ?>
 <link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
+<style>
+/* Custom firmware file picker: the native file input is replaced by a label
+   styled as a button so that it matches the rest of the form controls */
+#custom_firmware.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    border: 0;
+}
+#custom_firmware_bound label.btn {
+    margin-bottom: 0;
+    cursor: pointer;
+}
+/* keyboard focus indicator, the label replaces a focusable input */
+#custom_firmware_bound label.btn:focus {
+    outline: 2px solid #0088cc;
+    outline-offset: 1px;
+}
+#custom_firmware_name {
+    margin-left: 8px;
+    color: #999;
+    font-style: italic;
+}
+#custom_firmware_name.file-selected {
+    color: #333;
+    font-style: normal;
+    font-weight: bold;
+}
+</style>
 <div class="admin-container">
     <h3><?php echo tr('Update'); ?></h3>
 
@@ -75,7 +108,7 @@ global $settings;
                 </select>
             </div>
 
-            <div class="input-prepend" style="margin-bottom:0px">
+            <div id="radio_format_bound" class="input-prepend" style="margin-bottom:0px">
                 <span class="add-on">Radio format:</span>
                 <select id="selected_radio_format">
                    <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
@@ -84,18 +117,33 @@ global $settings;
                 </select>
             </div>
             <br>
-            <div class="input-prepend" style="margin-bottom:0px; margin-top:10px">
+            <div style="margin-top:10px">
+                <label class="radio inline" style="margin-right:15px">
+                    <input type="radio" name="firmware_source" value="standard" checked> <?php echo tr('Standard firmware'); ?>
+                </label>
+                <label class="radio inline">
+                    <input type="radio" name="firmware_source" value="custom" id="firmware_source_custom" disabled> <?php echo tr('Custom firmware file'); ?>
+                </label>
+            </div>
+
+            <div id="standard_firmware_bound" class="input-prepend" style="margin-bottom:0px; margin-top:10px">
                 <span class="add-on">Firmware:</span>
                 <select id="selected_firmware" style="width:552px">
                     <option value="none">none</option>
                 </select>
             </div>
-            <div id="custom_firmware_bound" style="display: none; color:#333; font-size:14px">
-                <hr>
-                <!-- option to upload custom firmware -->
-                <p>- or - upload custom firmware to <b><span id="custom_firmware_hardware"></span></b> on <b><span id="custom_firmware_port"></span></b>:
-                <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex,.bin"></p>
+
+            <div id="custom_firmware_bound" style="display:none; margin-top:10px">
+                <div class="input-prepend" style="margin-bottom:0px">
+                    <span class="add-on"><?php echo tr('Firmware file'); ?>:</span>
+                    <label for="custom_firmware" class="btn" tabindex="0"><?php echo tr('Choose file'); ?>&hellip;</label>
+                </div>
+                <span id="custom_firmware_name"><?php echo tr('No file selected'); ?></span>
+                <!-- the native file input is visually hidden, the label above opens it -->
+                <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex,.bin" class="visually-hidden">
             </div>
+
+            <p id="firmware_summary" class="text-info" style="margin-top:10px; margin-bottom:0px; font-size:13px"></p>
         </div>
 
         <button id="update-firmware" class="btn btn-info"><?php echo tr('Update Firmware'); ?></button>
@@ -148,6 +196,14 @@ global $settings;
 
 var firmware_available = <?php echo json_encode($firmware_available); ?>;
 
+var standard_firmware_button_label = <?php echo json_encode(tr('Update Firmware')); ?>;
+var custom_firmware_button_label = <?php echo json_encode(tr('Upload & Flash')); ?>;
+var flashing_message = <?php echo json_encode(tr('Flashing...')); ?>;
+var select_hardware_message = <?php echo json_encode(tr('Select your hardware type to continue')); ?>;
+var select_file_message = <?php echo json_encode(tr('Select a .hex or .bin firmware file to upload')); ?>;
+var no_file_message = <?php echo json_encode(tr('No file selected')); ?>;
+var no_firmware_message = <?php echo json_encode(tr('No firmware available for this hardware and radio format')); ?>;
+
 var logFileDetails;
 $("#copyupdatelogfile").on('click', function(event) {
     logFileDetails = $("#update-log").text();
@@ -195,7 +251,9 @@ $(".update").click(function() {
     refresh_updateLog("");
     var type = $(this).attr("type");
     var serial_port = $("#select_serial_port").val();
-    var firmware_key = $("#selected_firmware").val();
+    // In custom firmware mode the standard firmware selection must not be flashed,
+    // it is only used to derive the upload settings (baud rate, core, autoreset)
+    var firmware_key = firmware_source()=="custom" ? "none" : $("#selected_firmware").val();
 
     $.ajax({
         type: "POST",
@@ -219,65 +277,215 @@ $(".update").click(function() {
 $("#selected_hardware").change(function(){
     draw_firmware_select_list();
 
-    // show custom firmware upload if hardware is not none
-    if ($("#selected_hardware").val() != "none") {
-        $("#custom_firmware_bound").show();
-        $("#custom_firmware_hardware").text($("#selected_hardware").val());
-        $("#custom_firmware_port").text($("#select_serial_port").val());
+    // custom firmware upload is only possible once a hardware type is selected,
+    // the selected hardware provides the upload settings (baud rate, core, autoreset)
+    if ($("#selected_hardware").val() == "none") {
+        $("#firmware_source_custom").prop("disabled", true);
+        $("input[name=firmware_source][value=standard]").prop("checked", true);
+        set_firmware_source_view();
     } else {
-        $("#custom_firmware_bound").hide();
+        $("#firmware_source_custom").prop("disabled", false);
+        update_firmware_summary();
     }
 });
 
 // port change
 $("#select_serial_port").change(function(){
-    $("#custom_firmware_port").text($("#select_serial_port").val());
+    update_firmware_summary();
 });
 
 $("#selected_radio_format").change(function(){
     draw_firmware_select_list();
 });
 
-// custom firmware upload
-$("#custom_firmware").change(function(){
-    // get the file
-    var file = this.files[0];
+$("#selected_firmware").change(function(){
+    update_firmware_summary();
+});
 
-    // check if file is a hex file
-    var ext = file.name.split('.').pop();
+// switch between standard firmware and custom firmware file
+$("input[name=firmware_source]").change(function(){
+    set_firmware_source_view();
+});
+
+// selecting a file no longer starts the upload, it only updates the summary.
+// the upload is started by the update firmware button, so that there is a
+// single, explicit action that flashes the board
+$("#custom_firmware").change(function(){
+    update_custom_firmware_name();
+    update_firmware_summary();
+});
+
+// the file input is visually hidden so the label needs to be keyboard operable
+$("#custom_firmware_bound label.btn").keydown(function(event){
+    if (event.which==13 || event.which==32) {
+        event.preventDefault();
+        $("#custom_firmware").click();
+    }
+});
+
+// show the selected filename in place of the browsers native file input text
+function update_custom_firmware_name() {
+    var file = custom_firmware_file();
+    if (file===null) {
+        $("#custom_firmware_name").text(no_file_message).removeClass("file-selected");
+    } else {
+        $("#custom_firmware_name").text(file.name).addClass("file-selected");
+    }
+}
+
+function firmware_source() {
+    return $("input[name=firmware_source]:checked").val();
+}
+
+// selected custom firmware file, null if none selected
+function custom_firmware_file() {
+    var input = document.getElementById("custom_firmware");
+    return (input && input.files.length) ? input.files[0] : null;
+}
+
+// show either the standard firmware list or the custom firmware file input
+function set_firmware_source_view() {
+    if (firmware_source()=="custom") {
+        $("#standard_firmware_bound").hide();
+        // the radio format only selects between the listed standard firmwares,
+        // a custom firmware has its radio format built in
+        $("#radio_format_bound").hide();
+        $("#custom_firmware_bound").show();
+        $("#update-firmware").text(custom_firmware_button_label);
+    } else {
+        $("#custom_firmware_bound").hide();
+        $("#standard_firmware_bound").show();
+        $("#radio_format_bound").show();
+        $("#update-firmware").text(standard_firmware_button_label);
+        // clear any previously selected file so that switching back to custom
+        // does not silently re-use an old selection
+        $("#custom_firmware").val("");
+        update_custom_firmware_name();
+    }
+    update_firmware_summary();
+}
+
+// The upload settings (baud rate, core, autoreset) are a property of the
+// hardware rather than of the individual firmware, so any entry for the
+// selected hardware will do. Custom firmware uploads use this rather than the
+// standard firmware selection, which is filtered by radio format and can
+// therefore be empty for a hardware type that is otherwise perfectly valid.
+function upload_settings(hardware) {
+    for (var firmware_key in firmware_available) {
+        if (firmware_available[firmware_key].hardware==hardware) return firmware_available[firmware_key];
+    }
+    return undefined;
+}
+
+// describe exactly what the update firmware button will write and where
+function update_firmware_summary() {
+    var port = $("#select_serial_port").val();
+    var hardware = $("#selected_hardware").val();
+
+    if (hardware=="none") {
+        $("#firmware_summary").html(select_hardware_message);
+        return;
+    }
+
+    if (firmware_source()=="custom") {
+        var firmware = upload_settings(hardware);
+        if (firmware===undefined) {
+            $("#firmware_summary").html(no_firmware_message);
+            return;
+        }
+        var file = custom_firmware_file();
+        if (file===null) {
+            $("#firmware_summary").html(select_file_message);
+        } else {
+            var settings = firmware.baud+" baud, core "+firmware.core;
+            if (firmware.autoreset) settings += ", autoreset "+firmware.autoreset;
+            $("#firmware_summary").html(
+                "<b>"+$("<div>").text(file.name).html()+"</b> ("+Math.round(file.size/1024)+" kB) &rarr; <b>"+hardware+"</b> on <b>"+port+"</b><br>"+
+                "Upload settings for "+hardware+": "+settings
+            );
+        }
+    } else {
+        var firmware = firmware_available[$("#selected_firmware").val()];
+        if (firmware===undefined) {
+            $("#firmware_summary").html(no_firmware_message);
+            return;
+        }
+        $("#firmware_summary").html(
+            "<b>"+firmware.description+" v"+firmware.version+"</b> &rarr; <b>"+hardware+"</b> on <b>"+port+"</b>"
+        );
+    }
+}
+
+// upload a custom firmware file and flash it
+function upload_custom_firmware() {
+    var file = custom_firmware_file();
+    if (file===null) {
+        alert(select_file_message);
+        return;
+    }
+
+    var ext = file.name.split('.').pop().toLowerCase();
     if (ext != "hex" && ext != "bin") {
         alert("Please select a .hex or .bin file");
         return;
     }
 
-    // create form data
+    // the upload settings are taken from the selected hardware type
+    var hardware = $("#selected_hardware").val();
+    var firmware = upload_settings(hardware);
+    if (firmware===undefined) {
+        alert(hardware=="none" ? select_hardware_message : no_firmware_message);
+        return;
+    }
+
+    var port = $("#select_serial_port").val();
+    if (!confirm("Write "+file.name+" to "+hardware+" on "+port+"?\n\nThis will overwrite the firmware currently on the board.")) return;
+
     var formData = new FormData();
-
-    // Get the baud rate from the selected firmware
-    var firmware_key = $("#selected_firmware").val();
-    var firmware = firmware_available[firmware_key];
-
-    // 1. port
-    formData.append('port', $("#select_serial_port").val());
-    // 2. baud rate
+    formData.append('port', port);
     formData.append('baud_rate', firmware.baud);
-    // 3. core
     formData.append('core', firmware.core);
-    // 4. autoreset
     formData.append('autoreset', firmware.autoreset);
-
-    // 5. file
     formData.append('custom_firmware', file);
-    
-    // just submit the file
-    $.ajax({
-        type: "POST",
+
+    refresh_updateLog("");
+    firmware_request({
         url: path+"admin/update/firmware-upload",
         data: formData,
-        async: true,
         cache: false,
         contentType: false,
-        processData: false,
+        processData: false
+    });
+}
+
+// flash one of the listed standard firmwares
+function update_standard_firmware() {
+    var firmware_key = $("#selected_firmware").val();
+    var firmware = firmware_available[firmware_key];
+    if (firmware===undefined) {
+        alert($("#selected_hardware").val()=="none" ? select_hardware_message : no_firmware_message);
+        return;
+    }
+
+    var port = $("#select_serial_port").val();
+    if (!confirm("Write "+firmware.description+" v"+firmware.version+" to "+$("#selected_hardware").val()+" on "+port+"?\n\nThis will overwrite the firmware currently on the board.")) return;
+
+    refresh_updateLog("");
+    firmware_request({
+        url: path+"admin/update/firmware",
+        data: "serial_port="+port+"&firmware_key="+firmware_key
+    });
+}
+
+// shared request handling for both firmware update routes
+function firmware_request(options) {
+    var $button = $("#update-firmware");
+    var label = firmware_source()=="custom" ? custom_firmware_button_label : standard_firmware_button_label;
+    $button.prop("disabled", true).text(flashing_message);
+
+    $.ajax($.extend({
+        type: "POST",
+        async: true,
         dataType: "json",
         success: function(result) {
             if (result.reauth == true) { window.location.reload(true); }
@@ -288,10 +496,12 @@ $("#custom_firmware").change(function(){
                 refresh_updateLog(result.message);
                 refresherStart(getUpdateLog, 1000)
             }
-          
+        },
+        complete: function() {
+            $button.prop("disabled", false).text(label);
         }
-    });
-});
+    }, options));
+}
 
 function draw_firmware_select_list() {
     refresh_updateLog("");
@@ -299,7 +509,8 @@ function draw_firmware_select_list() {
     var radio_format = $("#selected_radio_format").val();
 
     if (hardware=="none") {
-        $("#selected_firmware").html("<option>none</option>");
+        $("#selected_firmware").html("<option value='none'>none</option>");
+        update_firmware_summary();
         return;
     }
 
@@ -310,33 +521,23 @@ function draw_firmware_select_list() {
             out += "<option value='"+firmware_key+"'>"+firmware.description+", "+firmware.radio_format+", v"+firmware.version+"</option>";
         }
     }
+    if (out=="") out = "<option value='none'>none</option>";
     $("#selected_firmware").html(out);
+    update_firmware_summary();
 }
 
 
+// single action button, flashes either the selected standard firmware
+// or the uploaded custom firmware file depending on the selected source
 $("#update-firmware").click(function() {
-    refresh_updateLog("");
-    var serial_port = $("#select_serial_port").val();
-    var firmware_key = $("#selected_firmware").val();
-
-    $.ajax({
-        type: "POST",
-        url: path+"admin/update/firmware",
-        data: "serial_port="+serial_port+"&firmware_key="+firmware_key,
-        async: true,
-        dataType: "json",
-        success: function(result) {
-            if (result.reauth == true) { window.location.reload(true); }
-            if (result.success == false)  {
-                clearInterval(updates_log_interval);
-                refresh_updateLog("<text style='color:red;'>" + result.message + "</text>\n");
-            } else {
-                refresh_updateLog(result.message);
-                refresherStart(getUpdateLog, 1000)
-            }
-        }
-    });
+    if (firmware_source()=="custom") {
+        upload_custom_firmware();
+    } else {
+        update_standard_firmware();
+    }
 });
+
+update_firmware_summary();
 
 
 // shrink log file viewers
