@@ -1031,6 +1031,60 @@ class User
     }
 
 
+    /**
+     * Server-side gravatar proxy: avatars are fetched and cached by the server
+     * so that the visitor's browser never connects to gravatar.com directly
+     * (gravatar.com would otherwise receive the visitor's IP and email hash on every page view)
+     *
+     * @param string $hash  md5 (32 hex chars) or sha256 (64 hex chars) gravatar email hash
+     * @param int    $size  image size in pixels
+     * @return array|false  array('content'=>bytes, 'mime'=>type) or false if unavailable
+     */
+    public function get_gravatar($hash, $size)
+    {
+        if (!is_string($hash) || !preg_match('/^([0-9a-f]{32}|[0-9a-f]{64})$/', $hash)) return false;
+        $size = (int) $size;
+        if ($size<1 || $size>512) $size = 52;
+
+        $cache_dir = !empty($GLOBALS["avatar_cache_dir"]) ? $GLOBALS["avatar_cache_dir"] : sys_get_temp_dir()."/emoncms-avatar-cache";
+        if (!is_dir($cache_dir)) @mkdir($cache_dir, 0700, true);
+        $cache_file = "$cache_dir/$hash-$size";
+        $cache_max_age = 7*24*3600;
+
+        $content = false;
+        if (is_file($cache_file) && (time()-filemtime($cache_file)) < $cache_max_age) {
+            $content = @file_get_contents($cache_file);
+        }
+        if ($content === false) {
+            $ch = curl_init("https://www.gravatar.com/avatar/$hash?s=$size&d=mp&r=g");
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+            $fetched = curl_exec($ch);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($fetched !== false && $http_code == 200 && strlen($fetched)) {
+                $content = $fetched;
+                // atomic write so concurrent requests never read a partial file
+                $tmp_file = $cache_file.".".getmypid().".tmp";
+                if (@file_put_contents($tmp_file, $content) !== false) @rename($tmp_file, $cache_file);
+            } else if (is_file($cache_file)) {
+                // gravatar.com unreachable: fall back to the stale cached copy
+                $content = @file_get_contents($cache_file);
+            }
+        }
+        if ($content === false) return false;
+
+        $mime = "image/png";
+        if (substr($content,0,3)=="\xFF\xD8\xFF") $mime = "image/jpeg";
+        else if (substr($content,0,6)=="GIF87a" || substr($content,0,6)=="GIF89a") $mime = "image/gif";
+        else if (substr($content,0,4)=="RIFF" && substr($content,8,4)=="WEBP") $mime = "image/webp";
+
+        return array('content'=>$content, 'mime'=>$mime);
+    }
+
     public function update_last_active($userid) {
         $userid = (int) $userid;
         $lastactive = time();
