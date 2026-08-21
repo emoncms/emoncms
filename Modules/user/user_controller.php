@@ -152,6 +152,16 @@ function user_controller()
         if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));
 
         // The end points are safe to use with apikeys
+
+        // Describes the current session so that a client holding an apikey can discover which
+        // account the key belongs to and whether it grants write access, without exposing the
+        // username, email address or the keys themselves. Used by the sync module to validate a
+        // remote apikey, in place of user/get which is restricted to interactive logins below.
+        if ($route->action == 'session' && $session['read']) return array(
+            'userid' => (int) $session['userid'],
+            'type' => $session['write'] ? 'write' : 'read'
+        );
+
         if ($route->action == 'getuuid' && $session['read']) return $user->get_uuid($session['userid']);
         if ($route->action == 'timezone' && $session['read']) return $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) return $user->get_timezone($session['userid']);
