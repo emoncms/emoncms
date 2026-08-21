@@ -272,6 +272,22 @@ class Feed
         return $feedexist;
     }
 
+    // Return true only if every feed id in the list is public.
+    // Used to decide whether a graph/multigraph config may be shared without
+    // a session. Fails closed: a missing feed makes the whole set non-public.
+    // Non-positive ids reference no real feed and are ignored.
+    public function all_feeds_public($feedids)
+    {
+        foreach ($feedids as $id) {
+            $id = (int) $id;
+            if ($id < 1) continue;
+            if (!$this->exist($id)) return false;
+            $f = $this->get($id);
+            if (empty($f['public'])) return false;
+        }
+        return true;
+    }
+
     // Check both if feed exists and if the user has access to the feed
     public function access($userid,$feedid)
     {
