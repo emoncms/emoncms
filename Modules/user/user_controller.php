@@ -93,6 +93,20 @@ function user_controller()
             exit();
         }
 
+        // Server-side gravatar proxy, see User::get_gravatar
+        if ($route->action == 'gravatar' && $session['read']) {
+            $avatar = $user->get_gravatar(get('hash'), (int) get('s'));
+            if ($avatar === false) {
+                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+                exit();
+            }
+            header("Content-Type: ".$avatar['mime']);
+            header("Content-Length: ".strlen($avatar['content']));
+            header("Cache-Control: private, max-age=86400");
+            echo $avatar['content'];
+            exit();
+        }
+
         if ($route->action == 'verify' && $settings['interface']['email_verification'] && isset($_GET['key'])) {
             // On first registration the user will not be logged in
             // a message is returned on the login page with the result of the verification process
