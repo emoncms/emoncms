@@ -77,6 +77,7 @@ class User
                 $session['gravatar'] = '';
                 $session['public_userid'] = 0;
                 $session['public_username'] = "";
+                $session['apikey'] = 1;       // authenticated with an apikey rather than an interactive login
                 return $session;
             }
             
@@ -90,6 +91,7 @@ class User
                 $session['gravatar'] = '';
                 $session['public_userid'] = 0;
                 $session['public_username'] = "";
+                $session['apikey'] = 1;       // authenticated with an apikey rather than an interactive login
                 return $session;
             }
         }
@@ -114,6 +116,7 @@ class User
             $session['gravatar'] = '';
             $session['public_userid'] = 0;
             $session['public_username'] = "";
+            $session['apikey'] = 1;       // authenticated with an apikey rather than an interactive login
             if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$id);
             return $session;
         }
@@ -135,6 +138,7 @@ class User
             $session['gravatar'] = '';
             $session['public_userid'] = 0;
             $session['public_username'] = "";
+            $session['apikey'] = 1;       // authenticated with an apikey rather than an interactive login
             if ($this->redis) $this->redis->set("readapikey:$apikey_in",$id);
             return $session;
         }

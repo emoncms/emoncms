@@ -138,31 +138,48 @@ function user_controller()
         if ($route->action == 'login' && !$session['read']) return $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
         if ($route->action == 'register' && $allowusersregister) return $user->register(post('username'),post('password'),post('email'),post('timezone'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
+
         
         if ($route->action == 'resend-verify' && $settings["interface"]["email_verification"]) {
             if (isset($_GET['username'])) $username = $_GET['username']; else $username = $session["username"];
             return  $user->send_verification_email($username);
         }
+
+        // Trigger password reset from username and email (non authenticated)
+        if ($route->action == 'passwordreset') return  $user->passwordreset(get('username'),get('email'));
+
+        // Returns apikey's from login credentials, required username and password.
+        if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));
+
+        // The end points are safe to use with apikeys
         if ($route->action == 'getuuid' && $session['read']) return $user->get_uuid($session['userid']);
+        if ($route->action == 'timezone' && $session['read']) return $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
+        if ($route->action == 'gettimezone' && $session['read']) return $user->get_timezone($session['userid']);
+        if ($route->action == 'gettimezones') return $user->get_timezones();
+
+        // ---------------------------------------------------------------------------------------------------------
+        // All actions beyond this point require the user to be logged in with a username and password not an apikey
+        // ---------------------------------------------------------------------------------------------------------
+        $is_apikey_session = !empty($session['apikey']);
+
+        if ($session['read'] && $is_apikey_session) {
+            return array('success'=>false, 'message'=>tr("This action requires an interactive login and cannot be performed with an API key"));
+        }
+        
+        // Change username, email, password
         if ($route->action == 'changeusername' && $session['write']) return  $user->change_username($session['userid'],get('username'));
         if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],get('email'));
         if ($route->action == 'changepassword' && $session['write']) return  $user->change_password($session['userid'],post('old'),post('new'));
         
-        if ($route->action == 'passwordreset') return  $user->passwordreset(get('username'),get('email'));
         // Apikey
         if ($route->action == 'newapikeyread' && $session['write']) return  $user->new_apikey_read($session['userid']);
         if ($route->action == 'newapikeywrite' && $session['write']) return  $user->new_apikey_write($session['userid']);
-
-        if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));
 
         // Get and set - user by profile client
         if ($route->action == 'get' && $session['write']) return  $user->get($session['userid']);
         if ($route->action == 'set' && $session['write']) return  $user->set($session['userid'],json_decode(post('data')));
 
-        if ($route->action == 'timezone' && $session['read']) return $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
-        if ($route->action == 'gettimezone' && $session['read']) return $user->get_timezone($session['userid']);
-        if ($route->action == 'gettimezones') return $user->get_timezones();
-           
+        // Delete all
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
             $userid = $session['userid'];
@@ -205,6 +222,8 @@ function user_controller()
                 return "missing mode field";
             }
         }
+
+        // ---------------------- end of restricted section ---------------------------
     }
 
     return array('content'=>false);
