@@ -1,6 +1,8 @@
 <?php 
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path, $session, $user; 
+
+// The input API helper is only available for write access sessions - checked in the controller
 ?>
 
 <style>

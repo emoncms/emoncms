@@ -9,12 +9,18 @@
 <ul><li><?php echo ctx_tr('schedule_messages','Append on the URL of your request: &apikey=APIKEY'); ?></li>
 <li><?php echo ctx_tr('schedule_messages','Use POST parameter: "apikey=APIKEY"'); ?></li>
 <li><?php echo ctx_tr('schedule_messages','Add the HTTP header: "Authorization: Bearer APIKEY"'); ?></li></ul>
+
+<?php 
+// Apikey's must only be made available with a write access session
+if ($session['write']) {
+?>
 <p><b><?php echo ctx_tr('schedule_messages','Read only:'); ?></b><br>
 <input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
 </p>
 <p><b><?php echo ctx_tr('schedule_messages','Read & Write:'); ?></b><br>
 <input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_write($session['userid']); ?>" />
 </p>
+<?php } ?>
 
 <h3><?php echo ctx_tr('schedule_messages','Available HTML URLs'); ?></h3>
 <table class="table">
