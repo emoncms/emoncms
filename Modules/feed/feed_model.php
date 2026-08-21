@@ -274,13 +274,16 @@ class Feed
 
     // Return true only if every feed id in the list is public.
     // Used to decide whether a graph/multigraph config may be shared without
-    // a session. Fails closed: a missing feed makes the whole set non-public.
-    // Non-positive ids reference no real feed and are ignored.
+    // a session. Fails closed: anything that cannot be shown to be a public
+    // feed makes the whole set non-public. That includes a missing feed, an id
+    // that is not a positive integer, and an empty or non array list - there is
+    // no public feed to justify sharing, so there is nothing to grant.
     public function all_feeds_public($feedids)
     {
+        if (!is_array($feedids) || !count($feedids)) return false;
         foreach ($feedids as $id) {
+            if (!is_numeric($id) || (int) $id < 1) return false;
             $id = (int) $id;
-            if ($id < 1) continue;
             if (!$this->exist($id)) return false;
             $f = $this->get($id);
             if (empty($f['public'])) return false;

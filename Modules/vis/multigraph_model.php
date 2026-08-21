@@ -86,14 +86,23 @@ class Multigraph
         // config is only returned if every feed it references is public. The feed
         // data itself is separately access-controlled per feed; this stops a
         // non-owner learning the feed ids/names/layout of a private multigraph.
+        //
+        // Fails closed: a feedlist that is empty, does not parse as a list, or
+        // holds an entry without a feed id proves nothing about being public, so
+        // it is treated as private rather than shared on the strength of the
+        // entries that did parse.
         if ($userid < 1 || (int) $result['userid'] !== $userid) {
+            $private = !$this->feed || !is_array($feedlist) || !count($feedlist);
+
             $feedids = array();
-            if (is_array($feedlist)) {
+            if (!$private) {
                 foreach ($feedlist as $f) {
-                    if (isset($f->id)) $feedids[] = $f->id;
+                    if (!is_object($f) || !isset($f->id)) { $private = true; break; }
+                    $feedids[] = $f->id;
                 }
             }
-            if (!$this->feed || !$this->feed->all_feeds_public($feedids)) {
+
+            if ($private || !$this->feed->all_feeds_public($feedids)) {
                 return array('success'=>false, 'message'=>'this multigraph is not public');
             }
         }
