@@ -96,7 +96,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
                     <?php if (!$session["gravatar"]) { ?>
                         <span class="svg-icon-user" style="color:#fff"></span>
                     <?php } else { ?>
-                        <img src="https://www.gravatar.com/avatar/<?php echo md5($session["gravatar"]); ?>?s=52&d=mp&r=g" class="grav img-circle">
+                        <img src="<?php echo $path; ?>user/gravatar?hash=<?php echo md5(strtolower(trim($session["gravatar"]))); ?>&amp;s=52" class="grav img-circle">
                     <?php } ?>
                 </a>
 
