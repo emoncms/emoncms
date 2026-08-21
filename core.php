@@ -437,9 +437,16 @@ function generate_secure_key($length)
 // ---------------------------------------------------------------------------------------------------------
 // Fetch the current session's apikeys, for display on the API documentation pages.
 //
-// Keys are only returned for a session that holds write access. A session
-// authenticated with the read only apikey has a userid but no write access, and
-// must never be shown the write key.
+// Two conditions, both required:
+//
+// 1. The session holds write access. A session authenticated with the read only
+//    apikey has a userid but no write access, and must never be shown the write
+//    key: that would turn read access into write access.
+//
+// 2. The session is an interactive login, not one authenticated with a key.
+//    Keys are account credentials, so they follow the same rule as the rest of
+//    the account actions in user_controller: presenting one key never yields
+//    another. Without this a leaked write key would also hand over the read key.
 //
 // Returns array('logged_in'=>bool, 'read'=>string|false, 'write'=>string|false)
 // ---------------------------------------------------------------------------------------------------------
@@ -449,7 +456,8 @@ function session_apikeys()
 
     $keys = array('logged_in'=>false, 'read'=>false, 'write'=>false);
 
-    if (isset($session['write']) && $session['write'] && isset($session['userid']) && $session['userid']>0) {
+    if (isset($session['write']) && $session['write'] && isset($session['userid']) && $session['userid']>0
+        && empty($session['apikey'])) {
         $keys['logged_in'] = true;
         $keys['read'] = $user->get_apikey_read($session['userid']);
         $keys['write'] = $user->get_apikey_write($session['userid']);
