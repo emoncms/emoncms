@@ -15,7 +15,17 @@ function schedule_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) $result = view("Modules/schedule/Views/schedule_view.php",array());
-        if ($route->action == 'api') $result = view("Modules/schedule/Views/schedule_api.php", array());
+        if ($route->action == 'api') {
+            require_once "Modules/schedule/schedule_api_obj.php";
+            $api = array();
+            foreach (schedule_api_obj() as $endpoint) { $endpoint['module'] = "schedule"; $api[] = $endpoint; }
+            $result = view("Lib/api_explorer_view.php", array(
+                "title"=>tr("Schedule API"),
+                "sub"=>tr("Use the schedule API to manage the time of use schedules available to input and feed processing"),
+                "api"=>$api, "show_docs_link"=>true, "standalone"=>true,
+                "apikeys"=>session_apikeys()
+            ));
+        }
     }
 
     if ($route->format == 'json')

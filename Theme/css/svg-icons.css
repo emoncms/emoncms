@@ -20,15 +20,17 @@
     vertical-align: -0.15em;
 }
 
-/* Icon-only links should inherit surrounding text colour, not default link/visited palette */
-a:not(.text-muted):has(> [class^="svg-icon-"]:only-child),
-a:not(.text-muted):has(> [class*=" svg-icon-"]:only-child),
-a:not(.text-muted):has(> [class^="svg-icon-"]:only-child):visited,
-a:not(.text-muted):has(> [class*=" svg-icon-"]:only-child):visited,
-a:not(.text-muted):has(> [class^="svg-icon-"]:only-child):hover,
-a:not(.text-muted):has(> [class*=" svg-icon-"]:only-child):hover,
-a:not(.text-muted):has(> [class^="svg-icon-"]:only-child):focus,
-a:not(.text-muted):has(> [class*=" svg-icon-"]:only-child):focus {
+/* Icon-only links should inherit surrounding text colour, not default link/visited palette.
+   Excludes dropdown-menu links: their icon is the only child *element* but is followed by
+   text, and inheriting there lets page-level colours leak into the menus. */
+a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child),
+a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child),
+a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):visited,
+a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):visited,
+a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):hover,
+a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):hover,
+a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):focus,
+a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):focus {
     color: inherit;
 }
 
@@ -130,6 +132,11 @@ a:not(.text-muted):has(> [class*=" svg-icon-"]:only-child):focus {
 .svg-icon-logout {
     -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M23.75 6.875c2.563 2.188 4.25 5.5 4.25 9.125 0 6.625-5.375 12-12 12s-12-5.375-12-12c0-3.625 1.688-6.938 4.25-9.125l1.875 1.875c-2.063 1.688-3.438 4.313-3.438 7.25 0 5.188 4.125 9.313 9.313 9.313s9.313-4.125 9.313-9.313c0-2.938-1.313-5.5-3.438-7.188zM17.313 4v13.313h-2.625v-13.313h2.625z'/></svg>");
     mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M23.75 6.875c2.563 2.188 4.25 5.5 4.25 9.125 0 6.625-5.375 12-12 12s-12-5.375-12-12c0-3.625 1.688-6.938 4.25-9.125l1.875 1.875c-2.063 1.688-3.438 4.313-3.438 7.25 0 5.188 4.125 9.313 9.313 9.313s9.313-4.125 9.313-9.313c0-2.938-1.313-5.5-3.438-7.188zM17.313 4v13.313h-2.625v-13.313h2.625z'/></svg>");
+}
+
+.svg-icon-info {
+    -webkit-mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2.688c-7.375 0-13.313 5.938-13.313 13.313s5.938 13.313 13.313 13.313 13.313-5.938 13.313-13.313-5.938-13.313-13.313-13.313zM17.313 22.688h-2.625v-9.375h2.625v9.375zM17.313 12h-2.625v-2.688h2.625v2.688z'/></svg>");
+    mask-image: url("data:image/svg+xml;charset=utf-8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><path d='M16 2.688c-7.375 0-13.313 5.938-13.313 13.313s5.938 13.313 13.313 13.313 13.313-5.938 13.313-13.313-5.938-13.313-13.313-13.313zM17.313 22.688h-2.625v-9.375h2.625v9.375zM17.313 12h-2.625v-2.688h2.625v2.688z'/></svg>");
 }
 
 .svg-icon-expand {

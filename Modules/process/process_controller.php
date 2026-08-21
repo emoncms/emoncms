@@ -32,7 +32,17 @@ function process_controller()
 
     if ($route->format == 'html')
     {
-        if ($route->action == 'api') $result = view("Modules/process/Views/process_api.php", array());
+        if ($route->action == 'api') {
+            require_once "Modules/process/process_api_obj.php";
+            $api = array();
+            foreach (process_api_obj() as $endpoint) { $endpoint['module'] = "process"; $api[] = $endpoint; }
+            $result = view("Lib/api_explorer_view.php", array(
+                "title"=>tr("Process API"),
+                "sub"=>tr("Use the process API to list the processes available for input and virtual feed process lists"),
+                "api"=>$api, "show_docs_link"=>true, "standalone"=>true,
+                "apikeys"=>session_apikeys()
+            ));
+        }
     }
 
     elseif ($route->format == 'json')
