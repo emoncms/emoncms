@@ -192,6 +192,15 @@ if ($route->controller=="version") {
     echo version();
     exit;
 }
+// Machine readable API documentation for AI assistants (llms.txt convention):
+// /llms.txt is a short index, /llms-full.txt the complete reference, both
+// generated from the same definitions as the site/api explorer
+if (($route->controller=="llms" || $route->controller=="llms-full") && $route->format=="txt") {
+    require_once "Lib/api_docs_export.php";
+    header('Content-Type: text/plain; charset=utf-8');
+    echo $route->controller=="llms" ? api_docs_llms_txt() : api_docs_markdown();
+    exit;
+}
 
 if (get('embed')==1) {
     $embed = 1;
@@ -392,8 +401,11 @@ if ($route->format == 'json') {
         print view("Theme/theme.php", $output);
     }
 
-} elseif ($route->format == 'text') {
+} elseif ($route->format == 'text' || $route->format == 'txt') {
     header('Content-Type: text/plain');
+    print $output['content'];
+} elseif ($route->format == 'md') {
+    header('Content-Type: text/markdown; charset=utf-8');
     print $output['content'];
 } elseif ($route->format == 'csv') {
     header('Content-Type: text/csv');

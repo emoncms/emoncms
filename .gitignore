@@ -16,6 +16,7 @@ emoncms.log
 Modules/*
 Modules/*/
 !Modules/admin/
+!Modules/api/
 !Modules/feed/
 !Modules/eventp/
 !Modules/input/

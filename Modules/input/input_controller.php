@@ -136,7 +136,15 @@ function input_controller()
         elseif ($route->action == 'api') {
             $route->format = "html";
             textdomain("messages");
-            return view("Modules/input/Views/input_api.php", array());
+            require_once "Modules/input/input_api_obj.php";
+            $api = array();
+            foreach (input_api_obj() as $endpoint) { $endpoint['module'] = "input"; $api[] = $endpoint; }
+            return view("Lib/api_explorer_view.php", array(
+                "title"=>tr("Input API"),
+                "sub"=>tr("Use the input API to post data from your own devices and scripts"),
+                "api"=>$api, "show_docs_link"=>true, "standalone"=>true,
+                "apikeys"=>session_apikeys()
+            ));
         } elseif ($route->action == 'view') {
             $route->format = "html";
             textdomain("messages");

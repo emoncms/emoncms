@@ -55,8 +55,15 @@ function feed_controller()
             if (!$session['read'] && !$session['public_userid']) {
                 return "";
             }
-            require "Modules/feed/feed_api_obj.php";
-            return view("Lib/api_tool_view.php",array("title"=>tr("Feed API"), "api"=>feed_api_obj(), "selected_api"=>8));
+            require_once "Modules/feed/feed_api_obj.php";
+            $api = array();
+            foreach (feed_api_obj() as $endpoint) { $endpoint['module'] = "feed"; $api[] = $endpoint; }
+            return view("Lib/api_explorer_view.php", array(
+                "title"=>tr("Feed API"),
+                "sub"=>tr("Use the feed API to read timeseries data recorded in emoncms feeds"),
+                "api"=>$api, "show_docs_link"=>true, "standalone"=>true,
+                "apikeys"=>session_apikeys()
+            ));
         } elseif (!$session['read']) {
             return ''; // empty strings force user back to login
         }
