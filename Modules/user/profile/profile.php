@@ -94,7 +94,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
     <tr>
       <td class="muted"><?php echo tr('Gravatar'); ?></td>
       <td>
-        <img v-if="!edit.gravatar" style="border: 1px solid #ccc; padding:2px" :src="gravatarUrl" />      
+        <img v-if="!edit.gravatar && gravatarUrl" style="border: 1px solid #ccc; padding:2px" :src="gravatarUrl" />
         <div v-else class="input-append">
           <input type="text" style="width:220px" v-model="user.gravatar"/>
           <button class="btn" @click="save('gravatar')"><i class="icon-ok"></i></button>
@@ -261,6 +261,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 </div>
 
 <script>
+var gravatar_enabled = <?php echo json_encode(gravatar_enabled()); ?>;
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
 var translation_status = <?php echo json_encode(get_translation_status()); ?>;
 var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";

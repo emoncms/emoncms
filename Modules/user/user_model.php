@@ -14,6 +14,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
+    // Cache directory for the server side gravatar proxy, alongside the other
+    // emoncms data directories. See gravatar_enabled(): where this does not
+    // exist or is not writable the gravatar feature is disabled.
+    const GRAVATAR_CACHE_DIR = '/var/opt/emoncms/gravatar';
+
     private $mysqli;
     private $rememberme;
     private $enable_rememberme = false;
@@ -1036,6 +1041,29 @@ class User
 
 
     /**
+     * Is the server side gravatar proxy available on this install?
+     *
+     * The cache directory is deliberately not created here: it is provisioned by
+     * packaging alongside the other /var/opt/emoncms data directories, so that
+     * ownership and permissions are set once by the installer rather than by
+     * whichever request happens to arrive first. Emoncms also runs on hosts
+     * where that path does not exist and is not writable (shared hosting,
+     * containers), and creating a cache under a world writable temp directory
+     * would mean following whatever another local user had planted there.
+     * Where the directory is missing or read only the feature is simply off.
+     *
+     * @return bool
+     */
+    public function gravatar_enabled()
+    {
+        static $enabled = null;
+        if ($enabled === null) {
+            $enabled = is_dir(self::GRAVATAR_CACHE_DIR) && is_writable(self::GRAVATAR_CACHE_DIR);
+        }
+        return $enabled;
+    }
+
+    /**
      * Server-side gravatar proxy: avatars are fetched and cached by the server
      * so that the visitor's browser never connects to gravatar.com directly
      * (gravatar.com would otherwise receive the visitor's IP and email hash on every page view)
@@ -1046,13 +1074,12 @@ class User
      */
     public function get_gravatar($hash, $size)
     {
+        if (!$this->gravatar_enabled()) return false;
         if (!is_string($hash) || !preg_match('/^([0-9a-f]{32}|[0-9a-f]{64})$/', $hash)) return false;
         $size = (int) $size;
         if ($size<1 || $size>512) $size = 52;
 
-        $cache_dir = !empty($GLOBALS["avatar_cache_dir"]) ? $GLOBALS["avatar_cache_dir"] : sys_get_temp_dir()."/emoncms-avatar-cache";
-        if (!is_dir($cache_dir)) @mkdir($cache_dir, 0700, true);
-        $cache_file = "$cache_dir/$hash-$size";
+        $cache_file = self::GRAVATAR_CACHE_DIR."/$hash-$size";
         $cache_max_age = 7*24*3600;
 
         $content = false;
@@ -1068,7 +1095,11 @@ class User
             curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
             $fetched = curl_exec($ch);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
+            // no curl_close(): deprecated since PHP 8.0 and the handle is freed
+            // when it goes out of scope. The deprecation notice it raises would be
+            // written into the response ahead of the image bytes, corrupting every
+            // cache miss on installs that have display_errors on.
+            unset($ch);
             if ($fetched !== false && $http_code == 200 && strlen($fetched)) {
                 $content = $fetched;
                 // atomic write so concurrent requests never read a partial file

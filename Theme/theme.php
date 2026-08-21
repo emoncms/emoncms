@@ -91,9 +91,10 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             <div class="menu-tr"><ul>
             <?php if ($session["read"]) { ?>
 
-            <li class="<?php echo $session["gravatar"] ? '' : 'no-'; ?>gravatar dropdown">
+            <?php $show_gravatar = $session["gravatar"] && gravatar_enabled(); ?>
+            <li class="<?php echo $show_gravatar ? '' : 'no-'; ?>gravatar dropdown">
                 <a id="user-dropdown" href="#" title="<?php echo $session["username"] . " " . ($session['admin'] ? '(Admin)' : ''); ?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
-                    <?php if (!$session["gravatar"]) { ?>
+                    <?php if (!$show_gravatar) { ?>
                         <span class="svg-icon-user" style="color:#fff"></span>
                     <?php } else { ?>
                         <img src="<?php echo $path; ?>user/gravatar?hash=<?php echo md5(strtolower(trim($session["gravatar"]))); ?>&amp;s=52" class="grav img-circle">
