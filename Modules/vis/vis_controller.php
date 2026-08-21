@@ -22,7 +22,7 @@
     $feed = new Feed($mysqli,$redis, $settings['feed']);
 
     require "Modules/vis/multigraph_model.php";
-    $multigraph = new Multigraph($mysqli);
+    $multigraph = new Multigraph($mysqli, $feed);
 
     $visdir = "vis/visualisations/";
 
