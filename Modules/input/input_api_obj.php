@@ -30,18 +30,20 @@ function input_api_obj() {
       "description" => tr("Post data (JSON)"),
       "path" => "input/post",
       "parameters" => array(
-        "node" => array( "default" => "emontx", "description" => tr("Node name, max 16 characters") ),
+        "node" => array( "default" => "emontx", "description" => tr("Node name, see the naming rules below") ),
         "fulljson" => array( "default" => '{"power1":100,"power2":200,"power3":300}', "description" => tr("Strict JSON, recommended for new integrations") )
       ),
       "mode" => "write",
       "group" => tr("Posting data"),
-      "notes" => tr("Responds {\"success\": true} when the fulljson parameter is used, plain text 'ok' otherwise. The node name can also be given as a sub-action: input/post/emontx. Legacy parameters json={power1:100} and csv=100,200,300 are parsed leniently: non-numeric values are silently skipped.")
+      "notes" => tr("Responds {\"success\": true} when the fulljson parameter is used, plain text 'ok' otherwise. The node name can also be given as a sub-action: input/post/emontx. Legacy parameters json={power1:100} and csv=100,200,300 are parsed leniently: non-numeric values are silently skipped.")." "
+                 .tr("Naming rules: inputs are created automatically, named by the keys of the posted data. Node and input names may contain letters (including accented and non latin letters), numbers, underscore, hyphen, period and spaces. Any other character is removed without warning, so \"power(W)\" becomes \"powerW\".")." "
+                 .tr("Name length is set by the database rather than by emoncms: emoncms.org allows 16 characters for a node name and 64 for an input name. Where those limits apply, posting a longer name does not create the input and the values sent under it are dropped, and the response is still 'ok'. Keep within these limits for portability.")
     ),
     array(
       "description" => tr("Post data (CSV)"),
       "path" => "input/post",
       "parameters" => array(
-        "node" => array( "default" => "emontx", "description" => tr("Node name, max 16 characters") ),
+        "node" => array( "default" => "emontx", "description" => tr("Node name, see the naming rules below") ),
         "csv" => array( "default" => "100,200,300", "description" => tr("Values are named 1,2,3... in order") )
       ),
       "mode" => "write",
@@ -167,7 +169,9 @@ function input_api_obj() {
         "fields" => array( "default" => '{"description":"Input Description"}', "description" => tr("Only name and description can be set") )
       ),
       "mode" => "write",
-      "group" => tr("Managing inputs")
+      "group" => tr("Managing inputs"),
+      "notes" => tr("Unlike posting, which removes characters it does not accept, this endpoint rejects the whole request with 'invalid characters in input name' and changes nothing.")." "
+                 .tr("A name here may contain letters, numbers, underscore, hyphen and spaces. A description may also contain a period. Note that a period is accepted in an input name created by posting but not when renaming here.")
     ),
     array(
       "description" => tr("Set descriptions for multiple inputs"),
