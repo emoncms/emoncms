@@ -34,7 +34,9 @@ var app = Vue.createApp({
     }; },
     computed: {
         gravatarUrl: function() {
-            return 'https://www.gravatar.com/avatar/' + this.gravatarHash;
+            // avatars are served via the local proxy rather than gravatar.com directly
+            if (!this.gravatarHash) return '';
+            return path + 'user/gravatar?hash=' + this.gravatarHash + '&s=80';
         }
     },
     watch: {
