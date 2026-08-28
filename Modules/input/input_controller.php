@@ -76,6 +76,11 @@ function input_controller()
                     $result = $param->sha256base64_response;
                 }
             } else {
+                // Reject the batch with 400 so that the client can tell data we
+                // will never accept from a problem worth retrying. Without a
+                // status code a client can only compare the body against "ok",
+                // and will retry a batch that can never succeed forever.
+                header($_SERVER["SERVER_PROTOCOL"]." 400 Bad Request");
                 $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
                 $log = new EmonLogger(__FILE__);
                 $log->error($result." for User: ".$session['userid']);
