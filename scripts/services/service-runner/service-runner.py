@@ -38,6 +38,15 @@ SCRIPT_WHITELIST = {
     "backup-export":         "/opt/emoncms/modules/backup/emoncms-export.sh",
     "backup-import":         "/opt/emoncms/modules/backup/emoncms-import.sh",
     "backup-usb-import":     "/opt/emoncms/modules/backup/usb-import.sh",
+    # Backup to an attached drive. One action per argument shape rather than a
+    # single action for the whole script, so that the expected argument count
+    # below stays a meaningful check on each of them.
+    "backup-drive-sync":     "/opt/emoncms/modules/backup/drive-backup.sh",
+    "backup-drive-verify":   "/opt/emoncms/modules/backup/drive-backup.sh",
+    "backup-drive-setpath":  "/opt/emoncms/modules/backup/drive-backup.sh",
+    "backup-drive-mount":    "/opt/emoncms/modules/backup/drive-backup.sh",
+    "backup-drive-schedule": "/opt/emoncms/modules/backup/drive-backup.sh",
+    "backup-drive-restore":  "/opt/emoncms/modules/backup/drive-restore.sh",
 }
 
 # Hardcoded whitelist: log name -> absolute log file path.
@@ -48,6 +57,9 @@ LOG_WHITELIST = {
     "exportbackup": f"{_LOG_DIR}/exportbackup.log",
     "importbackup": f"{_LOG_DIR}/importbackup.log",
     "usbimport":    f"{_LOG_DIR}/usbimport.log",
+    "drivebackup":       f"{_LOG_DIR}/drivebackup.log",
+    "drivebackupverify": f"{_LOG_DIR}/drivebackup-verify.log",
+    "driverestore":      f"{_LOG_DIR}/driverestore.log",
 }
 
 _EXPECTED_ARG_COUNT = {
@@ -64,6 +76,14 @@ _EXPECTED_ARG_COUNT = {
     "backup-export":         0,    # no args
     "backup-import":         0,    # no args
     "backup-usb-import":     0,    # no args
+    "backup-drive-sync":     0,    # no args
+    "backup-drive-verify":   1,    # ["--verify"]
+    "backup-drive-setpath":  2,    # ["--set-path", "/media/backup"]
+    "backup-drive-mount":    None, # ["--mount", "/dev/disk/by-id/usb-..."]
+                                   #   or ["--format-mount", "/dev/disk/by-id/usb-...", "--confirm-erase"]
+    "backup-drive-schedule": 1,    # ["--enable-schedule"] or ["--disable-schedule"]
+    "backup-drive-restore":  None, # ["--yes"], and any of --delete,
+                                   #   ["--sql", "<snapshot>"]
 }
 
 def _validate_args(action: str, args: list) -> bool:
@@ -73,6 +93,25 @@ def _validate_args(action: str, args: list) -> bool:
         return False
     if action == "firmware-upload":
         return len(args) in (2, 6)
+    # Both take a variable number of arguments, so the shape is checked here
+    # instead. The backup scripts validate the values themselves: a mountpoint
+    # or drive has to be one their own discovery just reported, and a snapshot
+    # name one that is present on the backup drive.
+    if action == "backup-drive-schedule":
+        return args in (["--enable-schedule"], ["--disable-schedule"])
+    if action == "backup-drive-mount":
+        if args[:1] == ["--mount"]:
+            return len(args) == 2
+        if args[:1] == ["--format-mount"]:
+            return len(args) == 3 and args[2] == "--confirm-erase"
+        return False
+    if action == "backup-drive-restore":
+        if not args or args[0] != "--yes":
+            return False
+        rest = args[1:]
+        if rest[:1] == ["--delete"]:
+            rest = rest[1:]
+        return rest == [] or (len(rest) == 2 and rest[0] == "--sql")
     expected = _EXPECTED_ARG_COUNT.get(action)
     if expected is None:
         return False
