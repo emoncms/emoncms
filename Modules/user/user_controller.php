@@ -107,6 +107,29 @@ function user_controller()
             exit();
         }
 
+        // Redeem an emailed password reset link
+        if ($route->action == 'passwordreset-confirm') {
+            if (empty($settings['interface']['enable_password_reset'])) {
+                return view("Modules/user/login_block.php", array(
+                    'allowusersregister'=>$allowusersregister,
+                    'verify'=>array(),
+                    'message'=>tr("Password reset is not enabled on this installation"),
+                    'referrer'=>'',
+                    'v' => 3
+                ));
+            }
+            // Check the token before rendering the form, so an expired or
+            // already used link says so up front rather than after the user has
+            // typed a new password twice. passwordreset_confirm() re-checks.
+            // Missing key falls through to the same "invalid link" message as a
+            // bad one, rather than get()'s bare "missing key parameter" die
+            $key = get('key', false, '');
+            return view("Modules/user/passwordreset_confirm.php", array(
+                'key' => $key,
+                'key_valid' => $user->passwordreset_key_is_valid($key)
+            ));
+        }
+
         if ($route->action == 'verify' && $settings['interface']['email_verification'] && isset($_GET['key'])) {
             // On first registration the user will not be logged in
             // a message is returned on the login page with the result of the verification process
@@ -145,8 +168,17 @@ function user_controller()
             return  $user->send_verification_email($username);
         }
 
-        // Trigger password reset from username and email (non authenticated)
-        if ($route->action == 'passwordreset') return  $user->passwordreset(get('username'),get('email'));
+        // Step 1: email a one time reset link (non authenticated).
+        // POST only: as a GET this was triggerable by URL alone, which made it
+        // CSRF-able and put the address in access logs and proxy caches.
+        if ($route->action == 'passwordreset' && $route->method == 'POST') {
+            return $user->passwordreset(post('username'),post('email'));
+        }
+
+        // Step 2: redeem the emailed token and set the new password (non authenticated)
+        if ($route->action == 'passwordreset-confirm' && $route->method == 'POST') {
+            return $user->passwordreset_confirm(post('key'),post('password'));
+        }
 
         // Returns apikey's from login credentials, required username and password.
         if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));

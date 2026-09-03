@@ -79,7 +79,9 @@ var user = {
   'passwordreset':function(username,email)
   {
     var result = {};
-    $.ajax({ url: path+"user/passwordreset.json", data: "&username="+encodeURIComponent(username)+"&email="+encodeURIComponent(email), dataType: "json", async: false, success: function(data) {result = data;} });
+    // POST: as a GET this was triggerable by URL alone, which made it CSRF-able
+    // and put the email address into access logs and proxy caches
+    $.ajax({ type: "POST", url: path+"user/passwordreset.json", data: "&username="+encodeURIComponent(username)+"&email="+encodeURIComponent(email), dataType: "json", async: false, success: function(data) {result = data;} });
     return result;
   },
 

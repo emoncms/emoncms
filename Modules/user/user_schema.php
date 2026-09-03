@@ -33,6 +33,12 @@ $schema['users'] = array(
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int', 'default'=>0),
     'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
+
+    // Password reset. The emailed token itself is never stored, only its
+    // sha256 hash, so a leak of this table does not hand over live reset
+    // links. Cleared on use, and ignored once password_reset_expires passes.
+    'password_reset_hash' => array('type' => 'varchar(64)', 'default'=>''),
+    'password_reset_expires' => array('type' => 'int(11)', 'default'=>0),
     'uuid' => array('type' => 'varchar(36)', 'default'=>''),
 
     'lastactive'=> array('type' => 'int(11)'),

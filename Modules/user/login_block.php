@@ -28,7 +28,12 @@ global $path, $settings;
   #login-form { margin:0;}
   
 </style>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
+<?php
+// $v is set inside Theme/theme.php, a separate view scope rendered after this
+// one, so it was never defined here: this rendered as a constant "?v=" that
+// never busted anything. load_js stamps ?v=filemtime instead.
+load_js("Modules/user/user.js");
+?>
 <br>
 
 
