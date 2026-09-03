@@ -4,7 +4,15 @@ $schema['users'] = array(
     'id' => array('type' => 'int', 'Null'=>false, 'Key'=>'PRI', 'Extra'=>'auto_increment'),
     'username' => array('type' => 'varchar(30)'),
     'email' => array('type' => 'varchar(64)'),
-    'password' => array('type' => 'varchar(64)'),
+    // Wide enough for either algorithm settings['password']['algo'] selects:
+    // bcrypt is 60 characters, argon2id is 97. Sized for the larger so that
+    // switching algorithm never needs a widening under a live migration, and so
+    // an install that has run this update can take either. See Lib/password.php.
+    'password' => array('type' => 'varchar(255)'),
+    // Only used by rows still on the legacy sha256 format, which stored the
+    // salt separately. bcrypt and argon2id both carry their own salt inside the
+    // hash. Cleared as each account is upgraded on login, kept because
+    // unupgraded rows still need it.
     'salt' => array('type' => 'varchar(32)'),
     'apikey_write' => array('type' => 'varchar(64)'),
     'apikey_read' => array('type' => 'varchar(64)'),
