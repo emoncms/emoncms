@@ -916,26 +916,25 @@ class User
 
         $link_base = $this->password_reset_link_base();
 
-        $stmt = $this->mysqli->prepare("SELECT id,access FROM users WHERE username=? AND email=?");
+        $stmt = $this->mysqli->prepare("SELECT * FROM users WHERE username=? AND email=?");
         $stmt->bind_param("ss",$username,$emailto);
         $stmt->execute();
-        $stmt->bind_result($userid,$access);
-        $found = $stmt->fetch();
+        $userData = $stmt->get_result()->fetch_object();
         $stmt->close();
 
-        if (!$found || $userid < 1) {
+        if (!$userData || $userData->id < 1) {
             $this->log->info("passwordreset: no account matched username:$username emailto:$emailto ip:".get_client_ip_env());
             return $generic;
         }
 
         // Don't send a reset for an account that could not log in with the new
         // password anyway. The caller cannot tell this apart from success.
-        if ($access !== null && (int) $access == 0) {
-            $this->log->info("passwordreset: refused for account with login disabled userid:$userid");
+        if ($this->account_session_denied($userData)) {
+            $this->log->info("passwordreset: refused for restricted account userid:".$userData->id);
             return $generic;
         }
 
-        $userid = (int) $userid;
+        $userid = (int) $userData->id;
 
         // Per account limit, on top of the per IP limit at the top of this
         // method. The IP bucket alone does not protect the account holder: an
