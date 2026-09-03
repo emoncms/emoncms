@@ -1381,9 +1381,6 @@ class User
      * holder; hash_equals is used because it is the right default for
      * comparing a submitted digest, not because there is anything to leak.
      *
-     * Both digests get_gravatar accepts are checked: the theme addresses the
-     * proxy with md5, the profile page with sha256.
-     *
      * @param string $hash     hash supplied by the request
      * @param string $address  gravatar address to check it against
      * @return bool
@@ -1395,8 +1392,7 @@ class User
         $normalised = strtolower(trim($address));
         if ($normalised === '') return false;
 
-        return hash_equals(hash('sha256', $normalised), $hash)
-            || hash_equals(hash('md5', $normalised), $hash);
+        return hash_equals(hash('sha256', $normalised), $hash);
     }
 
     /**
@@ -1404,14 +1400,18 @@ class User
      * so that the visitor's browser never connects to gravatar.com directly
      * (gravatar.com would otherwise receive the visitor's IP and email hash on every page view)
      *
-     * @param string $hash  md5 (32 hex chars) or sha256 (64 hex chars) gravatar email hash
+     * @param string $hash  sha256 (64 hex chars) gravatar email hash
      * @param int    $size  image size in pixels
      * @return array|false  array('content'=>bytes, 'mime'=>type) or false if unavailable
      */
     public function get_gravatar($hash, $size)
     {
         if (!$this->gravatar_enabled()) return false;
-        if (!is_string($hash) || !preg_match('/^([0-9a-f]{32}|[0-9a-f]{64})$/', $hash)) return false;
+        // \z, not $: PHP's $ also matches before a trailing newline, so a hash
+        // submitted as "<64 hex>%0A" would otherwise pass and be spliced into
+        // the request URL and the cache filename. libcurl rejects such a URL
+        // anyway; this does not rely on it doing so.
+        if (!is_string($hash) || !preg_match('/^[0-9a-f]{64}\z/', $hash)) return false;
         $size = (int) $size;
         if ($size<1 || $size>512) $size = 52;
 
