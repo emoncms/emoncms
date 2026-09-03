@@ -458,8 +458,8 @@ class User
 
     public function login($username, $password, $remembermecheck, $referrer='')
     {
-        // Rate limit login attempts to prevent brute force attacks. Limit to 10 attempts in 15 minutes.
-        if ($this->is_rate_limited('login', 10, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+        // Rate limit login attempts to prevent brute force attacks. Limit to 10 failed attempts in 15 minutes.
+        if ($this->is_rate_limit_exceeded('login', 10)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
 
         // Basic checks
         $remembermecheck = (int) $remembermecheck;
@@ -470,6 +470,7 @@ class User
 
         // Dont go further if username does not exist.
         if (!$userid = $this->get_id($username)) {
+            $this->record_failed_attempt('login', 900);
             $this->log->error("Login: Username does not exist username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
@@ -487,6 +488,7 @@ class User
         // argon2id, please see Lib/password.php
         if (!verify_password($password, $userData->password, $userData->salt))
         {
+            $this->record_failed_attempt('login', 900);
             $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
@@ -1226,6 +1228,40 @@ class User
             return true;
         }
         return false;
+    }
+
+    // Check rate limit without incrementing the counter.
+    private function is_rate_limit_exceeded($action, $limit)
+    {
+        if ($this->disable_rate_limiting) return false;
+        if (!$this->redis) return false;
+
+        $ip = get_client_ip_env();
+        if (empty($ip)) return false;
+
+        $key = "ratelimit:{$action}:" . $ip;
+        $attempts = (int) $this->redis->get($key);
+        if ($attempts > $limit) {
+            $this->log->warn("Rate limit hit action:{$action} ip:{$ip}");
+            return true;
+        }
+        return false;
+    }
+
+    // Increment the failure counter for an action without checking the limit.
+    private function record_failed_attempt($action, $window)
+    {
+        if ($this->disable_rate_limiting) return;
+        if (!$this->redis) return;
+
+        $ip = get_client_ip_env();
+        if (empty($ip)) return;
+
+        $key = "ratelimit:{$action}:" . $ip;
+        $attempts = $this->redis->incr($key);
+        if ($attempts === 1) {
+            $this->redis->expire($key, $window);
+        }
     }
 
     /**
