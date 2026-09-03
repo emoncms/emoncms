@@ -1170,14 +1170,6 @@ class User
         return false;
     }
 
-    public function get_salt($userid)
-    {
-        $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT salt FROM users WHERE id = '$userid'");
-        $row = $result->fetch_object();
-        return $row->salt;
-    }
-
     //---------------------------------------------------------------------------------------
     // Get by other paramater methods
     //---------------------------------------------------------------------------------------
