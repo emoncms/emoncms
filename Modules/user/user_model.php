@@ -1097,6 +1097,14 @@ class User
 
     public function change_email($userid, $email)
     {
+        // Limited like change_password, and for a second reason: the
+        // notification below is sent to the address being replaced, so an
+        // account holder chooses both the recipient and the timing. Setting
+        // the address to someone else's and then changing it again sends them
+        // mail from this install, and unlimited that is a way to send mail to
+        // arbitrary people on our reputation.
+        if ($this->is_rate_limited('changeemail', 5, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+
         if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>tr("As you are using a cookie based remember me login, please logout and log back in to change email"));
 
         $userid = (int) $userid;

@@ -44,8 +44,14 @@ class Email
         // The from address lives in [email] so that it is shared by every
         // transport, and falls back to [smtp] so that installs configured
         // before [email] existed keep the address they already set.
-        $this->from_email = $this->email_settings['from_email'] ?? ($this->smtp_settings['from_email'] ?? '');
-        $this->from_name = $this->email_settings['from_name'] ?? ($this->smtp_settings['from_name'] ?? '');
+        //
+        // Emptiness, not ??, decides whether to fall back. The defaults files
+        // ship [email] from_email = '' and are merged UNDER the install's own
+        // settings, so the key is always present: with ?? the fallback would
+        // never fire and every install that had configured [smtp] from_email
+        // would silently lose the ability to send anything at all.
+        $this->from_email = $this->firstNonEmpty($this->email_settings, $this->smtp_settings, 'from_email');
+        $this->from_name = $this->firstNonEmpty($this->email_settings, $this->smtp_settings, 'from_name');
         $this->to = '';
         $this->cc = '';
         $this->bcc = '';
@@ -53,6 +59,15 @@ class Email
         $this->body = '';
         $this->content_type = 'text/html';
         $this->attachments = [];
+    }
+
+    // $key from $primary, or from $fallback where the primary is absent or
+    // empty, or '' where neither has it.
+    private function firstNonEmpty($primary, $fallback, $key)
+    {
+        if (!empty($primary[$key])) return $primary[$key];
+        if (!empty($fallback[$key])) return $fallback[$key];
+        return '';
     }
 
     /**
