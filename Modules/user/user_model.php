@@ -429,7 +429,7 @@ class User
         //    "message"=>"<p>To complete emoncms registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>"
         // )));
         
-        require "Lib/email.php";
+        require_once "Lib/email.php";
         $emailer = new Email();
         $emailer->to(array($email));
         $emailer->subject(ucfirst($this->appname).' email verification');
