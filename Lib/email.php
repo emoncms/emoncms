@@ -1,15 +1,25 @@
 <?php
 
-/* A simple email helper class using SMTP via fsockopen
-   
-   This provides more reliable email delivery than mail() function
-   and supports SMTP authentication.
+/* A simple email helper class.
+
+   Builds the message, then hands it to one of three transports selected by
+   settings['email']['transport']:
+
+     smtp        SMTP relay via fsockopen, with authentication
+     sendmail    the local /usr/sbin/sendmail binary
+     mailersend  the MailerSend HTTP API
+
+   Every call site builds a message the same way and reads the same
+   array('success'=>bool, 'message'=>string) back, so which transport an install
+   uses is a setting rather than a branch at each place an email is sent.
 */
 
 class Email
 {
     private $log;
     private $smtp_settings;
+    private $email_settings;
+    private $transport;
     private $from_email;
     private $from_name;
     private $to;
@@ -21,15 +31,21 @@ class Email
     private $attachments;
     private $boundary; // Added missing property
 
-    function __construct($smtp_settings = null)
+    function __construct($smtp_settings = null, $email_settings = null)
     {
         global $settings;
         $this->log = new EmonLogger(__FILE__);
         
         // Allow dependency injection for better testability
         $this->smtp_settings = $smtp_settings ?? ($settings['smtp'] ?? []);
-        $this->from_email = $this->smtp_settings['from_email'] ?? '';
-        $this->from_name = $this->smtp_settings['from_name'] ?? '';
+        $this->email_settings = $email_settings ?? ($settings['email'] ?? []);
+        $this->transport = $this->resolveTransport();
+
+        // The from address lives in [email] so that it is shared by every
+        // transport, and falls back to [smtp] so that installs configured
+        // before [email] existed keep the address they already set.
+        $this->from_email = $this->email_settings['from_email'] ?? ($this->smtp_settings['from_email'] ?? '');
+        $this->from_name = $this->email_settings['from_name'] ?? ($this->smtp_settings['from_name'] ?? '');
         $this->to = '';
         $this->cc = '';
         $this->bcc = '';
@@ -37,6 +53,41 @@ class Email
         $this->body = '';
         $this->content_type = 'text/html';
         $this->attachments = [];
+    }
+
+    /**
+     * Which transport to deliver through.
+     *
+     * An explicit settings['email']['transport'] always wins. With none set,
+     * derive it from the pre-existing [smtp] block so that an install upgraded
+     * from before this setting existed behaves exactly as it did: sendmail if
+     * the sendmail flag was on, SMTP otherwise. Anything unrecognised falls
+     * back to smtp with a note in the log rather than throwing, so a typo
+     * cannot take email down silently.
+     *
+     * @return string  smtp|sendmail|mailersend
+     */
+    private function resolveTransport()
+    {
+        $transport = isset($this->email_settings['transport'])
+            ? strtolower(trim($this->email_settings['transport'])) : '';
+
+        if ($transport === '') {
+            return !empty($this->smtp_settings['sendmail']) ? 'sendmail' : 'smtp';
+        }
+
+        if (in_array($transport, array('smtp', 'sendmail', 'mailersend'), true)) {
+            return $transport;
+        }
+
+        $this->log->error("unknown settings['email']['transport'] '$transport', falling back to smtp");
+        return 'smtp';
+    }
+
+    // The transport in use, for callers that want to log it
+    function transport()
+    {
+        return $this->transport;
     }
 
     // Add email validation
@@ -53,6 +104,30 @@ class Email
 
     function check()
     {
+        if (empty($this->from_email)) {
+            $this->log->error("check() from_email not configured.");
+            return false;
+        }
+
+        if ($this->transport === 'mailersend') {
+            if (!function_exists('curl_init')) {
+                $this->log->error("check() curl is not available, required by the mailersend transport.");
+                return false;
+            }
+            if (empty($this->email_settings['mailersend_api_key'])) {
+                $this->log->error("check() mailersend_api_key not configured.");
+                return false;
+            }
+            return true;
+        }
+
+        if ($this->transport === 'sendmail') {
+            // Nothing to check beyond the from address: the local binary either
+            // opens or it does not, which sendViaSendmail() reports. This no
+            // longer demands an SMTP host, which sendmail never used.
+            return true;
+        }
+
         if (!function_exists('fsockopen')) {
             $this->log->error("check() fsockopen() function is not available.");
             return false;
@@ -153,12 +228,13 @@ class Email
     function send()
     {
         if (!$this->check()) {
-            return array('success'=>false, 'message'=>"SMTP configuration invalid.");
+            return array('success'=>false, 'message'=>"Email configuration invalid, see the log for what is missing.");
         }
 
         try {
-            // Use sendmail if configured
-            if (!empty($this->smtp_settings['sendmail'])) {
+            if ($this->transport === 'mailersend') {
+                return $this->sendViaMailersend();
+            } else if ($this->transport === 'sendmail') {
                 return $this->sendViaSendmail();
             } else {
                 return $this->sendViaSMTP();
@@ -167,6 +243,126 @@ class Email
             $this->log->error("Email send failed: " . $e->getMessage());
             return array('success'=>false, 'message'=>"Failed to send email");
         }
+    }
+
+    /**
+     * Deliver through the MailerSend HTTP API.
+     *
+     * Timeouts are the point of the explicit curl options: this runs inline in
+     * requests a person is waiting on, registration and password reset among
+     * them, so a MailerSend outage has to cost a bounded wait and a logged
+     * failure rather than hanging the request until PHP gives up.
+     *
+     * The caller sees the same array('success'=>..., 'message'=>...) as the
+     * other two transports. The response body is carried into the message
+     * because MailerSend's 422 names the field it rejected, which is the
+     * difference between a diagnosable failure and a mystery.
+     */
+    private function sendViaMailersend()
+    {
+        $payload = $this->mailersendPayload();
+        if ($payload === false) {
+            return array('success'=>false, 'message'=>"No recipient");
+        }
+
+        $api_key = $this->email_settings['mailersend_api_key'];
+
+        $ch = curl_init("https://api.mailersend.com/v1/email");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "X-Requested-With: XMLHttpRequest",
+            "Authorization: Bearer ".$api_key
+        ));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+        // Generous enough for the CSV attachments the export scripts send,
+        // short enough that a stalled API does not hold a PHP worker for long.
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+
+        $response = curl_exec($ch);
+        $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curl_error = curl_error($ch);
+        // no curl_close(): deprecated since PHP 8.0, the handle frees itself
+        unset($ch);
+
+        if ($status >= 200 && $status < 300) {
+            return array('success'=>true, 'message'=>"", 'status'=>$status);
+        }
+
+        if ($status === 0) {
+            $message = "MailerSend unreachable: ".($curl_error !== '' ? $curl_error : "no response");
+        } else {
+            $message = "MailerSend returned HTTP $status: ".substr((string) $response, 0, 300);
+        }
+
+        // status is carried out so a caller sending in bulk can tell a rate
+        // limit, which is worth waiting out, from a rejected message, which is
+        // not. Absent for the other transports, which have no HTTP status.
+        $this->log->error($message);
+        return array('success'=>false, 'message'=>$message, 'status'=>$status);
+    }
+
+    // The request body, split out from the call so it can be inspected on its
+    // own. Returns false when there is no recipient to send to.
+    private function mailersendPayload()
+    {
+        $to = $this->parseEmails($this->to);
+        if (empty($to)) return false;
+
+        $from = array('email'=>$this->from_email);
+        if (!empty($this->from_name)) $from['name'] = $this->from_name;
+
+        $payload = array(
+            'from' => $from,
+            'to' => $this->mailersendRecipients($to),
+            'subject' => $this->subject,
+            'html' => $this->body,
+            // A text part is not optional in practice: HTML only mail scores
+            // badly with spam filters and is unreadable in text only clients.
+            'text' => $this->plainTextBody()
+        );
+
+        $cc = $this->parseEmails($this->cc);
+        if (!empty($cc)) $payload['cc'] = $this->mailersendRecipients($cc);
+        $bcc = $this->parseEmails($this->bcc);
+        if (!empty($bcc)) $payload['bcc'] = $this->mailersendRecipients($bcc);
+
+        foreach ($this->attachments as $attachment) {
+            $content = @file_get_contents($attachment['path']);
+            if ($content === false) {
+                $this->log->warn("could not read attachment ".$attachment['path']);
+                continue;
+            }
+            $payload['attachments'][] = array(
+                'content' => base64_encode($content),
+                'filename' => $attachment['name'],
+                'disposition' => 'attachment'
+            );
+        }
+
+        return $payload;
+    }
+
+    private function mailersendRecipients($emails)
+    {
+        $recipients = array();
+        foreach ($emails as $email) {
+            $recipients[] = array('email'=>$email);
+        }
+        return $recipients;
+    }
+
+    // Plain text alternative derived from the HTML body. Entities are decoded
+    // so the text part reads as "you & me" rather than "you &amp; me".
+    private function plainTextBody()
+    {
+        if ($this->content_type !== 'text/html') return $this->body;
+
+        $text = preg_replace('/<br\s*\/?>/i', "\n", $this->body);
+        $text = preg_replace('/<\/p>/i', "\n\n", $text);
+        return trim(html_entity_decode(strip_tags($text), ENT_QUOTES, 'UTF-8'));
     }
     
     private function sendViaSendmail()
