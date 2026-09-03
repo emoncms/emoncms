@@ -66,6 +66,15 @@ $settings = array(
 
 ),
 
+// Email delivery. transport is "smtp", "sendmail" or "mailersend".
+// Leave it out entirely to keep whatever the smtp block below implies.
+// "email"=>array(
+//     'transport' => 'mailersend',
+//     'from_email' => 'noreply@emoncms.org',
+//     'from_name' => 'Emoncms',
+//     'mailersend_api_key' => ''
+// ),
+
 "smtp"=>array(
     // Email address to email proccessed input values
     // 'default_emailto' => 'root@localhost',
