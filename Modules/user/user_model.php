@@ -1374,6 +1374,32 @@ class User
     }
 
     /**
+     * Does $hash identify $address on gravatar.com?
+     *
+     * Used to confine the proxy to the visitor's own avatar, see the gravatar
+     * route in user_controller. Neither side is a secret from the session
+     * holder; hash_equals is used because it is the right default for
+     * comparing a submitted digest, not because there is anything to leak.
+     *
+     * Both digests get_gravatar accepts are checked: the theme addresses the
+     * proxy with md5, the profile page with sha256.
+     *
+     * @param string $hash     hash supplied by the request
+     * @param string $address  gravatar address to check it against
+     * @return bool
+     */
+    public function gravatar_hash_matches($hash, $address)
+    {
+        if (!is_string($hash) || !is_string($address)) return false;
+
+        $normalised = strtolower(trim($address));
+        if ($normalised === '') return false;
+
+        return hash_equals(hash('sha256', $normalised), $hash)
+            || hash_equals(hash('md5', $normalised), $hash);
+    }
+
+    /**
      * Server-side gravatar proxy: avatars are fetched and cached by the server
      * so that the visitor's browser never connects to gravatar.com directly
      * (gravatar.com would otherwise receive the visitor's IP and email hash on every page view)

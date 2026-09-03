@@ -95,6 +95,18 @@ function user_controller()
 
         // Server-side gravatar proxy, see User::get_gravatar
         if ($route->action == 'gravatar' && $session['read']) {
+            // Only ever the visitor's own avatar. Both call sites, the theme
+            // and the profile page, render the session user's gravatar address
+            // and nothing else, so an arbitrary hash is never legitimate here.
+            // Left open, any logged in account could use the proxy to find out
+            // whether some other address has a gravatar, and could grow the
+            // cache directory without limit: gravatar.com answers 200 for an
+            // unknown address, so every distinct hash and size writes a file.
+            if (!$user->gravatar_hash_matches(get('hash'), $session['gravatar'])) {
+                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+                exit();
+            }
+
             $avatar = $user->get_gravatar(get('hash'), (int) get('s'));
             if ($avatar === false) {
                 header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");

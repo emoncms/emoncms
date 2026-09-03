@@ -2,6 +2,7 @@ var user_data = user.get();
 var last_username = ""+user_data.username
 var last_email = ""+user_data.email
 var last_language = ""+user_data.language;
+var last_gravatar = ""+user_data.gravatar;
 
 var timezones = [];
 $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
@@ -30,7 +31,7 @@ var app = Vue.createApp({
             new: "",
             repeat: ""
         },
-        gravatarHash: ''
+        gravatarHash: gravatar_hash
     }; },
     computed: {
         gravatarUrl: function() {
@@ -40,33 +41,20 @@ var app = Vue.createApp({
             return path + 'user/gravatar?hash=' + this.gravatarHash + '&s=80';
         }
     },
-    watch: {
-        'user.gravatar': function(val) {
-            this._updateGravatarHash(val);
-        }
-    },
-    mounted: function() {
-        this._updateGravatarHash(this.user.gravatar);
-    },
     methods: {
-        _updateGravatarHash: function(email) {
-            var self = this;
-            var normalized = (email || '').trim().toLowerCase();
-            var encoded = new TextEncoder().encode(normalized);
-            crypto.subtle.digest('SHA-256', encoded).then(function(buf) {
-                self.gravatarHash = Array.from(new Uint8Array(buf))
-                    .map(function(b) { return b.toString(16).padStart(2, '0'); })
-                    .join('');
-            });
-        },
         show_edit: function(key) {
             app.edit[key] = true;
         },
         save: function(key) {
             user.set(app.user);
             app.edit[key] = false;
-            // refresh the page if the language has been changed.
-            if (app.user.language!=last_language) {
+            // Reload after a language change so the new translation applies, and
+            // after a gravatar change because the avatar hash is rendered server
+            // side, see gravatar_hash in profile.php. Only the server knows what
+            // was actually stored: set() strips characters an address may
+            // legitimately contain, so hashing what was typed here would ask the
+            // proxy for an address the account does not have.
+            if (app.user.language!=last_language || app.user.gravatar!=last_gravatar) {
                 window.location.href = path+"user/view";
             }
         },
