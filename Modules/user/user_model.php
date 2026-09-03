@@ -643,6 +643,10 @@ class User
             // Guarded on the hash it was verified against, so a concurrent
             // password change is not overwritten by this upgrade
             $stmt = $this->mysqli->prepare("UPDATE users SET password=?, salt=? WHERE id=? AND password=?");
+            if ($stmt === false) {
+                $this->log->warn("upgrade_password_hash: prepare failed userid:$userid");
+                return;
+            }
             $stmt->bind_param("ssis", $new_hash, $salt, $userid, $stored);
             $stmt->execute();
             $upgraded = $stmt->affected_rows;
@@ -655,7 +659,7 @@ class User
                 $algo = password_hash_config();
                 $this->log->info("upgrade_password_hash: upgraded to ".$algo['name']." userid:$userid");
             }
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->log->warn("upgrade_password_hash failed userid:$userid ".$e->getMessage());
         }
     }
@@ -759,13 +763,24 @@ class User
 
         // This runs on the login path, so it must never be able to break a
         // login: on a database that has the new code but has not had the schema
-        // update applied yet the columns are missing and prepare() throws
+        // update applied yet, these columns are missing.
+        //
+        // Both outcomes have to be handled. Under mysqli's default error mode
+        // since PHP 8.1 prepare() throws; with reporting off, which is the
+        // default on PHP 7 and can be set explicitly on any version, it returns
+        // false instead and the bind_param() that follows raises an Error.
+        // Error does not extend Exception, so catching Throwable rather than
+        // Exception is what makes the catch cover both.
         try {
             $stmt = $this->mysqli->prepare("UPDATE users SET password_reset_hash='', password_reset_expires=0 WHERE id=? AND password_reset_hash!=''");
+            if ($stmt === false) {
+                $this->log->warn("clear_password_reset_token: password reset columns missing, run the database update");
+                return;
+            }
             $stmt->bind_param("i", $userid);
             $stmt->execute();
             $stmt->close();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->log->warn("clear_password_reset_token failed userid:$userid ".$e->getMessage());
         }
     }
@@ -792,16 +807,21 @@ class User
         $now = time();
 
         // Renders a page, so treat a database that predates the reset columns
-        // as "no valid token" rather than letting it 500
+        // as "no valid token" rather than letting it 500. Throwable, and the
+        // false check, for the same reason as clear_password_reset_token().
         try {
             $userid = 0;
             $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE password_reset_hash=? AND password_reset_expires>?");
+            if ($stmt === false) {
+                $this->log->warn("passwordreset_key_is_valid: password reset columns missing, run the database update");
+                return false;
+            }
             $stmt->bind_param("si", $token_hash, $now);
             $stmt->execute();
             $stmt->bind_result($userid);
             $found = $stmt->fetch();
             $stmt->close();
-        } catch (Exception $e) {
+        } catch (Throwable $e) {
             $this->log->warn("passwordreset_key_is_valid failed: ".$e->getMessage());
             return false;
         }
