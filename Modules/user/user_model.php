@@ -1427,8 +1427,12 @@ class User
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+            // Redirects are deliberately not followed. gravatar.com answers these
+            // requests with a direct 200, so following them gains nothing, and a
+            // redirect is the one way a compromised gravatar.com could point this
+            // fetch at an address inside the network. Unfollowed, a 3xx is simply
+            // not a 200 and is handled as a failed fetch below.
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             $fetched = curl_exec($ch);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // no curl_close(): deprecated since PHP 8.0 and the handle is freed
@@ -1441,9 +1445,17 @@ class User
                 // atomic write so concurrent requests never read a partial file
                 $tmp_file = $cache_file.".".getmypid().".tmp";
                 if (@file_put_contents($tmp_file, $content) !== false) @rename($tmp_file, $cache_file);
-            } else if (is_file($cache_file)) {
-                // gravatar.com unreachable: fall back to the stale cached copy
-                $content = @file_get_contents($cache_file);
+            } else {
+                if ($http_code >= 300 && $http_code < 400) {
+                    // Only reachable if gravatar.com starts redirecting these
+                    // requests, at which point avatars quietly stop refreshing.
+                    // Logged so that shows up as a cause rather than a mystery.
+                    $this->log->warn("get_gravatar: gravatar.com returned HTTP $http_code, redirects are not followed");
+                }
+                if (is_file($cache_file)) {
+                    // gravatar.com unreachable: fall back to the stale cached copy
+                    $content = @file_get_contents($cache_file);
+                }
             }
         }
         if ($content === false) return false;
