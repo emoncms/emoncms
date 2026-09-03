@@ -41,9 +41,12 @@ $schema['users'] = array(
     'diskuse' => array('type' => 'bigint(20)')
 );
 
+// Indexed because every request carrying a remember me cookie looks a row up by
+// (userid, persistentToken), and every logout and revocation deletes by userid.
+// Unindexed this was a full scan of the whole table on each such request.
 $schema['rememberme'] = array(
-    'userid' => array('type' => 'int'),
+    'userid' => array('type' => 'int', 'Index'=>true),
     'token' => array('type' => 'varchar(64)'),
-    'persistentToken' => array('type' => 'varchar(64)'),
+    'persistentToken' => array('type' => 'varchar(64)', 'Index'=>true),
     'expire' => array('type' => 'datetime')
 );
