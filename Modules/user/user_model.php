@@ -258,20 +258,38 @@ class User
                         $userData = $result->fetch_object();
                         if ($userData->id != 0)
                         {
-                            // Regenerate session ID when logging in via remember-me token
-                            session_regenerate_id(true);
+                            // Apply the same account state gate as the login
+                            // form. Without this an account that has had its
+                            // login access revoked could keep resuming a session
+                            // from a cookie issued before the restriction was
+                            // applied. logout() clears the cookie so the token
+                            // is not left live.
+                            if ($this->account_session_denied($userData)) {
+                                $this->log->error("Login: remember me rejected for restricted account userid:".$userData->id);
+                                $this->logout();
+                            } else {
+                                // Grant the access level the account actually
+                                // holds: 1 is read only, 2+ adds write. This
+                                // previously always granted write.
+                                $access = $this->user_access_level($userData);
 
-                            $_SESSION['userid'] = $userData->id;
-                            $_SESSION['username'] = $userData->username;
-                            $_SESSION['read'] = 1;
-                            $_SESSION['write'] = 1;
-                            $_SESSION['admin'] = $userData->admin;
-                            $_SESSION['lang'] = $userData->language;
-                            $_SESSION['timezone'] = $userData->timezone;
-                            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
-                            // There is a chance that an attacker has stolen the login token, so we store
-                            // the fact that the user was logged in via RememberMe (instead of login form)
-                            $_SESSION['cookielogin'] = true;
+                                // Regenerate session ID when logging in via remember-me token
+                                session_regenerate_id(true);
+
+                                $_SESSION['userid'] = $userData->id;
+                                $_SESSION['username'] = $userData->username;
+                                $_SESSION['read'] = 1;
+                                if ($access>1) {
+                                    $_SESSION['write'] = 1;
+                                    $_SESSION['admin'] = $userData->admin;
+                                }
+                                $_SESSION['lang'] = $userData->language;
+                                $_SESSION['timezone'] = $userData->timezone;
+                                if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
+                                // There is a chance that an attacker has stolen the login token, so we store
+                                // the fact that the user was logged in via RememberMe (instead of login form)
+                                $_SESSION['cookielogin'] = true;
+                            }
                         }
                     }
                 } else {
@@ -456,6 +474,43 @@ class User
 
     }
 
+    /**
+     * Effective access level for a user row.
+     * 0 = no login, 1 = read only, 2+ = read and write.
+     * Defaults to write access where the column is absent, matching the
+     * behaviour of installs whose schema predates the access column.
+     *
+     * @param object $userData row from the users table
+     * @return int
+     */
+    private function user_access_level($userData)
+    {
+        if (!isset($userData->access)) return 2;
+        return (int) $userData->access;
+    }
+
+    /**
+     * Shared account state gate for every path that starts a session.
+     *
+     * Returns an error array when the account may not be given a session, or
+     * false when it may. Both the login form and the remember me cookie path
+     * call this: keeping the rules in one place is the point, as the remember
+     * me path previously skipped them entirely, which let an account whose
+     * login had been disabled with access=0 keep working indefinitely from a
+     * cookie issued before the account was restricted.
+     *
+     * @param object $userData row from the users table
+     * @return array|false
+     */
+    private function account_session_denied($userData)
+    {
+        if ($this->user_access_level($userData)==0) {
+            return array('message'=>tr("Login disabled for this account"));
+        }
+
+        return false;
+    }
+
     public function login($username, $password, $remembermecheck, $referrer='')
     {
         // Rate limit login attempts to prevent brute force attacks. Limit to 10 failed attempts in 15 minutes.
@@ -501,9 +556,8 @@ class User
             // Default write access
             if (!isset($userData->access)) $userData->access = 2;
 
-            // If no access via login
-            if ($userData->access==0) {
-                return array('success'=>false, 'message'=>tr("Login disabled for this account"));
+            if ($denied = $this->account_session_denied($userData)) {
+                return array('success'=>false, 'message'=>$denied['message']);
             }
         
             // Ensure session is active before regenerating
