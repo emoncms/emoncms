@@ -206,9 +206,8 @@ function user_controller()
                         $userid = (int) $userid;
                         $query_result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
                         $row = $query_result->fetch_object();
-                        $hash = hash('sha256', $row->salt . hash('sha256', $_POST['password']));
 
-                        if ($hash == $row->password || $session['admin']==1) {
+                        if (verify_password($_POST['password'], $row->password, $row->salt) || $session['admin']==1) {
                             $result = "PERMANENT DELETE:\n";
                             $result .= delete_user($userid,"permanentdelete");
                             $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'permanentdelete']);

@@ -338,9 +338,11 @@ class User
 
         // If we got here the username, password and email should all be valid
 
-        $hash = hash('sha256', $password);
-        $salt = generate_secure_key(16);
-        $password = hash('sha256', $salt . $hash);
+        // bcrypt and argon2id both carry their own salt inside the hash, so the
+        // salt column stays empty for every account created from here on
+        // whichever settings['password']['algo'] selects
+        $password = hash_password($password);
+        $salt = '';
 
         $apikey_write = generate_secure_key(16);
         $apikey_read = generate_secure_key(16);
@@ -481,15 +483,19 @@ class User
         // If email verification is required and email is not verified then dont allow login
         if ($this->email_verification && isset($userData->email_verified) && !$userData->email_verified) return array('success'=>false, 'message'=>tr("Please verify email address"));
         
-        // Check password
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-        if ($hash != $userData->password)
+        // Check password. reads all three formats, legacy sha256, bcrypt and
+        // argon2id, please see Lib/password.php
+        if (!verify_password($password, $userData->password, $userData->salt))
         {
             $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
         else
         {
+            // Upgrade password hash e.g from sha256 to bcrypt or argon2id.
+            // Please see the [password] section of settings.ini.
+            $this->upgrade_password_hash($userData->id, $password, $userData->password);
+
             // Default write access
             if (!isset($userData->access)) $userData->access = 2;
 
@@ -572,11 +578,13 @@ class User
             return array('success'=>false, 'message'=>tr("Incorrect authentication"));
         }
        
-        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
-
-        if ($hash != $userData_password) {
+        if (!verify_password($password, $userData_password, $userData_salt)) {
             return array('success'=>false, 'message'=>tr("Incorrect authentication"));
         } else {
+            // Upgrade here too: an account driven only through this API would
+            // otherwise never pass through login() and never migrate
+            $this->upgrade_password_hash($userData_id, $password, $userData_password);
+
             return array('success'=>true, 'userid'=>$userData_id, 'apikey_write'=>$userData_apikey_write, 'apikey_read'=>$userData_apikey_read);
         }
     }
@@ -588,6 +596,61 @@ class User
         session_unset();
         //session_regenerate_id(true);
         session_destroy();
+    }
+
+    /**
+     * Replace a stored hash with a current one, after the password has been
+     * verified against it.
+     *
+     * This is how accounts move off the old sha256 scheme: there is no way to
+     * convert a stored hash without the password, so each account is upgraded
+     * at the one moment the password is in memory, which is a successful
+     * authentication. No mass reset, and nothing the account holder notices.
+     *
+     * The same path also carries every later change to how passwords are
+     * hashed: switching settings['password']['algo'] between bcrypt and
+     * argon2id, or raising the bcrypt cost or the argon2id memory or time cost.
+     * password_needs_upgrade() compares the stored hash against whatever is
+     * configured now, so accounts move to it as their owners log in.
+     *
+     * Never allowed to fail the authentication that triggered it: the caller
+     * has already verified the password, so a write failure here means the
+     * account stays on the old format and is retried next time, not that the
+     * user is refused.
+     *
+     * @param int    $userid
+     * @param string $password verified plaintext
+     * @param string $stored   hash it was verified against
+     * @return void
+     */
+    private function upgrade_password_hash($userid, $password, $stored)
+    {
+        $userid = (int) $userid;
+        if ($userid < 1) return;
+        if (!password_needs_upgrade($stored)) return;
+
+        try {
+            $new_hash = hash_password($password);
+            $salt = '';
+
+            // Guarded on the hash it was verified against, so a concurrent
+            // password change is not overwritten by this upgrade
+            $stmt = $this->mysqli->prepare("UPDATE users SET password=?, salt=? WHERE id=? AND password=?");
+            $stmt->bind_param("ssis", $new_hash, $salt, $userid, $stored);
+            $stmt->execute();
+            $upgraded = $stmt->affected_rows;
+            $stmt->close();
+
+            if ($upgraded > 0) {
+                // Name the algorithm actually written, not an assumed one: it
+                // follows the setting, and falls back to bcrypt where argon2 is
+                // unavailable, so this is the record of what the row now holds
+                $algo = password_hash_config();
+                $this->log->info("upgrade_password_hash: upgraded to ".$algo['name']." userid:$userid");
+            }
+        } catch (Exception $e) {
+            $this->log->warn("upgrade_password_hash failed userid:$userid ".$e->getMessage());
+        }
     }
 
     public function change_password($userid, $old, $new)
@@ -605,14 +668,14 @@ class User
         // 1) check that old password is correct
         $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
         $row = $result->fetch_object();
-        $hash = hash('sha256', $row->salt . hash('sha256', $old));
 
-        if ($hash == $row->password)
+        if (verify_password($old, $row->password, $row->salt))
         {
-            // 2) Save new password
-            $hash = hash('sha256', $new);
-            $salt = generate_secure_key(16);
-            $password = hash('sha256', $salt . $hash);
+            // 2) Save new password in the configured algorithm, bcrypt or
+            // argon2id, and clear any legacy salt: no separate upgrade needed
+            // here, the row is rewritten anyway
+            $password = hash_password($new);
+            $salt = '';
 
             $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
             $stmt->bind_param("ssi", $password, $salt, $userid);
