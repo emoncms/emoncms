@@ -104,41 +104,62 @@ class Email
 
     function check()
     {
-        if (empty($this->from_email)) {
-            $this->log->error("check() from_email not configured.");
+        $error = $this->configurationError();
+        if ($error !== '') {
+            $this->log->error("check() ".$error);
             return false;
+        }
+        return true;
+    }
+
+    /**
+     * Can this install send at all with the transport it has selected?
+     *
+     * The same test check() makes, without saying anything to the log, so that
+     * a caller sending something nobody asked for can skip it quietly. Most
+     * self hosted installs have no email configured, and an optional
+     * notification should not fill their log with errors on every attempt.
+     *
+     * @return bool
+     */
+    function configured()
+    {
+        return $this->configurationError() === '';
+    }
+
+    // Empty string when the configuration is usable, otherwise what is missing.
+    private function configurationError()
+    {
+        if (empty($this->from_email)) {
+            return "from_email not configured.";
         }
 
         if ($this->transport === 'mailersend') {
             if (!function_exists('curl_init')) {
-                $this->log->error("check() curl is not available, required by the mailersend transport.");
-                return false;
+                return "curl is not available, required by the mailersend transport.";
             }
             if (empty($this->email_settings['mailersend_api_key'])) {
-                $this->log->error("check() mailersend_api_key not configured.");
-                return false;
+                return "mailersend_api_key not configured.";
             }
-            return true;
+            return '';
         }
 
         if ($this->transport === 'sendmail') {
             // Nothing to check beyond the from address: the local binary either
             // opens or it does not, which sendViaSendmail() reports. This no
             // longer demands an SMTP host, which sendmail never used.
-            return true;
+            return '';
         }
 
         if (!function_exists('fsockopen')) {
-            $this->log->error("check() fsockopen() function is not available.");
-            return false;
+            return "fsockopen() function is not available.";
         }
         
         if (empty($this->smtp_settings['host'])) {
-            $this->log->error("check() SMTP host not configured.");
-            return false;
+            return "SMTP host not configured.";
         }
         
-        return true;
+        return '';
     }
 
     function from($from)

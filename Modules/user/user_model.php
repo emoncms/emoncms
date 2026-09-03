@@ -422,13 +422,6 @@ class User
         global $path;
         $verification_link = $path."user/verify?key=$verification_key";
         
-        // $this->redis->rpush("emailqueue",json_encode(array(
-        //    "emailto"=>$email,
-        //    "type"=>"passwordrecovery",
-        //    "subject"=>'Emoncms email verification',
-        //    "message"=>"<p>To complete emoncms registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>"
-        // )));
-        
         require_once "Lib/email.php";
         $emailer = new Email();
         $emailer->to(array($email));
@@ -773,29 +766,25 @@ class User
     /**
      * Base URL to put in a password reset email.
      *
-     * Built from settings['domain'] wherever it is configured, never from the
-     * request: get_application_path() falls back to the Host header, and a
-     * reset link built from that can be pointed at an attacker's server by
-     * sending a spoofed Host with the reset request. The victim then receives a
-     * genuine looking email that hands the token over on click.
+     * Deliberately built only from the configured domain, never from the
+     * request. $path falls back to HTTP_X_FORWARDED_HOST or HTTP_HOST when
+     * settings['domain'] is false, see get_application_path in core.php, and a
+     * reset link built from those can be pointed at an attacker's server by
+     * sending a spoofed Host header with the reset request. The victim then
+     * receives a genuine looking email that hands the token over on click.
      *
-     * Most self hosted installs have no domain configured, so rather than
-     * refuse to send at all this falls back to the request derived path, which
-     * is what every other emoncms generated link already uses. Set
-     * settings['domain'] on any install reachable from the internet, and make
-     * sure the web server has a default vhost that does not route unknown Host
-     * headers here.
+     * Returns false when no domain is configured, in which case no reset email
+     * should be sent at all.
      *
-     * @return string
+     * @return string|false
      */
     private function password_reset_link_base()
     {
-        global $settings, $path;
+        global $settings;
 
-        if (!empty($settings["domain"])) return get_application_path($settings["domain"]);
+        if (empty($settings["domain"])) return false;
 
-        $this->log->warn("passwordreset: settings['domain'] is not set, the reset link is built from the request Host header");
-        return $path;
+        return get_application_path($settings["domain"]);
     }
 
     /**
@@ -914,7 +903,14 @@ class User
         global $settings;
         if (empty($settings["interface"]["enable_password_reset"])) return $generic;
 
+        // Resolve the link base before touching the account: a reset link built
+        // from the request host is worse than no reset at all, see
+        // password_reset_link_base()
         $link_base = $this->password_reset_link_base();
+        if ($link_base === false) {
+            $this->log->error("passwordreset: settings['domain'] is not set, refusing to email a reset link");
+            return $generic;
+        }
 
         $stmt = $this->mysqli->prepare("SELECT * FROM users WHERE username=? AND email=?");
         $stmt->bind_param("ss",$username,$emailto);
@@ -1108,11 +1104,39 @@ class User
         $result = $this->is_valid_email($email);
         if (!$result['success']) return $result;
 
+        // Capture the previous email address before overwriting it so we can
+        // notify it of the change below.
+        $old_email = $this->get_email($userid);
+
         $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
         $stmt->close();
-        
+
+        // Notify the previous address that the account email was changed, so an
+        // unexpected change is visible to the original owner even if the account
+        // is compromised. Best effort: only when the old address is a valid,
+        // different email, and only where this install can actually send.
+        if ($old_email && filter_var($old_email, FILTER_VALIDATE_EMAIL)
+            && strtolower($old_email) !== strtolower($email)) {
+            $username = $this->get_username($userid);
+            $safe_new = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+            $safe_user = htmlspecialchars((string) $username, ENT_QUOTES, 'UTF-8');
+
+            require_once "Lib/email.php";
+            $emailer = new Email();
+            if ($emailer->configured()) {
+                $emailer->to($old_email);
+                $emailer->subject(ucfirst($this->appname).' account email address changed');
+                $emailer->body("<p>The email address for your ".$this->appname." account (username: $safe_user) has just been changed to $safe_new.</p>"
+                    . "<p>If you did not make this change, please contact us immediately at support@openenergymonitor.zendesk.com</p>");
+                $result = $emailer->send();
+                if (!$result['success']) {
+                    $this->log->error("change_email: notification to previous address failed message='".$result['message']."'");
+                }
+            }
+        }
+
 	/*
         global $session;
         
