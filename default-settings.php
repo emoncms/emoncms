@@ -233,16 +233,17 @@ $_settings = array(
 //   sendmail    the local /usr/sbin/sendmail binary
 //   mailersend  the MailerSend HTTP API
 //
-// Leave it empty to keep whatever the "smtp" block below already implies:
-// sendmail when its sendmail flag is true, SMTP otherwise. Installs that
-// predate this block therefore need no change. Setting it explicitly wins.
+// Empty means smtp, or sendmail where the deprecated "smtp" sendmail flag is
+// set, so installs that predate this block need no change.
 "email"=>array(
     'transport' => '',
 
-    // Address email is sent from, used by every transport. Falls back to the
-    // smtp block's from_email and from_name below when not set here.
+    // Address email is sent from, used by every transport
     'from_email' => '',
     'from_name' => '',
+
+    // Where the 'Send email' input process sends to
+    'default_to' => '',
 
     // Only used by the mailersend transport. Create a key in the MailerSend
     // dashboard. The sending domain has to be verified there, and from_email
@@ -250,23 +251,17 @@ $_settings = array(
     'mailersend_api_key' => ''
 ),
 
-// (OPTIONAL) Email SMTP, used for password reset or other email functions
+// SMTP relay connection, used by the smtp transport
 "smtp"=>array(
-    // Email address to email proccessed input values
-    'default_emailto' => '',
-    'from_email' => '',
-    'from_name' => '',
-    // sendmail, when enabled we use local email server instead smtp relay
-    'sendmail' => false,
-    // lines below are ignored when sendmail is enabled
     'host'=>"",
     // 25, 465, 587
     'port'=>"",
-    // comment lines below that dont apply
-    // ssl, tls
+    // ssl or tls, leave empty for none
     'encryption'=>"",
     'username'=>"",
-    'password'=>""
+    'password'=>"",
+    // Socket timeout in seconds
+    'timeout'=>30
 ),
 
 // Log file configuration

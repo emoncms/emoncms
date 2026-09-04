@@ -12,6 +12,15 @@
    Every call site builds a message the same way and reads the same
    array('success'=>bool, 'message'=>string) back, so which transport an install
    uses is a setting rather than a branch at each place an email is sent.
+
+   Settings live in two blocks. [email] holds everything that applies whatever
+   the transport is: transport, from_email, from_name, default_to and
+   mailersend_api_key. [smtp] holds the relay connection only: host, port,
+   encryption, username, password and timeout.
+
+   [smtp] also used to carry from_email, from_name, default_emailto and a
+   sendmail flag. Those moved to [email], and the old names are still read as a
+   fallback so that installs configured before the move keep working.
 */
 
 class Email
@@ -41,15 +50,6 @@ class Email
         $this->email_settings = $email_settings ?? ($settings['email'] ?? []);
         $this->transport = $this->resolveTransport();
 
-        // The from address lives in [email] so that it is shared by every
-        // transport, and falls back to [smtp] so that installs configured
-        // before [email] existed keep the address they already set.
-        //
-        // Emptiness, not ??, decides whether to fall back. The defaults files
-        // ship [email] from_email = '' and are merged UNDER the install's own
-        // settings, so the key is always present: with ?? the fallback would
-        // never fire and every install that had configured [smtp] from_email
-        // would silently lose the ability to send anything at all.
         $this->from_email = $this->firstNonEmpty($this->email_settings, $this->smtp_settings, 'from_email');
         $this->from_name = $this->firstNonEmpty($this->email_settings, $this->smtp_settings, 'from_name');
         $this->to = '';
@@ -63,22 +63,37 @@ class Email
 
     // $key from $primary, or from $fallback where the primary is absent or
     // empty, or '' where neither has it.
-    private function firstNonEmpty($primary, $fallback, $key)
+    //
+    // Emptiness, not ??, decides whether to fall back. The defaults files ship
+    // the [email] keys as '' and are merged under the install's own settings,
+    // so the key is always present and ?? would never reach the fallback.
+    private function firstNonEmpty($primary, $fallback, $key, $fallback_key = null)
     {
         if (!empty($primary[$key])) return $primary[$key];
-        if (!empty($fallback[$key])) return $fallback[$key];
+        $fallback_key = $fallback_key ?? $key;
+        if (!empty($fallback[$fallback_key])) return $fallback[$fallback_key];
         return '';
+    }
+
+    /**
+     * The address the "Send email" input process and the example scripts send
+     * to when no recipient is given.
+     *
+     * @return string  empty when the install has not set one
+     */
+    function default_to()
+    {
+        return $this->firstNonEmpty($this->email_settings, $this->smtp_settings, 'default_to', 'default_emailto');
     }
 
     /**
      * Which transport to deliver through.
      *
      * An explicit settings['email']['transport'] always wins. With none set,
-     * derive it from the pre-existing [smtp] block so that an install upgraded
-     * from before this setting existed behaves exactly as it did: sendmail if
-     * the sendmail flag was on, SMTP otherwise. Anything unrecognised falls
-     * back to smtp with a note in the log rather than throwing, so a typo
-     * cannot take email down silently.
+     * fall back to the deprecated [smtp] sendmail flag so that an install
+     * configured before transport existed behaves as it did. Anything
+     * unrecognised falls back to smtp with a note in the log rather than
+     * throwing, so a typo cannot take email down silently.
      *
      * @return string  smtp|sendmail|mailersend
      */

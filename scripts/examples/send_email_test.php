@@ -18,12 +18,15 @@
 
     Add the following to your settings.ini file:
 
-    [smtp]
-    default_emailto = 'Your email to test'
-    host = "smpt.emailprovider.com"
-    port = 465
+    [email]
+    transport = 'smtp'
     from_email = 'hello@myemail.com'
     from_name = 'Emoncms'
+    default_to = 'Your email to test'
+
+    [smtp]
+    host = "smtp.emailprovider.com"
+    port = 465
     encryption = "ssl"
     username = "hello@myemail.com"
     password = "PASSWORD"
@@ -47,10 +50,9 @@ require "process_settings.php";
 require "Lib/EmonLogger.php";
 $log = new EmonLogger(__FILE__);
 
-$email = $settings['smtp']['default_emailto'];
-
 require "Lib/email.php";
 $emailer = new Email();
+$email = $emailer->default_to();
 $emailer->to(array($email));
 $emailer->subject("Email test example from Emoncms CLI script");
 $emailer->body("<p>This is a test email sent from the Emoncms CLI script.</p><p>If you received this email, it means that the email configuration is working correctly.</p>");

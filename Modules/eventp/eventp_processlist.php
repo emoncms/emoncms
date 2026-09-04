@@ -94,7 +94,7 @@ class Eventp_ProcessList
     }
 
     public function sendEmail($emailbody, $time, $value, $options) {
-        global $user, $session, $settings;
+        global $user, $session;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
         if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
@@ -113,12 +113,13 @@ class Eventp_ProcessList
             // Not supported for VIRTUAL FEEDS
         }
 
+        require_once "Lib/email.php";
+        $email = new Email();
+
         //need to get an email address from the config file or the form ?
-        $emailto = $settings['smtp']['default_emailto'];
+        $emailto = $email->default_to();
 
         if (!empty($emailto)) {
-            require_once "Lib/email.php";
-            $email = new Email();
             //$email->from(from);
             $email->to($emailto);
             $email->subject('Emoncms event alert');
