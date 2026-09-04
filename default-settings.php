@@ -54,6 +54,19 @@ $_settings = array(
     'userid'    => 1,
     'multiuser' => false,
     'pub_count' => false, // Publish message count to MQTT every 5 minutes
+
+    // secure MQTT parameters
+    // capath must be defined to enable SSL usage.
+    // This is the only setting required to connect to a SSL mqtt broker.
+    //'capath'   => '/etc/ssl/certs',
+    // The following settings are related to your CLIENT certificate, if your broker requires client authentication.
+    // certpath must point to your client certificate
+    //'certpath' => '/etc/letsencrypt/live/yoursite/fullkey.pem',
+    // keypath must point to your client private key
+    //'keypath'  => '/etc/letsencrypt/live/yoursite/privatekey.pem',
+    // keypw is the client private key password.
+    // do not define if your private key is not password protected
+    //'keypw'    => ''
 ),
 
 // Input
@@ -92,7 +105,7 @@ $_settings = array(
     'virtualfeed'   => array('data_sampling' => false),
     'mysqltimeseries'   => array('data_sampling' => false),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => 8928,
+    'max_datapoints'        => 20000,
     
     // Minumum feed interval
     'min_feed_interval' => 10,
@@ -112,6 +125,39 @@ $_settings = array(
     
     // Max csv download size in MB
     'csv_downloadlimit_mb' => 25
+),
+
+// How account passwords are hashed
+//
+// algo is "bcrypt" (default) or "argon2id".
+//
+// bcrypt is always available and cheap on memory, which is what makes it the
+// right default for a Raspberry Pi that is also running MySQL and feed
+// processing.
+//
+// argon2id is stronger, because its cost is memory as well as time and memory is
+// the scarce resource on a GPU cracking rig. Use it where you control the server
+// and can spare the RAM. It needs PHP built with libargon2, and its hashes are 97
+// characters, so run the database update first so that users.password is
+// varchar(255). If argon2 is unavailable emoncms falls back to bcrypt and notes
+// it in the error log.
+//
+// Changing this is safe at any time: existing hashes still verify whatever they
+// were written with, and each account is rewritten to the new algorithm the next
+// time its owner logs in.
+"password"=>array(
+    'algo' => "bcrypt",
+
+    // bcrypt: 10 is roughly 50ms on a modest x86 server, more on a Pi.
+    // Each step up doubles the work.
+    'bcrypt_cost' => 10,
+
+    // argon2id: memory in KiB, then passes, then threads. 65536 KiB (64 MiB) with
+    // 3 passes is roughly 140ms on a modest x86 server. This much memory is held
+    // per concurrent login.
+    'argon2_memory_cost' => 65536,
+    'argon2_time_cost' => 3,
+    'argon2_threads' => 1
 ),
 
 // User Interface settings
@@ -147,7 +193,7 @@ $_settings = array(
     'default_action_auth' => "list",
     
     // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
-    'feedviewpath' => "vis/auto?feedid=",
+    'feedviewpath' => "graph/",
 
     // Enable multi user emoncms.
     // If set to false, emoncms will automatically remove the register form and
@@ -167,7 +213,11 @@ $_settings = array(
     'enable_update_ui' => true,
     
     // Email verification
-    'email_verification' => false
+    'email_verification' => false,
+
+    // Disable rate limiting (login, register, auth, etc.)
+    // WARNING: only set to true in development/test environments
+    'disable_rate_limiting' => false
 ),
 
 "public_profile"=>array(
