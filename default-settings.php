@@ -18,6 +18,14 @@ $_settings = array(
 // URL Example: http://localhost/emoncms/admin/db
 "updatelogin" => false,
 
+// Check and migrate the app module database tables. Set to false to skip the
+// check once the schema is up to date.
+"db_check" => true,
+
+// Read only mode. Non admin users keep read access but lose write access, and
+// registration is turned off.
+"ui_read_only_mode" => false,
+
 // Mysql database settings
 "sql"=>array(
     "server"   => "localhost",
@@ -101,9 +109,11 @@ $_settings = array(
     'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
     'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
     'cassandra'     => array('keyspace' => 'emoncms'),
-    // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
-    'virtualfeed'   => array('data_sampling' => false),
-    'mysqltimeseries'   => array('data_sampling' => false),
+    // MysqlTimeSeries table naming. With generic true every feed is stored in a
+    // table named prefix + feed id. Set to false to name each table on creation.
+    // The engine can also use its own database server, add 'server', 'port',
+    // 'database', 'username' and 'password' here to enable that.
+    'mysqltimeseries' => array('generic' => true, 'prefix' => 'feed_'),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
     'max_datapoints'        => 20000,
     
@@ -169,21 +179,12 @@ $_settings = array(
     // gettext  translations are found under each Module's locale directory
     'default_language' => 'en_GB',
 
-    // Theme location (folder located under Theme/, and must have the same structure as the basic one)
-    'theme' => "basic",
-    
     // Theme colour options: "standard", "blue", "sun"
     'themecolor' => "blue",
 
-    // Favicon filenme in Theme/$theme
+    // Favicon filename in Theme/
     'favicon' => "favicon.png",
 
-    // Main menu collapses on lower screen widths
-    'menucollapses' => false,
-    
-    // Show menu titles
-    'show_menu_titles' => true,
-    
     // Default controller and action if none are specified and user is anonymous
     'default_controller' => "user",
     'default_action' => "login",
@@ -208,10 +209,7 @@ $_settings = array(
     
     // If installed on Emonpi, allow admin menu tools
     'enable_admin_ui' => false,
-    
-    // Show update section in admin
-    'enable_update_ui' => true,
-    
+
     // Email verification
     'email_verification' => false,
 
@@ -225,9 +223,7 @@ $_settings = array(
     // Allows http://yourdomain.com/[username]/[dash alias] or ?id=[dash id]
     // Alternative to http://yourdomain.com/dashboard/view?id=[dash id]
     // Add optional '&embed=1' in the end to remove header and footer
-    'enabled' => true,
-    'controller' => "dashboard",
-    'action' => "view"
+    'enabled' => true
 ),
 
 // How email is delivered.
@@ -283,11 +279,20 @@ $_settings = array(
     "level" => 2
 ),
 
-"device"=>array(
-    "enable_UDP_broadcast" => true
+// Apps
+"app"=>array(
+    // Comma separated list of app names to hide from the app list, e.g my_solar_app
+    // 'hidden' => ''
+    // Key that allows myheatpump daily stats to be cleared without a write
+    // session. Leave it out unless you need it. An empty value would match an
+    // empty request.
+    //,'clearkey' => ''
 ),
 
-"cydynni"=>array(),
+"device"=>array(
+    // Hide the device menu entry
+    'hide_menu' => false
+),
 
 "postprocess"=>array(
     "cron_enabled"=>0
