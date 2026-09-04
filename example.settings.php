@@ -1,93 +1,69 @@
 <?php
-// -----------------------------------------------------
-// Example emoncms settings.php file
-//
-// default-settings.php contains the default settings.
-//
-// Settings entered here override the default settings.
-// Enter only the settings you wish to customise here.
-//
-// The following is a barebones example, copy across
-// other settings from default-settings.php as required
-// Maintain the section structure (items in [])
-// -----------------------------------------------------
+# ------------------------------------------------------------
+# Example emoncms settings.php - DO NOT EDIT!!
+#
+# 1. copy example.settings.php and rename to settings.php
+# 2. edit entries in settings.php as required
+# 3. copy settings from default-settings.php into settings.php as required
+#    Keep each setting in the block it belongs to
+# ------------------------------------------------------------
 
 $settings = array(
-// Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
+
+// IMPORTANT: Installation domain: If your emoncms install is available on the public internet
+// please set this to your fixed domain e.g myemoncmsinstall.org to secure your install.
 "domain" => false,
 
-// MYSQL Database settings
+// Path to the symlinked emoncms modules
+"emoncms_dir" => "/opt/emoncms",
+
+// Path to the EmonScripts repository
+"openenergymonitor_dir" => "/opt/openenergymonitor",
+
+// MySQL database
 "sql"=>array(
     "server"   => "localhost",
     "database" => "emoncms",
-    "username" => "_DB_USER_",
-    "password" => "_DB_PASSWORD_",
+    "username" => "emoncms",
+    "password" => "password",
     "port"     => 3306,
-     // Skip database setup test - set to false once database has been setup.
+    // Skip the database setup test, set to false once the database is set up
     "dbtest"   => true
 ),
 
-// Redis Database (used as a cache for improved performance)
+// Redis, used as a cache to reduce SD card/disk write wear and improve performance
 "redis"=>array(
-    'enabled' => false
+    'enabled' => true,
+    'prefix'  => ''
 ),
 
-// MQTT Used with emoncms_mqtt service to send and receive data over MQTT
-// If MQTT settings are changed reboot or execute "sudo systemctl restart emoncms_mqtt.service"
+// MQTT, used by the emoncms_mqtt service to send and receive data
+// Restart the service after a change: sudo systemctl restart emoncms_mqtt.service
 "mqtt"=>array(
-    'enabled'   => false,
-    'user'      => '',
-    'password'  => ''
+    'enabled'  => false,
+    'user'     => 'username',
+    'password' => 'password'
 ),
 
-// Feed engine settings
 "feed"=>array(
-    // Supported engines. List engines by id to disable feed creation.
-    // Existing feeds with a hidden engine still work
-
-    // MYSQL:0, MYSQLMEMORY:8, PHPTIMESERIES:2, PHPFINA:5, CASSANDRA:10
-    // 5:phpfina and 2:phptimeseries are the recommended emoncms feed engines
-    'engines_hidden'=>array(0,8,10),
-    // Buffer data to be written to
-    'redisbuffer'   => array(
-        'enabled' => false,
-        'sleep' => 60
+    // Engines hidden from feed creation, existing feeds will still work
+    // MYSQL:0, PHPTIMESERIES:2, PHPFINA:5, PHPFIWA:6, MYSQLMEMORY:8, CASSANDRA:10
+    'engines_hidden' => array(0,6,8,10),
+    'redisbuffer'    => array(
+        // Buffer feed data in redis, needs redis enabled and the feedwriter service
+        'enabled' => true,
+        // Seconds to wait before writing the buffer to disk
+        'sleep' => 300
     ),
-    'phpfina'       => array('datadir'  => '/var/opt/emoncms/phpfina/'),
-    'phptimeseries' => array('datadir'  => '/var/opt/emoncms/phptimeseries/')
+    // Feed data directories, ensure write permission on both
+    'phpfina'        => array('datadir' => '/var/opt/emoncms/phpfina/'),
+    'phptimeseries'  => array('datadir' => '/var/opt/emoncms/phptimeseries/')
 ),
 
-// Enable the graph module if you have it installed
 "interface"=>array(
-    'feedviewpath' => "graph/"
-),
-
-"public_profile"=>array(
-
-),
-
-// Email delivery. transport is "smtp", "sendmail" or "mailersend".
-// Leave it out entirely to keep whatever the smtp block below implies.
-// "email"=>array(
-//     'transport' => 'mailersend',
-//     'from_email' => 'noreply@emoncms.org',
-//     'from_name' => 'Emoncms',
-//     'mailersend_api_key' => ''
-// ),
-
-"smtp"=>array(
-    // Email address to email proccessed input values
-    // 'default_emailto' => 'root@localhost',
-    // 'host'=>"smtp.gmail.com",
-    // 25, 465, 587
-    // 'port'=>"465",
-    // 'from_email' => 'noreply@emoncms.org',
-    // 'from_name' => 'EmonCMS',
-    // comment lines below that dont apply
-    // ssl, tls
-    // 'encryption'=>"ssl",
-    // 'username'=>"yourusername@gmail.com",
-    // 'password'=>"yourpassword"
+    'enable_admin_ui' => false,
+    'feedviewpath'    => "graph/",
+    'favicon'         => "favicon.png"
 ),
 
 "log"=>array(
