@@ -46,6 +46,11 @@ $GLOBALS['settings'] = [
         'level'    => 2,
     ],
     'ui_read_only_mode' => false,
+    // Same defaults as the [password] section of default-settings.ini
+    'password' => [
+        'algo'        => 'bcrypt',
+        'bcrypt_cost' => 10,
+    ],
 ];
 
 // Helper functions used by user_model.php that live in core.php.
@@ -75,6 +80,7 @@ if (!function_exists('is_https')) {
  return false; }
 }
 
+require_once __DIR__ . '/../../Lib/password.php';
 require_once __DIR__ . '/../../Lib/EmonLogger.php';
 require_once __DIR__ . '/../../Modules/user/rememberme_model.php';
 require_once __DIR__ . '/../../Modules/user/user_model.php';

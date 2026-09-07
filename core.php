@@ -435,6 +435,15 @@ function generate_secure_key($length)
 }
 
 // ---------------------------------------------------------------------------------------------------------
+// Password hashing
+//
+// hash_password(), verify_password() and password_needs_upgrade() live in
+// Lib/password.php. They depend on nothing but $settings['password'], see the
+// [password] section of default-settings.ini.
+// ---------------------------------------------------------------------------------------------------------
+require_once __DIR__."/Lib/password.php";
+
+// ---------------------------------------------------------------------------------------------------------
 // Fetch the current session's apikeys, for display on the API documentation pages.
 //
 // Two conditions, both required:

@@ -10,6 +10,11 @@
 */
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
+
+// view() only brings $path into scope, and the gravatar hash below is rendered
+// from the session user's own address
+global $session;
+
 load_css("Modules/user/profile/profile.css");
 load_js("Lib/js/clipboard.js");
 load_js("Lib/js/qrcode.js");
@@ -262,6 +267,11 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 <script>
 var gravatar_enabled = <?php echo json_encode(gravatar_enabled()); ?>;
+// sha256 of the stored address, and the only hash the profile page uses. The
+// browser cannot compute it: user/set normalises the address before storing it,
+// so what was typed here and what the account actually has can differ. Saving a
+// new address reloads the page, see save() in profile.js.
+var gravatar_hash = <?php echo json_encode($session["gravatar"] ? hash('sha256', strtolower(trim($session["gravatar"]))) : ''); ?>;
 var languages = <?php echo json_encode(get_available_languages_with_names()); ?>;
 var translation_status = <?php echo json_encode(get_translation_status()); ?>;
 var str_passwords_do_not_match = "<?php echo tr('Passwords do not match'); ?>";

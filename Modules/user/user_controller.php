@@ -95,6 +95,18 @@ function user_controller()
 
         // Server-side gravatar proxy, see User::get_gravatar
         if ($route->action == 'gravatar' && $session['read']) {
+            // Only ever the visitor's own avatar. Both call sites, the theme
+            // and the profile page, render the session user's gravatar address
+            // and nothing else, so an arbitrary hash is never legitimate here.
+            // Left open, any logged in account could use the proxy to find out
+            // whether some other address has a gravatar, and could grow the
+            // cache directory without limit: gravatar.com answers 200 for an
+            // unknown address, so every distinct hash and size writes a file.
+            if (!$user->gravatar_hash_matches(get('hash'), $session['gravatar'])) {
+                header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
+                exit();
+            }
+
             $avatar = $user->get_gravatar(get('hash'), (int) get('s'));
             if ($avatar === false) {
                 header($_SERVER["SERVER_PROTOCOL"]." 404 Not Found");
@@ -105,6 +117,29 @@ function user_controller()
             header("Cache-Control: private, max-age=86400");
             echo $avatar['content'];
             exit();
+        }
+
+        // Redeem an emailed password reset link
+        if ($route->action == 'passwordreset-confirm') {
+            if (empty($settings['interface']['enable_password_reset'])) {
+                return view("Modules/user/login_block.php", array(
+                    'allowusersregister'=>$allowusersregister,
+                    'verify'=>array(),
+                    'message'=>tr("Password reset is not enabled on this installation"),
+                    'referrer'=>'',
+                    'v' => 3
+                ));
+            }
+            // Check the token before rendering the form, so an expired or
+            // already used link says so up front rather than after the user has
+            // typed a new password twice. passwordreset_confirm() re-checks.
+            // Missing key falls through to the same "invalid link" message as a
+            // bad one, rather than get()'s bare "missing key parameter" die
+            $key = get('key', false, '');
+            return view("Modules/user/passwordreset_confirm.php", array(
+                'key' => $key,
+                'key_valid' => $user->passwordreset_key_is_valid($key)
+            ));
         }
 
         if ($route->action == 'verify' && $settings['interface']['email_verification'] && isset($_GET['key'])) {
@@ -145,8 +180,17 @@ function user_controller()
             return  $user->send_verification_email($username);
         }
 
-        // Trigger password reset from username and email (non authenticated)
-        if ($route->action == 'passwordreset') return  $user->passwordreset(get('username'),get('email'));
+        // Step 1: email a one time reset link (non authenticated).
+        // POST only: as a GET this was triggerable by URL alone, which made it
+        // CSRF-able and put the address in access logs and proxy caches.
+        if ($route->action == 'passwordreset' && $route->method == 'POST') {
+            return $user->passwordreset(post('username'),post('email'));
+        }
+
+        // Step 2: redeem the emailed token and set the new password (non authenticated)
+        if ($route->action == 'passwordreset-confirm' && $route->method == 'POST') {
+            return $user->passwordreset_confirm(post('key'),post('password'));
+        }
 
         // Returns apikey's from login credentials, required username and password.
         if ($route->action == 'auth' && !$session['read']) return  $user->get_apikeys_from_login(post('username'),post('password'));
@@ -206,9 +250,8 @@ function user_controller()
                         $userid = (int) $userid;
                         $query_result = $mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
                         $row = $query_result->fetch_object();
-                        $hash = hash('sha256', $row->salt . hash('sha256', $_POST['password']));
 
-                        if ($hash == $row->password || $session['admin']==1) {
+                        if (verify_password($_POST['password'], $row->password, $row->salt) || $session['admin']==1) {
                             $result = "PERMANENT DELETE:\n";
                             $result .= delete_user($userid,"permanentdelete");
                             $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'permanentdelete']);

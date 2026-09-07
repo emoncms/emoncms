@@ -180,6 +180,30 @@ $_settings = array(
     'action' => "view"
 ),
 
+// How email is delivered.
+//
+// transport selects one of:
+//   smtp        SMTP relay, configured in the "smtp" block below
+//   sendmail    the local /usr/sbin/sendmail binary
+//   mailersend  the MailerSend HTTP API
+//
+// Leave it empty to keep whatever the "smtp" block below already implies:
+// sendmail when its sendmail flag is true, SMTP otherwise. Installs that
+// predate this block therefore need no change. Setting it explicitly wins.
+"email"=>array(
+    'transport' => '',
+
+    // Address email is sent from, used by every transport. Falls back to the
+    // smtp block's from_email and from_name below when not set here.
+    'from_email' => '',
+    'from_name' => '',
+
+    // Only used by the mailersend transport. Create a key in the MailerSend
+    // dashboard. The sending domain has to be verified there, and from_email
+    // above has to be an address on it.
+    'mailersend_api_key' => ''
+),
+
 // (OPTIONAL) Email SMTP, used for password reset or other email functions
 "smtp"=>array(
     // Email address to email proccessed input values

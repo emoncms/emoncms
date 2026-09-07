@@ -258,20 +258,38 @@ class User
                         $userData = $result->fetch_object();
                         if ($userData->id != 0)
                         {
-                            // Regenerate session ID when logging in via remember-me token
-                            session_regenerate_id(true);
+                            // Apply the same account state gate as the login
+                            // form. Without this an account that has had its
+                            // login access revoked could keep resuming a session
+                            // from a cookie issued before the restriction was
+                            // applied. logout() clears the cookie so the token
+                            // is not left live.
+                            if ($this->account_session_denied($userData)) {
+                                $this->log->error("Login: remember me rejected for restricted account userid:".$userData->id);
+                                $this->logout();
+                            } else {
+                                // Grant the access level the account actually
+                                // holds: 1 is read only, 2+ adds write. This
+                                // previously always granted write.
+                                $access = $this->user_access_level($userData);
 
-                            $_SESSION['userid'] = $userData->id;
-                            $_SESSION['username'] = $userData->username;
-                            $_SESSION['read'] = 1;
-                            $_SESSION['write'] = 1;
-                            $_SESSION['admin'] = $userData->admin;
-                            $_SESSION['lang'] = $userData->language;
-                            $_SESSION['timezone'] = $userData->timezone;
-                            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
-                            // There is a chance that an attacker has stolen the login token, so we store
-                            // the fact that the user was logged in via RememberMe (instead of login form)
-                            $_SESSION['cookielogin'] = true;
+                                // Regenerate session ID when logging in via remember-me token
+                                session_regenerate_id(true);
+
+                                $_SESSION['userid'] = $userData->id;
+                                $_SESSION['username'] = $userData->username;
+                                $_SESSION['read'] = 1;
+                                if ($access>1) {
+                                    $_SESSION['write'] = 1;
+                                    $_SESSION['admin'] = $userData->admin;
+                                }
+                                $_SESSION['lang'] = $userData->language;
+                                $_SESSION['timezone'] = $userData->timezone;
+                                if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
+                                // There is a chance that an attacker has stolen the login token, so we store
+                                // the fact that the user was logged in via RememberMe (instead of login form)
+                                $_SESSION['cookielogin'] = true;
+                            }
                         }
                     }
                 } else {
@@ -338,9 +356,11 @@ class User
 
         // If we got here the username, password and email should all be valid
 
-        $hash = hash('sha256', $password);
-        $salt = generate_secure_key(16);
-        $password = hash('sha256', $salt . $hash);
+        // bcrypt and argon2id both carry their own salt inside the hash, so the
+        // salt column stays empty for every account created from here on
+        // whichever settings['password']['algo'] selects
+        $password = hash_password($password);
+        $salt = '';
 
         $apikey_write = generate_secure_key(16);
         $apikey_read = generate_secure_key(16);
@@ -402,14 +422,7 @@ class User
         global $path;
         $verification_link = $path."user/verify?key=$verification_key";
         
-        // $this->redis->rpush("emailqueue",json_encode(array(
-        //    "emailto"=>$email,
-        //    "type"=>"passwordrecovery",
-        //    "subject"=>'Emoncms email verification',
-        //    "message"=>"<p>To complete emoncms registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>"
-        // )));
-        
-        require "Lib/email.php";
+        require_once "Lib/email.php";
         $emailer = new Email();
         $emailer->to(array($email));
         $emailer->subject(ucfirst($this->appname).' email verification');
@@ -454,10 +467,47 @@ class User
 
     }
 
+    /**
+     * Effective access level for a user row.
+     * 0 = no login, 1 = read only, 2+ = read and write.
+     * Defaults to write access where the column is absent, matching the
+     * behaviour of installs whose schema predates the access column.
+     *
+     * @param object $userData row from the users table
+     * @return int
+     */
+    private function user_access_level($userData)
+    {
+        if (!isset($userData->access)) return 2;
+        return (int) $userData->access;
+    }
+
+    /**
+     * Shared account state gate for every path that starts a session.
+     *
+     * Returns an error array when the account may not be given a session, or
+     * false when it may. Both the login form and the remember me cookie path
+     * call this: keeping the rules in one place is the point, as the remember
+     * me path previously skipped them entirely, which let an account whose
+     * login had been disabled with access=0 keep working indefinitely from a
+     * cookie issued before the account was restricted.
+     *
+     * @param object $userData row from the users table
+     * @return array|false
+     */
+    private function account_session_denied($userData)
+    {
+        if ($this->user_access_level($userData)==0) {
+            return array('message'=>tr("Login disabled for this account"));
+        }
+
+        return false;
+    }
+
     public function login($username, $password, $remembermecheck, $referrer='')
     {
-        // Rate limit login attempts to prevent brute force attacks. Limit to 10 attempts in 15 minutes.
-        if ($this->is_rate_limited('login', 10, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+        // Rate limit login attempts to prevent brute force attacks. Limit to 10 failed attempts in 15 minutes.
+        if ($this->is_rate_limit_exceeded('login', 10)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
 
         // Basic checks
         $remembermecheck = (int) $remembermecheck;
@@ -468,6 +518,7 @@ class User
 
         // Dont go further if username does not exist.
         if (!$userid = $this->get_id($username)) {
+            $this->record_failed_attempt('login', 900);
             $this->log->error("Login: Username does not exist username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
@@ -481,21 +532,25 @@ class User
         // If email verification is required and email is not verified then dont allow login
         if ($this->email_verification && isset($userData->email_verified) && !$userData->email_verified) return array('success'=>false, 'message'=>tr("Please verify email address"));
         
-        // Check password
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-        if ($hash != $userData->password)
+        // Check password. reads all three formats, legacy sha256, bcrypt and
+        // argon2id, please see Lib/password.php
+        if (!verify_password($password, $userData->password, $userData->salt))
         {
+            $this->record_failed_attempt('login', 900);
             $this->log->error("Login: Incorrect password username:$username ip:".get_client_ip_env());
             return array('success'=>false, 'message'=>tr("Incorrect username or password"));
         }
         else
         {
+            // Upgrade password hash e.g from sha256 to bcrypt or argon2id.
+            // Please see the [password] section of settings.ini.
+            $this->upgrade_password_hash($userData->id, $password, $userData->password);
+
             // Default write access
             if (!isset($userData->access)) $userData->access = 2;
 
-            // If no access via login
-            if ($userData->access==0) {
-                return array('success'=>false, 'message'=>tr("Login disabled for this account"));
+            if ($denied = $this->account_session_denied($userData)) {
+                return array('success'=>false, 'message'=>$denied['message']);
             }
         
             // Ensure session is active before regenerating
@@ -503,8 +558,13 @@ class User
                 session_start();
             }
 
-            $this->update_last_active($userData->id);            
-        
+            $this->update_last_active($userData->id);
+
+            // The user still has their password, so any reset link sitting in
+            // their inbox is no longer needed and should stop working now
+            // rather than at the end of its window
+            $this->clear_password_reset_token($userData->id);
+
             session_regenerate_id(true);
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
@@ -572,11 +632,13 @@ class User
             return array('success'=>false, 'message'=>tr("Incorrect authentication"));
         }
        
-        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
-
-        if ($hash != $userData_password) {
+        if (!verify_password($password, $userData_password, $userData_salt)) {
             return array('success'=>false, 'message'=>tr("Incorrect authentication"));
         } else {
+            // Upgrade here too: an account driven only through this API would
+            // otherwise never pass through login() and never migrate
+            $this->upgrade_password_hash($userData_id, $password, $userData_password);
+
             return array('success'=>true, 'userid'=>$userData_id, 'apikey_write'=>$userData_apikey_write, 'apikey_read'=>$userData_apikey_read);
         }
     }
@@ -588,6 +650,65 @@ class User
         session_unset();
         //session_regenerate_id(true);
         session_destroy();
+    }
+
+    /**
+     * Replace a stored hash with a current one, after the password has been
+     * verified against it.
+     *
+     * This is how accounts move off the old sha256 scheme: there is no way to
+     * convert a stored hash without the password, so each account is upgraded
+     * at the one moment the password is in memory, which is a successful
+     * authentication. No mass reset, and nothing the account holder notices.
+     *
+     * The same path also carries every later change to how passwords are
+     * hashed: switching settings['password']['algo'] between bcrypt and
+     * argon2id, or raising the bcrypt cost or the argon2id memory or time cost.
+     * password_needs_upgrade() compares the stored hash against whatever is
+     * configured now, so accounts move to it as their owners log in.
+     *
+     * Never allowed to fail the authentication that triggered it: the caller
+     * has already verified the password, so a write failure here means the
+     * account stays on the old format and is retried next time, not that the
+     * user is refused.
+     *
+     * @param int    $userid
+     * @param string $password verified plaintext
+     * @param string $stored   hash it was verified against
+     * @return void
+     */
+    private function upgrade_password_hash($userid, $password, $stored)
+    {
+        $userid = (int) $userid;
+        if ($userid < 1) return;
+        if (!password_needs_upgrade($stored)) return;
+
+        try {
+            $new_hash = hash_password($password);
+            $salt = '';
+
+            // Guarded on the hash it was verified against, so a concurrent
+            // password change is not overwritten by this upgrade
+            $stmt = $this->mysqli->prepare("UPDATE users SET password=?, salt=? WHERE id=? AND password=?");
+            if ($stmt === false) {
+                $this->log->warn("upgrade_password_hash: prepare failed userid:$userid");
+                return;
+            }
+            $stmt->bind_param("ssis", $new_hash, $salt, $userid, $stored);
+            $stmt->execute();
+            $upgraded = $stmt->affected_rows;
+            $stmt->close();
+
+            if ($upgraded > 0) {
+                // Name the algorithm actually written, not an assumed one: it
+                // follows the setting, and falls back to bcrypt where argon2 is
+                // unavailable, so this is the record of what the row now holds
+                $algo = password_hash_config();
+                $this->log->info("upgrade_password_hash: upgraded to ".$algo['name']." userid:$userid");
+            }
+        } catch (Throwable $e) {
+            $this->log->warn("upgrade_password_hash failed userid:$userid ".$e->getMessage());
+        }
     }
 
     public function change_password($userid, $old, $new)
@@ -605,20 +726,24 @@ class User
         // 1) check that old password is correct
         $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
         $row = $result->fetch_object();
-        $hash = hash('sha256', $row->salt . hash('sha256', $old));
 
-        if ($hash == $row->password)
+        if (verify_password($old, $row->password, $row->salt))
         {
-            // 2) Save new password
-            $hash = hash('sha256', $new);
-            $salt = generate_secure_key(16);
-            $password = hash('sha256', $salt . $hash);
+            // 2) Save new password in the configured algorithm, bcrypt or
+            // argon2id, and clear any legacy salt: no separate upgrade needed
+            // here, the row is rewritten anyway
+            $password = hash_password($new);
+            $salt = '';
 
             $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
             $stmt->bind_param("ssi", $password, $salt, $userid);
             $stmt->execute();
             $stmt->close();
-            
+
+            // Invalidate any outstanding reset link: it would otherwise stay
+            // redeemable against the password just set
+            $this->clear_password_reset_token($userid);
+
             return array('success'=>true, 'message'=>tr("Password updated successfully"));
         }
         else
@@ -629,66 +754,320 @@ class User
         }
     }
 
+    // How long an emailed password reset link stays usable
+    private $password_reset_window = 3600;
+
+    // How many reset emails a single account can be sent, regardless of how
+    // many different IPs ask for them. Set to match the link lifetime: there is
+    // no legitimate reason to need a fourth link while the first is still live.
+    private $password_reset_account_limit = 3;
+    private $password_reset_account_window = 3600;
+
+    /**
+     * Base URL to put in a password reset email.
+     *
+     * Deliberately built only from the configured domain, never from the
+     * request. $path falls back to HTTP_X_FORWARDED_HOST or HTTP_HOST when
+     * settings['domain'] is false, see get_application_path in core.php, and a
+     * reset link built from those can be pointed at an attacker's server by
+     * sending a spoofed Host header with the reset request. The victim then
+     * receives a genuine looking email that hands the token over on click.
+     *
+     * Returns false when no domain is configured, in which case no reset email
+     * should be sent at all.
+     *
+     * @return string|false
+     */
+    private function password_reset_link_base()
+    {
+        global $settings;
+
+        if (empty($settings["domain"])) return false;
+
+        return get_application_path($settings["domain"]);
+    }
+
+    /**
+     * Clear any outstanding password reset token for a user.
+     *
+     * Called whenever the account holder proves they still have the password:
+     * a live emailed link is only meant to cover the case where they have lost
+     * it, so leaving one usable for the rest of the window after a successful
+     * login or password change is an unnecessary window for whoever can read
+     * that mailbox.
+     *
+     * @param int $userid
+     * @return void
+     */
+    private function clear_password_reset_token($userid)
+    {
+        $userid = (int) $userid;
+        if ($userid < 1) return;
+
+        // This runs on the login path, so it must never be able to break a
+        // login: on a database that has the new code but has not had the schema
+        // update applied yet, these columns are missing.
+        //
+        // Both outcomes have to be handled. Under mysqli's default error mode
+        // since PHP 8.1 prepare() throws; with reporting off, which is the
+        // default on PHP 7 and can be set explicitly on any version, it returns
+        // false instead and the bind_param() that follows raises an Error.
+        // Error does not extend Exception, so catching Throwable rather than
+        // Exception is what makes the catch cover both.
+        try {
+            $stmt = $this->mysqli->prepare("UPDATE users SET password_reset_hash='', password_reset_expires=0 WHERE id=? AND password_reset_hash!=''");
+            if ($stmt === false) {
+                $this->log->warn("clear_password_reset_token: password reset columns missing, run the database update");
+                return;
+            }
+            $stmt->bind_param("i", $userid);
+            $stmt->execute();
+            $stmt->close();
+        } catch (Throwable $e) {
+            $this->log->warn("clear_password_reset_token failed userid:$userid ".$e->getMessage());
+        }
+    }
+
+    /**
+     * True if a reset token is currently redeemable.
+     *
+     * Used to tell the user their link has expired when they open the page,
+     * rather than after they have typed a new password twice. This is only a
+     * lookup, the redemption in passwordreset_confirm() re-checks everything.
+     *
+     * @param string $key token from the emailed link
+     * @return bool
+     */
+    public function passwordreset_key_is_valid($key)
+    {
+        // Generous limit: this is a page load, and the redemption below has its
+        // own stricter counter. Fail open, the real gate is on redemption.
+        if ($this->is_rate_limited('passwordresetcheck', 30, 900)) return true;
+
+        if (!is_string($key) || strlen($key) != 64 || !ctype_xdigit($key)) return false;
+
+        $token_hash = hash('sha256', $key);
+        $now = time();
+
+        // Renders a page, so treat a database that predates the reset columns
+        // as "no valid token" rather than letting it 500. Throwable, and the
+        // false check, for the same reason as clear_password_reset_token().
+        try {
+            $userid = 0;
+            $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE password_reset_hash=? AND password_reset_expires>?");
+            if ($stmt === false) {
+                $this->log->warn("passwordreset_key_is_valid: password reset columns missing, run the database update");
+                return false;
+            }
+            $stmt->bind_param("si", $token_hash, $now);
+            $stmt->execute();
+            $stmt->bind_result($userid);
+            $found = $stmt->fetch();
+            $stmt->close();
+        } catch (Throwable $e) {
+            $this->log->warn("passwordreset_key_is_valid failed: ".$e->getMessage());
+            return false;
+        }
+
+        return $found && $userid > 0;
+    }
+
+    /**
+     * Step 1 of password reset: email a one time link.
+     *
+     * This deliberately does NOT change the password. Anyone on the internet
+     * can reach this endpoint knowing only a username and an email address, so
+     * changing the credential here let a stranger lock any account out at will.
+     * The account is only altered once the emailed token comes back in
+     * passwordreset_confirm(), which proves control of the mailbox.
+     *
+     * The response is identical whether or not an account matched, so this
+     * cannot be used to test which usernames or addresses are registered.
+     *
+     * @param string $username
+     * @param string $emailto
+     * @return array
+     */
     public function passwordreset($username,$emailto)
     {
         if ($this->is_rate_limited('passwordreset', 3, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
 
-        $result = $this->is_valid_username($username);
-        if (!$result['success']) return $result;
-        $result = $this->is_valid_email($emailto);
-        if (!$result['success']) return $result;
+        // Sent whatever happens below: never reveal whether an account matched
+        $generic = array('success'=>true, 'message'=>tr("If that username and email match an account, a password reset link has been sent."));
 
-        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username=? AND email=?");
+        $result = $this->is_valid_username($username);
+        if (!$result['success']) return $generic;
+        $result = $this->is_valid_email($emailto);
+        if (!$result['success']) return $generic;
+
+        global $settings;
+        if (empty($settings["interface"]["enable_password_reset"])) return $generic;
+
+        // Resolve the link base before touching the account: a reset link built
+        // from the request host is worse than no reset at all, see
+        // password_reset_link_base()
+        $link_base = $this->password_reset_link_base();
+        if ($link_base === false) {
+            $this->log->error("passwordreset: settings['domain'] is not set, refusing to email a reset link");
+            return $generic;
+        }
+
+        $stmt = $this->mysqli->prepare("SELECT * FROM users WHERE username=? AND email=?");
         $stmt->bind_param("ss",$username,$emailto);
         $stmt->execute();
-        $stmt->bind_result($userid);
-        $stmt->fetch();
+        $userData = $stmt->get_result()->fetch_object();
         $stmt->close();
-        
-        if ($userid!==false && $userid>0)
-        {
-            global $settings;
-            if ($settings["interface"]["enable_password_reset"]==true)
-            {
-                // Generate new random password
-                $newpass = hash('sha256',generate_secure_key(32));
 
-                // Hash and salt
-                $hash = hash('sha256', $newpass);
-                $salt = generate_secure_key(16);
-                $password = hash('sha256', $salt . $hash);
-                
-                // Sent email with $newpass to $email
-                require "Lib/email.php";
-                $email = new Email();
-                $email->to($emailto);
-                $email->subject(ucfirst($this->appname).' password reset');
-                $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
-                $result = $email->send();
-                if (!$result['success']) {
-                    $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
-                    return array('success'=>false, 'message'=>$result['message']);
-                } else {
-                    $this->log->info("Email sent to $emailto");
-                    // Save password and salt only after email is confirmed sent
-                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
-                    $stmt->bind_param("ssi", $password, $salt, $userid);
-                    if (!$stmt->execute()) {
-                        $this->log->error("passwordreset: failed to save new password for userid:$userid error:" . $this->mysqli->error);
-                        $stmt->close();
-                        return array('success'=>false, 'message'=>"Error saving new password");
-                    }
-                    $stmt->close();
-                    return array('success'=>true, 'message'=>"Password recovery email sent!");
-                }                
-            } else {
-                return array('success'=>false, 'message'=>"Password reset disabled");
-            }
-        } else {
-            // Return the same response as a successful send to prevent username/email enumeration
+        if (!$userData || $userData->id < 1) {
             $this->log->info("passwordreset: no account matched username:$username emailto:$emailto ip:".get_client_ip_env());
-            return array('success'=>true, 'message'=>"Password recovery email sent!");
+            return $generic;
         }
+
+        // Don't send a reset for an account that could not log in with the new
+        // password anyway. The caller cannot tell this apart from success.
+        if ($this->account_session_denied($userData)) {
+            $this->log->info("passwordreset: refused for restricted account userid:".$userData->id);
+            return $generic;
+        }
+
+        $userid = (int) $userData->id;
+
+        // Per account limit, on top of the per IP limit at the top of this
+        // method. The IP bucket alone does not protect the account holder: an
+        // attacker with a pool of addresses stays under it on every address
+        // while filling one victim's inbox with reset emails. Checked here, so
+        // it only counts requests that would actually send, and applied before
+        // the UPDATE below so a flood cannot keep invalidating the link the
+        // legitimate user is trying to use. The response is the generic one, so
+        // this does not become an oracle for whether an account exists.
+        if ($this->is_rate_limited_by('passwordreset:user', $userid, $this->password_reset_account_limit, $this->password_reset_account_window)) {
+            $this->log->warn("passwordreset: per account limit reached userid:$userid ip:".get_client_ip_env());
+            return $generic;
+        }
+
+        // The token goes in the email; only its hash is stored, so read access
+        // to the users table does not yield usable reset links
+        $token = generate_secure_key(32);
+        $token_hash = hash('sha256', $token);
+        $expires = time() + $this->password_reset_window;
+
+        $reset_link = $link_base."user/passwordreset-confirm?key=$token";
+        $minutes = (int) round($this->password_reset_window / 60);
+
+        require_once "Lib/email.php";
+        $emailer = new Email();
+        $emailer->to($emailto);
+        $emailer->subject(ucfirst($this->appname).' password reset');
+        $emailer->body("<p>A password reset was requested for your ".$this->appname." account.</p>"
+                      ."<p>To choose a new password follow this link: <a href='$reset_link'>$reset_link</a></p>"
+                      ."<p>The link can be used once and expires in $minutes minutes. "
+                      ."If you did not request this you can ignore this email, your password has not been changed.</p>");
+        $result = $emailer->send();
+        if (!$result['success']) {
+            // Store nothing if the email did not go out: the outstanding link,
+            // if any, stays valid rather than being replaced by one nobody has
+            $this->log->error("passwordreset: email send returned error. emailto=$emailto message='".$result['message']."'");
+            return $generic;
+        }
+
+        $stmt = $this->mysqli->prepare("UPDATE users SET password_reset_hash=?, password_reset_expires=? WHERE id=?");
+        $stmt->bind_param("sii", $token_hash, $expires, $userid);
+        if (!$stmt->execute()) {
+            // The link is already in the user's inbox but nothing will accept
+            // it. Nothing to do but log it, telling the caller would break the
+            // "identical response either way" property above.
+            $this->log->error("passwordreset: failed to store reset token userid:$userid error:".$this->mysqli->error);
+        }
+        $stmt->close();
+
+        $this->log->info("passwordreset: reset link sent userid:$userid ip:".get_client_ip_env());
+
+        return $generic;
+    }
+
+    /**
+     * Step 2 of password reset: redeem the emailed token and set a new password.
+     *
+     * The token is single use and time limited, and redeeming it revokes every
+     * remember me cookie on the account.
+     *
+     * KNOWN LIMITATION: this does not end PHP sessions that are already open.
+     * Emoncms keeps no per user record of live sessions, so there is nothing to
+     * enumerate and destroy here. Someone who knew the old password and has a
+     * session open keeps that session until it expires or they log out. Closing
+     * this needs either redis backed sessions keyed by userid, or a session
+     * epoch column on users that is bumped here and compared in
+     * emon_session_start(). Until then a reset locks out the old password and
+     * every remember me cookie, but not an open session.
+     *
+     * @param string $key   token from the emailed link
+     * @param string $new   the new password
+     * @return array
+     */
+    public function passwordreset_confirm($key, $new)
+    {
+        if ($this->is_rate_limited('passwordresetconfirm', 10, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+
+        $invalid = array('success'=>false, 'message'=>tr("This password reset link is invalid or has expired, please request a new one"));
+
+        // Tokens issued before the feature was turned off are not redeemable
+        global $settings;
+        if (empty($settings["interface"]["enable_password_reset"])) return $invalid;
+
+        // Same shape generate_secure_key(32) produces
+        if (!is_string($key) || strlen($key) != 64 || !ctype_xdigit($key)) return $invalid;
+
+        $result = $this->is_valid_password($new);
+        if (!$result['success']) return $result;
+
+        $token_hash = hash('sha256', $key);
+        $now = time();
+
+        $userid = 0;
+        $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE password_reset_hash=? AND password_reset_expires>?");
+        $stmt->bind_param("si", $token_hash, $now);
+        $stmt->execute();
+        $stmt->bind_result($userid);
+        $found = $stmt->fetch();
+        $stmt->close();
+
+        if (!$found || $userid < 1) {
+            $this->log->warn("passwordreset_confirm: invalid or expired key ip:".get_client_ip_env());
+            return $invalid;
+        }
+
+        $userid = (int) $userid;
+
+        // A reset always lands on the configured algorithm, bcrypt or argon2id,
+        // and clears any legacy salt with it
+        $password = hash_password($new);
+        $salt = '';
+
+        // Clearing the token in the same statement makes it single use even if
+        // two redemptions arrive at once: the second matches no row
+        $stmt = $this->mysqli->prepare("UPDATE users SET password=?, salt=?, password_reset_hash='', password_reset_expires=0 WHERE id=? AND password_reset_hash=?");
+        $stmt->bind_param("ssis", $password, $salt, $userid, $token_hash);
+        $stmt->execute();
+        $changed = $stmt->affected_rows;
+        $stmt->close();
+
+        if ($changed < 1) return $invalid;
+
+        // A reset is only meaningful if it also ends logins held with the old
+        // password. See the limitation noted above: this covers remember me
+        // cookies, not sessions that are already open.
+        $this->rememberme->clearAllTriplets($userid);
+
+        // The reset completed, so the per account send limit has done its job.
+        // Clearing it means someone who used up their allowance and then reset
+        // successfully is not locked out of asking again for the rest of the
+        // window. Only reachable by redeeming a token, so it cannot be reset by
+        // whoever was flooding the account.
+        $this->clear_rate_limit_by('passwordreset:user', $userid);
+
+        $this->log->info("passwordreset_confirm: password reset userid:$userid ip:".get_client_ip_env());
+
+        return array('success'=>true, 'message'=>tr("Password updated, you can now log in with your new password"));
     }
 
     public function change_username($userid, $username)
@@ -718,6 +1097,14 @@ class User
 
     public function change_email($userid, $email)
     {
+        // Limited like change_password, and for a second reason: the
+        // notification below is sent to the address being replaced, so an
+        // account holder chooses both the recipient and the timing. Setting
+        // the address to someone else's and then changing it again sends them
+        // mail from this install, and unlimited that is a way to send mail to
+        // arbitrary people on our reputation.
+        if ($this->is_rate_limited('changeemail', 5, 900)) return array('success'=>false, 'message'=>tr("Too many attempts, please try again later"));
+
         if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>tr("As you are using a cookie based remember me login, please logout and log back in to change email"));
 
         $userid = (int) $userid;
@@ -725,11 +1112,39 @@ class User
         $result = $this->is_valid_email($email);
         if (!$result['success']) return $result;
 
+        // Capture the previous email address before overwriting it so we can
+        // notify it of the change below.
+        $old_email = $this->get_email($userid);
+
         $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
         $stmt->close();
-        
+
+        // Notify the previous address that the account email was changed, so an
+        // unexpected change is visible to the original owner even if the account
+        // is compromised. Best effort: only when the old address is a valid,
+        // different email, and only where this install can actually send.
+        if ($old_email && filter_var($old_email, FILTER_VALIDATE_EMAIL)
+            && strtolower($old_email) !== strtolower($email)) {
+            $username = $this->get_username($userid);
+            $safe_new = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
+            $safe_user = htmlspecialchars((string) $username, ENT_QUOTES, 'UTF-8');
+
+            require_once "Lib/email.php";
+            $emailer = new Email();
+            if ($emailer->configured()) {
+                $emailer->to($old_email);
+                $emailer->subject(ucfirst($this->appname).' account email address changed');
+                $emailer->body("<p>The email address for your ".$this->appname." account (username: $safe_user) has just been changed to $safe_new.</p>"
+                    . "<p>If you did not make this change, please contact us immediately at support@openenergymonitor.zendesk.com</p>");
+                $result = $emailer->send();
+                if (!$result['success']) {
+                    $this->log->error("change_email: notification to previous address failed message='".$result['message']."'");
+                }
+            }
+        }
+
 	/*
         global $session;
         
@@ -858,14 +1273,6 @@ class User
             if ($timezone===$_timezone) return true;
         }
         return false;
-    }
-
-    public function get_salt($userid)
-    {
-        $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT salt FROM users WHERE id = '$userid'");
-        $row = $result->fetch_object();
-        return $row->salt;
     }
 
     //---------------------------------------------------------------------------------------
@@ -1064,18 +1471,44 @@ class User
     }
 
     /**
+     * Does $hash identify $address on gravatar.com?
+     *
+     * Used to confine the proxy to the visitor's own avatar, see the gravatar
+     * route in user_controller. Neither side is a secret from the session
+     * holder; hash_equals is used because it is the right default for
+     * comparing a submitted digest, not because there is anything to leak.
+     *
+     * @param string $hash     hash supplied by the request
+     * @param string $address  gravatar address to check it against
+     * @return bool
+     */
+    public function gravatar_hash_matches($hash, $address)
+    {
+        if (!is_string($hash) || !is_string($address)) return false;
+
+        $normalised = strtolower(trim($address));
+        if ($normalised === '') return false;
+
+        return hash_equals(hash('sha256', $normalised), $hash);
+    }
+
+    /**
      * Server-side gravatar proxy: avatars are fetched and cached by the server
      * so that the visitor's browser never connects to gravatar.com directly
      * (gravatar.com would otherwise receive the visitor's IP and email hash on every page view)
      *
-     * @param string $hash  md5 (32 hex chars) or sha256 (64 hex chars) gravatar email hash
+     * @param string $hash  sha256 (64 hex chars) gravatar email hash
      * @param int    $size  image size in pixels
      * @return array|false  array('content'=>bytes, 'mime'=>type) or false if unavailable
      */
     public function get_gravatar($hash, $size)
     {
         if (!$this->gravatar_enabled()) return false;
-        if (!is_string($hash) || !preg_match('/^([0-9a-f]{32}|[0-9a-f]{64})$/', $hash)) return false;
+        // \z, not $: PHP's $ also matches before a trailing newline, so a hash
+        // submitted as "<64 hex>%0A" would otherwise pass and be spliced into
+        // the request URL and the cache filename. libcurl rejects such a URL
+        // anyway; this does not rely on it doing so.
+        if (!is_string($hash) || !preg_match('/^[0-9a-f]{64}\z/', $hash)) return false;
         $size = (int) $size;
         if ($size<1 || $size>512) $size = 52;
 
@@ -1091,8 +1524,12 @@ class User
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
             curl_setopt($ch, CURLOPT_TIMEOUT, 5);
-            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            curl_setopt($ch, CURLOPT_MAXREDIRS, 2);
+            // Redirects are deliberately not followed. gravatar.com answers these
+            // requests with a direct 200, so following them gains nothing, and a
+            // redirect is the one way a compromised gravatar.com could point this
+            // fetch at an address inside the network. Unfollowed, a 3xx is simply
+            // not a 200 and is handled as a failed fetch below.
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
             $fetched = curl_exec($ch);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             // no curl_close(): deprecated since PHP 8.0 and the handle is freed
@@ -1105,9 +1542,17 @@ class User
                 // atomic write so concurrent requests never read a partial file
                 $tmp_file = $cache_file.".".getmypid().".tmp";
                 if (@file_put_contents($tmp_file, $content) !== false) @rename($tmp_file, $cache_file);
-            } else if (is_file($cache_file)) {
-                // gravatar.com unreachable: fall back to the stale cached copy
-                $content = @file_get_contents($cache_file);
+            } else {
+                if ($http_code >= 300 && $http_code < 400) {
+                    // Only reachable if gravatar.com starts redirecting these
+                    // requests, at which point avatars quietly stop refreshing.
+                    // Logged so that shows up as a cause rather than a mystery.
+                    $this->log->warn("get_gravatar: gravatar.com returned HTTP $http_code, redirects are not followed");
+                }
+                if (is_file($cache_file)) {
+                    // gravatar.com unreachable: fall back to the stale cached copy
+                    $content = @file_get_contents($cache_file);
+                }
             }
         }
         if ($content === false) return false;
@@ -1153,16 +1598,90 @@ class User
             return false;
         }
 
-        $key = "ratelimit:{$action}:" . $ip;
+        return $this->is_rate_limited_by($action, $ip, $limit, $window);
+    }
+
+    /**
+     * Check rate limit for a given action against an explicit bucket.
+     *
+     * Same counter as is_rate_limited(), but the caller chooses what is being
+     * limited instead of it always being the client IP. Used to limit an action
+     * per target account, which an IP bucket cannot do: an attacker with a pool
+     * of addresses stays under the per IP limit on every one of them while
+     * hitting a single victim over and over.
+     *
+     * @param string $action  e.g. 'passwordreset:user'
+     * @param string $bucket  what is being limited, e.g. a userid
+     * @param int    $limit   max attempts allowed within the window
+     * @param int    $window  time window in seconds
+     * @return bool
+     */
+    private function is_rate_limited_by($action, $bucket, $limit, $window)
+    {
+        if ($this->disable_rate_limiting) return false;
+        if (!$this->redis) return false;
+        if ($bucket === '' || $bucket === null) return false;
+
+        $key = "ratelimit:{$action}:" . $bucket;
         $attempts = $this->redis->incr($key);
         if ($attempts === 1) {
             $this->redis->expire($key, $window);
         }
         if ($attempts > $limit) {
+            $this->log->warn("Rate limit hit action:{$action} bucket:{$bucket}");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Reset the counter for a bucket, once whatever it was protecting against
+     * has been settled legitimately.
+     *
+     * @param string $action
+     * @param string $bucket
+     * @return void
+     */
+    private function clear_rate_limit_by($action, $bucket)
+    {
+        if (!$this->redis) return;
+        if ($bucket === '' || $bucket === null) return;
+
+        $this->redis->del("ratelimit:{$action}:" . $bucket);
+    }
+
+    // Check rate limit without incrementing the counter.
+    private function is_rate_limit_exceeded($action, $limit)
+    {
+        if ($this->disable_rate_limiting) return false;
+        if (!$this->redis) return false;
+
+        $ip = get_client_ip_env();
+        if (empty($ip)) return false;
+
+        $key = "ratelimit:{$action}:" . $ip;
+        $attempts = (int) $this->redis->get($key);
+        if ($attempts > $limit) {
             $this->log->warn("Rate limit hit action:{$action} ip:{$ip}");
             return true;
         }
         return false;
+    }
+
+    // Increment the failure counter for an action without checking the limit.
+    private function record_failed_attempt($action, $window)
+    {
+        if ($this->disable_rate_limiting) return;
+        if (!$this->redis) return;
+
+        $ip = get_client_ip_env();
+        if (empty($ip)) return;
+
+        $key = "ratelimit:{$action}:" . $ip;
+        $attempts = $this->redis->incr($key);
+        if ($attempts === 1) {
+            $this->redis->expire($key, $window);
+        }
     }
 
     /**
