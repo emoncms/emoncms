@@ -2,13 +2,16 @@
 # ------------------------------------------------------------
 # Default emoncms settings.php - DO NOT EDIT!!
 # ------------------------------------------------------------
+
+// no direct access
+defined('EMONCMS_EXEC') or die('Restricted access');
     
 $_settings = array(
 // Set Emoncms installation domain here to secure installation e.g domain = myemoncmsinstall.org
 "domain" => false,
-// Suggested installation path for symlinked emoncms modules /opt/emoncms
+// Installation path for symlinked emoncms modules
 "emoncms_dir" => "/opt/emoncms",
-// Suggested installation path for emonpi and EmonScripts repository: /opt/openenergymonitor
+// Installation path for the emonpi and EmonScripts repository
 "openenergymonitor_dir" => "/opt/openenergymonitor",
 
 // Show all fatal PHP errors
@@ -18,15 +21,23 @@ $_settings = array(
 // URL Example: http://localhost/emoncms/admin/db
 "updatelogin" => false,
 
+// index.php: force a redirect to https for every request except login.
+// Leave true unless the install genuinely has no certificate.
+// "https_enable" => true,
+
 // Check and migrate the app module database tables. Set to false to skip the
-// check once the schema is up to date.
+// check once the schema is up to date. (Is this still needed)
 "db_check" => true,
 
 // Read only mode. Non admin users keep read access but lose write access, and
 // registration is turned off.
 "ui_read_only_mode" => false,
 
-// Mysql database settings
+// -----------------------------------------------------------------------
+// Storage and services
+// -----------------------------------------------------------------------
+
+// MySQL / MariaDB connection.
 "sql"=>array(
     "server"   => "localhost",
     "database" => "emoncms",
@@ -44,7 +55,7 @@ $_settings = array(
     'port'    => 6379,
     'auth'    => '',
     'dbnum'   => '',
-    'prefix'  => 'emoncms'
+    'prefix'  => 'emoncms' // should this be the default here?
 ),
 
 // MQTT
@@ -77,25 +88,32 @@ $_settings = array(
     //'keypw'    => ''
 ),
 
-// Input
+// -----------------------------------------------------------------------
+// Inputs and feeds
+// -----------------------------------------------------------------------
+
 "input"=>array(
     // Max number of allowed different inputs per user. For limiting garbage rf data
     'max_node_id_limit' => 32
 ),
 
-// Feed settings
 "feed"=>array(
-    // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
-    // Place a ',' as the first character on all uncommented engines lines but first.
-    'engines_hidden'=>array(
-     Engine::MYSQL         // 0  Mysql traditional
-    ,Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
-    //,Engine::PHPTIMESERIES // 2
-    //,Engine::PHPFINA      // 5
-    ,Engine::CASSANDRA    // 10 Apache Cassandra
-    ),
+    // The following is a list of feed engines that are disabled by default
+    // Existing feeds on a hidden engines keep working and stay readable.
+    //
+    //   0  MYSQL           traditional mysql
+    //   2  PHPTIMESERIES   variable interval
+    //   5  PHPFINA         fixed interval
+    //   6  PHPFIWA         fixed interval with averaging (deprecated)
+    //   8  MYSQLMEMORY     mysql MEMORY tables, all data lost on shutdown
+    //  10  CASSANDRA       apache cassandra
+    //
+    // This should default to an empty array. A non-empty default here could not be cleared from settings.php
+    'engines_hidden' => array(),
 
-    // Redis Low-write mode
+    // Low-write mode. Data is buffered in redis and flushed to disk by the
+    // feedwriter service rather than written on every input. Requires redis
+    // enabled and the feedwriter service running.
     'redisbuffer'   => array(
         // If enabled is true, requires redis enabled and feedwriter service running
         'enabled' => false,
@@ -103,27 +121,27 @@ $_settings = array(
         'sleep' => 60
     ),
     
-    // Engines working folder. Default is /var/lib/phpfina,phptimeseries
-    // On windows or shared hosting you will likely need to specify a different data directory--
-    // Make sure that emoncms has write permission's to the datadirectory folders
-    'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
-    'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
+    // Engine data directories. Emoncms must be able to write to these.
+    'phpfina'       => array('datadir' => '/var/opt/emoncms/phpfina/'),
+    'phptimeseries' => array('datadir' => '/var/opt/emoncms/phptimeseries/'),
     'cassandra'     => array('keyspace' => 'emoncms'),
+    
     // MysqlTimeSeries table naming. With generic true every feed is stored in a
     // table named prefix + feed id. Set to false to name each table on creation.
     // The engine can also use its own database server, add 'server', 'port',
     // 'database', 'username' and 'password' here to enable that.
     'mysqltimeseries' => array('generic' => true, 'prefix' => 'feed_'),
-    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => 20000,
-    
-    // Minumum feed interval
+
+    // Minumum PHPFina feed interval
     'min_feed_interval' => 10,
     
+    // Most datapoints one feed/data call may return. Raising it allows longer
+    // ranges in a single request at the cost of memory and response time.
+    'max_datapoints' => 70000,
+
     // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
     // The thousands separator is not used (specified as "nothing")
-    // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
-    // Adjust as appropriate for your location
+    
     // number of decimal places
     'csv_decimal_places' => 2,
 
@@ -137,13 +155,15 @@ $_settings = array(
     'csv_downloadlimit_mb' => 25
 ),
 
-// How account passwords are hashed
+// -----------------------------------------------------------------------
+// Accounts
+// -----------------------------------------------------------------------
+
+// Account password hashing
 //
 // algo is "bcrypt" (default) or "argon2id".
 //
-// bcrypt is always available and cheap on memory, which is what makes it the
-// right default for a Raspberry Pi that is also running MySQL and feed
-// processing.
+// bcrypt: always available, low memory use, sufficient for a single user RPi
 //
 // argon2id is stronger, because its cost is memory as well as time and memory is
 // the scarce resource on a GPU cracking rig. Use it where you control the server
@@ -170,7 +190,10 @@ $_settings = array(
     'argon2_threads' => 1
 ),
 
-// User Interface settings
+// -----------------------------------------------------------------------
+// User interface
+// -----------------------------------------------------------------------
+
 "interface"=>array(
 
     // Applicaton name
@@ -192,8 +215,8 @@ $_settings = array(
     // Default controller and action if none are specified and user is logged in
     'default_controller_auth' => "feed",
     'default_action_auth' => "list",
-    
-    // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
+
+    // Requires module https://github.com/emoncms/graph
     'feedviewpath' => "graph/",
 
     // Enable multi user emoncms.
@@ -206,7 +229,7 @@ $_settings = array(
 
     // Allow user to reset password
     'enable_password_reset' => false,
-    
+
     // If installed on Emonpi, allow admin menu tools
     'enable_admin_ui' => false,
 
@@ -225,6 +248,10 @@ $_settings = array(
     // Add optional '&embed=1' in the end to remove header and footer
     'enabled' => true
 ),
+
+// -----------------------------------------------------------------------
+// Email
+// -----------------------------------------------------------------------
 
 // How email is delivered.
 //
@@ -264,6 +291,10 @@ $_settings = array(
     'timeout'=>30
 ),
 
+// -----------------------------------------------------------------------
+// Logging
+// -----------------------------------------------------------------------
+
 // Log file configuration
 "log"=>array(
     "enabled" => true,
@@ -272,6 +303,15 @@ $_settings = array(
     "location" => "/var/log/emoncms",
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
     "level" => 2
+),
+
+// -----------------------------------------------------------------------
+// Modules
+// -----------------------------------------------------------------------
+
+"device"=>array(
+    // Hide the device menu entry
+    'hide_menu' => false
 ),
 
 // Apps
@@ -284,12 +324,8 @@ $_settings = array(
     //,'clearkey' => ''
 ),
 
-"device"=>array(
-    // Hide the device menu entry
-    'hide_menu' => false
-),
-
 "postprocess"=>array(
-    "cron_enabled"=>0
+    // Let the postprocess module run its jobs from cron.
+    "cron_enabled" = >0
 )
 );
