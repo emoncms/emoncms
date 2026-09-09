@@ -40,7 +40,6 @@
         "ext-zlib": "*"
     },
     "suggest": {
-        "ext-cassandra": "Cassandra storage engine",
         "ext-mosquitto-php": "Mosquitto MQTT",
         "ext-redis": "Redis storage engine"
     }

@@ -102,7 +102,6 @@ $_settings = array(
     //   5  PHPFINA         fixed interval
     //   6  PHPFIWA         fixed interval with averaging (deprecated)
     //   8  MYSQLMEMORY     mysql MEMORY tables, all data lost on shutdown
-    //  10  CASSANDRA       apache cassandra
     //
     // This should default to an empty array. A non-empty default here could not be cleared from settings.php
     'engines_hidden' => array(),
@@ -120,7 +119,6 @@ $_settings = array(
     // Engine data directories. Emoncms must be able to write to these.
     'phpfina'       => array('datadir' => '/var/opt/emoncms/phpfina/'),
     'phptimeseries' => array('datadir' => '/var/opt/emoncms/phptimeseries/'),
-    'cassandra'     => array('keyspace' => 'emoncms'),
     
     // MysqlTimeSeries table naming. With generic true every feed is stored in a
     // table named prefix + feed id. Set to false to name each table on creation.

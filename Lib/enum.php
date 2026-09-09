@@ -30,7 +30,7 @@ class Engine
     const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
     const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown
     const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
-    const CASSANDRA = 10;    // Cassandra
+    const CASSANDRA = 10;    // Deprecated
     
     /**
      * returns array of all known engines
@@ -65,8 +65,7 @@ class Engine
             array("id"=>Engine::PHPFINA,"description"=>"Emoncms Fixed Interval TimeSeries"),
             array("id"=>Engine::PHPTIMESERIES,"description"=>"Emoncms Variable Interval TimeSeries"),
             array("id"=>Engine::MYSQL,"description"=>"MYSQL TimeSeries"),
-            array("id"=>Engine::MYSQLMEMORY,"description"=>"MYSQL Memory (RAM data lost on power off)"),
-            array("id"=>Engine::CASSANDRA,"description"=>"CASSANDRA TimeSeries")
+            array("id"=>Engine::MYSQLMEMORY,"description"=>"MYSQL Memory (RAM data lost on power off)")
         );
     }
 

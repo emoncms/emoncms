@@ -71,10 +71,6 @@ class Feed
                     require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
                     $engines[$e] = new MysqlMemory($this->mysqli);
                     break;
-                case (string)Engine::CASSANDRA :
-                    require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
-                    $engines[$e] = new CassandraEngine($this->settings['cassandra']);
-                    break;
                 default :
                     $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
                     // throw new Exception("ABORTED: Engine id '".$e."' is not supported.");

@@ -47,7 +47,7 @@ $settings = array(
 
 "feed"=>array(
     // Engines hidden from feed creation, existing feeds will still work
-    // MYSQL:0, PHPTIMESERIES:2, PHPFINA:5, PHPFIWA:6, MYSQLMEMORY:8, CASSANDRA:10
+    // MYSQL:0, PHPTIMESERIES:2, PHPFINA:5, PHPFIWA:6, MYSQLMEMORY:8
     'engines_hidden' => array(0,6,8,10),
     'redisbuffer'    => array(
         // Buffer feed data in redis, needs redis enabled and the feedwriter service

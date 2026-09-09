@@ -11,7 +11,7 @@ var feeds = {};
 var nodes = {};
 var nodes_display = {};
 var node_time_and_colour = {};
-var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA (No longer supported)','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA (No longer supported)'];
 
 function isNumeric(value) {
     return value !== null && value !== '' && Number.isFinite(Number(value));
@@ -198,7 +198,6 @@ var feedAppRoot = Vue.createApp({
             else if (engineName == 'VIRTUAL')      { cssClass = 'engine-virtual'; }
             else if (engineName == 'MEMORY')       { cssClass = 'engine-memory'; }
             else if (engineName == 'REDISBUFFER')  { engineName = 'REDIS'; cssClass = 'engine-redis'; }
-            else if (engineName == 'CASSANDRA')    { cssClass = 'engine-cassandra'; }
             var intervalTag = (engine == 5)
                 ? '<span class="interval-sep"></span><span class="interval-tag">' + interval + 's</span>'
                 : '';

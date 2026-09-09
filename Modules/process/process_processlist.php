@@ -82,7 +82,7 @@ class Process_ProcessList
                 "args" => array(
                     array(
                         "type" => ProcessArg::FEEDID,
-                        "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA)
+                        "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY)
                     ),
                 ),
                 "group" => tr("Main"),
@@ -819,7 +819,7 @@ class Process_ProcessList
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "log_to_feed_join",
                 "group" => tr("Main"),
-                "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY, Engine::CASSANDRA),
+                "engines" => array(Engine::PHPFINA, Engine::PHPTIMESERIES, Engine::MYSQL, Engine::MYSQLMEMORY),
                 "nochange" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
