@@ -326,6 +326,6 @@ $_settings = array(
 
 "postprocess"=>array(
     // Let the postprocess module run its jobs from cron.
-    "cron_enabled" = >0
+    "cron_enabled" => 0
 )
 );
