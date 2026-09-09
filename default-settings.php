@@ -25,10 +25,6 @@ $_settings = array(
 // Leave true unless the install genuinely has no certificate.
 // "https_enable" => true,
 
-// Check and migrate the app module database tables. Set to false to skip the
-// check once the schema is up to date. (Is this still needed)
-"db_check" => true,
-
 // Read only mode. Non admin users keep read access but lose write access, and
 // registration is turned off.
 "ui_read_only_mode" => false,
@@ -316,8 +312,11 @@ $_settings = array(
 
 // Apps
 "app"=>array(
+    // Check and migrate the app module database tables on load. Set to false
+    // to skip the check once the schema is up to date.
+    'auto_migrate' => true
     // Comma separated list of app names to hide from the app list, e.g my_solar_app
-    // 'hidden' => ''
+    //,'hidden' => ''
     // Key that allows myheatpump daily stats to be cleared without a write
     // session. Leave it out unless you need it. An empty value would match an
     // empty request.
