@@ -42,16 +42,19 @@ input[type="checkbox"] { margin:0px; }
  * 8-column subgrid layout for the input list.
  * Col 1 : 40px        — checkbox / arrow
  * Col 2 : max-content — name
- * Col 3 : max-content — description  (hideable)
- * Col 4 : max-content — process list (hideable)
+ * Col 3 : description  (hideable) sized to content, wraps when short of space
+ * Col 4 : process list (hideable) takes the space left over, badges wrap
  * Col 5 : 1fr         — spacer (flexible gap)
  * Col 6 : max-content — last updated (hideable)
  * Col 7 : max-content — value        (hideable)
  * Col 8 : 40px        — configure icon
  */
 .input-list-grid {
-    grid-template-columns: 40px max-content max-content max-content 1fr max-content max-content 50px;
+    grid-template-columns: 40px max-content minmax(min-content, max-content) minmax(min-content, 1fr) 1fr max-content max-content 50px;
 }
+
+/* Description wraps rather than being dropped when the window is narrow */
+.input-list-grid [data-col="description"] { white-space: normal; }
 
 /* ── Dynamic column hiding (driven by ResizeObserver in input_view.js) ── */
 .input-list-grid[data-hide-description] [data-col="description"] { display: none; }

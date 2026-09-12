@@ -78,7 +78,7 @@ load_css("Modules/input/Views/input_view.css");
                             <!-- Col 2: Node name -->
                             <div data-col="name" class="group-list-cell group-list-name">{{ nodeid }}<small style="margin-left:8px" v-if="getDeviceSelectedInputids(device).length > 0">&nbsp;({{ getDeviceSelectedInputids(device).length }})</small></div>
                             <!-- Col 3: Description -->
-                            <div data-col="description" class="group-list-cell text-nowrap">{{ device.description }}</div>
+                            <div data-col="description" class="group-list-cell">{{ device.description }}</div>
                             <!-- Col 4: Process -->
                             <div data-col="process" class="group-list-cell"></div>
                             <!-- Spacer -->
@@ -110,7 +110,7 @@ load_css("Modules/input/Views/input_view.css");
                                 <!-- Col 2: Name -->
                                 <div data-col="name" class="group-list-cell text-nowrap">{{ input.name }}</div>
                                 <!-- Col 3: Description -->
-                                <div data-col="description" class="group-list-cell text-nowrap">{{ input.description }}</div>
+                                <div data-col="description" class="group-list-cell">{{ input.description }}</div>
                                 <!-- Col 4: Processlist -->
                                 <div data-col="process" class="group-list-cell">
                                     <div class="label-container" v-html="input.processlistHtml"></div>

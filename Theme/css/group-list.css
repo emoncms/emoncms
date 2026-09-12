@@ -117,6 +117,16 @@
     min-width: 0;
 }
 
+/* ── 8b. Process list cell ───────────────────────────────────────
+   Process badges wrap onto more lines rather than forcing the column
+   to the width of the longest process list. Without this an input with
+   many processes widens the column for every row in the list. */
+.group-list-cell[data-col="process"] {
+    white-space: normal;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
 /* ── 9. Inline status indicator bar (inside updated cell) ────────── */
 .group-list-indicator {
     display: inline-block;

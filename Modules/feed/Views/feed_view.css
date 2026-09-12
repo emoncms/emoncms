@@ -64,7 +64,7 @@
 .text-sm   { font-size: 11px; }
 
 .feed-list-grid {
-    grid-template-columns: 40px max-content max-content max-content max-content max-content 1fr max-content max-content;
+    grid-template-columns: 40px max-content max-content max-content max-content minmax(min-content, 1fr) 1fr max-content max-content;
 }
 
 /* ── Dynamic column hiding (driven by ResizeObserver in feed_list.js) ── */
