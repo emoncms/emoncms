@@ -57,8 +57,9 @@ load_css("Modules/input/Views/input_view.css");
 
         <!-- alert danger if input creation is disabled for user, click enable button to enable -->
         <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
-                <button @click="enableInputCreation" class="btn pull-right">
-                    <i class="icon icon-play"></i>
+            <button @click="enableInputCreation" class="btn pull-right">
+                <i class="icon icon-play"></i>
+            </button>
             <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
         </div>
 
