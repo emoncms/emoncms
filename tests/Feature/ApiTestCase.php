@@ -63,7 +63,6 @@ abstract class ApiTestCase extends TestCase
 
         $body = curl_exec($ch);
         $this->assertNotFalse($body, "GET $path failed: " . curl_error($ch));
-        curl_close($ch);
 
         return $this->decodeJson($body, "GET $path");
     }
@@ -92,7 +91,6 @@ abstract class ApiTestCase extends TestCase
 
         $body = curl_exec($ch);
         $this->assertNotFalse($body, "POST $path failed: " . curl_error($ch));
-        curl_close($ch);
 
         return $this->decodeJson($body, "POST $path");
     }
@@ -141,7 +139,6 @@ abstract class ApiTestCase extends TestCase
 
         $body = curl_exec($ch);
         $this->assertNotFalse($body, "POST $path failed: " . curl_error($ch));
-        curl_close($ch);
 
         $decoded = json_decode($body, true); // null for non-JSON (redirects etc.)
 

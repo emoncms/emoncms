@@ -42,7 +42,6 @@ class RemembermeApiTest extends ApiTestCase
             CURLOPT_TIMEOUT    => 10,
         ]);
         $body = curl_exec($ch);
-        curl_close($ch);
 
         $result = json_decode($body, true);
         if (empty($result['success'])) {
@@ -176,7 +175,6 @@ class RemembermeApiTest extends ApiTestCase
             CURLOPT_TIMEOUT        => 10,
         ]);
         curl_exec($ch);
-        curl_close($ch);
 
         $this->assertSame(0, $this->countDbTriplets(), 'Rememberme DB row should be removed after logout');
     }

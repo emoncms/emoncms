@@ -331,7 +331,6 @@ class UserApiTest extends ApiTestCase
         $ch = curl_init($url);
         curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 10]);
         $body = curl_exec($ch);
-        curl_close($ch);
 
         // Must not contain a real timezone value.
         $this->assertStringNotContainsString('UTC', $body);
