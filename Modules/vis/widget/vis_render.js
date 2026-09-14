@@ -41,7 +41,7 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","colour","colourbg","interval","units","dp","scale","delta","mode","initzoom"],
-      "optionstype":["feedid","colour_picker","colour_picker","value","value","value","value","boolean","boolean","dropbox"],
+      "optionstype":["feedid","colour_picker","colour_picker","value","value","value","value","boolean","value","dropbox"],
       "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Colour"),_Tr_Vis("Background"),_Tr_Vis("Interval"),_Tr_Vis("units"),_Tr_Vis("dp"),_Tr_Vis("scale"),_Tr_Vis("delta"),_Tr_Vis("mode"),_Tr_Vis("Zoom")],
       "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Line colour in hex. Blank is use default."),_Tr_Vis("Background colour in hex. Blank is use default."),_Tr_Vis("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr_Vis("Units"),_Tr_Vis("Decimal points"),_Tr_Vis("Scale by"),_Tr_Vis("Show difference between each bar"),_Tr_Vis("Mode set to 'daily' can be used instead of interval for timezone based daily data"),_Tr_Vis("Default visible window interval")],
       "optionsdata": [ , ,"ffffff", , , , , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],

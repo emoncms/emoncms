@@ -29,7 +29,7 @@
           "type": "boolean"
         },
         "mode": {
-          "type": "boolean"
+          "type": "value"
         },
         "initzoom": {
           "type": "dropbox",
