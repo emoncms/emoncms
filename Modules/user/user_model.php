@@ -1095,7 +1095,7 @@ class User
         }
     }
 
-    public function change_email($userid, $email)
+    public function change_email($userid, $email, $password)
     {
         // Limited like change_password, and for a second reason: the
         // notification below is sent to the address being replaced, so an
@@ -1108,6 +1108,21 @@ class User
         if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>tr("As you are using a cookie based remember me login, please logout and log back in to change email"));
 
         $userid = (int) $userid;
+
+        // The current password is required, as it is to change the password.
+        // A request made in the visitor's session is otherwise enough to move
+        // the address, and the address is where a password reset is sent.
+        $result = $this->is_valid_password($password);
+        if (!$result['success']) return $result;
+
+        $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
+        $row = $result->fetch_object();
+
+        if (!$row || !verify_password($password, $row->password, $row->salt)) {
+            $ip_address = get_client_ip_env();
+            $this->log->error("change_email: password incorrect ip:$ip_address");
+            return array('success'=>false, 'message'=>tr("Password incorrect"));
+        }
 
         $result = $this->is_valid_email($email);
         if (!$result['success']) return $result;

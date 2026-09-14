@@ -201,6 +201,55 @@ class UserModelIntegrationTest extends TestCase
     }
 
     // -------------------------------------------------------------------------
+    // change_email()
+    // -------------------------------------------------------------------------
+
+    /**
+     * @test
+     */
+    public function change_email_updates_the_address_with_the_correct_password(): void
+    {
+        $username = $this->uniqueUsername();
+        $password = 'Correct1!';
+        $reg = $this->registerTestUser($username, $password);
+
+        $result = $this->user->change_email($reg['userid'], $username . '.new@example.test', $password);
+        $this->assertTrue($result['success'], $result['message'] ?? '');
+        $this->assertSame($username . '.new@example.test', $this->user->get_email($reg['userid']));
+    }
+
+    /**
+     * The address is where a password reset is sent, so a session alone must
+     * not be enough to move it.
+     *
+     * @test
+     */
+    public function change_email_fails_with_an_incorrect_password(): void
+    {
+        $username = $this->uniqueUsername();
+        $reg = $this->registerTestUser($username, 'Correct1!');
+        $original = $this->user->get_email($reg['userid']);
+
+        $result = $this->user->change_email($reg['userid'], 'attacker@example.test', 'WrongPass1!');
+        $this->assertFalse($result['success']);
+        $this->assertSame($original, $this->user->get_email($reg['userid']));
+    }
+
+    /**
+     * @test
+     */
+    public function change_email_fails_with_an_empty_password(): void
+    {
+        $username = $this->uniqueUsername();
+        $reg = $this->registerTestUser($username, 'Correct1!');
+        $original = $this->user->get_email($reg['userid']);
+
+        $result = $this->user->change_email($reg['userid'], 'attacker@example.test', '');
+        $this->assertFalse($result['success']);
+        $this->assertSame($original, $this->user->get_email($reg['userid']));
+    }
+
+    // -------------------------------------------------------------------------
     // get_apikeys_from_login()
     // -------------------------------------------------------------------------
 

@@ -222,7 +222,10 @@ function user_controller()
         
         // Change username, email, password
         if ($route->action == 'changeusername' && $session['write']) return  $user->change_username($session['userid'],get('username'));
-        if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],get('email'));
+        // POST only and password gated. As a GET it could be fired by any tag
+        // that loads a URL, and dashboard content is attacker authored markup
+        // served from this origin.
+        if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],post('email'),post('password'));
         if ($route->action == 'changepassword' && $session['write']) return  $user->change_password($session['userid'],post('old'),post('new'));
         
         // Apikey

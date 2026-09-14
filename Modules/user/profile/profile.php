@@ -47,9 +47,12 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td class="muted"><?php echo tr('Email'); ?></td>
       <td>
         <span v-if="!edit.email">{{ user.email }}</span>
-        <div v-else class="input-append">
-          <input type="text" v-model="user.email"/>
-          <button class="btn" @click="save_email(user.email)"><i class="icon-ok"></i></button>
+        <div v-else>
+          <div class="input-append">
+            <input type="text" v-model="user.email"/>
+            <button class="btn" @click="save_email(user.email)"><i class="icon-ok"></i></button>
+          </div>
+          <input type="password" v-model="email_password" placeholder="<?php echo htmlspecialchars(tr('Current password'), ENT_QUOTES, 'UTF-8'); ?>"/>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.email" @click="show_edit('email')"></i></td>

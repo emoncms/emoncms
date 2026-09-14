@@ -31,6 +31,7 @@ var app = Vue.createApp({
             new: "",
             repeat: ""
         },
+        email_password: "",
         gravatarHash: gravatar_hash
     }; },
     computed: {
@@ -81,15 +82,22 @@ var app = Vue.createApp({
         },
         save_email: function(email) {
             if (email!=last_email) {
+                // The current password is required, see change_email
+                if (app.email_password=='') {
+                    alert("Current password field empty");
+                    return false;
+                }
                 $.ajax({
+                    type: 'POST',
                     url: path+"user/changeemail.json",
-                    data: "&email="+encodeURIComponent(email),
+                    data: "email="+encodeURIComponent(email)+"&password="+encodeURIComponent(app.email_password),
                     dataType: 'json',
                     success: function(result) {
                         if (result.success!=undefined) {
                             if (result.success) {
                                 last_email = email;
                                 app.edit.email = false;
+                                app.email_password = "";
                             } else {
                                 alert(result.message)                        
                             }
@@ -98,6 +106,7 @@ var app = Vue.createApp({
                 });
             } else {
                 app.edit.email = false;
+                app.email_password = "";
             }
         },
         change_password: function() {
