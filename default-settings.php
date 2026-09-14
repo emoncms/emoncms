@@ -323,6 +323,21 @@ $_settings = array(
 // Modules
 // -----------------------------------------------------------------------
 
+// Dashboards
+"dashboard"=>array(
+    // The button and curl widgets act when clicked instead of only displaying
+    // data. The button widget writes a value to a feed. The curl widget sends a
+    // request to an address stored in the dashboard.
+    //
+    // WARNING: both act in the session of whoever is viewing the page, and any
+    // dashboard marked public can be opened by any logged in visitor. A
+    // dashboard author can therefore point these at another account on the same
+    // install and get a visitor to trigger it with one click. Only enable this
+    // on a single user install, or where every account holder is trusted. Do
+    // not enable it on a server open to public registration.
+    'enable_action_widgets' => false
+),
+
 "device"=>array(
     // Hide the device menu entry
     'hide_menu' => false
