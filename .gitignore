@@ -29,5 +29,6 @@ Modules/*/
 /vendor/
 /composer.phar
 .phpunit.result.cache
+__pycache__/
 
 /audits/
