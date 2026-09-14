@@ -1163,7 +1163,10 @@ class User
 	/*
         global $session;
         
-        if (!$session['admin']) {
+        // empty() rather than !$session['admin']: $session is not set outside a
+        // web request, a CLI script or a test for instance, and indexing null
+        // warns. Every case takes the same branch as before.
+        if (empty($session['admin'])) {
             $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
             $stmt->bind_param("i", $userid);
             $stmt->execute();
