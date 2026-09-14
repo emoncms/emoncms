@@ -20,7 +20,7 @@ $settings = array(
 // Path to the EmonScripts repository
 "openenergymonitor_dir" => "/opt/openenergymonitor",
 
-// MySQL database
+// SQL database settings
 "sql"=>array(
     "server"   => "localhost",
     "database" => "emoncms",
