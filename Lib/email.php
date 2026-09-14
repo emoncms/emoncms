@@ -470,7 +470,13 @@ class Email
     private function sendViaSMTP()
     {
         $host = $this->smtp_settings['host'];
-        $port = $this->smtp_settings['port'] ?? 25;
+        // Emptiness, not ??, decides whether a port was configured.
+        // default-settings ships [smtp] port = '' and is merged UNDER the
+        // install's own settings, so the key is always present and ?? never
+        // fired: an install that had not set a port got '', which fsockopen
+        // reads as port 0. Left empty here and defaulted below, after the
+        // encryption is known, so that ssl still reaches 465.
+        $port = !empty($this->smtp_settings['port']) ? $this->smtp_settings['port'] : '';
         $username = $this->smtp_settings['username'] ?? '';
         $password = $this->smtp_settings['password'] ?? '';
         $encryption = $this->smtp_settings['encryption'] ?? '';
@@ -486,6 +492,9 @@ class Email
                 $port = $port ?: 465;
             }
             
+            // Nothing configured and not ssl: the standard submission port
+            $port = $port ?: 25;
+
             $smtp = fsockopen($host, $port, $errno, $errstr, $timeout);
             if (!$smtp) {
                 throw new Exception("Could not connect to SMTP server: $errstr ($errno)");
