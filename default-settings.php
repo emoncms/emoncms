@@ -232,7 +232,27 @@ $_settings = array(
 
     // Disable rate limiting (login, register, auth, etc.)
     // WARNING: only set to true in development/test environments
-    'disable_rate_limiting' => false
+    'disable_rate_limiting' => false,
+
+    // Which other sites may place emoncms pages in an iframe, sent as the
+    // Content-Security-Policy frame-ancestors header and, where it maps to a
+    // single keyword, X-Frame-Options. "self" allows this site only, which
+    // blocks clickjacking. "none" blocks all framing. A space separated list is
+    // also accepted, for example "self https://example.com"
+    'frame_ancestors' => "self",
+
+    // The same setting for content meant to be embedded on another site, a
+    // public dashboard and graph/embed. "*" allows any site, the long standing
+    // behaviour. Set it to an origin list, or to "self", to lock embeds down.
+    // It is not applied to a page the session cookie authenticated, so a
+    // private dashboard is covered by frame_ancestors above whatever this says.
+    'embed_frame_ancestors' => "*",
+
+    // Sent as the Referrer-Policy header. The default keeps the query string,
+    // which may carry an apikey or a readkey, out of the referer sent to
+    // another site, while leaving same origin requests alone. Set it to "" to
+    // send no header.
+    'referrer_policy' => "strict-origin-when-cross-origin",
 ),
 
 "public_profile"=>array(

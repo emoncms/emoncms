@@ -329,6 +329,12 @@ if ($output['content'] === "" && (!isset($session['read']) || (isset($session['r
 $output['route'] = $route;
 $output['session'] = $session;
 
+// Clickjacking protection, set once the route is final
+set_frame_policy($route);
+
+// Keep url query parameters, which may carry an apikey, out of the referer
+set_referrer_policy();
+
 // 7) Output
 if ($route->format == 'json') {
     if ($route->controller=='time') {

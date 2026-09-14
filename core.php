@@ -56,6 +56,80 @@ function is_https()
     return false;
 }
 
+// Called by a controller that has decided the page it is about to return may
+// be framed by another site, for example a public dashboard. Read by
+// set_frame_policy, which runs once the controller has finished.
+function allow_public_embed()
+{
+    global $public_embed;
+    $public_embed = true;
+}
+
+// Tell the browser which sites may place this page in an iframe. Without it any
+// site can load emoncms in a hidden iframe and trick a logged in visitor into
+// clicking a control they cannot see. Dashboards and graph embeds are designed
+// to sit in an iframe on another site, so they take a separate setting.
+//
+// The route alone does not say whether a page may be embedded. dashboard/view
+// serves a public dashboard to anyone and a private one to its owner, and the
+// private one was taking the embed setting as well, which on its default of "*"
+// let any site frame it. The dashboard controller says which it served, see
+// allow_public_embed.
+function set_frame_policy($route)
+{
+    global $settings, $session, $apikey, $devicekey, $public_embed;
+
+    $embeddable = !empty($public_embed)
+        || ($route->controller == "graph" && $route->action == "embed");
+
+    // A page the browser authenticated on its own, with the session cookie, is
+    // never relaxed: that is the one case where a framing site gains something
+    // it does not already have. A key in the url is different, whoever framed
+    // the page had to know the key to write it.
+    $cookie_session = !empty($session['read']) && !$apikey && !$devicekey;
+    if ($cookie_session) $embeddable = false;
+
+    $key = $embeddable ? 'embed_frame_ancestors' : 'frame_ancestors';
+    $value = isset($settings['interface'][$key]) ? $settings['interface'][$key] : 'self';
+
+    // "self" and "none" are CSP keywords and have to be quoted in the header
+    $sources = preg_split('/\s+/', trim($value), -1, PREG_SPLIT_NO_EMPTY);
+    if (!$sources) $sources = array('self');
+    foreach ($sources as &$source) {
+        if ($source == 'self' || $source == 'none') $source = "'$source'";
+    }
+    unset($source);
+    $ancestors = implode(' ', $sources);
+
+    header("Content-Security-Policy: frame-ancestors $ancestors");
+
+    // X-Frame-Options for browsers that do not support frame-ancestors. It
+    // cannot express a list of origins, so only the two keywords map across.
+    if ($ancestors == "'self'") {
+        header("X-Frame-Options: SAMEORIGIN");
+    } elseif ($ancestors == "'none'") {
+        header("X-Frame-Options: DENY");
+    }
+}
+
+// Keep the query string out of the referer sent to another site. Emoncms
+// accepts an apikey and a readkey as query parameters, and a page may carry
+// content the author pointed at another site, a dashboard image for example,
+// so without this the key travels to that site in the referer of the fetch.
+// Same origin requests still send the full url, which is what the menu and the
+// login redirect read.
+function set_referrer_policy()
+{
+    global $settings;
+
+    $value = isset($settings['interface']['referrer_policy'])
+        ? trim($settings['interface']['referrer_policy'])
+        : 'strict-origin-when-cross-origin';
+
+    if ($value === '') return;
+    header("Referrer-Policy: $value");
+}
+
 function get_application_path($manual_domain = false)
 {
     if (is_https()) {
