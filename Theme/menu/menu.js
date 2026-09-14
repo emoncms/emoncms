@@ -21,6 +21,20 @@ var menu = {
 
     debug: false,
 
+    // Menu entries carry names a user chose, a dashboard name for one, and
+    // they are built into html here rather than set as text. Escaped so a name
+    // is drawn as the name rather than parsed as markup. The dashboard module
+    // filters the column on the way in as well, see Dashboard::set.
+    esc: function (value) {
+        if (value === undefined || value === null) return '';
+        return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    },
+
     auto_hide: true,    
     auto_hide_timer: null,
     
@@ -100,9 +114,9 @@ var menu = {
                 // Menu item
                 let href='';
                 if (item['default']!=undefined) {
-                    href = 'href="'+path+item['default']+'"';
+                    href = 'href="'+menu.esc(path+item['default'])+'"';
                 }
-                out += '<li><a '+href+' onclick="return false;"><div l1='+l1+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l1"> '+item['name']+'</span></div></a></li>';
+                out += '<li><a '+href+' onclick="return false;"><div l1='+l1+' class="'+active+'" title="'+menu.esc(title)+'"> '+icon+'<span class="menu-text-l1"> '+menu.esc(item['name'])+'</span></div></a></li>';
             }
         }
         $(".menu-l1 ul").html(out);
@@ -159,17 +173,17 @@ var menu = {
                 // Create link if applicable
                 let href = ''
                 if (item['l3']==undefined) {
-                    href = 'href="'+path+item['href']+'"'
+                    href = 'href="'+menu.esc(path+item['href'])+'"'
                 } else {
                     if (item['default']!=undefined) {
-                        href = 'href="'+path+item['default']+'"'
+                        href = 'href="'+menu.esc(path+item['default'])+'"'
                     }
                 }
                 // Disable link for active menu items
                 if (active=="active") href = '';
                 
                 // Menu item                
-                out += '<li><a '+href+'><div l2='+l2+' class="'+active+'" title="'+title+'"> '+icon+'<span class="menu-text-l2"> '+item['name']+'</span></div></a></li>';
+                out += '<li><a '+href+'><div l2='+l2+' class="'+active+'" title="'+menu.esc(title)+'"> '+icon+'<span class="menu-text-l2"> '+menu.esc(item['name'])+'</span></div></a></li>';
             }
         }
         
@@ -198,7 +212,7 @@ var menu = {
     // ------------------------------------------------------------------
     draw_l3: function () {
         menu.log("draw_l3");
-        var out = '<div class="htop"></div><h3 class="l3-title mx-3">'+menu.obj[menu.active_l1]['l2'][menu.active_l2]['name']+'</h3>';
+        var out = '<div class="htop"></div><h3 class="l3-title mx-3">'+menu.esc(menu.obj[menu.active_l1]['l2'][menu.active_l2]['name'])+'</h3>';
         for (var l3 in menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3']) {
             let item = menu.obj[menu.active_l1]['l2'][menu.active_l2]['l3'][l3];
             // Prepare active status
@@ -207,7 +221,7 @@ var menu = {
                 active = "active";
                 menu.active_l3 = l3;
             }
-            out += '<li><a href="'+path+item['href']+'" class="'+active+'">'+item['name']+'</a></li>';
+            out += '<li><a href="'+menu.esc(path+item['href'])+'" class="'+active+'">'+menu.esc(item['name'])+'</a></li>';
         }
         $(".menu-l3 ul").html(out);
 

@@ -141,7 +141,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
             var session_read = <?php echo $session['read']; ?>;
 
             var q = "<?php echo preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q); ?>"+location.search+location.hash;
-            menu.init(<?php echo json_encode($menu); ?>,"<?php echo $session['public_username']; ?>");
+            menu.init(<?php echo json_encode($menu); ?>,<?php echo json_encode((string) $session['public_username']); ?>);
             </script>
             <?php
             if (is_array($content) || is_object($content)) {
