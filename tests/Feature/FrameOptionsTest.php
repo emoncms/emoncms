@@ -53,7 +53,10 @@ class FrameOptionsTest extends ApiTestCase
         return $headers;
     }
 
-    /** Insert a user row directly. @return array{0:int,1:string} */
+    /**
+     * Insert a user row directly.
+     * @return array{0:int,1:string}
+     */
     private function seedUser(): array
     {
         $username = $this->uniqueUsername();
