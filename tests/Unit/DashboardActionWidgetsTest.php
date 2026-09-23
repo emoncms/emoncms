@@ -43,6 +43,9 @@ final class DashboardActionWidgetsTest extends TestCase
     {
         $code = sprintf(
             'define("EMONCMS_EXEC",1); $path="/"; ' .
+            // Defined by core.php, which the loader is run without here.
+            'function load_js($f,$m=true,$mod=false){ echo "<script src=\\"$f\\"></script>\\n"; } ' .
+            'function load_css($f,$m=true){ echo "<link href=\\"$f\\">\\n"; } ' .
             '$GLOBALS["settings"]=["dashboard"=>["enable_action_widgets"=>%s]]; ' .
             'chdir(%s); require %s;',
             $enabled ? 'true' : 'false',
@@ -104,7 +107,9 @@ final class DashboardActionWidgetsTest extends TestCase
         $ini = parse_ini_file(self::$root . '/default-settings.ini', true, INI_SCANNER_TYPED);
         $this->assertFalse($ini['dashboard']['enable_action_widgets']);
 
-        // default-settings.php assigns $_settings rather than returning it
+        // default-settings.php assigns $_settings rather than returning it, and
+        // refuses to run outside emoncms
+        if (!defined('EMONCMS_EXEC')) define('EMONCMS_EXEC', 1);
         require self::$root . '/default-settings.php';
         $this->assertFalse($_settings['dashboard']['enable_action_widgets']);
     }
