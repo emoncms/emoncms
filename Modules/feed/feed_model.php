@@ -449,6 +449,7 @@ class Feed
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
 
         $feedids = $this->redis->sMembers("user:feeds:$userid");
+        sort($feedids, SORT_NUMERIC);
 
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($feedids as $id) $this->redis->hGetAll("feed:$id");
@@ -488,7 +489,7 @@ class Feed
         $getmeta= (int) $getmeta;
 
         $feeds = array();
-        $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,name,userid,tag,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid' ORDER BY id");
         while ($f = (array)$result->fetch_object())
         {
             if ($f['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
@@ -534,8 +535,9 @@ class Feed
         if ($this->redis) {
             if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
             $feedids = $this->redis->sMembers("user:feeds:$userid");
+            sort($feedids, SORT_NUMERIC);
         } else {
-            $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid'");
+            $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid' ORDER BY id");
             $feedids = array();
             while ($row = $result->fetch_array()) $feedids[] = $row['id'];
         }
