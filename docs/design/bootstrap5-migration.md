@@ -11,8 +11,8 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), glyphicon sprites, form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes) with the phone rules from `bootstrap-responsive.css`, `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
 - `Theme/img/`: glyphicon sprites used by the legacy file.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
-- `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for graph and app embeds (`?embed=1`). Remove the list and Bootstrap 2 once every page is converted.
-- `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. `color-box` moved to `Modules/user/profile/profile.css`. Other custom classes in it (`text-tertiary`, `text-quaternary`, `text-exporting`, `m-6`, `p-6`) are not used in core.
+- `Theme/theme.php` and `Theme/embed.php` load Bootstrap 5 on every page. Bootstrap 2 (`Lib/bootstrap/`) and `Theme/css/bootstrap4-utils.css` are removed.
+- Custom classes from `bootstrap4-utils.css`: `color-box` moved to `Modules/user/profile/profile.css`. Classes the apps use are in `Modules/app/Views/css/utils.css`.
 
 Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard` (list, editor, view), API help pages, apps (`Modules/app`), with the process list modal and device dialog they use.
 
@@ -129,6 +129,8 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Status and next steps
 
+Bootstrap 2 is removed. Every page loads Bootstrap 5.
+
 Branch `bootstrap5` in core and the device, graph, account, dashboard, backup, sync, network, postprocess, emailreport, config and app modules. Postprocess branches from `stable`. Nothing pushed.
 
 Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard`, API help pages, apps, process list modal, device dialog, card to panel rename.
@@ -139,7 +141,7 @@ Core pages are done. Modules done: backup, sync, network (and setup, which uses 
 
 Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). `Modules/app/Views/css/utils.css` keeps them. It is loaded by the config panel (`Lib/appconf/appconf.php`), which every app includes. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). The other 14 apps were converted from the markup but not rendered. They need test instances before they can be checked. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
-Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
+Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css`.
 
 Tools are in `scripts/bootstrap5/`.
 

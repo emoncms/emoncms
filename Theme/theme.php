@@ -17,10 +17,6 @@ $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
 $v = 55;
 
-// Pages listed here load Bootstrap 5 in place of Bootstrap 2, by controller/action or controller
-$bootstrap5_pages = ['admin', 'input/view', 'feed/view', 'graph', 'device/view', 'user', 'account', 'schedule/view', 'dashboard', 'api', 'input/api', 'feed/api', 'device/api', 'process/api', 'schedule/api', 'backup', 'sync', 'network', 'postprocess', 'emailreport', 'setup', 'config', 'app'];
-$bootstrap5 = in_array($route->controller . '/' . $route->action, $bootstrap5_pages) || in_array($route->controller, $bootstrap5_pages);
-
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
 }
@@ -61,21 +57,14 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     // Consider replacing this with esbuild bundler (merge + minify) in the future
 
     // Main theme CSS
-    if ($bootstrap5) {
-        load_css("Lib/bootstrap5/css/bootstrap.min.css");
-        load_css("Theme/css/bootstrap5-theme.css");
-        load_css("Theme/css/bootstrap2-legacy.css");
-    } else {
-        load_css("Lib/bootstrap/css/bootstrap.min.css");
-        load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
-    }
+    load_css("Lib/bootstrap5/css/bootstrap.min.css");
+    load_css("Theme/css/bootstrap5-theme.css");
+    load_css("Theme/css/bootstrap2-legacy.css");
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/menu.css");
     load_css("Theme/css/panel.css");
     load_css("Theme/css/group-list.css");
     load_css("Theme/css/autocomplete.css");
-    // Utility classes, included in Bootstrap 5
-    if (!$bootstrap5) load_css("Theme/css/bootstrap4-utils.css");
     // Specific used icons
     load_css("Theme/css/svg-icons.css");
 
@@ -167,7 +156,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <?php load_js($bootstrap5 ? "Lib/bootstrap5/js/bootstrap.bundle.min.js" : "Lib/bootstrap/js/bootstrap.js"); ?>
+    <?php load_js("Lib/bootstrap5/js/bootstrap.bundle.min.js"); ?>
 </body>
 </html>
 
