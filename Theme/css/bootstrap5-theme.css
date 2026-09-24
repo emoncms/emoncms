@@ -27,10 +27,14 @@
     --bs-primary-rgb: 0, 136, 204;
     --bs-info-rgb: 58, 135, 173;
     --bs-success-rgb: 70, 136, 71;
-    --bs-warning-rgb: 192, 152, 83;
+    --bs-warning-rgb: 248, 148, 6;
     --bs-danger-rgb: 185, 74, 72;
+    --bs-secondary-rgb: 153, 153, 153;
+    --bs-dark-rgb: 51, 51, 51;
     --bs-secondary-color: #999;
 }
+
+.text-warning { color: #c09853 !important; }
 
 a { text-decoration: none; }
 a:hover, a:focus { text-decoration: underline; }
@@ -52,7 +56,7 @@ h6, .h6 { font-size: 11.9px; }
 
 p { margin: 0 0 10px; }
 ul, ol { padding: 0; margin: 0 0 10px 25px; }
-dl { margin-bottom: 20px; }
+dl { margin-top: 1em; margin-bottom: 20px; }  /* Bootstrap 2 left the browser top margin */
 dt, dd { line-height: 20px; }
 dd { margin-left: 10px; margin-bottom: 0; }
 .row > dd { margin-left: 0; }
@@ -141,12 +145,109 @@ dd { margin-left: 10px; margin-bottom: 0; }
 
 /* -- 3. Components -------------------------------------------------------- */
 
+/* Badge: Bootstrap 2 label. Pill: Bootstrap 2 badge. */
 .badge {
-    --bs-badge-padding-x: 9px;
+    --bs-badge-padding-x: 4px;
     --bs-badge-padding-y: 2px;
     --bs-badge-font-size: 11.844px;
     --bs-badge-border-radius: 3px;
+    line-height: 14px;
+    vertical-align: baseline;
 }
+.badge.rounded-pill {
+    --bs-badge-padding-x: 9px;
+}
+/* Bootstrap 2 links in labels are darker */
+a.badge.bg-secondary[href] { background-color: #808080 !important; }
+a.badge.bg-danger[href] { background-color: #953b39 !important; }
+a.badge.bg-warning[href] { background-color: #c67605 !important; }
+a.badge.bg-success[href] { background-color: #356635 !important; }
+a.badge.bg-info[href] { background-color: #2d6987 !important; }
+a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
+
+/* Alert: Bootstrap 2 colours and padding */
+.alert {
+    --bs-alert-padding-x: 14px;
+    --bs-alert-padding-y: 8px;
+    --bs-alert-margin-bottom: 20px;
+    --bs-alert-border-radius: 4px;
+    padding-right: 35px;
+    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.alert-warning { --bs-alert-color: #c09853; --bs-alert-bg: #fcf8e3; --bs-alert-border-color: #fbeed5; }
+.alert-danger  { --bs-alert-color: #b94a48; --bs-alert-bg: #f2dede; --bs-alert-border-color: #eed3d7; }
+.alert-success { --bs-alert-color: #468847; --bs-alert-bg: #dff0d8; --bs-alert-border-color: #d6e9c6; }
+.alert-info    { --bs-alert-color: #3a87ad; --bs-alert-bg: #d9edf7; --bs-alert-border-color: #bce8f1; }
+.alert h4 { margin: 0; color: inherit; }
+.alert .alert-link { color: inherit; }
+
+/* Modal: Bootstrap 2 box, 10% from the top */
+.modal {
+    --bs-modal-width: 560px;
+    --bs-modal-padding: 15px;
+    --bs-modal-header-padding: 9px 15px;
+    --bs-modal-header-border-color: #eee;
+    --bs-modal-title-line-height: 30px;
+    --bs-modal-border-color: rgba(0, 0, 0, 0.3);
+    --bs-modal-border-radius: 6px;
+    --bs-modal-box-shadow: 0 3px 7px rgba(0, 0, 0, 0.3);
+    --bs-modal-footer-bg: #f5f5f5;
+    --bs-modal-footer-border-color: #ddd;
+    --bs-modal-footer-gap: 0;
+}
+.modal-backdrop { --bs-backdrop-opacity: 0.8; }
+@media (min-width: 576px) {
+    .modal { --bs-modal-margin: 10vh; }
+}
+.modal-content { box-shadow: var(--bs-modal-box-shadow); }
+.modal-header h3 { margin: 0; }
+.modal-body { max-height: 400px; overflow-y: auto; }
+.modal-footer {
+    display: block;
+    padding: 14px 15px 15px;
+    text-align: right;
+    box-shadow: inset 0 1px 0 #fff;
+}
+.modal-footer > * { margin: 0; }
+.modal-footer .btn + .btn { margin-left: 5px; }
+.btn-close { --bs-btn-close-opacity: 0.2; }
+
+/* Input group: inline and sized to its content, as Bootstrap 2 input-prepend */
+.input-group {
+    display: inline-flex;
+    width: auto;
+    flex-wrap: nowrap;
+    vertical-align: middle;
+    margin-bottom: 10px;
+}
+.input-group input,
+.input-group select,
+.input-group textarea { margin-bottom: 0; }
+.input-group-text {
+    min-width: 16px;
+    padding: 4px 5px;
+    font-size: 14px;
+    line-height: 20px;
+    background-color: #eee;
+    border-color: #ccc;
+    text-shadow: 0 1px 0 #fff;
+}
+
+/* Table: Bootstrap 2 cell padding and borders */
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: #f9f9f9;
+    --bs-table-hover-bg: #f5f5f5;
+    --bs-border-color: #ddd;
+    margin-bottom: 20px;
+}
+.table > :not(caption) > * > * {
+    padding: 8px;
+    line-height: 20px;
+    border-bottom-width: 0;
+    border-top: 1px solid #ddd;
+}
+.table-sm > :not(caption) > * > * { padding: 4px 5px; }
 
 .progress {
     --bs-progress-height: 20px;

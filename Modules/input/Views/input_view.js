@@ -478,7 +478,7 @@ function noProcessNotification(devices){
         }
     }
     if(processList.length<1 && Object.keys(devices).length > 0){
-        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',tr("Configure your device here"))
+        message = '<div class="alert alert-warning float-end">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',tr("Configure your device here"))
     }
     $('#noprocesses').html(message);
 }

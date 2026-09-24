@@ -21,6 +21,7 @@
 
 /* ── 3. Group header row ─────────────────────────────────────────── */
 .group-list-header {
+    box-sizing: content-box;
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -67,6 +68,7 @@
 
 /* ── 6. Individual data row ──────────────────────────────────────── */
 .group-list-row {
+    box-sizing: content-box;
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -153,6 +155,7 @@
     justify-content: center;
 }
 .group-list-chevron {
+    box-sizing: content-box;
     display: block;
     width: 6px; height: 6px;
     border-right: 2px solid #666;

@@ -193,7 +193,7 @@
 .card table td.col-updated { text-align: right; white-space: nowrap; }
 
 .card table th.col-action,
-.card table td.col-action  { width: 24px; text-align: center; padding: 9px 6px; }
+.card table td.col-action  { box-sizing: content-box; width: 24px; text-align: center; padding: 9px 6px; }
 
 /* Table Column Sizing */
 .card table col.col-w-label  { width: 200px; }

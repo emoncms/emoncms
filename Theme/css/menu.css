@@ -283,6 +283,7 @@ a.grav-container:hover img.grav {
   border-color: #dedede;
 }
 .no-gravitar a.grav-container {
+  box-sizing: content-box;
   border-radius: 50%;
   background: #c5c5c5;
   width: 1.36em;

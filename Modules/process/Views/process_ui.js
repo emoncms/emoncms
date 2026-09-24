@@ -13,12 +13,12 @@ var ProcessArg = {
 }
 
 var argtypes = {
-    0: { name: "Value", cssClass: 'label-important', title: '{longText}: {value}' },
-    1: { name: "Input", cssClass: 'label-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
-    2: { name: "Feed", cssClass: 'label-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
-    3: { name: "None", cssClass: 'label-important', title: '{longText}: {value}' },
-    4: { name: "Text", cssClass: 'label-info', title: '{longText}: {value}' },
-    5: { name: "Schedule", cssClass: 'label-warning', title: '{longText}: {schedule.name}' }
+    0: { name: "Value", cssClass: 'bg-danger', title: '{longText}: {value}' },
+    1: { name: "Input", cssClass: 'bg-warning', title: '{longText}: ({input.nodeid}:{input.name}) {input.description}' },
+    2: { name: "Feed", cssClass: 'bg-info', title: '{longText}: {feed.tag}:{feed.name} ({feed.id})' },
+    3: { name: "None", cssClass: 'bg-danger', title: '{longText}: {value}' },
+    4: { name: "Text", cssClass: 'bg-info', title: '{longText}: {value}' },
+    5: { name: "Schedule", cssClass: 'bg-warning', title: '{longText}: {schedule.name}' }
 };
 
 var process_vue = Vue.createApp({
@@ -110,7 +110,7 @@ var process_vue = Vue.createApp({
                 }
 
                 // Set the label for the process according to its argtype
-                process.label = argtypes[argtype].cssClass || 'label-default'; // Default to 'label-default' if not found
+                process.label = argtypes[argtype].cssClass || 'bg-secondary'; // Default to 'bg-secondary' if not found
             }
 
             this.process_list = process_list;
@@ -135,7 +135,7 @@ var process_vue = Vue.createApp({
         adjustModal: function () {
             // Adjust the height of the process list UI
             if ($("#processlistModal").length) {
-                var h = $(window).height() - $("#processlistModal").position().top - 180;
+                var h = $(window).height() - $("#processlistModal .modal-content").offset().top - 180;
                 $("#processlist-ui").height(h);
             }
         },
@@ -339,7 +339,7 @@ var process_vue = Vue.createApp({
             var process = this.processes_by_key[this.selected_process];
 
             let output_args = [];
-            let label = 'label-muted'; // Default label for the process
+            let label = 'bg-secondary'; // Default label for the process
 
             if (this.args != undefined && Array.isArray(this.args)) {
                 // Loop through the Vue args and get the values
@@ -595,7 +595,7 @@ var process_vue = Vue.createApp({
             for (let b of this.getBadges(decoded_process_list, input)) {
                 let markup = []
                 markup.push(b.href ? '<a target="_blank" href="' + b.href + '"' : '<span')
-                markup.push(' class="label ' + b.cssClass + '" title="' + b.title + '">')
+                markup.push(' class="badge ' + b.cssClass + '" title="' + b.title + '">')
                 markup.push((b.text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'))
                 markup.push(b.href ? '</a> ' : '</span> ')
                 out.push(markup.join(''));
@@ -610,7 +610,7 @@ var process_vue = Vue.createApp({
                 return process_list.map(() => ({
                     text: ' ⌛ ',
                     title: '',
-                    cssClass: 'muted',
+                    cssClass: 'bg-secondary',
                     href: false
                 }));
             }
@@ -661,12 +661,12 @@ var process_vue = Vue.createApp({
                     // If feed, input, or schedule is missing, set error badge
                     badge.title = '{typeName} {value} does not exist or was deleted'.format(badge);
                     badge.text = 'ERROR';
-                    badge.cssClass = 'badge-muted';
+                    badge.cssClass = 'bg-secondary';
                 }
 
                 // Highlight processes that require Redis if Redis is not available
                 if (!this.has_redis && process_info.requireredis) {
-                    badge.cssClass = 'badge-muted';
+                    badge.cssClass = 'bg-secondary';
                 }
 
                 badges.push(badge);

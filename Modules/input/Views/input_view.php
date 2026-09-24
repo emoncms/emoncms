@@ -28,24 +28,24 @@ load_css("Modules/input/Views/input_view.css");
 <div class="input-controls-sentinel"></div>
 <div id="input-app">
     <div class="controls input-controls" v-cloak v-if="total_devices > 0">
-        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
+        <button @click="collapseAll" id="expand-collapse-all" class="btn btn-default" :title="collapse_title">
             <i class="icon" :class="allCollapsed ? 'icon-resize-full' : 'icon-resize-small'"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
+        <button @click="selectAll" class="btn btn-default" :title="'<?php echo addslashes(tr('Select all')); ?>' + ' (' + total_inputs + ')'">
             <i class="icon" :class="selected.length > 0 && selected.length >= total_inputs ? 'icon-ban-circle' : 'icon-check'"></i>
             <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="btn input-delete" v-if="selected.length > 0" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
-        <button @click="open_edit" class="btn input-edit" v-if="selected.length > 0" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
+        <button @click="open_delete" class="btn btn-default input-delete" v-if="selected.length > 0" title="<?php echo tr('Delete'); ?>"><i class="icon-trash"></i></button>
+        <button @click="open_edit" class="btn btn-default input-edit" v-if="selected.length > 0" title="<?php echo tr('Edit'); ?>"><i class="icon-pencil"></i></button>
         <!-- input processing configure only show if one input selected -->
         <button
             v-if="selected.length === 1"
             @click="showInputConfigure(selected[0])"
-            class="btn input-configure"
+            class="btn btn-default input-configure"
             :title="'<?php echo addslashes(tr('Configure Input processing')); ?>'">
             <i class="icon-wrench"></i>
         </button>
-        <button v-if="show_clean" @click="clean_unused" class="btn pull-right ml-3" title="<?php echo tr('Clean unused devices'); ?>">
+        <button v-if="show_clean" @click="clean_unused" class="btn btn-default float-end ms-3" title="<?php echo tr('Clean unused devices'); ?>">
             <i class="icon-leaf"></i>
         </button>
         <input type="text" name="filter" id="input-filter" v-model="filterText" v-show="selected.length === 0" placeholder="<?php echo tr('Filter inputs') ?>">
@@ -57,7 +57,7 @@ load_css("Modules/input/Views/input_view.css");
 
         <!-- alert danger if input creation is disabled for user, click enable button to enable -->
         <div v-if="input_creation_disabled" class="alert alert-danger" style="padding-right:8px">
-            <button @click="enableInputCreation" class="btn pull-right">
+            <button @click="enableInputCreation" class="btn btn-default float-end">
                 <i class="icon icon-play"></i>
             </button>
             <div style="margin: 5px 0;"><?php echo tr('<b>Input creation disabled:</b> Enable to add new inputs & devices'); ?></div>
@@ -137,10 +137,10 @@ load_css("Modules/input/Views/input_view.css");
                 </template>
             </div>
         </template>
-            <div class="alert" v-else>
+            <div class="alert alert-warning" v-else>
                 <h3><?php echo tr('No inputs created'); ?></h3>
                 <p><?php echo tr('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-                <button @click.prevent="create_device" class="btn">
+                <button @click.prevent="create_device" class="btn btn-default">
                     <i class="icon-plus-sign"></i> <?php echo tr('New device'); ?>
                 </button>
             </div>
@@ -149,7 +149,7 @@ load_css("Modules/input/Views/input_view.css");
 
         <!-- disable input creation button, only show if input creation is not already disabled and there are existing inputs -->
         <div v-if="!input_creation_disabled && total_inputs > 0">
-            <button @click="disableInputCreation" class="btn" style="margin-top:10px;">
+            <button @click="disableInputCreation" class="btn btn-default" style="margin-top:10px;">
                 <i class="icon icon-lock" style="margin-top:2px"></i>
                 <?php echo tr('Disable further input creation'); ?></button>
         </div>

@@ -112,4 +112,4 @@ var edit_input = Vue.createApp({
         }
     }
 }).mount('#inputEditModal');
-$('#inputEditModal').on('hidden', function() { edit_input.onDialogClose(); });
+$('#inputEditModal').on('hidden.bs.modal', function() { edit_input.onDialogClose(); });

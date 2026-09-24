@@ -1,10 +1,5 @@
 .modal-processlist {
-    width: 94%;
-    left: 3%;
-    /* (100%-width)/2 */
-    margin-left: auto;
-    margin-right: auto;
-    overflow-y: hidden;
+    --bs-modal-width: 94%;
 }
 
 .modal-processlist .modal-body {

@@ -136,4 +136,4 @@ var delete_input = Vue.createApp({
         }
     }
 }).mount('#inputDeleteModal');
-$('#inputDeleteModal').on('hidden', function() { delete_input.onDialogClose(); });
+$('#inputDeleteModal').on('hidden.bs.modal', function() { delete_input.onDialogClose(); });

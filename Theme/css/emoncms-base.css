@@ -377,6 +377,7 @@ div#account {
     transition-timing-function: ease;
 }
 .node .collapse > * {
+    box-sizing: content-box;
     width: 100%;
     position: relative;
     border-bottom: 1px solid #fff;
