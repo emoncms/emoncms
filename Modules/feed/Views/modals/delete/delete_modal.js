@@ -115,7 +115,7 @@ function showSelectedFeeds(feed_inputs) {
         }
         msg += total_selected === 1? tr("associated with this feed"): tr("associated with these feeds");
 
-        feedProcessList = `<span class="badge badge-default" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
+        feedProcessList = `<span class="badge rounded-pill bg-secondary" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
     }
 
     total_summary += '</div>';
@@ -288,14 +288,14 @@ function updateFeedDeleteModalMessage(response){
     let message = response.message;
     let success = response.success;
     let $msg = $('#feedDelete-message');
-    let cssClassName = success ? 'label-success' : 'label-important';
+    let cssClassName = success ? 'bg-success' : 'bg-danger';
 
     $msg.stop().fadeOut(function(){
-        $(this).text(message).removeClass('label-warning').addClass(cssClassName).fadeIn();
+        $(this).text(message).removeClass('bg-warning').addClass(cssClassName).fadeIn();
     });
     setTimeout(function(){
         $msg.stop().fadeOut(function(){
-            $msg.text($msg.data('default')).removeClass(cssClassName).addClass('label-warning').fadeIn();
+            $msg.text($msg.data('default')).removeClass(cssClassName).addClass('bg-warning').fadeIn();
         })
     }, 3800);
 }
@@ -338,8 +338,8 @@ function enableTrim(start_time){
     initRelativeStartDateButtons(start_time);
 
     // remove any styling the disableTrim() function created
-    $('#trimContainer').attr('title','').removeClass('muted')//.show()
-        .find('h4').addClass('text-info').removeClass('muted').end()
+    $('#trimContainer').attr('title','').removeClass('text-muted')//.show()
+        .find('h4').addClass('text-info').removeClass('text-muted').end()
         .find('button,input').removeClass('disabled');
     
     // enable the confirm trim button
@@ -386,8 +386,8 @@ function enableTrim(start_time){
  * @return void
  */
 function disableTrim(){
-    $('#trimContainer').attr('title',tr('"Trim" not available for this storage engine')).addClass('muted')//.hide()
-        .find('h4').removeClass('text-info').addClass('muted').end()
+    $('#trimContainer').attr('title',tr('"Trim" not available for this storage engine')).addClass('text-muted')//.hide()
+        .find('h4').removeClass('text-info').addClass('text-muted').end()
         .find('button,input').addClass('disabled');
     clearTrimInputValue();
     $('#feedTrim-confirm').off('click'); // remove previous click event (if it exists)
@@ -469,8 +469,8 @@ function initClear(){
 
 function enableClear(){
     // remove any disable styling
-    $('#clearContainer').attr('title','').removeClass('muted')//.show()
-        .find('h4').addClass('text-info').removeClass('muted').end()
+    $('#clearContainer').attr('title','').removeClass('text-muted')//.show()
+        .find('h4').addClass('text-info').removeClass('text-muted').end()
         .find('button').removeClass('disabled');
 
     $("#feedClear-confirm")
@@ -499,8 +499,8 @@ function enableClear(){
 function disableClear(){
     $("#feedClear-confirm").off();
 
-    $('#clearContainer').attr('title',tr('"Clear" not available for this storage engine')).addClass('muted')//.hide()
-        .find('h4').removeClass('text-info').addClass('muted').end()
+    $('#clearContainer').attr('title',tr('"Clear" not available for this storage engine')).addClass('text-muted')//.hide()
+        .find('h4').removeClass('text-info').addClass('text-muted').end()
         .find('button').addClass('disabled');
 }
 

@@ -82,28 +82,28 @@ load_css("Modules/feed/Views/feed_view.css");
 <div class="feed-controls-sentinel"></div>
 <div id="feed-app">
     <div class="controls feed-controls">
-        <button class="btn" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
+        <button class="btn btn-default" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
             <i :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
         </button>
-        <button class="btn" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
+        <button class="btn btn-default" :title="allSelected ? '<?php echo tr('Unselect all') ?>' : '<?php echo tr('Select all') ?>'" @click="selectAllFeeds()">
             <i :class="allSelected ? 'icon-ban-circle' : 'icon-check'"></i> <span>{{ selectedFeedCount }}</span>
         </button>
-        <button class="btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
+        <button class="btn btn-default" v-if="selectedFeedCount > 0" title="<?php echo tr('Edit') ?>" @click="editFeeds">
             <i class="icon-pencil"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount > 0 && session_write" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
+        <button class="btn btn-default" v-if="selectedFeedCount > 0 && session_write" title="<?php echo tr('Delete') ?>" @click="deleteFeeds">
             <i class="icon-trash"></i>
         </button>
-        <button class="btn" v-if="showDownsample" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
+        <button class="btn btn-default" v-if="showDownsample" title="<?php echo tr('Downsample') ?>" @click="downsampleFeeds">
             <i class="icon-repeat"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
+        <button class="btn btn-default" v-if="selectedFeedCount > 0" title="<?php echo tr('Download') ?>" @click="exportFeeds">
             <i class="icon-download"></i>
         </button>
-        <button class="btn" v-if="selectedFeedCount > 0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
+        <button class="btn btn-default" v-if="selectedFeedCount > 0" title="<?php echo tr('Graph view') ?>" @click="graphSelectedFeeds">
             <i class="icon-eye-open"></i>
         </button>
-        <button class="btn" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
+        <button class="btn btn-default" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
         <input type="text" name="filter" id="filter" v-model="filterText" v-show="selectedFeedCount === 0" placeholder="<?php echo tr('Filter feeds') ?>">
@@ -119,7 +119,7 @@ load_css("Modules/feed/Views/feed_view.css");
             <div class="grid-cell text-center">Public</div>
             <div class="grid-cell">Engine</div>
             <div class="grid-cell text-center">Size</div>
-            <div class="grid-cell text-left">Process List</div>
+            <div class="grid-cell text-start">Process List</div>
             <div class="grid-cell text-center">Value</div>
             <div class="grid-cell text-center">Updated</div>
         </div>
@@ -134,7 +134,7 @@ load_css("Modules/feed/Views/feed_view.css");
                     <span v-if="!selectedFeedCount || !nodes[node] || nodes[node].length == 0" class="group-list-chevron"></span>
                     <input v-else @click.stop="selectAllNodeFeeds(node)" type="checkbox" class="checkbox-lg feed-select" :checked="isNodeFullySelected(node)" :title="'<?php echo tr('Select all feeds in node'); ?>'">
                 </div>
-                <div data-col="name" class="group-list-cell group-list-name">{{ node }}<small class="ml-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
+                <div data-col="name" class="group-list-cell group-list-name">{{ node }}<small class="ms-2" v-if="getNodeSelectedCount(node) > 0">&nbsp;({{ getNodeSelectedCount(node) }})</small></div>
                 <div data-col="public" class="group-list-cell"></div>
                 <div data-col="engine" class="group-list-cell"></div>
                 <div data-col="size" class="group-list-cell text-center">{{ getNodeSize(nodeFeeds) }}</div>
@@ -166,9 +166,9 @@ load_css("Modules/feed/Views/feed_view.css");
                     </div>
                     <div data-col="engine" class="group-list-cell" v-html="formatEngine(feed.engine, feed.interval)"></div>
                     <div data-col="size" class="group-list-cell text-center text-muted">{{ formatSize(feed.size) }}</div>
-                    <div data-col="process" class="group-list-cell text-left" v-html="feed.processListHTML"></div>
+                    <div data-col="process" class="group-list-cell text-start" v-html="feed.processListHTML"></div>
                     <div data-col="spacer" class="group-list-cell"></div>
-                    <div data-col="value" class="group-list-cell text-right">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
+                    <div data-col="value" class="group-list-cell text-end">{{ formatValueDynamic(feed.value) }} <span class="text-muted text-sm">{{ feed.unit }}</span></div>
                     <div data-col="updated" class="group-list-cell text-center" :style="{color: feed.color}">
                         {{ feed.formatted_time }}
                     </div>
@@ -181,21 +181,21 @@ load_css("Modules/feed/Views/feed_view.css");
         </template>
     </div>
 
-    <div id="feed-none" class="alert alert-block" v-show="showNoFeeds">
+    <div id="feed-none" class="alert alert-warning" v-show="showNoFeeds">
         <h4 class="alert-heading"><?php echo tr('No feeds created'); ?></h4>
         <p><?php echo tr('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo tr('Feed API helper'); ?></a></p>
     </div>
 
-    <div id="public-feeds-none" class="alert alert-block" v-show="showNoPublicFeeds">
+    <div id="public-feeds-none" class="alert alert-warning" v-show="showNoPublicFeeds">
         <h4 class="alert-heading"><?php echo tr('No public feeds available'); ?></h4>
     </div>
 
 </div>
 
 <div id="feed-footer">
-    <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo tr('Refresh feed size'); ?></button>
-    <button id="addnewfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New feed'); ?></button>
-    <button id="importdata" class="btn btn-small" data-toggle="modal" data-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
+    <button id="refreshfeedsize" class="btn btn-default btn-sm" ><i class="icon-refresh" ></i>&nbsp;<?php echo tr('Refresh feed size'); ?></button>
+    <button id="addnewfeed" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo tr('New feed'); ?></button>
+    <button id="importdata" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 

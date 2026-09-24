@@ -36,29 +36,22 @@
 
 .text-warning { color: #c09853 !important; }
 
-a { text-decoration: none; }
-a:hover, a:focus { text-decoration: underline; }
-
-/* Headings: Bootstrap 2 sizes */
-h1, h2, h3, h4, h5, h6,
+/* Element rules come from bootstrap2-legacy.css. These cover Bootstrap 5
+   classes and reboot rules that the legacy element rules do not reach. */
 .h1, .h2, .h3, .h4, .h5, .h6 {
     margin: 10px 0;
     font-weight: bold;
     line-height: 20px;
     color: inherit;
 }
-h1, .h1 { font-size: 38.5px; line-height: 40px; }
-h2, .h2 { font-size: 31.5px; line-height: 40px; }
-h3, .h3 { font-size: 24.5px; line-height: 40px; }
-h4, .h4 { font-size: 17.5px; }
-h5, .h5 { font-size: 14px; }
-h6, .h6 { font-size: 11.9px; }
+.h1 { font-size: 38.5px; line-height: 40px; }
+.h2 { font-size: 31.5px; line-height: 40px; }
+.h3 { font-size: 24.5px; line-height: 40px; }
+.h4 { font-size: 17.5px; }
+.h5 { font-size: 14px; }
+.h6 { font-size: 11.9px; }
 
-p { margin: 0 0 10px; }
-ul, ol { padding: 0; margin: 0 0 10px 25px; }
-dl { margin-top: 1em; margin-bottom: 20px; }  /* Bootstrap 2 left the browser top margin */
-dt, dd { line-height: 20px; }
-dd { margin-left: 10px; margin-bottom: 0; }
+dl { margin-top: 1em; }  /* Bootstrap 2 left the browser top margin */
 .row > dd { margin-left: 0; }
 
 /* -- 2. Buttons ----------------------------------------------------------- */
@@ -74,6 +67,13 @@ dd { margin-left: 10px; margin-bottom: 0; }
     --bs-btn-padding-x: 10px;
     --bs-btn-padding-y: 2px;
     --bs-btn-font-size: 11.9px;
+    --bs-btn-border-radius: 3px;
+}
+/* Extra small, Bootstrap 2 btn-mini */
+.btn-xs, .btn-group-xs > .btn {
+    --bs-btn-padding-x: 6px;
+    --bs-btn-padding-y: 0;
+    --bs-btn-font-size: 10.5px;
     --bs-btn-border-radius: 3px;
 }
 .btn-lg, .btn-group-lg > .btn {
@@ -196,8 +196,15 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     --bs-modal-footer-gap: 0;
 }
 .modal-backdrop { --bs-backdrop-opacity: 0.8; }
-@media (min-width: 576px) {
+@media (min-width: 768px) {
     .modal { --bs-modal-margin: 10vh; }
+}
+/* Bootstrap 2 responsive: full width with a small margin */
+@media (max-width: 767px) {
+    .modal .modal-dialog { max-width: none; margin: 20px; }
+}
+@media (max-width: 480px) {
+    .modal .modal-dialog { margin: 10px; }
 }
 .modal-content { box-shadow: var(--bs-modal-box-shadow); }
 .modal-header h3 { margin: 0; }

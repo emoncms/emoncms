@@ -5,7 +5,7 @@
             <div class="modal-header">
                 <h3 id="inputEditModalLabel" class="modal-title"><?php echo tr('Edit Input'); ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+            </div>
             <div class="modal-body">
                 <p><?php echo tr("Edit the input's description."); ?>
                 <em class="text-muted">({{selected.length}} <?php echo tr('Inputs') ?>)</em>

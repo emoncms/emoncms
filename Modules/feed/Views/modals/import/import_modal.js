@@ -3,7 +3,7 @@
 // -------------------------------------------------------------------------------
 var import_data = [];
 
-$('#importDataModal').on('shown', function(){
+$('#importDataModal').on('shown.bs.modal', function(){
     draw_import_feed_select();
     
     for (var e in engines_hidden) {

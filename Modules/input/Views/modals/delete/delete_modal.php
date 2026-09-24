@@ -4,7 +4,7 @@
             <div class="modal-header">
                 <h3 id="inputDeleteModalLabel" class="modal-title"><?php echo tr('Delete Input'); ?></h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+            </div>
             <div class="modal-body">
                 <div class="alert alert-danger">
                 <?php echo tr('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>

@@ -18,7 +18,7 @@ $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 $v = 55;
 
 // Bootstrap 5 spike: pages listed here load Bootstrap 5 in place of Bootstrap 2
-$bootstrap5 = in_array($route->controller . '/' . $route->action, ['admin/info', 'input/view']);
+$bootstrap5 = in_array($route->controller . '/' . $route->action, ['admin/info', 'input/view', 'feed/view']);
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";

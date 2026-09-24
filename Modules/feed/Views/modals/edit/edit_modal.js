@@ -158,7 +158,7 @@ var editFeedRoot = Vue.createApp({
 var edit_feed = editFeedRoot.mount('#feedEditModal');
 
 // Bootstrap 2 modal hidden event — run cleanup that was previously on dialog 'close'
-$('#feedEditModal').on('hidden', function() {
+$('#feedEditModal').on('hidden.bs.modal', function() {
     edit_feed.onDialogClose();
 });
 

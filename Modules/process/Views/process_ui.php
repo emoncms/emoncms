@@ -23,7 +23,7 @@ load_js("Modules/process/process.js");
                 <div class="modal-header">
                     <div class="process-header-title"><b>{{ input_or_virtual_feed_name }}</b> <?php echo ctx_tr('process_messages', 'process list setup'); ?></div>
                     <button type="button" class="btn-close" @click="close" aria-label="Close"></button>
-        </div>
+                </div>
                 <div class="modal-body" id="processlist-ui">
         
                     <p><?php echo ctx_tr('process_messages', 'Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
