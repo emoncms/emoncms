@@ -264,6 +264,17 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
 }
 .table-sm > :not(caption) > * > * { padding: 4px 5px; }
 
+/* Form controls: Bootstrap 2 input metrics */
+.form-control,
+.form-select {
+    padding: 4px 6px;
+    font-size: 14px;
+    line-height: 20px;
+    border-color: #ccc;
+    border-radius: 4px;
+}
+.form-select { padding-right: 24px; }
+
 /* Row colours: Bootstrap 2 tints, not striped */
 .table-success, .table-danger, .table-warning, .table-info {
     --bs-table-color: currentColor;

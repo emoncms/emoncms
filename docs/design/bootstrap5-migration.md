@@ -14,7 +14,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. `color-box` moved to `Modules/user/profile/profile.css`. Other custom classes in it (`text-tertiary`, `text-quaternary`, `text-exporting`, `m-6`, `p-6`) are not used in core.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, `schedule/view`, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, `schedule/view`, `dashboard` (list, editor, view), with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -45,6 +45,7 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `input-prepend`, `input-append` | `input-group` |
 | `add-on` | `input-group-text` |
 | `table-condensed` | `table-sm` |
+| `hidden-phone` | `d-none d-md-block` |
 | `tr.success`, `error`, `warning`, `info` | `table-success`, `table-danger`, `table-warning`, `table-info` |
 | `data-toggle`, `data-dismiss`, `data-target`, `data-parent` | `data-bs-*` |
 | `dropdown-menu pull-right` | `dropdown-menu dropdown-menu-end` |
@@ -100,7 +101,8 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `.row > *` gets gutter padding, which overrides page padding on columns. Use `g-0` and add padding with utilities.
 - `.input-group` is inline and sized to its content in the theme, as `input-prepend` was. New full width groups need `d-flex w-100`.
 - Utilities are `!important`. A page rule can no longer override them. jQuery `.show()` cannot undo `d-none`, which is why `hide` stays.
-- Classes that did nothing under Bootstrap 2, such as `text-muted`, some `mr-*` and `pb-md-2`, now apply. Remove them where the page relied on them doing nothing.
+- Classes that did nothing under Bootstrap 2, such as `text-muted`, some `mr-*`, `pb-md-2`, `btn-light`, `text-body` and `form-control`, now apply. Remove them where the page relied on them doing nothing, or use `btn-default` for `btn-light`.
+- The theme gives `form-control` and `form-select` the Bootstrap 2 input size: 14px text, 4px 6px padding.
 - Table cells inherit their colour. Bootstrap 5 sets them black by default.
 - Links without `href` inherit their colour.
 - `.dropdown-toggle` gets a caret through `::after`. Hide it where the design has none.
@@ -120,11 +122,11 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 Branch `bootstrap5` in core, device, graph, backup and account. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, `schedule/view`, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, `schedule/view`, `dashboard`, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+Remaining, core: API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 
