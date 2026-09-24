@@ -28,6 +28,14 @@ const GROUPS = {
     { name: "feed_new", page: "feed/view", steps: [{ click: "#addnewfeed" }] },
     { name: "feed_import", page: "feed/view", steps: [{ click: "#importdata" }] },
   ],
+  device: [
+    { name: "device_list", page: "device/view", steps: [] },
+    { name: "device_select", page: "device/view", steps: [{ click: ".group-list-row input[type=checkbox]" }] },
+    { name: "device_config", page: "device/view", steps: [{ click: ".group-list-row a[title='Configure']" }] },
+    { name: "device_init", page: "device/view", steps: [{ click: ".group-list-row a[title='Configure']" }, { dispatch: "#generate-template" }, { dispatch: "#prepare-custom-template" }] },
+    { name: "device_delete", page: "device/view", steps: [{ click: ".group-list-row input[type=checkbox]" }, { click: "button[title='Delete']" }] },
+    { name: "device_new", page: "device/view", steps: [{ click: "button[title='New device']" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -73,6 +81,12 @@ for (const st of GROUPS[group]) {
       const loc = p.locator(s.click).first();
       if (await loc.count()) { await loc.click(); await p.waitForTimeout(900); }
       else missing.push(s.click);
+    }
+    // click event without pointer hit test, for buttons under an overlay
+    if (s.dispatch) {
+      const loc = p.locator(s.dispatch).first();
+      if (await loc.count()) { await loc.dispatchEvent("click"); await p.waitForTimeout(900); }
+      else missing.push(s.dispatch);
     }
   }
   await p.screenshot({ path: `${out}/${st.name}@${width}.png`, fullPage: group === "graph" });

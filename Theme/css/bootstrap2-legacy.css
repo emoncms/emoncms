@@ -71,6 +71,17 @@
 .dl-horizontal dd {
   margin-left: 180px;
 }
+@media (max-width: 767px) {
+  .dl-horizontal dt {
+    float: none;
+    width: auto;
+    clear: none;
+    text-align: left;
+  }
+  .dl-horizontal dd {
+    margin-left: 0;
+  }
+}
 
 /* -- 1b. Base elements --------------------------------------------------
    Bootstrap 2 element rules from reset, scaffolding, type, code and tables.
@@ -1318,6 +1329,24 @@ textarea::-webkit-input-placeholder {
   width: 530px;
 }
 
+/* Bootstrap 2 responsive: full width on phones, except in input groups */
+@media (max-width: 767px) {
+  .input-large,
+  .input-xlarge,
+  .input-xxlarge {
+    display: block;
+    width: 100%;
+    min-height: 30px;
+    box-sizing: border-box;
+  }
+  .input-group .input-large,
+  .input-group .input-xlarge,
+  .input-group .input-xxlarge {
+    display: inline-block;
+    width: auto;
+  }
+}
+
 input:where([class*="span"]),
 select:where([class*="span"]),
 textarea:where([class*="span"]),
@@ -1705,6 +1734,22 @@ legend + .control-group {
 
 .form-horizontal .form-actions {
   padding-left: 180px;
+}
+
+@media (max-width: 480px) {
+  .form-horizontal .control-label {
+    float: none;
+    width: auto;
+    padding-top: 0;
+    text-align: left;
+  }
+  .form-horizontal .controls {
+    margin-left: 0;
+  }
+  .form-horizontal .form-actions {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
 }
 
 /* Browsers size select from its border box, as Bootstrap 2 relied on */

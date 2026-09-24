@@ -8,13 +8,13 @@ Aim for the current look first. Visual changes come later, through the theme var
 
 - `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
 - `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, and component sizes (buttons, badges, alerts, modals, input groups, tables). Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), glyphicon sprites, form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes), `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
+- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), glyphicon sprites, form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes) with the phone rules from `bootstrap-responsive.css`, `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
 - `Theme/img/`: glyphicon sprites used by the legacy file.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. Custom classes in it (`text-tertiary`, `text-quaternary`, `color-box`, `text-exporting`, `m-6`, `p-6`) need a new home.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -117,11 +117,11 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 Branch `bootstrap5` in core, device, graph and backup. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: `device/view` (broken until converted, it shares the converted device dialog), admin pages, user and account pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+Remaining, core: admin pages, user and account pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 
