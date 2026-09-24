@@ -120,13 +120,13 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Status and next steps
 
-Branch `bootstrap5` in core, device, graph, backup and account. Nothing pushed.
+Branch `bootstrap5` in core and the device, graph, account, dashboard, backup, sync, network, postprocess, emailreport and config modules. Postprocess branches from `stable`. Nothing pushed.
 
 Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard`, API help pages, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Core pages are done. Remaining: module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
+Core pages are done. Modules done: backup, sync, network (and setup, which uses the network view), postprocess, emailreport, config. Remaining: the apps in `Modules/app`. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 
@@ -134,4 +134,4 @@ Tools are in `scripts/bootstrap5/`.
 
 ## Checking a converted page
 
-Compare each page against master with screenshots and a layout diff of every element's box and computed style. Capture every state: modals, selections, expanded sections. Switch core and every module repo to master for the baseline. Live data (feed values, graphs, logs) and CSS transitions change between runs, so compare two runs of the same branch to see the noise level. Wait for PHP opcache to serve changed files before capturing.
+Compare each page against master with screenshots and a layout diff of every element's box and computed style. Capture every state: modals, selections, expanded sections. Switch core and every module repo to master for the baseline. `onmaster.sh` finds each module's repo through git, as symlinked modules point into a subfolder of their repo. Live data (feed values, graphs, logs) and CSS transitions change between runs, so compare two runs of the same branch to see the noise level. Wait for PHP opcache to serve changed files before capturing.
