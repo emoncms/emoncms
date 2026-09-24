@@ -28,7 +28,7 @@ class DashboardAccessTest extends ApiTestCase
     /**
      * Insert a user row directly and return [userid, username]. Only the
      * columns needed for public-profile resolution are set; NOT NULL columns
-     * without a default (admin, account_admin) are set explicitly.
+     * without a default (admin) are set explicitly.
      *
      * @return array{0:int,1:string}
      */
@@ -36,8 +36,8 @@ class DashboardAccessTest extends ApiTestCase
     {
         $username = $this->uniqueUsername();
         $stmt = static::$mysqli->prepare(
-            "INSERT INTO users (username, email, password, salt, apikey_read, apikey_write, admin, account_admin)
-             VALUES (?, ?, '', '', ?, ?, 0, 0)"
+            "INSERT INTO users (username, email, password, salt, apikey_read, apikey_write, admin)
+             VALUES (?, ?, '', '', ?, ?, 0)"
         );
         $email = $username . '@example.test';
         $read  = bin2hex(random_bytes(16));
