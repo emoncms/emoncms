@@ -40,7 +40,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
         <?php
-        if ($route->controller == "graph") {
+        if (in_array($route->controller, ["graph", "app"])) {
             load_css("Lib/bootstrap5/css/bootstrap.min.css");
             load_css("Theme/css/bootstrap5-theme.css");
             load_css("Theme/css/bootstrap2-legacy.css");

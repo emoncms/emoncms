@@ -127,6 +127,39 @@ const GROUPS = {
     { name: "mod_postprocess_new", page: "postprocess", steps: [{ wait: 1000 }, { select: "#app select", index: 1 }] },
     { name: "mod_emailreport", page: "emailreport", steps: [{ wait: 1000 }] },
   ],
+  // test login; never click create, save, delete or the config ok buttons
+  app: [
+    { name: "app_list", page: "app/list", steps: [{ wait: 1000 }] },
+    { name: "app_list_edit", page: "app/list", steps: [{ wait: 1000 }, { click: "button:has-text('Edit')" }] },
+    { name: "app_new", page: "app/new", steps: [] },
+    { name: "app_new_archived", page: "app/new", steps: [{ click: ".app-group-toggle" }] },
+    { name: "app_new_modal", page: "app/new", steps: [{ click: ".app-item" }] },
+    { name: "app_myelectricflow", page: "app/view?id=122", steps: [{ wait: 2500 }] },
+    { name: "app_myelectricflow_manual", page: "app/view?id=122", steps: [{ wait: 2500 }, { click: "#time-manual-open" }] },
+    { name: "app_myelectricflow_picker", page: "app/view?id=122", steps: [{ wait: 2500 }, { click: "#time-manual-open" }, { click: "#datetimepicker1 .add-on" }] },
+    { name: "app_myelectricflow_config", page: "app/view?id=122", steps: [{ wait: 2500 }, { dispatch: ".config-open" }] },
+    { name: "app_myheatpump", page: "app/view?id=126", steps: [{ wait: 3000 }] },
+    { name: "app_myheatpump_power", page: "app/view?id=126", steps: [{ wait: 3000 }, { click: ".bargraph-day" }, { wait: 1500 }] },
+    { name: "app_myheatpump_config", page: "app/view?id=126", steps: [{ wait: 3000 }, { dispatch: ".config-open" }] },
+    { name: "app_timeofuse2", page: "app/view?id=140", steps: [{ wait: 2500 }] },
+    { name: "app_timeofuse2_config", page: "app/view?id=140", steps: [{ wait: 2500 }, { dispatch: ".config-open" }] },
+    { name: "app_myelectric2", page: "app/view?id=141", steps: [{ wait: 2500 }] },
+    { name: "app_myelectric2_cost", page: "app/view?id=141", steps: [{ wait: 2500 }, { click: ".viewcostenergy" }] },
+    { name: "app_myelectric2_config", page: "app/view?id=141", steps: [{ wait: 2500 }, { dispatch: ".config-open" }] },
+    { name: "app_myboiler", page: "app/view?id=181", steps: [{ wait: 3000 }] },
+    { name: "app_myboiler_config", page: "app/view?id=181", steps: [{ wait: 3000 }, { dispatch: ".config-open" }] },
+    { name: "app_ukgrid", page: "app/view?id=182", steps: [{ wait: 3000 }] },
+    { name: "app_ukgrid_fuelmix", page: "app/view?id=182", steps: [{ wait: 3000 }, { click: ".fuelmix" }, { wait: 1500 }] },
+    { name: "app_ukgrid_config", page: "app/view?id=182", steps: [{ wait: 3000 }, { dispatch: ".config-open" }] },
+    { name: "app_co2monitor", page: "app/view?id=201", steps: [{ wait: 2500 }] },
+    { name: "app_co2monitor_decay", page: "app/view?id=201", steps: [{ wait: 2500 }, { dispatch: "#decay_mode" }] },
+    { name: "app_co2monitor_config", page: "app/view?id=201", steps: [{ wait: 2500 }, { dispatch: ".config-open" }] },
+  ],
+  // admin login; never click Simulate
+  app_admin: [
+    { name: "app_solarbatterysim", page: "app/view?id=131", steps: [{ wait: 3000 }] },
+    { name: "app_solarbatterysim_config", page: "app/view?id=131", steps: [{ wait: 3000 }, { dispatch: ".config-open" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -205,7 +238,7 @@ for (const st of GROUPS[group]) {
       else missing.push(s.dispatch);
     }
   }
-  await p.screenshot({ path: `${out}/${st.name}@${width}.png`, fullPage: group === "graph" });
+  await p.screenshot({ path: `${out}/${st.name}@${width}.png`, fullPage: group === "graph" || group.startsWith("app") });
   const data = await p.evaluate(PROPS => {
     const res = [];
     const path = el => { const parts = []; for (let e = el; e && e.nodeType === 1 && e !== document.documentElement; e = e.parentElement) {

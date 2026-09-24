@@ -315,6 +315,10 @@ ol ul {
   margin-bottom: 0;
 }
 
+.nav {
+  margin-left: 0;
+}
+
 li {
   line-height: 20px;
 }
@@ -445,6 +449,17 @@ table th[class*="span"] {
 /* bootstrap-datetimepicker 0.0.11 switches its panels with Bootstrap 2 collapse classes */
 .bootstrap-datetimepicker-widget .collapse.in {
   display: block;
+}
+.bootstrap-datetimepicker-widget .table-condensed th,
+.bootstrap-datetimepicker-widget .table-condensed td {
+  padding: 4px 5px;
+}
+.bootstrap-datetimepicker-widget .divider {
+  height: 1px;
+  margin: 9px 1px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  border-bottom: 1px solid #fff;
 }
 
 /* Bootstrap 2 caret */
