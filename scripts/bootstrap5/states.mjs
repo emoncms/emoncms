@@ -103,6 +103,14 @@ const GROUPS = {
     { name: "api_process", page: "process/api", steps: [] },
     { name: "api_schedule", page: "schedule/api", steps: [] },
   ],
+  // logged out; never submit the forms
+  login: [
+    { name: "login_page", page: "user/login", steps: [] },
+    { name: "login_required", page: "feed/view", steps: [] },
+    { name: "login_reset", page: "user/login", steps: [{ dispatch: "#passwordreset-link" }] },
+    { name: "login_reset_back", page: "user/login", steps: [{ dispatch: "#passwordreset-link" }, { dispatch: "#passwordreset-link-cancel" }] },
+    { name: "login_reset_confirm", page: "user/passwordreset-confirm?token=invalid", steps: [] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -131,10 +139,14 @@ let errors = [];
 p.on("pageerror", e => errors.push(String(e.message)));
 p.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
 p.on("response", r => { if (r.status() >= 400) errors.push("HTTP " + r.status() + " " + r.url()); });
-await p.goto(base + "/", { waitUntil: "networkidle" });
-await p.fill("input[name=username]", process.env.EMONCMS_USER);
-await p.fill("input[name=password]", process.env.EMONCMS_PASS);
-await Promise.all([p.waitForLoadState("networkidle"), p.click("#login")]);
+// groups that run logged out
+const LOGGED_OUT = ["login"];
+if (!LOGGED_OUT.includes(group)) {
+  await p.goto(base + "/", { waitUntil: "networkidle" });
+  await p.fill("input[name=username]", process.env.EMONCMS_USER);
+  await p.fill("input[name=password]", process.env.EMONCMS_PASS);
+  await Promise.all([p.waitForLoadState("networkidle"), p.click("#login")]);
+}
 
 const report = {};
 for (const st of GROUPS[group]) {
