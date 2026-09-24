@@ -30,7 +30,9 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !^/?scripts.*$
   RewriteCond %{REQUEST_URI} !^/?Theme.*$
   RewriteCond %{ENV:REDIRECT_STATUS} ![45]0[0-9]
-  RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
+  # B escapes the path before it goes into q. Without it an encoded & in the
+  # path starts a second q, and PHP routes on the last one.
+  RewriteRule ^(.*)$ index.php?q=$1 [L,QSA,B]
 </IfModule>
 
 # ------------------------------------------------------------------------------

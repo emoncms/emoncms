@@ -209,6 +209,35 @@ function view($filepath, array $args = array())
     return $content;
 }
 /**
+ * Whether a query string holds more than one q parameter.
+ *
+ * The rewrite rule writes the request path into q and appends the original
+ * query string. Where the path is written decoded (nginx with $uri, Apache
+ * without the B flag) an encoded & in the path starts a second q, and PHP
+ * keeps the last one, so /name%26q=feed/delete.json routes to
+ * feed/delete.json. A link that looks like a page can then run an action in
+ * the session of whoever follows it. No request made by emoncms carries two.
+ *
+ * Keys are read as PHP reads them: url decoded, leading spaces dropped, and
+ * q[...] counted as q.
+ *
+ * @param string $query_string raw QUERY_STRING
+ * @return bool
+ */
+function route_query_is_ambiguous($query_string)
+{
+    $separators = preg_quote(ini_get('arg_separator.input') ?: '&', '/');
+    $count = 0;
+    foreach (preg_split('/[' . $separators . ']/', (string) $query_string) as $pair) {
+        $key = ltrim(urldecode(explode('=', $pair, 2)[0]), ' ');
+        if (preg_match('/^q(\[|$)/', $key)) {
+            $count++;
+        }
+    }
+    return $count > 1;
+}
+
+/**
  * strip slashes from GET values or null if not set
  *
  * @param string $index name of $_GET item

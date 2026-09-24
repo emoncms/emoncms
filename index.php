@@ -20,6 +20,13 @@ require "route.php";
 require "param.php";
 require "locale.php";
 
+// Refuse a second q before anything routes on it, see route_query_is_ambiguous.
+if (route_query_is_ambiguous(isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '')) {
+    http_response_code(400);
+    echo "Bad request";
+    die;
+}
+
 $emoncms_version = ($settings['feed']['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
 $path = get_application_path($settings["domain"]);
