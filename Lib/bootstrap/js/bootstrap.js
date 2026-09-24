@@ -522,7 +522,7 @@
       if (this.transitioning || this.$element.hasClass('in')) return
 
       dimension = this.dimension()
-      scroll = $.camelCase(['scroll', dimension].join('-'))
+      scroll = 'scroll' + dimension.charAt(0).toUpperCase() + dimension.slice(1)
       actives = this.$parent && this.$parent.find('> .accordion-group > .in')
 
       if (actives && actives.length) {
@@ -1585,7 +1585,7 @@
               , $href = /^#\w/.test(href) && $(href)
             return ( $href
               && $href.length
-              && [[ $href.position().top + (!$.isWindow(self.$scrollElement.get(0)) && self.$scrollElement.scrollTop()), href ]] ) || null
+              && [[ $href.position().top + (!(self.$scrollElement.get(0) === self.$scrollElement.get(0).window) && self.$scrollElement.scrollTop()), href ]] ) || null
           })
           .sort(function (a, b) { return a[0] - b[0] })
           .each(function () {
@@ -1917,7 +1917,7 @@
         return this.shown ? this.hide() : this
       }
 
-      items = $.isFunction(this.source) ? this.source(this.query, $.proxy(this.process, this)) : this.source
+      items = typeof this.source === "function" ? this.source(this.query, $.proxy(this.process, this)) : this.source
 
       return items ? this.process(items) : this
     }

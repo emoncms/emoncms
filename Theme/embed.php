@@ -42,7 +42,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <?php
         load_css("Lib/bootstrap/css/bootstrap.min.css");
         load_css("Theme/css/emoncms-base.css?v=".$v);
-        load_js("Lib/js/jquery-3.6.0.min.js");
+        load_js("Lib/js/jquery-4.0.0.min.js");
         load_js("Lib/js/gettext.js?v=".$v);
         ?>
         
