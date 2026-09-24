@@ -82,7 +82,7 @@ $_js_translations = array(
 );
 ?>
 
-<link rel="stylesheet" href="<?php echo $path; ?>Modules/admin/static/admin_styles.css?v=3">
+<?php load_css("Modules/admin/static/admin_styles.css"); ?>
 
 <div id="new-system-info" class="admin-container">
 	<?php if (PHP_VERSION_ID < 70300) { ?>
