@@ -72,6 +72,16 @@ const GROUPS = {
   account_empty: [
     { name: "account_empty", page: "account/list", steps: [{ wait: 1500 }] },
   ],
+  // never click New schedule (creates a record) or Save
+  schedule: [
+    { name: "schedule_list", page: "schedule/view", steps: [] },
+    { name: "schedule_edit", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }] },
+    { name: "schedule_edit_days", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: ".sb-presets button:has-text('M–F')" }] },
+    { name: "schedule_custom", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: "a:has-text('Custom expression')" }] },
+    { name: "schedule_help", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: "a:has-text('Custom expression')" }, { click: "button[title='Expression reference']" }] },
+    { name: "schedule_delete", page: "schedule/view", steps: [{ click: "button:has-text('Delete')" }] },
+    { name: "schedule_test", page: "schedule/view", steps: [{ click: "button:has-text('Test')" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
