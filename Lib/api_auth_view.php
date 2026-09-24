@@ -92,6 +92,7 @@
   .api-auth-mono .hl { color: #fff; }
 
   .api-auth-tag {
+    box-sizing: content-box;
     font-size: 11px;
     font-weight: bold;
     color: #999;

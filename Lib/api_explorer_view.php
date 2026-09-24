@@ -131,6 +131,7 @@
 
   /* Standalone page container for the module API pages */
   .api-page {
+    box-sizing: content-box;
     max-width: 1150px;
     margin: 0 auto;
     padding: 28px 20px 64px 20px;
@@ -161,6 +162,7 @@
   .ref-docs-btn:hover { background-color: var(--bg-card-row-hover, #f5f5f5); color: var(--text-primary, #000) !important; text-decoration: none !important; }
 
   .ref-filter {
+    box-sizing: content-box;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -251,6 +253,7 @@
   .ref-group-heading:first-child { margin-top: 0; }
 
   .badge {
+    box-sizing: content-box;
     font-size: 11px;
     font-weight: bold;
     padding: 3px 8px;
@@ -340,6 +343,7 @@
   .try-btn:disabled { background-color: var(--border-card, #e0e0e0); color: var(--text-muted, #666); cursor: not-allowed; opacity: 1; }
 
   .response-block {
+    box-sizing: content-box;
     font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
     font-size: 12.5px;
     line-height: 20px;

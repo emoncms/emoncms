@@ -18,7 +18,7 @@ $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 $v = 55;
 
 // Pages listed here load Bootstrap 5 in place of Bootstrap 2, by controller/action or controller
-$bootstrap5_pages = ['admin', 'input/view', 'feed/view', 'graph', 'device/view', 'user/view', 'account', 'schedule/view', 'dashboard'];
+$bootstrap5_pages = ['admin', 'input/view', 'feed/view', 'graph', 'device/view', 'user/view', 'account', 'schedule/view', 'dashboard', 'api', 'input/api', 'feed/api', 'device/api', 'process/api', 'schedule/api'];
 $bootstrap5 = in_array($route->controller . '/' . $route->action, $bootstrap5_pages) || in_array($route->controller, $bootstrap5_pages);
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
