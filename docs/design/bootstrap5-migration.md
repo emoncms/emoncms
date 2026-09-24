@@ -87,6 +87,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 - Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle.
 - `bootstrap-datetimepicker` 0.0.11 finds its trigger through `.add-on`. Keep `add-on` next to `input-group-text` on its triggers. The legacy file shows its `collapse in` panels.
 - `Lib/js/DateTimePicker.js` uses `input-group-text dtp-add-on`.
+- Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
 
 ## Behaviour changes
 
