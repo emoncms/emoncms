@@ -50,6 +50,17 @@ const GROUPS = {
     { name: "admin_update_hw", page: "admin/update", steps: [{ select: "#selected_hardware", index: 1 }] },
     { name: "admin_update_custom", page: "admin/update", steps: [{ select: "#selected_hardware", index: 1 }, { click: "#firmware_source_custom" }] },
   ],
+  // modals are opened only, never confirmed
+  user: [
+    { name: "user_view", page: "user/view", steps: [] },
+    { name: "user_edit_username", page: "user/view", steps: [{ dispatch: "tr:has-text('Username') .icon-pencil" }] },
+    { name: "user_edit_email", page: "user/view", steps: [{ dispatch: "tr:has-text('Email') .icon-pencil" }] },
+    { name: "user_edit_password", page: "user/view", steps: [{ dispatch: "tr:has-text('Password') .icon-pencil" }] },
+    { name: "user_edit_timezone", page: "user/view", steps: [{ dispatch: "tr:has-text('Timezone') .icon-pencil" }] },
+    { name: "user_edit_language", page: "user/view", steps: [{ dispatch: "tr:has-text('Language') .icon-pencil" }] },
+    { name: "user_delete", page: "user/view", steps: [{ click: "button:has-text('Delete account')" }] },
+    { name: "user_apikey", page: "user/view", steps: [{ click: "tr:has-text('Read Only API Key') button:has-text('Generate New')" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
