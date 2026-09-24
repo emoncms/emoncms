@@ -26,31 +26,31 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
   <h3><?php echo tr('My Account'); ?></h3>
   <table class="table table-hover">
     <tr>
-      <td class="muted"><?php echo tr('User ID'); ?></td>    
+      <td class="text-muted"><?php echo tr('User ID'); ?></td>    
       <td>{{ user.id }}</td>
       <td></td>
-      <td><button class="btn btn-small btn-danger" @click="delete_account()"><?php echo tr('Delete account'); ?></button></td>
+      <td><button class="btn btn-sm btn-danger" @click="delete_account()"><?php echo tr('Delete account'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Username'); ?></td>
+      <td class="text-muted"><?php echo tr('Username'); ?></td>
       <td>
         <span v-if="!edit.username">{{ user.username }}</span>
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <input type="text" v-model="user.username"/>
-          <button class="btn" @click="save_username(user.username)"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save_username(user.username)"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.username" @click="show_edit('username')"></i></td>
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Email'); ?></td>
+      <td class="text-muted"><?php echo tr('Email'); ?></td>
       <td>
         <span v-if="!edit.email">{{ user.email }}</span>
         <div v-else>
-          <div class="input-append">
+          <div class="input-group">
             <input type="text" v-model="user.email"/>
-            <button class="btn" @click="save_email(user.email)"><i class="icon-ok"></i></button>
+            <button class="btn btn-default" @click="save_email(user.email)"><i class="icon-ok"></i></button>
           </div>
           <input type="password" v-model="email_password" placeholder="<?php echo htmlspecialchars(tr('Current password'), ENT_QUOTES, 'UTF-8'); ?>"/>
         </div>
@@ -59,36 +59,36 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Read & Write API Key'); ?></td>
+      <td class="text-muted"><?php echo tr('Read & Write API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_write }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_write,'<?php echo addslashes(tr("Write API Key copied to clipboard")); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('write')"><?php echo tr('Generate New'); ?></button></td>
+      <td><button class="btn btn-default btn-sm" @click="new_apikey('write')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Read Only API Key'); ?></td>
+      <td class="text-muted"><?php echo tr('Read Only API Key'); ?></td>
       <td><div class="apikey">{{ user.apikey_read }}</div></td>
       <td><i class="icon-share" @click="copy_text_to_clipboard(user.apikey_read,'<?php echo addslashes(tr("Read API Key copied to clipboard")); ?>')"></i></td>
-      <td><button class="btn btn-small" @click="new_apikey('read')"><?php echo tr('Generate New'); ?></button></td>
+      <td><button class="btn btn-default btn-sm" @click="new_apikey('read')"><?php echo tr('Generate New'); ?></button></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Password'); ?></td>    
+      <td class="text-muted"><?php echo tr('Password'); ?></td>    
       <td>
-        <span v-if="!edit.password" class="muted">**********</span>
+        <span v-if="!edit.password" class="text-muted">**********</span>
         <div v-else>
           <div class="account-item">
-              <span class="muted"><?php echo tr('Current password'); ?></span>
+              <span class="text-muted"><?php echo tr('Current password'); ?></span>
               <br><input type="password" v-model="password.current" />
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo tr('New password'); ?></span>
+              <span class="text-muted"><?php echo tr('New password'); ?></span>
               <br><input type="password" v-model="password.new" />
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo tr('Repeat new password'); ?></span>
+              <span class="text-muted"><?php echo tr('Repeat new password'); ?></span>
               <br><input type="password" v-model="password.repeat" />
           </div>
           <button class="btn btn-primary" @click="change_password()" /><?php echo tr('Save'); ?></button>
-          <button class="btn" @click="edit.password=false" /><?php echo tr('Cancel'); ?></button>
+          <button class="btn btn-default" @click="edit.password=false" /><?php echo tr('Cancel'); ?></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.password" @click="show_edit('password')"></i></td>
@@ -100,75 +100,75 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
   <table class="table table-hover">
     <tr>
-      <td class="muted"><?php echo tr('Gravatar'); ?></td>
+      <td class="text-muted"><?php echo tr('Gravatar'); ?></td>
       <td>
         <img v-if="!edit.gravatar && gravatarUrl" style="border: 1px solid #ccc; padding:2px" :src="gravatarUrl" />
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <input type="text" style="width:220px" v-model="user.gravatar"/>
-          <button class="btn" @click="save('gravatar')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('gravatar')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.gravatar" @click="show_edit('gravatar')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Name'); ?></td>
+      <td class="text-muted"><?php echo tr('Name'); ?></td>
       <td>
         <span v-if="!edit.name">{{ user.name }}</span>
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <input type="text" v-model="user.name"/>
-          <button class="btn" @click="save('name')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('name')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.name" @click="show_edit('name')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Location'); ?></td>
+      <td class="text-muted"><?php echo tr('Location'); ?></td>
       <td>
         <span v-if="!edit.location">{{ user.location }}</span>
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <input type="text" v-model="user.location"/>
-          <button class="btn" @click="save('location')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('location')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.location" @click="show_edit('location')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Timezone'); ?></td>
+      <td class="text-muted"><?php echo tr('Timezone'); ?></td>
       <td>
         <span v-if="!edit.timezone">{{ user.timezone }}</span>
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <select v-model="user.timezone">
             <option v-for="tz in timezones" :value="tz.id">{{ tz.id }} {{ tz.gmt_offset_text }}</option>
           </select>
-          <button class="btn" @click="save('timezone')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('timezone')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.timezone" @click="show_edit('timezone')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Language'); ?></td>
+      <td class="text-muted"><?php echo tr('Language'); ?></td>
       <td>
         <span v-if="!edit.language">{{ languages[user.language] }}</span> 
-        <span class="muted" style="margin-left:20px" v-if="!edit.language && translation_status[user.language]!=undefined"><?php echo tr("Translation: "); ?>{{ translation_status[user.language].prc_complete }}% <?php echo tr("complete"); ?></span>
+        <span class="text-muted" style="margin-left:20px" v-if="!edit.language && translation_status[user.language]!=undefined"><?php echo tr("Translation: "); ?>{{ translation_status[user.language].prc_complete }}% <?php echo tr("complete"); ?></span>
 
-        <div v-if="edit.language" class="input-append">
+        <div v-if="edit.language" class="input-group">
           <select v-model="user.language">
             <!-- default en_GB at the top -->
             <option value="en_GB" selected>English (United Kingdom)</option>
             <option v-for="(name,code) in languages" :value="code" v-if="code!='en_GB'">{{ name }}</option>
           </select>
-          <button class="btn" @click="save('language')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('language')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.language" @click="show_edit('language')"></i></td>
     </tr>
     <tr>
-      <td class="muted"><?php echo tr('Starting page'); ?></td>
+      <td class="text-muted"><?php echo tr('Starting page'); ?></td>
       <td>
         <span v-if="!edit.startingpage">{{ user.startingpage }}</span>
-        <div v-else class="input-append">
+        <div v-else class="input-group">
           <input type="text" v-model="user.startingpage"/>
-          <button class="btn" @click="save('startingpage')"><i class="icon-ok"></i></button>
+          <button class="btn btn-default" @click="save('startingpage')"><i class="icon-ok"></i></button>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.startingpage" @click="show_edit('startingpage')"></i></td>
@@ -178,7 +178,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 <table class="table table-hover">
   <tr>
-    <td class="muted"><?php echo tr('Theme colour'); ?></td>
+    <td class="text-muted"><?php echo tr('Theme colour'); ?></td>
     <td>
       <div class="color-box themecolor" name="blue" style="background-color:#44b3e2"></div>
       <div class="color-box themecolor" name="black" style="background-color:#555"></div>
@@ -189,21 +189,21 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
     </td>
   </tr>
   <tr>
-    <td class="muted"><?php echo tr('Sidebar colour'); ?></td>
+    <td class="text-muted"><?php echo tr('Sidebar colour'); ?></td>
     <td>
       <div class="color-box sidebarcolor" name="dark" style="background-color:#333"></div>
       <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
     </td>
   </tr>
   <tr>
-    <td class="muted"><?php echo tr('Archived features'); ?></td>
+    <td class="text-muted"><?php echo tr('Archived features'); ?></td>
     <td>
       <label><input type="checkbox" id="show-archived"> <?php echo tr('Show archived features (e.g. Visualization)'); ?></label>
     </td>
   </tr>
 </table>
 
-<div style="background-color:#f0f0f0; padding:20px; max-width:360px">
+<div style="background-color:#f0f0f0; padding:20px; max-width:360px; box-sizing:content-box">
 
   <div style="width:49.9%; float:left">
     <div style="margin-right:20px">
@@ -225,46 +225,54 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 </div>
 
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo tr('WARNING deleting an account is permanent'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <div class="delete-account-s1">
-        <p><?php echo tr('Are you sure you want to delete your account?'); ?></p>
-        </div>
-
-        <div class="delete-account-s2" style="display:none">
-        <p><b><?php echo tr('Your account has been successfully deleted.'); ?></b></p>
-        </div>
+<div id="myModal" class="modal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="myModalLabel" class="modal-title"><?php echo tr('WARNING deleting an account is permanent'); ?></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="delete-account-s1">
+                <p><?php echo tr('Are you sure you want to delete your account?'); ?></p>
+                </div>
         
-        <pre id="deleteall-output"></pre>
-        
-        <div class="delete-account-s1">
-            <p><?php echo tr('Confirm password to delete:'); ?><br>
-            <input id="delete-account-password" type="password" /></p>
+                <div class="delete-account-s2" style="display:none">
+                <p><b><?php echo tr('Your account has been successfully deleted.'); ?></b></p>
+                </div>
+                
+                <pre id="deleteall-output"></pre>
+                
+                <div class="delete-account-s1">
+                    <p><?php echo tr('Confirm password to delete:'); ?><br>
+                    <input id="delete-account-password" type="password" /></p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="canceldelete" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+                <button id="confirmdelete" class="btn btn-primary"><?php echo tr('Delete permanently'); ?></button>
+                <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo tr('Logout'); ?></button>
+            </div>
         </div>
-    </div>
-    <div class="modal-footer">
-        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo tr('Delete permanently'); ?></button>
-        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo tr('Logout'); ?></button>
     </div>
 </div>
 
-<div id="modalNewApikey" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="modalNewApikeyLabel" aria-hidden="true" data-backdrop="false">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="modalNewApikeyLabel"><?php echo tr('Generate a new API key'); ?> - <span id="apikey_type"></span></h3>
-    </div>
-    <div class="modal-body">
-        <p><?php echo tr('Are you sure you want to generate a new apikey?'); ?></p>
-        <p><?php echo tr("All devices using the current key will need to be updated with the new key."); ?></p>
-    </div>
-    <div class="modal-footer">
-        <button id="cancel_generate_apikey" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
-        <button id="confirm_generate_apikey" class="btn btn-primary"><?php echo tr('Generate'); ?></button>
+<div id="modalNewApikey" class="modal" tabindex="-1" aria-labelledby="modalNewApikeyLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalNewApikeyLabel" class="modal-title"><?php echo tr('Generate a new API key'); ?> - <span id="apikey_type"></span></h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><?php echo tr('Are you sure you want to generate a new apikey?'); ?></p>
+                <p><?php echo tr("All devices using the current key will need to be updated with the new key."); ?></p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel_generate_apikey" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true"><?php echo tr('Cancel'); ?></button>
+                <button id="confirm_generate_apikey" class="btn btn-primary"><?php echo tr('Generate'); ?></button>
+            </div>
+        </div>
     </div>
 </div>
 

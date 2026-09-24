@@ -27,7 +27,7 @@
     display:block;
 }
 
-#app input, select, .input-append {
+#app input, select, .input-group {
     margin:0px;
 }
 
@@ -48,6 +48,7 @@ input[type='checkbox'] {
 
 .table td:nth-child(1) {
     width:200px;
+    box-sizing: content-box;
 }
 
 @media (max-width: 576px) {
@@ -60,4 +61,20 @@ input[type='checkbox'] {
     width:180px;
     overflow:hidden;
   }
+}
+
+/* Theme and sidebar colour swatches, formerly in bootstrap4-utils.css */
+.color-box {
+    margin-right: 2px;
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    border: 2px solid #ddd;
+    box-sizing: content-box;
+    cursor: pointer;
+}
+
+.color-box-active,
+.color-box:hover {
+    border: 2px solid #000;
 }
