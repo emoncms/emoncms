@@ -10,8 +10,8 @@ STATE=$(mktemp)
 for r in $REPOS; do
   cur=$(git -C $r rev-parse --abbrev-ref HEAD)
   def=master; git -C $r show-ref -q refs/heads/master || def=$(git -C $r symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null | sed 's#origin/##'); [ -z "$def" ] && def=$cur
-  # repos with no master branch stay where they are (postprocess tracks stable, account uses main)
-  git -C $r show-ref -q refs/heads/master || def=$cur
+  # repos with no master branch use main, or stay where they are (postprocess tracks stable)
+  git -C $r show-ref -q refs/heads/master || { git -C $r show-ref -q refs/heads/main && def=main || def=$cur; }
   case "$(basename $r)" in postprocess*) def=$cur ;; esac
   stashed=0
   if [ -n "$(git -C $r status --porcelain --untracked-files=no)" ]; then git -C $r stash push -q -m onmaster && stashed=1; fi

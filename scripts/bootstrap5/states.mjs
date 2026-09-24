@@ -61,6 +61,17 @@ const GROUPS = {
     { name: "user_delete", page: "user/view", steps: [{ click: "button:has-text('Delete account')" }] },
     { name: "user_apikey", page: "user/view", steps: [{ click: "tr:has-text('Read Only API Key') button:has-text('Generate New')" }] },
   ],
+  // admin login; never click view (switches session), the access cell or unlink
+  account: [
+    { name: "account_list", page: "account/list", steps: [{ wait: 1500 }] },
+    { name: "account_add", page: "account/list", steps: [{ wait: 1500 }, { click: "#open-add-user-modal" }] },
+    { name: "account_edit", page: "account/list", steps: [{ wait: 1500 }, { click: "td:has(.icon-pencil)" }] },
+    { name: "account_filter", page: "account/list", steps: [{ wait: 1500 }, { fill: "#app input[type=text]", value: "test" }] },
+  ],
+  // test login, no linked accounts
+  account_empty: [
+    { name: "account_empty", page: "account/list", steps: [{ wait: 1500 }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -106,6 +117,11 @@ for (const st of GROUPS[group]) {
       const loc = p.locator(s.click).first();
       if (await loc.count()) { await loc.click(); await p.waitForTimeout(900); }
       else missing.push(s.click);
+    }
+    if (s.fill) {
+      const loc = p.locator(s.fill).first();
+      if (await loc.count()) { await loc.fill(s.value); await p.waitForTimeout(900); }
+      else missing.push(s.fill);
     }
     if (s.select) {
       const loc = p.locator(s.select).first();

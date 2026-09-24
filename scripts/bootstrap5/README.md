@@ -15,7 +15,7 @@ Each prints its changes. Review the diff after running.
 
 ## Checks
 
-- `states.mjs <outdir> <group> [width]`: drive page states (modals, selections) and save a screenshot and a layout dump for each. Groups are defined at the top of the file. Steps are `click` (pointer click), `dispatch` (click event only, for buttons under an overlay), `select` (option by `index`) and `wait` (ms).
+- `states.mjs <outdir> <group> [width]`: drive page states (modals, selections) and save a screenshot and a layout dump for each. Groups are defined at the top of the file. Steps are `click` (pointer click), `dispatch` (click event only, for buttons under an overlay), `select` (option by `index`), `fill` (text `value`) and `wait` (ms).
 - `onmaster.sh <command...>`: run a command with core and every module repo on master, local changes stashed, then restore. Use it to capture the baseline.
 - `summ.sh <masterdir> <branchdir> <width> states...`: count elements that moved more than 1px.
 - `boxcmp.mjs a.json b.json [limit]`: group style differences by property change.
