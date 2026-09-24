@@ -206,7 +206,7 @@ html,body{
 }
 .no-gravatar a.grav-container:hover { background: var(--bg-menu-top-hover); }
 a.grav-container img.grav {
-    max-height: 1.2em; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
+    box-sizing: content-box; max-height: 1.2em; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%;
 }
 a.grav-container:hover img.grav { border-color: rgba(255,255,255,0.7); }
 
@@ -234,6 +234,7 @@ a.grav-container:hover img.grav { border-color: rgba(255,255,255,0.7); }
     
 
 #wrap main.content-container{
+  display: flow-root; /* contain child margins, as the Bootstrap 2 clearfix did */
   height: 100%;
   /*margin-top: 2.7rem;
   margin-left: 15rem;
@@ -272,6 +273,7 @@ svg.icon {
 }
 
 #push, #footer {
+    box-sizing: content-box;
     height: 30px;
 }
 
@@ -517,6 +519,7 @@ div#account {
 /* when log level is changed e.g INFO to DEBUG*/
 #snackbar {
     visibility: hidden;
+    box-sizing: content-box;
     min-width: 250px;
     margin-left: -125px;
     background-color: #333;

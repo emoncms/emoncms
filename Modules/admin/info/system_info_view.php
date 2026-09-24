@@ -86,23 +86,23 @@ $_js_translations = array(
 
 <div id="new-system-info" class="admin-container">
 	<?php if (PHP_VERSION_ID < 70300) { ?>
-	<div class="alert alert-error" style="text-align:left">
+	<div class="alert alert-danger" style="text-align:left">
 		<b>Important:</b> PHP version <?php echo PHP_VERSION; ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>
 		This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>
 		See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a>
 	</div>
 	<?php } ?>
 
-	<div class="d-md-flex justify-content-between align-items-center pb-md-2 pb-2 text-right px-1">
-		<div class="text-left">
+	<div class="d-md-flex justify-content-between align-items-center pb-md-2 pb-2 text-end px-1">
+		<div class="text-start">
 			<h3 class="mt-1 mb-0">{{ tr('System Information') }}</h3>
 		</div>
 		<div>
-			<button type="button" class="btn btn-default mr-1" @click="refresh" :disabled="loading" :title="tr('Refresh')">
+			<button type="button" class="btn btn-default me-1" @click="refresh" :disabled="loading" :title="tr('Refresh')">
 				<span v-if="loading">{{ tr('Loading...') }}</span>
 				<span v-else>&#8635; {{ tr('Refresh') }}</span>
 			</button>
-			<button type="button" class="btn btn-info mr-1" @click="copyAsMarkdown" :title="tr('**Recommended** when pasting into forum')">{{ tr('Copy as Markdown') }}</button>
+			<button type="button" class="btn btn-info me-1" @click="copyAsMarkdown" :title="tr('**Recommended** when pasting into forum')">{{ tr('Copy as Markdown') }}</button>
 			<button type="button" class="btn btn-info" @click="copyAsText" :title="tr('Formatted as plain text')">{{ tr('Copy as Text') }}</button>
 		</div>
 	</div>
@@ -114,19 +114,19 @@ $_js_translations = array(
 
 	<template v-if="hasLoaded">
 	<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr('Services') }}</h4>
-	<dl class="row">
+	<dl class="row g-0">
 		<template v-for="(svc, key) in info.Services" :key="key">
-			<dt class="col-sm-2 col-4 text-truncate" @click="copyServiceRow(key, svc, $event)"><span :class="'badge badge-' + serviceCssClass(svc)"></span> {{ key }}</dt>
+			<dt class="col-sm-2 col-4 text-truncate ps-1" @click="copyServiceRow(key, svc, $event)"><span :class="'badge rounded-pill bg-' + serviceCssClass(svc)"></span> {{ key }}</dt>
 			<dd class="col-sm-10 col-8 border-box px-1" @click="copyServiceRow(key, svc, $event)">
 				<template v-if="isServiceLoaded(svc)">
 					<strong>{{ svc.state }}</strong> {{ serviceText(svc) }}
 					<div class="btn-group" role="group" style="float:right">
 						<template v-if="svc.unitfilestate !== 'container'">
-							<button v-if="svc.unitfilestate !== 'disabled' && !isServiceActive(svc)" class="btn btn-small btn-success" @click="serviceAction(key, 'start')">Start</button>
-							<button v-if="isServiceActive(svc)" class="btn btn-small btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
-							<button v-if="isServiceActive(svc)" class="btn btn-small btn-warning" @click="serviceAction(key, 'restart')">Restart</button>
-							<button v-if="svc.unitfilestate === 'disabled'" class="btn btn-small btn-primary" @click="serviceAction(key, 'enable')">Enable</button>
-							<button v-else-if="!isServiceActive(svc)" class="btn btn-small btn-inverse" @click="serviceAction(key, 'disable')">Disable</button>
+							<button v-if="svc.unitfilestate !== 'disabled' && !isServiceActive(svc)" class="btn btn-sm btn-success" @click="serviceAction(key, 'start')">Start</button>
+							<button v-if="isServiceActive(svc)" class="btn btn-sm btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
+							<button v-if="isServiceActive(svc)" class="btn btn-sm btn-warning" @click="serviceAction(key, 'restart')">Restart</button>
+							<button v-if="svc.unitfilestate === 'disabled'" class="btn btn-sm btn-primary" @click="serviceAction(key, 'enable')">Enable</button>
+							<button v-else-if="!isServiceActive(svc)" class="btn btn-sm btn-dark" @click="serviceAction(key, 'disable')">Disable</button>
 						</template>
 					</div>
 				</template>
@@ -138,19 +138,19 @@ $_js_translations = array(
 	<template v-for="section in serverSections" :key="section.title">
 		<h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1 d-flex justify-content-between align-items-center">
 			<span>{{ tr(section.title) }}</span>
-			<button v-if="section.title === 'Disk'" class="btn btn-info btn-small" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
+			<button v-if="section.title === 'Disk'" class="btn btn-info btn-sm" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
 		</h4>
-		<dl class="row">
+		<dl class="row g-0">
 			<template v-for="row in section.rows" :key="row.title">
-				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate'" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
+				<dt :class="row.titleClass || 'col-sm-2 col-4 text-truncate ps-1'" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd :class="row.valueClass || 'col-sm-10 col-8 border-box px-1'" @click="copyRow(row, $event)">
 					<template v-if="row.type === 'text'">{{ row.value }}</template>
 					<template v-if="row.type === 'progress'">
 						<h5 class="m-0">{{ tr(row.label) }}</h5>
-						<div class="progress progress-info mb-0"><div class="bar" :style="{ width: row.width + '%' }"></div></div>
+						<div class="progress mb-0"><div class="progress-bar" :style="{ width: row.width + '%' }"></div></div>
 						<dl class="inline">
 							<template v-for="item in row.summary" :key="item.k">
-								<dt class="pl-0">{{ item.k }}</dt>
+								<dt class="ps-0">{{ item.k }}</dt>
 								<dd>{{ item.v }}</dd>
 							</template>
 						</dl>
@@ -160,7 +160,7 @@ $_js_translations = array(
 					</template>
 					<template v-if="row.type === 'redis-size'">
 						<span id="redisused">{{ row.value }}</span>
-						<button id="redisflush" class="btn btn-info btn-small pull-right" @click="redisFlush">{{ tr('Flush') }}</button>
+						<button id="redisflush" class="btn btn-info btn-sm float-end" @click="redisFlush">{{ tr('Flush') }}</button>
 					</template>
 				</dd>
 			</template>
@@ -170,18 +170,18 @@ $_js_translations = array(
 	<h3 class="mt-1 mb-0">{{ tr('Client Information') }}</h3>
 	<template v-for="section in clientSections" :key="section.title || 'client'">
 		<h4 v-if="section.title" class="text-info text-uppercase border-top pt-2 mt-0 px-1">{{ tr(section.title) }}</h4>
-		<dl class="row">
+		<dl class="row g-0">
 			<template v-for="row in section.rows" :key="row.title">
-				<dt class="col-sm-2 col-4 text-truncate" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
+				<dt class="col-sm-2 col-4 text-truncate ps-1" @click="copyRow(row, $event)">{{ tr(row.title) }}</dt>
 				<dd class="col-sm-10 col-8 border-box px-1" @click="copyRow(row, $event)">{{ row.value }}</dd>
 			</template>
 		</dl>
 	</template>
 	</template>
 
-	<div class="well mt-4">
+	<div class="bg-body-tertiary border rounded p-3 mt-4 mb-3">
 		<h4 class="text-info text-uppercase">{{ tr('Pi Control') }}</h4>
-		<button type="button" class="btn btn-warning mr-2" @click="rebootPi" :disabled="loading">{{ tr('Reboot') }}</button>
+		<button type="button" class="btn btn-warning me-2" @click="rebootPi" :disabled="loading">{{ tr('Reboot') }}</button>
 		<button type="button" class="btn btn-danger" @click="haltPi" :disabled="loading">{{ tr('Shutdown') }}</button>
 	</div>
 </div>
@@ -302,8 +302,8 @@ Vue.createApp({
 			return this.isServiceLoaded(svc) && this.isServiceActive(svc) && (svc.substate === 'Running');
 		},
 		serviceCssClass: function(svc) {
-			if (!svc) return 'masked';
-			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') return 'masked';
+			if (!svc) return 'secondary';
+			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') return 'secondary';
 			return this.isServiceRunning(svc) ? 'success' : 'danger';
 		},
 		serviceText: function(svc) {

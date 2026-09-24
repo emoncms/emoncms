@@ -17,6 +17,9 @@ $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
 $v = 55;
 
+// Bootstrap 5 spike: pages listed here load Bootstrap 5 in place of Bootstrap 2
+$bootstrap5 = in_array($route->controller . '/' . $route->action, ['admin/info']);
+
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
 }
@@ -57,15 +60,20 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     // Consider replacing this with esbuild bundler (merge + minify) in the future
 
     // Main theme CSS
-    load_css("Lib/bootstrap/css/bootstrap.min.css");
-    load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
+    if ($bootstrap5) {
+        load_css("Lib/bootstrap5/css/bootstrap.min.css");
+        load_css("Theme/css/bootstrap5-theme.css");
+    } else {
+        load_css("Lib/bootstrap/css/bootstrap.min.css");
+        load_css("Lib/bootstrap/css/bootstrap-responsive.min.css");
+    }
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/menu.css");
     load_css("Theme/css/card.css");
     load_css("Theme/css/group-list.css");
     load_css("Theme/css/autocomplete.css");
-    // Utility classes
-    load_css("Theme/css/bootstrap4-utils.css");
+    // Utility classes, included in Bootstrap 5
+    if (!$bootstrap5) load_css("Theme/css/bootstrap4-utils.css");
     // Specific used icons
     load_css("Theme/css/svg-icons.css");
 
@@ -93,7 +101,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
 
             <?php $show_gravatar = $session["gravatar"] && gravatar_enabled(); ?>
             <li class="<?php echo $show_gravatar ? '' : 'no-'; ?>gravatar dropdown">
-                <a id="user-dropdown" href="#" title="<?php echo $session["username"] . " " . ($session['admin'] ? '(Admin)' : ''); ?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown">
+                <a id="user-dropdown" href="#" title="<?php echo $session["username"] . " " . ($session['admin'] ? '(Admin)' : ''); ?>" class="grav-container img-circle d-flex dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown">
                     <?php if (!$show_gravatar) { ?>
                         <span class="svg-icon-user" style="color:#fff"></span>
                     <?php } else { ?>
@@ -101,16 +109,16 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
                     <?php } ?>
                 </a>
 
-                <ul class="dropdown-menu pull-right" style="font-size:1rem">
+                <ul class="dropdown-menu pull-right dropdown-menu-end" style="font-size:1rem">
                     <?php if ($session["write"]) { ?>
-                    <li><a href="<?php echo $path; ?>user/view" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="svg-icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
-                    <li class="divider"><a href="#"></a></li>  
+                    <li><a href="<?php echo $path; ?>user/view" class="dropdown-item" title="<?php echo ctx_tr("theme_messages","My Account"); ?>" style="line-height:30px"><span class="svg-icon-user"></span> <?php echo ctx_tr("theme_messages","My Account"); ?></a></li>
+                    <li class="divider"><hr class="dropdown-divider"></li>  
                     <?php if (isset($_SESSION['adminuser'])) { ?>
-                    <li><a href="<?php echo $path; ?>account/switch" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
-                    <li class="divider"><a href="#"></a></li>
+                    <li><a href="<?php echo $path; ?>account/switch" class="dropdown-item" title="<?php echo ctx_tr("theme_messages","Admin"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Admin"); ?></a></li>
+                    <li class="divider"><hr class="dropdown-divider"></li>
                     <?php } ?>
                     <?php } ?>
-                    <li><a href="<?php echo $path; ?>user/logout" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
+                    <li><a href="<?php echo $path; ?>user/logout" class="dropdown-item" title="<?php echo ctx_tr("theme_messages","Logout"); ?>" style="line-height:30px"><span class="svg-icon-logout"></span> <?php echo ctx_tr("theme_messages","Logout"); ?></a></li>
                 </ul>
             </li>
             <?php } else { ?>
@@ -157,7 +165,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
-    <?php load_js("Lib/bootstrap/js/bootstrap.js"); ?>
+    <?php load_js($bootstrap5 ? "Lib/bootstrap5/js/bootstrap.bundle.min.js" : "Lib/bootstrap/js/bootstrap.js"); ?>
 </body>
 </html>
 
