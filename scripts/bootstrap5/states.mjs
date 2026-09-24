@@ -92,6 +92,17 @@ const GROUPS = {
     { name: "dash_edit_config", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { click: "#dashboard-config-button" }] },
     { name: "dash_edit_menu", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { click: "#widget-buttons .dropdown-toggle" }] },
   ],
+  // never click the try buttons
+  api: [
+    { name: "api_main", page: "api", steps: [] },
+    { name: "api_open", page: "api", steps: [{ click: ".endpoint-row" }] },
+    { name: "api_filter", page: "api", steps: [{ fill: ".ref-filter input", value: "feed" }] },
+    { name: "api_input", page: "input/api", steps: [] },
+    { name: "api_feed", page: "feed/api", steps: [] },
+    { name: "api_device", page: "device/api", steps: [] },
+    { name: "api_process", page: "process/api", steps: [] },
+    { name: "api_schedule", page: "schedule/api", steps: [] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],

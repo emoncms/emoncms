@@ -33,6 +33,11 @@ def scan(src):
 
 if __name__ == "__main__":
     fix = "--fix" in sys.argv
+    def declaration(body):
+        """box-sizing declaration on its own line, indented as the rule body."""
+        ind = re.search(r"\n([ \t]+)\S", body)
+        if "\n" not in body: return " box-sizing: content-box;"
+        return "\n" + (ind.group(1) if ind else "    ") + "box-sizing: content-box;"
     files = [a for a in sys.argv[1:] if a != "--fix"]
     total = 0
     for f in files:
@@ -45,7 +50,7 @@ if __name__ == "__main__":
                 if fix:
                     o, q = [], 0
                     for a_, b_, sel, body in hits:
-                        o.append(inner[q:a_] + " box-sizing: content-box;" + body); q = b_
+                        o.append(inner[q:a_] + declaration(body) + body); q = b_
                     o.append(inner[q:]); inner = "".join(o)
                 return m.group(1) + inner + m.group(3)
             new = re.sub(r"(<style[^>]*>)(.*?)(</style>)", blk, full, flags=re.S)
@@ -62,10 +67,7 @@ if __name__ == "__main__":
         if fix:
             out, pos = [], 0
             for a, b, sel, body in hits:
-                ind = re.search(r"\n([ \t]+)\S", body)
-                ind = ind.group(1) if ind else " "
-                nl = "\n" if "\n" in body else ""
-                out.append(src[pos:a] + (nl + ind if nl else " ") + "box-sizing: content-box;" + ("" if nl else "") + body)
+                out.append(src[pos:a] + declaration(body) + body)
                 pos = b
             out.append(src[pos:])
             open(f, "w").write("".join(out))
