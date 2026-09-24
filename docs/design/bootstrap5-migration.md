@@ -14,7 +14,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. `color-box` moved to `Modules/user/profile/profile.css`. Other custom classes in it (`text-tertiary`, `text-quaternary`, `text-exporting`, `m-6`, `p-6`) are not used in core.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -45,6 +45,7 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `input-prepend`, `input-append` | `input-group` |
 | `add-on` | `input-group-text` |
 | `table-condensed` | `table-sm` |
+| `tr.success`, `error`, `warning`, `info` | `table-success`, `table-danger`, `table-warning`, `table-info` |
 | `data-toggle`, `data-dismiss`, `data-target`, `data-parent` | `data-bs-*` |
 | `dropdown-menu pull-right` | `dropdown-menu dropdown-menu-end` |
 | links in a dropdown | add `dropdown-item` |
@@ -117,13 +118,13 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Status and next steps
 
-Branch `bootstrap5` in core, device, graph and backup. Nothing pushed.
+Branch `bootstrap5` in core, device, graph, backup and account. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: account module pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+Remaining, core: schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 

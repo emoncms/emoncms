@@ -264,6 +264,17 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
 }
 .table-sm > :not(caption) > * > * { padding: 4px 5px; }
 
+/* Row colours: Bootstrap 2 tints, not striped */
+.table-success, .table-danger, .table-warning, .table-info {
+    --bs-table-color: currentColor;
+    --bs-table-striped-color: currentColor;
+    --bs-table-border-color: #ddd;
+}
+.table-success { --bs-table-bg: #dff0d8; --bs-table-striped-bg: #dff0d8; }
+.table-danger { --bs-table-bg: #f2dede; --bs-table-striped-bg: #f2dede; }
+.table-warning { --bs-table-bg: #fcf8e3; --bs-table-striped-bg: #fcf8e3; }
+.table-info { --bs-table-bg: #d9edf7; --bs-table-striped-bg: #d9edf7; }
+
 .progress {
     --bs-progress-height: 20px;
     --bs-progress-bg: #f5f5f5;
