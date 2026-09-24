@@ -36,6 +36,20 @@ const GROUPS = {
     { name: "device_delete", page: "device/view", steps: [{ click: ".group-list-row input[type=checkbox]" }, { click: "button[title='Delete']" }] },
     { name: "device_new", page: "device/view", steps: [{ click: "button[title='New device']" }] },
   ],
+  // read-only: never click update, apply, start, stop or the user View (switches session)
+  admin: [
+    { name: "admin_log", page: "admin/log", steps: [] },
+    { name: "admin_log_refresh", page: "admin/log", steps: [{ click: "#getlog" }] },
+    { name: "admin_components", page: "admin/component", steps: [] },
+    { name: "admin_components_custom", page: "admin/component", steps: [{ click: "button:has-text('Custom')" }] },
+    { name: "admin_db", page: "admin/db", steps: [] },
+    { name: "admin_serial", page: "admin/serial", steps: [{ wait: 2500 }] },
+    { name: "admin_users", page: "admin/users", steps: [] },
+    { name: "admin_users_add", page: "admin/users", steps: [{ click: "button:has-text('Add new user')" }] },
+    { name: "admin_update", page: "admin/update", steps: [] },
+    { name: "admin_update_hw", page: "admin/update", steps: [{ select: "#selected_hardware", index: 1 }] },
+    { name: "admin_update_custom", page: "admin/update", steps: [{ select: "#selected_hardware", index: 1 }, { click: "#firmware_source_custom" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -81,6 +95,11 @@ for (const st of GROUPS[group]) {
       const loc = p.locator(s.click).first();
       if (await loc.count()) { await loc.click(); await p.waitForTimeout(900); }
       else missing.push(s.click);
+    }
+    if (s.select) {
+      const loc = p.locator(s.select).first();
+      if (await loc.count()) { await loc.selectOption({ index: s.index }); await p.waitForTimeout(900); }
+      else missing.push(s.select);
     }
     // click event without pointer hit test, for buttons under an overlay
     if (s.dispatch) {
