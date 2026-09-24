@@ -111,6 +111,22 @@ const GROUPS = {
     { name: "login_reset_back", page: "user/login", steps: [{ dispatch: "#passwordreset-link" }, { dispatch: "#passwordreset-link-cancel" }] },
     { name: "login_reset_confirm", page: "user/passwordreset-confirm?token=invalid", steps: [] },
   ],
+  // admin login; read-only clicks only
+  modules_admin: [
+    { name: "mod_backup", page: "backup", steps: [{ wait: 1000 }] },
+    { name: "mod_network", page: "network", steps: [{ wait: 1500 }] },
+    { name: "mod_setup", page: "setup", steps: [{ wait: 1500 }] },
+    { name: "mod_config", page: "config", steps: [{ wait: 1500 }] },
+    { name: "mod_config_editor", page: "config", steps: [{ wait: 1500 }, { click: "#show-editor" }] },
+    { name: "mod_config_level", page: "config", steps: [{ wait: 1500 }, { click: "#log-level .dropdown-toggle" }] },
+  ],
+  // test login
+  modules_user: [
+    { name: "mod_sync", page: "sync", steps: [{ wait: 1500 }] },
+    { name: "mod_postprocess", page: "postprocess", steps: [{ wait: 1000 }] },
+    { name: "mod_postprocess_new", page: "postprocess", steps: [{ wait: 1000 }, { select: "#app select", index: 1 }] },
+    { name: "mod_emailreport", page: "emailreport", steps: [{ wait: 1000 }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
