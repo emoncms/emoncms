@@ -3,7 +3,7 @@
    ========================================================================== */
 
 /* Card: visual container */
-.card {
+.panel {
     /*border: 1px solid var(--border-card);*/
     border-radius: var(--radius-card);
     overflow: hidden;
@@ -13,12 +13,12 @@
     transition: box-shadow 0.15s ease;
 }
 
-.card:hover {
+.panel:hover {
     /*box-shadow: 0 4px 14px rgba(0,0,0,0.13);*/
 }
 
 /* Grid: pure layout primitive — no visual styling */
-.card-grid {
+.panel-grid {
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
@@ -30,7 +30,7 @@
    ========================================================================== */
 
 /* Main Interactive Header */
-.card-header {
+.panel-header {
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -42,12 +42,12 @@
     transition: background-color 0.15s ease-in-out;
 }
 
-.card-header:hover {
+.panel-header:hover {
     background-color: var(--bg-card-header-hover);
 }
 
 /* Header Elements */
-.card-header .card-accent {
+.panel-header .panel-accent {
     display: block;
     width: 3px;
     height: 1.1em;
@@ -56,7 +56,7 @@
     flex-shrink: 0;
 }
 
-.card-header .card-name {
+.panel-header .panel-name {
     font-weight: 600;
     font-size: var(--font-sm);
     color: var(--text-primary);
@@ -64,7 +64,7 @@
     letter-spacing: 0.02em;
 }
 
-.card-header .card-badge {
+.panel-header .panel-badge {
     font-size: var(--font-2xs);
     color: var(--text-secondary);
     background-color: var(--bg-badge);
@@ -73,20 +73,20 @@
     padding: 1px 8px;
 }
 
-.card-header .card-updated {
+.panel-header .panel-updated {
     font-size: var(--font-2xs);
     color: var(--text-secondary);
     white-space: nowrap;
 }
 
-.card-header .collapse-icon {
+.panel-header .collapse-icon {
     font-size: var(--font-2xs);
     color: var(--text-secondary);
     transition: color 0.2s;
     flex-shrink: 0;
 }
 
-.card-header:hover .collapse-icon { 
+.panel-header:hover .collapse-icon { 
     color: var(--accent); 
 }
 
@@ -94,20 +94,20 @@
    3. BODY & LAYOUT SECTIONS
    ========================================================================== */
 
-.card-body {
+.panel-body {
     padding: 8px;
 }
 
-.card-controls {
+.panel-controls {
     padding: 0.75rem;
 }
 
 /* Nested Feed Options Section */
-.card .feed-options {
+.panel .feed-options {
     border-top: 1px solid var(--border);
 }
 
-.card .feed-options .card {
+.panel .feed-options .panel {
     border-left: none;
     border-right: none;
     border-bottom: none;
@@ -116,7 +116,7 @@
     box-shadow: none;
 }
 
-.card .feed-options .card-header {
+.panel .feed-options .panel-header {
     border-radius: 0;
 }
 
@@ -124,13 +124,13 @@
    4. INNER TABLES
    ========================================================================== */
 
-.card table {
+.panel table {
     width: 100%;
     border-collapse: collapse;
     table-layout: fixed;
 }
 
-.card table th {
+.panel table th {
     padding: 5px 12px;
     font-size: var(--font-2xs);
     font-weight: normal;
@@ -145,26 +145,26 @@
     text-overflow: ellipsis;
 }
 
-.card table td {
+.panel table td {
     padding: 9px 12px;
     color: var(--text-body);
     border-bottom: 1px solid rgba(255,255,255,0.06);
     vertical-align: middle;
 }
 
-.card table tr:last-child td { 
+.panel table tr:last-child td { 
     border-bottom: none; 
 }
 
-.card table tbody tr:hover td { 
+.panel table tbody tr:hover td { 
     background-color: var(--accent-row-hover); 
 }
 
 /* Column Variants & Alignment */
-.card table td.col-secondary { color: var(--text-secondary); }
-.card table td.col-primary   { color: var(--text-primary); font-weight: 500; }
+.panel table td.col-secondary { color: var(--text-secondary); }
+.panel table td.col-primary   { color: var(--text-primary); font-weight: 500; }
 
-.card table td.col-chip span {
+.panel table td.col-chip span {
     display: inline-block;
     font-size: var(--font-2xs);
     color: var(--text-secondary);
@@ -174,14 +174,14 @@
     padding: 1px 8px;
 }
 
-.card table td.col-mono,
-.card table td.col-mono-truncate {
+.panel table td.col-mono,
+.panel table td.col-mono-truncate {
     font-family: monospace;
     color: var(--text-secondary);
 }
 
-.card table td.col-mono { font-size: var(--font-xs); }
-.card table td.col-mono-truncate {
+.panel table td.col-mono { font-size: var(--font-xs); }
+.panel table td.col-mono-truncate {
     font-size: var(--font-2xs);
     max-width: 160px;
     overflow: hidden;
@@ -189,22 +189,22 @@
     white-space: nowrap;
 }
 
-.card table th.col-updated,
-.card table td.col-updated { text-align: right; white-space: nowrap; }
+.panel table th.col-updated,
+.panel table td.col-updated { text-align: right; white-space: nowrap; }
 
-.card table th.col-action,
-.card table td.col-action  { box-sizing: content-box; width: 24px; text-align: center; padding: 9px 6px; }
+.panel table th.col-action,
+.panel table td.col-action  { box-sizing: content-box; width: 24px; text-align: center; padding: 9px 6px; }
 
 /* Table Column Sizing */
-.card table col.col-w-label  { width: 200px; }
-.card table col.col-w-action { width: 32px; }
-.card table col.col-w-btn    { width: 130px; }
+.panel table col.col-w-label  { width: 200px; }
+.panel table col.col-w-action { width: 32px; }
+.panel table col.col-w-btn    { width: 130px; }
 
 /* ==========================================================================
    5. GRID & FEED LISTS (NODE SYSTEM)
    ========================================================================== */
 
-.card-list-grid {
+.panel-list-grid {
     display: grid;
     width: 100%;
     box-sizing: border-box;
@@ -223,16 +223,16 @@
 }
 
 /* Adjustments for headers inside grids */
-.grid-row.card-header {
+.grid-row.panel-header {
     padding: 0;
     gap: 0;
 }
-.grid-row.card-header > .grid-cell {
+.grid-row.panel-header > .grid-cell {
     padding-top: 0.6rem;
     padding-bottom: 0.6rem;
 }
-.grid-row.card-header > .grid-cell:first-child { padding-left: 1rem; }
-.grid-row.card-header > .grid-cell:last-child  { padding-right: 1rem; }
+.grid-row.panel-header > .grid-cell:first-child { padding-left: 1rem; }
+.grid-row.panel-header > .grid-cell:last-child  { padding-right: 1rem; }
 
 /* Feed Rows — use as .grid-row.grid-row-item; extends .grid-row with interactive states */
 .grid-row-item {
@@ -265,7 +265,7 @@
 .grid-row-item.selected:hover   { background-color: var(--accent-bg-hover); }
 
 
-.card-indicator {
+.panel-indicator {
     display: inline-block;
     width: 4px;
     height: 1.8em;
@@ -292,7 +292,7 @@
     transition: color 0.15s;
 }
 .grid-row-item:hover .row-action,
-.card table tbody tr:hover .row-action { color: var(--text-secondary); }
+.panel table tbody tr:hover .row-action { color: var(--text-secondary); }
 .row-action:hover { color: var(--accent) !important; }
 
 /* Collapse Indicators */
@@ -317,7 +317,7 @@
    ========================================================================== */
 
 @media (max-width: 576px) {
-    .card table col.col-w-label { 
+    .panel table col.col-w-label { 
         width: 90px; 
     }
 }

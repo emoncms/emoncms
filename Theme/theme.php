@@ -17,8 +17,9 @@ $q = ""; if (isset($_GET['q'])) $q = $_GET['q'];
 
 $v = 55;
 
-// Bootstrap 5 spike: pages listed here load Bootstrap 5 in place of Bootstrap 2
-$bootstrap5 = in_array($route->controller . '/' . $route->action, ['admin/info', 'input/view', 'feed/view']);
+// Pages listed here load Bootstrap 5 in place of Bootstrap 2, by controller/action or controller
+$bootstrap5_pages = ['admin/info', 'input/view', 'feed/view', 'graph'];
+$bootstrap5 = in_array($route->controller . '/' . $route->action, $bootstrap5_pages) || in_array($route->controller, $bootstrap5_pages);
 
 if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","standard","copper","black","green"])) {
     $settings["interface"]["themecolor"] = "standard";
@@ -70,7 +71,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     }
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/menu.css");
-    load_css("Theme/css/card.css");
+    load_css("Theme/css/panel.css");
     load_css("Theme/css/group-list.css");
     load_css("Theme/css/autocomplete.css");
     // Utility classes, included in Bootstrap 5

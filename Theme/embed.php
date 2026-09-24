@@ -40,7 +40,13 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","standard","co
         <meta name="twitter:image" content="<?php echo $path; ?>emoncms_graphic.png">
 
         <?php
-        load_css("Lib/bootstrap/css/bootstrap.min.css");
+        if ($route->controller == "graph") {
+            load_css("Lib/bootstrap5/css/bootstrap.min.css");
+            load_css("Theme/css/bootstrap5-theme.css");
+            load_css("Theme/css/bootstrap2-legacy.css");
+        } else {
+            load_css("Lib/bootstrap/css/bootstrap.min.css");
+        }
         load_css("Theme/css/emoncms-base.css?v=".$v);
         load_js("Lib/js/jquery-4.0.0.min.js");
         load_js("Lib/js/gettext.js?v=".$v);

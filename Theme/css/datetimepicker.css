@@ -68,8 +68,8 @@
 }
 
 /* Bootstrap uses .input-prepend .add-on; keep dtp add-on locked to input height */
-.input-prepend .dtp-add-on,
-.input-append .dtp-add-on {
+.input-group .dtp-add-on,
+.input-group .dtp-add-on {
     height: 30px;
     padding: 0 6px;
     line-height: 20px;
@@ -79,30 +79,30 @@
 }
 
 /* Connect flush with Bootstrap .input-prepend .add-on */
-.input-prepend .dtp-input {
+.input-group .dtp-input {
     margin-bottom: 0;
     vertical-align: top;
     border-left: none;
     border-radius: 0;
 }
 
-.input-prepend .dtp-wrap,
-.input-prepend .dtp-input-wrap {
+.input-group .dtp-wrap,
+.input-group .dtp-input-wrap {
     font-size: 14px;
     vertical-align: top;
 }
 
 /* Keep DateTimePicker host aligned with Bootstrap input groups in any context */
-.input-prepend > date-time-picker,
-.input-prepend > .dtp-wrap,
-.input-append > date-time-picker,
-.input-append > .dtp-wrap {
+.input-group > date-time-picker,
+.input-group > .dtp-wrap,
+.input-group > date-time-picker,
+.input-group > .dtp-wrap {
     display: inline-block;
     vertical-align: top;
 }
 
-.input-prepend > .add-on,
-.input-append > .add-on {
+.input-group > .input-group-text,
+.input-group > .input-group-text {
     height: 30px;
     line-height: 20px;
     box-sizing: border-box;
@@ -110,8 +110,8 @@
     align-items: center;
 }
 
-.input-prepend .dtp-input,
-.input-append .dtp-input {
+.input-group .dtp-input,
+.input-group .dtp-input {
     height: 30px;
     line-height: 20px;
     box-sizing: border-box;

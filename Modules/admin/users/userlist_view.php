@@ -52,20 +52,20 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 <div id="userlist-app" v-cloak>
 
     <!-- Users card -->
-    <div class="card mt-3">
+    <div class="panel mt-3">
 
         <!-- Card header -->
-        <div class="card-header" style="cursor:default">
-            <span class="card-accent"></span>
-            <span class="card-name"><?php echo tr("Users"); ?></span>
-            <span class="card-badge">{{ numberOfUsers }}</span>
+        <div class="panel-header" style="cursor:default">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr("Users"); ?></span>
+            <span class="panel-badge">{{ numberOfUsers }}</span>
             <button class="btn btn-sm" style="margin-left:auto" @click="openAddUserModal">
                 <i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?>
             </button>
         </div>
 
         <!-- Controls -->
-        <div class="card-controls">
+        <div class="panel-controls">
             <div class="userlist-controls">
                 <div class="input-prepend">
                     <span class="add-on"><?php echo tr("Order by"); ?></span>
@@ -89,7 +89,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         </div>
 
         <!-- Pagination (top) -->
-        <div class="card-controls" v-if="numberOfPages > 1">
+        <div class="panel-controls" v-if="numberOfPages > 1">
             <div class="pagination-bar">
                 <a href="#" v-for="p in numberOfPages" :key="p" :class="{ active: p === currentPage }" @click.prevent="goToPage(p)">{{ p }}</a>
             </div>
@@ -128,13 +128,13 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         </table>
 
         <!-- Pagination (bottom) -->
-        <div class="card-controls" v-if="numberOfPages > 1">
+        <div class="panel-controls" v-if="numberOfPages > 1">
             <div class="pagination-bar">
                 <a href="#" v-for="p in numberOfPages" :key="p" :class="{ active: p === currentPage }" @click.prevent="goToPage(p)">{{ p }}</a>
             </div>
         </div>
 
-    </div><!-- end .card -->
+    </div><!-- end .panel -->
 
     <!-- Add new user modal -->
     <div id="addUserModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" style="width:380px;margin-left:-190px;">

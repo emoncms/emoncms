@@ -436,6 +436,37 @@ table th[class*="span"] {
   display: block;
 }
 
+/* Bootstrap 2 caret */
+.caret {
+  display: inline-block;
+  width: 0;
+  height: 0;
+  vertical-align: top;
+  border-top: 4px solid #000;
+  border-right: 4px solid transparent;
+  border-left: 4px solid transparent;
+  content: "";
+}
+.dropdown .caret {
+  margin-top: 8px;
+  margin-left: 2px;
+}
+.btn .caret {
+  margin-top: 8px;
+  margin-left: 0;
+}
+.btn-lg .caret {
+  margin-top: 6px;
+  border-top-width: 5px;
+  border-right-width: 5px;
+  border-left-width: 5px;
+}
+.btn-primary .caret, .btn-warning .caret, .btn-danger .caret,
+.btn-info .caret, .btn-success .caret, .btn-dark .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+}
+
 /* -- 2. Glyphicons -------------------------------------------------------- */
 
 
@@ -1681,7 +1712,7 @@ select {
   box-sizing: border-box;
 }
 
-/* Browsers size checkbox and radio from the border box */
-input:where([type="checkbox"], [type="radio"]) {
+/* Browsers size checkbox, radio and color from the border box */
+input:where([type="checkbox"], [type="radio"], [type="color"]) {
   box-sizing: border-box;
 }

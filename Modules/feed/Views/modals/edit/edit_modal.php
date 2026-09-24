@@ -3,7 +3,7 @@
 include_once('Lib/units.php');
 ?>
 <style>
-.card-badge {
+.panel-badge {
     font-size: 11px;
     color: #777;
     background-color: #f5f5f5;
@@ -24,7 +24,7 @@ include_once('Lib/units.php');
                 <div class="modal-header">
                     <h3 id="feedEditModalLabel" class="modal-title">                <span v-if="selectedFeedIds.length==1"><?php echo tr('Edit Feed'); ?></span>
                         <span v-else><?php echo tr('Edit Feeds'); ?></span>
-                        <span class="card-badge">{{ selectedFeedIds.length }} selected</span>
+                        <span class="panel-badge">{{ selectedFeedIds.length }} selected</span>
                     </h3>
                     <button @click="closeModal" type="button" class="btn-close" aria-label="Close"></button>
                 </div>
