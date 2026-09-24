@@ -22,7 +22,7 @@
 .sb-add-rule { margin-bottom:4px; font-size:12px; padding:3px 8px !important; }
 .sb-mode-toggle { margin-top:6px; }
 .sb-time-row { display:flex; align-items:center; gap:6px; margin-bottom:4px; }
-.sb-time-row input[type="time"] { width:115px; padding:3px 5px; font-size:13px; }
+.sb-time-row input[type="time"] { box-sizing: content-box; width:115px; padding:3px 5px; font-size:13px; }
 .sb-time-remove { padding:1px 5px !important; font-size:12px !important; line-height:1.4; }
 </style>
 
@@ -39,7 +39,7 @@
                 <th>ID</th>
                 <th><?php echo ctx_tr('schedule_messages','Name'); ?></th>
                 <th><?php echo ctx_tr('schedule_messages','Expression'); ?></th>
-                <th style="width:300px">Actions</th>
+                <th style="width:300px; box-sizing:content-box">Actions</th>
             </tr>
             <tr v-for="s in schedules" :key="s.id">
                 <td>{{ s.id }}</td>
@@ -64,15 +64,15 @@
     <div class="app-loader" v-show="loading"></div>
 
     <div class="app-toolbar">
-        <button class="btn" @click="addNew"><i class="icon icon-plus-sign"></i> <?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
+        <button class="btn btn-default" @click="addNew"><i class="icon icon-plus-sign"></i> <?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
     </div>
 
-    <div v-if="deleteTargetId !== null" class="modal show" tabindex="-1" role="dialog" style="display:block;" data-backdrop="static">
+    <div v-if="deleteTargetId !== null" class="modal show" tabindex="-1" role="dialog" style="display:block;" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" @click="cancelDelete" aria-hidden="true">×</button>
-                    <h3><?php echo ctx_tr('schedule_messages','Delete schedule'); ?></h3>
+                    <h3 class="modal-title"><?php echo ctx_tr('schedule_messages','Delete schedule'); ?></h3>
+                    <button type="button" class="btn-close" @click="cancelDelete" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p><?php echo ctx_tr('schedule_messages','Deleting a schedule is permanent.'); ?>
@@ -83,7 +83,7 @@
                     </p>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn" @click="cancelDelete"><?php echo ctx_tr('schedule_messages','Cancel'); ?></button>
+                    <button class="btn btn-default" @click="cancelDelete"><?php echo ctx_tr('schedule_messages','Cancel'); ?></button>
                     <button class="btn btn-primary" @click="confirmDelete"><?php echo ctx_tr('schedule_messages','Delete permanently'); ?></button>
                 </div>
             </div>
@@ -94,8 +94,8 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" @click="closeTest" aria-hidden="true">×</button>
-                    <h3>Test: {{ testResult.name }}</h3>
+                    <h3 class="modal-title">Test: {{ testResult.name }}</h3>
+                    <button type="button" class="btn-close" @click="closeTest" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div style="text-align:center;padding:12px 0 20px;">
@@ -338,14 +338,14 @@ var ScheduleExprBuilder = {
                         <div>
                             <button v-for="day in DAYS" :key="day"
                                     @click="toggleDay(rule, day)"
-                                    :class="['btn', 'sb-day-btn', rule.weekdays.includes(day) ? 'btn-primary' : '']">
+                                    :class="['btn', 'sb-day-btn', rule.weekdays.includes(day) ? 'btn-primary' : 'btn-default']">
                                 {{ day.slice(0,2) }}
                             </button>
                             <span class="sb-presets">
-                                <button @click="setDays(rule,'all')"      class="btn">All</button>
-                                <button @click="setDays(rule,'weekdays')" class="btn">M–F</button>
-                                <button @click="setDays(rule,'weekend')"  class="btn">S–S</button>
-                                <button @click="setDays(rule,'none')"     class="btn">Clear</button>
+                                <button @click="setDays(rule,'all')"      class="btn btn-default">All</button>
+                                <button @click="setDays(rule,'weekdays')" class="btn btn-default">M–F</button>
+                                <button @click="setDays(rule,'weekend')"  class="btn btn-default">S–S</button>
+                                <button @click="setDays(rule,'none')"     class="btn btn-default">Clear</button>
                             </span>
                             <span class="sb-hint" v-if="!rule.weekdays.length">none = any day</span>
                         </div>
@@ -361,7 +361,7 @@ var ScheduleExprBuilder = {
                                 <button v-if="rule.times.length > 1" @click="removeTime(rule, ti)"
                                         class="btn btn-danger sb-time-remove">×</button>
                             </div>
-                            <button @click="addTime(rule)" class="btn" style="padding:2px 8px;font-size:12px;margin-top:2px;">
+                            <button @click="addTime(rule)" class="btn btn-default" style="padding:2px 8px;font-size:12px;margin-top:2px;">
                                 + Add time range
                             </button>
                         </div>
@@ -369,7 +369,7 @@ var ScheduleExprBuilder = {
                 </div>
 
                 <div style="margin-bottom:6px;">
-                    <button @click="addRule" class="btn sb-add-rule">+ Add rule</button>
+                    <button @click="addRule" class="btn btn-default sb-add-rule">+ Add rule</button>
                 </div>
 
                 <div class="sb-preview">{{ expression || '(set times above to build expression)' }}</div>
@@ -380,7 +380,7 @@ var ScheduleExprBuilder = {
                     <input type="text" v-model="customExpr"
                            style="flex:1;min-width:0;margin-bottom:0;border-radius:3px 0 0 3px;"
                            placeholder="e.g. Mon-Fri | 09:00-17:00">
-                    <button @click="showHelp=true" class="btn"
+                    <button @click="showHelp=true" class="btn btn-default"
                             style="border-left:0;border-radius:0 3px 3px 0;"
                             title="Expression reference"><i class="icon icon-info-sign"></i></button>
                 </div>
@@ -400,8 +400,8 @@ var ScheduleExprBuilder = {
                 <div class="modal-dialog modal-lg">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" @click="showHelp=false" aria-hidden="true">×</button>
-                            <h3>Expression reference</h3>
+                            <h3 class="modal-title">Expression reference</h3>
+                            <button type="button" class="btn-close" @click="showHelp=false" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <p>Granularity is day light saving time, month, day, week day, hour and minute.</p>

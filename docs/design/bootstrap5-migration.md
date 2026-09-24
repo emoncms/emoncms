@@ -14,7 +14,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. `color-box` moved to `Modules/user/profile/profile.css`. Other custom classes in it (`text-tertiary`, `text-quaternary`, `text-exporting`, `m-6`, `p-6`) are not used in core.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, `schedule/view`, with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -93,7 +93,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Behaviour changes
 
-- Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color and select stay border-box, as browsers size them.
+- Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. `boxsizing.py` cannot tell, so skip its fixes on button rules.
 - The reboot sets margins that Bootstrap 2 left to the browser. The theme restores `dl` top margin, `dd` bottom margin, `legend` float and `hr` opacity.
 - Bootstrap 2 `.container-fluid` and `.row` had a clearfix that stopped child margins collapsing. `main.content-container` has `display: flow-root` for the same effect.
 - Bootstrap 5 `.container-fluid` is `width: 100%`. The theme sets `width: auto` on `main`, which has a left margin for the sidebar.
@@ -120,11 +120,11 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 Branch `bootstrap5` in core, device, graph, backup and account. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, `schedule/view`, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+Remaining, core: dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 
