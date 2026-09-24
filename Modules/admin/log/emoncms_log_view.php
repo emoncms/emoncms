@@ -2,28 +2,28 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 
-<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=1">
+<?php load_css("Modules/admin/static/admin_styles.css"); ?>
 <div class="admin-container">
 
     <?php
     // LOG FILE VIEWER
     // -------------------
     if ($log_enabled) { ?>
-    <section class="d-md-flex justify-content-between align-items-center pb-md-2 text-right px-1">
-        <div class="text-left">
+    <section class="d-md-flex justify-content-between align-items-center text-end px-1">
+        <div class="text-start">
             <h3 class="mt-1 mb-0"><?php echo tr('Emoncms Log'); ?></h3>
             <p><?php
             if(is_writable($emoncms_logfile)) {
                 echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'),$emoncms_logfile);
             } else {
-                echo '<div class="alert alert-warn">';
+                echo '<div class="alert alert-warning">';
                 echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
                 echo '<small></div>';
             } ?></p>
         </div>
         <div>
             <?php if(is_writable($emoncms_logfile)) { ?>
-                <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
+                <button id="getlog" type="button" class="btn btn-info mb-1" aria-pressed="false" autocomplete="off">
                     <?php echo tr('Auto refresh'); ?>
                 </button>
                 <a href="<?php echo $path; ?>admin/log/download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
@@ -35,9 +35,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <!--
     <section>
         <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px);"><div id="logreply"></div></pre>
-        <div class="text-right"> 
+        <div class="text-end"> 
             <div class="btn-group">
-                <button class="btn btn-inverse mb-1">
+                <button class="btn btn-dark mb-1">
                     <?php echo sprintf('Log Level: %s', $log_level_label) ?>
                 </button>
             </div>
@@ -48,7 +48,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     
     <section>
         <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 220px); display:none;"><div id="logreply"></div></pre>
-        <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
+        <span id="log-level" class="btn btn-sm btn-dark text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
             <?php echo sprintf('Log Level: %s', $log_level_label) ?>
         </span>
     </section>
@@ -129,11 +129,12 @@ function getLog() {
 
 // auto refresh the updates logfile
 $("#getlog").click(function() {
-    $this = $(this)
-    if ($this.is('.active')) {
-        clearInterval(emoncms_log_interval);
+    var active = $(this).toggleClass('active').hasClass('active');
+    $(this).attr('aria-pressed', active);
+    if (active) {
+        emoncms_log_interval = refresherStart(getLog, 1000);
     } else {
-        emoncms_log_interval = refresherStart(getLog, 1000); 
+        clearInterval(emoncms_log_interval);
     }
 });
 function copyTextToClipboard(text, message) {

@@ -2,9 +2,9 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path; 
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+load_js("Modules/admin/serial/serial_config_lib/serial_config_core.js");
+load_css("Modules/admin/static/admin_styles.css");
 ?>
-<script src="<?php echo $path; ?>Modules/admin/serial/serial_config_lib/serial_config_core.js"></script>
-<link rel="stylesheet" href="<?php echo $path ?>Modules/admin/static/admin_styles.css?v=1">
 <style>
     #emonhub-running-notice,
     #emonhub-stopped-notice {
@@ -15,7 +15,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 <div id="app">
 
-    <div class="input-prepend input-append start-options" style="float:right; margin-top:4px" v-if="!connected">
+    <div class="input-group start-options" style="float:right; margin-top:4px" v-if="!connected">
         <button class="btn btn-success" @click="start"><?php echo tr('Start'); ?></button>
         <select v-model="serialport">
             <?php foreach ($serial_ports as $port) { ?>
@@ -33,21 +33,21 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
     <h3 style="color:#333">Serial Config Tool</h3>
 
-    <div id="emonhub-running-notice" class="alert hide">
+    <div id="emonhub-running-notice" class="alert alert-warning hide">
         <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently running and may conflict with serial monitor'); ?>
-        <button id="stopEmonHub" class="btn" style="float:right"><?php echo tr('Stop EmonHub'); ?></button>
+        <button id="stopEmonHub" class="btn btn-default" style="float:right"><?php echo tr('Stop EmonHub'); ?></button>
     </div>
 
     <div id="emonhub-stopped-notice" class="alert alert-success hide">
         <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
-        <button id="startEmonHub" class="btn" style="float:right"><?php echo tr('Start EmonHub'); ?></button>
+        <button id="startEmonHub" class="btn btn-default" style="float:right"><?php echo tr('Start EmonHub'); ?></button>
     </div>
 
     <?php include __DIR__ . '/serial_config_lib/serial_config_template.php'; ?>
 
 </div>
 
-<pre id="log" class="log" style="padding:10px; height: 500px"></pre>
+<pre id="log" class="log" style="box-sizing:content-box; padding:10px; height: 500px"></pre>
 
 <script>
     const log = document.getElementById("log");

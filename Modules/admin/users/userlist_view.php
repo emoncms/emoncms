@@ -24,6 +24,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         flex-wrap: wrap;
     }
     .pagination-bar a {
+        box-sizing: content-box;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -59,7 +60,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr("Users"); ?></span>
             <span class="panel-badge">{{ numberOfUsers }}</span>
-            <button class="btn btn-sm" style="margin-left:auto" @click="openAddUserModal">
+            <button class="btn btn-default" style="margin-left:auto" @click="openAddUserModal">
                 <i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?>
             </button>
         </div>
@@ -67,8 +68,8 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <!-- Controls -->
         <div class="panel-controls">
             <div class="userlist-controls">
-                <div class="input-prepend">
-                    <span class="add-on"><?php echo tr("Order by"); ?></span>
+                <div class="input-group">
+                    <span class="input-group-text"><?php echo tr("Order by"); ?></span>
                     <select v-model="orderby" @change="fetchUsers">
                         <option value="id"><?php echo tr("Id"); ?></option>
                         <option value="username"><?php echo tr("Username"); ?></option>
@@ -80,10 +81,10 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                         <option value="descending"><?php echo tr("Descending"); ?></option>
                     </select>
                 </div>
-                <div class="input-prepend input-append">
-                    <span class="add-on"><?php echo tr("Search"); ?></span>
+                <div class="input-group">
+                    <span class="input-group-text"><?php echo tr("Search"); ?></span>
                     <input v-model="searchKey" type="text" @keyup.enter="search" style="width:180px" />
-                    <button class="btn" @click="search"><?php echo tr("Search"); ?></button>
+                    <button class="btn btn-default" @click="search"><?php echo tr("Search"); ?></button>
                 </div>
             </div>
         </div>
@@ -122,7 +123,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                     <td class="col-secondary">{{ user.email }}</td>
                     <td class="col-secondary"><span v-if="user.email_verified" title="<?php echo tr('Email verified'); ?>" style="color:var(--success)"><i class="icon icon-check"></i></span><span v-else></span></td>
                     <td class="col-secondary">{{ user.feeds }}</td>
-                    <td><a class="btn" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
+                    <td><a class="btn btn-default" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
                 </tr>
             </tbody>
         </table>
@@ -137,29 +138,33 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
     </div><!-- end .panel -->
 
     <!-- Add new user modal -->
-    <div id="addUserModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true" style="width:380px;margin-left:-190px;">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h3 id="addUserModalLabel"><?php echo tr("Add new user"); ?></h3>
-        </div>
-        <div class="modal-body">
-            <p>
-                <label><?php echo tr("Username"); ?></label>
-                <input v-model="newUser.username" type="text" class="input-block-level" />
-            </p>
-            <p>
-                <label><?php echo tr("Password"); ?></label>
-                <input v-model="newUser.password" type="password" class="input-block-level" />
-            </p>
-            <p>
-                <label><?php echo tr("Email"); ?></label>
-                <input v-model="newUser.email" type="text" class="input-block-level" />
-            </p>
-            <div class="alert alert-danger" v-if="addUserError">{{ addUserError }}</div>
-        </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal"><?php echo tr('Close'); ?></button>
-            <button class="btn btn-primary" @click="addUser"><?php echo tr('Add user'); ?></button>
+    <div id="addUserModal" class="modal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true" style="--bs-modal-width:380px">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="addUserModalLabel" class="modal-title"><?php echo tr("Add new user"); ?></h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <label><?php echo tr("Username"); ?></label>
+                        <input v-model="newUser.username" type="text" class="input-block-level" />
+                    </p>
+                    <p>
+                        <label><?php echo tr("Password"); ?></label>
+                        <input v-model="newUser.password" type="password" class="input-block-level" />
+                    </p>
+                    <p>
+                        <label><?php echo tr("Email"); ?></label>
+                        <input v-model="newUser.email" type="text" class="input-block-level" />
+                    </p>
+                    <div class="alert alert-danger" v-if="addUserError">{{ addUserError }}</div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-bs-dismiss="modal"><?php echo tr('Close'); ?></button>
+                    <button class="btn btn-primary" @click="addUser"><?php echo tr('Add user'); ?></button>
+                </div>
+            </div>
         </div>
     </div>
 

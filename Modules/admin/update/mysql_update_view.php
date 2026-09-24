@@ -20,13 +20,13 @@
     }
 ?>
 
-<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css">
+<?php load_css("Modules/admin/static/admin_styles.css"); ?>
 <div class="admin-container">
 
 <h2><?php echo tr("Update database"); ?></h2>
 <?php
     if ($out && !$applychanges) {
-        echo '<div class="alert alert-block"><p><b>Todo:</b> These changes need to be applied</p><br>'.$out.'</div>';
+        echo '<div class="alert alert-warning"><p><b>Todo:</b> These changes need to be applied</p><br>'.$out.'</div>';
 ?>
 <a href="<?php echo $path; ?>admin/db?apply=true" class="btn btn-info"><?php echo tr('Apply changes'); ?></a>
 <?php } 

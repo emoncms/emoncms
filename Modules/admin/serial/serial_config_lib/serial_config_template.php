@@ -21,10 +21,10 @@
             </tbody>
         </table>
 
-        <div class="input-prepend input-append" v-if="device.hardware!='emonPi3'">
-            <span class="add-on"><?php echo _('Voltage calibration'); ?></span>
+        <div class="input-group" v-if="device.hardware!='emonPi3'">
+            <span class="input-group-text"><?php echo _('Voltage calibration'); ?></span>
             <input type="text" v-model="device.vcal" style="width:60px" @change="set_vcal" :disabled="!connected" />
-            <span class="add-on">%</span>
+            <span class="input-group-text">%</span>
         </div>
 
         <!-- Multi voltage calibration for emonPi3 -->
@@ -42,9 +42,9 @@
                 </td>
                 <td>V{{ index+1 }}</td>
                 <td>
-                    <div class="input-append">
+                    <div class="input-group">
                         <input type="text" v-model="vchannel.vcal" style="width:60px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
-                        <span class="add-on">%</span>
+                        <span class="input-group-text">%</span>
                     </div>  
                 </td>
                 <td>
@@ -92,9 +92,9 @@
             </tr>
         </table>
 
-        <div class="input-prepend input-append" v-if="device.hardware!='emonPi2'">
-            <span class="add-on"><?php echo _('Radio enabled'); ?></span>
-            <span class="add-on"><input type="checkbox" style="margin-top:2px" v-model="device.RF" @change="set_radio" :disabled="!connected"></span>
+        <div class="input-group" v-if="device.hardware!='emonPi2'">
+            <span class="input-group-text"><?php echo _('Radio enabled'); ?></span>
+            <span class="input-group-text"><input type="checkbox" style="margin-top:2px" v-model="device.RF" @change="set_radio" :disabled="!connected"></span>
         </div><br>
 
         <table class="table table-bordered">
@@ -146,8 +146,8 @@
 
     <div class="alert alert-danger" v-if="upgrade_required"><?php echo _('<b>Firmware update required:</b> Looks like you are running an older firmware version on this device, please upgrade the device firmware to use this tool.<br><br>Alternatively, enter commands manually to configure, send command ? to list configuration commands and options.'); ?></div>
 
-    <div class="input-prepend input-append">
-        <span class="add-on"><b><?php echo _('Console'); ?></b></span>
+    <div class="input-group">
+        <span class="input-group-text"><b><?php echo _('Console'); ?></b></span>
         <input v-model="input" type="text" :disabled="!connected" />
-        <button class="btn" @click="send_cmd" :disabled="!connected"><?php echo _('Send'); ?></button>
+        <button class="btn btn-default" @click="send_cmd" :disabled="!connected"><?php echo _('Send'); ?></button>
     </div>

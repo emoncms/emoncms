@@ -12,13 +12,13 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 <pre id="update-log-bound" class="log" style="display:none; margin-bottom:10px"><div id="update-log"></div></pre>
 
 <div id="app">
-    <div class="input-prepend input-append">
-        <span class="add-on"><?php echo tr('Update or switch all components to'); ?></span>
+    <div class="input-group">
+        <span class="input-group-text"><?php echo tr('Update or switch all components to'); ?></span>
         <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
         <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
         <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
         <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
-        <button v-if="all_custom" class="btn" @click="all('custom')">Switch</button>
+        <button v-if="all_custom" class="btn btn-default" @click="all('custom')">Switch</button>
     </div>
 
     <table class="table table-bordered">
@@ -38,8 +38,8 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>{{ item.version }}</td>
       <td>{{ item.describe }}</td>
       <td>
-        <span v-if="item.local_changes!=''" :title="item.local_changes" class="label label-important"><?php echo tr('Yes'); ?></span>
-        <span class="label label-success" v-else><?php echo tr('No'); ?></span>
+        <span v-if="item.local_changes!=''" :title="item.local_changes" class="badge bg-danger"><?php echo tr('Yes'); ?></span>
+        <span class="badge bg-success" v-else><?php echo tr('No'); ?></span>
       </td>
       <td v-if="item.local_changes==''">
         <select v-model="item.branch" @change="switch_branch(key)">
@@ -47,7 +47,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         </select>
       </td>
       <td v-else>{{ item.branch }}</td>
-      <td><button class="btn" v-if="item.local_changes==''" @click="update(key)"><?php echo tr('Update'); ?></button></td>
+      <td><button class="btn btn-default" v-if="item.local_changes==''" @click="update(key)"><?php echo tr('Update'); ?></button></td>
     </tr>
     </table>
 </div>

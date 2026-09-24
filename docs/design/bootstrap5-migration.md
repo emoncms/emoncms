@@ -14,7 +14,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. Custom classes in it (`text-tertiary`, `text-quaternary`, `color-box`, `text-exporting`, `m-6`, `p-6`) need a new home.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -85,6 +85,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 ## Other JS
 
 - Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle.
+- `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
 - `bootstrap-datetimepicker` 0.0.11 finds its trigger through `.add-on`. Keep `add-on` next to `input-group-text` on its triggers. The legacy file shows its `collapse in` panels.
 - `Lib/js/DateTimePicker.js` uses `input-group-text dtp-add-on`.
 - Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
@@ -98,7 +99,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `.row > *` gets gutter padding, which overrides page padding on columns. Use `g-0` and add padding with utilities.
 - `.input-group` is inline and sized to its content in the theme, as `input-prepend` was. New full width groups need `d-flex w-100`.
 - Utilities are `!important`. A page rule can no longer override them. jQuery `.show()` cannot undo `d-none`, which is why `hide` stays.
-- Classes that did nothing under Bootstrap 2, such as `text-muted` and some `mr-*`, now apply.
+- Classes that did nothing under Bootstrap 2, such as `text-muted`, some `mr-*` and `pb-md-2`, now apply. Remove them where the page relied on them doing nothing.
 - Table cells inherit their colour. Bootstrap 5 sets them black by default.
 - Links without `href` inherit their colour.
 - `.dropdown-toggle` gets a caret through `::after`. Hide it where the design has none.
@@ -118,11 +119,11 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 Branch `bootstrap5` in core, device, graph and backup. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: admin pages, user and account pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+Remaining, core: user and account pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 
