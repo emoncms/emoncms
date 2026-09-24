@@ -32,3 +32,5 @@ Modules/*/
 __pycache__/
 
 /audits/
+# Bootstrap 5 migration tools
+scripts/bootstrap5/node_modules/

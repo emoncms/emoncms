@@ -113,6 +113,20 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `btn-close` in place of the `×` character.
 - Colour inputs keep the Bootstrap 2 size, which squashes the swatch to a line. A later change can let them grow.
 
+## Status and next steps
+
+Branch `bootstrap5` in core, device, graph and backup. Nothing pushed.
+
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, process list modal, device dialog, card to panel rename.
+
+Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
+
+Remaining, core: `device/view` (broken until converted, it shares the converted device dialog), admin pages, user and account pages, schedule, dashboard list and editor, API help pages, login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Four dashboard CSS files have uncommitted `content-box` additions from the box-sizing scan.
+
+Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
+
+Tools are in `scripts/bootstrap5/`.
+
 ## Checking a converted page
 
 Compare each page against master with screenshots and a layout diff of every element's box and computed style. Capture every state: modals, selections, expanded sections. Switch core and every module repo to master for the baseline. Live data (feed values, graphs, logs) and CSS transitions change between runs, so compare two runs of the same branch to see the noise level. Wait for PHP opcache to serve changed files before capturing.
