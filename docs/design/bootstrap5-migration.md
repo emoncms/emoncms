@@ -14,7 +14,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/theme.php`: pages in `$bootstrap5_pages` (by `controller/action` or `controller`) load Bootstrap 5. `Theme/embed.php` does the same for the graph embed. Remove the list and Bootstrap 2 once every page is converted.
 - `Theme/css/bootstrap4-utils.css`: not loaded with Bootstrap 5, which has the same utilities. `color-box` moved to `Modules/user/profile/profile.css`. Other custom classes in it (`text-tertiary`, `text-quaternary`, `text-exporting`, `m-6`, `p-6`) are not used in core.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user/view`, `account` module, `schedule/view`, `dashboard` (list, editor, view), API help pages, with the process list modal and device dialog they use.
+Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard` (list, editor, view), API help pages, with the process list modal and device dialog they use.
 
 ## Class conversion
 
@@ -86,7 +86,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Other JS
 
-- Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle.
+- Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle. `.collapse('hide')` only hides an element that has `collapse show`; Bootstrap 2 hid any element.
 - `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
 - `bootstrap-datetimepicker` 0.0.11 finds its trigger through `.add-on`. Keep `add-on` next to `input-group-text` on its triggers. The legacy file shows its `collapse in` panels.
 - `Lib/js/DateTimePicker.js` uses `input-group-text dtp-add-on`.
@@ -122,11 +122,11 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 Branch `bootstrap5` in core, device, graph, backup and account. Nothing pushed.
 
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user/view`, `account` module, `schedule/view`, `dashboard`, API help pages, process list modal, device dialog, card to panel rename.
+Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard`, API help pages, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Remaining, core: login. Then module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
+Core pages are done. Remaining: module repos (backup, sync, network, postprocess, emailreport, setup, dashboard) and the apps in `Modules/app`. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
 Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css` and finally Bootstrap 2 itself.
 

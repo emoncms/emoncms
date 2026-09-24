@@ -17,6 +17,7 @@ global $path, $settings;
 ?>
 <style>
   .main {
+    box-sizing: content-box;
     max-width: 320px;
     padding: 10px;
   }
@@ -40,12 +41,12 @@ load_js("Modules/user/user.js");
 
 
 <div class="main">
-  <div class="well">
+  <div class="bg-body-tertiary border rounded p-3 mb-3">
     <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
         <form id="login-form" autocomplete="on" onsubmit="return false;">
-            <div id="loginblock">
+            <div id="loginblock" class="collapse show">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo tr('Email'); ?>
                         <input type="text" name="email" tabindex="1" autocomplete="email"/>
@@ -59,7 +60,7 @@ load_js("Modules/user/user.js");
                 </div>
 
                 <div class="form-group">
-                    <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
+                    <a id="passwordreset-link" class="float-end" href="#">Forgot password?</a>
                     <label><?php echo tr('Password'); ?>
                         <input type="password" tabindex="3" autocomplete="current-password" name="password" />
                     </label>
@@ -111,7 +112,7 @@ load_js("Modules/user/user.js");
                 <a id="passwordreset-link-cancel" href="#"><?php echo tr('login'); ?></a>
             </div>
             <div id="passwordresetmessage"></div>
-            <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
+            <p class="pt-1 mb-0"><small id="message" class="text-muted"><?php echo $message ?></small></p>
             <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
         </form>
     </div>
@@ -131,7 +132,7 @@ if (verify.success!=undefined) {
     if (verify.success) {
         $("#loginmessage").html("<div class='alert alert-success'> "+verify.message+"</div>");
     } else {
-        $("#loginmessage").html("<div class='alert alert-error'> "+verify.message+"</div>");
+        $("#loginmessage").html("<div class='alert alert-danger'> "+verify.message+"</div>");
     }
 }
 
@@ -157,14 +158,14 @@ $("#passwordreset-submit").click(function(){
     var email = $("#passwordreset-email").val();
 
     if (email==="" || username==="") {
-        $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>Please enter username and email address</div>");
+        $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-danger'>Please enter username and email address</div>");
     } else {
         var result = user.passwordreset(username,email);
         if (result.success===true) {
             $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-success'>"+result.message+"</div>");
             $("#passwordresetblock").hide();
         } else {
-            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>"+result.message+"</div>");
+            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-danger'>"+result.message+"</div>");
         }
     }
 });
@@ -215,7 +216,7 @@ function login(){
     var result = user.login(username,password,rememberme,referrer);
 
     if (result.success==undefined) {
-        $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+        $("#loginmessage").html("<div class='alert alert-danger'>"+result+"</div>");
         return false;
     
     } else {
@@ -228,9 +229,9 @@ function login(){
         else
         {
             if (result.message=="Please verify email address") {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"<br><br><button class='btn resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
+                $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"<br><br><button class='btn btn-default resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
             } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+                $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"</div>");
             }
             return false;
         }
@@ -245,7 +246,7 @@ function register(){
 
     if (password != confirmpassword)
     {
-        $("#loginmessage").html("<div class='alert alert-error'>Passwords do not match</div>");
+        $("#loginmessage").html("<div class='alert alert-danger'>Passwords do not match</div>");
     }
     else
     {
@@ -259,7 +260,7 @@ function register(){
         var result = user.register(username,password,email,user_timezone);
 
         if (result.success==undefined) {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+            $("#loginmessage").html("<div class='alert alert-danger'>"+result+"</div>");
             return false;
         
         } else {
@@ -275,7 +276,7 @@ function register(){
                 }
                 
             } else {
-                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+                $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"</div>");
             }
         }
     }
@@ -293,7 +294,7 @@ function resend_verify()
          if (result.success) {
              $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
          } else {
-             $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+             $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"</div>");
          }
       } 
     });
