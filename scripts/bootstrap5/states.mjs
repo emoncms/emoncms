@@ -82,6 +82,16 @@ const GROUPS = {
     { name: "schedule_delete", page: "schedule/view", steps: [{ click: "button:has-text('Delete')" }] },
     { name: "schedule_test", page: "schedule/view", steps: [{ click: "button:has-text('Test')" }] },
   ],
+  // test login, dashboard 224 "bs5-test"; never click save, delete or New
+  dashboard: [
+    { name: "dash_list", page: "dashboard/list", steps: [] },
+    { name: "dash_view", page: "dashboard/view?id=224", steps: [{ wait: 1500 }] },
+    { name: "dash_edit", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }] },
+    { name: "dash_edit_select", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { clickat: "#can", x: 220, y: 70 }] },
+    { name: "dash_edit_options", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { clickat: "#can", x: 220, y: 70 }, { click: "#options-button" }] },
+    { name: "dash_edit_config", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { click: "#dashboard-config-button" }] },
+    { name: "dash_edit_menu", page: "dashboard/edit?id=224", steps: [{ wait: 1500 }, { click: "#widget-buttons .dropdown-toggle" }] },
+  ],
   embed: [
     { name: "embed_graph", page: "graph/embed?feedidsLH=623", steps: [{ wait: 1500 }] },
   ],
@@ -127,6 +137,17 @@ for (const st of GROUPS[group]) {
       const loc = p.locator(s.click).first();
       if (await loc.count()) { await loc.click(); await p.waitForTimeout(900); }
       else missing.push(s.click);
+    }
+    if (s.clickat) {
+      const loc = p.locator(s.clickat).first();
+      // mouse events sent to the element, so an overlay cannot take the click
+      if (await loc.count()) {
+        const b = await loc.boundingBox();
+        const init = { bubbles: true, clientX: b.x + s.x, clientY: b.y + s.y, button: 0 };
+        for (const type of ["mousedown", "mouseup", "click"]) await loc.dispatchEvent(type, init);
+        await p.waitForTimeout(900);
+      }
+      else missing.push(s.clickat);
     }
     if (s.fill) {
       const loc = p.locator(s.fill).first();
