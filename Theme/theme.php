@@ -60,6 +60,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue","sun","yellow2","sta
     load_css("Lib/bootstrap5/css/bootstrap.min.css");
     load_css("Theme/css/bootstrap5-theme.css");
     load_css("Theme/css/bootstrap2-legacy.css");
+    load_css("Theme/css/bootstrap2-icons.css");
     load_css("Theme/css/emoncms-base.css");
     load_css("Theme/css/menu.css");
     load_css("Theme/css/panel.css");

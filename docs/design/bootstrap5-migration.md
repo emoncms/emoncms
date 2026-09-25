@@ -8,8 +8,9 @@ Aim for the current look first. Visual changes come later, through the theme var
 
 - `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
 - `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, and component sizes (buttons, badges, alerts, modals, input groups, tables). Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), glyphicon sprites, form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes) with the phone rules from `bootstrap-responsive.css`, `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
-- `Theme/img/`: glyphicon sprites used by the legacy file.
+- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes) with the phone rules from `bootstrap-responsive.css`, `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
+- `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the legacy file.
+- `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
 - `Theme/theme.php` and `Theme/embed.php` load Bootstrap 5 on every page. Bootstrap 2 (`Lib/bootstrap/`) and `Theme/css/bootstrap4-utils.css` are removed.
 - Custom classes from `bootstrap4-utils.css`: `color-box` moved to `Modules/user/profile/profile.css`. Classes the apps use are in `Modules/app/Views/css/utils.css`.
@@ -53,7 +54,7 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `li.divider` | `<li><hr class="dropdown-divider"></li>` |
 | `card`, `card-*` (emoncms component) | `panel`, `panel-*` |
 
-Kept as they are: `icon-*`, `hide`, `hidden`, `caret`, `control-group`, `controls`, `help-inline`, `help-block`, `input-mini` to `input-xxlarge`, `checkbox inline`, `accordion-*`, `dl-horizontal`, `input-block-level`. The legacy file styles them.
+Kept as they are: `icon-*` (styled by `bootstrap2-icons.css`), `hide`, `hidden`, `caret`, `control-group`, `controls`, `help-inline`, `help-block`, `input-mini` to `input-xxlarge`, `checkbox inline`, `accordion-*`, `dl-horizontal`, `input-block-level`. The legacy file styles the rest.
 
 Rename classes in CSS selectors and in JS as well as in markup: `addClass`, `removeClass`, class names held in JS data, and HTML built with string concatenation.
 
