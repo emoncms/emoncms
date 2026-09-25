@@ -7,9 +7,9 @@ Aim for the current look first. Visual changes come later, through the theme var
 ## Files
 
 - `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
-- `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, and component sizes (buttons, badges, alerts, modals, input groups, tables). Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. `hide` and Bootstrap 2 element rules (links, type, lists, code, tables). Form elements moved to Bootstrap 5, see Forms. Remove sections as pages move to Bootstrap 5 components.
-- `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the legacy file.
+- `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, the element look where the Bootstrap 5 reboot differs (links, headings, paragraphs, lists, `hr`, `code`, `pre`), component sizes (buttons, badges, alerts, modals, input groups, tables, form controls) and `hide`. Loaded straight after `bootstrap.min.css`.
+- `Theme/css/bootstrap2-legacy.css` is removed. Its rules moved to Bootstrap 5 components or the theme.
+- `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the theme.
 - `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
 - `Theme/theme.php` and `Theme/embed.php` load Bootstrap 5 on every page. Bootstrap 2 (`Lib/bootstrap/`) and `Theme/css/bootstrap4-utils.css` are removed.
@@ -56,7 +56,7 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 
 Kept as they are: `icon-*` (styled by `bootstrap2-icons.css`) and `hide`.
 
-Removed from the legacy file:
+Removed with the legacy file:
 
 | Bootstrap 2 | Now |
 |---|---|
@@ -67,7 +67,7 @@ Removed from the legacy file:
 
 ## Forms
 
-Every text input, select and textarea has `form-control` or `form-select`. The legacy file no longer styles bare fields, so a field without them shows as a plain browser field. `scripts/bootstrap5/formlint.py` lists fields without them and leftover Bootstrap 2 form classes.
+Every text input, select and textarea has `form-control` or `form-select`. Bare fields are unstyled, so a field without them shows as a plain browser field. `scripts/bootstrap5/formlint.py` lists fields without them and leftover Bootstrap 2 form classes.
 
 | Bootstrap 2 | Bootstrap 5 |
 |---|---|
@@ -147,6 +147,12 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
 - Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
 
+## Element look
+
+The Bootstrap 5 reboot differs from Bootstrap 2 on headings (weight 500, no top margin, 1.2 line height), links (always underlined), paragraph spacing (16px) and lists. Emoncms pages rely on the Bootstrap 2 values, so the theme sets them in its base section: bold headings with 10px margins and the Bootstrap 2 sizes, links underlined on hover, 10px paragraph margin, list indent, `hr`, `code` and `pre`. Change the look there, not with utilities on each page.
+
+The link hover rule uses `a:where(:hover, :focus)` so `.btn`, `.nav-link` and `.dropdown-item` keep no underline.
+
 ## Behaviour changes
 
 - Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. `boxsizing.py` cannot tell, so skip its fixes on button rules. It also misses a size and padding set in different rules, such as `.badge` padding with `.badge-get` width. Compare element sizes to find those.
@@ -170,7 +176,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 - A `btn` with only a variant loses its colour when JS removes the variant. Swap to `btn-default` in the JS.
 - `cvt_classes.py` does not convert `row`/`row-fluid` with `spanN`. Convert those by hand.
 - `.lead` is 20px, weight 300, line height 20px. Bootstrap 2 used 21px, weight 200, line height 30px.
-- `bootstrap2-legacy.css` resets the `ul` left margin on `.nav`, as Bootstrap 2 did.
+- Lists indent by margin as in Bootstrap 2 (25px, no padding). Page rules that reset the margin rely on this. `.nav` has no margin.
 
 ## Accepted differences
 
@@ -196,7 +202,7 @@ Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` 
 
 Form elements are on `form-control`/`form-select`.
 
-Later passes: base element rules from `bootstrap2-legacy.css` into the theme (keep `hide`), theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
+Later passes: theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
 
 Tools are in `scripts/bootstrap5/`.
 
