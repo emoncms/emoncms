@@ -1,76 +1,84 @@
+// Date and time picker, Vue 3 component on Bootstrap 5 input group and dropdown.
+//
+// In a Vue template it renders an input, a calendar button and the dropdown menu,
+// to sit inside an .input-group:
+//
+//     <div class="input-group">
+//         <span class="input-group-text">Start</span>
+//         <date-time-picker v-model="start" @change="reload"></date-time-picker>
+//     </div>
+//
+// Without Vue templates, DateTimePicker.attach(input, options) adds the button and
+// menu after an existing input, see the end of this file.
+//
+// Values are local time strings, YYYY-MM-DD HH:MM:SS.
+
 const DateTimePicker = {
 	name: 'DateTimePicker',
 
 	template: `
-		<div class="dtp-wrap" ref="wrapRef">
-			<div class="dtp-input-row">
-				<slot name="label" />
-				<div class="dtp-input-wrap">
-					<input
-						class="dtp-input"
-						type="text"
-						v-model="localInput"
-						@keydown.enter.prevent="commitInput"
-						@blur="onInputBlur"
-						:placeholder="placeholder"
-					/>
-					<span class="input-group-text dtp-add-on">
-						<button class="dtp-icon-btn" @click.stop="toggle" tabindex="-1" aria-label="Open calendar"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calendar-days-icon lucide-calendar-days"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></button>
-					</span>
-				</div>
+		<input
+			v-if="!input"
+			ref="ownInput"
+			class="form-control dtp-input"
+			type="text"
+			:placeholder="placeholder"
+			@keydown.enter.prevent="commitInput"
+			@blur="onInputBlur"
+		/>
+		<button
+			ref="toggle"
+			type="button"
+			:class="buttonClass"
+			class="dtp-toggle dropdown-toggle"
+			data-bs-toggle="dropdown"
+			data-bs-auto-close="outside"
+			aria-expanded="false"
+			@pointerdown="dropdownInstance"
+			@keydown="dropdownInstance"
+			:aria-label="t('Open calendar')"
+			:title="t('Open calendar')"
+		><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></button>
+		<div ref="menu" class="dropdown-menu dtp-popup">
+			<div class="dtp-calendar-header">
+				<button type="button" class="dtp-nav" @click="prevMonth" :aria-label="t('Previous month')">&#8249;</button>
+				<span class="dtp-month-label">{{ monthLabel }}</span>
+				<button type="button" class="dtp-nav" @click="nextMonth" :aria-label="t('Next month')">&#8250;</button>
 			</div>
 
-			<div v-if="open" class="dtp-popup">
+			<div class="dtp-dow-row">
+				<span v-for="d in dowLabels" :key="d" class="dtp-dow">{{ d }}</span>
+			</div>
 
-				<div class="dtp-calendar-header">
-					<button class="dtp-nav" @click="prevMonth">&#8249;</button>
-					<span class="dtp-month-label">{{ monthLabel }}</span>
-					<button class="dtp-nav" @click="nextMonth">&#8250;</button>
-				</div>
+			<div class="dtp-days">
+				<button
+					v-for="cell in calendarCells"
+					:key="cell.key"
+					type="button"
+					class="dtp-day"
+					:class="{
+						'dtp-day--other': !cell.current,
+						'dtp-day--selected': cell.selected,
+						'dtp-day--today': cell.today,
+					}"
+					@click="selectDay(cell)"
+				>{{ cell.d }}</button>
+			</div>
 
-				<div class="dtp-dow-row">
-					<span v-for="d in dowLabels" :key="d" class="dtp-dow">{{ d }}</span>
-				</div>
-
-				<div class="dtp-days">
-					<button
-						v-for="cell in calendarCells"
-						:key="cell.key"
-						class="dtp-day"
-						:class="{
-							'dtp-day--other': !cell.current,
-							'dtp-day--selected': cell.selected,
-							'dtp-day--today': cell.today,
-						}"
-						@click="selectDay(cell)"
-					>{{ cell.d }}</button>
-				</div>
-
-				<div class="dtp-time-row">
+			<div class="dtp-time-row">
+				<template v-for="(unit, i) in ['h', 'm', 's']" :key="unit">
+					<span v-if="i" class="dtp-colon">:</span>
 					<div class="dtp-time-group">
-						<button class="dtp-t-btn" @click="adjustTime('h', 1)">&#9650;</button>
-						<input class="dtp-t-input" type="text" :value="pad(tempH)" @change="onHourInput" maxlength="2" />
-						<button class="dtp-t-btn" @click="adjustTime('h', -1)">&#9660;</button>
+						<button type="button" class="dtp-t-btn" @click="adjustTime(unit, 1)">&#9650;</button>
+						<input class="form-control form-control-sm dtp-t-input" type="text" :value="pad(time[unit])" @change="onTimeInput(unit, $event)" maxlength="2" />
+						<button type="button" class="dtp-t-btn" @click="adjustTime(unit, -1)">&#9660;</button>
 					</div>
-					<span class="dtp-colon">:</span>
-					<div class="dtp-time-group">
-						<button class="dtp-t-btn" @click="adjustTime('m', 1)">&#9650;</button>
-						<input class="dtp-t-input" type="text" :value="pad(tempM)" @change="onMinInput" maxlength="2" />
-						<button class="dtp-t-btn" @click="adjustTime('m', -1)">&#9660;</button>
-					</div>
-					<span class="dtp-colon">:</span>
-					<div class="dtp-time-group">
-						<button class="dtp-t-btn" @click="adjustTime('s', 1)">&#9650;</button>
-						<input class="dtp-t-input" type="text" :value="pad(tempS)" @change="onSecInput" maxlength="2" />
-						<button class="dtp-t-btn" @click="adjustTime('s', -1)">&#9660;</button>
-					</div>
-				</div>
+				</template>
+			</div>
 
-				<div class="dtp-footer">
-					<button class="dtp-btn-now" @click="setNow">Now</button>
-					<button class="dtp-btn-apply" @click="apply">Apply</button>
-				</div>
-
+			<div class="dtp-footer">
+				<button type="button" class="btn btn-sm btn-default" @click="setNow">{{ t('Now') }}</button>
+				<button type="button" class="btn btn-sm btn-primary" @click="apply" :disabled="!selectedDate">{{ t('Apply') }}</button>
 			</div>
 		</div>
 	`,
@@ -83,6 +91,15 @@ const DateTimePicker = {
 		placeholder: {
 			type: String,
 			default: 'YYYY-MM-DD HH:MM:SS'
+		},
+		// An existing input to use in place of the component's own
+		input: {
+			type: Object,
+			default: null
+		},
+		buttonClass: {
+			type: String,
+			default: 'btn btn-default'
 		}
 	},
 
@@ -91,15 +108,10 @@ const DateTimePicker = {
 	data() {
 		const now = new Date()
 		return {
-			open: false,
 			viewYear: now.getFullYear(),
 			viewMonth: now.getMonth(),
 			selectedDate: null,
-			tempH: 0,
-			tempM: 0,
-			tempS: 0,
-			dowLabels: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-			localInput: '',
+			time: { h: 0, m: 0, s: 0 },
 		}
 	},
 
@@ -109,14 +121,23 @@ const DateTimePicker = {
 				.toLocaleString('default', { month: 'long', year: 'numeric' })
 		},
 
+		// Sunday first, 5 January 2025 was a Sunday
+		dowLabels() {
+			const labels = []
+			for (let i = 0; i < 7; i++) {
+				labels.push(new Date(2025, 0, 5 + i).toLocaleString('default', { weekday: 'short' }).slice(0, 2))
+			}
+			return labels
+		},
+
 		calendarCells() {
 			const year = this.viewYear
 			const month = this.viewMonth
 			const firstDay = new Date(year, month, 1).getDay()
 			const daysInMonth = new Date(year, month + 1, 0).getDate()
 			const daysInPrev = new Date(year, month, 0).getDate()
-			const today = new Date()
-			const todayStr = this.fmt(today.getFullYear(), today.getMonth() + 1, today.getDate(), 0, 0, 0).slice(0, 10)
+			const todayStr = this.dayKey(new Date())
+			const selStr = this.selectedDate ? this.dayKey(this.selectedDate) : null
 			const cells = []
 
 			for (let i = firstDay - 1; i >= 0; i--) {
@@ -124,12 +145,7 @@ const DateTimePicker = {
 				cells.push({ key: `p${d}`, d, current: false, selected: false, today: false, year, month: month - 1 })
 			}
 			for (let d = 1; d <= daysInMonth; d++) {
-				const dateStr = this.fmt(year, month + 1, d, 0, 0, 0).slice(0, 10)
-				const selStr = this.selectedDate ? this.fmt(
-					this.selectedDate.getFullYear(),
-					this.selectedDate.getMonth() + 1,
-					this.selectedDate.getDate(), 0, 0, 0
-				).slice(0, 10) : null
+				const dateStr = this.dayKey(new Date(year, month, d))
 				cells.push({
 					key: `c${d}`, d, current: true,
 					selected: selStr === dateStr,
@@ -149,81 +165,102 @@ const DateTimePicker = {
 		modelValue: {
 			immediate: true,
 			handler(val) {
-				if (val) {
-					const d = new Date(val.replace(' ', 'T'))
-					if (!isNaN(d)) {
-						this.selectedDate = d
-						this.viewYear = d.getFullYear()
-						this.viewMonth = d.getMonth()
-						this.tempH = d.getHours()
-						this.tempM = d.getMinutes()
-						this.tempS = d.getSeconds()
-						this.localInput = this.fmt(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
-					}
-				} else {
-					this.localInput = ''
-				}
+				this.$nextTick(() => {
+					const d = DateTimePicker.parse(val)
+					if (d) this.show(d)
+					this.inputEl().value = d ? DateTimePicker.format(d) : ''
+				})
 			}
 		}
 	},
 
 	mounted() {
-		document.addEventListener('click', this.onOutsideClick)
+		if (window.bootstrap) this.dropdownInstance()
+		if (this.input) {
+			this.onKeydown = e => { if (e.key === 'Enter') { e.preventDefault(); this.commitInput() } }
+			this.input.addEventListener('keydown', this.onKeydown)
+			this.input.addEventListener('blur', this.onInputBlur)
+		}
 	},
 
 	beforeUnmount() {
-		document.removeEventListener('click', this.onOutsideClick)
+		if (this.dropdown) this.dropdown.dispose()
+		if (this.input) {
+			this.input.removeEventListener('keydown', this.onKeydown)
+			this.input.removeEventListener('blur', this.onInputBlur)
+		}
 	},
 
 	methods: {
-		toggle() {
-			this.open = !this.open
+		t(text) {
+			return typeof _Tr === 'function' ? _Tr(text) : text
 		},
 
-		onOutsideClick(e) {
-			if (this.$refs.wrapRef && !this.$refs.wrapRef.contains(e.target)) {
-				this.open = false
-			}
+		inputEl() {
+			return this.input || this.$refs.ownInput
+		},
+
+		// Created on mount, or on the pointerdown or keydown before the first click
+		// when a page mounts Vue before the Bootstrap bundle loads. Bootstrap's click
+		// handler runs first, in the capture phase, and would create a default instance.
+		dropdownInstance() {
+			if (this.dropdown) return this.dropdown
+			const toggle = this.$refs.toggle
+			this.dropdown = bootstrap.Dropdown.getOrCreateInstance(toggle, {
+				autoClose: 'outside',
+				reference: this.inputEl(),
+				// Fixed, so a scrolling modal body does not clip the menu
+				popperConfig: { strategy: 'fixed', placement: 'bottom-start' }
+			})
+			// Opens on the date in the input
+			toggle.addEventListener('show.bs.dropdown', () => {
+				const d = DateTimePicker.parse(this.inputEl().value)
+				if (d) this.show(d)
+			})
+			return this.dropdown
+		},
+
+		dayKey(d) {
+			return DateTimePicker.format(d).slice(0, 10)
+		},
+
+		// Popup state from a date, without emitting
+		show(d) {
+			this.selectedDate = d
+			this.viewYear = d.getFullYear()
+			this.viewMonth = d.getMonth()
+			this.time = { h: d.getHours(), m: d.getMinutes(), s: d.getSeconds() }
 		},
 
 		onInputBlur(e) {
-			// Don't commit if focus moved to another element inside this component
-			if (this.$refs.wrapRef && this.$refs.wrapRef.contains(e.relatedTarget)) return
+			// Focus moved into the button or menu
+			if (e.relatedTarget && (e.relatedTarget === this.$refs.toggle || this.$refs.menu.contains(e.relatedTarget))) return
 			this.commitInput()
 		},
 
 		commitInput() {
-			const raw = (this.localInput || '').trim()
+			const el = this.inputEl()
+			const raw = el.value.trim()
 			if (!raw) {
+				if (!this.modelValue) return
 				this.selectedDate = null
-				this.$emit('update:modelValue', '')
-				this.$emit('change', '')
+				this.emit('')
 				return
 			}
-			const d = new Date(raw.replace(' ', 'T'))
-			if (isNaN(d)) {
-				// Revert to last known good value
-				this.localInput = this.modelValue
-					? this.fmt(
-						new Date(this.modelValue.replace(' ', 'T')).getFullYear(),
-						new Date(this.modelValue.replace(' ', 'T')).getMonth() + 1,
-						new Date(this.modelValue.replace(' ', 'T')).getDate(),
-						new Date(this.modelValue.replace(' ', 'T')).getHours(),
-						new Date(this.modelValue.replace(' ', 'T')).getMinutes(),
-						new Date(this.modelValue.replace(' ', 'T')).getSeconds()
-					  )
-					: ''
+			const d = DateTimePicker.parse(raw)
+			if (!d) {
+				// Back to the last good value
+				const last = DateTimePicker.parse(this.modelValue)
+				el.value = last ? DateTimePicker.format(last) : ''
 				return
 			}
-			this.selectedDate = d
-			this.viewYear = d.getFullYear()
-			this.viewMonth = d.getMonth()
-			this.tempH = d.getHours()
-			this.tempM = d.getMinutes()
-			this.tempS = d.getSeconds()
-			const str = this.fmt(d.getFullYear(), d.getMonth() + 1, d.getDate(), d.getHours(), d.getMinutes(), d.getSeconds())
-			this.localInput = str
-			this.open = false
+			const str = DateTimePicker.format(d)
+			el.value = str
+			this.show(d)
+			if (str !== this.modelValue) this.emit(str)
+		},
+
+		emit(str) {
 			this.$emit('update:modelValue', str)
 			this.$emit('change', str)
 		},
@@ -239,62 +276,95 @@ const DateTimePicker = {
 		},
 
 		selectDay(cell) {
-			const d = this.selectedDate ? new Date(this.selectedDate) : new Date()
-			d.setFullYear(cell.year)
-			d.setMonth(cell.month)
-			d.setDate(cell.d)
-			this.selectedDate = d
+			this.selectedDate = new Date(cell.year, cell.month, cell.d)
 			if (!cell.current) {
-				this.viewYear = cell.year
-				this.viewMonth = ((cell.month % 12) + 12) % 12
+				this.viewYear = this.selectedDate.getFullYear()
+				this.viewMonth = this.selectedDate.getMonth()
 			}
 		},
 
 		adjustTime(unit, delta) {
-			if (unit === 'h') this.tempH = ((this.tempH + delta) + 24) % 24
-			if (unit === 'm') this.tempM = ((this.tempM + delta) + 60) % 60
-			if (unit === 's') this.tempS = ((this.tempS + delta) + 60) % 60
+			const max = unit === 'h' ? 24 : 60
+			this.time[unit] = (this.time[unit] + delta + max) % max
 		},
 
-		onHourInput(e) {
-			const v = parseInt(e.target.value)
-			if (!isNaN(v)) this.tempH = Math.min(23, Math.max(0, v))
-		},
-		onMinInput(e) {
-			const v = parseInt(e.target.value)
-			if (!isNaN(v)) this.tempM = Math.min(59, Math.max(0, v))
-		},
-		onSecInput(e) {
-			const v = parseInt(e.target.value)
-			if (!isNaN(v)) this.tempS = Math.min(59, Math.max(0, v))
+		onTimeInput(unit, e) {
+			const v = parseInt(e.target.value, 10)
+			if (!isNaN(v)) this.time[unit] = Math.min(unit === 'h' ? 23 : 59, Math.max(0, v))
+			e.target.value = this.pad(this.time[unit])
 		},
 
 		setNow() {
-			const now = new Date()
-			this.selectedDate = now
-			this.viewYear = now.getFullYear()
-			this.viewMonth = now.getMonth()
-			this.tempH = now.getHours()
-			this.tempM = now.getMinutes()
-			this.tempS = now.getSeconds()
+			this.show(new Date())
 		},
 
 		apply() {
 			if (!this.selectedDate) return
 			const d = this.selectedDate
-			const str = this.fmt(d.getFullYear(), d.getMonth() + 1, d.getDate(), this.tempH, this.tempM, this.tempS)
-			this.localInput = str
-			this.$emit('update:modelValue', str)
-			this.$emit('change', str)
-			this.open = false
-		},
-
-		fmt(Y, M, D, h, m, s) {
-			return `${Y}-${this.pad(M)}-${this.pad(D)} ${this.pad(h)}:${this.pad(m)}:${this.pad(s)}`
+			const str = DateTimePicker.format(new Date(d.getFullYear(), d.getMonth(), d.getDate(), this.time.h, this.time.m, this.time.s))
+			this.inputEl().value = str
+			this.dropdownInstance().hide()
+			this.emit(str)
 		},
 
 		pad(n) {
 			return String(n).padStart(2, '0')
+		}
+	}
+}
+
+// Local time from YYYY-MM-DD, with optional HH:MM or HH:MM:SS. Null if invalid.
+DateTimePicker.parse = function (str) {
+	const m = /^(\d{4})-(\d{1,2})-(\d{1,2})(?:[ T](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?$/.exec((str || '').trim())
+	if (!m) return null
+	const d = new Date(+m[1], m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0), +(m[6] || 0))
+	// Rejects overflow such as 2025-02-30
+	if (d.getMonth() !== m[2] - 1 || d.getDate() !== +m[3]) return null
+	return d
+}
+
+DateTimePicker.format = function (d) {
+	const p = n => String(n).padStart(2, '0')
+	return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`
+}
+
+// Adds the picker to an existing input inside an .input-group, for pages without
+// Vue templates. The input keeps its id, value and events.
+//
+// options.value       initial Date
+// options.onChange    called with a Date, or null when cleared
+// options.buttonClass button classes, default "btn btn-default"
+//
+// Returns { getDate(), setDate(date) }. setDate does not call onChange.
+DateTimePicker.attach = function (input, options) {
+	options = options || {}
+	const host = document.createElement('span')
+	host.className = 'dtp-host'
+	input.after(host)
+
+	const state = Vue.reactive({ value: options.value ? DateTimePicker.format(options.value) : '' })
+	Vue.createApp({
+		render() {
+			return Vue.h(DateTimePicker, {
+				input,
+				modelValue: state.value,
+				buttonClass: options.buttonClass || 'btn btn-default',
+				'onUpdate:modelValue': v => { state.value = v },
+				onChange: v => {
+					// A change event for page code that listens on the input
+					input.dispatchEvent(new Event('change', { bubbles: true }))
+					if (options.onChange) options.onChange(DateTimePicker.parse(v))
+				}
+			})
+		}
+	}).mount(host)
+
+	return {
+		getDate() {
+			return DateTimePicker.parse(input.value)
+		},
+		setDate(date) {
+			state.value = date ? DateTimePicker.format(date) : ''
 		}
 	}
 }

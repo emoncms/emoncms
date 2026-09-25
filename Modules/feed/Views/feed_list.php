@@ -64,8 +64,7 @@ var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
 load_js("Modules/feed/feed.js");
 load_js("Lib/js/date_time.js");
 load_js("Lib/js/DateTimePicker.js");
-load_css("Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css");
-load_js("Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
+load_css("Theme/css/datetimepicker.css");
 load_js("Lib/js/autocomplete.js");
 load_css("Modules/feed/Views/feed_view.css");
 ?>

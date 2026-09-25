@@ -8,7 +8,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 
 - `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
 - `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, and component sizes (buttons, badges, alerts, modals, input groups, tables). Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. `hide`, Bootstrap 2 element rules (links, type, lists, code, tables) and the datetimepicker patches. Form elements moved to Bootstrap 5, see Forms. Remove sections as pages move to Bootstrap 5 components.
+- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. `hide` and Bootstrap 2 element rules (links, type, lists, code, tables). Form elements moved to Bootstrap 5, see Forms. Remove sections as pages move to Bootstrap 5 components.
 - `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the legacy file.
 - `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
@@ -102,6 +102,18 @@ Every text input, select and textarea has `form-control` or `form-select`. The l
 
 Rename classes in CSS selectors and in JS as well as in markup: `addClass`, `removeClass`, class names held in JS data, and HTML built with string concatenation.
 
+## Date picker
+
+`Lib/js/DateTimePicker.js` with `Theme/css/datetimepicker.css` is the one date picker. bootstrap-datetimepicker 0.0.11 is removed.
+
+- Vue template: `<date-time-picker v-model="start" @change="reload">` inside an `.input-group`. It renders an input, a calendar button and a Bootstrap dropdown menu as children of the group.
+- Other pages: `DateTimePicker.attach(input, { value, onChange, buttonClass })` adds the button and menu after an existing input in an `.input-group`. The input keeps its id, value and events, and gets a `change` event when a date is applied. Returns `getDate()` and `setDate(date)`; `setDate` does not call `onChange`.
+- Values are local time, `YYYY-MM-DD HH:MM:SS`. `DateTimePicker.parse` and `DateTimePicker.format` convert to and from `Date`.
+- The menu uses Popper with fixed positioning, so a scrolling modal body does not clip it. Bootstrap closes it on an outside click or Esc.
+- The Dropdown is created before Bootstrap's own click handler, which runs in the capture phase and would create one with default options.
+- Colours come from `--bs-*` variables.
+- A page rule such as `.x input[type=text]` also reaches the time inputs in the menu. Use a child selector for the page's own input.
+
 ## Modals
 
 Bootstrap 5 modal markup has two extra wrappers:
@@ -133,8 +145,6 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 - Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle. `.collapse('hide')` only hides an element that has `collapse show`; Bootstrap 2 hid any element.
 - `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
-- `bootstrap-datetimepicker` 0.0.11 finds its trigger through `.add-on`. Keep `add-on` next to `input-group-text` on its triggers. The legacy file shows its `collapse in` panels.
-- `Lib/js/DateTimePicker.js` uses `input-group-text dtp-add-on`.
 - Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
 
 ## Behaviour changes
@@ -161,7 +171,6 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `cvt_classes.py` does not convert `row`/`row-fluid` with `spanN`. Convert those by hand.
 - `.lead` is 20px, weight 300, line height 20px. Bootstrap 2 used 21px, weight 200, line height 30px.
 - `bootstrap2-legacy.css` resets the `ul` left margin on `.nav`, as Bootstrap 2 did.
-- The datetimepicker widget keeps Bootstrap 2 cell padding and divider through `bootstrap2-legacy.css`.
 
 ## Accepted differences
 
@@ -187,7 +196,7 @@ Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` 
 
 Form elements are on `form-control`/`form-select`.
 
-Later passes: one date picker (replace bootstrap-datetimepicker 0.0.11), base element rules from `bootstrap2-legacy.css` into the theme (keep `hide`), theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
+Later passes: base element rules from `bootstrap2-legacy.css` into the theme (keep `hide`), theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
 
 Tools are in `scripts/bootstrap5/`.
 

@@ -43,31 +43,14 @@ function openFeedExportModal(){
     
     $('#feedExportModal').modal('show');
 
-    // Initialise Bootstrap 2 datetimepickers once
-    var pickerOptions = { pickDate: true, pickTime: true, pickSeconds: true, format: 'yyyy-MM-dd hh:mm:ss' };
-    if (!$('#export-start-dtp').data('datetimepicker')) {
-        $('#export-start-dtp').datetimepicker(pickerOptions);
-        $('#export-start-dtp').on('changeDate', function(e) {
-            if (!e.date) return;
-            var endDate = getExportDate($('#export-end'));
-            if (endDate && e.date > endDate) {
-                setExportDate($('#export-end'), e.date);
-            }
-            calculate_download_size($("#export").attr('feedcount'));
-        });
-    }
-    if (!$('#export-end-dtp').data('datetimepicker')) {
-        $('#export-end-dtp').datetimepicker(pickerOptions);
-        $('#export-end-dtp').on('changeDate', function(e) {
-            if (!e.date) return;
-            var startDate = getExportDate($('#export-start'));
-            if (startDate && e.date < startDate) {
-                setExportDate($('#export-start'), e.date);
-            }
-            calculate_download_size($("#export").attr('feedcount'));
-        });
+    // Pickers are added once. Their change event reaches the input handlers below.
+    if (!exportPickers.start) {
+        exportPickers.start = DateTimePicker.attach(document.getElementById('export-start'), { value: getExportDate($('#export-start')) });
+        exportPickers.end = DateTimePicker.attach(document.getElementById('export-end'), { value: getExportDate($('#export-end')) });
     }
 }
+
+var exportPickers = {};
 
 function getExportDate($input) {
     return ecDateTime.parseYmdHms($input.val());
@@ -76,8 +59,8 @@ function getExportDate($input) {
 function setExportDate($input, date) {
     var value = ecDateTime.formatYmdHms(date);
     $input.val(value);
-    var picker = $input.closest('.input-append.date').data('datetimepicker');
-    if (picker) picker.setValue(value);
+    var picker = exportPickers[$input.attr('id') === 'export-start' ? 'start' : 'end'];
+    if (picker) picker.setDate(date);
 }
 
 var now = new Date();

@@ -17,20 +17,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                 <tr>
                     <td>
                         <p><b><?php echo tr('Start date & time'); ?></b></p>
-                        <div id="export-start-dtp" class="input-group date">
-                            <input id="export-start" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
-                            <span class="input-group-text add-on">
-                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                            </span>
+                        <div class="input-group">
+                            <input id="export-start" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
                         </div>
                     </td>
                     <td>
                         <p><b><?php echo tr('End date & time ');?></b></p>
-                        <div id="export-end-dtp" class="input-group date">
-                            <input id="export-end" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
-                            <span class="input-group-text add-on">
-                                <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                            </span>
+                        <div class="input-group">
+                            <input id="export-end" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:MM:SS" />
                         </div>
                     </td>
                 </tr>

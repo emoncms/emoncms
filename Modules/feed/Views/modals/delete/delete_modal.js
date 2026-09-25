@@ -124,18 +124,18 @@ function showSelectedFeeds(feed_inputs) {
     $("#feedProcessList").html(feedProcessList);
 }
 
+var trimPicker = null;
+
 function setTrimInputValue(date) {
     var value = ecDateTime.formatYmdHms(date);
     $('#trim_start_time').val(value).trigger('change');
 
-    var picker = $('#feed_trim_datetimepicker').data('datetimepicker');
-    if (picker) picker.setDate(date);
+    if (trimPicker) trimPicker.setDate(date);
 }
 
 function clearTrimInputValue() {
     $('#trim_start_time').val('').trigger('change');
-    var picker = $('#feed_trim_datetimepicker').data('datetimepicker');
-    if (picker) picker.setValue(false);
+    if (trimPicker) trimPicker.setDate(null);
 }
 
 function updateRelativeButtonsFromDate(date) {
@@ -417,16 +417,13 @@ function openDeleteFeedModal(){
     // show the selected feeds and any associated processList
     showSelectedFeeds(selected_feeds_inputs);
 
-    // Initialise Bootstrap 2 datetimepicker once
-    if (!$('#feed_trim_datetimepicker').data('datetimepicker')) {
-        $('#feed_trim_datetimepicker').datetimepicker({
-            pickDate: true,
-            pickTime: true,
-            pickSeconds: true,
-            format: 'yyyy-MM-dd hh:mm:ss'
-        });
-        $('#feed_trim_datetimepicker').on('changeDate', function(e) {
-            if (e.date) updateRelativeButtonsFromDate(e.date);
+    // Picker added once
+    if (!trimPicker) {
+        trimPicker = DateTimePicker.attach(document.getElementById('trim_start_time'), {
+            value: ecDateTime.parseYmdHms($('#trim_start_time').val()),
+            onChange: function(date) {
+                if (date) updateRelativeButtonsFromDate(date);
+            }
         });
     }
 

@@ -136,7 +136,7 @@ const GROUPS = {
     { name: "app_new_modal", page: "app/new", steps: [{ click: ".app-item" }] },
     { name: "app_myelectricflow", page: "app/view?id=122", steps: [{ wait: 2500 }] },
     { name: "app_myelectricflow_manual", page: "app/view?id=122", steps: [{ wait: 2500 }, { click: "#time-manual-open" }] },
-    { name: "app_myelectricflow_picker", page: "app/view?id=122", steps: [{ wait: 2500 }, { click: "#time-manual-open" }, { click: "#datetimepicker1 .add-on" }] },
+    { name: "app_myelectricflow_picker", page: "app/view?id=122", steps: [{ wait: 2500 }, { click: "#time-manual-open" }, { click: "#request-start + .dtp-host .dtp-toggle" }] },
     { name: "app_myelectricflow_config", page: "app/view?id=122", steps: [{ wait: 2500 }, { dispatch: ".config-open" }] },
     { name: "app_myheatpump", page: "app/view?id=126", steps: [{ wait: 3000 }] },
     { name: "app_myheatpump_power", page: "app/view?id=126", steps: [{ wait: 3000 }, { click: ".bargraph-day" }, { wait: 1500 }] },

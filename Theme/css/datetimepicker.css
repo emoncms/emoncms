@@ -1,131 +1,41 @@
+/* ---- DateTimePicker component (Lib/js/DateTimePicker.js) ---- */
 
-/* ---- DateTimePicker component ---- */
-.dtp-wrap {
-    position: relative;
-    display: inline-block;
-}
-.dtp-input-row {
-    display: flex;
-    align-items: center;
-    gap: 0;
-}
-.dtp-input-wrap {
-    position: relative;
-    display: inline-flex;
-    align-items: stretch;
-}
 .dtp-input {
     width: 155px;
-    cursor: text;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 4px 6px;
-    font-size: 14px;
-    line-height: 20px;
-    height: 30px;
-    box-sizing: border-box;
-    color: var(--text-primary);
+    flex: 0 0 auto;
 }
-.dtp-input:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px var(--focus-ring);
-}
-.dtp-icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #000;
-    width: 18px;
-    height: 18px;
-    padding: 0;
-    line-height: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 3px;
-}
-.dtp-icon-btn:hover { color: #000; }
+.input-group > .dtp-input { width: 155px; }
 
-.dtp-icon-btn svg {
+/* Calendar button, no dropdown caret */
+.dtp-toggle {
+    display: inline-flex;
+    align-items: center;
+    padding-left: 7px;
+    padding-right: 7px;
+}
+.dtp-toggle::after { display: none; }
+.dtp-toggle svg {
     width: 14px;
     height: 14px;
-    display: block;
 }
 
-.dtp-add-on {
-    margin-left: -1px;
-    min-width: 28px;
-    height: 30px;
-    padding: 0 6px;
-    line-height: 20px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0 4px 4px 0;
-    box-sizing: border-box;
+/* Attached to an existing input: the host wraps the button and menu, so
+   Bootstrap's input group rules do not reach the button */
+.dtp-host { display: contents; }
+.input-group > .dtp-host > .dtp-toggle {
+    margin-left: calc(-1 * var(--bs-border-width));
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.input-group > .dtp-host:not(:last-child) > .dtp-toggle {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
-/* Bootstrap uses .input-prepend .add-on; keep dtp add-on locked to input height */
-.input-group .dtp-add-on,
-.input-group .dtp-add-on {
-    height: 30px;
-    padding: 0 6px;
-    line-height: 20px;
-    display: inline-flex;
-    align-items: center;
-    box-sizing: border-box;
-}
-
-/* Connect flush with Bootstrap .input-prepend .add-on */
-.input-group .dtp-input {
-    margin-bottom: 0;
-    vertical-align: top;
-    border-left: none;
-    border-radius: 0;
-}
-
-.input-group .dtp-wrap,
-.input-group .dtp-input-wrap {
-    font-size: 14px;
-    vertical-align: top;
-}
-
-/* Keep DateTimePicker host aligned with Bootstrap input groups in any context */
-.input-group > date-time-picker,
-.input-group > .dtp-wrap,
-.input-group > date-time-picker,
-.input-group > .dtp-wrap {
-    display: inline-block;
-    vertical-align: top;
-}
-
-.input-group > .input-group-text,
-.input-group > .input-group-text {
-    height: 30px;
-    line-height: 20px;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-}
-
-.input-group .dtp-input,
-.input-group .dtp-input {
-    height: 30px;
-    line-height: 20px;
-    box-sizing: border-box;
-}
 .dtp-popup {
-    position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    z-index: 9999;
-    background: var(--bg-card);
-    border: 1px solid var(--border-card);
-    border-radius: 6px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    padding: 10px;
+    --bs-dropdown-padding-x: 10px;
+    --bs-dropdown-padding-y: 10px;
+    --bs-dropdown-min-width: 240px;
     width: 240px;
     user-select: none;
 }
@@ -140,16 +50,15 @@
     border: none;
     cursor: pointer;
     font-size: 18px;
-    color: var(--text-secondary);
+    color: var(--bs-secondary-color);
     padding: 0 6px;
     line-height: 1;
-    border-radius: 4px;
+    border-radius: var(--bs-border-radius);
 }
-.dtp-nav:hover { background: var(--bg-card-row-hover); }
+.dtp-nav:hover { background: var(--bs-tertiary-bg); }
 .dtp-month-label {
     font-size: 13px;
     font-weight: 600;
-    color: var(--text-primary);
 }
 .dtp-dow-row {
     display: grid;
@@ -159,7 +68,7 @@
 .dtp-dow {
     text-align: center;
     font-size: 11px;
-    color: var(--border-strong);
+    color: var(--bs-secondary-color);
     font-weight: 600;
     padding: 2px 0;
 }
@@ -175,16 +84,20 @@
     border: none;
     background: none;
     cursor: pointer;
-    border-radius: 4px;
-    color: var(--text-body);
+    border-radius: var(--bs-border-radius);
+    color: var(--bs-body-color);
     line-height: 1;
 }
-.dtp-day:hover { background: var(--accent-bg); }
-.dtp-day--other { color: var(--border-strong); }
-.dtp-day--today { font-weight: 700; color: var(--accent); }
-.dtp-day--selected {
-    background: var(--accent) !important;
-    color: #fff !important;
+.dtp-day:hover { background: var(--bs-tertiary-bg); }
+.dtp-day--other { color: var(--bs-secondary-color); }
+.dtp-day--today {
+    font-weight: 700;
+    color: rgb(var(--bs-primary-rgb));
+}
+.dtp-day--selected,
+.dtp-day--selected:hover {
+    background: rgb(var(--bs-primary-rgb));
+    color: #fff;
     font-weight: 600;
 }
 .dtp-time-row {
@@ -194,7 +107,7 @@
     gap: 4px;
     margin: 10px 0 8px;
     padding-top: 8px;
-    border-top: 1px solid var(--border);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
 }
 .dtp-time-group {
     display: flex;
@@ -204,59 +117,31 @@
 }
 .dtp-t-btn {
     background: none;
-    border: 1px solid var(--border);
+    border: var(--bs-border-width) solid var(--bs-border-color);
     border-radius: 3px;
     cursor: pointer;
     font-size: 9px;
-    color: var(--text-secondary);
+    color: var(--bs-secondary-color);
     padding: 1px 5px;
     line-height: 1;
 }
-.dtp-t-btn:hover { background: var(--bg-card-row-hover); }
-.dtp-t-input {
-    width: 34px;
+.dtp-t-btn:hover { background: var(--bs-tertiary-bg); }
+.form-control.dtp-t-input {
+    width: 36px;
+    padding: 3px 2px;
     text-align: center;
-    background: var(--bg-input);
-    border: 1px solid var(--border);
-    border-radius: 3px;
     font-size: 13px;
     font-weight: 600;
-    padding: 3px 2px;
-    color: var(--text-primary);
 }
 .dtp-colon {
     font-size: 16px;
     font-weight: 700;
-    color: var(--text-secondary);
-    margin-bottom: 2px;
+    color: var(--bs-secondary-color);
 }
 .dtp-footer {
     display: flex;
-    justify-content: space-between;
     gap: 6px;
     padding-top: 8px;
-    border-top: 1px solid var(--border);
+    border-top: var(--bs-border-width) solid var(--bs-border-color);
 }
-.dtp-btn-now {
-    flex: 1;
-    padding: 5px;
-    font-size: 12px;
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    background: var(--bg-input);
-    cursor: pointer;
-    color: var(--text-secondary);
-}
-.dtp-btn-now:hover { background: var(--bg-card-row-hover); }
-.dtp-btn-apply {
-    flex: 1;
-    padding: 5px;
-    font-size: 12px;
-    border: none;
-    border-radius: 4px;
-    background: var(--accent);
-    color: #fff;
-    cursor: pointer;
-    font-weight: 600;
-}
-.dtp-btn-apply:hover { filter: brightness(0.85); }
+.dtp-footer .btn { flex: 1; }

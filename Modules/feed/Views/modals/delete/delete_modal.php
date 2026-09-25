@@ -26,11 +26,8 @@
                             <h4 class="text-info"><?php echo tr('Trim') ?>:</h4>
                             <p><?php echo tr('Empty feed data up to') ?>:</p>
                             <div id="trim_start_time_container" style="margin-bottom:1.3em">
-                                <div id="feed_trim_datetimepicker" class="input-group date" style="margin-bottom:0">
-                                    <input id="trim_start_time" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
-                                    <span class="input-group-text add-on">
-                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                                    </span>
+                                <div class="input-group" style="margin-bottom:0">
+                                    <input id="trim_start_time" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:MM:SS">
                                 </div>
                                 <div class="btn-group" style="margin-bottom:-4px">
                                     <button class="btn btn-default btn-xs active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
