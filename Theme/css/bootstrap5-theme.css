@@ -5,16 +5,13 @@
    ========================================================================== */
 
 /* -- 1. Palette and tokens ------------------------------------------------
-   The look is set here. Components below read these variables. */
+   The look is set here. Components below read these variables.
+   Three blocks: values shared by both modes, the light set and the dark set.
+   A page or app turns dark with data-bs-theme="dark" on its root element.
+   Light and dark declare the same variables, so the dark set also works on <html>. */
 
-:root {
-    /* Primary, the emoncms accent: links, primary buttons, focus, active items */
-    --bs-primary: #2a8fc7;
-    --bs-primary-rgb: 42, 143, 199;
-    --ec-primary-dark: #237bab;        /* hover, border */
-    --ec-primary-darker: #1d6189;      /* active, link hover */
-    --ec-primary-darker-rgb: 29, 97, 137;
-
+/* Shared by both modes. On every theme root, so aliases follow the mode. */
+:root, [data-bs-theme] {
     /* Button colours, Bootstrap 2: base, dark (hover and border), darker */
     --ec-btn-info: #49afcd;    --ec-btn-info-dark: #2f96b4;    --ec-btn-info-darker: #1f6377;
     --ec-btn-success: #5bb75b; --ec-btn-success-dark: #51a351; --ec-btn-success-darker: #387038;
@@ -30,28 +27,9 @@
     --bs-secondary-rgb: 153, 153, 153;
     --bs-dark-rgb: 51, 51, 51;
 
-    /* Alerts and row tints: text, background, border */
-    --bs-info-text-emphasis: #3a87ad;    --bs-info-bg-subtle: #d9edf7;    --bs-info-border-subtle: #bce8f1;
-    --bs-success-text-emphasis: #468847; --bs-success-bg-subtle: #dff0d8; --bs-success-border-subtle: #d6e9c6;
-    --bs-warning-text-emphasis: #c09853; --bs-warning-bg-subtle: #fcf8e3; --bs-warning-border-subtle: #fbeed5;
-    --bs-danger-text-emphasis: #b94a48;  --bs-danger-bg-subtle: #f2dede;  --bs-danger-border-subtle: #eed3d7;
-
-    /* Greys */
-    --bs-body-color: #333;
-    --bs-body-color-rgb: 51, 51, 51;
-    --bs-secondary-color: #999;        /* muted text */
-    --bs-border-color: #ddd;
-    --ec-input-border-color: #ccc;     /* form controls, default button */
-    --bs-secondary-bg: #eee;           /* input group text, readonly fields */
-    --bs-secondary-bg-rgb: 238, 238, 238;
-    --bs-tertiary-bg: #f5f5f5;         /* default button, wells, modal footer */
-    --bs-tertiary-bg-rgb: 245, 245, 245;
-
     /* Links */
     --bs-link-color: var(--bs-primary);
     --bs-link-color-rgb: var(--bs-primary-rgb);
-    --bs-link-hover-color: var(--ec-primary-darker);
-    --bs-link-hover-color-rgb: var(--ec-primary-darker-rgb);
     --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
 
     /* Type */
@@ -65,33 +43,16 @@
     --bs-border-radius-lg: 6px;
 
     /* emoncms tokens, used by panel.css, menu.css and some pages.
-       Aliases where Bootstrap has the same role. */
+       Aliases where Bootstrap has the same role. Mode specific ones are in the sets below. */
     --accent: var(--bs-primary);
     --accent-hover: var(--bs-primary);
-    --accent-bg: rgba(var(--bs-primary-rgb), 0.10);
-    --accent-bg-hover: rgba(var(--bs-primary-rgb), 0.20);
     --accent-row-hover: rgba(var(--bs-primary-rgb), 0.05);
-    --accent-border: rgba(var(--bs-primary-rgb), 0.35);
     --focus-ring: rgba(var(--bs-primary-rgb), 0.2);
 
-    --bg-body: whitesmoke;
     --bg-card: var(--bs-body-bg);
-    --bg-card-header: #ddd;
-    --bg-card-header-hover: #e0e0e0;
-    --bg-card-row-hover: var(--bs-tertiary-bg);
-    --bg-badge: #efefef;
-    --bg-input: #fafafa;
     --bg-vis-graph-color: rgba(255, 255, 255, 0);
-    --controls-bg: rgba(234, 234, 234, 0.92);
-
-    --border: var(--bs-border-color);
     --border-card: var(--bs-border-color);
-    --border-strong: #c0c0c0;
-
     --text-primary: var(--bs-emphasis-color);
-    --text-body: var(--bs-emphasis-color);
-    --text-secondary: #555;
-    --text-muted: #666;
 
     --color-cat-default: #44b3e2;
 
@@ -113,9 +74,139 @@
     --s4: calc(var(--spacer) * 1.25);
     --s5: calc(var(--spacer) * 1.5);
     --s6: calc(var(--spacer) * 2);
+}
+
+/* Light set */
+:root, [data-bs-theme="light"] {
+    /* Primary, the emoncms accent: links, primary buttons, focus, active items */
+    --bs-primary: #2a8fc7;
+    --bs-primary-rgb: 42, 143, 199;
+    --ec-primary-dark: #237bab;        /* hover, border */
+    --ec-primary-darker: #1d6189;      /* active */
+    --bs-link-hover-color: #1d6189;
+    --bs-link-hover-color-rgb: 29, 97, 137;
+
+    /* Alerts and row tints: text, background, border */
+    --bs-info-text-emphasis: #3a87ad;    --bs-info-bg-subtle: #d9edf7;    --bs-info-border-subtle: #bce8f1;
+    --bs-success-text-emphasis: #468847; --bs-success-bg-subtle: #dff0d8; --bs-success-border-subtle: #d6e9c6;
+    --bs-warning-text-emphasis: #c09853; --bs-warning-bg-subtle: #fcf8e3; --bs-warning-border-subtle: #fbeed5;
+    --bs-danger-text-emphasis: #b94a48;  --bs-danger-bg-subtle: #f2dede;  --bs-danger-border-subtle: #eed3d7;
+
+    /* Greys */
+    --bs-body-color: #333;
+    --bs-body-color-rgb: 51, 51, 51;
+    --bs-body-bg: #fff;                /* surfaces: cards, fields, modals */
+    --bs-body-bg-rgb: 255, 255, 255;
+    --bs-emphasis-color: #000;
+    --bs-emphasis-color-rgb: 0, 0, 0;
+    --bs-secondary-color: #999;        /* muted text */
+    --bs-border-color: #ddd;
+    --ec-input-border-color: #ccc;     /* form controls, default button */
+    --bs-secondary-bg: #eee;           /* input group text, readonly fields */
+    --bs-secondary-bg-rgb: 238, 238, 238;
+    --bs-tertiary-bg: #f5f5f5;         /* default button, wells, modal footer */
+    --bs-tertiary-bg-rgb: 245, 245, 245;
+
+    /* Component colours */
+    --ec-btn-default-hover-bg: #e6e6e6;
+    --ec-btn-default-active-bg: #d9d9d9;
+    --ec-btn-default-hover-border: #b3b3b3;
+    --ec-highlight: #fff;              /* inset line and text shadow on grey */
+    --ec-highlight-soft: rgba(255, 255, 255, 0.5);
+    --bs-code-color: #d14;
+    --ec-code-bg: #f7f7f9;
+    --ec-code-border: #e1e1e8;
+    --ec-table-striped-bg: #f9f9f9;
+    --ec-divider: #e5e5e5;
+    --ec-form-text: #595959;
+
+    /* emoncms tokens */
+    --accent-bg: rgba(var(--bs-primary-rgb), 0.10);
+    --accent-bg-hover: rgba(var(--bs-primary-rgb), 0.20);
+    --accent-border: rgba(var(--bs-primary-rgb), 0.35);
+
+    --bg-body: whitesmoke;             /* page */
+    --bg-card-header: #ddd;
+    --bg-card-header-hover: #e0e0e0;
+    --bg-card-row-hover: var(--bs-tertiary-bg);
+    --bg-badge: #efefef;
+    --bg-input: #fafafa;
+    --controls-bg: rgba(234, 234, 234, 0.92);
+
+    --border: var(--bs-border-color);
+    --border-strong: #c0c0c0;
+
+    --text-body: var(--bs-emphasis-color);
+    --text-secondary: #555;
+    --text-muted: #666;
 
     color-scheme: light;
 }
+
+/* Dark set, from the API pages and MyElectricFlow */
+[data-bs-theme="dark"] {
+    --bs-primary: #44b3e2;
+    --bs-primary-rgb: 68, 179, 226;
+    --ec-primary-dark: #3a9ac2;
+    --ec-primary-darker: #2f7b9c;
+    --bs-link-hover-color: #6ec6ea;    /* lighter on dark */
+    --bs-link-hover-color-rgb: 110, 198, 234;
+
+    --bs-info-text-emphasis: #9ecbdd;    --bs-info-bg-subtle: rgba(68, 179, 226, 0.15);    --bs-info-border-subtle: rgba(68, 179, 226, 0.3);
+    --bs-success-text-emphasis: #5cb85c; --bs-success-bg-subtle: rgba(92, 184, 92, 0.15);  --bs-success-border-subtle: rgba(92, 184, 92, 0.3);
+    --bs-warning-text-emphasis: #e7a944; --bs-warning-bg-subtle: rgba(231, 169, 68, 0.15); --bs-warning-border-subtle: rgba(231, 169, 68, 0.3);
+    --bs-danger-text-emphasis: #e06c6a;  --bs-danger-bg-subtle: rgba(224, 108, 106, 0.15); --bs-danger-border-subtle: rgba(224, 108, 106, 0.3);
+
+    --bs-body-color: #ccc;
+    --bs-body-color-rgb: 204, 204, 204;
+    --bs-body-bg: #2e2e2e;
+    --bs-body-bg-rgb: 46, 46, 46;
+    --bs-emphasis-color: #fff;
+    --bs-emphasis-color-rgb: 255, 255, 255;
+    --bs-secondary-color: #999;
+    --bs-border-color: #3f3f3f;
+    --ec-input-border-color: #444;
+    --bs-secondary-bg: #383838;
+    --bs-secondary-bg-rgb: 56, 56, 56;
+    --bs-tertiary-bg: #2a2a2a;
+    --bs-tertiary-bg-rgb: 42, 42, 42;
+
+    --ec-btn-default-hover-bg: #383838;
+    --ec-btn-default-active-bg: #444;
+    --ec-btn-default-hover-border: #555;
+    --ec-highlight: transparent;
+    --ec-highlight-soft: transparent;
+    --bs-code-color: #e685b5;
+    --ec-code-bg: #1a1a1a;
+    --ec-code-border: #3f3f3f;
+    --ec-table-striped-bg: #333;
+    --ec-divider: #3f3f3f;
+    --ec-form-text: #aaa;
+
+    --accent-bg: rgba(var(--bs-primary-rgb), 0.15);
+    --accent-bg-hover: rgba(var(--bs-primary-rgb), 0.25);
+    --accent-border: rgba(var(--bs-primary-rgb), 0.3);
+
+    --bg-body: #222;
+    --bg-card-header: #383838;
+    --bg-card-header-hover: #3f3f3f;
+    --bg-card-row-hover: var(--bs-secondary-bg);
+    --bg-badge: #2a2a2a;
+    --bg-input: #1a1a1a;
+    --controls-bg: rgba(46, 46, 46, 0.92);
+
+    --border: #333;
+    --border-strong: #555;
+
+    --text-body: var(--bs-body-color);
+    --text-secondary: #aaa;
+    --text-muted: #999;
+
+    color-scheme: dark;
+}
+
+/* Text colour follows the mode inside a theme root. body gets it from Bootstrap. */
+[data-bs-theme] { color: var(--bs-body-color); }
 
 .text-warning { color: var(--bs-warning-text-emphasis) !important; }
 
@@ -178,10 +269,10 @@ code, pre {
 code {
     padding: 2px 4px;
     font-size: 12px;
-    color: #d14;
+    color: var(--bs-code-color);
     white-space: nowrap;
-    background-color: #f7f7f9;
-    border: 1px solid #e1e1e8;
+    background-color: var(--ec-code-bg);
+    border: 1px solid var(--ec-code-border);
 }
 pre {
     padding: 9.5px;
@@ -237,13 +328,13 @@ pre code {
     --bs-btn-bg: var(--bs-tertiary-bg);
     --bs-btn-border-color: var(--ec-input-border-color);
     --bs-btn-hover-color: var(--bs-body-color);
-    --bs-btn-hover-bg: #e6e6e6;
-    --bs-btn-hover-border-color: #b3b3b3;
+    --bs-btn-hover-bg: var(--ec-btn-default-hover-bg);
+    --bs-btn-hover-border-color: var(--ec-btn-default-hover-border);
     --bs-btn-active-color: var(--bs-body-color);
-    --bs-btn-active-bg: #d9d9d9;
-    --bs-btn-active-border-color: #b3b3b3;
+    --bs-btn-active-bg: var(--ec-btn-default-active-bg);
+    --bs-btn-active-border-color: var(--ec-btn-default-hover-border);
     --bs-btn-disabled-color: var(--bs-body-color);
-    --bs-btn-disabled-bg: #e6e6e6;
+    --bs-btn-disabled-bg: var(--ec-btn-default-hover-bg);
     --bs-btn-disabled-border-color: var(--ec-input-border-color);
 }
 
@@ -300,7 +391,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     --bs-alert-margin-bottom: 20px;
     --bs-alert-border-radius: 4px;
     padding-right: 35px;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+    text-shadow: 0 1px 0 var(--ec-highlight-soft);
 }
 .alert h4 { margin: 0; color: inherit; }
 .alert .alert-link { color: inherit; }
@@ -337,7 +428,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     display: block;
     padding: 14px 15px 15px;
     text-align: right;
-    box-shadow: inset 0 1px 0 #fff;
+    box-shadow: inset 0 1px 0 var(--ec-highlight);
 }
 .modal-footer > * { margin: 0; }
 .modal-footer .btn + .btn { margin-left: 5px; }
@@ -361,7 +452,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     line-height: 20px;
     background-color: var(--bs-secondary-bg);
     border-color: var(--ec-input-border-color);
-    text-shadow: 0 1px 0 #fff;
+    text-shadow: 0 1px 0 var(--ec-highlight);
 }
 
 /* Table: Bootstrap 2 cell padding and borders */
@@ -371,7 +462,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     --bs-table-hover-color: currentColor;
     --bs-table-active-color: currentColor;
     --bs-table-bg: transparent;
-    --bs-table-striped-bg: #f9f9f9;
+    --bs-table-striped-bg: var(--ec-table-striped-bg);
     --bs-table-hover-bg: var(--bs-tertiary-bg);
     margin-bottom: 20px;
 }
@@ -433,7 +524,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     display: block;
     margin-bottom: 5px;
 }
-.form-text { color: #595959; }
+.form-text { color: var(--ec-form-text); }
 .form-control[readonly] { background-color: var(--bs-secondary-bg); }
 
 /* Row colours: Bootstrap 2 tints, not striped */
@@ -460,7 +551,7 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     --bs-dropdown-border-radius: 6px;
     --bs-dropdown-item-padding-x: 20px;
     --bs-dropdown-item-padding-y: 3px;
-    --bs-dropdown-divider-bg: #e5e5e5;
+    --bs-dropdown-divider-bg: var(--ec-divider);
     --bs-dropdown-divider-margin-y: 9px;
     --bs-dropdown-link-active-bg: var(--bs-primary);
 }

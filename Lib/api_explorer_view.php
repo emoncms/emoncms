@@ -32,8 +32,8 @@
                      cards, for module specific documentation that is not tied
                      to a single endpoint (used by device/api)
 
-  The explorer always renders with the dark site palette, defined as CSS
-  variables on .api-explorer, matching the emoncms.org site pages.
+  The explorer renders dark, with data-bs-theme="dark" and the dark set in
+  Theme/css/bootstrap5-theme.css. Styles are in Lib/api_explorer.css.
 
   */
 
@@ -62,336 +62,19 @@
   $standalone = !empty($standalone);
 
   load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+  load_css("Lib/api_explorer.css");
 ?>
-<style>
-  body { background-color: #222; }
-
-  /* The explorer always uses the dark site palette, on every page */
-  .api-explorer {
-    --bg-card: #2e2e2e;
-    --border-card: #3f3f3f;
-    --border: #333;
-    --text-primary: #fff;
-    --text-body: #ccc;
-    --text-muted: #999;
-    --bg-input: #1a1a1a;
-    --bg-badge: #2a2a2a;
-    --bg-card-row-hover: #383838;
-    --accent: #44b3e2;
-    --accent-bg: rgba(68, 179, 226, 0.15);
-    --accent-border: rgba(68, 179, 226, 0.3);
-    --exp-write: #e7a944;
-    --exp-write-bg: rgba(231, 169, 68, 0.15);
-    --exp-public: #5cb85c;
-    --exp-public-bg: rgba(92, 184, 92, 0.15);
-    --exp-response: #9ecbdd;
-  }
-
-  .api-explorer [v-cloak] { display: none; }
-
-  .api-explorer .mono {
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-  }
-
-  .api-explorer a { color: var(--accent, #2a8fc7); text-decoration: none; font-weight: bold; }
-  .api-explorer a:hover { text-decoration: underline; }
-
-  .api-muted { color: var(--text-muted, #666) !important; font-size: 14px !important; line-height: 21px !important; }
-
-  .copy-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 6px;
-    background-color: var(--bg-badge, #efefef);
-    color: var(--text-body, #000);
-    padding: 8px 10px;
-    cursor: pointer;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-  .copy-btn:hover { background-color: var(--bg-card-row-hover, #f5f5f5); color: var(--text-primary, #000); }
-
-  .code-block {
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 12.5px;
-    line-height: 20px;
-    color: var(--text-body, #000);
-    background-color: var(--bg-input, #fafafa);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 8px;
-    padding: 13px 16px;
-    word-break: break-all;
-  }
-
-  .code-block .hl { color: var(--text-primary, #000); font-weight: bold; }
-  .code-block .key { color: var(--accent, #2a8fc7); }
-
-  /* Standalone page container for the module API pages */
-  .api-page {
-    box-sizing: content-box;
-    max-width: 1150px;
-    margin: 0 auto;
-    padding: 28px 20px 64px 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-
-  .ref-header { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
-  .ref-header h2 { margin: 0; font-size: 26px; line-height: 34px; color: var(--text-primary, #000); }
-  .ref-header .ref-sub { color: var(--text-muted, #666) !important; font-size: 15px !important; line-height: 22px !important; margin: 2px 0 0 0 !important; }
-
-  .ref-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-
-  .ref-docs-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: var(--bg-card, #fff);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 13px;
-    color: var(--text-body, #000) !important;
-    font-weight: normal !important;
-    white-space: nowrap;
-  }
-  .ref-docs-btn:hover { background-color: var(--bg-card-row-hover, #f5f5f5); color: var(--text-primary, #000) !important; text-decoration: none !important; }
-
-  .ref-filter {
-    box-sizing: content-box;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background-color: var(--bg-card, #fff);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 8px;
-    padding: 4px 14px;
-    width: 300px;
-    color: var(--text-muted, #666);
-  }
-
-  .ref-filter input[type=text] {
-    flex-grow: 1;
-    background: none;
-    border: none;
-    box-shadow: none;
-    color: var(--text-body, #000);
-    font-size: 14px;
-    margin: 0;
-    padding: 6px 0;
-    height: auto;
-  }
-  .ref-filter input[type=text]:focus { outline: none; }
-
-  .ref-filter .filter-key {
-    color: var(--text-muted, #666);
-    font-size: 12px;
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 4px;
-    padding: 1px 6px;
-  }
-
-  .ref-layout { display: flex; gap: 28px; align-items: flex-start; }
-
-  .ref-sidebar {
-    width: 250px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 22px;
-    font-size: 14px;
-    position: sticky;
-    top: 60px;
-  }
-
-  .ref-sidebar .module-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: var(--text-muted, #666);
-    letter-spacing: 1px;
-    padding: 0 12px 6px 12px;
-  }
-
-  .ref-sidebar .group-link {
-    color: var(--text-body, #000);
-    padding: 7px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-
-  .ref-sidebar .group-link:hover { background-color: var(--bg-card-row-hover, #f5f5f5); color: var(--text-primary, #000); }
-
-  .ref-sidebar .group-link.active {
-    color: var(--text-primary, #000);
-    background-color: var(--accent-bg, rgba(42, 143, 199, 0.10));
-    font-weight: bold;
-  }
-
-  .ref-legend {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    border-top: 1px solid var(--border-card, #e0e0e0);
-    padding: 16px 12px 0 12px;
-  }
-
-  .ref-main { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
-
-  .ref-group-heading {
-    font-size: 13px;
-    font-weight: bold;
-    color: var(--text-muted, #666);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin: 16px 0 0 0;
-    scroll-margin-top: 60px;
-  }
-  .ref-group-heading:first-child { margin-top: 0; }
-
-  .badge {
-    box-sizing: content-box;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 3px 8px;
-    border-radius: 4px;
-    flex-shrink: 0;
-  }
-
-  .badge-get { color: var(--accent, #2a8fc7); background-color: var(--accent-bg, rgba(42, 143, 199, 0.10)); width: 38px; text-align: center; }
-  .badge-post { color: var(--exp-write); background-color: var(--exp-write-bg); width: 38px; text-align: center; }
-  .badge-read { color: var(--accent, #2a8fc7); background-color: var(--accent-bg, rgba(42, 143, 199, 0.10)); }
-  .badge-write { color: var(--exp-write); background-color: var(--exp-write-bg); }
-  .badge-public { color: var(--exp-public); background-color: var(--exp-public-bg); }
-
-  .endpoint {
-    background-color: var(--bg-card, #fff);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 10px;
-  }
-
-  .endpoint.open { border-color: var(--accent-border, rgba(42, 143, 199, 0.35)); }
-
-  .endpoint-row {
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    cursor: pointer;
-  }
-
-  .endpoint.open .endpoint-row { border-bottom: 1px solid var(--border-card, #e0e0e0); }
-
-  .endpoint-row .path { font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace; font-size: 14px; color: var(--text-primary, #000); }
-  .endpoint-row .desc { font-size: 14px; color: var(--text-muted, #666); flex-grow: 1; min-width: 0; }
-  .endpoint-row .chevron { color: var(--text-muted, #666); flex-shrink: 0; transition: transform 0.15s ease-out; }
-  .endpoint.open .endpoint-row .chevron { transform: rotate(180deg); }
-
-  .endpoint-body { padding: 20px; display: flex; flex-direction: column; gap: 18px; }
-
-  .param-table { display: flex; flex-direction: column; }
-
-  .param-row {
-    display: grid;
-    grid-template-columns: 130px 190px 1fr;
-    gap: 14px;
-    padding: 9px 0;
-    border-bottom: 1px solid var(--border, #e0e0e0);
-    align-items: center;
-  }
-  .param-row:last-child { border-bottom: none; }
-
-  .param-row.param-head { padding: 8px 0; }
-  .param-row.param-head span { font-size: 12px; font-weight: bold; color: var(--text-muted, #666); letter-spacing: 0.5px; }
-
-  .param-name { font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; color: var(--text-primary, #000); word-break: break-all; }
-  .param-desc { font-size: 13px; color: var(--text-body, #000); line-height: 19px; }
-  .param-desc .mono { font-size: 12px; }
-
-  .param-row input[type=text], .param-row select {
-    width: 100%;
-    box-sizing: border-box;
-    font-size: 13px;
-    color: var(--text-body, #000);
-    background-color: var(--bg-input, #fafafa);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 6px;
-    padding: 6px 10px;
-    height: auto;
-    margin: 0;
-    box-shadow: none;
-  }
-
-  .request-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
-  .request-header .req-label { font-size: 12px; font-weight: bold; color: var(--text-muted, #666); letter-spacing: 0.5px; }
-  .request-buttons { display: flex; gap: 8px; }
-
-  .try-btn {
-    font-size: 12px;
-    font-weight: bold;
-    color: #fff;
-    background-color: var(--accent, #2a8fc7);
-    border: none;
-    border-radius: 5px;
-    padding: 5px 14px;
-    cursor: pointer;
-  }
-  .try-btn:hover { opacity: 0.85; }
-  .try-btn:disabled { background-color: var(--border-card, #e0e0e0); color: var(--text-muted, #666); cursor: not-allowed; opacity: 1; }
-
-  .response-block {
-    box-sizing: content-box;
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 12.5px;
-    line-height: 20px;
-    color: var(--exp-response);
-    background-color: var(--bg-input, #fafafa);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 8px;
-    padding: 13px 16px;
-    white-space: pre-wrap;
-    word-break: break-all;
-    max-height: 300px;
-    overflow-y: auto;
-    margin: 0;
-  }
-
-  .endpoint-notes {
-    font-size: 13px !important;
-    line-height: 20px !important;
-    color: var(--text-muted, #666) !important;
-    background-color: var(--bg-badge, #efefef);
-    border: 1px solid var(--border-card, #e0e0e0);
-    border-radius: 8px;
-    padding: 12px 16px;
-    margin: 0;
-  }
-
-  @media (max-width: 900px) {
-    .ref-layout { flex-direction: column; }
-    .ref-sidebar { position: static; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 6px; }
-    .ref-sidebar .module-label { width: 100%; padding-bottom: 0; }
-    .ref-sidebar .group-link { border: 1px solid var(--border-card, #e0e0e0); }
-    .ref-legend { display: none; }
-    .param-row { grid-template-columns: 110px 1fr; }
-    .param-row .param-desc { grid-column: 1 / -1; }
-    .endpoint-row { flex-wrap: wrap; }
-  }
-</style>
 
 <?php if ($standalone) { ?>
-<div class="api-page">
+<div class="api-page" data-bs-theme="dark">
 
   <div class="ref-header" style="margin-bottom:4px">
     <div>
-      <h2 style="font-size:26px; line-height:34px; margin:0; color:#fff"><?php echo $title; ?></h2>
-      <p style="color:#999; font-size:15px; line-height:22px; margin:2px 0 0 0"><?php echo $sub; ?></p>
+      <h2><?php echo $title; ?></h2>
+      <p class="ref-sub"><?php echo $sub; ?></p>
     </div>
     <?php if (!empty($show_docs_link)) { ?>
-    <a class="ref-docs-btn" href="<?php echo $docs_route; ?>" style="color:#ccc; font-weight:normal; text-decoration:none">
+    <a class="ref-docs-btn" href="<?php echo $docs_route; ?>">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <?php echo tr('Getting started guide'); ?>
     </a>
@@ -403,7 +86,7 @@
   <?php if (!empty($extra)) echo view($extra, array('apikeys'=>$apikeys)); ?>
 
 <?php } ?>
-<div id="api-reference" class="api-explorer" v-cloak>
+<div id="api-reference" class="api-explorer" data-bs-theme="dark" v-cloak>
 
   <div style="display:flex; flex-direction:column; gap:28px">
 
@@ -527,11 +210,11 @@
   <!-- Machine readable renditions, also linked from /llms.txt. The link text
        survives HTML to markdown conversion, so AI tools that fetch this page
        without running javascript can find the full reference. -->
-  <p style="text-align:center; color:#999; font-size:14px; line-height:21px; margin:0">
+  <p class="api-muted" style="text-align:center; margin:0">
     <?php echo tr('Using an AI assistant to write API client code? Point it at the machine readable reference:'); ?>
-    <a href="<?php echo $docs_route; ?>.md" style="color:#44b3e2; text-decoration:none; font-weight:bold"><?php echo api_docs_route(); ?>.md</a> &middot;
-    <a href="<?php echo $docs_route; ?>.json" style="color:#44b3e2; text-decoration:none; font-weight:bold"><?php echo api_docs_route(); ?>.json</a> &middot;
-    <a href="<?php echo $path; ?>llms.txt" style="color:#44b3e2; text-decoration:none; font-weight:bold">llms.txt</a>
+    <a href="<?php echo $docs_route; ?>.md"><?php echo api_docs_route(); ?>.md</a> &middot;
+    <a href="<?php echo $docs_route; ?>.json"><?php echo api_docs_route(); ?>.json</a> &middot;
+    <a href="<?php echo $path; ?>llms.txt">llms.txt</a>
   </p>
 </div>
 <?php } ?>

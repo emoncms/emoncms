@@ -14,7 +14,7 @@
   Shared "Your API keys" and "Three ways to authenticate" cards.
   Used by the site API docs page and the input/feed module API pages.
   Relies on the api_copy() helper defined by Lib/api_explorer_view.php,
-  which is always included on the same pages.
+  which is always included on the same pages. Styles are in Lib/api_explorer.css.
 
   */
 
@@ -26,95 +26,6 @@
   $auth_apikey_read = $auth_logged_in ? $apikeys['read'] : "";
   $auth_apikey_write = $auth_logged_in ? $apikeys['write'] : "";
 ?>
-<style>
-  .api-auth-grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 24px;
-  }
-
-  .api-auth-card {
-    background-color: #2e2e2e;
-    border: 1px solid #3f3f3f;
-    border-radius: 12px;
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .api-auth-card h3 { margin: 0; font-size: 20px; line-height: 28px; color: #fff; }
-
-  .api-auth-card p { margin: 0; color: #ccc; font-size: 15px; line-height: 22px; }
-  .api-auth-card p strong { color: #fff; }
-  .api-auth-card a { color: #44b3e2; text-decoration: none; font-weight: bold; }
-  .api-auth-card a:hover { color: #6ec6ea; }
-
-  .api-auth-card .api-auth-muted { color: #999; font-size: 14px; line-height: 21px; }
-
-  .api-auth-title { display: flex; align-items: center; gap: 12px; }
-
-  .api-auth-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: rgba(68, 179, 226, 0.12);
-    color: #44b3e2;
-    flex-shrink: 0;
-  }
-
-  .api-auth-keyrow { display: flex; gap: 8px; align-items: center; }
-
-  .api-auth-keyrow input[type=text] {
-    flex-grow: 1;
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 13px;
-    color: #ddd;
-    background-color: #1a1a1a;
-    border: 1px solid #3f3f3f;
-    border-radius: 6px;
-    padding: 8px 12px;
-    height: auto;
-    margin: 0;
-    box-shadow: none;
-  }
-
-  .api-auth-row { display: flex; align-items: center; gap: 12px; }
-
-  .api-auth-mono {
-    font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 13px;
-    color: #ccc;
-  }
-  .api-auth-mono .hl { color: #fff; }
-
-  .api-auth-tag {
-    box-sizing: content-box;
-    font-size: 11px;
-    font-weight: bold;
-    color: #999;
-    background-color: #2a2a2a;
-    border: 1px solid #3f3f3f;
-    padding: 3px 8px;
-    border-radius: 4px;
-    width: 100px;
-    text-align: center;
-    flex-shrink: 0;
-  }
-
-  .api-auth-tag.recommended {
-    color: #44b3e2;
-    background-color: rgba(68, 179, 226, 0.15);
-    border-color: transparent;
-  }
-
-  @media (max-width: 900px) {
-    .api-auth-grid { grid-template-columns: minmax(0, 1fr); }
-  }
-</style>
 
 <div class="api-auth-grid">
 
