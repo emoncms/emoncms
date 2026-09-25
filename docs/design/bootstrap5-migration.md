@@ -149,11 +149,18 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 ## Palette and tokens
 
-All colours and shared values are in the `:root` block at the top of `bootstrap5-theme.css`. Components in the theme read them, so a look change is an edit there.
+All colours and shared values are at the top of `bootstrap5-theme.css`, in three blocks. Components in the theme read them, so a look change is an edit there.
 
-- Primary is the emoncms accent `#2a8fc7` (`--bs-primary`, `--bs-primary-rgb`), with `--ec-primary-dark` for hover and borders and `--ec-primary-darker` for active and link hover. Links, primary buttons, focus rings and the active item of dropdowns, pills, pagination and list groups use it.
+- `:root, [data-bs-theme]`: values shared by both modes (button colours, type, shape, spacing) and aliases such as `--accent` and `--bs-link-color`. The selector covers every theme root, so aliases take the colours of that root's mode.
+- `:root, [data-bs-theme="light"]`: the light set.
+- `[data-bs-theme="dark"]`: the dark set, from the API pages and MyElectricFlow. Primary `#44b3e2`, surfaces `#2e2e2e`, text `#ccc`, borders `#3f3f3f`.
+
+The light and dark sets declare the same variables, so the dark set also works on `<html>`. A new colour goes in both sets. `[data-bs-theme]` also sets the text colour, as Bootstrap sets it on `body` only.
+
+- Primary is the emoncms accent `#2a8fc7` in light and `#44b3e2` in dark (`--bs-primary`, `--bs-primary-rgb`), with `--ec-primary-dark` for hover and borders and `--ec-primary-darker` for active. Link hover is darker in light and lighter in dark. Links, primary buttons, focus rings and the active item of dropdowns, pills, pagination and list groups use it.
 - Coloured buttons keep the Bootstrap 2 colours in `--ec-btn-<colour>`, `-dark` and `-darker`. Text and label colours are `--bs-<colour>-rgb`. Alerts and row tints use `--bs-<colour>-text-emphasis`, `-bg-subtle` and `-border-subtle`.
 - Greys: `--bs-body-color`, `--bs-secondary-color` (muted), `--bs-border-color`, `--ec-input-border-color`, `--bs-secondary-bg` and `--bs-tertiary-bg`, each with its `-rgb` where Bootstrap reads one.
+- Component colours: `--ec-btn-default-*`, `--ec-highlight` and `--ec-highlight-soft` (inset line and text shadow, transparent in dark), `--bs-code-color`, `--ec-code-bg`, `--ec-code-border`, `--ec-table-striped-bg`, `--ec-divider`, `--ec-form-text`.
 - The emoncms tokens (`--accent`, `--border`, `--bg-card`, `--text-*`, `--font-*`, `--s1` to `--s6`) are defined here too, as aliases of the Bootstrap variables where the role is the same. `emoncms-base.css` keeps only the colour scheme classes (`.theme-*`), which set the top menu colours.
 - Page CSS still has fixed colours, including 72 uses of the menu blue `#44b3e2`. Move them to variables page by page.
 

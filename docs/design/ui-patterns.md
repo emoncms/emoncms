@@ -76,7 +76,7 @@ App colours:
 
 ### Reference
 
-The API pages keep their dark look and are the model for the dark variables. Their CSS sits in `<style>` blocks in `Lib/api_explorer_view.php` and `Lib/api_auth_view.php`. It moves to a CSS file, and its local token overrides are replaced by `data-bs-theme="dark"` with the shared dark set.
+The API pages are dark with `data-bs-theme="dark"` on `.api-page` and `.api-explorer`, using the shared dark set. Their CSS is in `Lib/api_explorer.css`. The page background stays a fixed `#222` until the colour mode is set on `<html>`.
 
 ## Light and dark
 
@@ -86,7 +86,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 - The dark accent is the brand blue `#44b3e2`. The light accent stays `#2a8fc7`, which reads better on white.
 - A page or app turns dark with `data-bs-theme="dark"` on its root element. Components, Bootstrap and emoncms alike, follow the variables, so they work in both.
 - For now each app keeps its own choice, and the API pages are dark. A site wide light or dark theme later sets the attribute on `<html>`.
-- The API explorer's local token overrides and the app `dark.css` and `light.css` are replaced by the shared dark and light sets.
+- The app `dark.css` and `light.css` are replaced by the shared dark and light sets.
 
 ## Page proposals
 
@@ -102,7 +102,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Email Reports | Bootstrap form | Panel layout, one panel per report. | Small |
 | Network | Blue page with white boxed rows | Panel layout in the shell: one panel per connection, WiFi scan in a panel. The blue look stays in the setup wizard only. | Medium |
 | Admin pages | Mixed | Panel layout. Review page by page. | Medium |
-| API pages | Dark reference | Keep the look. CSS to a file, colours from the shared dark set. | Small |
+| API pages | Dark reference | Done: CSS in a file, colours from the shared dark set. | Done |
 | MyElectricFlow, Psychrograph | Dark app, own CSS | Source of the app kit. | Medium |
 | MyHeatpump | Light app | Move to the kit's light set. | Medium |
 | CO2 Monitor, UK Grid | Older `dark.css` | Rebuild with the app kit. | Medium each |
@@ -113,6 +113,8 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 Each step is one or more commits per repo. Steps that should not change the look are checked with a before and after pixel diff. Steps that change the look are checked in the browser against a list of pages.
 
 ### 1. Dark variables
+
+Done.
 
 - Dark set on `[data-bs-theme="dark"]` in `bootstrap5-theme.css`: Bootstrap body, text, border and surface variables, primary `#44b3e2`, the emoncms tokens. Values from the API pages and MyElectricFlow.
 - Component colours still written as literals in the theme (default button greys, input group text shadow, `code`, modal footer highlight, table stripe) move to variables so they follow the mode.
@@ -125,6 +127,7 @@ Each step is one or more commits per repo. Steps that should not change the look
 - Group list and panel: tidy their CSS headers and document their classes in this guide.
 - Colours to variables in the shell (`emoncms-base.css`, `menu.css` with the colour schemes, `panel.css`, `group-list.css`) and the pages that keep their layout: inputs, feeds, devices, graph, backup.
 - Graph and backup `<style>` blocks move to CSS files.
+- Checked checkbox and radio use the Bootstrap blue `#0d6efd`. Set them to `--bs-primary`.
 - Check: pixel diff unchanged in light. The same pages viewed in dark for gaps.
 
 ### 3. Glyphicons to SVG icons
