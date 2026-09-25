@@ -23,7 +23,7 @@
                         <tr v-for="input in selectedInputs" :key="input.id">
                             <td class="text-muted">{{input.nodeid}}</td>
                             <td>{{input.name}}</td>
-                            <td><input type="text" class="input-block-level" placeholder="<?php echo tr('Description') ?>" v-model="input.description"></td>
+                            <td><input type="text" class="form-control" placeholder="<?php echo tr('Description') ?>" v-model="input.description"></td>
                             <td>
                                 <transition name="fade">
                                     <small class="text-muted" v-if="errors[input.id]">{{ errors[input.id] }}</small>

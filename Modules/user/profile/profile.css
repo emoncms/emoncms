@@ -31,10 +31,6 @@
     margin:0px;
 }
 
-#app input[type='text'] {
-    width:150px;
-}
-
 label {
     display: flex;
     align-items: center;

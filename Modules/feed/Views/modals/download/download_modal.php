@@ -18,7 +18,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                     <td>
                         <p><b><?php echo tr('Start date & time'); ?></b></p>
                         <div id="export-start-dtp" class="input-group date">
-                            <input id="export-start" class="input-medium" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
+                            <input id="export-start" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
                             <span class="input-group-text add-on">
                                 <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                             </span>
@@ -27,7 +27,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                     <td>
                         <p><b><?php echo tr('End date & time ');?></b></p>
                         <div id="export-end-dtp" class="input-group date">
-                            <input id="export-end" class="input-medium" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
+                            <input id="export-end" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss" />
                             <span class="input-group-text add-on">
                                 <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
                             </span>
@@ -37,7 +37,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                 <tr>
                     <td>
                         <p><b><?php echo tr('Interval');?></b></p>
-                        <select id="export-interval" >
+                        <select id="export-interval" class="form-select input-220">
                             <option value=original><?php echo tr('Original feed interval');?></option>
                             <option value=5><?php echo tr('5s');?></option>
                             <option value=10><?php echo tr('10s');?></option>
@@ -60,7 +60,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                     </td>
                     <td>
                         <p><b><?php echo tr('Date time format');?></b></p>
-                        <select id="export-timeformat">
+                        <select id="export-timeformat" class="form-select input-220">
                             <option value="unix">Unix timestamp</option>
                             <option value="excel">Excel (d/m/Y H:i:s), Timezone set in user account</option>
                             <option value="iso8601">ISO 8601 (e.g: 2020-01-01T10:00:00+01:00)</option>

@@ -30,8 +30,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
                 </table>
                 <div id="downsample-alert" class="alert alert-info"></div>
                 <div class="downsample-options">
-                    <label><?php echo tr('New interval: '); ?></label>
-                    <select id="downsample-interval" style="width:350px">
+                    <label class="form-label"><?php echo tr('New interval: '); ?></label>
+                    <select id="downsample-interval" class="form-select mb-2" style="width:350px">
                         <?php foreach (Engine::available_intervals() as $i) { ?>
                         <option value="<?php echo $i["interval"]; ?>"><?php echo ctx_tr('process_messages',$i["description"]); ?></option>
                         <?php } ?>

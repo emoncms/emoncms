@@ -138,7 +138,7 @@ load_js("Modules/process/process.js");
                                 </p>
         
                                 <!-- Process select dropdown -->
-                                <select id="select-process" class="input-large" v-model="selected_process" @change="processSelectChange(false)">
+                                <select id="select-process" class="form-select input-220 mb-2" v-model="selected_process" @change="processSelectChange(false)">
                                     <optgroup v-for="(processes, group) in context_only_processes_by_group" :label="group">
                                         <option v-for="(process, process_key) in processes" :value="process_key">{{ process.name }}</option>
                                     </optgroup>
@@ -149,14 +149,14 @@ load_js("Modules/process/process.js");
                                     <span v-if="arg.type == ProcessArg.VALUE">
                                         <div class="input-group">
                                             <span class="input-group-text value-select-label">{{ arg.name ? arg.name : 'Value' }} <i class="icon icon-question-sign" :title="arg.desc" v-if="arg.desc"></i></span>
-                                            <input type="text" v-model.number="arg.value" class="input-medium" placeholder="<?php echo ctx_tr('process_messages', 'Type value...'); ?>" />
+                                            <input type="text" v-model.number="arg.value" class="form-control input-165" placeholder="<?php echo ctx_tr('process_messages', 'Type value...'); ?>" />
                                         </div>
                                     </span>
         
                                     <span v-if="arg.type == ProcessArg.TEXT">
                                         <div class="input-group">
                                             <span class="input-group-text text-select-label">{{ arg.name ? arg.name : 'Text' }} <i class="icon icon-question-sign" :title="arg.desc"></i></span>
-                                            <input type="text" v-model="arg.value" class="input-large" placeholder="<?php echo ctx_tr('process_messages', 'Type text...'); ?>" />
+                                            <input type="text" v-model="arg.value" class="form-control input-220" placeholder="<?php echo ctx_tr('process_messages', 'Type text...'); ?>" />
                                         </div>
                                     </span>
         
@@ -164,7 +164,7 @@ load_js("Modules/process/process.js");
                                         <div class="input-group">
                                             <span class="input-group-text input-select-label"><?php echo ctx_tr('process_messages', 'Input'); ?></span>
                                             <div class="btn-group">
-                                                <select class="input-medium" v-model="arg.value">
+                                                <select class="form-select input-165" v-model="arg.value">
                                                     <optgroup v-for="(inputs,node_name) in inputs_by_node" :label="'Node '+node_name">
                                                         <option v-for="input in inputs" :value="input.id">{{ input.name }}: {{ input.description }}</option>
                                                     </optgroup>
@@ -177,7 +177,7 @@ load_js("Modules/process/process.js");
                                         <div class="input-group">
                                             <span class="input-group-text schedule-select-label"><?php echo ctx_tr('process_messages', 'Schedule'); ?></span>
                                             <div class="btn-group">
-                                                <select class="input-large" v-model="arg.value">
+                                                <select class="form-select input-220" v-model="arg.value">
                                                     <option v-for="schedule in schedules" :value="schedule.id">{{ schedule.id }}: {{ schedule.name }}</option>
                                                 </select>
                                             </div>
@@ -188,7 +188,7 @@ load_js("Modules/process/process.js");
                                         <div class="input-group">
                                             <span class="input-group-text feed-select-label"><?php echo ctx_tr('process_messages', 'Feed'); ?></span>
                                             <div class="btn-group">
-                                                <select class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;" v-model="arg.value">
+                                                <select class="form-select input-165" style="border-bottom-right-radius: 0;border-top-right-radius: 0;" v-model="arg.value">
                                                     <!-- feeds by tag -->
                                                     <option v-if="context_type==0 && Array.isArray(arg.engines) && arg.engines.length > 0" value="-1">CREATE NEW:</option>
                                                     <optgroup v-for="(feeds, tag) in feeds_by_tag" :label="tag">
@@ -201,17 +201,17 @@ load_js("Modules/process/process.js");
                                                     <div class="autocomplete">
                                                         <!-- autocomplete uses jquery which is a bit of a hack here, but it works -->
                                                         <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error -->
-                                                        <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" required style="width:4em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo ctx_tr('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Tag'); ?>" />
+                                                        <input v-model="arg.new_feed_tag" id="new-feed-tag" @click="feedSelectChange" @change="feedSelectChange" type="text" class="form-control input-75" required style="border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo ctx_tr('process_messages', 'Please enter a feed tag consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Tag'); ?>" />
                                                     </div>
                                                     <!-- removed pattern="[a-zA-Z0-9-_: ]+" giving error -->
-                                                    <input v-model="arg.new_feed_name" id="new-feed-name" type="text" required style="width:6em" title="<?php echo ctx_tr('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Name'); ?>" />
+                                                    <input v-model="arg.new_feed_name" id="new-feed-name" type="text" class="form-control input-105" required title="<?php echo ctx_tr('process_messages', 'Please enter a feed name consisting of alphabetical letters, A-Z a-z 0-9 - _ : and spaces'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Name'); ?>" />
                                                 </span>
                                             </div>
                                         </div>
                                         <div class="input-group" v-if="arg.value == -1">
                                             <span class="input-group-text feed-engine-label"><?php echo ctx_tr('process_messages', 'Engine'); ?></span>
                                             <div class="btn-group">
-                                                <select class="input-medium" v-model.number="arg.new_feed_engine">
+                                                <select class="form-select input-165" v-model.number="arg.new_feed_engine">
                                                     <?php foreach (Engine::get_all_descriptive() as $engine) { ?>
                                                         <?php if (isset($settings["feed"]["engines_hidden"]) && !in_array($engine["id"], $settings["feed"]["engines_hidden"])) { ?>
                                                             <option v-if="arg.engines && arg.engines.includes(<?php echo $engine["id"]; ?>)" value="<?php echo $engine["id"]; ?>"><?php echo $engine["description"]; ?></option>
@@ -219,7 +219,7 @@ load_js("Modules/process/process.js");
                                                     <?php } ?>
                                                 </select>
         
-                                                <select class="input-mini" v-model.number="arg.new_feed_interval" v-if="[1,4,5,6].includes(Number(arg.new_feed_engine))">
+                                                <select class="form-select input-75" v-model.number="arg.new_feed_interval" v-if="[1,4,5,6].includes(Number(arg.new_feed_engine))">
                                                     <option value=""><?php echo ctx_tr('process_messages', 'Select interval'); ?></option>
                                                     <?php foreach (Engine::available_intervals() as $i) { ?>
                                                         <option value="<?php echo $i["interval"]; ?>"><?php echo $i["description"]; ?></option>
@@ -227,7 +227,7 @@ load_js("Modules/process/process.js");
                                                 </select>
                                                 <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
                                                     <!-- remove pattern="[a-zA-Z0-9_]+" giving error -->
-                                                    <input v-if="[0,8].includes(Number(arg.new_feed_engine))" v-model="arg.new_feed_table_name" type="text" style="width:6em" title="<?php echo ctx_tr('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Table'); ?>" />
+                                                    <input v-if="[0,8].includes(Number(arg.new_feed_engine))" v-model="arg.new_feed_table_name" type="text" class="form-control input-105" title="<?php echo ctx_tr('process_messages', 'Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo ctx_tr('process_messages', 'Table'); ?>" />
                                                 <?php } ?>
                                             </div>
                                         </div>

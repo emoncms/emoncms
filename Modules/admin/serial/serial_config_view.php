@@ -17,12 +17,12 @@ load_css("Modules/admin/static/admin_styles.css");
 
     <div class="input-group start-options" style="float:right; margin-top:4px" v-if="!connected">
         <button class="btn btn-success" @click="start"><?php echo tr('Start'); ?></button>
-        <select v-model="serialport">
+        <select class="form-select input-auto" v-model="serialport">
             <?php foreach ($serial_ports as $port) { ?>
                 <option><?php echo $port; ?></option>
             <?php } ?>
         </select>
-        <select v-model="baudrate">
+        <select class="form-select input-auto" v-model="baudrate">
             <option>9600</option>
             <option selected>38400</option>
             <option>115200</option>

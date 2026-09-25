@@ -83,7 +83,7 @@ global $settings;
 
             <div class="input-group" style="margin-bottom:0px">
                 <span class="input-group-text">Select port:</span>
-                <select id="select_serial_port">
+                <select class="form-select input-auto" id="select_serial_port">
                     <?php foreach ($serial_ports as $port) { ?>
                     <option><?php echo $port; ?></option>
                     <?php } ?>
@@ -100,7 +100,7 @@ global $settings;
             ?>
             <div class="input-group" style="margin-bottom:0px">
                 <span class="input-group-text">Hardware:</span>
-                <select id="selected_hardware">
+                <select class="form-select input-auto" id="selected_hardware">
                     <option value="none">none</option>
                     <?php foreach ($hardware_options as $hardware) { ?>
                     <option><?php echo $hardware; ?></option>
@@ -110,7 +110,7 @@ global $settings;
 
             <div id="radio_format_bound" class="input-group" style="margin-bottom:0px">
                 <span class="input-group-text">Radio format:</span>
-                <select id="selected_radio_format">
+                <select class="form-select input-auto" id="selected_radio_format">
                    <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
                     <!--<option value="jeelib_native">RFM69 JeeLib Native</option>-->
                     <option value="jeelib_classic">RFM69 JeeLib Classic</option>
@@ -118,17 +118,17 @@ global $settings;
             </div>
             <br>
             <div style="margin-top:10px">
-                <label class="radio inline" style="margin-right:15px">
+                <label class="d-inline-block" style="margin-right:15px">
                     <input type="radio" name="firmware_source" value="standard" checked> <?php echo tr('Standard firmware'); ?>
                 </label>
-                <label class="radio inline">
+                <label class="d-inline-block me-2">
                     <input type="radio" name="firmware_source" value="custom" id="firmware_source_custom" disabled> <?php echo tr('Custom firmware file'); ?>
                 </label>
             </div>
 
             <div id="standard_firmware_bound" class="input-group" style="margin-bottom:0px; margin-top:10px">
                 <span class="input-group-text">Firmware:</span>
-                <select id="selected_firmware" style="width:552px">
+                <select class="form-select" id="selected_firmware" style="width:552px">
                     <option value="none">none</option>
                 </select>
             </div>

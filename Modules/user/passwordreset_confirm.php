@@ -26,7 +26,6 @@ $key_valid = !empty($key_valid);
 <style>
   .main { max-width: 340px; margin: 0 auto; padding-top: 40px; }
   .main .form-group { margin-bottom: 12px; }
-  .main input[type=password] { width: 100%; }
 </style>
 
 <div class="main">
@@ -37,13 +36,13 @@ $key_valid = !empty($key_valid);
 <?php } else { ?>
     <div id="reset-form">
         <div class="form-group">
-            <label>New password
-                <input id="reset-password" type="password" autocomplete="new-password" />
+            <label class="form-label">New password
+                <input class="form-control mb-2" id="reset-password" type="password" autocomplete="new-password" />
             </label>
         </div>
         <div class="form-group">
-            <label>Confirm new password
-                <input id="reset-password2" type="password" autocomplete="new-password" />
+            <label class="form-label">Confirm new password
+                <input class="form-control mb-2" id="reset-password2" type="password" autocomplete="new-password" />
             </label>
         </div>
         <button id="reset-submit" class="btn btn-primary" type="button">Set new password</button>

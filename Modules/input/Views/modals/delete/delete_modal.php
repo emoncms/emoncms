@@ -14,10 +14,10 @@
                     <em class="text-muted">({{selected.length}} <?php echo tr('Inputs') ?>)</em>
                 </h4>
                 <div class="bg-body-tertiary border rounded mb-3 p-2">
-                    <dl class="dl-horizontal">
+                    <dl class="row g-0">
                         <template v-for="inputid in selected">
-                            <dt :title="getInputNode(inputid)">{{ getInputNode(inputid) }}: </dt>
-                            <dd>{{ getInputName(inputid) }}</dd>
+                            <dt class="col-sm-4 text-sm-end text-truncate pe-3" :title="getInputNode(inputid)">{{ getInputNode(inputid) }}: </dt>
+                            <dd class="col-sm-8">{{ getInputName(inputid) }}</dd>
                         </template>
                     </dl>
                 </div>

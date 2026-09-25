@@ -70,20 +70,20 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
             <div class="userlist-controls">
                 <div class="input-group">
                     <span class="input-group-text"><?php echo tr("Order by"); ?></span>
-                    <select v-model="orderby" @change="fetchUsers">
+                    <select class="form-select input-220" v-model="orderby" @change="fetchUsers">
                         <option value="id"><?php echo tr("Id"); ?></option>
                         <option value="username"><?php echo tr("Username"); ?></option>
                         <option value="email"><?php echo tr("Email"); ?></option>
                         <option value="email_verified"><?php echo tr("Email Verified"); ?></option>
                     </select>
-                    <select v-model="order" @change="fetchUsers">
+                    <select class="form-select input-220" v-model="order" @change="fetchUsers">
                         <option value="ascending"><?php echo tr("Ascending"); ?></option>
                         <option value="descending"><?php echo tr("Descending"); ?></option>
                     </select>
                 </div>
                 <div class="input-group">
                     <span class="input-group-text"><?php echo tr("Search"); ?></span>
-                    <input v-model="searchKey" type="text" @keyup.enter="search" style="width:180px" />
+                    <input class="form-control" v-model="searchKey" type="text" @keyup.enter="search" style="width:194px" />
                     <button class="btn btn-default" @click="search"><?php echo tr("Search"); ?></button>
                 </div>
             </div>
@@ -147,16 +147,16 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                 </div>
                 <div class="modal-body">
                     <p>
-                        <label><?php echo tr("Username"); ?></label>
-                        <input v-model="newUser.username" type="text" class="input-block-level" />
+                        <label class="form-label"><?php echo tr("Username"); ?></label>
+                        <input v-model="newUser.username" type="text" class="form-control" />
                     </p>
                     <p>
-                        <label><?php echo tr("Password"); ?></label>
-                        <input v-model="newUser.password" type="password" class="input-block-level" />
+                        <label class="form-label"><?php echo tr("Password"); ?></label>
+                        <input v-model="newUser.password" type="password" class="form-control" />
                     </p>
                     <p>
-                        <label><?php echo tr("Email"); ?></label>
-                        <input v-model="newUser.email" type="text" class="input-block-level" />
+                        <label class="form-label"><?php echo tr("Email"); ?></label>
+                        <input v-model="newUser.email" type="text" class="form-control" />
                     </p>
                     <div class="alert alert-danger" v-if="addUserError">{{ addUserError }}</div>
                 </div>

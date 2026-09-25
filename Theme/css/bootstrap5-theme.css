@@ -273,7 +273,44 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     border-color: #ccc;
     border-radius: 4px;
 }
-.form-select { padding-right: 24px; }
+.form-select {
+    padding-right: 24px;
+    background-position: right 6px center;  /* arrow inside the right padding */
+}
+.form-control-color {
+    width: 3rem;
+    height: 30px;
+    padding: 2px;
+}
+
+/* Fixed width fields, inline as Bootstrap 2 inputs. Width includes padding and border.
+   Display has class weight only, so .hide still hides the field. */
+:where(.form-control, .form-select):is(.input-75, .input-105, .input-165, .input-220, .input-285, .input-545, .input-auto) {
+    display: inline-block;
+    vertical-align: middle;
+}
+:is(.form-control, .form-select).input-75 { width: 75px; }
+:is(.form-control, .form-select).input-105 { width: 105px; }
+:is(.form-control, .form-select).input-165 { width: 165px; }
+:is(.form-control, .form-select).input-220 { width: 220px; }
+:is(.form-control, .form-select).input-285 { width: 285px; }
+:is(.form-control, .form-select).input-545 { width: 545px; }
+:is(.form-control, .form-select).input-auto { width: auto; }
+
+/* Full width on phones, except in input groups */
+@media (max-width: 767px) {
+    :is(.form-control, .form-select):is(.input-285, .input-545):not(.input-group > *) {
+        display: block;
+        width: 100%;
+    }
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 5px;
+}
+.form-text { color: #595959; }
+.form-control[readonly] { background-color: var(--bs-secondary-bg); }
 
 /* Row colours: Bootstrap 2 tints, not striped */
 .table-success, .table-danger, .table-warning, .table-info {

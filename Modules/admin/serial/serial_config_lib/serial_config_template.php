@@ -23,7 +23,7 @@
 
         <div class="input-group" v-if="device.hardware!='emonPi3'">
             <span class="input-group-text"><?php echo _('Voltage calibration'); ?></span>
-            <input type="text" v-model="device.vcal" style="width:60px" @change="set_vcal" :disabled="!connected" />
+            <input type="text" class="form-control input-75" v-model="device.vcal" @change="set_vcal" :disabled="!connected" />
             <span class="input-group-text">%</span>
         </div>
 
@@ -43,12 +43,12 @@
                 <td>V{{ index+1 }}</td>
                 <td>
                     <div class="input-group">
-                        <input type="text" v-model="vchannel.vcal" style="width:60px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
+                        <input type="text" class="form-control input-75" v-model="vchannel.vcal" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
                         <span class="input-group-text">%</span>
                     </div>  
                 </td>
                 <td>
-                    <input type="text" v-model="vchannel.vlead" style="width:50px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
+                    <input type="text" class="form-control" v-model="vchannel.vlead" style="width:64px" :disabled="!connected || !vchannel.active" @change="set_vchannel(index)" />
                 </td>
             </tr>
         </table>
@@ -72,18 +72,18 @@
                 </td>
                 <td>CT {{ index+1 }}</td>
                 <td>
-                    <select style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)">
+                    <select class="form-select" style="width:80px" v-model="channel.ical" @change="set_ical(index)" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)">
                         <option v-for="rating in cts_available" :key="rating" v-bind:value="rating">{{ rating }}A</option>
                     </select>
                 </td>
-                <td><input type="text" v-model="channel.ilead" @change="set_ical(index)" style="width:50px" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)" /></td>
+                <td><input type="text" class="form-control" v-model="channel.ilead" @change="set_ical(index)" style="width:64px" :disabled="!connected || (device.hardware=='emonPi3' && !channel.active)" /></td>
                 <td v-if="device.hardware=='emonPi3'">
-                    <select style="width:80px" v-model="channel.vchan1" :disabled="!connected || !channel.active" @change="set_ical(index)">
+                    <select class="form-select" style="width:80px" v-model="channel.vchan1" :disabled="!connected || !channel.active" @change="set_ical(index)">
                         <option v-for="vchan in [1,2,3]" :key="vchan" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
                 <td v-if="device.hardware=='emonPi3'">
-                    <select style="width:80px" v-model="channel.vchan2" :disabled="!connected || !channel.active" @change="set_ical(index)">
+                    <select class="form-select" style="width:80px" v-model="channel.vchan2" :disabled="!connected || !channel.active" @change="set_ical(index)">
                         <option v-for="vchan in [1,2,3]" :key="vchan" v-bind:value="vchan">{{ vchan }}</option>
                     </select>
                 </td>
@@ -105,9 +105,9 @@
                 <th><?php echo _('Format'); ?></th>
             </tr>
             <tr v-if="device.hardware!='emonPi2' && device.RF">
-                <td><input type="text" v-model="device.rfNode" style="width:80px; margin:0" @change="set_rfNode" :disabled="!connected" /></td>
-                <td><input type="text" v-model="device.rfGroup" style="width:80px; margin:0" @change="set_rfGroup" :disabled="!connected" /></td>
-                <td><select style="width:100px; margin:0" v-model="device.rfBand" @change="set_rfBand" :disabled="!connected">
+                <td><input type="text" class="form-control" v-model="device.rfNode" style="width:94px" @change="set_rfNode" :disabled="!connected" /></td>
+                <td><input type="text" class="form-control" v-model="device.rfGroup" style="width:94px" @change="set_rfGroup" :disabled="!connected" /></td>
+                <td><select class="form-select" style="width:100px" v-model="device.rfBand" @change="set_rfBand" :disabled="!connected">
                         <option value="0">433 MHz</option>
                         <option value="3">433.92 MHz</option>
                         <option value="1">868 Mhz</option>
@@ -124,9 +124,9 @@
             </tr>
             <tr>
                 <td><input type="checkbox" v-model="device.pulse" style="width:80px" :disabled="!connected" @change="set_pulse" /></td>
-                <td><input type="text" v-model="device.pulsePeriod" style="width:80px" :disabled="!connected" @change="set_pulsePeriod" /></td>
-                <td><input type="text" v-model="device.datalog" style="width:80px" :disabled="!connected" @change="set_datalog" /></td>
-                <td><select v-model="device.json" :disabled="!connected" @change="set_json">
+                <td><input type="text" class="form-control" v-model="device.pulsePeriod" style="width:94px" :disabled="!connected" @change="set_pulsePeriod" /></td>
+                <td><input type="text" class="form-control" v-model="device.datalog" style="width:94px" :disabled="!connected" @change="set_datalog" /></td>
+                <td><select class="form-select input-220" v-model="device.json" :disabled="!connected" @change="set_json">
                         <option value=0><?php echo _('Simple key:value pairs'); ?></option>
                         <option value=1><?php echo _('Full JSON'); ?></option>
                     </select></td>
@@ -148,6 +148,6 @@
 
     <div class="input-group">
         <span class="input-group-text"><b><?php echo _('Console'); ?></b></span>
-        <input v-model="input" type="text" :disabled="!connected" />
+        <input class="form-control input-220" v-model="input" type="text" :disabled="!connected" />
         <button class="btn btn-default" @click="send_cmd" :disabled="!connected"><?php echo _('Send'); ?></button>
     </div>

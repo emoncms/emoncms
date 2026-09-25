@@ -44,7 +44,7 @@
             <tr v-for="s in schedules" :key="s.id">
                 <td>{{ s.id }}</td>
                 <td>
-                    <input v-if="editingId === s.id" type="text" v-model="editFields.name" />
+                    <input v-if="editingId === s.id" type="text" class="form-control input-220" v-model="editFields.name" />
                     <span v-else>{{ s.name }}</span>
                 </td>
                 <td>
@@ -326,7 +326,7 @@ var ScheduleExprBuilder = {
 
                     <div class="sb-row">
                         <span class="sb-label">Season</span>
-                        <select v-model="rule.dst" class="input-small" style="margin-bottom:0;">
+                        <select v-model="rule.dst" class="form-select input-105">
                             <option value="">Any season</option>
                             <option value="Summer">Summer (DST on)</option>
                             <option value="Winter">Winter (DST off)</option>
@@ -355,9 +355,9 @@ var ScheduleExprBuilder = {
                         <span class="sb-label" style="padding-top:5px;">Times</span>
                         <div>
                             <div v-for="(t, ti) in rule.times" :key="ti" class="sb-time-row">
-                                <input type="time" v-model="t.from">
+                                <input type="time" class="form-control" v-model="t.from">
                                 <span style="color:#888;">–</span>
-                                <input type="time" v-model="t.to">
+                                <input type="time" class="form-control" v-model="t.to">
                                 <button v-if="rule.times.length > 1" @click="removeTime(rule, ti)"
                                         class="btn btn-danger sb-time-remove">×</button>
                             </div>
@@ -377,8 +377,8 @@ var ScheduleExprBuilder = {
 
             <template v-else>
                 <div style="display:flex;margin-bottom:4px;">
-                    <input type="text" v-model="customExpr"
-                           style="flex:1;min-width:0;margin-bottom:0;border-radius:3px 0 0 3px;"
+                    <input type="text" class="form-control" v-model="customExpr"
+                           style="flex:1;min-width:0;border-radius:3px 0 0 3px;"
                            placeholder="e.g. Mon-Fri | 09:00-17:00">
                     <button @click="showHelp=true" class="btn btn-default"
                             style="border-left:0;border-radius:0 3px 3px 0;"

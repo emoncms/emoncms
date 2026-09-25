@@ -62,9 +62,6 @@ dl.inline > dd {
     padding: 1.2em 0 0 1.2em;
     vertical-align: middle;
 }
-.caret {
-    border-top-color: currentColor!important;
-}
 .dropdown-menu-right{
     right: 0!important;
     left: initial;

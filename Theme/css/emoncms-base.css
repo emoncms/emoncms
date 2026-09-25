@@ -268,10 +268,6 @@ svg.icon {
     background-color:var(--bg-body-login);
 }
 
-#login-form input[type="text"], #login-form input[type="password"] {
-    width: 94%;
-}
-
 #push, #footer {
     box-sizing: content-box;
     height: 30px;
@@ -332,10 +328,6 @@ div#account {
         no-repeat;
 }
 
-.caret {
-    border-top-color: #fff !important;
-}
-
 .text-larger {
     font-size: larger
 }
@@ -348,19 +340,6 @@ div#account {
 }
 .expand-all.in .icon-resize-full {
     display: none
-}
-
-/* collapsable groups of items */
-.node.accordion {
-    line-height: 41px;
-}
-
-.node .accordion-toggle {
-    background: #ddd;
-    height: 41px;
-}
-.node .accordion-toggle:hover {
-    background-color: #e3e3e3;
 }
 
 /* dropdown indicator */
@@ -424,11 +403,6 @@ div#account {
 .device-key:hover {background-color:#eaeaea;}
 .device-configure:hover {background-color:#eaeaea;}
 .label-container{display:inline-block; min-width:200px}
-
-/* #table used by device, input, profile, feedlist, schedule view */
-#table .accordion {
-    margin-bottom: .5em
-}
 
 /* Used by dashboard designer */
 .controls {

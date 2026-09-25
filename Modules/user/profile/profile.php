@@ -36,7 +36,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <span v-if="!edit.username">{{ user.username }}</span>
         <div v-else class="input-group">
-          <input type="text" v-model="user.username"/>
+          <input class="form-control input-165" type="text" v-model="user.username"/>
           <button class="btn btn-default" @click="save_username(user.username)"><i class="icon-ok"></i></button>
         </div>
       </td>
@@ -49,10 +49,10 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <span v-if="!edit.email">{{ user.email }}</span>
         <div v-else>
           <div class="input-group">
-            <input type="text" v-model="user.email"/>
+            <input class="form-control input-165" type="text" v-model="user.email"/>
             <button class="btn btn-default" @click="save_email(user.email)"><i class="icon-ok"></i></button>
           </div>
-          <input type="password" v-model="email_password" placeholder="<?php echo htmlspecialchars(tr('Current password'), ENT_QUOTES, 'UTF-8'); ?>"/>
+          <input class="form-control input-220" type="password" v-model="email_password" placeholder="<?php echo htmlspecialchars(tr('Current password'), ENT_QUOTES, 'UTF-8'); ?>"/>
         </div>
       </td>
       <td><i class="icon-pencil" v-if="!edit.email" @click="show_edit('email')"></i></td>
@@ -77,15 +77,15 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <div v-else>
           <div class="account-item">
               <span class="text-muted"><?php echo tr('Current password'); ?></span>
-              <br><input type="password" v-model="password.current" />
+              <br><input class="form-control input-220" type="password" v-model="password.current" />
           </div>
           <div class="account-item">
               <span class="text-muted"><?php echo tr('New password'); ?></span>
-              <br><input type="password" v-model="password.new" />
+              <br><input class="form-control input-220" type="password" v-model="password.new" />
           </div>
           <div class="account-item">
               <span class="text-muted"><?php echo tr('Repeat new password'); ?></span>
-              <br><input type="password" v-model="password.repeat" />
+              <br><input class="form-control input-220" type="password" v-model="password.repeat" />
           </div>
           <button class="btn btn-primary" @click="change_password()" /><?php echo tr('Save'); ?></button>
           <button class="btn btn-default" @click="edit.password=false" /><?php echo tr('Cancel'); ?></button>
@@ -104,7 +104,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <img v-if="!edit.gravatar && gravatarUrl" style="border: 1px solid #ccc; padding:2px" :src="gravatarUrl" />
         <div v-else class="input-group">
-          <input type="text" style="width:220px" v-model="user.gravatar"/>
+          <input class="form-control input-220" type="text" v-model="user.gravatar"/>
           <button class="btn btn-default" @click="save('gravatar')"><i class="icon-ok"></i></button>
         </div>
       </td>
@@ -115,7 +115,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <span v-if="!edit.name">{{ user.name }}</span>
         <div v-else class="input-group">
-          <input type="text" v-model="user.name"/>
+          <input class="form-control input-165" type="text" v-model="user.name"/>
           <button class="btn btn-default" @click="save('name')"><i class="icon-ok"></i></button>
         </div>
       </td>
@@ -126,7 +126,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <span v-if="!edit.location">{{ user.location }}</span>
         <div v-else class="input-group">
-          <input type="text" v-model="user.location"/>
+          <input class="form-control input-165" type="text" v-model="user.location"/>
           <button class="btn btn-default" @click="save('location')"><i class="icon-ok"></i></button>
         </div>
       </td>
@@ -137,7 +137,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <span v-if="!edit.timezone">{{ user.timezone }}</span>
         <div v-else class="input-group">
-          <select v-model="user.timezone">
+          <select class="form-select input-220" v-model="user.timezone">
             <option v-for="tz in timezones" :value="tz.id">{{ tz.id }} {{ tz.gmt_offset_text }}</option>
           </select>
           <button class="btn btn-default" @click="save('timezone')"><i class="icon-ok"></i></button>
@@ -152,7 +152,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <span class="text-muted" style="margin-left:20px" v-if="!edit.language && translation_status[user.language]!=undefined"><?php echo tr("Translation: "); ?>{{ translation_status[user.language].prc_complete }}% <?php echo tr("complete"); ?></span>
 
         <div v-if="edit.language" class="input-group">
-          <select v-model="user.language">
+          <select class="form-select input-220" v-model="user.language">
             <!-- default en_GB at the top -->
             <option value="en_GB" selected>English (United Kingdom)</option>
             <option v-for="(name,code) in languages" :value="code" v-if="code!='en_GB'">{{ name }}</option>
@@ -167,7 +167,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
       <td>
         <span v-if="!edit.startingpage">{{ user.startingpage }}</span>
         <div v-else class="input-group">
-          <input type="text" v-model="user.startingpage"/>
+          <input class="form-control input-165" type="text" v-model="user.startingpage"/>
           <button class="btn btn-default" @click="save('startingpage')"><i class="icon-ok"></i></button>
         </div>
       </td>
@@ -245,7 +245,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                 
                 <div class="delete-account-s1">
                     <p><?php echo tr('Confirm password to delete:'); ?><br>
-                    <input id="delete-account-password" type="password" /></p>
+                    <input class="form-control input-220" id="delete-account-password" type="password" /></p>
                 </div>
             </div>
             <div class="modal-footer">

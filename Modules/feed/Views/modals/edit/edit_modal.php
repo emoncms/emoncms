@@ -42,19 +42,19 @@ include_once('Lib/units.php');
                         <tbody>
                             <tr v-for="feed in selectedFeeds" :key="feed.id">
                                 <td>
-                                    <input v-if="selectedFeedIds.length === 1" type="text" class="input-block-level" v-model="feed.name">
+                                    <input v-if="selectedFeedIds.length === 1" type="text" class="form-control" v-model="feed.name">
                                     <span v-else class="text-muted">{{feed.name}}</span>
                                 </td>
                                 <td>
-                                    <input type="text" class="input-block-level" v-model="feed.tag">
+                                    <input type="text" class="form-control" v-model="feed.tag">
                                 </td>
                                 <td>
-                                    <select class="input-block-level" :value="unitOther[feed.id] ? '_other' : feed.unit" @change="onUnitChange(feed, $event)">
+                                    <select class="form-select" :value="unitOther[feed.id] ? '_other' : feed.unit" @change="onUnitChange(feed, $event)">
                                         <option value=""><?php echo tr('-- select --') ?></option>
                                         <option v-for="u in units" :key="u.short" :value="u.short">{{u.long}} ({{u.short}})</option>
                                         <option value="_other"><?php echo tr('Other') ?></option>
                                     </select>
-                                    <input v-if="unitOther[feed.id]" type="text" class="input-small" :value="feed.unit" @input="feed.unit = $event.target.value" placeholder="<?php echo tr('unit') ?>">
+                                    <input v-if="unitOther[feed.id]" type="text" class="form-control input-105 mt-2" :value="feed.unit" @input="feed.unit = $event.target.value" placeholder="<?php echo tr('unit') ?>">
                                 </td>
                                 <td class="text-center">
                                     <input type="checkbox" :checked="!!feed.public" @change="feed.public = $event.target.checked ? 1 : 0">

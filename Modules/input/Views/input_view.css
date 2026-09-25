@@ -82,7 +82,3 @@ input.checkbox-lg {
     float: none;
     transform: scale(1.3);
 }
-
-.dl-horizontal dt {
-    float: left;
-}

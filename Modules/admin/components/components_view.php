@@ -17,7 +17,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
         <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
         <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
-        <input v-if="all_custom" v-model="custom_branch" type="text" value="menu_v3" style="width:100px">
+        <input v-if="all_custom" class="form-control" v-model="custom_branch" type="text" value="menu_v3" style="width:114px">
         <button v-if="all_custom" class="btn btn-default" @click="all('custom')">Switch</button>
     </div>
 
@@ -42,7 +42,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <span class="badge bg-success" v-else><?php echo tr('No'); ?></span>
       </td>
       <td v-if="item.local_changes==''">
-        <select v-model="item.branch" @change="switch_branch(key)">
+        <select class="form-select input-220" v-model="item.branch" @change="switch_branch(key)">
           <option v-for="branch in item.branches_available" :key="branch">{{ branch }}</option>
         </select>
       </td>

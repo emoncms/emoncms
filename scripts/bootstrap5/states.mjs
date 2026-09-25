@@ -15,7 +15,7 @@ const GROUPS = {
     { name: "input_delete", page: "input/view", steps: [{ click: ".input-select" }, { click: ".input-delete" }] },
     { name: "input_process", page: "input/view", steps: [{ click: "a[title='Configure Input processing']" }] },
     { name: "input_device", page: "input/view", steps: [{ click: "a[title='Configure device using device template']" }] },
-    { name: "input_device_expand", page: "input/view", steps: [{ click: "a[title='Configure device using device template']" }, { click: ".category-heading .accordion-toggle" }, { click: ".group-heading .accordion-toggle" }] },
+    { name: "input_device_expand", page: "input/view", steps: [{ click: "a[title='Configure device using device template']" }, { click: ".category-heading .tpl-toggle" }, { click: ".group-heading .tpl-toggle" }] },
   ],
   feed: [
     { name: "feed_list", page: "feed/view", steps: [] },

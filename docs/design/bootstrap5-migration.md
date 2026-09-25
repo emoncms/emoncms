@@ -8,7 +8,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 
 - `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
 - `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, and component sizes (buttons, badges, alerts, modals, input groups, tables). Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. Element rules (reset, type, forms), form layout (`control-group`, `controls`, `help-*`, `checkbox inline`, input sizes) with the phone rules from `bootstrap-responsive.css`, `hide`, `hidden`, `caret`, accordion, `dl-horizontal`, `input-block-level`. Attribute selectors sit in `:where()` so Bootstrap 5 classes such as `.form-control` still win. Remove sections as pages move to Bootstrap 5 components.
+- `Theme/css/bootstrap2-legacy.css`: parts of Bootstrap 2 kept after the switch. `hide`, Bootstrap 2 element rules (links, type, lists, code, tables) and the datetimepicker patches. Form elements moved to Bootstrap 5, see Forms. Remove sections as pages move to Bootstrap 5 components.
 - `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the legacy file.
 - `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
@@ -54,7 +54,51 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `li.divider` | `<li><hr class="dropdown-divider"></li>` |
 | `card`, `card-*` (emoncms component) | `panel`, `panel-*` |
 
-Kept as they are: `icon-*` (styled by `bootstrap2-icons.css`), `hide`, `hidden`, `caret`, `control-group`, `controls`, `help-inline`, `help-block`, `input-mini` to `input-xxlarge`, `checkbox inline`, `accordion-*`, `dl-horizontal`, `input-block-level`. The legacy file styles the rest.
+Kept as they are: `icon-*` (styled by `bootstrap2-icons.css`) and `hide`.
+
+Removed from the legacy file:
+
+| Bootstrap 2 | Now |
+|---|---|
+| `hidden` | `hide` |
+| `dl-horizontal` | `dl.row g-0`, `dt.col-sm-4 text-sm-end text-truncate`, `dd.col-sm-8` |
+| `caret` | `dropdown-toggle` caret, or a page rule (graph `tag-caret`) |
+| accordion in the device dialog | `tpl-list`, `tpl-group`, `tpl-heading`, `tpl-toggle`, `tpl-inner` in `device_dialog.css` |
+
+## Forms
+
+Every text input, select and textarea has `form-control` or `form-select`. The legacy file no longer styles bare fields, so a field without them shows as a plain browser field. `scripts/bootstrap5/formlint.py` lists fields without them and leftover Bootstrap 2 form classes.
+
+| Bootstrap 2 | Bootstrap 5 |
+|---|---|
+| bare `input`, `textarea` | `form-control input-220` |
+| bare `select` | `form-select input-220` |
+| `input-mini` | `input-75` |
+| `input-small` | `input-105` |
+| `input-medium` | `input-165` |
+| `input-large` | `input-220` |
+| `input-xlarge` | `input-285` |
+| `input-xxlarge` | `input-545` |
+| `input-block-level` | `form-control` |
+| `type="color"` | `form-control form-control-color` |
+| `label` above a field | `form-label` |
+| `control-group` | `mb-2` |
+| `controls` | remove |
+| `help-block` | `form-text` |
+| `help-inline` | `form-text d-inline-block align-middle ms-1 mt-0` |
+| `control-group error` | `is-invalid` on the field, `text-danger` on the help text |
+| `checkbox`, `radio`, `inline` labels | `d-block` or `d-inline-block me-2`, native checkbox |
+
+- Width classes are theme classes. They set the total width (padding and border included), `display: inline-block` and `vertical-align: middle`, and only apply together with `form-control` or `form-select`. `input-auto` sizes a select to its options.
+- `input-285` and `input-545` go full width below 768px, except in an input group.
+- A Bootstrap 5 field is a full width block with no bottom margin. Bootstrap 2 fields had 10px below. Stacked fields use `mb-2`.
+- A field in an `.input-group` needs a width class, as Bootstrap 5 shrinks group fields to fit.
+- `form-label` is block with 5px below, as the Bootstrap 2 label. `form-text` is #595959.
+- Readonly fields keep the grey background.
+- Bootstrap 2 inputs were content-box and selects border-box. A text input or textarea that keeps a pixel width from the page gets 14px more, so `width:100px` becomes `width:114px`. Select widths stay.
+- Accepted: a select with a Bootstrap 2 size class is 14px wider than before (`input-medium` select 150px, now `input-165`). `input-large` no longer goes full width on phones.
+- `form-select` draws its own box, so its text follows line height and padding. A native select centred its text. A page rule that sets a select's height must set line height to the height less padding and border, or the text sits low.
+- Checkboxes and radios stay native. `form-check-input` would restyle them.
 
 Rename classes in CSS selectors and in JS as well as in markup: `addClass`, `removeClass`, class names held in JS data, and HTML built with string concatenation.
 
@@ -126,7 +170,6 @@ Bootstrap 5 modal markup has two extra wrappers:
 - Well padding 16px or 8px where Bootstrap 2 used 19px or 9px.
 - Border radius on small buttons 3px where Bootstrap 2 used 4px.
 - `btn-close` in place of the `×` character.
-- Colour inputs keep the Bootstrap 2 size, which squashes the swatch to a line. A later change can let them grow.
 
 ## Status and next steps
 
@@ -142,7 +185,9 @@ Core pages are done. Modules done: backup, sync, network (and setup, which uses 
 
 Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). `Modules/app/Views/css/utils.css` keeps them. It is loaded by the config panel (`Lib/appconf/appconf.php`), which every app includes. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). The other 14 apps were converted from the markup but not rendered. They need test instances before they can be checked. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
-Later passes: glyphicons to SVG icons, form elements to `form-control`/`form-select`, then remove sections of `bootstrap2-legacy.css`.
+Form elements are on `form-control`/`form-select`.
+
+Later passes: one date picker (replace bootstrap-datetimepicker 0.0.11), base element rules from `bootstrap2-legacy.css` into the theme (keep `hide`), theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
 
 Tools are in `scripts/bootstrap5/`.
 

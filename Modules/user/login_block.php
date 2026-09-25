@@ -48,27 +48,27 @@ load_js("Modules/user/user.js");
         <form id="login-form" autocomplete="on" onsubmit="return false;">
             <div id="loginblock" class="collapse show">
                 <div class="form-group register-item" style="display:none">
-                    <label><?php echo tr('Email'); ?>
-                        <input type="text" name="email" tabindex="1" autocomplete="email"/>
+                    <label class="form-label"><?php echo tr('Email'); ?>
+                        <input class="form-control mb-2" type="text" name="email" tabindex="1" autocomplete="email"/>
                     </label>
                 </div>
 
                 <div class="form-group">
-                    <label><?php echo tr('Username'); ?>
-                        <input type="text" tabindex="2" autocomplete="username" name="username"  />
+                    <label class="form-label"><?php echo tr('Username'); ?>
+                        <input class="form-control mb-2" type="text" tabindex="2" autocomplete="username" name="username"  />
                     </label>
                 </div>
 
                 <div class="form-group">
                     <a id="passwordreset-link" class="float-end" href="#">Forgot password?</a>
-                    <label><?php echo tr('Password'); ?>
-                        <input type="password" tabindex="3" autocomplete="current-password" name="password" />
+                    <label class="form-label"><?php echo tr('Password'); ?>
+                        <input class="form-control mb-2" type="password" tabindex="3" autocomplete="current-password" name="password" />
                     </label>
                 </div>
 
                 <div class="form-group register-item" style="display:none">
-                    <label><?php echo tr('Confirm password'); ?>
-                        <input id="confirm-password" type="password" name="confirm-password" tabindex="4" autocomplete="new-password"/>
+                    <label class="form-label"><?php echo tr('Confirm password'); ?>
+                        <input class="form-control mb-2" id="confirm-password" type="password" name="confirm-password" tabindex="4" autocomplete="new-password"/>
                     </label>
                 </div>
 
@@ -76,9 +76,9 @@ load_js("Modules/user/user.js");
 
                 <div class="form-group login-item">
                     <?php if ($settings["interface"]["enable_rememberme"]) { ?>
-                        <div class="checkbox">
-                            <label>
-                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off"><?php echo '&nbsp;'.tr('Remember me'); ?>
+                        <div>
+                            <label class="d-block mb-1">
+                                <input class="me-1" type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off"><?php echo '&nbsp;'.tr('Remember me'); ?>
                             </label>
                         </div>
                     <?php } ?>
@@ -98,13 +98,13 @@ load_js("Modules/user/user.js");
 
             <div id="passwordresetblock" class="collapse">
                 <div class="form-group">
-                    <label>Existing account name
-                        <input id="passwordreset-username" type="text" autocomplete="username"/>
+                    <label class="form-label">Existing account name
+                        <input class="form-control mb-2" id="passwordreset-username" type="text" autocomplete="username"/>
                     </label>
                 </div>
                 <div class="form-group">
-                    <label>Account email address
-                        <input id="passwordreset-email" type="text" autocomplete="email"/>
+                    <label class="form-label">Account email address
+                        <input class="form-control mb-2" id="passwordreset-email" type="text" autocomplete="email"/>
                     </label>
                 </div>
                 <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>

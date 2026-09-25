@@ -25,21 +25,19 @@
                         <div class="bg-body-tertiary border rounded mb-3 p-2">
                             <h4 class="text-info"><?php echo tr('Trim') ?>:</h4>
                             <p><?php echo tr('Empty feed data up to') ?>:</p>
-                            <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
-                                <div class="controls">
-                                    <div id="feed_trim_datetimepicker" class="input-group date" style="margin-bottom:0">
-                                        <input id="trim_start_time" class="input-medium" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
-                                        <span class="input-group-text add-on">
-                                            <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
-                                        </span>
-                                    </div>
-                                    <div class="btn-group" style="margin-bottom:-4px">
-                                        <button class="btn btn-default btn-xs active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
-                                        <button class="btn btn-default btn-xs" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>
-                                        <button class="btn btn-default btn-xs" title="<?php echo tr('Two years ago') ?>" data-relative_time="-2y"><?php echo tr('- 2 year') ?></button>
-                                        <button class="btn btn-default btn-xs" title="<?php echo tr('Three years ago') ?>" data-relative_time="-3y"><?php echo tr('- 3 year') ?></button>
-                                        <button class="btn btn-default btn-xs" title="<?php echo tr('Set to the current date/time') ?>" data-relative_time="now"><?php echo tr('Now') ?></button>
-                                    </div>
+                            <div id="trim_start_time_container" style="margin-bottom:1.3em">
+                                <div id="feed_trim_datetimepicker" class="input-group date" style="margin-bottom:0">
+                                    <input id="trim_start_time" class="form-control input-165" type="text" placeholder="YYYY-MM-DD HH:mm:ss">
+                                    <span class="input-group-text add-on">
+                                        <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i>
+                                    </span>
+                                </div>
+                                <div class="btn-group" style="margin-bottom:-4px">
+                                    <button class="btn btn-default btn-xs active" title="<?php echo tr('Set to the start date') ?>" data-relative_time="start"><?php echo tr('Start') ?></button>
+                                    <button class="btn btn-default btn-xs" title="<?php echo tr('One year ago') ?>" data-relative_time="-1y"><?php echo tr('- 1 year') ?></button>
+                                    <button class="btn btn-default btn-xs" title="<?php echo tr('Two years ago') ?>" data-relative_time="-2y"><?php echo tr('- 2 year') ?></button>
+                                    <button class="btn btn-default btn-xs" title="<?php echo tr('Three years ago') ?>" data-relative_time="-3y"><?php echo tr('- 3 year') ?></button>
+                                    <button class="btn btn-default btn-xs" title="<?php echo tr('Set to the current date/time') ?>" data-relative_time="now"><?php echo tr('Now') ?></button>
                                 </div>
                             </div>
                             <button id="feedTrim-confirm" class="btn btn-dark"><?php echo tr('Trim Data'); ?>&hellip;</button>
