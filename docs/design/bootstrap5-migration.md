@@ -147,6 +147,16 @@ Bootstrap 5 modal markup has two extra wrappers:
 - `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
 - Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
 
+## Palette and tokens
+
+All colours and shared values are in the `:root` block at the top of `bootstrap5-theme.css`. Components in the theme read them, so a look change is an edit there.
+
+- Primary is the emoncms accent `#2a8fc7` (`--bs-primary`, `--bs-primary-rgb`), with `--ec-primary-dark` for hover and borders and `--ec-primary-darker` for active and link hover. Links, primary buttons, focus rings and the active item of dropdowns, pills, pagination and list groups use it.
+- Coloured buttons keep the Bootstrap 2 colours in `--ec-btn-<colour>`, `-dark` and `-darker`. Text and label colours are `--bs-<colour>-rgb`. Alerts and row tints use `--bs-<colour>-text-emphasis`, `-bg-subtle` and `-border-subtle`.
+- Greys: `--bs-body-color`, `--bs-secondary-color` (muted), `--bs-border-color`, `--ec-input-border-color`, `--bs-secondary-bg` and `--bs-tertiary-bg`, each with its `-rgb` where Bootstrap reads one.
+- The emoncms tokens (`--accent`, `--border`, `--bg-card`, `--text-*`, `--font-*`, `--s1` to `--s6`) are defined here too, as aliases of the Bootstrap variables where the role is the same. `emoncms-base.css` keeps only the colour scheme classes (`.theme-*`), which set the top menu colours.
+- Page CSS still has fixed colours, including 72 uses of the menu blue `#44b3e2`. Move them to variables page by page.
+
 ## Element look
 
 The Bootstrap 5 reboot differs from Bootstrap 2 on headings (weight 500, no top margin, 1.2 line height), links (always underlined), paragraph spacing (16px) and lists. Emoncms pages rely on the Bootstrap 2 values, so the theme sets them in its base section: bold headings with 10px margins and the Bootstrap 2 sizes, links underlined on hover, 10px paragraph margin, list indent, `hr`, `code` and `pre`. Change the look there, not with utilities on each page.
@@ -202,7 +212,7 @@ Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` 
 
 Form elements are on `form-control`/`form-select`.
 
-Later passes: theming through `bootstrap5-theme.css` variables, glyphicons to SVG icons.
+Later passes: look changes through the palette, page CSS colours to variables, dark mode (`data-bs-theme`), colour schemes setting `--bs-primary`, glyphicons to SVG icons.
 
 Tools are in `scripts/bootstrap5/`.
 
