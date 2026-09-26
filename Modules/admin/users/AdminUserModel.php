@@ -120,12 +120,12 @@ class AdminUserModel
         // query per user row, avoiding an N+1 query problem. GROUP BY ensures one
         // row per user. The ORDER BY column is prefixed with u. to avoid ambiguity
         // with the GROUP BY in play.
-        $sql = "SELECT u.id, u.username, u.email, u.email_verified,
+        $sql = "SELECT u.id, u.username, u.email, u.email_verified, u.admin,
                     COUNT(f.id) AS feeds
                 FROM users u
                 LEFT JOIN feeds f ON f.userid = u.id
                 $searchstr
-                GROUP BY u.id, u.username, u.email, u.email_verified
+                GROUP BY u.id, u.username, u.email, u.email_verified, u.admin
                 ORDER BY u.$orderby $order
                 $limitstr";
 
@@ -153,6 +153,7 @@ class AdminUserModel
         while ($row = $result->fetch_object()) {
             $row->id = (int) $row->id;
             $row->email_verified = (int) $row->email_verified;
+            $row->admin = (int) $row->admin;
             // feeds is cast to int to match the type consistency of the other
             // numeric fields, since COUNT() returns a string in MySQLi.
             $row->feeds = (int) $row->feeds;

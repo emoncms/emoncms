@@ -38,3 +38,56 @@ body { background-color: var(--bg-body); }
 }
 .pagination-bar a:hover { background: var(--bg-card-row-hover); color: var(--text-primary); }
 .pagination-bar a.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+/* User table: middle aligned rows */
+.panel table td { vertical-align: middle; }
+.user-cell { display: flex; align-items: center; gap: 10px; min-width: 0; }
+
+/* Avatar with initials, pastel pair picked from the username */
+.user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.02em;
+}
+.user-avatar-0 { color: #31708f; background-color: #d9edf7; }
+.user-avatar-1 { color: #3c763d; background-color: #dff0d8; }
+.user-avatar-2 { color: #8a6d3b; background-color: #fcf8e3; }
+.user-avatar-3 { color: #7b3fa0; background-color: #f5e6ff; }
+.user-avatar-4 { color: #a94442; background-color: #fde0e0; }
+.user-avatar-5 { color: #b05000; background-color: #ffe8d6; }
+.user-avatar-6 { color: #1f7a6d; background-color: #d5f5f0; }
+.user-avatar-7 { color: #a2346f; background-color: #fde2f0; }
+[data-bs-theme="dark"] .user-avatar-0 { color: #7fc4ea; background-color: rgba(49, 112, 143, 0.35); }
+[data-bs-theme="dark"] .user-avatar-1 { color: #8fd18f; background-color: rgba(60, 118, 61, 0.35); }
+[data-bs-theme="dark"] .user-avatar-2 { color: #e7a944; background-color: rgba(138, 109, 59, 0.35); }
+[data-bs-theme="dark"] .user-avatar-3 { color: #c9a0e8; background-color: rgba(123, 63, 160, 0.35); }
+[data-bs-theme="dark"] .user-avatar-4 { color: #f08a8a; background-color: rgba(169, 68, 66, 0.35); }
+[data-bs-theme="dark"] .user-avatar-5 { color: #f5a35c; background-color: rgba(176, 80, 0, 0.35); }
+[data-bs-theme="dark"] .user-avatar-6 { color: #6fd6c6; background-color: rgba(31, 122, 109, 0.35); }
+[data-bs-theme="dark"] .user-avatar-7 { color: #f08cc2; background-color: rgba(162, 52, 111, 0.35); }
+
+/* Tags: pastel pairs as the feed engine badges */
+.user-tag {
+    display: inline-block;
+    flex-shrink: 0;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 18px;
+    border-radius: 3px;
+    color: var(--bs-secondary-color);
+    background-color: var(--bs-secondary-bg);
+}
+.user-tag-verified { color: #3c763d; background-color: #dff0d8; }
+.user-tag-feeds    { color: #31708f; background-color: #d9edf7; }
+.user-tag-admin    { color: #a94442; background-color: #fde0e0; }
+[data-bs-theme="dark"] .user-tag-verified { color: #8fd18f; background-color: rgba(60, 118, 61, 0.35); }
+[data-bs-theme="dark"] .user-tag-feeds    { color: #7fc4ea; background-color: rgba(49, 112, 143, 0.35); }
+[data-bs-theme="dark"] .user-tag-admin    { color: #f08a8a; background-color: rgba(169, 68, 66, 0.35); }

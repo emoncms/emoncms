@@ -62,8 +62,8 @@ load_css("Modules/admin/users/userlist_view.css");
                 <col style="width:60px">
                 <col>
                 <col>
-                <col>
-                <col style="width:70px">
+                <col style="width:110px">
+                <col style="width:80px">
                 <col style="width:80px">
             </colgroup>
             <thead>
@@ -79,11 +79,20 @@ load_css("Modules/admin/users/userlist_view.css");
             <tbody>
                 <tr v-for="user in users" :key="user.id">
                     <td class="col-secondary">{{ user.id }}</td>
-                    <td class="col-primary">{{ user.username }}</td>
-                    <td class="col-secondary">{{ user.email }}</td>
-                    <td class="col-secondary"><span v-if="user.email_verified" title="<?php echo tr('Email verified'); ?>" class="text-success"><span class="svg-icon-check"></span></span><span v-else></span></td>
-                    <td class="col-secondary">{{ user.feeds }}</td>
-                    <td><a class="btn btn-default" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
+                    <td>
+                        <div class="user-cell">
+                            <span class="user-avatar" :class="'user-avatar-' + avatarColour(user.username)">{{ initials(user.username) }}</span>
+                            <span class="col-primary text-truncate">{{ user.username }}</span>
+                            <span v-if="user.admin" class="user-tag user-tag-admin"><?php echo tr("Admin"); ?></span>
+                        </div>
+                    </td>
+                    <td class="col-secondary text-truncate">{{ user.email }}</td>
+                    <td>
+                        <span v-if="user.email_verified" class="user-tag user-tag-verified" title="<?php echo tr('Email verified'); ?>"><?php echo tr("Verified"); ?></span>
+                        <span v-else class="user-tag"><?php echo tr("Unverified"); ?></span>
+                    </td>
+                    <td><span class="user-tag" :class="{'user-tag-feeds': user.feeds > 0}">{{ user.feeds }}</span></td>
+                    <td class="text-end"><a class="btn btn-default btn-sm" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
                 </tr>
             </tbody>
         </table>
@@ -161,6 +170,19 @@ load_css("Modules/admin/users/userlist_view.css");
         },
 
         methods: {
+            // Up to two letters: first letters of the first two words, or the first two characters
+            initials: function (name) {
+                var words = String(name || '?').split(/[\s._-]+/).filter(Boolean);
+                var letters = words.length > 1 ? words[0][0] + words[1][0] : String(name || '?').slice(0, 2);
+                return letters.toUpperCase();
+            },
+            // Same colour for the same username, one of eight
+            avatarColour: function (name) {
+                var hash = 0;
+                name = String(name || '');
+                for (var i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
+                return Math.abs(hash) % 8;
+            },
             fetchNumberOfUsers: function () {
                 var self = this;
                 fetch(path + 'admin/numberofusers.json')
