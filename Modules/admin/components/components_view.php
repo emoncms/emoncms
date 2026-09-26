@@ -25,8 +25,9 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr('Components'); ?></span>
             <span class="panel-badge">{{ Object.keys(components).length }}</span>
+            <button class="btn btn-primary btn-sm cmp-update-all" @click="all('')" title="<?php echo tr('Update each component on its current branch'); ?>"><?php echo tr('Update all'); ?></button>
             <div class="input-group input-group-sm">
-                <span class="input-group-text"><?php echo tr('Update or switch all components to'); ?></span>
+                <span class="input-group-text"><?php echo tr('Switch all to'); ?></span>
                 <button v-if="!all_custom" class="btn btn-success" @click="all('stable')">Stable</button>
                 <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
                 <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
@@ -36,22 +37,27 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         </div>
         <div class="admin-table">
         <table class="cmp-table">
-            <colgroup><col><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col class="cmp-col-branch"><col class="cmp-col-actions"></colgroup>
+            <colgroup><col><col class="cmp-col-source"><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col class="cmp-col-branch"><col class="cmp-col-actions"></colgroup>
             <thead>
                 <tr>
                     <th><?php echo tr('Component name'); ?></th>
+                    <th><?php echo tr('Source'); ?></th>
                     <th><?php echo tr('Version'); ?></th>
                     <th><?php echo tr('Describe'); ?></th>
-                    <th><?php echo tr('Local changes'); ?></th>
+                    <th title="<?php echo tr('Local changes'); ?>"><?php echo tr('Changes'); ?></th>
                     <th><?php echo tr('Branch'); ?></th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, key) in components" :key="key">
+                <template v-for="group in groups" :key="group.dir">
+                <tr class="cmp-group"><td colspan="7">{{ group.dir }}<span class="cmp-group-count">{{ group.items.length }}</span></td></tr>
+                <tr v-for="{ key, item } in group.items" :key="key">
                     <td>
-                        <div class="cmp-name text-truncate"><span class="col-primary">{{ item.name }}</span><a class="cmp-repo" :href="repoLink(item.url)" :title="item.url">{{ repoName(item.url) }}</a></div>
-                        <div class="cmp-meta text-truncate" :title="item.path"><span v-if="protocol(item.url)=='SSH'" class="cmp-proto cmp-proto-ssh" title="<?php echo tr('SSH remote: updates only work if the service-runner user has a GitHub SSH key without a passphrase'); ?>">SSH</span><span v-else-if="protocol(item.url)" class="cmp-proto cmp-proto-https" title="<?php echo tr('HTTPS remote: updates need no key'); ?>">HTTPS</span>{{ item.path }}</div>
+                        <div class="col-primary text-truncate" :title="item.path">{{ item.name }}</div>
+                    </td>
+                    <td>
+                        <a class="cmp-proto" :class="'cmp-proto-' + protocol(item.url).toLowerCase()" :href="repoLink(item.url)" :title="item.url + '\n' + protocolNote(item.url)" target="_blank" rel="noopener"><span>{{ protocol(item.url) || 'git' }}</span><span class="svg-icon-link"></span></a>
                     </td>
                     <td class="col-secondary">{{ item.version }}</td>
                     <td class="cmp-describe">{{ item.describe }}</td>
@@ -67,6 +73,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                     <td v-else class="col-secondary">{{ item.branch }}</td>
                     <td class="text-end"><button class="btn btn-default btn-sm" v-if="item.local_changes==''" @click="update(key)"><?php echo tr('Update'); ?></button></td>
                 </tr>
+                </template>
             </tbody>
         </table>
         </div>
@@ -86,15 +93,33 @@ var app = Vue.createApp({
             components: components
         };
     },
+    computed: {
+        // Components grouped by parent folder, in list order
+        groups: function() {
+            var groups = [], by_dir = {};
+            for (var key in this.components) {
+                var item = this.components[key];
+                var dir = (item.path || "").replace(/\/[^\/]+\/?$/, "") || "/";
+                if (!by_dir[dir]) {
+                    by_dir[dir] = { dir: dir, items: [] };
+                    groups.push(by_dir[dir]);
+                }
+                by_dir[dir].items.push({ key: key, item: item });
+            }
+            return groups;
+        }
+    },
     methods: {
-        // git@github.com:emoncms/app.git and https://github.com/emoncms/app.git to emoncms/app
-        repoName: function(url) {
-            var m = (url || "").match(/github\.com[:\/](.+?)(\.git)?$/);
-            return m ? m[1] : url;
-        },
         protocol: function(url) {
             if (/^https?:\/\//.test(url || "")) return "HTTPS";
             if (/^(ssh:\/\/|[\w.-]+@[\w.-]+:)/.test(url || "")) return "SSH";
+            return "";
+        },
+        // git@github.com:emoncms/app.git and https://github.com/emoncms/app.git to the GitHub page
+        protocolNote: function(url) {
+            var p = this.protocol(url);
+            if (p == "SSH") return <?php echo json_encode(tr('SSH remote: updates only work if the service-runner user has a GitHub SSH key without a passphrase')); ?>;
+            if (p == "HTTPS") return <?php echo json_encode(tr('HTTPS remote: updates need no key')); ?>;
             return "";
         },
         repoLink: function(url) {
@@ -109,8 +134,12 @@ var app = Vue.createApp({
             console.log("update: "+name+" "+components[name].branch)
             component_update(name,components[name].branch)
         },
+        // Empty branch: update each component on its current branch
         all: function(branch) {
-            if (branch=='custom') branch = this.custom_branch
+            if (branch=='custom') {
+                if (!this.custom_branch) return;
+                branch = this.custom_branch;
+            }
             console.log("update all: "+branch)
             update_all_components(branch)
         }

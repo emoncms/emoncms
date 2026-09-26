@@ -119,15 +119,28 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
 
 /* -- Components ----------------------------------------------------------- */
 
+.cmp-col-source { width: 100px; }
 .cmp-col-version { width: 90px; }
 .cmp-col-describe { width: 170px; }
-.cmp-col-changes { width: 145px; }
+.cmp-col-changes { width: 100px; }
 .cmp-col-branch { width: 190px; }
 .cmp-col-actions { width: 90px; }
-.cmp-repo { margin-left: 8px; font-size: var(--font-xs); }
+.admin-page .cmp-table tr.cmp-group td {
+    height: auto;
+    padding: 5px 12px;
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    background-color: var(--bs-tertiary-bg);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+}
+.admin-page .cmp-table tbody tr.cmp-group:hover td { background-color: var(--bs-tertiary-bg); }
+.cmp-group-count { margin-left: 8px; font-family: var(--bs-body-font-family); color: var(--text-muted); }
 .cmp-proto {
-    display: inline-block;
-    margin-right: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     padding: 0 5px;
     font-size: 11px;
     font-weight: bold;
@@ -135,7 +148,12 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     border-radius: 3px;
     color: var(--bs-secondary-color);
     background-color: var(--bs-secondary-bg);
+    text-decoration: none;
 }
+.cmp-proto .svg-icon-link { font-size: 10px; opacity: 0.7; }
+a.cmp-proto:hover { text-decoration: none; filter: brightness(0.95); }
+a.cmp-proto:hover .svg-icon-link { opacity: 1; }
+[data-bs-theme="dark"] a.cmp-proto:hover { filter: brightness(1.25); }
 /* HTTPS and SSH tags: pastel pairs as the feed engine badges */
 .cmp-proto.cmp-proto-https { color: #7b3fa0; background-color: #f5e6ff; }
 [data-bs-theme="dark"] .cmp-proto.cmp-proto-https { color: #c9a0e8; background-color: rgba(155, 89, 182, 0.2); }
@@ -144,17 +162,17 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     color: var(--bs-warning-text-emphasis);
     background-color: var(--bs-warning-bg-subtle);
 }
-.cmp-meta { font-size: var(--font-xs); color: var(--text-secondary); }
 .admin-page td.cmp-describe {
     font-family: var(--font-mono);
     font-size: var(--font-xs);
     color: var(--text-muted);
     overflow-wrap: anywhere;
 }
-.admin-page .cmp-table td { vertical-align: middle; }
+.admin-page .cmp-table td { vertical-align: middle; height: 49px; }
 .cmp-custom { width: 140px; }
 .cmp-header { flex-wrap: wrap; }
-.cmp-header .input-group { margin: 0 0 0 auto; }
+.cmp-header .cmp-update-all { margin: 0 0 0 auto; padding: 2px 8px; font-size: var(--font-xs); line-height: 20px; }
+.cmp-header .input-group { margin: 0; }
 .cmp-header .input-group > .btn,
 .cmp-header .input-group > .input-group-text,
 .cmp-header .input-group > .form-control {
@@ -167,7 +185,7 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
 }
 
 @media (max-width: 767px) {
-    .admin-table .cmp-table { min-width: 860px; }
+    .admin-table .cmp-table { min-width: 960px; }
 }
 
 /* -- Log ------------------------------------------------------------------ */

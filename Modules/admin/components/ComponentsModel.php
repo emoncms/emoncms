@@ -143,8 +143,13 @@ class ComponentsModel
         return $this->pushAction("component-update", [$module_path, $branch], "update");
     }
 
+    // Empty branch updates each component on its current branch
     public function update_all_components($branch)
     {
+        if ($branch === "") {
+            return $this->pushAction("components-update", [""], "update");
+        }
+
         $available_branches = array();
         foreach ($this->component_list(false) as $c) {
             foreach ($c["branches_available"] as $b) {
