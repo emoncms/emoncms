@@ -78,7 +78,7 @@ class UpdateModel
 
     public function update_start($type, $serial_port, $firmware_key)
     {
-        if (!in_array($type, array("all", "emoncms"))) {
+        if ($type !== "all") {
             return array('success' => false, 'message' => "Invalid update type");
         }
         if (!in_array($serial_port, $this->listSerialPorts())) {

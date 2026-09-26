@@ -23,11 +23,6 @@ global $settings;
             <button class="update btn btn-primary" type="all" title="<?php echo tr('Update All'); ?> - <?php echo tr('OS, Packages, EmonHub, Emoncms'); ?>"><?php echo tr('Full Update'); ?></button>
         </div>
         <div class="panel-row">
-            <div class="row-key"><?php echo tr('Update Emoncms Only'); ?></div>
-            <div class="row-value"><?php echo tr('Emoncms, Emoncms Modules and Services'); ?>. <a href="https://github.com/emoncms/emoncms/releases">Release info</a></div>
-            <button class="update btn btn-primary" type="emoncms"><?php echo tr('Update Emoncms'); ?></button>
-        </div>
-        <div class="panel-row">
             <div class="row-key"><?php echo tr('Update Database Only'); ?></div>
             <div class="row-value"><?php echo tr('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></div>
             <a href="<?php echo $path; ?>admin/db" class="btn btn-primary"><?php echo tr('Update Database'); ?></a>
