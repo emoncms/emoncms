@@ -32,6 +32,7 @@ var app = Vue.createApp({
             repeat: ""
         },
         email_password: "",
+        before: {},
         gravatarHash: gravatar_hash
     }; },
     computed: {
@@ -44,7 +45,17 @@ var app = Vue.createApp({
     },
     methods: {
         show_edit: function(key) {
+            app.before[key] = app.user[key];
             app.edit[key] = true;
+        },
+        cancel_edit: function(key) {
+            if (key == 'password') {
+                app.password = { current: "", new: "", repeat: "" };
+            } else {
+                app.user[key] = app.before[key];
+            }
+            if (key == 'email') app.email_password = "";
+            app.edit[key] = false;
         },
         save: function(key) {
             user.set(app.user);
@@ -160,12 +171,16 @@ var app = Vue.createApp({
 var urlCleaned = window.location.href.replace("user/view" ,"");
 var qrcode = new QRCode(document.getElementById("qr_apikey"), {
     text: urlCleaned + "app?readkey=" + user_data.apikey_read  + "#myelectric",
-    width: 192,
-    height: 192,
+    width: 160,
+    height: 160,
     colorDark : "#000000",
     colorLight : "#ffffff",
     correctLevel : QRCode.CorrectLevel.H
 }); //Re-designed on-board QR generation using javascript
+
+$("#delete-account").click(function() {
+    app.delete_account();
+});
 
 $("#confirmdelete").click(function() {
     var password = $("#delete-account-password").val();

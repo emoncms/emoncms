@@ -1,76 +1,71 @@
 [v-cloak] { display: none; }
 
-.content-container {
-  max-width:980px;
+/* My Account: panels on the page background, as graph and backup */
+body { background-color: var(--bg-body); }
+.content-container { max-width: 980px; }
+.profile-page { padding-bottom: 2rem; }
+.profile-page .panel { margin-bottom: 1rem; }
+
+.profile-page .apikey { font-family: var(--font-mono); font-size: var(--font-sm); }
+
+/* Inline edit: fields and buttons on one line, wrapping when narrow */
+.profile-edit {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
 }
-.writeapikey, .readapikey  {
-  width:100px;
-  overflow:none;
-  display:inline-block;
+.profile-edit .form-control,
+.profile-edit .form-select { margin: 0; }
+.profile-password { padding: 6px 0; }
+
+.profile-gravatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
 }
 
-#app tr .icon-pencil {
-    display:none;
-    cursor:pointer;
-}
-
-#app tr .icon-share {
-    display:none;
-    cursor:pointer;
-}
-
-#app tr:hover .icon-pencil {
-    display:block;
-}
-
-#app tr:hover .icon-share {
-    display:block;
-}
-
-#app input, select, .input-group {
-    margin:0px;
-}
-
-label {
+.profile-check {
     display: flex;
     align-items: center;
+    gap: 6px;
     margin: 0;
 }
+.profile-check input { margin: 0; }
 
-input[type='checkbox'] {
-    margin: 0 5px 0 0;
-    flex-shrink: 0;
-}
-
-.table td:nth-child(1) {
-    width:200px;
-    box-sizing: content-box;
-}
-
-@media (max-width: 576px) {
-
-  .table td:nth-child(1) {
-      width:90px;
-  }
-
-  .apikey {
-    width:180px;
-    overflow:hidden;
-  }
-}
-
-/* Theme and sidebar colour swatches, formerly in bootstrap4-utils.css */
+/* Theme and sidebar colour swatches */
 .color-box {
-    margin-right: 2px;
+    display: inline-block;
+    box-sizing: content-box;
     width: 20px;
     height: 20px;
-    display: inline-block;
-    border: 2px solid #ddd;
-    box-sizing: content-box;
+    margin-right: 2px;
+    border: 2px solid var(--border);
+    border-radius: 3px;
+    vertical-align: middle;
     cursor: pointer;
 }
-
 .color-box-active,
 .color-box:hover {
-    border: 2px solid #000;
+    border-color: var(--bs-emphasis-color);
+}
+
+/* Mobile app: QR code beside the text. QR keeps a white margin so it scans in dark mode. */
+.profile-mobile {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem;
+}
+.profile-mobile > div:last-child { flex: 1; min-width: 220px; }
+#qr_apikey {
+    padding: 8px;
+    background-color: #fff;
+    line-height: 0;
+}
+.profile-mobile .store-badge { height: 40px; width: auto; }
+
+@media (max-width: 576px) {
+    .profile-page .apikey { font-size: var(--font-xs); }
 }

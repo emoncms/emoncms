@@ -32,6 +32,10 @@
     background-color: var(--bg-card-header-hover);
 }
 
+/* Header that only labels the panel, no pointer or hover */
+.panel-header.panel-header-static { cursor: default; }
+.panel-header.panel-header-static:hover { background-color: var(--bg-card-header); }
+
 /* Accent bar before the name */
 .panel-header .panel-accent {
     display: block;
@@ -40,6 +44,11 @@
     border-radius: 2px;
     background-color: var(--accent);
     flex-shrink: 0;
+}
+
+/* Red accent for a panel of destructive actions */
+.panel-header .panel-accent.panel-accent-danger {
+    background-color: var(--bs-danger-text-emphasis);
 }
 
 .panel-header .panel-name {
@@ -69,6 +78,50 @@
 /* Strip of fields and buttons */
 .panel-controls {
     padding: 0.75rem;
+}
+
+/* Key and value rows: key, value, then icon actions and buttons on the right */
+.panel-row {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 44px;
+    padding: 6px 1rem;
+    border-top: 1px solid var(--border);
+}
+.panel-row:first-child { border-top: 0; }
+.panel-row.is-editing { background-color: var(--bg-card-row-hover); }
+.panel-row .row-key {
+    flex: 0 0 200px;
+    color: var(--text-secondary);
+}
+.panel-row .row-value {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.panel-row .row-note {
+    margin-left: 1rem;
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+.panel-row .btn { margin: 0; }
+
+/* Icon action, shown on row hover */
+.row-action {
+    cursor: pointer;
+    color: transparent;
+    transition: color 0.15s;
+}
+.panel-row:hover .row-action { color: var(--text-secondary); }
+.panel-row .row-action:hover { color: var(--accent); }
+@media (hover: none) {
+    .panel-row .row-action { color: var(--text-secondary); }
+}
+
+@media (max-width: 576px) {
+    .panel-row { flex-wrap: wrap; gap: 2px 1rem; }
+    .panel-row .row-key { flex-basis: 100%; }
 }
 
 /* Panels nested in a panel section, as graph feed options */

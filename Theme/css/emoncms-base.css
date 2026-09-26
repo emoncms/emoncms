@@ -205,15 +205,6 @@ svg.icon {
     color: var(--bs-secondary-color);
 }
 
-div#account {
-    width:250px;
-}
-
-/* Used user/profile/profile.php */
-.account-item {
-    margin-bottom:10px;
-}
-
 /* Lastly, apply responsive CSS fixes as necessary */
 @media (max-width: 767px) {
     #footer {
