@@ -6,7 +6,7 @@ Sets the page families, the components each family uses and a proposal per page.
 
 - Consistent structure and behaviour matter more than an identical look. Pages that do the same job are built the same way.
 - Colours carry meaning: green is fresh or OK, orange is a warning, red is stale or destructive. The same energy source keeps the same colour in every app.
-- Colours and shared values come from one set of variables in `Theme/css/bootstrap5-theme.css`, with a light and a dark version. Page and app CSS do not set fixed colours.
+- Colours and shared values come from one set of variables in `Theme/css/bootstrap5-theme.css`, with a light and a dark version. Page and app CSS do not set fixed colours. Exceptions: a component that sets both its background and its text, such as a pastel badge, and colours on the coloured top bar or the log window.
 - Page CSS goes in a `.css` file loaded with `load_css`, not in a `<style>` block.
 - Reuse a component before writing a new one. A new component goes in this guide.
 
@@ -22,7 +22,7 @@ Sets the page families, the components each family uses and a proposal per page.
 
 A setup page is one of two layouts, both under a page header.
 
-**Page header.** `h3` title on the left, page actions and the help link on the right. Today each page builds its own (`#feed-header` with a floated link, plain `h2` or `h3` elsewhere). One theme component replaces them.
+**Page header.** `h3` title on the left, page actions and the help link on the right, centred on the title (`Theme/css/bootstrap5-theme.css`).
 
 ```html
 <div class="page-header">
@@ -33,14 +33,40 @@ A setup page is one of two layouts, both under a page header.
 
 **List layout.** For pages that list things: feeds, inputs, devices. Rows grouped by node or tag, collapsible, with selection and a sticky toolbar.
 
-- Toolbar: `div.controls` with `btn btn-default` icon buttons and a filter field on the right (`Theme/css/emoncms-base.css`).
-- List: `group-list` > `group-list-group` > `group-list-header` and `group-list-rows` > `group-list-row` > `group-list-cell` (`Theme/css/group-list.css`). Column widths are set per page on the grid.
-- Status: `group-list-indicator` for the coloured edge, time since update in green or red text.
+- Toolbar: `div.controls` with `btn btn-default` icon buttons and a filter field on the right. Each page makes it sticky with its own `*-controls` class and a sentinel element.
+- List (`Theme/css/group-list.css`). Column widths are set per page on the `group-list` grid, with `data-col` on each cell.
+
+| Class | Role |
+|---|---|
+| `group-list` | Grid container |
+| `group-list-group` | One node or tag |
+| `group-list-header` | Group row, `collapsed` when closed |
+| `group-list-chevron` | Arrow in the header select cell |
+| `group-list-name` | Group name |
+| `group-list-rows` > `group-list-rows-inner` | Collapsible wrapper, `is-expanded` when open |
+| `group-list-row` | Item row, `selected` when ticked |
+| `group-list-cell` | Cell |
+| `group-list-value` | Value cell text |
+| `group-list-indicator` | Status bar in the updated cell |
+
+- Status: `--status-color` on a header or row sets the stripe on its right edge and the indicator colour. Time since update in green or red text.
 
 **Panel layout.** For pages of settings, forms and tools: graph, backup.
 
-- `panel` > `panel-header` (`panel-accent`, `panel-name`, actions on the right) > `panel-body` or `panel-controls` (`Theme/css/panel.css`).
-- Key and value rows: `panel-grid` with `grid-row`, `row-value` and `row-action`.
+- Panel (`Theme/css/panel.css`):
+
+| Class | Role |
+|---|---|
+| `panel` | Container |
+| `panel-header` | Header row, pointer and hover. Pages whose header does not collapse reset these. |
+| `panel-accent` | Accent bar before the name |
+| `panel-name` | Title |
+| `panel-badge` | Count or state beside the name |
+| `panel-body` | Content with padding |
+| `panel-controls` | Strip of fields and buttons |
+| `table` in a panel | Uppercase grey column heads, row hover. `col-primary` and `col-secondary` on cells. |
+
+- Key and value rows: backup's `bk-rows` (`bk-row` with `k` and `v`) for now. Moves to the panel CSS with the My Account conversion.
 - Several panels stack with the panel margin. A page may place panels in a Bootstrap grid (`row g-3` > `col-lg-6`).
 
 **Controls.**
@@ -123,12 +149,15 @@ Done.
 
 ### 2. Setup kit
 
-- `page-header` component in the theme, used by every setup page. Pages with an `h2` title move to `h3`.
-- Group list and panel: tidy their CSS headers and document their classes in this guide.
-- Colours to variables in the shell (`emoncms-base.css`, `menu.css` with the colour schemes, `panel.css`, `group-list.css`) and the pages that keep their layout: inputs, feeds, devices, graph, backup.
-- Graph and backup `<style>` blocks move to CSS files.
-- Checked checkbox and radio use the Bootstrap blue `#0d6efd`. Set them to `--bs-primary`.
-- Check: pixel diff unchanged in light. The same pages viewed in dark for gaps.
+Done.
+
+- `page-header` in the theme. Used by inputs, feeds, devices, schedules, dashboards, post process, sync, email reports, EmonHub config, my apps, available apps and my accounts. The `h2` titles moved to `h3`. Admin pages and network get it with their conversion.
+- Group list and panel: CSS headers tidied, classes documented above. Unused panel rules removed (grid rows, row actions, collapse helpers, column variants).
+- Colours to variables in `emoncms-base.css`, `menu.css`, `panel.css`, `group-list.css` and on inputs, feeds, devices, graph and backup. Unused `.node`, `.device-key` and `.gravitar` rules removed.
+- Graph, backup and devices `<style>` blocks moved to `Modules/graph/view.css`, `Modules/backup/backup_view.css` and `Modules/device/Views/device_view.css`.
+- Checked checkbox and radio in `--bs-primary`, with `accent-color` for native fields.
+- Check: colour moves pixel identical in light. Look changes (header, `h3`, checkbox colour) checked on screenshots.
+- Gaps seen in dark: glyphicon sprites stay black (step 3), graph "select a feed" box, feed engine badges (pastel, readable).
 
 ### 3. Glyphicons to SVG icons
 
