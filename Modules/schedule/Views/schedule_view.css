@@ -1,0 +1,111 @@
+/* Schedules: panels on the page background, as post process */
+body { background-color: var(--bg-body); }
+.content-container { max-width: 1150px; }
+[v-cloak] { display: none; }
+
+.schedule-page { padding-bottom: 2rem; }
+.schedule-page .panel { margin-bottom: 1rem; }
+.page-lead { margin: -4px 0 14px; color: var(--text-secondary); }
+.panel-header .btn { margin: 0; }
+
+/* Schedule list */
+.sch-col-name { width: 220px; }
+.sch-col-tz { width: 170px; }
+.sch-col-actions { width: 230px; }
+.sch-expr {
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    overflow-wrap: anywhere;
+}
+.sch-actions { text-align: right; white-space: nowrap; }
+.sch-actions .btn { margin: 0; }
+.sch-actions .btn + .btn { margin-left: 4px; }
+.schedule-page tr.sch-editing td { background-color: var(--accent-bg); }
+.sch-empty { padding: 1rem; color: var(--text-secondary); }
+
+/* Edit form */
+.sch-form { padding: 1rem; }
+.sch-field { margin-bottom: 14px; }
+.sch-form .form-label { font-weight: 600; font-size: var(--font-sm); }
+.sch-buttons { display: flex; gap: 6px; }
+.sch-buttons .btn { margin: 0; }
+
+/* Expression builder */
+.sb-wrap { font-size: var(--font-sm); max-width: 720px; }
+.sb-rule {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background-color: var(--bs-tertiary-bg);
+    padding: 10px 12px;
+    margin-bottom: 8px;
+}
+.sb-rule-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 26px;
+    margin-bottom: 8px;
+}
+.sb-rule-title {
+    font-size: var(--font-2xs);
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.sb-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+.sb-row:last-child { margin-bottom: 0; }
+.sb-label {
+    flex: 0 0 60px;
+    padding-top: 5px;
+    color: var(--text-secondary);
+}
+.sb-days { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.sb-days .btn { margin: 0; }
+.sb-day { min-width: 34px; }
+.sb-hint { color: var(--text-muted); font-size: var(--font-xs); }
+.sb-time-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.sb-time-row .form-control { width: 120px; }
+.sb-time-sep { color: var(--text-muted); }
+.sb-wrap .btn { margin: 0; }
+.sb-add-rule { margin-bottom: 8px; }
+.sb-preview {
+    padding: 5px 8px;
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    color: var(--text-body);
+    background-color: var(--ec-code-bg);
+    border: 1px solid var(--ec-code-border);
+    border-radius: 3px;
+    overflow-wrap: anywhere;
+}
+.sb-preview.is-empty { color: var(--text-muted); }
+.sb-custom { display: flex; max-width: 100%; }
+.sb-custom .form-control { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: var(--font-xs); }
+.sb-error { margin-top: 4px; color: var(--bs-danger-text-emphasis); font-size: var(--font-xs); }
+.sb-mode-toggle { margin-top: 6px; font-size: var(--font-xs); }
+.sb-help pre { font-size: var(--font-xs); }
+
+/* Test result */
+.sch-test-state { padding: 12px 0 20px; text-align: center; }
+.sch-test-value { font-size: 26px; font-weight: bold; line-height: 1.2; color: var(--text-muted); }
+.sch-test-value.is-active { color: var(--bs-success-text-emphasis); }
+.sch-test-note { margin-top: 4px; font-size: var(--font-xs); color: var(--text-muted); }
+.sch-test-field { margin-bottom: 12px; }
+.sch-test-label { margin-bottom: 4px; font-size: var(--font-xs); color: var(--text-secondary); }
+.sch-test-field code { display: block; padding: 6px 8px; white-space: normal; overflow-wrap: anywhere; }
+.sch-test-debug summary { cursor: pointer; user-select: none; font-size: var(--font-xs); color: var(--text-secondary); }
+.sch-test-debug pre {
+    max-height: 220px;
+    margin-top: 8px;
+    overflow-y: auto;
+    font-size: 11px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+/* Table scrolls on narrow screens */
+.sch-table { overflow-x: auto; }
+@media (max-width: 767px) {
+    .sch-table table { min-width: 860px; }
+}
