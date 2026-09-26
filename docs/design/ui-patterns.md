@@ -79,6 +79,7 @@ A setup page is one of two layouts, both under a page header.
 - Dates: `DateTimePicker`.
 - Buttons: `btn-default` for ordinary actions, `btn-primary` for the main action of a panel or modal, `btn-danger` for delete and other destructive actions. One primary button per panel or modal.
 - Status labels: `badge bg-success`, `bg-warning`, `bg-danger`, `bg-secondary`.
+- On and off setting in a list row: `form-check form-switch`, as the Sync upload switch.
 - Modals: Bootstrap 5 modal as in `bootstrap5-migration.md`.
 
 ### Apps
@@ -127,7 +128,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Backup | Panel layout | Keep. Move the `<style>` block to a CSS file. | Small |
 | My Account | Striped Bootstrap table | Done: panels Account, API keys, Profile, Appearance, Mobile app, Delete account. Inline edit with Save and Cancel. | Done |
 | Post Process | Bootstrap table, well for Create new | Done: panel table for processes (no groups, so not the group list), panel form for new and edit. Run and Edit `btn-default`, Delete `btn-danger`. | Done |
-| Sync | Older list and table | Panel for the remote connection and settings. List layout for remote feeds, grouped by tag, matching Feeds. | Medium |
+| Sync | Older list and table | Done: panels Remote server and Upload service side by side, group list of feeds by tag with a sticky toolbar and filter as on Feeds. Upload switch per row, status stripe green (same), orange (behind remote), blue (ahead). Sync Inputs and Sync Dashboards removed. | Done |
 | Schedule | Bootstrap list and editor | List layout for schedules, editor in a panel. | Medium |
 | Email Reports | Bootstrap form | Panel layout, one panel per report. | Small |
 | Network | Blue page with white boxed rows | Panel layout in the shell: one panel per connection, WiFi scan in a panel. The blue look stays in the setup wizard only. | Medium |
@@ -169,7 +170,7 @@ One page per commit. Each starts with a short proposal (layout sketch or mock up
 
 1. My Account. Done.
 2. Post Process. Done.
-3. Sync
+3. Sync. Done.
 4. Schedule
 5. Email Reports
 6. Network. The setup wizard shares its view, so the wizard keeps the blue look and the Network page takes the panel layout.
