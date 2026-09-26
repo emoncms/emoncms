@@ -128,7 +128,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Backup | Panel layout | Keep. Move the `<style>` block to a CSS file. | Small |
 | My Account | Striped Bootstrap table | Done: panels Account, API keys, Profile, Appearance, Mobile app, Delete account. Inline edit with Save and Cancel. | Done |
 | Post Process | Bootstrap table, well for Create new | Done: panel table for processes (no groups, so not the group list), panel form for new and edit. Run and Edit `btn-default`, Delete `btn-danger`. | Done |
-| Sync | Older list and table | Done: panels Remote server and Upload service side by side, group list of feeds by tag with a sticky toolbar and filter as on Feeds. Upload switch per row, status stripe green (same), orange (behind remote), blue (ahead). Sync Inputs and Sync Dashboards removed. | Done |
+| Sync | Older list and table | Done: Upload and Download tabs (`nav-tabs`). Two panels side by side: Remote server (a summary once linked, Change opens the form), then Upload service or Download by tab. Upload tab lists local feeds with an upload switch. Download tab lists remote feeds with Download buttons. Group list by tag with a sticky toolbar and filter as on Feeds. Status stripe green (up to date), orange (behind remote), blue (ahead). Sync Inputs and Sync Dashboards removed. | Done |
 | Schedule | Bootstrap list and editor | List layout for schedules, editor in a panel. | Medium |
 | Email Reports | Bootstrap form | Panel layout, one panel per report. | Small |
 | Network | Blue page with white boxed rows | Panel layout in the shell: one panel per connection, WiFi scan in a panel. The blue look stays in the setup wizard only. | Medium |
