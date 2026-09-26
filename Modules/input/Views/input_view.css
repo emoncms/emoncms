@@ -12,7 +12,7 @@ input[type="checkbox"] { margin:0px; }
     position: sticky;
     top: var(--feed-top, 46px);
     z-index: 100;
-    background: #fff;
+    background: var(--bs-body-bg);
     padding: 6px 0;
     margin-bottom: 10px;
     transition: background-color 0.2s ease, box-shadow 0.2s ease, top 0.3s ease-out;
@@ -25,14 +25,14 @@ input[type="checkbox"] { margin:0px; }
     left: 0;
     width: 100vw;
     height: 44px;
-    background: #209ed3;
+    background: var(--bg-menu-top-active);
     z-index: -1;
     transition: top 0.3s ease-out;
 }
 .input-controls .btn { margin-right: 4px; }
 #input-filter { float: right; }
 
-#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+#noprocesses .alert{margin:0;border-bottom-color:var(--bs-warning-bg-subtle);border-radius: 4px 4px 0 0;padding-right:14px}
 
 /* ================================================================== */
 /* INPUT LIST GRID                                                     */

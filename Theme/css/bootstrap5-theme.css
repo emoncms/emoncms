@@ -133,6 +133,12 @@
     --bg-input: #fafafa;
     --controls-bg: rgba(234, 234, 234, 0.92);
 
+    /* Group list rows */
+    --ec-list-row-bg: #f0f0f0;
+    --ec-list-selected-bg: #d9edf7;
+    --ec-list-selected-hover-bg: #c4e3f3;
+    --ec-list-status: #ccc;            /* status stripe when a row sets none */
+
     --border: var(--bs-border-color);
     --border-strong: #c0c0c0;
 
@@ -194,6 +200,11 @@
     --bg-badge: #2a2a2a;
     --bg-input: #1a1a1a;
     --controls-bg: rgba(46, 46, 46, 0.92);
+
+    --ec-list-row-bg: #333;
+    --ec-list-selected-bg: rgba(68, 179, 226, 0.15);
+    --ec-list-selected-hover-bg: rgba(68, 179, 226, 0.25);
+    --ec-list-status: #555;
 
     --border: #333;
     --border-strong: #555;
@@ -520,6 +531,14 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
     }
 }
 
+/* Checked checkbox and radio in the primary colour, not Bootstrap's blue */
+.form-check-input:checked {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+.form-check-input:focus { border-color: rgba(var(--bs-primary-rgb), 0.6); }
+input:is([type="checkbox"], [type="radio"]) { accent-color: var(--bs-primary); }
+
 .form-label {
     display: block;
     margin-bottom: 5px;
@@ -571,6 +590,15 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
 
 /* main sits beside the sidebar with a left margin, so it must not be 100% wide */
 main.content-container.container-fluid { width: auto; }
+
+/* Page header: h3 title on the left, actions and help link on the right */
+.page-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 1rem;
+}
 
 /* Avatar menu has no caret */
 .grav-container.dropdown-toggle::after { display: none; }

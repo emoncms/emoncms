@@ -63,6 +63,8 @@
   --l2-border: #444;
   --l2-title: #ccc;
   --l2-text: #fff;
+  --l2-item: #ccc;
+  --l2-item-active: #fff;
   --bg-l2-active:#222;
   --bg-l2-hover:#444;
   --bg-l3:#222;
@@ -78,6 +80,8 @@
   --l2-border: #fff;
   --l2-title: #000;
   --l2-text: #000;
+  --l2-item: #333;
+  --l2-item-active: #000;
   --bg-l2-active:#ddd;
   --bg-l2-hover:#fff;
   --bg-l3:#f3f3f3;
@@ -185,7 +189,7 @@ svg.icon {
 }
 
 #footer {
-    background-color: #f5f5f5;
+    background-color: var(--bs-tertiary-bg);
     text-align: center;
     font-size: 13px;
     font-weight: bold;
@@ -198,7 +202,7 @@ svg.icon {
 }
 
 #footer span {
-    color: #999;
+    color: var(--bs-secondary-color);
 }
 
 div#account {
@@ -233,7 +237,7 @@ div#account {
     position: absolute;
     top: 0; bottom:0; left: 0; right:0;
     margin: auto;
-    background: rgba(255, 255, 255, .8)
+    background: rgba(var(--bs-body-bg-rgb), .8)
         url(../ajax-loader.gif)
         center
         no-repeat;
@@ -253,66 +257,11 @@ div#account {
     display: none
 }
 
-/* dropdown indicator */
-.node .has-indicator .icon-indicator {
-    opacity: 0.333;
-    float: none;
-}
-
-.node .select input {margin-top: -1px}
-.node .collapse {
-    width: 100%;
-    transition-duration: 350ms;
-    transition-property: all;
-    transition-timing-function: ease;
-}
-.node .collapse > * {
-    box-sizing: content-box;
-    width: 100%;
-    position: relative;
-    border-bottom: 1px solid #fff;
-    background: #f0f0f0;
-}
-.node .collapse > *:hover {
-    background-color: #f5f5f5;
-}
-.node .collapse > *:before {
-    content: '';
-    width: 0px;
-    background: #44b3e2;
-    height: 100%;
-    display: block;
-    position: absolute;
-    transition: width .2s ease-out;
-}
-.node .collapse > *:hover:before {
-    width: 2px;
-}
-.node .collapse > *:last-child {
-    border-bottom-width: 0
-}
-.node > * > * ,
-.node > * > * > * ,
-.node > * > * > .pull-right > * {
-    float: left;
-    min-height: 1px;
-}
 .pull-right{float:right!important}
 .line-height-expanded{line-height: 2;}
 .line-height-normal{line-height: 1.5;}
 .cursor-pointer{ cursor: pointer; }
 
-/* input_view interface */
-.device-key,
-.device-schedule,
-.device-configure,
-.device-last-updated {
-    border-left: 1px solid #eee;
-    color: white;
-}
-
-.device-key:hover {background-color:#eaeaea;}
-.device-configure:hover {background-color:#eaeaea;}
 .label-container{display:inline-block; min-width:200px}
 
 /* Used by dashboard designer */

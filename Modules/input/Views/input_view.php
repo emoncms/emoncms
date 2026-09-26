@@ -20,9 +20,9 @@ load_css("Modules/input/Views/input_view.css");
 </script>
 <?php require "Modules/input/Views/translate.php"; ?>
 
-<div id="input-header">
-    <span id="api-help" style="float:right"><a href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a></span>
+<div class="page-header">
     <h3><?php echo tr('Inputs'); ?></h3>
+    <a href="<?php echo $path ?>input/api"><?php echo tr('API Help'); ?></a>
 </div>
 
 <div class="input-controls-sentinel"></div>

@@ -28,9 +28,10 @@
 
 <div id="schedule-app">
 
-    <a href="api" style="float:right"><?php echo ctx_tr('schedule_messages','Schedule API'); ?></a>
-
-    <h3><?php echo ctx_tr('schedule_messages','Schedules'); ?></h3>
+    <div class="page-header">
+        <h3><?php echo ctx_tr('schedule_messages','Schedules'); ?></h3>
+        <a href="api"><?php echo ctx_tr('schedule_messages','Schedule API'); ?></a>
+    </div>
     <p style="color:#666;"><?php echo ctx_tr('schedule_messages','Schedules define active time windows that can be assigned to Input or Feed process lists to control when those processes run.'); ?></p>
 
     <div v-if="schedules.length" class="">

@@ -85,7 +85,7 @@
 }
 
 .dropdown-menu svg.icon {
-  fill:#000;
+  fill: var(--bs-emphasis-color);
 }
 
 .htop {
@@ -145,7 +145,7 @@
 
 .menu-l2 li div {
   text-decoration: none;
-  color: #ccc;
+  color: var(--l2-item);
   display: block;
   padding: 0.94rem;
   cursor:pointer;
@@ -162,7 +162,7 @@
   background-color:var(--bg-l2-active);
   /* add highlight bar on the left */
     border-left: 3px solid var(--accent);
-    color:#fff;
+    color: var(--l2-item-active);
 }
 
 .menu-text-l2 {
@@ -282,37 +282,3 @@ a.grav-container img.grav {
 a.grav-container:hover img.grav {
   border-color: #dedede;
 }
-.no-gravitar a.grav-container {
-  box-sizing: content-box;
-  border-radius: 50%;
-  background: #c5c5c5;
-  width: 1.36em;
-  height: 1.36em;
-  line-height: 1.37em;
-  border: 2px solid #ccc;
-  overflow: hidden;
-  margin: 0.2em;
-  font-size:1.5rem;
-}
-
-.no-gravitar a.grav-container:hover {
-  background: none;
-}
-
-.no-gravitar a.grav-container .icon.user {
-  font-size: 1.66em;
-  margin: 0 -.1em;
-}
-
-.gravitar a.grav-container {
-  border-radius: 50%;
-  overflow: hidden;
-  padding: 6px;
-  font-size:1.5rem;
-  transition: all 0.1s ease-out;
-}
-
-.gravitar a.grav-container:hover {
-  background: var(--bg-menu-top-hover);
-}
-

@@ -72,10 +72,10 @@ load_css("Modules/feed/Views/feed_view.css");
 <!-- FEED LIST VIEW                                                                                                                                   -->   
 <!--------------------------------------------------------------------------------------------------------------------------------------------------- -->
 
-<div id="feed-header">
-    <span id="api-help" style="float:right"><a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a></span>
+<div class="page-header">
     <h3 id="feeds-title"><?php echo tr('Feeds'); ?></h3>
     <h3 id="public-feeds-title" class="hide"><?php echo tr('Public Feeds'); ?></h3>
+    <a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a>
 </div>
 
 <div class="feed-controls-sentinel"></div>
