@@ -37,14 +37,16 @@ body { background-color: var(--bg-body); }
 /* -- System info ---------------------------------------------------------- */
 
 .info-row { cursor: pointer; transition: background-color 0.15s; }
+/* Compact rows on the info page */
+.info-page .panel-row { min-height: 34px; padding: 5px 1rem; }
 .info-row:hover { background-color: var(--bg-card-row-hover); }
 .info-page .panel-row .row-key { flex-basis: 160px; }
 .info-row .row-key { font-weight: 600; color: var(--text-primary); }
 
 .status-dot {
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     margin-right: 6px;
     border-radius: 50%;
     background-color: var(--bs-secondary-color);
@@ -103,6 +105,46 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     from { bottom: 30px; opacity: 1; }
     to { bottom: 0; opacity: 0; }
 }
+
+/* Tags: pastel pairs as the feed engine badges */
+.info-tag {
+    display: inline-block;
+    padding: 0 6px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 18px;
+    border-radius: 3px;
+    white-space: nowrap;
+    color: var(--bs-secondary-color);
+    background-color: var(--bs-secondary-bg);
+}
+.info-tag-green { color: #3c763d; background-color: #dff0d8; }
+.info-tag-amber { color: #8a6d3b; background-color: #fcf8e3; }
+.info-tag-red   { color: #a94442; background-color: #fde0e0; }
+[data-bs-theme="dark"] .info-tag-green { color: #8fd18f; background-color: rgba(60, 118, 61, 0.35); }
+[data-bs-theme="dark"] .info-tag-amber { color: #e7a944; background-color: rgba(138, 109, 59, 0.35); }
+[data-bs-theme="dark"] .info-tag-red   { color: #f08a8a; background-color: rgba(169, 68, 66, 0.35); }
+.info-note { margin-left: 6px; color: var(--text-secondary); }
+
+/* Component chips: name, version, local changes tag */
+.info-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+.info-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 1px 4px 1px 7px;
+    font-size: var(--font-xs);
+    line-height: 18px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background-color: var(--bs-tertiary-bg);
+}
+.info-chip-version { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); padding-right: 3px; }
+.info-chip .info-tag { padding: 0 4px; font-size: 10px; line-height: 15px; }
+
+/* Services: joined button group, as before the conversion */
+.svc-buttons { flex-shrink: 0; }
+.svc-buttons .btn { margin: 0; }
 
 /* -- Update --------------------------------------------------------------- */
 

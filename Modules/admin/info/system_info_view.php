@@ -92,8 +92,8 @@ $_js_translations = array(
 				<span v-if="loading">{{ tr('Loading...') }}</span>
 				<span v-else><span class="svg-icon-refresh-cw"></span> {{ tr('Refresh') }}</span>
 			</button>
-			<button type="button" class="btn btn-default" @click="copyAsMarkdown" :title="tr('**Recommended** when pasting into forum')">{{ tr('Copy as Markdown') }}</button>
-			<button type="button" class="btn btn-default" @click="copyAsText" :title="tr('Formatted as plain text')">{{ tr('Copy as Text') }}</button>
+			<button type="button" class="btn btn-info" @click="copyAsMarkdown" :title="tr('**Recommended** when pasting into forum')">{{ tr('Copy as Markdown') }}</button>
+			<button type="button" class="btn btn-info" @click="copyAsText" :title="tr('Formatted as plain text')">{{ tr('Copy as Text') }}</button>
 		</div>
 	</div>
 
@@ -119,15 +119,15 @@ $_js_translations = array(
 		<div v-for="(svc, key) in info.Services" :key="key" class="panel-row info-row" @click="copyServiceRow(key, svc, $event)">
 			<div class="row-key"><span class="status-dot" :class="serviceDotClass(svc)"></span>{{ key }}</div>
 			<div class="row-value">
-				<template v-if="isServiceLoaded(svc)"><strong>{{ svc.state }}</strong> {{ serviceText(svc) }}</template>
-				<template v-else>{{ serviceText(svc) }}</template>
+				<span class="info-tag" :class="serviceTag(svc).cls">{{ serviceTag(svc).text }}</span>
+				<span v-if="svc && svc.note" class="info-note">{{ svc.note }}</span>
 			</div>
-			<div class="row-buttons" v-if="isServiceLoaded(svc) && svc.unitfilestate !== 'container'">
-				<button v-if="svc.unitfilestate !== 'disabled' && !isServiceActive(svc)" class="btn btn-sm btn-default" @click="serviceAction(key, 'start')">Start</button>
-				<button v-if="isServiceActive(svc)" class="btn btn-sm btn-default" @click="serviceAction(key, 'restart')">Restart</button>
-				<button v-if="isServiceActive(svc)" class="btn btn-sm btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
-				<button v-if="svc.unitfilestate === 'disabled'" class="btn btn-sm btn-default" @click="serviceAction(key, 'enable')">Enable</button>
-				<button v-else-if="!isServiceActive(svc)" class="btn btn-sm btn-default" @click="serviceAction(key, 'disable')">Disable</button>
+			<div class="btn-group svc-buttons" role="group" v-if="isServiceLoaded(svc) && svc.unitfilestate !== 'container'">
+				<button v-if="svc.unitfilestate !== 'disabled' && !isServiceActive(svc)" class="btn btn-xs btn-success" @click="serviceAction(key, 'start')">Start</button>
+				<button v-if="isServiceActive(svc)" class="btn btn-xs btn-danger" @click="serviceAction(key, 'stop')">Stop</button>
+				<button v-if="isServiceActive(svc)" class="btn btn-xs btn-warning" @click="serviceAction(key, 'restart')">Restart</button>
+				<button v-if="svc.unitfilestate === 'disabled'" class="btn btn-xs btn-primary" @click="serviceAction(key, 'enable')">Enable</button>
+				<button v-else-if="!isServiceActive(svc)" class="btn btn-xs btn-dark" @click="serviceAction(key, 'disable')">Disable</button>
 			</div>
 		</div>
 	</div>
@@ -136,15 +136,19 @@ $_js_translations = array(
 		<div class="panel-header panel-header-static">
 			<span class="panel-accent"></span>
 			<span class="panel-name">{{ tr(section.title) }}</span>
-			<button v-if="section.title === 'Disk'" class="btn btn-default btn-sm" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
+			<button v-if="section.title === 'Disk'" class="btn btn-info btn-sm" @click="resetDiskStats">{{ tr('Reset Disk Stats') }}</button>
 		</div>
 		<div v-for="row in section.rows" :key="row.title" class="panel-row info-row" @click="copyRow(row, $event)">
 			<div class="row-key text-truncate" :title="tr(row.title)">{{ tr(row.title) }}</div>
 			<div class="row-value">
 				<template v-if="row.type === 'text'">{{ row.value }}</template>
+				<span v-if="row.type === 'branch'" class="info-tag" :class="branchTagClass(row.value)">{{ row.value }}</span>
+				<div v-if="row.type === 'components'" class="info-chips">
+					<span v-for="c in row.items" :key="c.name" class="info-chip" :title="c.lc ? '<?php echo tr('Local changes'); ?>' : ''">{{ c.name }}<span class="info-chip-version">{{ c.version }}</span><span v-if="c.lc" class="info-tag info-tag-red">LC</span></span>
+				</div>
 				<div v-if="row.type === 'progress'" class="info-usage">
 					<div class="info-usage-label">{{ tr(row.label) }}</div>
-					<div class="progress"><div class="progress-bar" :style="{ width: row.width + '%' }"></div></div>
+					<div class="progress"><div class="progress-bar" :class="usageClass(row.width)" :style="{ width: row.width + '%' }"></div></div>
 					<div class="info-summary">
 						<span v-for="item in row.summary" :key="item.k"><b>{{ item.k }}</b>{{ item.v }}</span>
 					</div>
@@ -153,7 +157,7 @@ $_js_translations = array(
 				<span v-if="row.type === 'redis-size'" id="redisused">{{ row.value }}</span>
 			</div>
 			<div class="row-buttons" v-if="row.type === 'redis-size'">
-				<button id="redisflush" class="btn btn-danger btn-sm" @click="redisFlush">{{ tr('Flush') }}</button>
+				<button id="redisflush" class="btn btn-info btn-sm" @click="redisFlush">{{ tr('Flush') }}</button>
 			</div>
 		</div>
 	</div>
@@ -178,7 +182,7 @@ $_js_translations = array(
 		<div class="panel-row">
 			<div class="row-key">{{ tr('Reboot') }}</div>
 			<div class="row-value text-muted">Takes about 30 seconds.</div>
-			<button type="button" class="btn btn-default" @click="rebootPi" :disabled="loading">{{ tr('Reboot') }}</button>
+			<button type="button" class="btn btn-warning" @click="rebootPi" :disabled="loading">{{ tr('Reboot') }}</button>
 		</div>
 		<div class="panel-row">
 			<div class="row-key">{{ tr('Shutdown') }}</div>
@@ -308,6 +312,32 @@ Vue.createApp({
 			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') return '';
 			return this.isServiceRunning(svc) ? 'is-running' : 'is-stopped';
 		},
+		// State tag: green running, amber active but not running, red stopped, grey not installed
+		serviceTag: function(svc) {
+			if (!svc || svc.loadstate === 'Not-found') return { text: 'Not installed', cls: '' };
+			if (svc.loadstate === 'Masked') return { text: 'Masked', cls: '' };
+			if (this.isServiceRunning(svc)) return { text: 'Running', cls: 'info-tag-green' };
+			if (this.isServiceActive(svc)) return { text: svc.substate || 'Active', cls: 'info-tag-amber' };
+			return { text: [svc.state, svc.substate].filter(Boolean).join(' ') || 'Stopped', cls: 'info-tag-red' };
+		},
+		branchTagClass: function(branch) {
+			return (branch === 'master' || branch === 'stable') ? 'info-tag-green' : 'info-tag-amber';
+		},
+		usageClass: function(percent) {
+			if (percent >= 90) return 'bg-danger';
+			if (percent >= 70) return 'bg-warning';
+			return 'bg-success';
+		},
+		// "Emoncms Core v11.19.2 [LC] | App v3.5.0" to name, version and local changes
+		parseComponents: function(text) {
+			return text.split('|').map(function(part) {
+				var p = part.trim();
+				var lc = /\[LC\]/.test(p);
+				p = p.replace(/\s*\[LC\]/, '');
+				var m = p.match(/^(.*?)\s+(v\S+)$/);
+				return { name: m ? m[1] : p, version: m ? m[2] : '', lc: lc };
+			}).filter(function(c) { return c.name; });
+		},
 		serviceText: function(svc) {
 			if (!svc) return '';
 			if (svc.loadstate === 'Not-found' || svc.loadstate === 'Masked') {
@@ -334,6 +364,16 @@ Vue.createApp({
 			for (var key in sectionData) {
 				if (!sectionData.hasOwnProperty(key)) continue;
 				var value = sectionData[key];
+
+				// Emoncms git branch and component list
+				if (sectionTitle === 'Emoncms' && key === 'Git Branch' && typeof value === 'string' && value) {
+					rows.push({ type: 'branch', title: key, value: value });
+					continue;
+				}
+				if (sectionTitle === 'Emoncms' && key === 'Components' && typeof value === 'string' && value) {
+					rows.push({ type: 'components', title: key, value: value, items: this.parseComponents(value) });
+					continue;
+				}
 
 				// Redis size/keys row
 				if (isRedisSection && (key === 'Size' || key === 'keys') && typeof value === 'string') {
@@ -469,7 +509,7 @@ Vue.createApp({
 				});
 		},
 		rowToText: function(row) {
-			if (row.type === 'text' || !row.type) return row.value || '';
+			if (row.type === 'text' || row.type === 'branch' || row.type === 'components' || !row.type) return row.value || '';
 			if (row.type === 'list') return (row.items || []).join(', ');
 			if (row.type === 'progress') {
 				var pairs = (row.summary || []).map(function(s) { return s.k + ': ' + s.v; });
