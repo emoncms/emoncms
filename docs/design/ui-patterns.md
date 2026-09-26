@@ -130,9 +130,9 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Post Process | Bootstrap table, well for Create new | Done: panel table for processes (no groups, so not the group list), panel form for new and edit. Run and Edit `btn-default`, Delete `btn-danger`. | Done |
 | Sync | Older list and table | Done: Upload and Download tabs (`nav-tabs`). Two panels side by side: Remote server (a summary once linked, Change opens the form), then Upload service or Download by tab. Upload tab lists local feeds with an upload switch. Download tab lists remote feeds with Download buttons. Group list by tag with a sticky toolbar and filter as on Feeds. Status stripe green (up to date), orange (behind remote), blue (ahead). Sync Inputs and Sync Dashboards removed. | Done |
 | Schedule | Bootstrap list and editor | Done: panel table for schedules (no groups, so not the group list) with Test, Edit and Delete. Editor in a panel below with Save and Cancel, rule blocks for the expression builder. New schedule opens the editor. | Done |
-| Email Reports | Bootstrap form | Panel layout, one panel per report. | Small |
+| Email Reports | Bootstrap form | Done: one tab per report (`nav-tabs`), Settings panel with `form-switch` for on and off options, Email preview panel with the subject row. The email keeps its light look in dark mode (`data-bs-theme="light"` on the email). | Done |
 | Network | Blue page with white boxed rows | Panel layout in the shell: one panel per connection, WiFi scan in a panel. The blue look stays in the setup wizard only. | Medium |
-| Admin pages | Mixed | Panel layout. Review page by page. | Medium |
+| Admin pages | Mixed | Done: page header with actions (`page-actions`) on every page. Info: one panel per section with `panel-row` rows, status dot per service, Pi Control with the danger accent. Update: update actions as rows with blue `btn-primary` buttons (an exception to one primary per panel), firmware form panel, update log panel. Components: panel table, bulk branch switch in the header (Stable green, Master orange, Custom red, as before), two line rows (name and repo link, then remote tag and path), remote tag HTTPS purple or SSH amber as the feed engine badges. Log and Serial: log window in a panel, serial device settings in panels. Users: page header, CSS in a file. Shared CSS in `Modules/admin/static/admin_styles.css`. | Done |
 | API pages | Dark reference | Done: CSS in a file, colours from the shared dark set. | Done |
 | MyElectricFlow, Psychrograph | Dark app, own CSS | Source of the app kit. | Medium |
 | MyHeatpump | Light app | Move to the kit's light set. | Medium |
@@ -172,9 +172,9 @@ One page per commit. Each starts with a short proposal (layout sketch or mock up
 2. Post Process. Done.
 3. Sync. Done.
 4. Schedule. Done.
-5. Email Reports
+5. Email Reports. Done.
 6. Network. The setup wizard shares its view, so the wizard keeps the blue look and the Network page takes the panel layout.
-7. Admin pages: info, log, components, update, serial, users.
+7. Admin pages: info, log, components, update, serial, users. Done.
 
 Colours move to variables as each page is converted.
 
