@@ -56,6 +56,19 @@
 
     --color-cat-default: #44b3e2;
 
+    /* Energy colours, the same in every app. Values from MyElectricFlow. */
+    --ec-energy-use: #0699fa;
+    --ec-energy-use-light: #82cbfc;    /* house box, grid to house flow */
+    --ec-energy-solar: #dccc1f;
+    --ec-energy-import: #d52e2e;
+    --ec-energy-export: #2ed52e;
+    --ec-energy-battery: #fb7b50;
+    --ec-energy-text: #333;            /* text on an energy colour */
+
+    /* App time bar */
+    --ec-app-nav-rgb: 6, 153, 250;
+    --ec-app-nav: rgb(var(--ec-app-nav-rgb));
+
     --font-heading: 1.2rem;
     --font-subheading: 1rem;
     --font-base: 16px;
@@ -139,6 +152,10 @@
     --ec-list-selected-hover-bg: #c4e3f3;
     --ec-list-status: #ccc;            /* status stripe when a row sets none */
 
+    /* Apps */
+    --ec-app-panel-bg: var(--bs-body-bg);
+    --ec-app-box-bg: var(--bs-tertiary-bg);   /* flow boxes without a colour */
+
     --border: var(--bs-border-color);
     --border-strong: #c0c0c0;
 
@@ -205,6 +222,9 @@
     --ec-list-selected-bg: rgba(68, 179, 226, 0.15);
     --ec-list-selected-hover-bg: rgba(68, 179, 226, 0.25);
     --ec-list-status: #555;
+
+    --ec-app-panel-bg: #262626;
+    --ec-app-box-bg: #282828;
 
     --border: #333;
     --border-strong: #555;
