@@ -58,15 +58,19 @@ A setup page is one of two layouts, both under a page header.
 | Class | Role |
 |---|---|
 | `panel` | Container |
-| `panel-header` | Header row, pointer and hover. Pages whose header does not collapse reset these. |
-| `panel-accent` | Accent bar before the name |
+| `panel-header` | Header row, pointer and hover |
+| `panel-header-static` | Header that only labels the panel, no pointer or hover |
+| `panel-accent` | Accent bar before the name, `panel-accent-danger` for destructive actions |
 | `panel-name` | Title |
 | `panel-badge` | Count or state beside the name |
 | `panel-body` | Content with padding |
 | `panel-controls` | Strip of fields and buttons |
+| `panel-row` | Key and value row: `row-key`, `row-value`, `row-note`, then `row-action` icons and buttons. `is-editing` while an inline edit is open. |
+| `row-action` | Icon action, shown on row hover and always on touch screens |
 | `table` in a panel | Uppercase grey column heads, row hover. `col-primary` and `col-secondary` on cells. |
 
-- Key and value rows: backup's `bk-rows` (`bk-row` with `k` and `v`) for now. Moves to the panel CSS with the My Account conversion.
+- Key and value rows: `panel-row`. Inline edit replaces the value with the field and Save and Cancel buttons. My Account is the example. Backup's `bk-row` can move onto it.
+- Icons on converted pages: SVG icons (`svg-icon-*`), which follow the text colour.
 - Several panels stack with the panel margin. A page may place panels in a Bootstrap grid (`row g-3` > `col-lg-6`).
 
 **Controls.**
@@ -121,8 +125,8 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Inputs, Feeds, Devices | List layout | Keep. Page header component. Colours to variables. | Small |
 | Graph | Panel layout | Keep. Move the 441 line `<style>` block to a CSS file. Colours to variables. | Small |
 | Backup | Panel layout | Keep. Move the `<style>` block to a CSS file. | Small |
-| My Account | Striped Bootstrap table | Panel layout: Account (user ID, username, email, API keys, password, delete), Profile (gravatar, name, location, timezone, language, starting page), Appearance (theme colour, sidebar colour, archived features), Mobile app. Edits stay inline with the pencil. | Medium |
-| Post Process | Bootstrap table, well for Create new | List layout for processes (name, parameters, mode, status badge, actions), panel for Create new. Run, Edit, Delete as `btn-default` and `btn-danger`. | Medium |
+| My Account | Striped Bootstrap table | Done: panels Account, API keys, Profile, Appearance, Mobile app, Delete account. Inline edit with Save and Cancel. | Done |
+| Post Process | Bootstrap table, well for Create new | Done: panel table for processes (no groups, so not the group list), panel form for new and edit. Run and Edit `btn-default`, Delete `btn-danger`. | Done |
 | Sync | Older list and table | Panel for the remote connection and settings. List layout for remote feeds, grouped by tag, matching Feeds. | Medium |
 | Schedule | Bootstrap list and editor | List layout for schedules, editor in a panel. | Medium |
 | Email Reports | Bootstrap form | Panel layout, one panel per report. | Small |
@@ -157,22 +161,14 @@ Done.
 - Graph, backup and devices `<style>` blocks moved to `Modules/graph/view.css`, `Modules/backup/backup_view.css` and `Modules/device/Views/device_view.css`.
 - Checked checkbox and radio in `--bs-primary`, with `accent-color` for native fields.
 - Check: colour moves pixel identical in light. Look changes (header, `h3`, checkbox colour) checked on screenshots.
-- Gaps seen in dark: glyphicon sprites stay black (step 3), graph "select a feed" box, feed engine badges (pastel, readable).
+- Gaps seen in dark: glyphicon sprites stay black (step 5), graph "select a feed" box, feed engine badges (pastel, readable).
 
-### 3. Glyphicons to SVG icons
-
-- `svg-icons.css` already has 82 icons drawn with CSS masks, in the text colour. The glyphicons have 244 uses, 82 names, across core and the module repos, in markup, JS strings and Vue class bindings.
-- Map each glyph name to an SVG icon, adding missing ones. A converter script in `scripts/bootstrap5/` does the renames, as `cvt_classes.py` did.
-- Remove `bootstrap2-icons.css` and the sprites in `Theme/img/`.
-- Before the page conversions, so converted pages use SVG icons from the start.
-- Check: icons change shape, so a browser check of the main pages. `icon-white` cases need a text colour instead.
-
-### 4. Page conversions
+### 3. Page conversions
 
 One page per commit. Each starts with a short proposal (layout sketch or mock up) for review, then the build, then a browser check.
 
-1. My Account
-2. Post Process
+1. My Account. Done.
+2. Post Process. Done.
 3. Sync
 4. Schedule
 5. Email Reports
@@ -181,7 +177,7 @@ One page per commit. Each starts with a short proposal (layout sketch or mock up
 
 Colours move to variables as each page is converted.
 
-### 5. App kit
+### 4. App kit
 
 - Shared app stylesheet in `Modules/app/Views/css/` from the MyElectricFlow components, on the shared light and dark variables. Energy colours as theme variables.
 - MyElectricFlow and Psychrograph onto the kit, checked with a pixel diff.
@@ -189,9 +185,19 @@ Colours move to variables as each page is converted.
 - MyHeatpump onto the light set.
 - The other apps that load `dark.css` or `light.css` move one by one. The 14 without test instances need instances first. Then `dark.css` and `light.css` are removed.
 
+### 5. Glyphicons to SVG icons
+
+Low priority, last.
+
+- `svg-icons.css` already has 82 icons drawn with CSS masks, in the text colour. The glyphicons have 244 uses, 82 names, across core and the module repos, in markup, JS strings and Vue class bindings.
+- Map each glyph name to an SVG icon, adding missing ones. A converter script in `scripts/bootstrap5/` does the renames, as `cvt_classes.py` did.
+- Remove `bootstrap2-icons.css` and the sprites in `Theme/img/`.
+- Converted pages already use SVG icons.
+- Check: icons change shape, so a browser check of the main pages. `icon-white` cases need a text colour instead.
+
 ### Release
 
-The `bootstrap5` branch spans core and eleven module repos and is not pushed. It removes Bootstrap 2, `bootstrap2-legacy.css` and the old date picker, so third party modules that use Bootstrap 2 classes need changes. Proposal: release the migration before the page conversions (after step 3), with notes for module authors from `bootstrap5-migration.md`, and test on an emonSD image. Merge order: modules first, core last, in one release.
+The `bootstrap5` branch spans core and eleven module repos and is not pushed. It removes Bootstrap 2, `bootstrap2-legacy.css` and the old date picker, so third party modules that use Bootstrap 2 classes need changes. Release after the page conversions (step 3), with notes for module authors from `bootstrap5-migration.md`, and test on an emonSD image. Merge order: modules first, core last, in one release.
 
 ### Later
 
