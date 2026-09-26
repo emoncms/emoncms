@@ -78,7 +78,10 @@ class AdminUserModel
             if ($orderby_in=="username") $orderby = "username";
             if ($orderby_in=="email") $orderby = "email";
             if ($orderby_in=="email_verified") $orderby = "email_verified";
+            if ($orderby_in=="feeds") $orderby = "feeds";
         }
+        // feeds is the COUNT alias, the other columns are on users
+        $orderexpr = $orderby == "feeds" ? "feeds" : "u.$orderby";
 
         $order = "DESC";
         if ($order_in !== null) {
@@ -126,7 +129,7 @@ class AdminUserModel
                 LEFT JOIN feeds f ON f.userid = u.id
                 $searchstr
                 GROUP BY u.id, u.username, u.email, u.email_verified, u.admin
-                ORDER BY u.$orderby $order
+                ORDER BY $orderexpr $order, u.id ASC
                 $limitstr";
 
         // Check prepare() and execute() explicitly; failing silently here could

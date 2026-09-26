@@ -16,37 +16,14 @@ load_css("Modules/admin/users/userlist_view.css");
     <div class="panel">
 
         <!-- Card header -->
-        <div class="panel-header panel-header-static">
+        <div class="panel-header panel-header-static user-header">
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr("Users"); ?></span>
-            <span class="panel-badge">{{ numberOfUsers }}</span>
+            <span class="panel-badge" :title="searchq ? '<?php echo tr('Matching users'); ?>' : ''">{{ searchq ? users.length + ' / ' + numberOfUsers : numberOfUsers }}</span>
+            <input class="form-control user-search" type="search" v-model="searchKey" @input="searchSoon" @keyup.enter="search" placeholder="<?php echo tr('Search users'); ?>" aria-label="<?php echo tr('Search users'); ?>" />
             <button class="btn btn-default btn-sm" @click="openAddUserModal">
                 <span class="svg-icon-plus"></span> <?php echo tr("Add new user"); ?>
             </button>
-        </div>
-
-        <!-- Controls -->
-        <div class="panel-controls">
-            <div class="userlist-controls">
-                <div class="input-group">
-                    <span class="input-group-text"><?php echo tr("Order by"); ?></span>
-                    <select class="form-select input-220" v-model="orderby" @change="fetchUsers">
-                        <option value="id"><?php echo tr("Id"); ?></option>
-                        <option value="username"><?php echo tr("Username"); ?></option>
-                        <option value="email"><?php echo tr("Email"); ?></option>
-                        <option value="email_verified"><?php echo tr("Email Verified"); ?></option>
-                    </select>
-                    <select class="form-select input-220" v-model="order" @change="fetchUsers">
-                        <option value="ascending"><?php echo tr("Ascending"); ?></option>
-                        <option value="descending"><?php echo tr("Descending"); ?></option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <span class="input-group-text"><?php echo tr("Search"); ?></span>
-                    <input class="form-control" v-model="searchKey" type="text" @keyup.enter="search" style="width:194px" />
-                    <button class="btn btn-default" @click="search"><?php echo tr("Search"); ?></button>
-                </div>
-            </div>
         </div>
 
         <!-- Pagination (top) -->
@@ -57,22 +34,21 @@ load_css("Modules/admin/users/userlist_view.css");
         </div>
 
         <!-- User table -->
+        <div class="user-table">
         <table>
             <colgroup>
                 <col style="width:60px">
                 <col>
                 <col>
                 <col style="width:110px">
-                <col style="width:80px">
+                <col style="width:90px">
                 <col style="width:80px">
             </colgroup>
             <thead>
                 <tr>
-                    <th><?php echo tr("Id"); ?></th>
-                    <th><?php echo tr("Username"); ?></th>
-                    <th><?php echo tr("Email"); ?></th>
-                    <th><?php echo tr("Verified"); ?></th>
-                    <th><?php echo tr("Feeds"); ?></th>
+                    <th v-for="col in sortColumns" :key="col.key" class="user-sort" :class="{ 'is-sorted': orderby === col.key }" :aria-sort="orderby === col.key ? order : 'none'" @click="sortBy(col.key)">
+                        {{ col.label }}<span class="user-sort-arrow">{{ orderby === col.key ? (order === 'ascending' ? '▲' : '▼') : '' }}</span>
+                    </th>
                     <th></th>
                 </tr>
             </thead>
@@ -96,6 +72,7 @@ load_css("Modules/admin/users/userlist_view.css");
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <!-- Pagination (bottom) -->
         <div class="panel-controls" v-if="numberOfPages > 1">
@@ -151,6 +128,14 @@ load_css("Modules/admin/users/userlist_view.css");
                 currentPage: 1,
                 orderby: 'id',
                 order: 'ascending',
+                sortColumns: [
+                    { key: 'id', label: <?php echo json_encode(tr("Id")); ?> },
+                    { key: 'username', label: <?php echo json_encode(tr("Username")); ?> },
+                    { key: 'email', label: <?php echo json_encode(tr("Email")); ?> },
+                    { key: 'email_verified', label: <?php echo json_encode(tr("Verified")); ?> },
+                    { key: 'feeds', label: <?php echo json_encode(tr("Feeds")); ?> }
+                ],
+                searchTimer: null,
                 searchKey: '',
                 searchq: false,
                 newUser: { username: '', password: '', email: '' },
@@ -209,7 +194,25 @@ load_css("Modules/admin/users/userlist_view.css");
                 this.fetchUsers();
             },
 
+            // Same column reverses the order, a new column starts ascending
+            sortBy: function (key) {
+                if (this.orderby === key) {
+                    this.order = this.order === 'ascending' ? 'descending' : 'ascending';
+                } else {
+                    this.orderby = key;
+                    this.order = 'ascending';
+                }
+                this.fetchUsers();
+            },
+
+            // Search after a pause in typing
+            searchSoon: function () {
+                clearTimeout(this.searchTimer);
+                this.searchTimer = setTimeout(this.search, 300);
+            },
+
             search: function () {
+                clearTimeout(this.searchTimer);
                 this.searchq = this.searchKey || false;
                 this.currentPage = 1;
                 this.fetchUsers();
