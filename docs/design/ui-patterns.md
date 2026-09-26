@@ -16,7 +16,7 @@ Sets the page families, the components each family uses and a proposal per page.
 |---|---|---|---|
 | Setup pages | Managing things and settings | Light, grey and white, in the emoncms shell | Inputs, Feeds (lists), Graph, Backup (panels) |
 | Apps | Dashboards for the household | Dark or light, chosen per app | MyElectricFlow (dark), MyHeatpump (light) |
-| Reference | API documentation | Dark | API help pages |
+| Reference | API documentation, network setup | Dark | API help pages, Network |
 
 ### Setup pages
 
@@ -109,6 +109,8 @@ App colours:
 
 The API pages are dark with `data-bs-theme="dark"` on `.api-page` and `.api-explorer`, using the shared dark set. Their CSS is in `Lib/api_explorer.css`. The page background stays a fixed `#222` until the colour mode is set on `<html>`.
 
+The Network page uses the same look with its own classes (`net-*` in `network_view.css`): rounded rows with an icon circle, pastel tags and mono IP addresses in one 800px column. The setup wizard shares the markup and turns blue with `net-blue`, a block of variable overrides.
+
 ## Light and dark
 
 The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, `#333` to `#444` borders, `#fff`, `#ccc` and `#999` text, `#44b3e2` accent. They become one dark style.
@@ -131,7 +133,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Sync | Older list and table | Done: Upload and Download tabs (`nav-tabs`). Two panels side by side: Remote server (a summary once linked, Change opens the form), then Upload service or Download by tab. Upload tab lists local feeds with an upload switch. Download tab lists remote feeds with Download buttons. Group list by tag with a sticky toolbar and filter as on Feeds. Status stripe green (up to date), orange (behind remote), blue (ahead). Sync Inputs and Sync Dashboards removed. | Done |
 | Schedule | Bootstrap list and editor | Done: panel table for schedules (no groups, so not the group list) with Test, Edit and Delete. Editor in a panel below with Save and Cancel, rule blocks for the expression builder. New schedule opens the editor. | Done |
 | Email Reports | Bootstrap form | Done: one tab per report (`nav-tabs`), Settings panel with `form-switch` for on and off options, Email preview panel with the subject row. The email keeps its light look in dark mode (`data-bs-theme="light"` on the email). | Done |
-| Network | Blue page with white boxed rows | Panel layout in the shell: one panel per connection, WiFi scan in a panel. The blue look stays in the setup wizard only. | Medium |
+| Network | Blue page with white boxed rows | Done: API page look, dark. One column as the original: connection rows (Ethernet, WiFi, Hotspot) with state tags, choice rows, then WiFi networks as rows with signal bars that open in place for the password. Close on the list, a failed state after 60 s without an IP address. The setup wizard shares the markup in blue (`net-blue`). | Done |
 | Admin pages | Mixed | Done: page header with actions (`page-actions`) on every page. Info: one panel per section with compact `panel-row` rows, status dot and state tag per service, coloured service buttons as before, branch tag, component chips with LC tag, usage bars green, amber or red, Pi Control with the danger accent. Update: Full Update and Update Database as rows with blue `btn-primary` buttons (an exception to one primary per panel), firmware form panel, update log panel. Update Emoncms Only removed: use Full Update or the Components page. Components: panel table, Update all (each component on its current branch) and bulk branch switch in the header (Stable green, Master orange, Custom red, as before), rows grouped by install folder, one line per component, Source badge (HTTPS purple or SSH amber, as the feed engine badges) that links to the repo. Log and Serial: log window in a panel, serial device settings in panels. Users: page header, CSS in a file, initials avatar in a pastel colour per username, Admin, Verified and feed count tags as the feed engine badges. Sort by clicking a column head, search in the panel header. Shared CSS in `Modules/admin/static/admin_styles.css`. | Done |
 | API pages | Dark reference | Done: CSS in a file, colours from the shared dark set. | Done |
 | MyElectricFlow, Psychrograph | Dark app, own CSS | Source of the app kit. | Medium |
@@ -173,7 +175,7 @@ One page per commit. Each starts with a short proposal (layout sketch or mock up
 3. Sync. Done.
 4. Schedule. Done.
 5. Email Reports. Done.
-6. Network. The setup wizard shares its view, so the wizard keeps the blue look and the Network page takes the panel layout.
+6. Network. Done. The setup wizard shares its view and keeps the blue look.
 7. Admin pages: info, log, components, update, serial, users. Done.
 
 Colours move to variables as each page is converted.
