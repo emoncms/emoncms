@@ -3,104 +3,65 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 global $settings; 
 ?>
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<style>
-/* Custom firmware file picker: the native file input is replaced by a label
-   styled as a button so that it matches the rest of the form controls */
-#custom_firmware.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0,0,0,0);
-    border: 0;
-}
-#custom_firmware_bound label.btn {
-    margin-bottom: 0;
-    cursor: pointer;
-}
-/* keyboard focus indicator, the label replaces a focusable input */
-#custom_firmware_bound label.btn:focus {
-    outline: 2px solid #0088cc;
-    outline-offset: 1px;
-}
-#custom_firmware_name {
-    margin-left: 8px;
-    color: #999;
-    font-style: italic;
-}
-#custom_firmware_name.file-selected {
-    color: #333;
-    font-style: normal;
-    font-weight: bold;
-}
-</style>
-<div class="admin-container">
-    <h3><?php echo tr('Update'); ?></h3>
+<div class="admin-page">
+    <div class="page-header">
+        <h3><?php echo tr('Update'); ?></h3>
+    </div>
 
 <?php if (PHP_VERSION_ID<70300) { ?>
 <div class="alert alert-danger"><b>Important:</b> PHP version <?php echo PHP_VERSION; ?> detected. Please update to version 7.3 or newer to keep your installation secure.<br>This emoncms installation is running in compatibility mode and does not include all of the latest security improvements.<br>See guide on updating php on the emoncms github: <a href="https://github.com/emoncms/emoncms/issues/1726">Updating PHP.</a></div>
 <?php } ?>
 
-    <?php
-    // UPDATES
-    // -------------------
-    ?>
-    <section class="d-md-flex justify-content-between align-items-center border-top pb-md-0 text-end pb-2 px-1">
-        <div class="text-start">
-            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Full Update'); ?></h4>
-            <p><?php echo tr('OS, Packages, EmonHub, Emoncms (Does not include firmware update)'); ?></p>
+    <div class="panel">
+        <div class="panel-header panel-header-static">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr('Updates'); ?></span>
         </div>
-        <div class="btn-group">
-        <button class="update btn btn-info" type="all" title="<?php echo tr('Update All'); ?> - <?php echo tr('OS, Packages, EmonHub, Emoncms'); ?>">
-            <?php echo tr('Full Update'); ?>
-        </button>
+        <div class="panel-row">
+            <div class="row-key"><?php echo tr('Full Update'); ?></div>
+            <div class="row-value"><?php echo tr('OS, Packages, EmonHub, Emoncms (Does not include firmware update)'); ?></div>
+            <button class="update btn btn-primary" type="all" title="<?php echo tr('Update All'); ?> - <?php echo tr('OS, Packages, EmonHub, Emoncms'); ?>"><?php echo tr('Full Update'); ?></button>
         </div>
-    </section>
+        <div class="panel-row">
+            <div class="row-key"><?php echo tr('Update Emoncms Only'); ?></div>
+            <div class="row-value"><?php echo tr('Emoncms, Emoncms Modules and Services'); ?>. <a href="https://github.com/emoncms/emoncms/releases">Release info</a></div>
+            <button class="update btn btn-primary" type="emoncms"><?php echo tr('Update Emoncms'); ?></button>
+        </div>
+        <div class="panel-row">
+            <div class="row-key"><?php echo tr('Update Database Only'); ?></div>
+            <div class="row-value"><?php echo tr('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></div>
+            <a href="<?php echo $path; ?>admin/db" class="btn btn-primary"><?php echo tr('Update Database'); ?></a>
+        </div>
+    </div>
 
     <?php
-    // EMONCMS UPDATE
-    // -------------------
+    $hardware_options = array();
+    foreach ($firmware_available as $firmware) {
+        if (!in_array($firmware->hardware,$hardware_options)) {
+            $hardware_options[] = $firmware->hardware;
+        }
+    }
     ?>
-    <aside class="d-md-flex justify-content-between align-items-center border-top pb-md-0 text-end pb-2 px-1">
-        <div class="text-start">
-            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Emoncms Only'); ?></h4>
-            <p><?php echo tr('Emoncms, Emoncms Modules and Services'); ?></p>
-            <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
+    <div class="panel">
+        <div class="panel-header panel-header-static">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr('Update Firmware Only'); ?></span>
         </div>
-        <a class="update btn btn-info" type="emoncms"><?php echo tr('Update Emoncms'); ?></a>
-    </aside>
+        <div class="panel-body admin-form">
+            <p class="text-muted"><?php echo tr('Select your hardware type and firmware version'); ?></p>
 
-    <?php
-    // SYSTEM UPDATE
-    // -------------------
-    ?>
-    <aside class="d-md-flex justify-content-between align-items-center border-top pb-md-0 text-end pb-2 px-1">
-        <div class="text-start" style="margin-bottom:10px">
-            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Firmware Only'); ?></h4>
-            <p><?php echo tr('Select your hardware type and firmware version'); ?></p>
-
-            <div class="input-group" style="margin-bottom:0px">
-                <span class="input-group-text">Select port:</span>
-                <select class="form-select input-auto" id="select_serial_port">
+            <div class="admin-field">
+                <label class="form-label" for="select_serial_port"><?php echo tr('Serial port'); ?></label>
+                <select class="form-select input-165" id="select_serial_port">
                     <?php foreach ($serial_ports as $port) { ?>
                     <option><?php echo $port; ?></option>
                     <?php } ?>
                 </select>
             </div>
 
-            <?php
-            $hardware_options = array();
-            foreach ($firmware_available as $firmware) {
-                if (!in_array($firmware->hardware,$hardware_options)) {
-                    $hardware_options[] = $firmware->hardware;
-                }
-            }
-            ?>
-            <div class="input-group" style="margin-bottom:0px">
-                <span class="input-group-text">Hardware:</span>
-                <select class="form-select input-auto" id="selected_hardware">
+            <div class="admin-field">
+                <label class="form-label" for="selected_hardware"><?php echo tr('Hardware'); ?></label>
+                <select class="form-select input-220" id="selected_hardware">
                     <option value="none">none</option>
                     <?php foreach ($hardware_options as $hardware) { ?>
                     <option><?php echo $hardware; ?></option>
@@ -108,87 +69,61 @@ global $settings;
                 </select>
             </div>
 
-            <div id="radio_format_bound" class="input-group" style="margin-bottom:0px">
-                <span class="input-group-text">Radio format:</span>
-                <select class="form-select input-auto" id="selected_radio_format">
-                   <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
+            <div id="radio_format_bound" class="admin-field">
+                <label class="form-label" for="selected_radio_format"><?php echo tr('Radio format'); ?></label>
+                <select class="form-select input-220" id="selected_radio_format">
+                    <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
                     <!--<option value="jeelib_native">RFM69 JeeLib Native</option>-->
                     <option value="jeelib_classic">RFM69 JeeLib Classic</option>
                 </select>
             </div>
-            <br>
-            <div style="margin-top:10px">
-                <label class="d-inline-block" style="margin-right:15px">
+
+            <div class="admin-field">
+                <label class="d-inline-block me-3">
                     <input type="radio" name="firmware_source" value="standard" checked> <?php echo tr('Standard firmware'); ?>
                 </label>
-                <label class="d-inline-block me-2">
+                <label class="d-inline-block">
                     <input type="radio" name="firmware_source" value="custom" id="firmware_source_custom" disabled> <?php echo tr('Custom firmware file'); ?>
                 </label>
             </div>
 
-            <div id="standard_firmware_bound" class="input-group" style="margin-bottom:0px; margin-top:10px">
-                <span class="input-group-text">Firmware:</span>
-                <select class="form-select" id="selected_firmware" style="width:552px">
+            <div id="standard_firmware_bound" class="admin-field">
+                <label class="form-label" for="selected_firmware"><?php echo tr('Firmware'); ?></label>
+                <select class="form-select input-545" id="selected_firmware">
                     <option value="none">none</option>
                 </select>
             </div>
 
-            <div id="custom_firmware_bound" style="display:none; margin-top:10px">
-                <div class="input-group" style="margin-bottom:0px">
-                    <span class="input-group-text"><?php echo tr('Firmware file'); ?>:</span>
+            <div id="custom_firmware_bound" class="admin-field" style="display:none">
+                <label class="form-label"><?php echo tr('Firmware file'); ?></label>
+                <div>
                     <label for="custom_firmware" class="btn btn-default" tabindex="0"><?php echo tr('Choose file'); ?>&hellip;</label>
+                    <span id="custom_firmware_name"><?php echo tr('No file selected'); ?></span>
                 </div>
-                <span id="custom_firmware_name"><?php echo tr('No file selected'); ?></span>
                 <!-- the native file input is visually hidden, the label above opens it -->
                 <input type="file" id="custom_firmware" name="custom_firmware" accept=".hex,.bin" class="visually-hidden">
             </div>
 
-            <p id="firmware_summary" class="text-info" style="margin-top:10px; margin-bottom:0px; font-size:13px"></p>
-        </div>
+            <p id="firmware_summary" class="firmware-summary"></p>
 
-        <button id="update-firmware" class="btn btn-info"><?php echo tr('Update Firmware'); ?></button>
-    </aside>
-
-    <?php
-    // DATABASE UPDATE
-    // -------------------
-    ?>
-    <aside class="d-md-flex justify-content-between align-items-center border-top pb-md-0 text-end pb-2 px-1">
-        <div class="text-start col-md-6">
-            <h4 class="text-info text-uppercase mb-2"><?php echo tr('Update Database Only'); ?></h4>
-            <p><?php echo tr('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
+            <button id="update-firmware" class="btn btn-primary"><?php echo tr('Update Firmware'); ?></button>
         </div>
-        <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo tr('Update Database'); ?></a>
-    </aside>
+    </div>
 
     <?php
     // UPDATE LOG FILE VIEWER
     // -------------------
-    //if (is_file($update_log_filename)) { ?>
-    <div id="update-logfile-view" class="hide">
-    <section class="d-md-flex justify-content-between align-items-center text-end px-1 border-top">
-        <div class="text-start">
-            <h3 class="mt-1 mb-0"><?php echo tr('Update Log'); ?></h3>
-            <p><?php
-            // if(is_readable($update_log_filename)) {
-                echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'), $update_log_filename);
-            // } else {
-                //echo '<div class="alert alert-warning">';
-                //echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
-                //echo "</div>";
-            // } ?></p>
+    ?>
+    <div id="update-logfile-view" class="panel hide">
+        <div class="panel-header panel-header-static">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr('Update Log'); ?></span>
+            <button id="getupdatelog" type="button" class="btn btn-default btn-sm" aria-pressed="false" autocomplete="off"><?php echo tr('Auto refresh'); ?></button>
+            <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-default btn-sm"><?php echo tr('Download Log'); ?></a>
+            <button class="btn btn-default btn-sm" id="copyupdatelogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
         </div>
-        <div>
-            <?php // if(is_readable($update_log_filename)) { ?>
-                <button id="getupdatelog" type="button" class="btn btn-info mb-1" aria-pressed="false" autocomplete="off">
-                    <?php echo tr('Auto refresh'); ?>
-                </button>
-                <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
-                <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
-            <?php // } ?>
-        </div>
-    </section>
-    <pre id="update-log-bound" class="log"><div id="update-log"></div></pre>
+        <pre id="update-log-bound" class="log"><div id="update-log"></div></pre>
+        <div class="panel-footer-note"><?php echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'), $update_log_filename); ?></div>
     </div>
 </div>
 <div id="snackbar" class=""></div>

@@ -1,165 +1,73 @@
-.admin-container {
-      margin-top:10px;
-}
-.content-container {
-    max-width:1150px;
-}
-.border-top{
-    border-color: #dee2e6;
-}
-select{
-    width: auto;
-}
-table tr td.buttons { text-align: right;}
-table tr td.subinfo { border-color:transparent;}
+/* Admin pages: panels on the page background, as post process */
+body { background-color: var(--bg-body); }
+.content-container { max-width: 1150px; }
+[v-cloak] { display: none; }
 
-.badge-danger{
-    background-color: #DC3545;
-}
-.badge-masked{
-    background-color: #808080;
-}
-section {
-    position: relative;
-}
-aside.collapse {
-    border-top-width: 0;
-}
-aside.collapse.in {
-    border-top-width: 1px;
-}
-dl {
-    margin: 0
-}
-dl dt,dl dd{
-    border-top: 1px solid #ddd;
-    padding: .2em 0;
-}
-dl dt:first-child, dl dt:first-child + dd,
-dl > dl dt:first-child, dl > dl dt:first-child + dd{
-    border-top: 0px solid #ddd;
-}
-dl dd:last-child{
-    padding-bottom: 1em;
-}
-dl.inline > * {
-    display: inline-block;
-    border: 0px solid transparent;
-}
-dl.inline > dd {
-    margin: 0 1em 0 0.3em;
-}
-.admin .row {
-    display: -ms-flexbox;
-    display: flex;
-    -ms-flex-wrap: wrap;
-    flex-wrap: wrap;
-    margin: 0;
+.admin-page { padding-bottom: 2rem; }
+.admin-page .panel { margin-bottom: 1rem; }
+.page-lead { margin: -4px 0 14px; color: var(--text-secondary); }
+.page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.page-actions .btn,
+.panel-header .btn,
+.row-buttons .btn { margin: 0; }
+.row-buttons { display: flex; flex-shrink: 0; gap: 4px; }
+.panel-row .row-value p:last-child { margin-bottom: 0; }
+
+/* Stacked form in a panel */
+.admin-form { padding: 1rem; }
+.admin-field { margin-bottom: 14px; }
+.admin-form .form-label { font-weight: 600; font-size: var(--font-sm); }
+.admin-form .input-group { margin-bottom: 0; }
+.admin-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+.admin-buttons .btn { margin: 0; }
+
+/* Log window in a panel */
+.panel .log { display: block; border-radius: 0; }
+.panel .log.admin-log { height: calc(100vh - 260px); min-height: 320px; }
+.panel-footer-note {
+    padding: 6px 1rem;
+    font-size: var(--font-xs);
+    color: var(--text-secondary);
+    border-top: 1px solid var(--border);
 }
 
-.label:empty, .badge:empty {
+/* Table in a panel scrolls on narrow screens */
+.admin-table { overflow-x: auto; }
+
+/* -- System info ---------------------------------------------------------- */
+
+.info-row { cursor: pointer; transition: background-color 0.15s; }
+.info-row:hover { background-color: var(--bg-card-row-hover); }
+.info-page .panel-row .row-key { flex-basis: 160px; }
+.info-row .row-key { font-weight: 600; color: var(--text-primary); }
+
+.status-dot {
     display: inline-block;
-    padding: 1.2em 0 0 1.2em;
+    width: 10px;
+    height: 10px;
+    margin-right: 6px;
+    border-radius: 50%;
+    background-color: var(--bs-secondary-color);
     vertical-align: middle;
 }
-.dropdown-menu-right{
-    right: 0!important;
-    left: initial;
-}
+.status-dot.is-running { background-color: var(--bs-success); }
+.status-dot.is-stopped { background-color: var(--bs-danger); }
 
-dl dt{
-  padding-left: .25em;
-  box-sizing: border-box;
-}
-ul.list-columns {
-    column-count: 4;
-    column-gap: 1em;
+.info-usage-label { font-size: var(--font-xs); font-weight: 600; margin-bottom: 3px; }
+.info-usage .progress { margin-bottom: 4px; }
+.info-summary { display: flex; flex-wrap: wrap; gap: 2px 1rem; font-size: var(--font-sm); }
+.info-summary b { font-weight: 600; margin-right: 3px; }
+
+ul.info-list {
+    margin: 0;
+    padding: 0;
     list-style: none;
-    padding-left: 0;
-    margin: 0;
 }
-aside,
-section,
-dt,
-dd{
-    transition: background-color .2s ease-out;
-}
-aside:hover,
-section:hover,
-dt:hover,
-dd:hover,
-dt:hover + dd{
-    background-color: #F9F9F9;
-}
-dt:hover,
-dd:hover{
-    cursor: pointer;
-}
-pre.small {
-    height: 3.33em;
-    overflow: auto;
-}
-pre.small [data-dismiss="log"]{
-    display: none;
-}
-.overflow-hidden {
-    overflow: hidden;
-}
-.border-box{
-    box-sizing: border-box;
-}
+ul.info-list.list-columns { columns: 4; column-gap: 1em; }
+ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-@keyframes fadein {
-    from {bottom: 0; opacity: 0;}
-    to {bottom: 30px; opacity: 1;}
-}
-
-@keyframes fadeout {
-    from {bottom: 30px; opacity: 1;}
-    to {bottom: 0; opacity: 0;}
-}
-@media (min-width: 480px) {
-    .dropdown-backdrop {
-        display:none!important;
-    }
-}
-
-ul#php-modules {
-    list-style-type: none;
-    margin: 0;
-    columns: 4;
-    -webkit-columns: 4;
-    -moz-columns: 4;
-}
-ul#php-modules li {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-@media (max-width: 800px) {
-    ul#php-modules {
-        columns: 3;
-        -webkit-columns: 3;
-        -moz-columns: 3;
-    }
-}
-
-@media (max-width: 575px) {
-    ul#php-modules {
-        columns: 2;
-        -webkit-columns: 2;
-        -moz-columns: 2;
-    }
-}
-
-@media (max-width: 480px) {
-    ul#php-modules {
-        columns: 1;
-        -webkit-columns: 1;
-        -moz-columns: 1;
-    }
-}
+@media (max-width: 800px) { ul.info-list.list-columns { columns: 3; } }
+@media (max-width: 575px) { ul.info-list.list-columns { columns: 2; } }
 
 .system-info-loading {
     display: flex;
@@ -167,7 +75,7 @@ ul#php-modules li {
     align-items: center;
     justify-content: center;
     padding: 4rem 1rem;
-    color: #888;
+    color: var(--text-muted);
 }
 
 .system-info-spinner {
@@ -175,8 +83,8 @@ ul#php-modules li {
     width: 2.5rem;
     height: 2.5rem;
     margin-bottom: 1rem;
-    border: 4px solid rgba(0, 0, 0, 0.1);
-    border-top-color: #2980b9;
+    border: 4px solid var(--border);
+    border-top-color: var(--accent);
     border-radius: 50%;
     animation: system-info-spin 0.8s linear infinite;
 }
@@ -185,4 +93,94 @@ ul#php-modules li {
     to { transform: rotate(360deg); }
 }
 
+/* Snackbar animation, used by #snackbar in emoncms-base.css */
+@keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+}
 
+@keyframes fadeout {
+    from { bottom: 30px; opacity: 1; }
+    to { bottom: 0; opacity: 0; }
+}
+
+/* -- Update --------------------------------------------------------------- */
+
+.firmware-summary { margin: 0 0 14px; font-size: var(--font-sm); color: var(--text-secondary); }
+#custom_firmware_bound label.btn { margin: 0; cursor: pointer; }
+#custom_firmware_bound label.btn:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+#custom_firmware_name { margin-left: 8px; color: var(--text-muted); font-style: italic; }
+#custom_firmware_name.file-selected { color: var(--text-primary); font-style: normal; font-weight: bold; }
+
+/* -- Database update ---------------------------------------------------- */
+
+.db-updates .panel-header:not(:first-child) { border-top: 1px solid var(--border); }
+.db-updates td.db-sql { font-family: var(--font-mono); font-size: var(--font-xs); overflow-wrap: anywhere; }
+
+/* -- Components ----------------------------------------------------------- */
+
+.cmp-col-version { width: 90px; }
+.cmp-col-describe { width: 170px; }
+.cmp-col-changes { width: 145px; }
+.cmp-col-branch { width: 190px; }
+.cmp-col-actions { width: 90px; }
+.cmp-repo { margin-left: 8px; font-size: var(--font-xs); }
+.cmp-proto {
+    display: inline-block;
+    margin-right: 6px;
+    padding: 0 5px;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
+    border-radius: 3px;
+    color: var(--bs-secondary-color);
+    background-color: var(--bs-secondary-bg);
+}
+/* HTTPS and SSH tags: pastel pairs as the feed engine badges */
+.cmp-proto.cmp-proto-https { color: #7b3fa0; background-color: #f5e6ff; }
+[data-bs-theme="dark"] .cmp-proto.cmp-proto-https { color: #c9a0e8; background-color: rgba(155, 89, 182, 0.2); }
+.cmp-proto.cmp-proto-ssh { color: #8a6d3b; background-color: #fcf8e3; }
+[data-bs-theme="dark"] .cmp-proto.cmp-proto-ssh {
+    color: var(--bs-warning-text-emphasis);
+    background-color: var(--bs-warning-bg-subtle);
+}
+.cmp-meta { font-size: var(--font-xs); color: var(--text-secondary); }
+.admin-page td.cmp-describe {
+    font-family: var(--font-mono);
+    font-size: var(--font-xs);
+    color: var(--text-muted);
+    overflow-wrap: anywhere;
+}
+.admin-page .cmp-table td { vertical-align: middle; }
+.cmp-custom { width: 140px; }
+.cmp-header { flex-wrap: wrap; }
+.cmp-header .input-group { margin: 0 0 0 auto; }
+.cmp-header .input-group > .btn,
+.cmp-header .input-group > .input-group-text,
+.cmp-header .input-group > .form-control {
+    padding: 2px 8px;
+    font-size: var(--font-xs);
+    line-height: 20px;
+}
+@media (max-width: 575px) {
+    .cmp-header .input-group-text { display: none; }
+}
+
+@media (max-width: 767px) {
+    .admin-table .cmp-table { min-width: 860px; }
+}
+
+/* -- Log ------------------------------------------------------------------ */
+
+.log-panel { position: relative; }
+.log-panel #log-level { bottom: 6px; right: 6px; }
+
+/* -- Serial config -------------------------------------------------------- */
+
+.serial-notice { overflow: hidden; line-height: 26px; }
+.serial-notice .btn { float: right; margin: 0 0 0 1rem; }
+.serial-page .log { height: 500px; padding: 10px; box-sizing: border-box; }
+.serial-page .panel table td,
+.serial-page .panel table th { vertical-align: middle; }
+.serial-page .panel table th { white-space: normal; }
+.serial-console { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }

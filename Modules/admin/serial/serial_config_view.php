@@ -5,49 +5,47 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 load_js("Modules/admin/serial/serial_config_lib/serial_config_core.js");
 load_css("Modules/admin/static/admin_styles.css");
 ?>
-<style>
-    #emonhub-running-notice,
-    #emonhub-stopped-notice {
-        padding: 8px 8px 8px 14px;
-        line-height: 31px;
-    }
-</style>
-
+<div class="admin-page serial-page">
 <div id="app">
 
-    <div class="input-group start-options" style="float:right; margin-top:4px" v-if="!connected">
-        <button class="btn btn-success" @click="start"><?php echo tr('Start'); ?></button>
-        <select class="form-select input-auto" v-model="serialport">
-            <?php foreach ($serial_ports as $port) { ?>
-                <option><?php echo $port; ?></option>
-            <?php } ?>
-        </select>
-        <select class="form-select input-auto" v-model="baudrate">
-            <option>9600</option>
-            <option selected>38400</option>
-            <option>115200</option>
-        </select>
+    <div class="page-header">
+        <h3><?php echo tr('Serial Config Tool'); ?></h3>
+        <div class="page-actions">
+            <div class="input-group start-options" v-if="!connected">
+                <select class="form-select input-auto" v-model="serialport" title="<?php echo tr('Serial port'); ?>">
+                    <?php foreach ($serial_ports as $port) { ?>
+                        <option><?php echo $port; ?></option>
+                    <?php } ?>
+                </select>
+                <select class="form-select input-auto" v-model="baudrate" title="<?php echo tr('Baud rate'); ?>">
+                    <option>9600</option>
+                    <option selected>38400</option>
+                    <option>115200</option>
+                </select>
+                <button class="btn btn-primary" @click="start"><?php echo tr('Start'); ?></button>
+            </div>
+            <button class="btn btn-danger" @click="stop" v-if="connected"><?php echo tr('Stop Serial'); ?></button>
+        </div>
     </div>
 
-    <button class="btn btn-danger" style="float:right; margin-top:4px" @click="stop" v-if="connected"><?php echo tr('Stop Serial'); ?></button>
-
-    <h3 style="color:#333">Serial Config Tool</h3>
-
-    <div id="emonhub-running-notice" class="alert alert-warning hide">
-        <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently running and may conflict with serial monitor'); ?>
-        <button id="stopEmonHub" class="btn btn-default" style="float:right"><?php echo tr('Stop EmonHub'); ?></button>
+    <div id="emonhub-running-notice" class="alert alert-warning serial-notice hide">
+        <span><b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently running and may conflict with serial monitor'); ?></span>
+        <button id="stopEmonHub" class="btn btn-default btn-sm"><?php echo tr('Stop EmonHub'); ?></button>
     </div>
 
-    <div id="emonhub-stopped-notice" class="alert alert-success hide">
-        <b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently stopped and will not interfere with serial monitor'); ?>
-        <button id="startEmonHub" class="btn btn-default" style="float:right"><?php echo tr('Start EmonHub'); ?></button>
+    <div id="emonhub-stopped-notice" class="alert alert-success serial-notice hide">
+        <span><b><?php echo tr('Note:'); ?></b> <?php echo tr('EmonHub is currently stopped and will not interfere with serial monitor'); ?></span>
+        <button id="startEmonHub" class="btn btn-default btn-sm"><?php echo tr('Start EmonHub'); ?></button>
     </div>
 
     <?php include __DIR__ . '/serial_config_lib/serial_config_template.php'; ?>
 
 </div>
 
-<pre id="log" class="log" style="box-sizing:content-box; padding:10px; height: 500px"></pre>
+<div class="panel">
+    <pre id="log" class="log"></pre>
+</div>
+</div>
 
 <script>
     const log = document.getElementById("log");

@@ -3,68 +3,43 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<div class="admin-container">
+<div class="admin-page">
 
     <?php
     // LOG FILE VIEWER
     // -------------------
     if ($log_enabled) { ?>
-    <section class="d-md-flex justify-content-between align-items-center text-end px-1">
-        <div class="text-start">
-            <h3 class="mt-1 mb-0"><?php echo tr('Emoncms Log'); ?></h3>
-            <p><?php
-            if(is_writable($emoncms_logfile)) {
-                echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'),$emoncms_logfile);
-            } else {
-                echo '<div class="alert alert-warning">';
-                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
-                echo '<small></div>';
-            } ?></p>
+    <div class="page-header">
+        <h3><?php echo tr('Emoncms Log'); ?></h3>
+        <?php if(is_writable($emoncms_logfile)) { ?>
+        <div class="page-actions">
+            <button id="getlog" type="button" class="btn btn-default" aria-pressed="false" autocomplete="off"><?php echo tr('Auto refresh'); ?></button>
+            <a href="<?php echo $path; ?>admin/log/download" class="btn btn-default"><?php echo tr('Download Log'); ?></a>
+            <button class="btn btn-default" id="copylogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
         </div>
-        <div>
-            <?php if(is_writable($emoncms_logfile)) { ?>
-                <button id="getlog" type="button" class="btn btn-info mb-1" aria-pressed="false" autocomplete="off">
-                    <?php echo tr('Auto refresh'); ?>
-                </button>
-                <a href="<?php echo $path; ?>admin/log/download" class="btn btn-info mb-1"><?php echo tr('Download Log'); ?></a>
-                <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
-            <?php } ?>
-        </div>
-    </section>
-    
-    <!--
-    <section>
-        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 280px);"><div id="logreply"></div></pre>
-        <div class="text-end"> 
-            <div class="btn-group">
-                <button class="btn btn-dark mb-1">
-                    <?php echo sprintf('Log Level: %s', $log_level_label) ?>
-                </button>
-            </div>
-        </div>
-    </section>
-    bellow is original code that overlaps footer, comment here is my proposal using correct bootstrap syntax
-    -->
-    
-    <section>
-        <pre id="logreply-bound" class="log" style="min-height:320px; height:calc(100vh - 220px); display:none;"><div id="logreply"></div></pre>
-        <span id="log-level" class="btn btn-sm btn-dark text-uppercase" title="Can be changed in settings file" style="cursor:pointer">
-            <?php echo sprintf('Log Level: %s', $log_level_label) ?>
-        </span>
-    </section>
-    
-    <?php 
+        <?php } ?>
+    </div>
+    <?php if(is_writable($emoncms_logfile)) { ?>
+    <p class="page-lead"><?php echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'),$emoncms_logfile); ?></p>
+    <?php } else { ?>
+    <div class="alert alert-warning">The log file has no write permissions or does not exists. To fix, log-on on shell and do:<pre><?php echo "touch $emoncms_logfile\nchmod 666 $emoncms_logfile"; ?></pre></div>
+    <?php } ?>
+
+    <div class="panel log-panel">
+        <pre id="logreply-bound" class="log admin-log"><div id="logreply"></div></pre>
+        <span id="log-level" class="badge bg-secondary text-uppercase" title="Can be changed in settings file"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
+    </div>
+
+    <?php
         } else {
-            echo tr('Logging is disabled in settings.');
+            echo '<div class="page-header"><h3>'.tr('Emoncms Log').'</h3></div>';
+            echo '<div class="alert alert-warning">'.tr('Logging is disabled in settings.').'</div>';
         }
     ?>
-    
-    
 </div>
 <div id="snackbar" class=""></div>
 <script>
 
-$("#logreply-bound").slideDown();
 
 var logFileDetails;
 $("#copylogfile").on('click', function(event) {

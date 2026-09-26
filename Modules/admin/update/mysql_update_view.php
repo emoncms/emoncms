@@ -8,12 +8,12 @@
         if ($update['operations'])
         {
             $done = false;
-            $out.="<h4>".$update['title']."</h4>";
-            $out.="<p>".$update['description']."</p>";
-            $out.='<table class="table table-striped ">';
+            $out.='<div class="panel-header panel-header-static"><span class="panel-accent"></span><span class="panel-name">'.$update['title'].'</span></div>';
+            $out.='<div class="panel-body text-muted">'.$update['description'].'</div>';
+            $out.='<table>';
             foreach ($update['operations'] as $operation)
             {
-                $out.="<tr><td>$operation;</td></tr>";
+                $out.='<tr><td class="db-sql">'.htmlspecialchars($operation).';</td></tr>';
             }
             $out.="</table>";
         }
@@ -21,32 +21,36 @@
 ?>
 
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<div class="admin-container">
+<div class="admin-page">
 
-<h2><?php echo tr("Update database"); ?></h2>
+<div class="page-header">
+    <h3><?php echo tr("Update database"); ?></h3>
+</div>
 <?php
     if ($out && !$applychanges) {
-        echo '<div class="alert alert-warning"><p><b>Todo:</b> These changes need to be applied</p><br>'.$out.'</div>';
+        echo '<div class="alert alert-warning"><b>Todo:</b> These changes need to be applied</div>';
+        echo '<div class="panel db-updates">'.$out.'</div>';
 ?>
-<a href="<?php echo $path; ?>admin/db?apply=true" class="btn btn-info"><?php echo tr('Apply changes'); ?></a>
-<?php } 
+<a href="<?php echo $path; ?>admin/db?apply=true" class="btn btn-primary"><?php echo tr('Apply changes'); ?></a>
+<?php }
     elseif ($applychanges && !empty($error)) {
-        echo '<div class="alert alert-danger"><p><b>Error:</b> The following error has occured:</b></p><br>'.$error.'</div>';
+        echo '<div class="alert alert-danger"><b>Error:</b> The following error has occured:<br>'.$error.'</div>';
 ?>
-<a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo tr('Back'); ?></a>
+<a href="<?php echo $path; ?>admin/db" class="btn btn-default"><?php echo tr('Back'); ?></a>
 
-<?php } 
+<?php }
     elseif ($out && $applychanges) {
-        echo '<div class="alert alert-success"><p><b>Success:</b> The following changes have been applied</b></p><br>'.$out.'</div>';
+        echo '<div class="alert alert-success"><b>Success:</b> The following changes have been applied</div>';
+        echo '<div class="panel db-updates">'.$out.'</div>';
 ?>
-<a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo tr('Check for further updates'); ?></a>
+<a href="<?php echo $path; ?>admin/db" class="btn btn-default"><?php echo tr('Check for further updates'); ?></a>
 <?php
     } else {
 ?>
 <div class="alert alert-success">
     <b><?php echo tr('Database is up to date '); ?></b> - <?php echo tr('Nothing to do'); ?>
 </div>
-<a href="<?php echo $path; ?>admin/update" class="btn btn-info"><?php echo tr('Return to Update Page'); ?></a>
+<a href="<?php echo $path; ?>admin/update" class="btn btn-default"><?php echo tr('Return to Update Page'); ?></a>
 <?php } ?>
 
 </div>

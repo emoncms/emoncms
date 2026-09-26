@@ -2,66 +2,26 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 global $path;
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
+load_css("Modules/admin/users/userlist_view.css");
 
 ?>
-<style>
-    [v-cloak] { display: none; }
-    .userlist-controls {
-        display: flex;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-    .userlist-controls label {
-        font-size: var(--font-sm);
-        color: var(--text-secondary);
-        margin-right: 0.25rem;
-    }
-    .pagination-bar {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    .pagination-bar a {
-        box-sizing: content-box;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 28px;
-        height: 26px;
-        padding: 0 6px;
-        border: 1px solid var(--border-strong);
-        border-radius: 0.25rem;
-        font-size: var(--font-xs);
-        color: var(--text-secondary);
-        text-decoration: none;
-        background: var(--bg-input);
-        transition: background-color 0.15s, color 0.15s;
-    }
-    .pagination-bar a:hover { background: var(--bg-card-row-hover); color: var(--text-primary); }
-    .pagination-bar a.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-
-
-    body {
-        background-color: whitesmoke;
-    }
-
-</style>
+<div class="page-header">
+    <h3><?php echo tr("Users"); ?></h3>
+</div>
 
 <div id="userlist-app" v-cloak>
 
     <!-- Users card -->
-    <div class="panel mt-3">
+    <div class="panel">
 
         <!-- Card header -->
-        <div class="panel-header" style="cursor:default">
+        <div class="panel-header panel-header-static">
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr("Users"); ?></span>
             <span class="panel-badge">{{ numberOfUsers }}</span>
-            <button class="btn btn-default" style="margin-left:auto" @click="openAddUserModal">
-                <i class="icon icon-plus"></i> <?php echo tr("Add new user"); ?>
+            <button class="btn btn-default btn-sm" @click="openAddUserModal">
+                <span class="svg-icon-plus"></span> <?php echo tr("Add new user"); ?>
             </button>
         </div>
 
@@ -121,7 +81,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                     <td class="col-secondary">{{ user.id }}</td>
                     <td class="col-primary">{{ user.username }}</td>
                     <td class="col-secondary">{{ user.email }}</td>
-                    <td class="col-secondary"><span v-if="user.email_verified" title="<?php echo tr('Email verified'); ?>" style="color:var(--success)"><i class="icon icon-check"></i></span><span v-else></span></td>
+                    <td class="col-secondary"><span v-if="user.email_verified" title="<?php echo tr('Email verified'); ?>" class="text-success"><span class="svg-icon-check"></span></span><span v-else></span></td>
                     <td class="col-secondary">{{ user.feeds }}</td>
                     <td><a class="btn btn-default" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
                 </tr>

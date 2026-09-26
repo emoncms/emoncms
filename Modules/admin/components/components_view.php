@@ -4,54 +4,74 @@ global $path;
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 ?>
+<?php load_css("Modules/admin/static/admin_styles.css"); ?>
 
-<h3><?php echo tr('Components'); ?></h3>
+<div class="admin-page">
+    <div class="page-header">
+        <h3><?php echo tr('Components'); ?></h3>
+    </div>
+    <p class="page-lead"><?php echo tr('Selectively update system components or switch between branches'); ?></p>
 
-<p><?php echo tr('Selectively update system components or switch between branches'); ?></p>
-
-<pre id="update-log-bound" class="log" style="display:none; margin-bottom:10px"><div id="update-log"></div></pre>
-
-<div id="app">
-    <div class="input-group">
-        <span class="input-group-text"><?php echo tr('Update or switch all components to'); ?></span>
-        <button v-if="!all_custom"class="btn btn-success" @click="all('stable')">Stable</button>
-        <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
-        <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
-        <input v-if="all_custom" class="form-control" v-model="custom_branch" type="text" value="menu_v3" style="width:114px">
-        <button v-if="all_custom" class="btn btn-default" @click="all('custom')">Switch</button>
+    <div id="update-log-bound" class="panel" style="display:none">
+        <div class="panel-header panel-header-static">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr('Update Log'); ?></span>
+        </div>
+        <pre class="log"><div id="update-log"></div></pre>
     </div>
 
-    <table class="table table-bordered">
-    <tr>
-      <th><?php echo tr('Component name'); ?></th>
-      <th><?php echo tr('Version'); ?></th>
-      <th><?php echo tr('Describe'); ?></th>
-      <th><?php echo tr('Local changes'); ?></th>
-      <th><?php echo tr('Branch'); ?></th>
-      <th></th>
-    </tr>
-    <tr v-for="(item, key) in components" :key="key">
-      <td>{{ item.name }}<br>
-        <span style="font-size:12px"><b><?php echo tr('URL:'); ?></b> <a :href="item.url">{{ item.url }}</a></span><br>
-        <span style="font-size:12px"><b><?php echo tr('Installed path:'); ?></b> {{ item.path }}</span>
-      </td>
-      <td>{{ item.version }}</td>
-      <td>{{ item.describe }}</td>
-      <td>
-        <span v-if="item.local_changes!=''" :title="item.local_changes" class="badge bg-danger"><?php echo tr('Yes'); ?></span>
-        <span class="badge bg-success" v-else><?php echo tr('No'); ?></span>
-      </td>
-      <td v-if="item.local_changes==''">
-        <select class="form-select input-220" v-model="item.branch" @change="switch_branch(key)">
-          <option v-for="branch in item.branches_available" :key="branch">{{ branch }}</option>
-        </select>
-      </td>
-      <td v-else>{{ item.branch }}</td>
-      <td><button class="btn btn-default" v-if="item.local_changes==''" @click="update(key)"><?php echo tr('Update'); ?></button></td>
-    </tr>
-    </table>
+    <div id="app" class="panel" v-cloak>
+        <div class="panel-header panel-header-static cmp-header">
+            <span class="panel-accent"></span>
+            <span class="panel-name"><?php echo tr('Components'); ?></span>
+            <span class="panel-badge">{{ Object.keys(components).length }}</span>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text"><?php echo tr('Update or switch all components to'); ?></span>
+                <button v-if="!all_custom" class="btn btn-success" @click="all('stable')">Stable</button>
+                <button v-if="!all_custom" class="btn btn-warning" @click="all('master')">Master</button>
+                <button class="btn btn-danger" @click="all_custom = !all_custom">Custom</button>
+                <input v-if="all_custom" class="form-control cmp-custom" v-model="custom_branch" type="text" placeholder="branch">
+                <button v-if="all_custom" class="btn btn-default" @click="all('custom')">Switch</button>
+            </div>
+        </div>
+        <div class="admin-table">
+        <table class="cmp-table">
+            <colgroup><col><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col class="cmp-col-branch"><col class="cmp-col-actions"></colgroup>
+            <thead>
+                <tr>
+                    <th><?php echo tr('Component name'); ?></th>
+                    <th><?php echo tr('Version'); ?></th>
+                    <th><?php echo tr('Describe'); ?></th>
+                    <th><?php echo tr('Local changes'); ?></th>
+                    <th><?php echo tr('Branch'); ?></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, key) in components" :key="key">
+                    <td>
+                        <div class="cmp-name text-truncate"><span class="col-primary">{{ item.name }}</span><a class="cmp-repo" :href="repoLink(item.url)" :title="item.url">{{ repoName(item.url) }}</a></div>
+                        <div class="cmp-meta text-truncate" :title="item.path"><span v-if="protocol(item.url)=='SSH'" class="cmp-proto cmp-proto-ssh" title="<?php echo tr('SSH remote: updates only work if the service-runner user has a GitHub SSH key without a passphrase'); ?>">SSH</span><span v-else-if="protocol(item.url)" class="cmp-proto cmp-proto-https" title="<?php echo tr('HTTPS remote: updates need no key'); ?>">HTTPS</span>{{ item.path }}</div>
+                    </td>
+                    <td class="col-secondary">{{ item.version }}</td>
+                    <td class="cmp-describe">{{ item.describe }}</td>
+                    <td>
+                        <span v-if="item.local_changes!=''" :title="item.local_changes" class="badge bg-danger"><?php echo tr('Yes'); ?></span>
+                        <span class="badge bg-success" v-else><?php echo tr('No'); ?></span>
+                    </td>
+                    <td v-if="item.local_changes==''">
+                        <select class="form-select input-165" v-model="item.branch" @change="switch_branch(key)">
+                            <option v-for="branch in item.branches_available" :key="branch">{{ branch }}</option>
+                        </select>
+                    </td>
+                    <td v-else class="col-secondary">{{ item.branch }}</td>
+                    <td class="text-end"><button class="btn btn-default btn-sm" v-if="item.local_changes==''" @click="update(key)"><?php echo tr('Update'); ?></button></td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
 </div>
-
 
 <script>
 var components = <?php echo json_encode($components); ?>;
@@ -67,6 +87,20 @@ var app = Vue.createApp({
         };
     },
     methods: {
+        // git@github.com:emoncms/app.git and https://github.com/emoncms/app.git to emoncms/app
+        repoName: function(url) {
+            var m = (url || "").match(/github\.com[:\/](.+?)(\.git)?$/);
+            return m ? m[1] : url;
+        },
+        protocol: function(url) {
+            if (/^https?:\/\//.test(url || "")) return "HTTPS";
+            if (/^(ssh:\/\/|[\w.-]+@[\w.-]+:)/.test(url || "")) return "SSH";
+            return "";
+        },
+        repoLink: function(url) {
+            var m = (url || "").match(/github\.com[:\/](.+?)(\.git)?$/);
+            return m ? "https://github.com/" + m[1] : url;
+        },
         switch_branch: function(name) {
             console.log("switch_branch: "+name+" "+components[name].branch)
             component_update(name,components[name].branch)  
