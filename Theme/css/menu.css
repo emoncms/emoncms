@@ -250,8 +250,6 @@
   color: var(--l3-text-hover);
 }
 
-.menu-text-l3 {}
-
 .menu-l3 .active {
   color: var(--l3-text-active);
 }

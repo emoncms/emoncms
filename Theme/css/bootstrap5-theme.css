@@ -59,7 +59,6 @@
 
     /* App time bar */
     --ec-app-nav-rgb: 6, 153, 250;
-    --ec-app-nav: rgb(var(--ec-app-nav-rgb));
 
     --font-subheading: 1rem;
     --font-sm: 13px;
@@ -322,17 +321,11 @@ pre code {
     --bs-btn-border-radius: 3px;
 }
 /* Extra small, Bootstrap 2 btn-mini */
-.btn-xs, .btn-group-xs > .btn {
+.btn-xs {
     --bs-btn-padding-x: 6px;
     --bs-btn-padding-y: 0;
     --bs-btn-font-size: 10.5px;
     --bs-btn-border-radius: 3px;
-}
-.btn-lg, .btn-group-lg > .btn {
-    --bs-btn-padding-x: 19px;
-    --bs-btn-padding-y: 11px;
-    --bs-btn-font-size: 17.5px;
-    --bs-btn-border-radius: 6px;
 }
 
 /* Default button, Bootstrap 2 plain .btn */
@@ -569,7 +562,7 @@ input:is([type="checkbox"], [type="radio"]) { accent-color: var(--bs-primary); }
 .form-control[readonly] { background-color: var(--bs-secondary-bg); }
 
 /* Row colours: Bootstrap 2 tints, not striped */
-.table-success, .table-danger, .table-warning, .table-info {
+.table-success, .table-danger, .table-warning {
     --bs-table-color: currentColor;
     --bs-table-striped-color: currentColor;
     --bs-table-border-color: var(--bs-border-color);
@@ -577,7 +570,6 @@ input:is([type="checkbox"], [type="radio"]) { accent-color: var(--bs-primary); }
 .table-success { --bs-table-bg: var(--bs-success-bg-subtle); --bs-table-striped-bg: var(--bs-success-bg-subtle); }
 .table-danger { --bs-table-bg: var(--bs-danger-bg-subtle); --bs-table-striped-bg: var(--bs-danger-bg-subtle); }
 .table-warning { --bs-table-bg: var(--bs-warning-bg-subtle); --bs-table-striped-bg: var(--bs-warning-bg-subtle); }
-.table-info { --bs-table-bg: var(--bs-info-bg-subtle); --bs-table-striped-bg: var(--bs-info-bg-subtle); }
 
 .progress {
     --bs-progress-height: 20px;
@@ -595,17 +587,6 @@ input:is([type="checkbox"], [type="radio"]) { accent-color: var(--bs-primary); }
     --bs-dropdown-divider-bg: var(--ec-divider);
     --bs-dropdown-divider-margin-y: 9px;
     --bs-dropdown-link-active-bg: var(--bs-primary);
-}
-
-/* Active items in the primary colour, not Bootstrap's blue */
-.nav-pills { --bs-nav-pills-link-active-bg: var(--bs-primary); }
-.pagination {
-    --bs-pagination-active-bg: var(--bs-primary);
-    --bs-pagination-active-border-color: var(--bs-primary);
-}
-.list-group {
-    --bs-list-group-active-bg: var(--bs-primary);
-    --bs-list-group-active-border-color: var(--bs-primary);
 }
 
 /* -- 4. Shell ------------------------------------------------------------- */

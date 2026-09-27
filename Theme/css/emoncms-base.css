@@ -213,10 +213,6 @@ svg.icon {
     }
 }
 
-.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
-    display: inherit !important;
-}
-
 /* dashboardeditor */
 .scrollable-menu {
     height: auto;
@@ -234,10 +230,6 @@ svg.icon {
         no-repeat;
 }
 
-.text-larger {
-    font-size: larger
-}
-
 .expand-all .icon-resize-small {
     display: none
 }
@@ -249,8 +241,6 @@ svg.icon {
 }
 
 .pull-right{float:right!important}
-.line-height-expanded{line-height: 2;}
-.line-height-normal{line-height: 1.5;}
 .cursor-pointer{ cursor: pointer; }
 
 .label-container{display:inline-block; min-width:200px}

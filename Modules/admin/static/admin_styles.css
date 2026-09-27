@@ -167,10 +167,6 @@ a.cmp-proto:hover .svg-icon-link { opacity: 1; }
     .cmp-header .input-group-text { display: none; }
 }
 
-@media (max-width: 767px) {
-    .admin-table .cmp-table { min-width: 960px; }
-}
-
 /* -- Log ------------------------------------------------------------------ */
 
 .log-panel { position: relative; }
@@ -184,4 +180,3 @@ a.cmp-proto:hover .svg-icon-link { opacity: 1; }
 .serial-page .panel table td,
 .serial-page .panel table th { vertical-align: middle; }
 .serial-page .panel table th { white-space: normal; }
-.serial-console { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); }
