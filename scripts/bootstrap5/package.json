@@ -3,6 +3,12 @@
   "private": true,
   "type": "module",
   "dependencies": {
-    "playwright": "^1.63.0"
+    "autoprefixer": "^10.6.1",
+    "bootstrap": "5.3.8",
+    "clean-css": "^5.3.3",
+    "playwright": "^1.63.0",
+    "postcss": "^8.5.28",
+    "purgecss": "^7.0.2",
+    "sass": "1.78.0"
   }
 }
