@@ -20,7 +20,7 @@ Kept: glyphicons (`icon-*`, `icon-white`, from `Theme/css/bootstrap2-icons.css`)
 5. Grid. `.row > *` takes full width and gutter padding. Use `row g-0` and `col-*` classes, or a flex layout, in place of hand sized columns.
 6. Loading. Load page CSS and JS with `load_css()` and `load_js()`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves a cached Bootstrap 2 era file after an update.
 7. Variables. Replace removed theme variables. See Variables.
-8. Build. Run `node scripts/bootstrap5/bsmissing.mjs` for classes missing from the reduced Bootstrap build. See Bootstrap build in `css-guide.md`.
+8. Build. Run `node scripts/bootstrap5/build.mjs --check` for classes missing from the reduced Bootstrap build. See Bootstrap build in `css-guide.md`.
 9. Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections.
 
 ## Classes

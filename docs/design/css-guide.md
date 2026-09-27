@@ -54,7 +54,7 @@ Apps also load `Modules/app/Views/css/app-kit.css`.
 - Put the stylesheet beside the view, for example `Modules/sync/sync_view.css`.
 - Prefix page classes with a short page name (`net-`, `bk-`, `cfg-`), so they do not clash with Bootstrap or other pages. Avoid Bootstrap names such as `modal-content` or `accordion-body` for page classes.
 - Read colours from variables: `var(--bs-primary)`, `var(--bs-border-color)`, `var(--ec-text-muted)`. A new shared colour goes in both sets of the theme as `--ec-*`.
-- A Bootstrap class that is new to the codebase may be missing from the reduced build. Run `node scripts/bootstrap5/bsmissing.mjs` and rebuild if it lists the class (see Bootstrap build).
+- A Bootstrap class that is new to the codebase may be missing from the reduced build. Run `node scripts/bootstrap5/build.mjs --check` and rebuild if it lists the class (see Bootstrap build).
 
 ## 4. Colours and tokens
 
@@ -414,9 +414,9 @@ Charts: Flot 5 legend panel and tick labels follow the mode inside `.app-page`. 
 A class that is not in the build has no style. After adding Bootstrap classes:
 
 ```sh
-cd scripts/bootstrap5 && npm install
-node bsmissing.mjs      # classes used in the source but missing from the build
-node build.mjs          # rebuild
+cd scripts/bootstrap5 && npm ci
+node build.mjs --check  # classes used in the source but missing from the build
+node build.mjs          # rebuild, then the same check
 ```
 
 To use a left out component, uncomment it in `scripts/bootstrap5/scss/bootstrap.scss` and rebuild. Modules outside the emoncms repos are not scanned. If a class they use is missing, ask for it to be added to the build. See `scripts/bootstrap5/README.md`.
