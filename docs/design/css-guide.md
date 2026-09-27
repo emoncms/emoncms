@@ -148,6 +148,8 @@ Bootstrap 5 points to keep in mind:
 | Apps | Dashboards for the household | Dark or light, chosen per app | MyElectricFlow (dark), MyHeatpump (light) |
 | Reference | API documentation, network setup | Dark | API help pages, Network |
 
+The login page (`Modules/user/login_block.php`) sits outside the families. It is a light card on `--bg-body-login`, with the logo in a header in `--bg-menu-top`, so it follows the colour scheme.
+
 A setup page uses one of two layouts under a page header.
 
 **List layout.** For pages that list things: feeds, inputs, devices. Rows grouped by node or tag, collapsible, with selection and a sticky toolbar. Examples: Inputs, Feeds, Devices, Sync.

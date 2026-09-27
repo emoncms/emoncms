@@ -1,0 +1,52 @@
+/* Login, register and password reset: light card with a header in the colour scheme */
+
+body:has(.login-page) { background-color: var(--bg-body-login); }
+body:has(.login-page) #footer { color: rgba(255, 255, 255, 0.8); background-color: rgba(0, 0, 0, 0.12); }
+body:has(.login-page) #footer a { color: #fff; }
+
+.login-page { max-width: 380px; margin: 0 auto; padding: 9vh 0 48px; }
+
+.login-card {
+    --bs-card-bg: var(--bs-tertiary-bg);
+    --bs-card-border-width: 0;
+    --bs-card-border-radius: 6px;
+    --bs-card-inner-border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+.login-card .card-body { padding: 26px 28px 28px; }
+
+/* Header: logo and wordmark on the scheme colour */
+.login-head { padding: 26px 20px 20px; text-align: center; color: #fff; background-color: var(--bg-menu-top); }
+.login-head p { margin: 8px 0 0; font-size: 15px; color: rgba(255, 255, 255, 0.85); }
+.login-brand { display: flex; align-items: center; justify-content: center; gap: 12px; font-size: 42px; line-height: 1; }
+.login-brand b { font-weight: bold; }
+
+.login-title { margin: 0 0 18px; font-size: 18px; }
+
+/* Fields */
+.login-field { margin-bottom: 18px; }
+.login-page .form-label { font-weight: bold; }
+.login-page .form-control { padding: 10px 14px; font-size: 16px; background-color: var(--bs-body-bg); }
+
+/* Remember me and forgot password */
+.login-options { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.login-options .form-check { display: flex; align-items: center; gap: 8px; min-height: 0; margin: 0; padding-left: 0; }
+.login-options .form-check-input { margin: 0; }
+.login-options a { margin-left: auto; }
+
+/* Main button, full width */
+.login-btn { display: block; width: 100%; padding: 10px; font-size: 17px; }
+
+/* Switch between log in, register and reset */
+.login-switch { margin: 16px 0 0; text-align: center; color: var(--ec-text-secondary); }
+
+.login-page .alert { margin: 0 0 18px; }
+#passwordresetmessage .alert { margin: 16px 0 0; }
+.login-note { margin: 12px 0 0; font-size: 13px; text-align: center; color: var(--ec-text-muted); }
+.login-note:empty { display: none; }
+
+@media (max-width: 480px) {
+    .login-page { padding-top: 24px; }
+    .login-card .card-body { padding: 22px 20px 24px; }
+}

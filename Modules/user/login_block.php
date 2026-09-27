@@ -15,108 +15,89 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 global $path, $settings;
 
 ?>
-<style>
-  .main {
-    box-sizing: content-box;
-    max-width: 320px;
-    padding: 10px;
-  }
-  
-  .content-container { max-width:340px; }
-  
-  .container-fluid { padding:0px !important; }
-
-  #login-form { margin:0;}
-  
-</style>
 <?php
-// $v is set inside Theme/theme.php, a separate view scope rendered after this
-// one, so it was never defined here: this rendered as a constant "?v=" that
-// never busted anything. load_js stamps ?v=filemtime instead.
+load_css("Modules/user/login_block.css");
 load_js("Modules/user/user.js");
 ?>
-<br>
 
+<div class="login-page" data-bs-theme="light">
+    <div class="card login-card">
+        <div class="login-head">
+            <div class="login-brand">
+                <img src="<?php echo $path; ?>Theme/emoncms-logo.svg" alt="" width="50" height="43">
+                <span><b>emon</b>cms</span>
+            </div>
+            <p>Open-source energy visualisation</p>
+        </div>
 
+        <div class="card-body">
+            <form id="login-form" autocomplete="on" onsubmit="return false;">
+                <div id="loginblock" class="collapse show">
+                    <h4 class="login-title register-item hide"><?php echo tr('Create account'); ?></h4>
 
+                    <div class="login-field register-item hide">
+                        <label class="form-label" for="login-email"><?php echo tr('Email'); ?></label>
+                        <input id="login-email" class="form-control" type="text" placeholder="<?php echo tr('Enter your email'); ?>" name="email" tabindex="1" autocomplete="email"/>
+                    </div>
 
-<div class="main">
-  <div class="bg-body-tertiary border rounded p-3 mb-3">
-    <img src="<?php echo $path; ?>Theme/logo_login.png" alt="Login" width="256" height="46" />
-        
-    <div class="login-container">
-        <form id="login-form" autocomplete="on" onsubmit="return false;">
-            <div id="loginblock" class="collapse show">
-                <div class="form-group register-item" style="display:none">
-                    <label class="form-label"><?php echo tr('Email'); ?>
-                        <input class="form-control mb-2" type="text" name="email" tabindex="1" autocomplete="email"/>
-                    </label>
-                </div>
+                    <div class="login-field">
+                        <label class="form-label" for="login-username"><?php echo tr('Username'); ?></label>
+                        <input id="login-username" class="form-control" type="text" placeholder="<?php echo tr('Enter your username'); ?>" tabindex="2" autocomplete="username" name="username"/>
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label"><?php echo tr('Username'); ?>
-                        <input class="form-control mb-2" type="text" tabindex="2" autocomplete="username" name="username"  />
-                    </label>
-                </div>
+                    <div class="login-field">
+                        <label class="form-label" for="login-password"><?php echo tr('Password'); ?></label>
+                        <input id="login-password" class="form-control" type="password" placeholder="<?php echo tr('Enter your password'); ?>" tabindex="3" autocomplete="current-password" name="password"/>
+                    </div>
 
-                <div class="form-group">
-                    <a id="passwordreset-link" class="float-end" href="#">Forgot password?</a>
-                    <label class="form-label"><?php echo tr('Password'); ?>
-                        <input class="form-control mb-2" type="password" tabindex="3" autocomplete="current-password" name="password" />
-                    </label>
-                </div>
+                    <div class="login-field register-item hide">
+                        <label class="form-label" for="confirm-password"><?php echo tr('Confirm password'); ?></label>
+                        <input class="form-control" id="confirm-password" type="password" placeholder="<?php echo tr('Enter your password again'); ?>" name="confirm-password" tabindex="4" autocomplete="new-password"/>
+                    </div>
 
-                <div class="form-group register-item" style="display:none">
-                    <label class="form-label"><?php echo tr('Confirm password'); ?>
-                        <input class="form-control mb-2" id="confirm-password" type="password" name="confirm-password" tabindex="4" autocomplete="new-password"/>
-                    </label>
-                </div>
+                    <div id="loginmessage"></div>
 
-                <div id="loginmessage"></div>
-
-                <div class="form-group login-item">
-                    <?php if ($settings["interface"]["enable_rememberme"]) { ?>
-                        <div>
-                            <label class="d-block mb-1">
-                                <input class="me-1" type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off"><?php echo '&nbsp;'.tr('Remember me'); ?>
-                            </label>
+                    <div class="login-item">
+                        <div class="login-options">
+                            <?php if ($settings["interface"]["enable_rememberme"]) { ?>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme" autocomplete="off">
+                                <label class="form-check-label" for="rememberme"><?php echo tr('Remember me'); ?></label>
+                            </div>
+                            <?php } ?>
+                            <a id="passwordreset-link" href="#"><?php echo tr('Forgot password?'); ?></a>
                         </div>
-                    <?php } ?>
-                    <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo tr('Login'); ?></button>
-                    <?php if ($allowusersregister) { echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                        <a id="register-link" href="#"><?php echo tr('register'); ?></a>
-                    <?php } ?>
+                        <button id="login" class="btn btn-primary login-btn" tabindex="6" type="submit"><?php echo tr('Login'); ?></button>
+                        <?php if ($allowusersregister) { ?>
+                        <p class="login-switch"><?php echo tr('No account?'); ?> <a id="register-link" href="#"><?php echo tr('Register'); ?></a></p>
+                        <?php } ?>
+                    </div>
+
+                    <div class="register-item hide">
+                        <button id="register" class="btn btn-primary login-btn" type="button"><?php echo tr('Register'); ?></button>
+                        <p class="login-switch"><?php echo tr('Have an account?'); ?> <a id="cancel-link" href="#"><?php echo tr('Log in'); ?></a></p>
+                    </div>
                 </div>
 
-                <div class="form-group register-item" style="display:none">
-                    <button id="register" class="btn btn-primary" type="button"><?php echo tr('Register'); ?></button>
-                    <?php echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                    <a id="cancel-link" href="#"><?php echo tr('login'); ?></a>
+                <div id="passwordresetblock" class="collapse">
+                    <h4 class="login-title"><?php echo tr('Reset password'); ?></h4>
+                    <div class="login-field">
+                        <label class="form-label" for="passwordreset-username"><?php echo tr('Existing account name'); ?></label>
+                        <input class="form-control" id="passwordreset-username" type="text" autocomplete="username"/>
+                    </div>
+                    <div class="login-field">
+                        <label class="form-label" for="passwordreset-email"><?php echo tr('Account email address'); ?></label>
+                        <input class="form-control" id="passwordreset-email" type="text" autocomplete="email"/>
+                    </div>
+                    <button id="passwordreset-submit" class="btn btn-primary login-btn" type="button"><?php echo tr('Recover'); ?></button>
+                    <p class="login-switch"><a id="passwordreset-link-cancel" href="#"><?php echo tr('Back to log in'); ?></a></p>
                 </div>
-
-            </div>
-
-            <div id="passwordresetblock" class="collapse">
-                <div class="form-group">
-                    <label class="form-label">Existing account name
-                        <input class="form-control mb-2" id="passwordreset-username" type="text" autocomplete="username"/>
-                    </label>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Account email address
-                        <input class="form-control mb-2" id="passwordreset-email" type="text" autocomplete="email"/>
-                    </label>
-                </div>
-                <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
-                <?php echo '&nbsp;'.tr('or').'&nbsp;' ?>
-                <a id="passwordreset-link-cancel" href="#"><?php echo tr('login'); ?></a>
-            </div>
-            <div id="passwordresetmessage"></div>
-            <p class="pt-1 mb-0"><small id="message" class="text-muted"><?php echo $message ?></small></p>
-            <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
-        </form>
+                <div id="passwordresetmessage"></div>
+                <p id="message" class="login-note"><?php echo $message ?></p>
+                <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
+            </form>
+        </div>
     </div>
-  </div>
 </div>
 
 <script>
@@ -126,7 +107,6 @@ menu.disable();
 
 var verify = <?php echo json_encode($verify); ?>;
 var register_open = false;
-$("body").addClass("body-login");
 
 if (verify.success!=undefined) {
     if (verify.success) {
@@ -158,14 +138,14 @@ $("#passwordreset-submit").click(function(){
     var email = $("#passwordreset-email").val();
 
     if (email==="" || username==="") {
-        $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-danger'>Please enter username and email address</div>");
+        $("#passwordresetmessage").html("<div class='alert alert-danger'>Please enter username and email address</div>");
     } else {
         var result = user.passwordreset(username,email);
         if (result.success===true) {
-            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-success'>"+result.message+"</div>");
+            $("#passwordresetmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
             $("#passwordresetblock").hide();
         } else {
-            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-danger'>"+result.message+"</div>");
+            $("#passwordresetmessage").html("<div class='alert alert-danger'>"+result.message+"</div>");
         }
     }
 });
@@ -229,7 +209,7 @@ function login(){
         else
         {
             if (result.message=="Please verify email address") {
-                $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"<br><br><button class='btn btn-default resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
+                $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"<div class='mt-2'><button class='btn btn-default btn-sm resend-verify' type='button'>Resend verification email</button></div></div>");
             } else {
                 $("#loginmessage").html("<div class='alert alert-danger'>"+result.message+"</div>");
             }

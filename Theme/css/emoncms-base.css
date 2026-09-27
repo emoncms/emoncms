@@ -179,10 +179,6 @@ svg.icon {
 /* Previously in emon-blue.css */
 /*-------------------------------------*/
 
-.body-login {
-    background-color:var(--bg-body-login);
-}
-
 #push, #footer {
     box-sizing: content-box;
     height: 30px;
