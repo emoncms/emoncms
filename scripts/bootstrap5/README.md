@@ -27,6 +27,12 @@ Each prints its changes. Review the diff after running.
 - `csscount.py [-v]`: rules, selectors and declarations in the same three sets. `-v` lists each file.
 - `csscov.mjs dirs...`: used share of each stylesheet from the coverage files in the given output folders, merged, with Bootstrap and hand written totals. Run every group first so the union covers the page list.
 
+## Quick checks
+
+- `appshot.mjs <outdir> <user> "name=page|click|click" ...`: logs in (password equals the user name), captures each state full page and prints page errors and emoncms error dialogs. `W=400` for phone width, `WAIT=ms` before clicks. Emoncms shows JS errors in its own alert, so the dialog log matters.
+- `netshot.mjs <outdir>`: Network page and setup wizard as admin, with WiFi networks injected through `window.app` and one row open.
+- `tags.py file.php ...`: tag balance of a view, PHP and scripts stripped.
+
 ## Typical run
 
 ```sh
