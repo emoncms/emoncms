@@ -31,6 +31,8 @@ Measured on core and the module repos at the end of each roadmap step, with the 
 | `<style>` blocks, 20 views | 18654 | 4326 | 178 | 200 | 447 |
 | `bootstrap.min.css` | 232111 | 30768 | 2550 | 2961 | 5543 |
 
+After step 4, app kit (27 September 2026): hand written `.css` 48 files, 185102 raw, 38793 gzipped, 1580 rules, 1705 selectors, 4304 declarations. `<style>` blocks 11 views, 10942 raw, 3009 gzipped, 97 rules. Together 10% smaller raw. Hex literals 333, `!important` 62.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
@@ -118,9 +120,9 @@ A setup page is one of two layouts, both under a page header.
 
 ### Apps
 
-Apps share a kit taken from MyElectricFlow: `Modules/app/Views/css/app-kit.css`, on the shared light and dark variables. MyElectricFlow, Psychrograph, CO2 Monitor and UK Grid use it. The other apps still use the older `Modules/app/Views/css/dark.css` or `light.css`, which retire once the apps have moved.
+Apps share one kit, `Modules/app/Views/css/app-kit.css`, on the shared light and dark variables. Dark apps take their look from MyElectricFlow (panels), light apps from MyHeatpump (blocks). Every app is on the kit. The older `dark.css`, `light.css` and `graph.css` are removed.
 
-An app loads the kit with `load_css`, wraps its view (app block, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` on it for the dark look. App specific CSS goes in a file beside the app.
+An app loads the kit with `load_css`, wraps its view (app block, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` or `"light"` on it. Light apps also load `Lib/fonts/montserrat/montserrat.css`, which the kit applies to a light `.app-page`. App specific CSS goes in a file beside the app.
 
 ```html
 <div class="app-page" data-bs-theme="dark">
@@ -138,21 +140,42 @@ An app loads the kit with `load_css`, wraps its view (app block, config and load
 </div>
 ```
 
+Light app, as MyHeatpump:
+
+```html
+<div class="app-page" data-bs-theme="light">
+    <section id="app-block" style="display:none">
+        <div class="app-block">
+            <div class="app-bar">
+                <div class="app-bar-title">MY HEATPUMP</div>
+                <button class="app-bar-btn config-open"><span class="svg-icon-wrench"></span></button>
+            </div>
+            <div class="app-block-body app-stats">...</div>
+        </div>
+        <div class="app-block">bar with time buttons, body with the chart, foot</div>
+    </section>
+    appconf include, ajax-loader
+</div>
+```
+
 | Component | Classes |
 |---|---|
 | App frame | `app-page`, `app-panel` rounded blocks. The first panel has a top margin. |
 | Top bar and tabs | `app-top-bar`, `btn-list`, `app-tabs` with `app-btn` tabs (icon and label, accent underline when `active`) |
 | Buttons | `app-btn` text button, `cost-btn` outlined accent button, `active` for the chosen option |
-| Live values | `stats-grid` of `power-title`, `power-value`, `power-unit`. Colour with `text-primary` (use), `text-warning` (solar), `text-danger` (import), `text-quaternary` (battery). |
+| Live values | `stats-grid` (three columns, `stats-grid-2` for two) of `power-title`, `power-value`, `power-unit`. Colour with `text-primary` (use), `text-warning` (solar), `text-danger` (import), `text-quaternary` (battery). |
 | Time bar | `visnavblock` with `visnav app-btn` buttons, joined with rounded ends. Manual date range: `ctrl-group` fields in a second `visnavblock`. |
 | Label and field pair | `ctrl-group` > `ctrl-label` + `select` or text `input`, `ctrl-checkbox`, `ctrl-note` |
 | Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour. |
 | Tables | `app-table`, `col-primary` for the name cell, `app-swatch` colour square |
-| Charts | Flot 5 legend panel and tick labels follow the mode inside `.app-page` (`dark.css` sets the same for older apps). Tick labels are SVG text, so a `font` option needs `fill`. Unlabelled series need `label: ""` to stay out of the legend. Tooltip classes `tooltip-title`, `tooltip-value`, `tooltip-units` keep fixed colours, as the tooltip is added to `body`. |
+| Blocks (light apps) | `app-block` > `app-bar` (grey header bar: `app-bar-title`, `app-bar-btn` buttons with `active`, `app-bar-spacer` to push the following buttons right), `app-block-body` (white), `app-block-foot` (grey summary strip) |
+| Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit` |
+| Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
+| Charts | Flot 5 legend panel and tick labels follow the mode inside `.app-page`. Tick labels are SVG text, so a `font` option needs `fill`. Unlabelled series need `label: ""` to stay out of the legend. Tooltip classes `tooltip-title`, `tooltip-value`, `tooltip-units` keep fixed colours, as the tooltip is added to `body`. |
 
 App colours:
 
-- Surfaces, text, borders and accent come from the shared light and dark variables, plus `--ec-app-panel-bg` and `--ec-app-box-bg`.
+- Surfaces, text, borders and accent come from the shared light and dark variables, plus `--ec-app-panel-bg`, `--ec-app-box-bg` and `--ec-app-bar-bg` (block header bar).
 - Time bar blue: `--ec-app-nav` and `--ec-app-nav-rgb`.
 - Energy colours shared by all apps: `--ec-energy-use`, `--ec-energy-use-light`, `--ec-energy-solar`, `--ec-energy-import`, `--ec-energy-export`, `--ec-energy-battery`, and `--ec-energy-text` for text on them. Values from MyElectricFlow. Heat is added with MyHeatpump. Chart series colours are still set in each app's JS.
 - The page background and footer sit outside `.app-page`, so the kit sets them to fixed dark values when a dark `.app-page` is on the page.
@@ -171,7 +194,7 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 - The dark accent is the brand blue `#44b3e2`. The light accent stays `#2a8fc7`, which reads better on white.
 - A page or app turns dark with `data-bs-theme="dark"` on its root element. Components, Bootstrap and emoncms alike, follow the variables, so they work in both.
 - For now each app keeps its own choice, and the API pages are dark. A site wide light or dark theme later sets the attribute on `<html>`.
-- The app `dark.css` and `light.css` are replaced by the shared dark and light sets.
+- The app `dark.css` and `light.css` are replaced by the shared dark and light sets. Done.
 
 ## Page proposals
 
@@ -189,9 +212,10 @@ The API pages and MyElectricFlow already share a dark look: `#2e2e2e` surfaces, 
 | Admin pages | Mixed | Done: page header with actions (`page-actions`) on every page. Info: one panel per section with compact `panel-row` rows, status dot and state tag per service, coloured service buttons as before, branch tag, component chips with LC tag, usage bars green, amber or red, Pi Control with the danger accent. Update: Full Update and Update Database as rows with blue `btn-primary` buttons (an exception to one primary per panel), firmware form panel, update log panel. Update Emoncms Only removed: use Full Update or the Components page. Components: panel table, Update all (each component on its current branch) and bulk branch switch in the header (Stable green, Master orange, Custom red, as before), rows grouped by install folder, one line per component, Source badge (HTTPS purple or SSH amber, as the feed engine badges) that links to the repo. Log and Serial: log window in a panel, serial device settings in panels. Users: page header, CSS in a file, initials avatar in a pastel colour per username, Admin, Verified and feed count tags as the feed engine badges. Sort by clicking a column head, search in the panel header. Shared CSS in `Modules/admin/static/admin_styles.css`. | Done |
 | API pages | Dark reference | Done: CSS in a file, colours from the shared dark set. | Done |
 | MyElectricFlow, Psychrograph | Dark app, own CSS | Done: source of the app kit, onto it without a visible change. Psychrograph legend fixed (dark panel, no "Plot N" entries). | Done |
-| MyHeatpump | Light app | Move to the kit's light set. | Medium |
+| MyHeatpump, MyBoiler | Light app | Done: source of the light blocks. Grey header bars with buttons, white bodies, value rows, option rows. MyBoiler loads the MyHeatpump stylesheet in place of its copy. | Done |
 | CO2 Monitor, UK Grid | Older `dark.css` | Done: rebuilt with the app kit. CO2 Monitor: top bar, time bar and chart, sensor panel with Average and Decay buttons, totals (volume, mean CO2, air change rate) beside the daily CO2 addition field, sensor table. UK Grid: Fuel mix and Forecast tabs, time bar, series toggles as a row above the chart, source notes panel. | Done |
-| Other apps | Older `dark.css` or `light.css` | Move to the kit one by one. The 14 without test instances need instances first. | Later |
+| Other light apps | Older `light.css` | Done: Time of Use, Feed-in, Octopus, Cost Comparison on the light blocks. Blue bars now grey. | Done |
+| Other dark apps | Older `dark.css` | Done: MyElectric, MyElectric2, Time of Use 2 (flexible), MyEnergy, MySolar, MySolarBattery, MySolarDivert, Solar template, Storage sim, Solar battery sim, Profile, and the template and blank starting points on the dark panels. Storage sim, Solar battery sim, MyElectric2 and Time of Use 2 were light pages and are now dark. | Done |
 
 ## Roadmap
 
@@ -237,8 +261,12 @@ Colours move to variables as each page is converted.
 - Shared app stylesheet `Modules/app/Views/css/app-kit.css` from the MyElectricFlow components, on the shared light and dark variables. Energy colours as theme variables. Done.
 - MyElectricFlow and Psychrograph onto the kit. Done. Pixel diff: flow view identical. Expected changes: the manual time bar Done button gets a rounded end, checkboxes and config fields follow dark mode, Psychrograph legend.
 - CO2 Monitor and UK Grid rebuilt with the kit. Done.
-- MyHeatpump onto the light set.
-- The other apps that load `dark.css` or `light.css` move one by one. The 14 without test instances need instances first. Then `dark.css` and `light.css` are removed.
+- MyHeatpump onto the kit, as the source of the light blocks (`app-block`, `app-bar`, `app-stats`, `app-option`, `--ec-app-bar-bg`). Done.
+- The other apps onto the kit: light apps on the blocks, dark apps on the panels. `dark.css`, `light.css`, `graph.css`, the MyBoiler stylesheet copy and the Octopus `tariff_explorer.css` removed. Done 27 September 2026.
+- MyElectric2 and Time of Use 2 moved on to the dark panels at Trystan's request.
+- Checked in the browser: every app with a test instance (MyHeatpump, MyBoiler, MyElectric2, Time of Use 2, MyEnergy, MySolar, MySolarBattery, and Solar battery sim with faked feed data). Checked from the markup and static renders only: MyElectric, MySolarDivert, Solar template, Storage sim, Profile, Time of Use, Feed-in, Octopus, Cost Comparison, template and blank. These need a test instance for a live check.
+- Fixed on the way: Solar battery sim and MyEnergy Balance charts did not draw under Flot 5 (second y axis not declared).
+- `config-nav.php` and `graph-nav.php` in `apps/OpenEnergyMonitor` are no longer included and can be removed.
 
 ### 5. Shared components from the page conversions
 
@@ -252,7 +280,8 @@ One core commit for the theme and panel files, then one commit per page repo.
 - Page defaults in the theme: `[v-cloak]`, body background, container width, page bottom padding and `page-lead`. Panel margin 1rem, which every page sets.
 - Remove the `.btn { margin: 0 }` resets, 19 across 8 files. Nothing sets a button margin.
 - Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg`, `--color-cat-default` and `--ec-energy-export`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
-- Apps: `app.css` (loaded by the controller), `utils.css` (loaded by the config panel) and `app-kit.css` overlap. One shared file once the apps are on the kit. `appconf.css` onto the variables so the config panel follows the mode.
+- Apps: `app.css` (loaded by the controller), `utils.css` (loaded by the config panel) and `app-kit.css` overlap. One shared file now the apps are on the kit. `appconf.css` onto the variables so the config panel follows the mode. `app.css` `#app-block.in_kw .power-value` conflicts with the kit value size.
+- App kit candidates found in the conversions, each now in an app file: unit box after a `ctrl-group` field (`ctrl-unit`, three copies), small line under a value (`app-stat-sub`), export text colour, flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), app title as the active tab, a two column row of blocks, a small field in an `app-bar`.
 - Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
 
 Check: pixel diff on the converted pages, as the moves do not change the look.
