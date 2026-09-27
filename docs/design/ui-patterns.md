@@ -108,11 +108,9 @@ A setup page is one of two layouts, both under a page header.
 | `group-list-rows` > `group-list-rows-inner` | Collapsible wrapper, `is-expanded` when open |
 | `group-list-row` | Item row, `selected` when ticked |
 | `group-list-cell` | Cell |
-| `group-list-value` | Value cell text |
-| `group-list-indicator` | Status bar in the updated cell |
 | `list-toolbar`, `list-toolbar-sentinel` | Sticky toolbar above the list |
 
-- Status: `--status-color` on a header or row sets the stripe on its right edge and the indicator colour. Time since update in green or red text.
+- Status: `--status-color` on a header or row sets the stripe on its right edge. Time since update in green or red text.
 
 **Panel layout.** For pages of settings, forms and tools: graph, backup, admin, post process, schedule, email reports, sync, My Account.
 
@@ -212,7 +210,7 @@ Light app, as MyHeatpump:
 App colours:
 
 - Surfaces, text, borders and accent come from the shared light and dark variables, plus `--ec-app-panel-bg`, `--ec-app-box-bg` and `--ec-app-bar-bg` (block header bar).
-- Time bar blue: `--ec-app-nav` and `--ec-app-nav-rgb`.
+- Time bar blue: `--ec-app-nav-rgb`, used as `rgba(var(--ec-app-nav-rgb), a)`.
 - Energy colours shared by all apps: `--ec-energy-use`, `--ec-energy-use-light`, `--ec-energy-solar`, `--ec-energy-import`, `--ec-energy-export`, `--ec-energy-battery`, `--ec-energy-direct`, `--ec-energy-wind`, and `--ec-energy-text` for text on them. Values from MyElectricFlow. Heat is added with MyHeatpump. Chart series colours are still set in each app's JS.
 - The page background and footer sit outside `.app-page`, so the kit sets them to fixed dark values when a dark `.app-page` is on the page.
 
