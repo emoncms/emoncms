@@ -35,6 +35,8 @@ After step 4, app kit (27 September 2026): hand written `.css` 48 files, 185102 
 
 After the app CSS tidy (`utils.css` removed, `app.css` to the app list page only): hand written `.css` 47 files, 182282 raw, 38269 gzipped, 1550 rules, 1673 selectors, 4291 declarations. `<style>` blocks 10 views, 10055 raw, 88 rules. Hex literals 330, `!important` 49.
 
+After apps on Bootstrap components: hand written `.css` 47 files, 177582 raw, 37573 gzipped, 1511 rules, 1626 selectors, 4153 declarations. `<style>` blocks unchanged. Hex literals 343 and `!important` 53, counted with `/usr/bin/grep`; the earlier figures went through the interactive `ugrep` wrapper and are not comparable. This step removed one `!important` and no hex literals.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
@@ -130,9 +132,9 @@ An app loads the kit with `load_css`, wraps its view (app block, config and load
 <div class="app-page" data-bs-theme="dark">
     <section id="app-block" style="display:none">
         <div class="app-panel">
-            <nav class="app-top-bar d-flex justify-content-between">
-                <ul id="tabs" class="btn-list app-tabs">...</ul>
-                <ul class="btn-list">config-open and config-close buttons</ul>
+            <nav class="app-top-bar">
+                <div id="tabs" class="nav nav-underline">button.nav-link tabs</div>
+                <div class="nav">config-open and config-close nav-link buttons</div>
             </nav>
             <div class="stats-grid">...</div>
         </div>
@@ -163,14 +165,14 @@ Light app, as MyHeatpump:
 | Component | Classes |
 |---|---|
 | App frame | `app-page`, `app-panel` rounded blocks. The first panel has a top margin. |
-| Top bar and tabs | `app-top-bar`, `btn-list`, `app-tabs` with `app-btn` tabs (icon and label, accent underline when `active`) |
-| Buttons | `app-btn` text button, `cost-btn` outlined accent button, `active` for the chosen option |
+| Top bar and tabs | `app-top-bar` (flex, space between) holding a `nav nav-underline` of `button.nav-link` tabs (icon and label, accent underline when `active`) and a `nav` of icon `nav-link` buttons (`config-open`, `config-close`) |
+| Buttons | Text or toggle button: `nav-link` in a `nav`, underlined when `active`. Action: `btn btn-outline-primary` (accent tint, defined in the theme), `active` for the chosen option. |
 | Live values | `stats-grid` (three columns, `stats-grid-2` for two) of `power-title`, `power-value`, `power-unit`. Colour with the energy classes. |
 | Energy colours | `text-use`, `text-house`, `text-solar`, `text-wind`, `text-direct`, `text-import`, `text-export`, `text-battery`. Bootstrap `text-*` classes keep their Bootstrap meaning. |
-| Time bar | `visnavblock` with `visnav app-btn` buttons, joined with rounded ends. Manual date range: `ctrl-group` fields in a second `visnavblock`. |
-| Label and field pair | `ctrl-group` > `ctrl-label` + `select` or text `input`, `ctrl-checkbox`, `ctrl-note` |
+| Time bar | `app-navbar` row (safe to show and hide from JS) with a `btn-group app-timebar` of plain `btn` buttons, then notes and a `nav ms-auto` of `nav-link` toggles such as Daily. Manual date range: `input-group` fields with `DateTimePicker.attach`, and a one button `app-timebar` for Done. |
+| Fields | `input-group w-auto` > `input-group-text` + `form-select` or `form-control` (theme width classes), a trailing `input-group-text` for a unit. `form-check` for a checkbox, `small text-body-secondary` for a note. `.app-page .input-group` has no bottom margin, so fields line up with buttons in a flex row. |
 | Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour. |
-| Tables | `app-table`, `col-primary` for the name cell, `app-swatch` colour square |
+| Tables | `table` (`table-sm` for dense ones), `col-primary` for the name cell, `app-swatch` colour square |
 | Blocks (light apps) | `app-block` > `app-bar` (grey header bar: `app-bar-title`, `app-bar-btn` buttons with `active`, `app-bar-spacer` to push the following buttons right), `app-block-body` (white), `app-block-foot` (grey summary strip) |
 | Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit` |
 | Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
@@ -284,7 +286,8 @@ One core commit for the theme and panel files, then one commit per page repo.
 - Remove the `.btn { margin: 0 }` resets, 19 across 8 files. Nothing sets a button margin.
 - Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg` and `--color-cat-default`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
 - Apps: done 27 September 2026. `utils.css` removed: energy colour classes in the kit in place of the redefined Bootstrap `text-*` classes, `app-top-bar` sets its own flex layout, the description `.lead` moved to `appconf.css`. `app.css` is now the Available apps page stylesheet only (with its `<style>` block), no longer loaded on app views; its unused Bootstrap 4 helpers and the `in_kw` rule, which shrank kW values in the MySolar apps, removed. Still open: `appconf.css` onto the variables so the config panel follows the mode.
-- App kit candidates found in the conversions, each now in an app file: unit box after a `ctrl-group` field (`ctrl-unit`, three copies), small line under a value (`app-stat-sub`), export text colour, flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), app title as the active tab, a two column row of blocks, a small field in an `app-bar`.
+- Apps on Bootstrap components, done 27 September 2026: tabs `nav-underline`, text and icon buttons `nav-link`, time bar `btn-group app-timebar`, actions `btn-outline-primary` (tinted, in the theme), fields `input-group`, checkboxes `form-check`, tables `table`. The kit's `btn-list`, `app-tabs`, `app-btn`, `cost-btn`, `visnavblock`, `visnav`, `ctrl-*` and `app-table` are removed (kit 17281 to 11900 bytes). MyElectricFlow was checked A/B first.
+- App kit candidates still in app files: small line under a value (`app-stat-sub`), flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), a two column row of blocks, a small field in an `app-bar`.
 - Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
 
 Check: pixel diff on the converted pages, as the moves do not change the look.

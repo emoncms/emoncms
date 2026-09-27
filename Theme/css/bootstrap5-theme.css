@@ -467,6 +467,20 @@ a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
 }
 .modal-footer > * { margin: 0; }
 .modal-footer .btn + .btn { margin-left: 5px; }
+/* Outline primary: accent text on a tint of the accent, stronger tint on hover and when active */
+.btn-outline-primary {
+    --bs-btn-color: var(--bs-primary);
+    --bs-btn-bg: rgba(var(--bs-primary-rgb), 0.12);
+    --bs-btn-border-color: rgba(var(--bs-primary-rgb), 0.35);
+    --bs-btn-hover-color: var(--bs-emphasis-color);
+    --bs-btn-hover-bg: rgba(var(--bs-primary-rgb), 0.25);
+    --bs-btn-hover-border-color: rgba(var(--bs-primary-rgb), 0.35);
+    --bs-btn-active-color: var(--bs-emphasis-color);
+    --bs-btn-active-bg: rgba(var(--bs-primary-rgb), 0.35);
+    --bs-btn-active-border-color: rgba(var(--bs-primary-rgb), 0.6);
+    --bs-btn-focus-shadow-rgb: var(--bs-primary-rgb);
+}
+
 .btn-close { --bs-btn-close-opacity: 0.2; }
 
 /* Input group: inline and sized to its content, as Bootstrap 2 input-prepend */
