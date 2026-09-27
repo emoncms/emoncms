@@ -25,6 +25,7 @@ Each prints its changes. Review the diff after running.
 - `crop.mjs out.png x y w h files...`: crop screenshots side by side.
 - `cssbytes.sh`: raw and gzipped bytes of the hand written CSS, the `<style>` blocks and `bootstrap.min.css`.
 - `csscount.py [-v]`: rules, selectors and declarations in the same three sets. `-v` lists each file.
+- `colcount.py`: hex literals and `!important` in the same sets, for the working tree and `HEAD`.
 - `csscov.mjs dirs...`: used share of each stylesheet from the coverage files in the given output folders, merged, with Bootstrap and hand written totals. Run every group first so the union covers the page list.
 
 ## Quick checks

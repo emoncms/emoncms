@@ -84,7 +84,7 @@ $_js_translations = array(
 
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
 
-<div id="new-system-info" class="admin-page info-page" v-cloak>
+<div id="new-system-info" class="panel-page admin-page info-page" v-cloak>
 	<div class="page-header">
 		<h3>{{ tr('System Information') }}</h3>
 		<div class="page-actions">
@@ -119,7 +119,7 @@ $_js_translations = array(
 		<div v-for="(svc, key) in info.Services" :key="key" class="panel-row info-row" @click="copyServiceRow(key, svc, $event)">
 			<div class="row-key"><span class="status-dot" :class="serviceDotClass(svc)"></span>{{ key }}</div>
 			<div class="row-value">
-				<span class="info-tag" :class="serviceTag(svc).cls">{{ serviceTag(svc).text }}</span>
+				<span class="badge px-2" :class="tagClass(serviceTag(svc).colour)">{{ serviceTag(svc).text }}</span>
 				<span v-if="svc && svc.note" class="info-note">{{ svc.note }}</span>
 			</div>
 			<div class="btn-group svc-buttons" role="group" v-if="isServiceLoaded(svc) && svc.unitfilestate !== 'container'">
@@ -142,9 +142,9 @@ $_js_translations = array(
 			<div class="row-key text-truncate" :title="tr(row.title)">{{ tr(row.title) }}</div>
 			<div class="row-value">
 				<template v-if="row.type === 'text'">{{ row.value }}</template>
-				<span v-if="row.type === 'branch'" class="info-tag" :class="branchTagClass(row.value)">{{ row.value }}</span>
+				<span v-if="row.type === 'branch'" class="badge px-2" :class="tagClass(branchColour(row.value))">{{ row.value }}</span>
 				<div v-if="row.type === 'components'" class="info-chips">
-					<span v-for="c in row.items" :key="c.name" class="info-chip" :title="c.lc ? '<?php echo tr('Local changes'); ?>' : ''">{{ c.name }}<span class="info-chip-version">{{ c.version }}</span><span v-if="c.lc" class="info-tag info-tag-red">LC</span></span>
+					<span v-for="c in row.items" :key="c.name" class="info-chip" :title="c.lc ? '<?php echo tr('Local changes'); ?>' : ''">{{ c.name }}<span class="info-chip-version">{{ c.version }}</span><span v-if="c.lc" class="badge bg-danger-subtle text-danger-emphasis">LC</span></span>
 				</div>
 				<div v-if="row.type === 'progress'" class="info-usage">
 					<div class="info-usage-label">{{ tr(row.label) }}</div>
@@ -314,14 +314,18 @@ Vue.createApp({
 		},
 		// State tag: green running, amber active but not running, red stopped, grey not installed
 		serviceTag: function(svc) {
-			if (!svc || svc.loadstate === 'Not-found') return { text: 'Not installed', cls: '' };
-			if (svc.loadstate === 'Masked') return { text: 'Masked', cls: '' };
-			if (this.isServiceRunning(svc)) return { text: 'Running', cls: 'info-tag-green' };
-			if (this.isServiceActive(svc)) return { text: svc.substate || 'Active', cls: 'info-tag-amber' };
-			return { text: [svc.state, svc.substate].filter(Boolean).join(' ') || 'Stopped', cls: 'info-tag-red' };
+			if (!svc || svc.loadstate === 'Not-found') return { text: 'Not installed', colour: 'secondary' };
+			if (svc.loadstate === 'Masked') return { text: 'Masked', colour: 'secondary' };
+			if (this.isServiceRunning(svc)) return { text: 'Running', colour: 'success' };
+			if (this.isServiceActive(svc)) return { text: svc.substate || 'Active', colour: 'warning' };
+			return { text: [svc.state, svc.substate].filter(Boolean).join(' ') || 'Stopped', colour: 'danger' };
 		},
-		branchTagClass: function(branch) {
-			return (branch === 'master' || branch === 'stable') ? 'info-tag-green' : 'info-tag-amber';
+		branchColour: function(branch) {
+			return (branch === 'master' || branch === 'stable') ? 'success' : 'warning';
+		},
+		// Pastel tag classes for a Bootstrap colour name
+		tagClass: function(colour) {
+			return 'bg-' + colour + '-subtle text-' + colour + '-emphasis';
 		},
 		usageClass: function(percent) {
 			if (percent >= 90) return 'bg-danger';

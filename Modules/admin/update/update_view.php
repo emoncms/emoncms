@@ -3,7 +3,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 global $settings; 
 ?>
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<div class="admin-page">
+<div class="panel-page admin-page">
     <div class="page-header">
         <h3><?php echo tr('Update'); ?></h3>
     </div>
@@ -42,10 +42,10 @@ global $settings;
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr('Update Firmware Only'); ?></span>
         </div>
-        <div class="panel-body admin-form">
+        <div class="panel-body panel-form">
             <p class="text-muted"><?php echo tr('Select your hardware type and firmware version'); ?></p>
 
-            <div class="admin-field">
+            <div class="panel-field">
                 <label class="form-label" for="select_serial_port"><?php echo tr('Serial port'); ?></label>
                 <select class="form-select input-165" id="select_serial_port">
                     <?php foreach ($serial_ports as $port) { ?>
@@ -54,7 +54,7 @@ global $settings;
                 </select>
             </div>
 
-            <div class="admin-field">
+            <div class="panel-field">
                 <label class="form-label" for="selected_hardware"><?php echo tr('Hardware'); ?></label>
                 <select class="form-select input-220" id="selected_hardware">
                     <option value="none">none</option>
@@ -64,7 +64,7 @@ global $settings;
                 </select>
             </div>
 
-            <div id="radio_format_bound" class="admin-field">
+            <div id="radio_format_bound" class="panel-field">
                 <label class="form-label" for="selected_radio_format"><?php echo tr('Radio format'); ?></label>
                 <select class="form-select input-220" id="selected_radio_format">
                     <option value="lowpowerlabs" selected>RFM69 LowPowerLabs</option>
@@ -73,7 +73,7 @@ global $settings;
                 </select>
             </div>
 
-            <div class="admin-field">
+            <div class="panel-field">
                 <label class="d-inline-block me-3">
                     <input type="radio" name="firmware_source" value="standard" checked> <?php echo tr('Standard firmware'); ?>
                 </label>
@@ -82,14 +82,14 @@ global $settings;
                 </label>
             </div>
 
-            <div id="standard_firmware_bound" class="admin-field">
+            <div id="standard_firmware_bound" class="panel-field">
                 <label class="form-label" for="selected_firmware"><?php echo tr('Firmware'); ?></label>
                 <select class="form-select input-545" id="selected_firmware">
                     <option value="none">none</option>
                 </select>
             </div>
 
-            <div id="custom_firmware_bound" class="admin-field" style="display:none">
+            <div id="custom_firmware_bound" class="panel-field" style="display:none">
                 <label class="form-label"><?php echo tr('Firmware file'); ?></label>
                 <div>
                     <label for="custom_firmware" class="btn btn-default" tabindex="0"><?php echo tr('Choose file'); ?>&hellip;</label>

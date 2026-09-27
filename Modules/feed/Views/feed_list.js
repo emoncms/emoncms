@@ -191,17 +191,17 @@ var feedAppRoot = Vue.createApp({
         
         formatEngine: function(engine, interval) {
             var engineName = feed_engines[engine];
-            var cssClass = 'engine-other';
-            if (engineName == 'PHPFINA')           { engineName = 'FIXED';    cssClass = 'engine-fixed'; }
-            else if (engineName == 'PHPTIMESERIES'){ engineName = 'VARIABLE'; cssClass = 'engine-variable'; }
-            else if (engineName == 'MYSQL')        { cssClass = 'engine-mysql'; }
-            else if (engineName == 'VIRTUAL')      { cssClass = 'engine-virtual'; }
-            else if (engineName == 'MEMORY')       { cssClass = 'engine-memory'; }
-            else if (engineName == 'REDISBUFFER')  { engineName = 'REDIS'; cssClass = 'engine-redis'; }
+            var colour = 'secondary';
+            if (engineName == 'PHPFINA')           { engineName = 'FIXED';    colour = 'info'; }
+            else if (engineName == 'PHPTIMESERIES'){ engineName = 'VARIABLE'; colour = 'success'; }
+            else if (engineName == 'MYSQL')        { colour = 'warning'; }
+            else if (engineName == 'VIRTUAL')      { colour = 'purple'; }
+            else if (engineName == 'MEMORY')       { colour = 'danger'; }
+            else if (engineName == 'REDISBUFFER')  { engineName = 'REDIS'; colour = 'orange'; }
             var intervalTag = (engine == 5)
-                ? '<span class="interval-sep"></span><span class="interval-tag">' + interval + 's</span>'
+                ? '<span class="interval-tag">' + interval + 's</span>'
                 : '';
-            return '<span class="engine-badge ' + cssClass + '">' + engineName + intervalTag + '</span>';
+            return '<span class="badge px-2 bg-' + colour + '-subtle text-' + colour + '-emphasis">' + engineName + intervalTag + '</span>';
         },
         
         formatSize: function(bytes) {

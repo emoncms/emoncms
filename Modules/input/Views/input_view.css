@@ -3,35 +3,6 @@ input[type="checkbox"] { margin:0px; }
 #inputs-to-delete { font-style:italic; }
 .text-nowrap { white-space: nowrap; }
 
-/* ================================================================== */
-/* STICKY CONTROLS TOOLBAR                                            */
-/* ================================================================== */
-
-.input-controls-sentinel { height: 0; visibility: hidden; }
-.input-controls {
-    position: sticky;
-    top: var(--feed-top, 46px);
-    z-index: 100;
-    background: var(--bs-body-bg);
-    padding: 6px 0;
-    margin-bottom: 10px;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, top 0.3s ease-out;
-}
-.input-controls.is-sticky { background: transparent; box-shadow: none; }
-.input-controls.is-sticky::before {
-    content: '';
-    position: fixed;
-    top: var(--feed-top, 46px);
-    left: 0;
-    width: 100vw;
-    height: 44px;
-    background: var(--bg-menu-top-active);
-    z-index: -1;
-    transition: top 0.3s ease-out;
-}
-.input-controls .btn { margin-right: 4px; }
-#input-filter { float: right; }
-
 #noprocesses .alert{margin:0;border-bottom-color:var(--bs-warning-bg-subtle);border-radius: 4px 4px 0 0;padding-right:14px}
 
 /* ================================================================== */

@@ -6,7 +6,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 ?>
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
 
-<div class="admin-page">
+<div class="panel-page admin-page">
     <div class="page-header">
         <h3><?php echo tr('Components'); ?></h3>
     </div>
@@ -35,7 +35,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                 <button v-if="all_custom" class="btn btn-default" @click="all('custom')">Switch</button>
             </div>
         </div>
-        <div class="admin-table">
+        <div class="panel-table">
         <table class="cmp-table">
             <colgroup><col><col class="cmp-col-source"><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col class="cmp-col-branch"><col class="cmp-col-actions"></colgroup>
             <thead>
@@ -57,7 +57,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                         <div class="col-primary text-truncate" :title="item.path">{{ item.name }}</div>
                     </td>
                     <td>
-                        <a class="cmp-proto" :class="'cmp-proto-' + protocol(item.url).toLowerCase()" :href="repoLink(item.url)" :title="item.url + '\n' + protocolNote(item.url)" target="_blank" rel="noopener"><span>{{ protocol(item.url) || 'git' }}</span><span class="svg-icon-link"></span></a>
+                        <a class="badge px-2 cmp-proto" :class="protocolClass(item.url)" :href="repoLink(item.url)" :title="item.url + '\n' + protocolNote(item.url)" target="_blank" rel="noopener"><span>{{ protocol(item.url) || 'git' }}</span><span class="svg-icon-link"></span></a>
                     </td>
                     <td class="col-secondary">{{ item.version }}</td>
                     <td class="cmp-describe">{{ item.describe }}</td>
@@ -114,6 +114,11 @@ var app = Vue.createApp({
             if (/^https?:\/\//.test(url || "")) return "HTTPS";
             if (/^(ssh:\/\/|[\w.-]+@[\w.-]+:)/.test(url || "")) return "SSH";
             return "";
+        },
+        // Tag colours: HTTPS purple, SSH amber, other grey
+        protocolClass: function(url) {
+            var c = { HTTPS: "purple", SSH: "warning" }[this.protocol(url)] || "secondary";
+            return "bg-" + c + "-subtle text-" + c + "-emphasis";
         },
         // git@github.com:emoncms/app.git and https://github.com/emoncms/app.git to the GitHub page
         protocolNote: function(url) {

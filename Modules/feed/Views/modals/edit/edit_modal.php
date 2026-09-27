@@ -2,17 +2,6 @@
 <?php
 include_once('Lib/units.php');
 ?>
-<style>
-.panel-badge {
-    font-size: 11px;
-    color: #777;
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 1px 8px;
-    margin-left: 6px;
-}
-</style>
 <script>var feed_units = <?php echo json_encode(defined('UNITS') ? UNITS : array(), JSON_UNESCAPED_UNICODE); ?>;</script>
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -24,7 +13,7 @@ include_once('Lib/units.php');
                 <div class="modal-header">
                     <h3 id="feedEditModalLabel" class="modal-title">                <span v-if="selectedFeedIds.length==1"><?php echo tr('Edit Feed'); ?></span>
                         <span v-else><?php echo tr('Edit Feeds'); ?></span>
-                        <span class="panel-badge">{{ selectedFeedIds.length }} selected</span>
+                        <span class="panel-badge fw-normal ms-2">{{ selectedFeedIds.length }} selected</span>
                     </h3>
                     <button @click="closeModal" type="button" class="btn-close" aria-label="Close"></button>
                 </div>

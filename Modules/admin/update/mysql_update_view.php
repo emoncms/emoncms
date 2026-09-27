@@ -21,7 +21,7 @@
 ?>
 
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<div class="admin-page">
+<div class="panel-page admin-page">
 
 <div class="page-header">
     <h3><?php echo tr("Update database"); ?></h3>

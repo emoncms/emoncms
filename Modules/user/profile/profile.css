@@ -1,10 +1,5 @@
-[v-cloak] { display: none; }
-
-/* My Account: panels on the page background, as graph and backup */
-body { background-color: var(--bg-body); }
-.content-container { max-width: 980px; }
-.profile-page { padding-bottom: 2rem; }
-.profile-page .panel { margin-bottom: 1rem; }
+/* My Account: panel-page from the theme, narrower */
+main.content-container:has(.profile-page) { max-width: 980px; }
 
 .profile-page .apikey { font-family: var(--font-mono); font-size: var(--font-sm); }
 
@@ -33,7 +28,7 @@ body { background-color: var(--bg-body); }
 }
 .profile-check input { margin: 0; }
 
-/* Theme and sidebar colour swatches */
+/* Theme and sidebar colour swatches. Each carries its scheme class, so it shows the scheme colour. */
 .color-box {
     display: inline-block;
     box-sizing: content-box;
@@ -45,6 +40,8 @@ body { background-color: var(--bg-body); }
     vertical-align: middle;
     cursor: pointer;
 }
+.color-box.themecolor { background-color: var(--bg-menu-top); }
+.color-box.sidebarcolor { background-color: var(--bg-l2); }
 .color-box-active,
 .color-box:hover {
     border-color: var(--bs-emphasis-color);

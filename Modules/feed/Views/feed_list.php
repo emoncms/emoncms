@@ -78,9 +78,9 @@ load_css("Modules/feed/Views/feed_view.css");
     <a href="<?php echo $path.$public_username_str; ?>feed/api"><?php echo tr('Feed API Help'); ?></a>
 </div>
 
-<div class="feed-controls-sentinel"></div>
+<div class="list-toolbar-sentinel"></div>
 <div id="feed-app">
-    <div class="controls feed-controls">
+    <div class="list-toolbar">
         <button class="btn btn-default" :title="allExpanded ? '<?php echo tr('Collapse') ?>' : '<?php echo tr('Expand') ?>'" @click="expandAllNodes()">
             <i :class="allExpanded ? 'icon-resize-small' : 'icon-resize-full'"></i>
         </button>
@@ -105,7 +105,7 @@ load_css("Modules/feed/Views/feed_view.css");
         <button class="btn btn-default" v-if="showProcess" title="<?php echo tr('Process config') ?>" @click="processSelectedFeed">
             <i class="icon-wrench"></i>
         </button>
-        <input type="text" name="filter" id="filter" class="form-control input-220" v-model="filterText" v-show="selectedFeedCount === 0" placeholder="<?php echo tr('Filter feeds') ?>">
+        <input type="text" name="filter" id="filter" class="form-control input-220 ms-auto" v-model="filterText" v-show="selectedFeedCount === 0" placeholder="<?php echo tr('Filter feeds') ?>">
     </div>
 
 <!-- Vue.js Feed List Component -->
@@ -198,26 +198,7 @@ load_css("Modules/feed/Views/feed_view.css");
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 
-<script>
-(function() {
-    var sentinel = document.querySelector('.feed-controls-sentinel');
-    if (!sentinel || !('IntersectionObserver' in window)) return;
-
-    // Sync --feed-top to navbar height (0 when hidden on mobile scroll)
-    var nav = document.querySelector('.menu-top');
-    function updateFeedTop() {
-        document.documentElement.style.setProperty('--feed-top', (nav && !nav.classList.contains('menu-top-hide') ? nav.offsetHeight : 0) + 'px');
-    }
-    if (nav) new MutationObserver(updateFeedTop).observe(nav, { attributes: true, attributeFilter: ['class'] });
-    updateFeedTop();
-
-    // Toggle is-sticky class when controls scroll behind the navbar
-    new IntersectionObserver(function(entries) {
-        var controls = document.querySelector('.feed-controls');
-        if (controls) controls.classList.toggle('is-sticky', !entries[0].isIntersecting);
-    }, { rootMargin: '-46px 0px 0px 0px', threshold: 0 }).observe(sentinel);
-})();
-</script>
+<script>list_toolbar(document.querySelector('.list-toolbar-sentinel'), '.list-toolbar');</script>
 
 <?php 
 

@@ -10,7 +10,7 @@ load_css("Modules/admin/users/userlist_view.css");
     <h3><?php echo tr("Users"); ?></h3>
 </div>
 
-<div id="userlist-app" v-cloak>
+<div id="userlist-app" class="panel-page" v-cloak>
 
     <!-- Users card -->
     <div class="panel">
@@ -34,7 +34,7 @@ load_css("Modules/admin/users/userlist_view.css");
         </div>
 
         <!-- User table -->
-        <div class="user-table">
+        <div class="panel-table">
         <table>
             <colgroup>
                 <col style="width:60px">
@@ -57,17 +57,17 @@ load_css("Modules/admin/users/userlist_view.css");
                     <td class="col-secondary">{{ user.id }}</td>
                     <td>
                         <div class="user-cell">
-                            <span class="user-avatar" :class="'user-avatar-' + avatarColour(user.username)">{{ initials(user.username) }}</span>
+                            <span class="user-avatar" :class="tagClass(avatarColour(user.username))">{{ initials(user.username) }}</span>
                             <span class="col-primary text-truncate">{{ user.username }}</span>
-                            <span v-if="user.admin" class="user-tag user-tag-admin"><?php echo tr("Admin"); ?></span>
+                            <span v-if="user.admin" class="badge px-2 bg-danger-subtle text-danger-emphasis"><?php echo tr("Admin"); ?></span>
                         </div>
                     </td>
                     <td class="col-secondary text-truncate">{{ user.email }}</td>
                     <td>
-                        <span v-if="user.email_verified" class="user-tag user-tag-verified" title="<?php echo tr('Email verified'); ?>"><?php echo tr("Verified"); ?></span>
-                        <span v-else class="user-tag"><?php echo tr("Unverified"); ?></span>
+                        <span v-if="user.email_verified" class="badge px-2 bg-success-subtle text-success-emphasis" title="<?php echo tr('Email verified'); ?>"><?php echo tr("Verified"); ?></span>
+                        <span v-else class="badge px-2 bg-secondary-subtle text-secondary-emphasis"><?php echo tr("Unverified"); ?></span>
                     </td>
-                    <td><span class="user-tag" :class="{'user-tag-feeds': user.feeds > 0}">{{ user.feeds }}</span></td>
+                    <td><span class="badge px-2" :class="tagClass(user.feeds > 0 ? 'info' : 'secondary')">{{ user.feeds }}</span></td>
                     <td class="text-end"><a class="btn btn-default btn-sm" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
                 </tr>
             </tbody>
@@ -161,12 +161,17 @@ load_css("Modules/admin/users/userlist_view.css");
                 var letters = words.length > 1 ? words[0][0] + words[1][0] : String(name || '?').slice(0, 2);
                 return letters.toUpperCase();
             },
-            // Same colour for the same username, one of eight
+            // Same colour for the same username, one of six
             avatarColour: function (name) {
+                var colours = ['info', 'success', 'warning', 'purple', 'danger', 'orange'];
                 var hash = 0;
                 name = String(name || '');
                 for (var i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) | 0;
-                return Math.abs(hash) % 8;
+                return colours[Math.abs(hash) % colours.length];
+            },
+            // Pastel tag classes for a Bootstrap colour name
+            tagClass: function (colour) {
+                return 'bg-' + colour + '-subtle text-' + colour + '-emphasis';
             },
             fetchNumberOfUsers: function () {
                 var self = this;

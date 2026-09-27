@@ -255,35 +255,6 @@ svg.icon {
 
 .label-container{display:inline-block; min-width:200px}
 
-/* Used by dashboard designer */
-.controls {
-    transition: all .2s ease-out
-}
-.controls.affix:before {
-    content: '';
-    background: var(--bg-menu-top-active);
-    opacity: 0.90;
-    width: 100%;
-    display: block;
-    position: fixed;
-    z-index: -1;
-    height: 2.6rem;
-    left: 0;
-    margin-top: -.3rem;
-}
-.controls.affix > * {
-    z-index: 2
-}
-.controls.affix {
-    z-index: 2;
-    top: 2.9rem;
-    padding: .3rem 0;
-}
-.controls.affix-top{position:absolute;}
-
-@media only screen and (max-width:979px) {
-    .controls.affix{top:0}
-}
 @media only screen and (min-width:870px) {
     body{font-size:16px}
 }

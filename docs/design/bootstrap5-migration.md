@@ -151,7 +151,7 @@ Bootstrap 5 modal markup has two extra wrappers:
 
 All colours and shared values are at the top of `bootstrap5-theme.css`, in three blocks. Components in the theme read them, so a look change is an edit there.
 
-- `:root, [data-bs-theme]`: values shared by both modes (button colours, type, shape, spacing) and aliases such as `--accent` and `--bs-link-color`. The selector covers every theme root, so aliases take the colours of that root's mode.
+- `:root, [data-bs-theme]`: values shared by both modes (button colours, type, shape, spacing) and aliases such as `--bs-link-color`. The selector covers every theme root, so aliases take the colours of that root's mode.
 - `:root, [data-bs-theme="light"]`: the light set.
 - `[data-bs-theme="dark"]`: the dark set, from the API pages and MyElectricFlow. Primary `#44b3e2`, surfaces `#2e2e2e`, text `#ccc`, borders `#3f3f3f`.
 
@@ -162,7 +162,7 @@ The light and dark sets declare the same variables, so the dark set also works o
 - Greys: `--bs-body-color`, `--bs-secondary-color` (muted), `--bs-border-color`, `--ec-input-border-color`, `--bs-secondary-bg` and `--bs-tertiary-bg`, each with its `-rgb` where Bootstrap reads one.
 - Component colours: `--ec-btn-default-*`, `--ec-highlight` and `--ec-highlight-soft` (inset line and text shadow, transparent in dark), `--bs-code-color`, `--ec-code-bg`, `--ec-code-border`, `--ec-table-striped-bg`, `--ec-divider`, `--ec-form-text`, and for the group list `--ec-list-row-bg`, `--ec-list-selected-bg`, `--ec-list-selected-hover-bg`, `--ec-list-status`.
 - Apps: energy colours `--ec-energy-*` and the time bar blue `--ec-app-nav` in the shared block, `--ec-app-panel-bg` and `--ec-app-box-bg` in both sets. See the Apps section of `ui-patterns.md`.
-- The emoncms tokens (`--accent`, `--border`, `--bg-card`, `--text-*`, `--font-*`, `--s1` to `--s6`) are defined here too, as aliases of the Bootstrap variables where the role is the same. `emoncms-base.css` keeps the colour scheme classes (`.theme-*`), which set the top menu colours, and the sidebar sets (`.sidebar-dark`, `.sidebar-light`). Sticky list toolbars use `--bg-menu-top-active`, so they follow the scheme.
+- Page CSS uses the Bootstrap names where the role is the same (`--bs-primary`, `--bs-primary-bg-subtle`, `--bs-body-bg`, `--bs-emphasis-color`) and `--ec-*` names otherwise: `--ec-header-bg` and `--ec-header-hover-bg` (panel and group list headers), `--ec-row-hover-bg`, `--ec-value-color` (values and table cells), `--ec-text-secondary` and `--ec-text-muted`. The older `--accent`, `--bg-card` and `--text-*` aliases are removed; modules that used them move to these names. `--border`, `--bg-body`, `--font-*` and `--radius-*` stay. `emoncms-base.css` keeps the colour scheme classes (`.theme-*`), which set the top menu colours, and the sidebar sets (`.sidebar-dark`, `.sidebar-light`). Sticky list toolbars use `--bg-menu-top-active`, so they follow the scheme.
 - Page CSS still has fixed colours, including 72 uses of the menu blue `#44b3e2`. Move them to variables page by page.
 
 ## Element look

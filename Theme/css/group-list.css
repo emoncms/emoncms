@@ -1,7 +1,7 @@
 /* ==========================================================================
    Group list
    Rows grouped under collapsible headers, on a CSS subgrid.
-   Used by the input, feed and device lists. Column widths are set per page
+   Used by the input, feed, device and sync lists. Column widths are set per page
    on the .group-list grid. Classes are listed in docs/design/ui-patterns.md.
    ========================================================================== */
 
@@ -32,13 +32,13 @@
     position: relative;
     padding: 0;
     gap: 0;
-    background: var(--bg-card-header);
+    background: var(--ec-header-bg);
     user-select: none;
     border-bottom: 1px solid var(--bs-body-bg);
     transition: background-color 0.15s ease-in-out;
 }
 .group-list-header:hover {
-    background: var(--bg-card-header-hover);
+    background: var(--ec-header-hover-bg);
 }
 
 /* Header node/tag name */
@@ -82,7 +82,7 @@
     color: var(--bs-body-color);
     transition: background-color 0.1s ease;
 }
-.group-list-row:hover { background-color: var(--bg-card-row-hover); }
+.group-list-row:hover { background-color: var(--ec-row-hover-bg); }
 
 /* Left accent strip — scales in on hover */
 .group-list-row::before {
@@ -90,7 +90,7 @@
     position: absolute;
     left: 0; top: 0;
     width: 3px; height: 100%;
-    background-color: var(--accent);
+    background-color: var(--bs-primary);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.2s ease-out;
@@ -158,8 +158,8 @@
     box-sizing: content-box;
     display: block;
     width: 6px; height: 6px;
-    border-right: 2px solid var(--text-muted);
-    border-top:   2px solid var(--text-muted);
+    border-right: 2px solid var(--ec-text-muted);
+    border-top:   2px solid var(--ec-text-muted);
     transform: rotate(45deg);
     transition: transform 0.35s ease;
     flex-shrink: 0;
@@ -167,4 +167,35 @@
 /* Rotate chevron when node is expanded (header does NOT have .collapsed) */
 .group-list-header:not(.collapsed) .group-list-chevron {
     transform: rotate(135deg);
+}
+
+/* ── 12. Sticky toolbar ──────────────────────────────────────────────
+   Buttons on the left, filter or actions pushed right with ms-auto.
+   An empty list-toolbar-sentinel goes above it. list_toolbar() in
+   Theme/js/emoncms.js sets is-sticky once the sentinel scrolls behind
+   the top menu, and keeps --list-top at the menu height. */
+.list-toolbar-sentinel { height: 0; }
+.list-toolbar {
+    position: sticky;
+    top: var(--list-top, 46px);
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 0;
+    margin-bottom: 10px;
+    transition: top 0.3s ease-out;
+}
+/* Bar in the top menu colour, full width behind the toolbar */
+.list-toolbar.is-sticky::before {
+    content: '';
+    position: fixed;
+    top: var(--list-top, 46px);
+    left: 0;
+    width: 100vw;
+    height: 44px;
+    background: var(--bg-menu-top-active);
+    z-index: -1;
+    transition: top 0.3s ease-out;
 }

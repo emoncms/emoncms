@@ -1,25 +1,7 @@
-/* Admin pages: panels on the page background, as post process */
-body { background-color: var(--bg-body); }
-.content-container { max-width: 1150px; }
-[v-cloak] { display: none; }
-
-.admin-page { padding-bottom: 2rem; }
-.admin-page .panel { margin-bottom: 1rem; }
-.page-lead { margin: -4px 0 14px; color: var(--text-secondary); }
+/* Admin pages: panel-page from the theme */
 .page-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.page-actions .btn,
-.panel-header .btn,
-.row-buttons .btn { margin: 0; }
 .row-buttons { display: flex; flex-shrink: 0; gap: 4px; }
 .panel-row .row-value p:last-child { margin-bottom: 0; }
-
-/* Stacked form in a panel */
-.admin-form { padding: 1rem; }
-.admin-field { margin-bottom: 14px; }
-.admin-form .form-label { font-weight: 600; font-size: var(--font-sm); }
-.admin-form .input-group { margin-bottom: 0; }
-.admin-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
-.admin-buttons .btn { margin: 0; }
 
 /* Log window in a panel */
 .panel .log { display: block; border-radius: 0; }
@@ -27,21 +9,18 @@ body { background-color: var(--bg-body); }
 .panel-footer-note {
     padding: 6px 1rem;
     font-size: var(--font-xs);
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
     border-top: 1px solid var(--border);
 }
-
-/* Table in a panel scrolls on narrow screens */
-.admin-table { overflow-x: auto; }
 
 /* -- System info ---------------------------------------------------------- */
 
 .info-row { cursor: pointer; transition: background-color 0.15s; }
 /* Compact rows on the info page */
 .info-page .panel-row { min-height: 34px; padding: 5px 1rem; }
-.info-row:hover { background-color: var(--bg-card-row-hover); }
+.info-row:hover { background-color: var(--ec-row-hover-bg); }
 .info-page .panel-row .row-key { flex-basis: 160px; }
-.info-row .row-key { font-weight: 600; color: var(--text-primary); }
+.info-row .row-key { font-weight: 600; color: var(--bs-emphasis-color); }
 
 .status-dot {
     display: inline-block;
@@ -77,7 +56,7 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     align-items: center;
     justify-content: center;
     padding: 4rem 1rem;
-    color: var(--text-muted);
+    color: var(--ec-text-muted);
 }
 
 .system-info-spinner {
@@ -86,7 +65,7 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     height: 2.5rem;
     margin-bottom: 1rem;
     border: 4px solid var(--border);
-    border-top-color: var(--accent);
+    border-top-color: var(--bs-primary);
     border-radius: 50%;
     animation: system-info-spin 0.8s linear infinite;
 }
@@ -106,25 +85,7 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     to { bottom: 0; opacity: 0; }
 }
 
-/* Tags: pastel pairs as the feed engine badges */
-.info-tag {
-    display: inline-block;
-    padding: 0 6px;
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 18px;
-    border-radius: 3px;
-    white-space: nowrap;
-    color: var(--bs-secondary-color);
-    background-color: var(--bs-secondary-bg);
-}
-.info-tag-green { color: #3c763d; background-color: #dff0d8; }
-.info-tag-amber { color: #8a6d3b; background-color: #fcf8e3; }
-.info-tag-red   { color: #a94442; background-color: #fde0e0; }
-[data-bs-theme="dark"] .info-tag-green { color: #8fd18f; background-color: rgba(60, 118, 61, 0.35); }
-[data-bs-theme="dark"] .info-tag-amber { color: #e7a944; background-color: rgba(138, 109, 59, 0.35); }
-[data-bs-theme="dark"] .info-tag-red   { color: #f08a8a; background-color: rgba(169, 68, 66, 0.35); }
-.info-note { margin-left: 6px; color: var(--text-secondary); }
+.info-note { margin-left: 6px; color: var(--ec-text-secondary); }
 
 /* Component chips: name, version, local changes tag */
 .info-chips { display: flex; flex-wrap: wrap; gap: 4px 6px; }
@@ -139,20 +100,19 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     border-radius: 3px;
     background-color: var(--bs-tertiary-bg);
 }
-.info-chip-version { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); padding-right: 3px; }
-.info-chip .info-tag { padding: 0 4px; font-size: 10px; line-height: 15px; }
+.info-chip-version { font-family: var(--font-mono); font-size: 11px; color: var(--ec-text-muted); padding-right: 3px; }
+.info-chip .badge { padding: 0 4px; font-size: 10px; line-height: 15px; }
 
 /* Services: joined button group, as before the conversion */
 .svc-buttons { flex-shrink: 0; }
-.svc-buttons .btn { margin: 0; }
 
 /* -- Update --------------------------------------------------------------- */
 
-.firmware-summary { margin: 0 0 14px; font-size: var(--font-sm); color: var(--text-secondary); }
-#custom_firmware_bound label.btn { margin: 0; cursor: pointer; }
-#custom_firmware_bound label.btn:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-#custom_firmware_name { margin-left: 8px; color: var(--text-muted); font-style: italic; }
-#custom_firmware_name.file-selected { color: var(--text-primary); font-style: normal; font-weight: bold; }
+.firmware-summary { margin: 0 0 14px; font-size: var(--font-sm); color: var(--ec-text-secondary); }
+#custom_firmware_bound label.btn { cursor: pointer; }
+#custom_firmware_bound label.btn:focus { outline: 2px solid var(--bs-primary); outline-offset: 1px; }
+#custom_firmware_name { margin-left: 8px; color: var(--ec-text-muted); font-style: italic; }
+#custom_firmware_name.file-selected { color: var(--bs-emphasis-color); font-style: normal; font-weight: bold; }
 
 /* -- Database update ---------------------------------------------------- */
 
@@ -172,42 +132,23 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
     padding: 5px 12px;
     font-family: var(--font-mono);
     font-size: var(--font-xs);
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
     background-color: var(--bs-tertiary-bg);
     border-top: 1px solid var(--border);
     border-bottom: 1px solid var(--border);
 }
 .admin-page .cmp-table tbody tr.cmp-group:hover td { background-color: var(--bs-tertiary-bg); }
-.cmp-group-count { margin-left: 8px; font-family: var(--bs-body-font-family); color: var(--text-muted); }
-.cmp-proto {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    padding: 0 5px;
-    font-size: 11px;
-    font-weight: bold;
-    line-height: 16px;
-    border-radius: 3px;
-    color: var(--bs-secondary-color);
-    background-color: var(--bs-secondary-bg);
-    text-decoration: none;
-}
+.cmp-group-count { margin-left: 8px; font-family: var(--bs-body-font-family); color: var(--ec-text-muted); }
+/* Source tag with a link icon */
+.cmp-proto { display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
 .cmp-proto .svg-icon-link { font-size: 10px; opacity: 0.7; }
-a.cmp-proto:hover { text-decoration: none; filter: brightness(0.95); }
+a.cmp-proto:hover { filter: brightness(0.95); }
 a.cmp-proto:hover .svg-icon-link { opacity: 1; }
 [data-bs-theme="dark"] a.cmp-proto:hover { filter: brightness(1.25); }
-/* HTTPS and SSH tags: pastel pairs as the feed engine badges */
-.cmp-proto.cmp-proto-https { color: #7b3fa0; background-color: #f5e6ff; }
-[data-bs-theme="dark"] .cmp-proto.cmp-proto-https { color: #c9a0e8; background-color: rgba(155, 89, 182, 0.2); }
-.cmp-proto.cmp-proto-ssh { color: #8a6d3b; background-color: #fcf8e3; }
-[data-bs-theme="dark"] .cmp-proto.cmp-proto-ssh {
-    color: var(--bs-warning-text-emphasis);
-    background-color: var(--bs-warning-bg-subtle);
-}
 .admin-page td.cmp-describe {
     font-family: var(--font-mono);
     font-size: var(--font-xs);
-    color: var(--text-muted);
+    color: var(--ec-text-muted);
     overflow-wrap: anywhere;
 }
 .admin-page .cmp-table td { vertical-align: middle; height: 49px; }

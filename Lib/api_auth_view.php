@@ -37,14 +37,14 @@
       <?php echo tr('Your API keys'); ?>
     </h3>
     <?php if ($auth_logged_in) { ?>
-    <div style="display:flex; flex-direction:column; gap:6px">
+    <div class="d-flex flex-column api-key-field">
       <span class="text-body-secondary"><?php echo tr('Read only access'); ?></span>
       <div class="input-group w-100">
         <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_read; ?>" onclick="this.select()">
         <button class="btn btn-default" onclick="api_copy('<?php echo $auth_apikey_read; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
       </div>
     </div>
-    <div style="display:flex; flex-direction:column; gap:6px">
+    <div class="d-flex flex-column api-key-field">
       <span class="text-body-secondary"><?php echo tr('Full Read &amp; Write access'); ?></span>
       <div class="input-group w-100">
         <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_write; ?>" onclick="this.select()">
@@ -64,7 +64,7 @@
       </span>
       <?php echo tr('Three ways to authenticate'); ?>
     </h3>
-    <div style="display:flex; flex-direction:column; gap:10px">
+    <div class="d-flex flex-column api-auth-rows">
       <div class="api-auth-row">
         <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo tr('RECOMMENDED'); ?></span>
         <span class="api-auth-mono font-monospace"><?php echo tr('POST body:'); ?> <span class="hl">apikey=APIKEY</span></span>

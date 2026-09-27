@@ -163,7 +163,7 @@
             </table>
         </div>
 
-        <div class="admin-buttons mb-3">
+        <div class="panel-buttons mb-3">
             <button v-if="changes" class="btn btn-primary" :disabled="!changes" @click="save"><?php echo _('Save changes'); ?></button>
             <button class="btn btn-danger ms-auto" @click="zero_energy_values" :disabled="!connected"><?php echo _('Zero energy values'); ?></button>
             <button class="btn btn-danger" @click="reset_to_defaults" :disabled="!connected"><?php echo _('Reset to default values'); ?></button>

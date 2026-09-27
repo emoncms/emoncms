@@ -74,6 +74,28 @@ $(function(){
     })
 });
 
+/**
+ * Sticky list toolbar (.list-toolbar in Theme/css/group-list.css)
+ * Sets is-sticky on the toolbar once the sentinel above it scrolls behind the top menu,
+ * and keeps --list-top at the menu height (0 while the menu is hidden on phones).
+ * @param {Element} sentinel empty .list-toolbar-sentinel above the toolbar
+ * @param {string} toolbar selector, looked up on each change as Vue may render it again
+ */
+function list_toolbar(sentinel, toolbar) {
+    if (!sentinel || !('IntersectionObserver' in window)) return;
+    var nav = document.querySelector('.menu-top');
+    function update_top() {
+        var h = (nav && !nav.classList.contains('menu-top-hide')) ? nav.offsetHeight : 0;
+        document.documentElement.style.setProperty('--list-top', h + 'px');
+    }
+    if (nav) new MutationObserver(update_top).observe(nav, { attributes: true, attributeFilter: ['class'] });
+    update_top();
+    new IntersectionObserver(function(entries) {
+        var el = document.querySelector(toolbar);
+        if (el) el.classList.toggle('is-sticky', !entries[0].isIntersecting);
+    }, { rootMargin: '-46px 0px 0px 0px', threshold: 0 }).observe(sentinel);
+}
+
 // Display alert if js error encountered
 window.onerror = function(msg, source, lineno, colno, error) {
     if (_SETTINGS && !_SETTINGS.showErrors) {

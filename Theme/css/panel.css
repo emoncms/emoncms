@@ -1,7 +1,7 @@
 /* ==========================================================================
    Panel
    A titled section of a setup page: header, then a body or controls strip.
-   Used by graph, backup and admin users. Classes are listed in
+   Used by the setup pages in panel layout. Classes are listed in
    docs/design/ui-patterns.md.
    ========================================================================== */
 
@@ -10,7 +10,7 @@
 .panel {
     border-radius: var(--radius-card);
     overflow: hidden;
-    background-color: var(--bg-card);
+    background-color: var(--bs-body-bg);
     margin-bottom: 0.5rem;
 }
 
@@ -22,19 +22,19 @@
     gap: 0.6rem;
     padding: 0.6rem 1rem;
     border-bottom: 1px solid var(--border);
-    background-color: var(--bg-card-header);
+    background-color: var(--ec-header-bg);
     cursor: pointer;
     user-select: none;
     transition: background-color 0.15s ease-in-out;
 }
 
 .panel-header:hover {
-    background-color: var(--bg-card-header-hover);
+    background-color: var(--ec-header-hover-bg);
 }
 
 /* Header that only labels the panel, no pointer or hover */
 .panel-header.panel-header-static { cursor: default; }
-.panel-header.panel-header-static:hover { background-color: var(--bg-card-header); }
+.panel-header.panel-header-static:hover { background-color: var(--ec-header-bg); }
 
 /* Accent bar before the name */
 .panel-header .panel-accent {
@@ -42,7 +42,7 @@
     width: 3px;
     height: 1.1em;
     border-radius: 2px;
-    background-color: var(--accent);
+    background-color: var(--bs-primary);
     flex-shrink: 0;
 }
 
@@ -54,15 +54,15 @@
 .panel-header .panel-name {
     font-weight: 600;
     font-size: var(--font-sm);
-    color: var(--text-primary);
+    color: var(--bs-emphasis-color);
     flex: 1;
     letter-spacing: 0.02em;
 }
 
-/* Count or state beside the name */
-.panel-header .panel-badge {
+/* Count or state beside the name, also in modal titles */
+.panel-badge {
     font-size: var(--font-2xs);
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
     background-color: var(--bg-badge);
     border: 1px solid var(--border-strong);
     border-radius: 0.75rem;
@@ -80,6 +80,16 @@
     padding: 0.75rem;
 }
 
+/* Stacked form: fields with a label above, then a row of buttons */
+.panel-form { padding: 1rem; }
+.panel-field { margin-bottom: 14px; }
+.panel-form .form-label { font-weight: 600; font-size: var(--font-sm); }
+.panel-form .input-group { margin-bottom: 0; }
+.panel-buttons { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Message in place of an empty table */
+.panel-empty { padding: 1rem; color: var(--ec-text-secondary); }
+
 /* Key and value rows: key, value, then icon actions and buttons on the right */
 .panel-row {
     display: flex;
@@ -90,10 +100,10 @@
     border-top: 1px solid var(--border);
 }
 .panel-row:first-child { border-top: 0; }
-.panel-row.is-editing { background-color: var(--bg-card-row-hover); }
+.panel-row.is-editing { background-color: var(--ec-row-hover-bg); }
 .panel-row .row-key {
     flex: 0 0 200px;
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
 }
 .panel-row .row-value {
     flex: 1;
@@ -103,9 +113,8 @@
 .panel-row .row-note {
     margin-left: 1rem;
     font-size: var(--font-sm);
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
 }
-.panel-row .btn { margin: 0; }
 
 /* Icon action, shown on row hover */
 .row-action {
@@ -113,10 +122,10 @@
     color: transparent;
     transition: color 0.15s;
 }
-.panel-row:hover .row-action { color: var(--text-secondary); }
-.panel-row .row-action:hover { color: var(--accent); }
+.panel-row:hover .row-action { color: var(--ec-text-secondary); }
+.panel-row .row-action:hover { color: var(--bs-primary); }
 @media (hover: none) {
-    .panel-row .row-action { color: var(--text-secondary); }
+    .panel-row .row-action { color: var(--ec-text-secondary); }
 }
 
 @media (max-width: 576px) {
@@ -150,7 +159,7 @@
     padding: 5px 12px;
     font-size: var(--font-2xs);
     font-weight: normal;
-    color: var(--text-secondary);
+    color: var(--ec-text-secondary);
     text-align: left;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -163,7 +172,7 @@
 
 .panel table td {
     padding: 9px 12px;
-    color: var(--text-body);
+    color: var(--ec-value-color);
     border-bottom: 1px solid transparent;
     vertical-align: middle;
 }
@@ -173,9 +182,17 @@
 }
 
 .panel table tbody tr:hover td {
-    background-color: var(--accent-row-hover);
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
 }
 
 /* Column text: muted, or emphasised for the main column */
-.panel table td.col-secondary { color: var(--text-secondary); }
-.panel table td.col-primary   { color: var(--text-primary); font-weight: 500; }
+.panel table td.col-secondary { color: var(--ec-text-secondary); }
+.panel table td.col-primary   { color: var(--bs-emphasis-color); font-weight: 500; }
+
+/* Buttons in the last cell, and the row being edited */
+.panel table td.panel-actions { text-align: right; white-space: nowrap; }
+.panel-actions .btn + .btn { margin-left: 4px; }
+.panel table tr.is-editing td { background-color: var(--bs-primary-bg-subtle); }
+
+/* Wrapper for a table that scrolls sideways. The page sets the table min-width on narrow screens. */
+.panel-table { overflow-x: auto; }

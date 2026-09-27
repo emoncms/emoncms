@@ -42,7 +42,7 @@ function profile_text_field($key, $save, $width = "input-220") {
     return '<input class="form-control '.$width.'" type="text" v-model="user.'.$key.'" @keyup.enter="'.$save.'"/>';
 }
 ?>
-<div class="profile-page">
+<div class="panel-page profile-page">
 <div id="app" v-cloak>
   <div class="page-header">
     <h3><?php echo tr('My Account'); ?></h3>
@@ -153,19 +153,19 @@ function profile_text_field($key, $save, $width = "input-220") {
   <div class="panel-row">
     <div class="row-key"><?php echo tr('Theme colour'); ?></div>
     <div class="row-value">
-      <div class="color-box themecolor" name="blue" style="background-color:#44b3e2"></div>
-      <div class="color-box themecolor" name="black" style="background-color:#555"></div>
-      <div class="color-box themecolor" name="sun" style="background-color:#ffbe14"></div>
-      <div class="color-box themecolor" name="yellow2" style="background-color:#dfc72d"></div>
-      <div class="color-box themecolor" name="copper" style="background-color:#e28743"></div>
-      <div class="color-box themecolor" name="green" style="background-color:#4eaa05"></div>
+      <div class="color-box themecolor theme-blue" name="blue"></div>
+      <div class="color-box themecolor theme-black" name="black"></div>
+      <div class="color-box themecolor theme-sun" name="sun"></div>
+      <div class="color-box themecolor theme-yellow2" name="yellow2"></div>
+      <div class="color-box themecolor theme-copper" name="copper"></div>
+      <div class="color-box themecolor theme-green" name="green"></div>
     </div>
   </div>
   <div class="panel-row">
     <div class="row-key"><?php echo tr('Sidebar colour'); ?></div>
     <div class="row-value">
-      <div class="color-box sidebarcolor" name="dark" style="background-color:#333"></div>
-      <div class="color-box sidebarcolor" name="light" style="background-color:#eee"></div>
+      <div class="color-box sidebarcolor sidebar-dark" name="dark"></div>
+      <div class="color-box sidebarcolor sidebar-light" name="light"></div>
     </div>
   </div>
   <div class="panel-row">

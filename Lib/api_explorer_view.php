@@ -88,12 +88,12 @@
 <?php } ?>
 <div id="api-reference" class="api-explorer" data-bs-theme="dark" v-cloak>
 
-  <div style="display:flex; flex-direction:column; gap:28px">
+  <div class="d-flex flex-column api-sections">
 
-    <div class="ref-head" id="reference" style="scroll-margin-top:60px">
+    <div class="ref-head" id="reference">
       <div>
         <?php if ($standalone) { ?>
-        <h2 style="font-size:20px; line-height:28px"><?php echo tr('Reference'); ?></h2>
+        <h2 class="api-title-sm"><?php echo tr('Reference'); ?></h2>
         <?php } else { ?>
         <h2><?php echo $title; ?></h2>
         <p class="text-body-secondary mb-0"><?php echo $sub; ?></p>
@@ -118,13 +118,13 @@
 
       <!-- Sidebar -->
       <div class="ref-sidebar">
-        <div v-for="module in modules" style="display:flex; flex-direction:column; gap:2px">
+        <div v-for="module in modules" class="d-flex flex-column api-nav-module">
           <span class="ref-label px-2 pb-1" v-if="modules.length > 1">{{ module.name.toUpperCase() }} API</span>
           <span v-for="group in module.groups" class="group-link" :class="{active: active_group==group.anchor}" @click="goto_group(group.anchor)">{{ group.name }}</span>
         </div>
         <div class="ref-legend">
           <span class="ref-label"><?php echo tr('KEY REQUIRED'); ?></span>
-          <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="d-flex flex-wrap gap-2">
             <span class="badge px-2 bg-primary-subtle text-primary-emphasis">read</span>
             <span class="badge px-2 bg-warning-subtle text-warning-emphasis">write</span>
             <span class="badge px-2 bg-success-subtle text-success-emphasis">public ok</span>
@@ -179,7 +179,7 @@
                   </div>
                 </div>
 
-                <div v-if="!e.notry" style="display:flex; flex-direction:column; gap:8px">
+                <div v-if="!e.notry" class="d-flex flex-column gap-2">
                   <div class="request-header">
                     <span class="req-label"><?php echo tr('REQUEST'); ?></span>
                     <div class="request-buttons">
@@ -191,7 +191,7 @@
                   <div class="ref-code">{{ display_url(e) }}<span class="key" v-if="e.http!='post' && apikey_for(e)">{{ has_query(e) ? '&' : '?' }}apikey={{ key_trunc(e) }}&hellip;</span><template v-if="e.http=='post'"><br><?php echo tr('POST body:'); ?> {{ display_body(e) }}<span class="key" v-if="apikey_for(e)">&amp;apikey={{ key_trunc(e) }}&hellip;</span></template></div>
                 </div>
 
-                <div v-if="e.loading || e.response!==null" style="display:flex; flex-direction:column; gap:8px">
+                <div v-if="e.loading || e.response!==null" class="d-flex flex-column gap-2">
                   <span class="request-header"><span class="req-label"><?php echo tr('RESPONSE'); ?><span v-if="e.status">: {{ e.status }}</span></span></span>
                   <pre class="ref-code response-block">{{ e.loading ? '...' : e.response }}</pre>
                 </div>
@@ -200,7 +200,7 @@
           </template>
         </template>
 
-        <p v-if="!modules.length" class="text-body-secondary" style="text-align:center; padding:24px 0"><?php echo tr('No endpoints match your filter'); ?></p>
+        <p v-if="!modules.length" class="text-body-secondary text-center py-4"><?php echo tr('No endpoints match your filter'); ?></p>
       </div>
     </div>
   </div>

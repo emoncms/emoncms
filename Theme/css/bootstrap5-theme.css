@@ -43,19 +43,8 @@
     --bs-border-radius-sm: 3px;
     --bs-border-radius-lg: 6px;
 
-    /* emoncms tokens, used by panel.css, menu.css and some pages.
-       Aliases where Bootstrap has the same role. Mode specific ones are in the sets below. */
-    --accent: var(--bs-primary);
-    --accent-hover: var(--bs-primary);
-    --accent-row-hover: rgba(var(--bs-primary-rgb), 0.05);
-    --focus-ring: rgba(var(--bs-primary-rgb), 0.2);
-
-    --bg-card: var(--bs-body-bg);
+    /* emoncms tokens. Mode specific ones are in the sets below. */
     --bg-vis-graph-color: rgba(255, 255, 255, 0);
-    --border-card: var(--bs-border-color);
-    --text-primary: var(--bs-emphasis-color);
-
-    --color-cat-default: #44b3e2;
 
     /* Energy colours, the same in every app. Values from MyElectricFlow. */
     --ec-energy-use: #0699fa;
@@ -72,9 +61,7 @@
     --ec-app-nav-rgb: 6, 153, 250;
     --ec-app-nav: rgb(var(--ec-app-nav-rgb));
 
-    --font-heading: 1.2rem;
     --font-subheading: 1rem;
-    --font-base: 16px;
     --font-sm: 13px;
     --font-xs: 12px;
     --font-2xs: 12px;
@@ -82,14 +69,6 @@
 
     --radius-card: var(--bs-border-radius);
     --radius-control: var(--bs-border-radius);
-
-    --spacer: 1rem;
-    --s1: calc(var(--spacer) * .25);
-    --s2: calc(var(--spacer) * .5);
-    --s3: var(--spacer);
-    --s4: calc(var(--spacer) * 1.25);
-    --s5: calc(var(--spacer) * 1.5);
-    --s6: calc(var(--spacer) * 2);
 }
 
 /* Light set */
@@ -109,6 +88,8 @@
     --bs-success-text-emphasis: #468847; --bs-success-bg-subtle: #dff0d8; --bs-success-border-subtle: #d6e9c6;
     --bs-warning-text-emphasis: #c09853; --bs-warning-bg-subtle: #fcf8e3; --bs-warning-border-subtle: #fbeed5;
     --bs-danger-text-emphasis: #b94a48;  --bs-danger-bg-subtle: #f2dede;  --bs-danger-border-subtle: #eed3d7;
+    --ec-purple-text-emphasis: #7b3fa0;  --ec-purple-bg-subtle: #f5e6ff;
+    --ec-orange-text-emphasis: #b05000;  --ec-orange-bg-subtle: #ffe8d6;
 
     /* Greys */
     --bs-body-color: #333;
@@ -139,17 +120,12 @@
     --ec-form-text: #595959;
 
     /* emoncms tokens */
-    --accent-bg: rgba(var(--bs-primary-rgb), 0.10);
-    --accent-bg-hover: rgba(var(--bs-primary-rgb), 0.20);
-    --accent-border: rgba(var(--bs-primary-rgb), 0.35);
-
     --bg-body: whitesmoke;             /* page */
-    --bg-card-header: #ddd;
-    --bg-card-header-hover: #e0e0e0;
-    --bg-card-row-hover: var(--bs-tertiary-bg);
+    --ec-header-bg: #ddd;              /* panel and group list headers */
+    --ec-header-hover-bg: #e0e0e0;
+    --ec-row-hover-bg: var(--bs-tertiary-bg);
     --bg-badge: #efefef;
     --bg-input: #fafafa;
-    --controls-bg: rgba(234, 234, 234, 0.92);
 
     /* Group list rows */
     --ec-list-row-bg: #f0f0f0;
@@ -165,9 +141,9 @@
     --border: var(--bs-border-color);
     --border-strong: #c0c0c0;
 
-    --text-body: var(--bs-emphasis-color);
-    --text-secondary: #555;
-    --text-muted: #666;
+    --ec-value-color: var(--bs-emphasis-color);   /* values and table cells */
+    --ec-text-secondary: #555;
+    --ec-text-muted: #666;
 
     color-scheme: light;
 }
@@ -187,6 +163,8 @@
     --bs-success-text-emphasis: #5cb85c; --bs-success-bg-subtle: rgba(92, 184, 92, 0.15);  --bs-success-border-subtle: rgba(92, 184, 92, 0.3);
     --bs-warning-text-emphasis: #e7a944; --bs-warning-bg-subtle: rgba(231, 169, 68, 0.15); --bs-warning-border-subtle: rgba(231, 169, 68, 0.3);
     --bs-danger-text-emphasis: #e06c6a;  --bs-danger-bg-subtle: rgba(224, 108, 106, 0.15); --bs-danger-border-subtle: rgba(224, 108, 106, 0.3);
+    --ec-purple-text-emphasis: #c9a0e8;  --ec-purple-bg-subtle: rgba(201, 160, 232, 0.15);
+    --ec-orange-text-emphasis: #f5a35c;  --ec-orange-bg-subtle: rgba(245, 163, 92, 0.15);
 
     --bs-body-color: #ccc;
     --bs-body-color-rgb: 204, 204, 204;
@@ -214,17 +192,12 @@
     --ec-divider: #3f3f3f;
     --ec-form-text: #aaa;
 
-    --accent-bg: rgba(var(--bs-primary-rgb), 0.15);
-    --accent-bg-hover: rgba(var(--bs-primary-rgb), 0.25);
-    --accent-border: rgba(var(--bs-primary-rgb), 0.3);
-
     --bg-body: #222;
-    --bg-card-header: #383838;
-    --bg-card-header-hover: #3f3f3f;
-    --bg-card-row-hover: var(--bs-secondary-bg);
+    --ec-header-bg: #383838;
+    --ec-header-hover-bg: #3f3f3f;
+    --ec-row-hover-bg: var(--bs-secondary-bg);
     --bg-badge: #2a2a2a;
     --bg-input: #1a1a1a;
-    --controls-bg: rgba(46, 46, 46, 0.92);
 
     --ec-list-row-bg: #333;
     --ec-list-selected-bg: rgba(68, 179, 226, 0.15);
@@ -238,9 +211,9 @@
     --border: #333;
     --border-strong: #555;
 
-    --text-body: var(--bs-body-color);
-    --text-secondary: #aaa;
-    --text-muted: #999;
+    --ec-value-color: var(--bs-body-color);
+    --ec-text-secondary: #aaa;
+    --ec-text-muted: #999;
 
     color-scheme: dark;
 }
@@ -423,6 +396,12 @@ a.badge.bg-warning[href] { background-color: #c67605 !important; }
 a.badge.bg-success[href] { background-color: #356635 !important; }
 a.badge.bg-info[href] { background-color: #2d6987 !important; }
 a.badge.bg-dark[href] { background-color: #1a1a1a !important; }
+
+/* Pastel pairs Bootstrap lacks, for tags as badge px-2 bg-*-subtle text-*-emphasis */
+.bg-purple-subtle { background-color: var(--ec-purple-bg-subtle); }
+.text-purple-emphasis { color: var(--ec-purple-text-emphasis); }
+.bg-orange-subtle { background-color: var(--ec-orange-bg-subtle); }
+.text-orange-emphasis { color: var(--ec-orange-text-emphasis); }
 
 /* Alert: Bootstrap 2 padding. Colours from the palette. */
 .alert {
@@ -642,6 +621,17 @@ main.content-container.container-fluid { width: auto; }
     justify-content: space-between;
     column-gap: 1rem;
 }
+/* Line under the page header */
+.page-lead { margin: -4px 0 14px; color: var(--ec-text-secondary); }
+
+/* Vue templates stay hidden until mounted */
+[v-cloak] { display: none; }
+
+/* Page of panels on the grey page background, 1150px wide. On the page root. */
+body:has(.panel-page) { background-color: var(--bg-body); }
+main.content-container:has(.panel-page) { max-width: 1150px; }
+.panel-page { padding-bottom: 2rem; }
+.panel-page .panel { margin-bottom: 1rem; }
 
 /* Avatar menu has no caret */
 .grav-container.dropdown-toggle::after { display: none; }

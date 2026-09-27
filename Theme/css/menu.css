@@ -161,7 +161,7 @@
 .menu-l2 .active {
   background-color:var(--bg-l2-active);
   /* add highlight bar on the left */
-    border-left: 3px solid var(--accent);
+    border-left: 3px solid var(--bs-primary);
     color: var(--l2-item-active);
 }
 

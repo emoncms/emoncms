@@ -5,7 +5,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 load_js("Modules/admin/serial/serial_config_lib/serial_config_core.js");
 load_css("Modules/admin/static/admin_styles.css");
 ?>
-<div class="admin-page serial-page">
+<div class="panel-page admin-page serial-page">
 <div id="app">
 
     <div class="page-header">

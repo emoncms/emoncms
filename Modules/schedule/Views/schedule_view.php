@@ -6,7 +6,7 @@
     load_css("Modules/schedule/Views/schedule_view.css");
 ?>
 
-<div id="schedule-app" class="schedule-page" v-cloak>
+<div id="schedule-app" class="panel-page schedule-page" v-cloak>
 
     <div class="page-header">
         <h3><?php echo ctx_tr('schedule_messages','Schedules'); ?></h3>
@@ -21,7 +21,7 @@
             <span class="panel-badge">{{ schedules.length }}</span>
             <button class="btn btn-default btn-sm" @click="addNew"><span class="svg-icon-plus"></span> <?php echo ctx_tr('schedule_messages','New schedule'); ?></button>
         </div>
-        <div class="sch-table" v-if="schedules.length">
+        <div class="panel-table" v-if="schedules.length">
         <table>
             <colgroup><col class="sch-col-name"><col><col class="sch-col-tz"><col class="sch-col-actions"></colgroup>
             <thead>
@@ -33,14 +33,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="s in schedules" :key="s.id" :class="{'sch-editing': editingId === s.id}">
+                <tr v-for="s in schedules" :key="s.id" :class="{'is-editing': editingId === s.id}">
                     <td class="col-primary" :title="'ID: ' + s.id">{{ s.name }}</td>
                     <td>
                         <span v-if="s.expression" class="sch-expr">{{ s.expression }}</span>
                         <span v-else class="text-muted">No times set</span>
                     </td>
                     <td class="col-secondary">{{ s.timezone }}</td>
-                    <td class="sch-actions">
+                    <td class="panel-actions">
                         <button class="btn btn-default btn-sm" @click="testSchedule(s)"><span class="svg-icon-play"></span> Test</button>
                         <button class="btn btn-default btn-sm" @click="startEdit(s)"><span class="svg-icon-pencil"></span> Edit</button>
                         <button class="btn btn-danger btn-sm" title="Delete" @click="promptDelete(s.id)"><span class="svg-icon-trash"></span></button>
@@ -49,7 +49,7 @@
             </tbody>
         </table>
         </div>
-        <div class="panel-body sch-empty" v-else-if="loaded">No schedules yet.</div>
+        <div class="panel-body panel-empty" v-else-if="loaded">No schedules yet.</div>
     </div>
 
     <div class="panel" v-if="editingId !== null" ref="editor">
@@ -58,16 +58,16 @@
             <span class="panel-name">Edit schedule</span>
             <span class="panel-badge">ID {{ editingId }}</span>
         </div>
-        <div class="panel-body sch-form">
-            <div class="sch-field">
+        <div class="panel-body panel-form">
+            <div class="panel-field">
                 <label class="form-label"><?php echo ctx_tr('schedule_messages','Name'); ?></label>
                 <input type="text" class="form-control input-285" v-model="editFields.name" />
             </div>
-            <div class="sch-field">
+            <div class="panel-field">
                 <label class="form-label"><?php echo ctx_tr('schedule_messages','Expression'); ?></label>
                 <schedule-expr-builder v-model="editFields.expression"></schedule-expr-builder>
             </div>
-            <div class="sch-buttons">
+            <div class="panel-buttons">
                 <button class="btn btn-primary" @click="saveEdit">Save</button>
                 <button class="btn btn-default" @click="cancelEdit"><?php echo ctx_tr('schedule_messages','Cancel'); ?></button>
             </div>

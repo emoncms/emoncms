@@ -41,11 +41,27 @@ After the reference pages on Bootstrap (API, Network, app config panel, 27 Septe
 
 After the reference page components (27 September 2026): hand written `.css` 172677 raw, 37188 gzipped, 1469 rules, 3948 declarations. Hex literals 337, `!important` 39. The API, Network and config sheets went from 24383 bytes before step 1 to 10922, plus 3259 in the theme.
 
+Hex and `!important` from here on are counted with `colcount.py`, which reads the working tree and `HEAD` with one pattern. Before step 5 (`HEAD`, 27 September 2026): hex literals 448 in `.css` files, 321 outside the theme, 16 in `<style>` blocks, `!important` 39.
+
+Step 5, tags (27 September 2026): hand written `.css` 168533 raw, 36540 gzipped, 1427 rules, 1542 selectors, 3833 declarations. Hex literals outside the theme 260, `!important` 39.
+
+Step 5, sticky list toolbar: hand written `.css` 165697 raw, 36306 gzipped, 1401 rules, 1516 selectors, 3748 declarations. Hex and `!important` unchanged.
+
+Step 5, panel form: hand written `.css` 164828 raw, 36253 gzipped, 1376 rules, 1491 selectors, 3714 declarations.
+
+Step 5, page defaults and button resets: hand written `.css` 162910 raw, 36121 gzipped, 1327 rules, 1440 selectors, 3660 declarations.
+
+Step 5, tokens: hand written `.css` 162161 raw, 35904 gzipped, 1327 rules, 1440 selectors, 3635 declarations. Hex literals outside the theme 260, `!important` 39.
+
+Step 5, leftovers: hand written `.css` 162128 raw, 36032 gzipped, 1327 rules, 1440 selectors, 3636 declarations. `<style>` blocks 9 views, 9873 raw, 87 rules. Hex literals outside the theme 260, 13 in `<style>` blocks, `!important` 39.
+
+End of step 5 against the step 4 figures (177582 raw, 37573 gzipped, 1511 rules, 4153 declarations): hand written `.css` 9% smaller raw, 4% gzipped, 184 rules and 517 declarations fewer. Against `HEAD` before step 5 (172677 raw, 37188 gzipped, 1469 rules): 10549 bytes, 1156 gzipped and 142 rules fewer. Hex literals outside the theme 321 to 260.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
 - `!important` gets rarer: 69 uses.
-- Every theme variable has a use. The unused ones are listed in roadmap step 5.
+- Every theme variable has a use.
 
 ```sh
 sh scripts/bootstrap5/cssbytes.sh
@@ -77,7 +93,7 @@ A setup page is one of two layouts, both under a page header.
 
 **List layout.** For pages that list things: feeds, inputs, devices. Rows grouped by node or tag, collapsible, with selection and a sticky toolbar.
 
-- Toolbar: `div.controls` with `btn btn-default` icon buttons and a filter field on the right. Each page makes it sticky with its own `*-controls` class and a sentinel element.
+- Toolbar: `div.list-toolbar` with `btn btn-default` icon buttons, then the filter field or page actions pushed right with `ms-auto`. An empty `div.list-toolbar-sentinel` goes above it, and the page calls `list_toolbar(sentinel, '.list-toolbar')` from `Theme/js/emoncms.js` once both are rendered. The toolbar sticks under the top menu with a bar in the menu colour (`is-sticky`).
 - List (`Theme/css/group-list.css`). Column widths are set per page on the `group-list` grid, with `data-col` on each cell.
 
 | Class | Role |
@@ -92,10 +108,13 @@ A setup page is one of two layouts, both under a page header.
 | `group-list-cell` | Cell |
 | `group-list-value` | Value cell text |
 | `group-list-indicator` | Status bar in the updated cell |
+| `list-toolbar`, `list-toolbar-sentinel` | Sticky toolbar above the list |
 
 - Status: `--status-color` on a header or row sets the stripe on its right edge and the indicator colour. Time since update in green or red text.
 
-**Panel layout.** For pages of settings, forms and tools: graph, backup.
+**Panel layout.** For pages of settings, forms and tools: graph, backup, admin, post process, schedule, email reports, sync, My Account.
+
+- Page: `panel-page` on the page root (theme). Grey page background, content 1150px wide, bottom padding, 1rem between panels. A page that needs another width sets `max-width` on `main.content-container:has(.its-page)`. `page-lead` for the line under the page header. `[v-cloak]` is in the theme.
 
 - Panel (`Theme/css/panel.css`):
 
@@ -110,8 +129,11 @@ A setup page is one of two layouts, both under a page header.
 | `panel-body` | Content with padding |
 | `panel-controls` | Strip of fields and buttons |
 | `panel-row` | Key and value row: `row-key`, `row-value`, `row-note`, then `row-action` icons and buttons. `is-editing` while an inline edit is open. |
+| `panel-form` | Stacked form in the panel body: `panel-field` blocks with a `form-label` above the field, then `panel-buttons` |
+| `panel-empty` | Message in place of an empty table |
 | `row-action` | Icon action, shown on row hover and always on touch screens |
-| `table` in a panel | Uppercase grey column heads, row hover. `col-primary` and `col-secondary` on cells. |
+| `table` in a panel | Uppercase grey column heads, row hover. `col-primary` and `col-secondary` on cells, `panel-actions` on the buttons cell, `is-editing` on the row open in the editor. |
+| `panel-table` | Wrapper for a table that scrolls sideways. The page sets the table `min-width` on narrow screens. |
 
 - Key and value rows: `panel-row`. Inline edit replaces the value with the field and Save and Cancel buttons. My Account is the example. Backup's `bk-row` can move onto it.
 - Icons on converted pages: SVG icons (`svg-icon-*`), which follow the text colour.
@@ -123,7 +145,7 @@ A setup page is one of two layouts, both under a page header.
 - Dates: `DateTimePicker`.
 - Buttons: `btn-default` for ordinary actions, `btn-primary` for the main action of a panel or modal, `btn-danger` for delete and other destructive actions. One primary button per panel or modal.
 - Status labels: `badge bg-success`, `bg-warning`, `bg-danger`, `bg-secondary`.
-- Pastel tags (method, access, state): `badge px-2 bg-success-subtle text-success-emphasis`, with `primary`, `secondary`, `info`, `warning` or `danger` in place of `success`. No CSS needed: the theme sets the subtle and emphasis colours in both modes. Used by the API pages, Network and the app config panel.
+- Pastel tags (method, access, state): `badge px-2 bg-success-subtle text-success-emphasis`, with `primary`, `secondary`, `info`, `warning`, `danger`, `purple` or `orange` in place of `success`. No page CSS needed: the theme sets the subtle and emphasis colours in both modes, and adds the purple and orange utilities Bootstrap lacks. Used by the feed engine badges, admin pages, backup, the API pages, Network and the app config panel. The user avatar takes the same classes for its colour.
 - Monospace text: `font-monospace` (theme sets `--bs-font-monospace`).
 - On and off setting in a list row: `form-check form-switch`, as the Sync upload switch.
 - Modals: Bootstrap 5 modal as in `bootstrap5-migration.md`.
@@ -177,10 +199,10 @@ Light app, as MyHeatpump:
 | Energy colours | `text-use`, `text-house`, `text-solar`, `text-wind`, `text-direct`, `text-import`, `text-export`, `text-battery`. Bootstrap `text-*` classes keep their Bootstrap meaning. |
 | Time bar | `app-navbar` row (safe to show and hide from JS) with a `btn-group app-timebar` of plain `btn` buttons, then notes and a `nav ms-auto` of `nav-link` toggles such as Daily. Manual date range: `input-group` fields with `DateTimePicker.attach`, and a one button `app-timebar` for Done. |
 | Fields | `input-group w-auto` > `input-group-text` + `form-select` or `form-control` (theme width classes), a trailing `input-group-text` for a unit. `form-check` for a checkbox, `small text-body-secondary` for a note. `.app-page .input-group` has no bottom margin, so fields line up with buttons in a flex row. |
-| Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour. |
+| Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour, with the fill `statsbox-solar`, `-import`, `-export`, `-battery` or `-house`. |
 | Tables | `table` (`table-sm` for dense ones), `col-primary` for the name cell, `app-swatch` colour square |
 | Blocks (light apps) | `app-block` > `app-bar` (grey header bar: `app-bar-title`, `app-bar-btn` buttons with `active`, `app-bar-spacer` to push the following buttons right), `app-block-body` (white), `app-block-foot` (grey summary strip) |
-| Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit` |
+| Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit`, `app-stat-sub` for a small line below |
 | Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
 | Config panel | `Lib/appconf`, shared by every app, dark in all apps. Header with the app name and Launch app, readiness strip, App and About cards, feeds as two-column rows (status circle, key, node, AUTO, DERIVED or REQUIRED tag, click to edit in place), unused optional feeds behind a Show button, kWh flow feeds card, options as rows with switches, Manage rows. The first `.lead` paragraph of `#appconf-description` becomes the header line. Classes `cfg-*` in `appconf.css`. |
 | Charts | Flot 5 legend panel and tick labels follow the mode inside `.app-page`. Tick labels are SVG text, so a `font` option needs `fill`. Unlabelled series need `label: ""` to stay out of the legend. Tooltip classes `tooltip-title`, `tooltip-value`, `tooltip-units` keep fixed colours, as the tooltip is added to `body`. |
@@ -299,18 +321,18 @@ CSS audit of 26 September 2026. Hand written CSS is about the same size on `boot
 
 One core commit for the theme and panel files, then one commit per page repo.
 
-- Tag: one component in the theme with colour tokens in both sets (blue, green, amber, purple, red, orange). Replaces the feed engine badges, admin `info-tag` and `cmp-proto`, users `user-tag` and `user-avatar`, network `net-tag`, backup `bk-badge` and the API `badge-*`. The same six colour pairs are pasted into three files today.
-- Sticky list toolbar: one class in `group-list.css`. Replaces the 25 line blocks in feeds, inputs, devices and sync, and the old `.controls.affix` rules in `emoncms-base.css`.
-- Panel form: `panel-form`, `panel-field`, `panel-buttons`, `panel-actions`, `panel-empty` and `is-editing` on a table row in `panel.css`. Replaces the `admin-`, `pp-`, `sch-` and `er-` copies and the narrow screen table scroll rule.
-- Page defaults in the theme: `[v-cloak]`, body background, container width, page bottom padding and `page-lead`. Panel margin 1rem, which every page sets.
-- Remove the `.btn { margin: 0 }` resets, 19 across 8 files. Nothing sets a button margin.
-- Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg` and `--color-cat-default`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
+- Tags, done 27 September 2026: Bootstrap `badge px-2 bg-*-subtle text-*-emphasis` in place of a tag component. The feed engine badges (feeds and sync), admin `info-tag` and `cmp-proto`, users `user-tag` and `user-avatar` colours, and backup `bk-badge` moved to it, after network `net-tag` and the API `badge-*`. The theme adds `--ec-purple-*` and `--ec-orange-*` in both sets with `bg-purple-subtle`, `text-purple-emphasis`, `bg-orange-subtle` and `text-orange-emphasis`. Avatars use six colours, down from eight (teal and pink dropped). Colours now follow the theme's subtle and emphasis values, close to the old pairs. Backup tags lose the pill shape and border.
+- Sticky list toolbar, done 27 September 2026: `list-toolbar` and `list-toolbar-sentinel` in `group-list.css`, flex with a 4px gap, and `list_toolbar()` in `Theme/js/emoncms.js` in place of four copies of the observer script. Feeds, inputs, devices and sync use it; their 25 line blocks, the float rules on the filters and the old `.controls` and `.controls.affix` rules in `emoncms-base.css` are removed. Sync now follows the top menu when it hides on phones (`--list-top`, was `--feed-top`). Devices' New device button sits at the right edge, 4px further right, as the filters do.
+- Panel form, done 27 September 2026: `panel-form`, `panel-field`, `panel-buttons`, `panel-actions`, `panel-empty`, `is-editing` on a table row and `panel-table` in `panel.css`. The `admin-`, `pp-`, `sch-` and `er-` copies and the users, components, schedule and post process scroll rules are removed. Pixel identical.
+- Page defaults, done 27 September 2026: `[v-cloak]`, `page-lead` and `panel-page` in the theme. `panel-page` sets the page background and 1150px width through `:has()`, the bottom padding and the 1rem panel margin. Admin pages, users, post process, schedule, email reports, My Account, sync, backup and graph use it, and their copies (and the API, Network and dashboard list `[v-cloak]`) are removed. My Account (980px), backup (1000px) and sync (full width) keep their width. Changes: users page 40px taller at the bottom and the backup alert under the last panel 8px lower, from the shared padding and margin.
+- `.btn { margin: 0 }` resets removed, done 27 September 2026: 20 across 10 files, 7 of them with the panel form. Nothing sets a button margin except Bootstrap's joined `btn-group` and the modal footer, so `btn-group` buttons now overlap by the border width as Bootstrap intends. One reset hid a dead `margin-bottom` on the schedule Add rule button, which is removed too.
+- Tokens, done 27 September 2026: unused `--s1` to `--s6`, `--spacer`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--accent-border`, `--focus-ring`, `--controls-bg`, `--border-card` and `--color-cat-default` removed. Pages use the `--bs-*` and `--ec-*` names: `--accent` to `--bs-primary`, `--accent-bg` to `--bs-primary-bg-subtle`, `--bg-card` to `--bs-body-bg`, `--text-primary` to `--bs-emphasis-color`, and `--ec-*` renames for the values Bootstrap has no match for (see Palette and tokens in `bootstrap5-migration.md`). `--text-muted` stays apart from `--bs-secondary-color` as `--ec-text-muted`, since merging lightens light mode text from `#666` to `#999`. The aliases are removed. Pixel identical.
 - Apps: done 27 September 2026. `utils.css` removed: energy colour classes in the kit in place of the redefined Bootstrap `text-*` classes, `app-top-bar` sets its own flex layout, the description `.lead` moved to `appconf.css`. `app.css` is now the Available apps page stylesheet only (with its `<style>` block), no longer loaded on app views; its unused Bootstrap 4 helpers and the `in_kw` rule, which shrank kW values in the MySolar apps, removed. The config panel is rebuilt on the shared dark set in the API and Network look (27 September 2026).
 - Apps on Bootstrap components, done 27 September 2026: tabs `nav-underline`, text and icon buttons `nav-link`, time bar `btn-group app-timebar`, actions `btn-outline-primary` (tinted, in the theme), fields `input-group`, checkboxes `form-check`, tables `table`. The kit's `btn-list`, `app-tabs`, `app-btn`, `cost-btn`, `visnavblock`, `visnav`, `ctrl-*` and `app-table` are removed (kit 17281 to 11900 bytes). MyElectricFlow was checked A/B first.
 - Reference pages on Bootstrap (27 September 2026): pastel tags to `badge` with subtle utilities, buttons to `btn-default` and `btn-primary`, fields to `form-control`, `form-select` and `input-group`, muted text to `text-body-secondary`, monospace to `font-monospace`, readiness bar to `progress`. The three sheets went from 24383 to 18149 bytes and 14 `!important` went. Fields and buttons now use the theme's compact size, where the API page had its own taller ones. The setup wizard keeps its blue look through overrides of the `--bs-*` and `--ec-*` variables on `.net-blue`.
 - Reference page components in the theme, done 27 September 2026: page, title, card on Bootstrap `card`, card title, section heading, label, icon circle, row, code block. API, Network and the config panel on them, and on the `--bs-*` variables in place of the `--accent`, `--bg-card` and `--text-*` aliases. The three page sheets went from 18149 to 10922 bytes, with 3259 bytes added to the theme.
-- App kit candidates still in app files: small line under a value (`app-stat-sub`), flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), a two column row of blocks, a small field in an `app-bar`.
-- Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
+- App kit candidates, done 27 September 2026: `app-stat-sub` and the flow box fills `statsbox-solar`, `-import`, `-export`, `-battery` and `-house` moved to the kit. MyElectricFlow, My Solar PV Battery and My Solar PV Divert use the classes in place of three copies of ID rules, and MyElectricFlow toggles the solar and battery fill class in place of setting hex colours from JS. Arrow colours stay per app, as each app maps flows differently. The two column block row and the small `app-bar` field have one use each and stay in their app files.
+- Done 27 September 2026: `panel-badge` works outside a panel header, so the feed edit modal loses its style block. The API explorer and API key cards have no inline styles: Bootstrap flex and gap utilities where the value matches, small classes in `api_explorer.css` where it does not. The My Account colour swatches carry their `theme-*` or `sidebar-*` class and show `--bg-menu-top` or `--bg-l2`, in place of hex copies; the copper swatch now shows the real menu colour (`#e97b00`, was `#e28743`).
 
 Check: pixel diff on the converted pages, as the moves do not change the look.
 

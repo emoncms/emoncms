@@ -3,7 +3,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 ?>
 
 <?php load_css("Modules/admin/static/admin_styles.css"); ?>
-<div class="admin-page">
+<div class="panel-page admin-page">
 
     <?php
     // LOG FILE VIEWER
