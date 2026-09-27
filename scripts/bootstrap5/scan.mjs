@@ -1,4 +1,4 @@
-// Source files scanned for class names, shared by purge.mjs and deadcss.mjs.
+// Source files scanned for class names, shared by purge.mjs and bsmissing.mjs.
 // Core and the modules, symlinked modules followed. <style> blocks are removed from the
 // content so a rule does not count as its own use.
 import fs from 'fs';

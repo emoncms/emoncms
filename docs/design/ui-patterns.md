@@ -60,17 +60,12 @@ End of step 5 against the step 4 figures (177582 raw, 37573 gzipped, 1511 rules,
 Bootstrap tree shake, dead rules and demandshaper (27 September 2026): `bootstrap.min.css` is built from the Bootstrap Sass with unused components left out, then purged against the source by `purge.mjs`, keeping the grid and the utility families whole. 97854 raw, 16092 gzipped, 1045 rules, 1261 selectors, 2485 declarations, against 232111, 30768 and 2550 rules for the stock file. A pixel and computed style diff of every page state against the stock file showed no difference. Hand written `.css` 46 files, 155339 raw, 34706 gzipped, 1265 rules, 1365 selectors, 3444 declarations, after 3.5 KB of dead rules found by `deadcss.mjs` and the demandshaper conversion. `<style>` blocks 8 views, 9812 raw, 86 rules. Hex literals outside the theme 228, `!important` 37.
 
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
-- Bootstrap size is set by the source scan in `purge.mjs`, not browser coverage. `bsmissing.mjs` lists classes the source uses that the build lacks. `deadcss.mjs` lists dead rules in the hand written CSS.
+- Bootstrap size is set by the source scan in `purge.mjs`, not browser coverage. `bsmissing.mjs` lists classes the source uses that the build lacks.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
 - `!important` gets rarer: 69 uses.
 - Every theme variable has a use.
 
-```sh
-sh scripts/bootstrap5/cssbytes.sh
-python3 scripts/bootstrap5/csscount.py
-python3 scripts/bootstrap5/colcount.py
-node scripts/bootstrap5/deadcss.mjs
-```
+Figures come from `cssbytes.sh`, `csscount.py`, `colcount.py` and `deadcss.mjs`. These are kept outside the repository.
 
 ## Families
 
