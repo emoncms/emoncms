@@ -68,8 +68,8 @@ Bootstrap tree shake, dead rules and demandshaper (27 September 2026): `bootstra
 ```sh
 sh scripts/bootstrap5/cssbytes.sh
 python3 scripts/bootstrap5/csscount.py
-node states.mjs cov-input input    # one folder per group, see the scripts README
-node csscov.mjs cov-*
+python3 scripts/bootstrap5/colcount.py
+node scripts/bootstrap5/deadcss.mjs
 ```
 
 ## Families

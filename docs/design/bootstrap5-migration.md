@@ -226,4 +226,6 @@ Tools are in `scripts/bootstrap5/`.
 
 ## Checking a converted page
 
-Compare each page against master with screenshots and a layout diff of every element's box and computed style. Capture every state: modals, selections, expanded sections. Switch core and every module repo to master for the baseline. `onmaster.sh` finds each module's repo through git, as symlinked modules point into a subfolder of their repo. Live data (feed values, graphs, logs) and CSS transitions change between runs, so compare two runs of the same branch to see the noise level. Wait for PHP opcache to serve changed files before capturing.
+Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections. Run `formlint.py` on the changed folders. Wait for PHP opcache to serve changed files before checking.
+
+During the migration each page was also compared against master with screenshots and a layout diff. Those tools are not kept in the repository.
