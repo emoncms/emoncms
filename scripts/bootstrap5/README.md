@@ -1,6 +1,6 @@
 # Bootstrap 5 tools
 
-Scripts to build the reduced Bootstrap stylesheet. See `docs/design/bootstrap5-migration.md` for the conversion rules.
+Scripts to build the reduced Bootstrap stylesheet. See `docs/design/css-guide.md` for how the build fits into the emoncms CSS.
 
 Setup: `npm install` in this folder (Bootstrap source, Sass, PostCSS, PurgeCSS).
 

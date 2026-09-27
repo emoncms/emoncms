@@ -1,61 +1,43 @@
-# Bootstrap 5: notes for module authors
+# Bootstrap 5 release
 
-Emoncms moves from Bootstrap 2.3.2 to Bootstrap 5.3 in one release. Bootstrap 2 is removed, so a module that uses Bootstrap 2 markup, classes or JS needs changes before it works with this release. All modules maintained by OpenEnergyMonitor are converted.
+Emoncms moves from Bootstrap 2.3.2 to Bootstrap 5.3.8. Core and every module maintained by OpenEnergyMonitor change together in this release. Bootstrap 2 is removed, so third party modules that use Bootstrap 2 markup, classes or JS need changes.
 
-Full conversion rules: `docs/design/bootstrap5-migration.md`. Page layouts and components: `docs/design/ui-patterns.md`.
+- Converting a module: `docs/design/bootstrap5-migration.md`.
+- Styling pages and modules: `docs/design/css-guide.md`.
 
-## Removed
+## Summary
 
-- Bootstrap 2 (`Lib/bootstrap/`), `Theme/css/bootstrap2-legacy.css` and `Theme/css/bootstrap4-utils.css`.
-- bootstrap-datetimepicker 0.0.11. Use `Lib/js/DateTimePicker.js`.
-- Theme variables `--accent`, `--bg-card` and `--text-*`, and other old aliases. See Variables below.
+Bootstrap 2 dates from 2013. Emoncms carried a copy of Bootstrap 4 utilities on top of it, and each page had its own CSS for similar components. This release replaces Bootstrap 2 with Bootstrap 5 and sets out one set of shared patterns for the whole application.
 
-Kept: glyphicons (`icon-*`, `icon-white`, from `Theme/css/bootstrap2-icons.css`) and the `hide` class.
+The work had four aims:
 
-## Converting a module
+- Move every page to Bootstrap 5, keeping the emoncms look.
+- Reduce the amount of CSS significantly.
+- Use modern CSS: variables, colour modes, grid and flex.
+- Give future development clear, documented patterns.
 
-1. Classes. Rename Bootstrap 2 classes in markup, CSS selectors and JS (`addClass`, strings of HTML). Common ones:
+## What changed
 
-   | Bootstrap 2 | Bootstrap 5 |
-   |---|---|
-   | `btn` with no variant | `btn btn-default` |
-   | `btn-small`, `btn-mini` | `btn-sm`, `btn-xs` |
-   | `btn-large` | `btn-lg`, after a rebuild (see Bootstrap build) |
-   | `label label-x` | `badge bg-x` |
-   | `alert-error`, `text-error` | `alert-danger`, `text-danger` |
-   | `pull-right`, `pull-left` | `float-end`, `float-start` |
-   | `input-prepend`, `input-append`, `add-on` | `input-group`, `input-group-text` |
-   | `row` > `spanN` | `row` > `col-N` |
-   | `well` | `bg-body-tertiary border rounded p-3 mb-3` |
-   | `muted` | `text-muted` |
-   | `data-toggle`, `data-dismiss`, `data-target` | `data-bs-*` |
-   | `dropdown-menu pull-right` | `dropdown-menu dropdown-menu-end`, links get `dropdown-item` |
+**Framework.** Bootstrap 5.3.8 on every page, with a reduced build that leaves out unused components (98 KB, the stock file is 232 KB). The old date picker is replaced by one date picker for Vue and jQuery pages.
 
-2. Forms. Every text input, select and textarea needs `form-control` or `form-select`, with a width class for its size: `input-75`, `input-105`, `input-165`, `input-220`, `input-285`, `input-545` or `input-auto`. A bare field shows as a plain browser field. A field in an `input-group` needs a width class.
+**Theme.** One set of colour and size variables in `Theme/css/bootstrap5-theme.css`, with a light and a dark set on the Bootstrap 5.3 colour mode (`data-bs-theme`). The theme keeps the emoncms look: element styles, compact fields and buttons, modal size and palette.
 
-3. Modals. Add the `modal-dialog` and `modal-content` wrappers, remove `hide` from `.modal`, use `btn-close` after the title. Open with `$(el).modal('show')`: `$(el).modal()` no longer opens it. Events are `shown.bs.modal` and `hidden.bs.modal`.
+**Shared components.** Pages now use shared components in place of their own copies: page header, panel with key and value rows and forms, group list with a sticky toolbar, pastel tags, reference page components for the API and Network pages, and an app kit for the apps. All are documented in the CSS guide.
 
-4. Box sizing. Bootstrap 5 sets `box-sizing: border-box` on every element. A page rule that sets a width or height together with padding or border now shrinks. Add `box-sizing: content-box` to the rule.
+**Pages.** Redesigned on the shared components:
 
-5. Grid. `.row > *` takes full width and gutter padding. Use `row g-0` and `col-*` classes, or a flex layout, in place of hand sized columns.
+- My Account, Post Process, Schedule and Email Reports on panels.
+- Sync with Upload and Download tabs. Sync Inputs and Sync Dashboards are removed.
+- Network and the setup wizard on the dark reference look.
+- Admin pages. The Components page groups components by install folder, shows the remote protocol, and has Update all. Update Emoncms Only is removed: use Full Update or Components.
+- API help pages on the dark reference look.
+- Every app on the app kit, dark or light. The app config panel is rebuilt.
 
-6. Loading. Load page CSS and JS with `load_css()` and `load_js()`, not `<link>` or `<script>` tags with a fixed `?v=`. The loaders add the file time, so browsers do not keep an old copy after an update.
+Other pages keep their layout, converted to Bootstrap 5 classes and the theme variables.
 
-Full rename list: `docs/design/bootstrap5-migration.md`.
+**Removed.** Bootstrap 2, `bootstrap2-legacy.css`, `bootstrap4-utils.css`, `card.css` (now `panel.css`), the old date picker, the app `dark.css`, `light.css` and `graph.css`, and the old theme variable aliases.
 
-## Bootstrap build
-
-`Lib/bootstrap5/css/bootstrap.min.css` is a reduced build, 98 KB where the stock file is 232 KB. Unused components are left out: navbar, accordion, breadcrumb, pagination, list group, toasts, popover, carousel, offcanvas and placeholders. The grid and the utility classes (`d-*`, `flex-*`, spacing, `text-*`, `bg-*`, `border-*` and similar) are all included. Their breakpoint variants, such as `d-md-flex`, are included only when some page uses them.
-
-A class that is not in the build has no style. To add one:
-
-```sh
-cd scripts/bootstrap5 && npm install
-node build.mjs          # rebuild from the source of core and the modules
-node bsmissing.mjs      # list classes used but missing from the build
-```
-
-To use a left out component, uncomment it in `scripts/bootstrap5/scss/bootstrap.scss` and rebuild. Modules outside the emoncms repos are not scanned. If a class they use is missing, ask for it to be added to the build.
+**Not yet changed.** Glyphicons stay, from `bootstrap2-icons.css`. Moving them to the SVG icon set is planned.
 
 ## CSS size
 
@@ -77,34 +59,8 @@ In emoncms CSS, hex colours fell from 711 to 373 and `!important` from 234 to 37
 
 Icons grew as glyphicons moved out of Bootstrap 2 into `bootstrap2-icons.css`. Replacing glyphicons with SVG icons is a later step.
 
-## Variables
+## For module authors
 
-Colours and shared values are in `Theme/css/bootstrap5-theme.css`, in a light and a dark set. Page CSS uses the Bootstrap names where the role is the same and `--ec-*` names otherwise.
+A module that uses Bootstrap 2 needs converting before it works with this release. The main changes are class renames, `form-control` on every field, modal markup and JS, and box sizing. `docs/design/bootstrap5-migration.md` has the full list and the steps.
 
-| Removed | Use |
-|---|---|
-| `--accent` | `--bs-primary` |
-| `--accent-bg` | `--bs-primary-bg-subtle` |
-| `--bg-card` | `--bs-body-bg` |
-| `--text-primary` | `--bs-emphasis-color` |
-| `--text-body` | `--ec-value-color` |
-| `--text-secondary` | `--ec-text-secondary` |
-| `--text-muted` | `--ec-text-muted` |
-| `--bg-card-header`, `--bg-card-header-hover` | `--ec-header-bg`, `--ec-header-hover-bg` |
-| `--bg-card-row-hover` | `--ec-row-hover-bg` |
-
-Also removed without a replacement: `--accent-hover`, `--accent-bg-hover`, `--accent-border`, `--accent-row-hover`, `--focus-ring`, `--controls-bg`, `--border-card`, `--color-cat-default`, `--spacer`, `--font-heading`, `--font-base` and `--s1` to `--s6`. `--border`, `--bg-body`, `--font-*` and `--radius-*` stay.
-
-## New components
-
-Components in the theme that a module can use in place of its own CSS. Details and markup in `ui-patterns.md`.
-
-- `page-header`: page title with actions and help link.
-- `panel-page`: grey page background and 1150px content width for panel pages. `page-lead` for the line under the header.
-- `panel` (`Theme/css/panel.css`): `panel-header`, `panel-body`, `panel-row` key and value rows with inline edit, `panel-form` stacked forms, `panel-table`, `panel-empty`.
-- `list-toolbar`: sticky toolbar above a list, with `list_toolbar()` in `Theme/js/emoncms.js`.
-- `group-list` (`Theme/css/group-list.css`): grouped, collapsible lists as on Inputs and Feeds.
-- Pastel tags: `badge px-2 bg-success-subtle text-success-emphasis`, with any theme colour, plus `purple` and `orange`.
-- `ref-*`: the dark reference page look of the API and Network pages.
-- App kit (`Modules/app/Views/css/app-kit.css`): shared components for apps, including energy colour classes `text-solar`, `text-import` and the rest.
-- `DateTimePicker`: one date picker for Vue and jQuery pages.
+The Bootstrap build includes only the classes used in core and the emoncms modules. Modules outside the emoncms repos are not scanned. If a class they use is missing, ask for it to be added to the build.

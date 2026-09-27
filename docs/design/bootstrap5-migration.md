@@ -1,31 +1,38 @@
-# Bootstrap 5 migration
+# Converting a module from Bootstrap 2
 
-Emoncms is moving from Bootstrap 2.3.2 to Bootstrap 5.3. All modules switch in one release. There is no period where both versions are supported.
+Emoncms uses Bootstrap 5.3. Bootstrap 2 is removed, so a module that uses Bootstrap 2 markup, classes or JS needs the changes below. For the components and patterns to convert to, see `css-guide.md`.
 
-Aim for the current look first. Visual changes come later, through the theme variables.
+## Removed
 
-## Files
+- Bootstrap 2 (`Lib/bootstrap/`), `Theme/css/bootstrap2-legacy.css` and `Theme/css/bootstrap4-utils.css`.
+- bootstrap-datetimepicker 0.0.11. Use `Lib/js/DateTimePicker.js` (see Date picker in `css-guide.md`).
+- `Theme/css/card.css`. The emoncms card component is now `panel` in `Theme/css/panel.css`.
+- Theme variables `--accent`, `--bg-card`, `--text-*` and other aliases. See Variables below.
 
-- `Lib/bootstrap5/`: `bootstrap.bundle.min.js` (Bootstrap 5.3.8 dist, with Popper) and `bootstrap.min.css`, a reduced build of Bootstrap 5.3.8 from `scripts/bootstrap5/build.mjs`. A class the build lacks has no style; `bsmissing.mjs` lists them. See the scripts README.
-- `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, the element look where the Bootstrap 5 reboot differs (links, headings, paragraphs, lists, `hr`, `code`, `pre`), component sizes (buttons, badges, alerts, modals, input groups, tables, form controls) and `hide`. Loaded straight after `bootstrap.min.css`.
-- `Theme/css/bootstrap2-legacy.css` is removed. Its rules moved to Bootstrap 5 components or the theme.
-- `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the theme.
-- `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
-- `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
-- `Theme/theme.php` and `Theme/embed.php` load Bootstrap 5 on every page. Bootstrap 2 (`Lib/bootstrap/`) and `Theme/css/bootstrap4-utils.css` are removed.
-- Custom classes from `bootstrap4-utils.css`: `color-box` moved to `Modules/user/profile/profile.css`. The apps use the energy colour classes in `Modules/app/Views/css/app-kit.css` in their place.
+Kept: glyphicons (`icon-*`, `icon-white`, from `Theme/css/bootstrap2-icons.css`) and the `hide` class.
 
-Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard` (list, editor, view), API help pages, apps (`Modules/app`), with the process list modal and device dialog they use.
+## Steps
 
-## Class conversion
+1. Classes. Rename Bootstrap 2 classes in markup, CSS selectors and JS: `addClass`, `removeClass`, class names held in JS data, and HTML built with string concatenation. See Classes.
+2. Forms. Every text input, select and textarea gets `form-control` or `form-select` and a width class. See Forms.
+3. Modals. Add the Bootstrap 5 wrappers and update the JS. See Modals.
+4. Box sizing. Bootstrap 5 sets `box-sizing: border-box` on every element. A page rule that sets a width or height together with padding or border now shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. A size and padding can also be set in different rules, such as `.badge` padding with `.badge-get` width. Compare element sizes to find those.
+5. Grid. `.row > *` takes full width and gutter padding. Use `row g-0` and `col-*` classes, or a flex layout, in place of hand sized columns.
+6. Loading. Load page CSS and JS with `load_css()` and `load_js()`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves a cached Bootstrap 2 era file after an update.
+7. Variables. Replace removed theme variables. See Variables.
+8. Build. Run `node scripts/bootstrap5/bsmissing.mjs` for classes missing from the reduced Bootstrap build. See Bootstrap build in `css-guide.md`.
+9. Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections.
+
+## Classes
 
 | Bootstrap 2 / bootstrap4-utils | Bootstrap 5 |
 |---|---|
 | `btn` with no variant | `btn btn-default` |
 | `btn-small` | `btn-sm` |
 | `btn-mini` | `btn-xs` (theme class) |
-| `btn-large` | `btn-lg` |
+| `btn-large` | `btn-lg`, after a rebuild |
 | `btn-inverse` | `btn-dark` |
+| `btn-inverse btn-link` | `btn-link` |
 | `alert` with no variant | `alert alert-warning` |
 | `alert-error` | `alert-danger` |
 | `alert-block` | remove |
@@ -42,7 +49,7 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `text-left`, `text-right` | `text-start`, `text-end` |
 | `mr-*`, `ml-*`, `pr-*`, `pl-*` | `me-*`, `ms-*`, `pe-*`, `ps-*` |
 | `row` holding `col-*` from bootstrap4-utils | `row g-0` |
-| `row`/`row-fluid` > `spanN` | `row` > `col-N` |
+| `row`/`row-fluid` > `spanN` | `row` > `col-N`, or `row g-0` and a flex layout |
 | `input-prepend`, `input-append` | `input-group` |
 | `add-on` | `input-group-text` |
 | `table-condensed` | `table-sm` |
@@ -52,22 +59,17 @@ Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph emb
 | `dropdown-menu pull-right` | `dropdown-menu dropdown-menu-end` |
 | links in a dropdown | add `dropdown-item` |
 | `li.divider` | `<li><hr class="dropdown-divider"></li>` |
-| `card`, `card-*` (emoncms component) | `panel`, `panel-*` |
-
-Kept as they are: `icon-*` (styled by `bootstrap2-icons.css`) and `hide`.
-
-Removed with the legacy file:
-
-| Bootstrap 2 | Now |
-|---|---|
 | `hidden` | `hide` |
 | `dl-horizontal` | `dl.row g-0`, `dt.col-sm-4 text-sm-end text-truncate`, `dd.col-sm-8` |
-| `caret` | `dropdown-toggle` caret, or a page rule (graph `tag-caret`) |
-| accordion in the device dialog | `tpl-list`, `tpl-group`, `tpl-heading`, `tpl-toggle`, `tpl-inner` in `device_dialog.css` |
+| `caret` | `dropdown-toggle` caret, or a page rule |
+| `accordion` | `collapse` with page markup, as the device dialog `tpl-*` classes |
+| `card`, `card-*` (emoncms component) | `panel`, `panel-*` |
+
+Classes that did nothing under Bootstrap 2, such as `text-muted`, some `mr-*`, `pb-md-2`, `btn-light`, `text-body` and `form-control`, now apply. Remove them where the page relied on them doing nothing, or use `btn-default` for `btn-light`.
+
+A `btn` with only a variant loses its colour when JS removes the variant. Swap to `btn-default` in the JS.
 
 ## Forms
-
-Every text input, select and textarea has `form-control` or `form-select`. Bare fields are unstyled, so a field without them shows as a plain browser field.
 
 | Bootstrap 2 | Bootstrap 5 |
 |---|---|
@@ -89,143 +91,58 @@ Every text input, select and textarea has `form-control` or `form-select`. Bare 
 | `control-group error` | `is-invalid` on the field, `text-danger` on the help text |
 | `checkbox`, `radio`, `inline` labels | `d-block` or `d-inline-block me-2`, native checkbox |
 
-- Width classes are theme classes. They set the total width (padding and border included), `display: inline-block` and `vertical-align: middle`, and only apply together with `form-control` or `form-select`. `input-auto` sizes a select to its options.
-- `input-285` and `input-545` go full width below 768px, except in an input group.
-- A Bootstrap 5 field is a full width block with no bottom margin. Bootstrap 2 fields had 10px below. Stacked fields use `mb-2`.
-- A field in an `.input-group` needs a width class, as Bootstrap 5 shrinks group fields to fit.
-- `form-label` is block with 5px below, as the Bootstrap 2 label. `form-text` is #595959.
-- Readonly fields keep the grey background.
 - Bootstrap 2 inputs were content-box and selects border-box. A text input or textarea that keeps a pixel width from the page gets 14px more, so `width:100px` becomes `width:114px`. Select widths stay.
-- Accepted: a select with a Bootstrap 2 size class is 14px wider than before (`input-medium` select 150px, now `input-165`). `input-large` no longer goes full width on phones.
-- `form-select` draws its own box, so its text follows line height and padding. A native select centred its text. A page rule that sets a select's height must set line height to the height less padding and border, or the text sits low.
+- A select with a Bootstrap 2 size class is 14px wider than before (`input-medium` select 150px, now `input-165`). `input-large` no longer goes full width on phones.
+- A Bootstrap 5 field is a block with no bottom margin. Bootstrap 2 fields had 10px below. Stacked fields use `mb-2`.
+- A field in an `.input-group` needs a width class, as Bootstrap 5 shrinks group fields to fit.
+- `form-select` draws its own box, so its text follows line height and padding. A page rule that sets a select's height must set line height to the height less padding and border.
 - Checkboxes and radios stay native. `form-check-input` would restyle them.
-
-Rename classes in CSS selectors and in JS as well as in markup: `addClass`, `removeClass`, class names held in JS data, and HTML built with string concatenation.
-
-## Date picker
-
-`Lib/js/DateTimePicker.js` with `Theme/css/datetimepicker.css` is the one date picker. bootstrap-datetimepicker 0.0.11 is removed.
-
-- Vue template: `<date-time-picker v-model="start" @change="reload">` inside an `.input-group`. It renders an input, a calendar button and a Bootstrap dropdown menu as children of the group.
-- Other pages: `DateTimePicker.attach(input, { value, onChange, buttonClass })` adds the button and menu after an existing input in an `.input-group`. The input keeps its id, value and events, and gets a `change` event when a date is applied. Returns `getDate()` and `setDate(date)`; `setDate` does not call `onChange`.
-- Values are local time, `YYYY-MM-DD HH:MM:SS`. `DateTimePicker.parse` and `DateTimePicker.format` convert to and from `Date`.
-- The menu uses Popper with fixed positioning, so a scrolling modal body does not clip it. Bootstrap closes it on an outside click or Esc.
-- The Dropdown is created before Bootstrap's own click handler, which runs in the capture phase and would create one with default options.
-- Colours come from `--bs-*` variables.
-- A page rule such as `.x input[type=text]` also reaches the time inputs in the menu. Use a child selector for the page's own input.
 
 ## Modals
 
-Bootstrap 5 modal markup has two extra wrappers:
+Bootstrap 5 modal markup has two extra wrappers, `modal-dialog` and `modal-content`. See Modals in `css-guide.md` for the markup.
 
-```html
-<div id="x" class="modal" tabindex="-1" aria-labelledby="xLabel" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="xLabel" class="modal-title">Title</h3>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">...</div>
-            <div class="modal-footer">...</div>
-        </div>
-    </div>
-</div>
-```
-
-- Remove `hide` from `.modal`. The close button goes after the title.
-- `$(el).modal('show')` and `'hide'` still work through the jQuery bridge. `$(el).modal()` and `$(el).modal({...})` no longer open the modal.
+- Remove `hide` from `.modal`. Use `btn-close` after the title in place of the `×` character.
+- `$(el).modal('show')` and `'hide'` work through the jQuery bridge. `$(el).modal()` and `$(el).modal({...})` no longer open the modal.
 - Events are namespaced: `shown` becomes `shown.bs.modal`, `hidden` becomes `hidden.bs.modal`.
-- In Bootstrap 2 `.modal` was the box. In Bootstrap 5 it is the full screen overlay and `.modal-dialog` is the box. Width goes in `--bs-modal-width` on the modal. Rules that set width, top or margin on `.modal` move to `.modal-dialog`, and border or radius to `.modal-content`.
+- In Bootstrap 2 `.modal` was the box. In Bootstrap 5 it is the full screen overlay and `.modal-dialog` is the box. Rules that set width, top or margin on `.modal` move to `.modal-dialog`, and border or radius to `.modal-content`. Width goes in `--bs-modal-width` on the modal.
 - JS that reads the box position must read `.modal-content`, for example `$("#x .modal-content").offset().top` in place of `$("#x").position().top`.
-- Page classes named `modal-content` or `accordion-body` clash with Bootstrap 5. `device_dialog` uses `device-modal-content`.
-- The theme keeps the Bootstrap 2 look: 560px wide, 10% from the top, body capped at 400px with scrolling, grey block footer, full width with 20px margin below 768px.
+- Rename page classes that clash with Bootstrap 5, such as `modal-content` or `accordion-body`.
 
 ## Other JS
 
-- Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle. `.collapse('hide')` only hides an element that has `collapse show`; Bootstrap 2 hid any element.
-- `data-bs-toggle="button"` toggles `active` before a page click handler runs, so a handler that reads `active` sees the new state. Bootstrap 2 toggled it after. Admin log pages toggle `active` in their own handler.
-- Load page CSS and JS with `load_css` and `load_js` from `core.php`, not `<link>` or `<script>` tags with a fixed `?v=`. A fixed version serves the cached Bootstrap 2 file after a branch switch. The loaders add the file time, which `git checkout` updates.
+- Collapse: `data-bs-parent` goes on the `.collapse` element, not on the toggle. `.collapse('hide')` only hides an element that has `collapse show`. Bootstrap 2 hid any element.
+- `data-bs-toggle="button"` toggles `active` before a page click handler runs. Bootstrap 2 toggled it after. A handler that reads `active` sees the new state.
+- jQuery `.show()` cannot undo Bootstrap 5 `d-none`. Use `hide` for elements shown from JS.
 
-## Palette and tokens
+## Variables
 
-All colours and shared values are at the top of `bootstrap5-theme.css`, in three blocks. Components in the theme read them, so a look change is an edit there.
+| Removed | Use |
+|---|---|
+| `--accent` | `--bs-primary` |
+| `--accent-bg` | `--bs-primary-bg-subtle` |
+| `--bg-card` | `--bs-body-bg` |
+| `--text-primary` | `--bs-emphasis-color` |
+| `--text-body` | `--ec-value-color` |
+| `--text-secondary` | `--ec-text-secondary` |
+| `--text-muted` | `--ec-text-muted` |
+| `--bg-card-header`, `--bg-card-header-hover` | `--ec-header-bg`, `--ec-header-hover-bg` |
+| `--bg-card-row-hover` | `--ec-row-hover-bg` |
 
-- `:root, [data-bs-theme]`: values shared by both modes (button colours, type, shape, spacing) and aliases such as `--bs-link-color`. The selector covers every theme root, so aliases take the colours of that root's mode.
-- `:root, [data-bs-theme="light"]`: the light set.
-- `[data-bs-theme="dark"]`: the dark set, from the API pages and MyElectricFlow. Primary `#44b3e2`, surfaces `#2e2e2e`, text `#ccc`, borders `#3f3f3f`.
+Also removed without a replacement: `--accent-hover`, `--accent-bg-hover`, `--accent-border`, `--accent-row-hover`, `--focus-ring`, `--controls-bg`, `--border-card`, `--color-cat-default`, `--spacer`, `--font-heading`, `--font-base` and `--s1` to `--s6`.
 
-The light and dark sets declare the same variables, so the dark set also works on `<html>`. A new colour goes in both sets. `[data-bs-theme]` also sets the text colour, as Bootstrap sets it on `body` only.
+## Differences from Bootstrap 2
 
-- Primary is the emoncms accent `#2a8fc7` in light and `#44b3e2` in dark (`--bs-primary`, `--bs-primary-rgb`), with `--ec-primary-dark` for hover and borders and `--ec-primary-darker` for active. Link hover is darker in light and lighter in dark. Links, primary buttons, focus rings and the active item of dropdowns, pills, pagination and list groups use it.
-- Coloured buttons keep the Bootstrap 2 colours in `--ec-btn-<colour>`, `-dark` and `-darker`. Text and label colours are `--bs-<colour>-rgb`. Alerts and row tints use `--bs-<colour>-text-emphasis`, `-bg-subtle` and `-border-subtle`.
-- Greys: `--bs-body-color`, `--bs-secondary-color` (muted), `--bs-border-color`, `--ec-input-border-color`, `--bs-secondary-bg` and `--bs-tertiary-bg`, each with its `-rgb` where Bootstrap reads one.
-- Component colours: `--ec-btn-default-*`, `--ec-highlight` and `--ec-highlight-soft` (inset line and text shadow, transparent in dark), `--bs-code-color`, `--ec-code-bg`, `--ec-code-border`, `--ec-table-striped-bg`, `--ec-divider`, `--ec-form-text`, and for the group list `--ec-list-row-bg`, `--ec-list-selected-bg`, `--ec-list-selected-hover-bg`, `--ec-list-status`.
-- Apps: energy colours `--ec-energy-*` and the time bar blue `--ec-app-nav-rgb` in the shared block, `--ec-app-panel-bg` and `--ec-app-box-bg` in both sets. See the Apps section of `ui-patterns.md`.
-- Page CSS uses the Bootstrap names where the role is the same (`--bs-primary`, `--bs-primary-bg-subtle`, `--bs-body-bg`, `--bs-emphasis-color`) and `--ec-*` names otherwise: `--ec-header-bg` and `--ec-header-hover-bg` (panel and group list headers), `--ec-row-hover-bg`, `--ec-value-color` (values and table cells), `--ec-text-secondary` and `--ec-text-muted`. The older `--accent`, `--bg-card` and `--text-*` aliases are removed; modules that used them move to these names. `--border`, `--bg-body`, `--font-*` and `--radius-*` stay. `emoncms-base.css` keeps the colour scheme classes (`.theme-*`), which set the top menu colours, and the sidebar sets (`.sidebar-dark`, `.sidebar-light`). Sticky list toolbars use `--bg-menu-top-active`, so they follow the scheme.
-- Page CSS still has fixed colours, including 72 uses of the menu blue `#44b3e2`. Move them to variables page by page.
-
-## Element look
-
-The Bootstrap 5 reboot differs from Bootstrap 2 on headings (weight 500, no top margin, 1.2 line height), links (always underlined), paragraph spacing (16px) and lists. Emoncms pages rely on the Bootstrap 2 values, so the theme sets them in its base section: bold headings with 10px margins and the Bootstrap 2 sizes, links underlined on hover, 10px paragraph margin, list indent, `hr`, `code` and `pre`. Change the look there, not with utilities on each page.
-
-The link hover rule uses `a:where(:hover, :focus)` so `.btn`, `.nav-link` and `.dropdown-item` keep no underline.
-
-## Behaviour changes
-
-- Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. A size and padding can also be set in different rules, such as `.badge` padding with `.badge-get` width. Compare element sizes to find those.
-- The reboot sets margins that Bootstrap 2 left to the browser. The theme restores `dl` top margin, `dd` bottom margin, `legend` float and `hr` opacity.
-- Bootstrap 2 `.container-fluid` and `.row` had a clearfix that stopped child margins collapsing. `main.content-container` has `display: flow-root` for the same effect.
-- Bootstrap 5 `.container-fluid` is `width: 100%`. The theme sets `width: auto` on `main`, which has a left margin for the sidebar.
-- `.row > *` gets gutter padding, which overrides page padding on columns. Use `g-0` and add padding with utilities.
-- `.input-group` is inline and sized to its content in the theme, as `input-prepend` was. New full width groups need `d-flex w-100`.
-- Utilities are `!important`. A page rule can no longer override them. jQuery `.show()` cannot undo `d-none`, which is why `hide` stays.
-- Classes that did nothing under Bootstrap 2, such as `text-muted`, some `mr-*`, `pb-md-2`, `btn-light`, `text-body` and `form-control`, now apply. Remove them where the page relied on them doing nothing, or use `btn-default` for `btn-light`.
-- The theme gives `form-control` and `form-select` the Bootstrap 2 input size: 14px text, 4px 6px padding.
-- Table cells inherit their colour. Bootstrap 5 sets them black by default.
-- Links without `href` inherit their colour.
-- `.dropdown-toggle` gets a caret through `::after`. Hide it where the design has none.
-- `.badge:empty` is `display: none`. Pages that use empty badges as dots need `display: inline-block`.
-- Linked labels (`a.badge[href]`) keep the darker Bootstrap 2 colours.
-- `btn-link` underlines by default. Bootstrap 2 underlined on hover only.
-- `btn-inverse btn-link` was a plain link in Bootstrap 2, as `btn-link` came later. `btn-dark btn-link` shows a dark button. Drop `btn-dark`.
-- `.btn-group > .btn` is `flex: 1 1 auto`, which beats a page rule on one class. Use a two class selector to stop buttons stretching.
-- `.btn-group` is flex, so its buttons shrink and wrap their text in a narrow cell. Add `text-nowrap`.
-- A `btn` with only a variant loses its colour when JS removes the variant. Swap to `btn-default` in the JS.
-- `row`/`row-fluid` with `spanN` become `row` with `col-N`, or `row g-0` and a flex layout.
-- `.lead` is 20px, weight 300, line height 20px. Bootstrap 2 used 21px, weight 200, line height 30px.
-- Lists indent by margin as in Bootstrap 2 (25px, no padding). Page rules that reset the margin rely on this. `.nav` has no margin.
-
-## Accepted differences
+The theme keeps most of the Bootstrap 2 look: element styles, input and button sizes, modal size, label and alert colours. These differ:
 
 - Flat button colours. Bootstrap 2 used gradients.
+- `btn-link` underlines by default. Bootstrap 2 underlined on hover only.
+- `.btn-group` is flex, so its buttons stretch, shrink and wrap their text. Use a two class selector to stop stretching, and `text-nowrap`.
+- `.dropdown-toggle` draws a caret with `::after`. Hide it where the design has none.
+- `.badge:empty` is hidden. Badges used as dots need `display: inline-block`.
+- `.input-group` is inline and sized to its content, as `input-prepend` was. New full width groups need `d-flex w-100`.
+- Utilities are `!important`. A page rule cannot override them.
+- `.lead` is 20px, weight 300, line height 20px. Bootstrap 2 used 21px, weight 200, line height 30px.
 - `bg-secondary` is the Bootstrap 2 label grey #999.
 - Well padding 16px or 8px where Bootstrap 2 used 19px or 9px.
 - Border radius on small buttons 3px where Bootstrap 2 used 4px.
-- `btn-close` in place of the `×` character.
-
-## Status and next steps
-
-Bootstrap 2 is removed. Every page loads Bootstrap 5.
-
-Branch `bootstrap5` in core and the device, graph, account, dashboard, backup, sync, network, postprocess, emailreport, config, app and demandshaper modules. Postprocess branches from `stable`. Nothing pushed.
-
-Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard`, API help pages, apps, process list modal, device dialog, card to panel rename.
-
-Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
-
-Core pages are done. Modules done: backup, sync, network (and setup, which uses the network view), postprocess, emailreport, config, app, demandshaper.
-
-Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). These are replaced by the kit (energy colour classes, `app-top-bar` layout) and `utils.css` is removed. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). Every app is on the app kit (see `ui-patterns.md`). Apps without a test instance were checked from the markup and static renders only. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
-
-Form elements are on `form-control`/`form-select`.
-
-Later passes: look changes through the palette, page CSS colours to variables, dark mode (`data-bs-theme`), colour schemes setting `--bs-primary`, glyphicons to SVG icons.
-
-Tools are in `scripts/bootstrap5/`.
-
-## Checking a converted page
-
-Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections. Wait for PHP opcache to serve changed files before checking.
-
-During the migration each page was also compared against master with screenshots and a layout diff. Those tools are not kept in the repository.
