@@ -67,7 +67,7 @@ Removed with the legacy file:
 
 ## Forms
 
-Every text input, select and textarea has `form-control` or `form-select`. Bare fields are unstyled, so a field without them shows as a plain browser field. `scripts/bootstrap5/formlint.py` lists fields without them and leftover Bootstrap 2 form classes.
+Every text input, select and textarea has `form-control` or `form-select`. Bare fields are unstyled, so a field without them shows as a plain browser field.
 
 | Bootstrap 2 | Bootstrap 5 |
 |---|---|
@@ -173,7 +173,7 @@ The link hover rule uses `a:where(:hover, :focus)` so `.btn`, `.nav-link` and `.
 
 ## Behaviour changes
 
-- Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. `boxsizing.py` cannot tell, so skip its fixes on button rules. It also misses a size and padding set in different rules, such as `.badge` padding with `.badge-get` width. Compare element sizes to find those.
+- Bootstrap 5 sets `box-sizing: border-box` on every element. An emoncms rule that sets width or height together with padding or border shrinks. Add `box-sizing: content-box` to the rule. Checkbox, radio, color, select and button stay border-box, as browsers size them. A size and padding can also be set in different rules, such as `.badge` padding with `.badge-get` width. Compare element sizes to find those.
 - The reboot sets margins that Bootstrap 2 left to the browser. The theme restores `dl` top margin, `dd` bottom margin, `legend` float and `hr` opacity.
 - Bootstrap 2 `.container-fluid` and `.row` had a clearfix that stopped child margins collapsing. `main.content-container` has `display: flow-root` for the same effect.
 - Bootstrap 5 `.container-fluid` is `width: 100%`. The theme sets `width: auto` on `main`, which has a left margin for the sidebar.
@@ -192,7 +192,7 @@ The link hover rule uses `a:where(:hover, :focus)` so `.btn`, `.nav-link` and `.
 - `.btn-group > .btn` is `flex: 1 1 auto`, which beats a page rule on one class. Use a two class selector to stop buttons stretching.
 - `.btn-group` is flex, so its buttons shrink and wrap their text in a narrow cell. Add `text-nowrap`.
 - A `btn` with only a variant loses its colour when JS removes the variant. Swap to `btn-default` in the JS.
-- `cvt_classes.py` does not convert `row`/`row-fluid` with `spanN`. Convert those by hand.
+- `row`/`row-fluid` with `spanN` become `row` with `col-N`, or `row g-0` and a flex layout.
 - `.lead` is 20px, weight 300, line height 20px. Bootstrap 2 used 21px, weight 200, line height 30px.
 - Lists indent by margin as in Bootstrap 2 (25px, no padding). Page rules that reset the margin rely on this. `.nav` has no margin.
 
@@ -226,6 +226,6 @@ Tools are in `scripts/bootstrap5/`.
 
 ## Checking a converted page
 
-Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections. Run `formlint.py` on the changed folders. Wait for PHP opcache to serve changed files before checking.
+Check each page for breakage, overlap and broken behaviour in every state: modals, selections, expanded sections. Wait for PHP opcache to serve changed files before checking.
 
 During the migration each page was also compared against master with screenshots and a layout diff. Those tools are not kept in the repository.

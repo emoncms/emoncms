@@ -336,7 +336,7 @@ Check: pixel diff on the converted pages, as the moves do not change the look.
 Low priority, last.
 
 - `svg-icons.css` already has 82 icons drawn with CSS masks, in the text colour. The glyphicons have 244 uses, 82 names, across core and the module repos, in markup, JS strings and Vue class bindings.
-- Map each glyph name to an SVG icon, adding missing ones. A converter script in `scripts/bootstrap5/` does the renames, as `cvt_classes.py` did.
+- Map each glyph name to an SVG icon, adding missing ones. A converter script does the renames.
 - Remove `bootstrap2-icons.css` and the sprites in `Theme/img/`.
 - Converted pages already use SVG icons.
 - Check: icons change shape, so a browser check of the main pages. `icon-white` cases need a text colour instead.

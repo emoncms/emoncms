@@ -1,8 +1,8 @@
 # Bootstrap 5 tools
 
-Scripts to build the reduced Bootstrap stylesheet and convert pages from Bootstrap 2. See `docs/design/bootstrap5-migration.md` for the conversion rules.
+Scripts to build the reduced Bootstrap stylesheet. See `docs/design/bootstrap5-migration.md` for the conversion rules.
 
-Setup: `npm install` in this folder (Bootstrap source, Sass, PostCSS, PurgeCSS). Only the `.mjs` scripts need it.
+Setup: `npm install` in this folder (Bootstrap source, Sass, PostCSS, PurgeCSS).
 
 ## Bootstrap build
 
@@ -20,13 +20,3 @@ Common classes work without a rebuild. A responsive utility variant or an omitte
 node build.mjs
 node bsmissing.mjs
 ```
-
-## Converters
-
-Each prints its changes. Review the diff after running.
-
-- `cvt_modal.py files...`: Bootstrap 2 modal markup to Bootstrap 5 (wrappers, close button, `data-bs-*`).
-- `cvt_classes.py files...`: class renames in `class` attributes, Vue `:class` literals and jQuery class calls. Skips class strings built by concatenation and reports them for hand editing.
-- `cvt_css.py files...`: class renames in CSS selectors, in `.css` files and `<style>` blocks.
-- `boxsizing.py [--fix] files...`: rules that set a size together with padding or border. `--fix` adds `box-sizing: content-box`.
-- `formlint.py dirs...`: form fields without `form-control` or `form-select`, including fields built in JS strings, and leftover Bootstrap 2 form classes.

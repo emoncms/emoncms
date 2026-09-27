@@ -41,7 +41,7 @@ Kept: glyphicons (`icon-*`, `icon-white`, from `Theme/css/bootstrap2-icons.css`)
 
 6. Loading. Load page CSS and JS with `load_css()` and `load_js()`, not `<link>` or `<script>` tags with a fixed `?v=`. The loaders add the file time, so browsers do not keep an old copy after an update.
 
-The scripts in `scripts/bootstrap5/` convert most of this: `cvt_classes.py`, `cvt_modal.py`, `cvt_css.py` and `boxsizing.py`. `formlint.py` lists fields without `form-control`. Review the diff after each run.
+Full rename list: `docs/design/bootstrap5-migration.md`.
 
 ## Bootstrap build
 
