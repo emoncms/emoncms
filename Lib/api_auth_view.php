@@ -27,15 +27,15 @@
   $auth_apikey_write = $auth_logged_in ? $apikeys['write'] : "";
 ?>
 
-<div class="api-auth-grid">
+<div class="row row-cols-1 row-cols-lg-2 g-3">
 
-  <div class="api-auth-card">
-    <div class="api-auth-title">
-      <span class="api-auth-icon">
+  <div class="col"><div class="card card-body gap-3 h-100 api-auth-card">
+    <h3 class="ref-card-title">
+      <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
       </span>
-      <h3><?php echo tr('Your API keys'); ?></h3>
-    </div>
+      <?php echo tr('Your API keys'); ?>
+    </h3>
     <?php if ($auth_logged_in) { ?>
     <div style="display:flex; flex-direction:column; gap:6px">
       <span class="text-body-secondary"><?php echo tr('Read only access'); ?></span>
@@ -55,15 +55,15 @@
     <p><?php echo tr('There are two API keys: a <strong>read only</strong> key, safe to use in dashboards and shared links, and a <strong>read &amp; write</strong> key that lets devices post data to your account.'); ?></p>
     <p><a href="<?php echo $path; ?>user/login"><?php echo tr('Log in or create an account'); ?></a> <?php echo tr('to get your keys.'); ?></p>
     <?php } ?>
-  </div>
+  </div></div>
 
-  <div class="api-auth-card">
-    <div class="api-auth-title">
-      <span class="api-auth-icon">
+  <div class="col"><div class="card card-body gap-3 h-100 api-auth-card">
+    <h3 class="ref-card-title">
+      <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
       </span>
-      <h3><?php echo tr('Three ways to authenticate'); ?></h3>
-    </div>
+      <?php echo tr('Three ways to authenticate'); ?>
+    </h3>
     <div style="display:flex; flex-direction:column; gap:10px">
       <div class="api-auth-row">
         <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo tr('RECOMMENDED'); ?></span>
@@ -79,5 +79,5 @@
       </div>
     </div>
     <p class="text-body-secondary"><?php echo tr('No HTTPS on your device? Emoncms also supports AES-128-CBC encrypted posting using your API key as a pre-shared key. See the reference below.'); ?></p>
-  </div>
+  </div></div>
 </div>

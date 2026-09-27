@@ -66,9 +66,9 @@
 ?>
 
 <?php if ($standalone) { ?>
-<div class="api-page" data-bs-theme="dark">
+<div class="api-page ref-page d-flex flex-column gap-4" data-bs-theme="dark">
 
-  <div class="ref-header" style="margin-bottom:4px">
+  <div class="ref-head">
     <div>
       <h2><?php echo $title; ?></h2>
       <p class="text-body-secondary mb-0"><?php echo $sub; ?></p>
@@ -90,7 +90,7 @@
 
   <div style="display:flex; flex-direction:column; gap:28px">
 
-    <div class="ref-header" id="reference" style="scroll-margin-top:60px">
+    <div class="ref-head" id="reference" style="scroll-margin-top:60px">
       <div>
         <?php if ($standalone) { ?>
         <h2 style="font-size:20px; line-height:28px"><?php echo tr('Reference'); ?></h2>
@@ -99,7 +99,7 @@
         <p class="text-body-secondary mb-0"><?php echo $sub; ?></p>
         <?php } ?>
       </div>
-      <div class="ref-actions">
+      <div class="d-flex flex-wrap align-items-center gap-2">
         <?php if (!empty($show_docs_link) && !$standalone) { ?>
         <a class="btn btn-default" href="<?php echo $docs_route; ?>">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
@@ -119,11 +119,11 @@
       <!-- Sidebar -->
       <div class="ref-sidebar">
         <div v-for="module in modules" style="display:flex; flex-direction:column; gap:2px">
-          <span class="module-label" v-if="modules.length > 1">{{ module.name.toUpperCase() }} API</span>
+          <span class="ref-label px-2 pb-1" v-if="modules.length > 1">{{ module.name.toUpperCase() }} API</span>
           <span v-for="group in module.groups" class="group-link" :class="{active: active_group==group.anchor}" @click="goto_group(group.anchor)">{{ group.name }}</span>
         </div>
         <div class="ref-legend">
-          <span class="module-label" style="padding:0"><?php echo tr('KEY REQUIRED'); ?></span>
+          <span class="ref-label"><?php echo tr('KEY REQUIRED'); ?></span>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
             <span class="badge px-2 bg-primary-subtle text-primary-emphasis">read</span>
             <span class="badge px-2 bg-warning-subtle text-warning-emphasis">write</span>
@@ -136,10 +136,10 @@
       <div class="ref-main">
         <template v-for="module in modules">
           <template v-for="group in module.groups">
-            <h3 class="ref-group-heading" :id="group.anchor"><template v-if="modules.length > 1">{{ module.name }} &middot; </template>{{ group.name }}</h3>
-            <div v-for="e in group.endpoints" class="endpoint" :class="{open: e.open}">
+            <h3 class="ref-label ref-group-heading" :id="group.anchor"><template v-if="modules.length > 1">{{ module.name }} &middot; </template>{{ group.name }}</h3>
+            <div v-for="e in group.endpoints" class="card" :class="{open: e.open}">
 
-              <div class="endpoint-row" @click="toggle(e)">
+              <div class="ref-row is-link endpoint-row" @click="toggle(e)">
                 <span class="badge px-2 api-method" :class="e.http=='post' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-primary-subtle text-primary-emphasis'">{{ e.http=='post' ? 'POST' : 'GET' }}</span>
                 <span class="path font-monospace">{{ e.path }}</span>
                 <span class="desc">{{ e.description }}</span>
@@ -188,12 +188,12 @@
                       <button class="btn btn-primary btn-sm" @click="try_endpoint(e)" :disabled="!can_try(e)" :title="can_try(e) ? '' : '<?php echo tr('Log in to try'); ?>'"><?php echo tr('Try it'); ?></button>
                     </div>
                   </div>
-                  <div class="code-block font-monospace">{{ display_url(e) }}<span class="key" v-if="e.http!='post' && apikey_for(e)">{{ has_query(e) ? '&' : '?' }}apikey={{ key_trunc(e) }}&hellip;</span><template v-if="e.http=='post'"><br><?php echo tr('POST body:'); ?> {{ display_body(e) }}<span class="key" v-if="apikey_for(e)">&amp;apikey={{ key_trunc(e) }}&hellip;</span></template></div>
+                  <div class="ref-code">{{ display_url(e) }}<span class="key" v-if="e.http!='post' && apikey_for(e)">{{ has_query(e) ? '&' : '?' }}apikey={{ key_trunc(e) }}&hellip;</span><template v-if="e.http=='post'"><br><?php echo tr('POST body:'); ?> {{ display_body(e) }}<span class="key" v-if="apikey_for(e)">&amp;apikey={{ key_trunc(e) }}&hellip;</span></template></div>
                 </div>
 
                 <div v-if="e.loading || e.response!==null" style="display:flex; flex-direction:column; gap:8px">
                   <span class="request-header"><span class="req-label"><?php echo tr('RESPONSE'); ?><span v-if="e.status">: {{ e.status }}</span></span></span>
-                  <pre class="response-block font-monospace">{{ e.loading ? '...' : e.response }}</pre>
+                  <pre class="ref-code response-block">{{ e.loading ? '...' : e.response }}</pre>
                 </div>
               </div>
             </div>

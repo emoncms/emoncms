@@ -39,6 +39,8 @@ After apps on Bootstrap components: hand written `.css` 47 files, 177582 raw, 37
 
 After the reference pages on Bootstrap (API, Network, app config panel, 27 September 2026): hand written `.css` 176725 raw, 37608 gzipped, 1516 rules, 4121 declarations. Hex literals 339, `!important` 39.
 
+After the reference page components (27 September 2026): hand written `.css` 172677 raw, 37188 gzipped, 1469 rules, 3948 declarations. Hex literals 337, `!important` 39. The API, Network and config sheets went from 24383 bytes before step 1 to 10922, plus 3259 in the theme.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
@@ -192,9 +194,22 @@ App colours:
 
 ### Reference
 
-The API pages are dark with `data-bs-theme="dark"` on `.api-page` and `.api-explorer`, using the shared dark set. Their CSS is in `Lib/api_explorer.css`. The page background stays a fixed `#222` until the colour mode is set on `<html>`.
+The API pages, the Network page and the app config panel share one set of components, section 5 of `Theme/css/bootstrap5-theme.css`, on Bootstrap cards and the shared dark set. Each page sets `data-bs-theme="dark"`. The page background stays a fixed `#222` until the colour mode is set on `<html>`.
 
-The Network page uses the same look with its own classes (`net-*` in `network_view.css`): rounded rows with an icon circle, pastel tags and mono IP addresses in one 800px column. The setup wizard shares the markup and turns blue with `net-blue`, a block of variable overrides.
+| Component | Classes |
+|---|---|
+| Page | `ref-page`, width from `--ref-width` (1040px default; API 1150px, Network 800px) |
+| Title | `ref-head` with `h2` and a lead `p` in the first child, actions after it |
+| Card | Bootstrap `card`, or `card card-body` for content. Radius, spacing and colours are set on `.ref-page .card`. `open` gives the accent border. Two cards side by side: `row row-cols-1 row-cols-lg-2 g-3`. |
+| Card title | `ref-card-title` with a `ref-icon` |
+| Section heading | `ref-section` holding an `h4.ref-label`, then a count or buttons |
+| Label | `ref-label`, the uppercase grey label, also for sidebar groups |
+| Icon circle | `ref-icon`, `ref-icon-sm` on rows. A state colour with `bg-success-subtle text-success-emphasis` and the like. |
+| Row | `ref-row` in a card: icon, text, values, actions. `is-link` for rows that open in place; the open card gets `open`. |
+| Code | `ref-code` for URLs, request bodies and responses |
+| Tags | `badge px-2 bg-*-subtle text-*-emphasis` |
+
+Page CSS keeps what is particular to the page: the API sidebar, parameter grid and chevron (`Lib/api_explorer.css`), the WiFi signal bars and row parts (`network_view.css`), the feed grid and value cells of the config panel (`appconf.css`). The setup wizard turns blue with `net-blue`, which overrides the `--bs-*` variables the components read.
 
 ## Light and dark
 
@@ -293,7 +308,7 @@ One core commit for the theme and panel files, then one commit per page repo.
 - Apps: done 27 September 2026. `utils.css` removed: energy colour classes in the kit in place of the redefined Bootstrap `text-*` classes, `app-top-bar` sets its own flex layout, the description `.lead` moved to `appconf.css`. `app.css` is now the Available apps page stylesheet only (with its `<style>` block), no longer loaded on app views; its unused Bootstrap 4 helpers and the `in_kw` rule, which shrank kW values in the MySolar apps, removed. The config panel is rebuilt on the shared dark set in the API and Network look (27 September 2026).
 - Apps on Bootstrap components, done 27 September 2026: tabs `nav-underline`, text and icon buttons `nav-link`, time bar `btn-group app-timebar`, actions `btn-outline-primary` (tinted, in the theme), fields `input-group`, checkboxes `form-check`, tables `table`. The kit's `btn-list`, `app-tabs`, `app-btn`, `cost-btn`, `visnavblock`, `visnav`, `ctrl-*` and `app-table` are removed (kit 17281 to 11900 bytes). MyElectricFlow was checked A/B first.
 - Reference pages on Bootstrap (27 September 2026): pastel tags to `badge` with subtle utilities, buttons to `btn-default` and `btn-primary`, fields to `form-control`, `form-select` and `input-group`, muted text to `text-body-secondary`, monospace to `font-monospace`, readiness bar to `progress`. The three sheets went from 24383 to 18149 bytes and 14 `!important` went. Fields and buttons now use the theme's compact size, where the API page had its own taller ones. The setup wizard keeps its blue look through overrides of the `--bs-*` and `--ec-*` variables on `.net-blue`.
-- Reference look components: the Network page (`net-*`), the API pages (`Lib/api_explorer.css`) and the app config panel (`cfg-*`, 6.5 KB) each define the same card, icon circle, section heading, row and pastel tag. One set in the theme would serve all three.
+- Reference page components in the theme, done 27 September 2026: page, title, card on Bootstrap `card`, card title, section heading, label, icon circle, row, code block. API, Network and the config panel on them, and on the `--bs-*` variables in place of the `--accent`, `--bg-card` and `--text-*` aliases. The three page sheets went from 18149 to 10922 bytes, with 3259 bytes added to the theme.
 - App kit candidates still in app files: small line under a value (`app-stat-sub`), flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), a two column row of blocks, a small field in an `app-bar`.
 - Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
 
