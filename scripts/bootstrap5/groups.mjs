@@ -17,7 +17,7 @@ export const GROUPS = {
     { name: "feed_delete", page: "feed/view", steps: [{ click: ".group-list-row .feed-select" }, { click: "button[title='Delete']" }] },
     { name: "feed_downsample", page: "feed/view", steps: [{ click: ".group-list-row .feed-select" }, { click: "button[title='Downsample']" }] },
     { name: "feed_download", page: "feed/view", steps: [{ click: ".group-list-row .feed-select" }, { click: "button[title='Download']" }] },
-    { name: "feed_process", page: "feed/view", steps: [{ click: ".group-list-row .feed-select" }, { click: "button[title='Process config']" }] },
+    { name: "feed_process", page: "feed/view", steps: [{ click: ".group-list-row:has-text('VIRTUAL') .feed-select" }, { click: "button[title='Process config']" }] },
     { name: "feed_new", page: "feed/view", steps: [{ click: "#addnewfeed" }] },
     { name: "feed_import", page: "feed/view", steps: [{ click: "#importdata" }] },
   ],
@@ -46,13 +46,13 @@ export const GROUPS = {
   // modals are opened only, never confirmed
   user: [
     { name: "user_view", page: "user/view", steps: [] },
-    { name: "user_edit_username", page: "user/view", steps: [{ dispatch: "tr:has-text('Username') .icon-pencil" }] },
-    { name: "user_edit_email", page: "user/view", steps: [{ dispatch: "tr:has-text('Email') .icon-pencil" }] },
-    { name: "user_edit_password", page: "user/view", steps: [{ dispatch: "tr:has-text('Password') .icon-pencil" }] },
-    { name: "user_edit_timezone", page: "user/view", steps: [{ dispatch: "tr:has-text('Timezone') .icon-pencil" }] },
-    { name: "user_edit_language", page: "user/view", steps: [{ dispatch: "tr:has-text('Language') .icon-pencil" }] },
+    { name: "user_edit_username", page: "user/view", steps: [{ dispatch: ".panel-row:has-text('Username') .svg-icon-pencil" }] },
+    { name: "user_edit_email", page: "user/view", steps: [{ dispatch: ".panel-row:has-text('Email') .svg-icon-pencil" }] },
+    { name: "user_edit_password", page: "user/view", steps: [{ dispatch: ".panel-row:has-text('Password') .svg-icon-pencil" }] },
+    { name: "user_edit_timezone", page: "user/view", steps: [{ dispatch: ".panel-row:has-text('Timezone') .svg-icon-pencil" }] },
+    { name: "user_edit_language", page: "user/view", steps: [{ dispatch: ".panel-row:has-text('Language') .svg-icon-pencil" }] },
     { name: "user_delete", page: "user/view", steps: [{ click: "button:has-text('Delete account')" }] },
-    { name: "user_apikey", page: "user/view", steps: [{ click: "tr:has-text('Read Only API Key') button:has-text('Generate New')" }] },
+    { name: "user_apikey", page: "user/view", steps: [{ click: ".panel-row:has-text('Read Only API Key') button:has-text('Generate New')" }] },
   ],
   // admin login; never click view (switches session), the access cell or unlink
   account: [
@@ -69,10 +69,10 @@ export const GROUPS = {
   schedule: [
     { name: "schedule_list", page: "schedule/view", steps: [] },
     { name: "schedule_edit", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }] },
-    { name: "schedule_edit_days", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: ".sb-presets button:has-text('M–F')" }] },
+    { name: "schedule_edit_days", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: ".btn-group button:has-text('M–F')" }] },
     { name: "schedule_custom", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: "a:has-text('Custom expression')" }] },
     { name: "schedule_help", page: "schedule/view", steps: [{ click: "button:has-text('Edit')" }, { click: "a:has-text('Custom expression')" }, { click: "button[title='Expression reference']" }] },
-    { name: "schedule_delete", page: "schedule/view", steps: [{ click: "button:has-text('Delete')" }] },
+    { name: "schedule_delete", page: "schedule/view", steps: [{ click: "button[title='Delete']" }] },
     { name: "schedule_test", page: "schedule/view", steps: [{ click: "button:has-text('Test')" }] },
   ],
   // test login, dashboard 224 "bs5-test"; never click save, delete or New
