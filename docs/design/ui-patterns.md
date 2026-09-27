@@ -33,6 +33,8 @@ Measured on core and the module repos at the end of each roadmap step, with the 
 
 After step 4, app kit (27 September 2026): hand written `.css` 48 files, 185102 raw, 38793 gzipped, 1580 rules, 1705 selectors, 4304 declarations. `<style>` blocks 11 views, 10942 raw, 3009 gzipped, 97 rules. Together 10% smaller raw. Hex literals 333, `!important` 62.
 
+After the app CSS tidy (`utils.css` removed, `app.css` to the app list page only): hand written `.css` 47 files, 182282 raw, 38269 gzipped, 1550 rules, 1673 selectors, 4291 declarations. `<style>` blocks 10 views, 10055 raw, 88 rules. Hex literals 330, `!important` 49.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
@@ -163,7 +165,8 @@ Light app, as MyHeatpump:
 | App frame | `app-page`, `app-panel` rounded blocks. The first panel has a top margin. |
 | Top bar and tabs | `app-top-bar`, `btn-list`, `app-tabs` with `app-btn` tabs (icon and label, accent underline when `active`) |
 | Buttons | `app-btn` text button, `cost-btn` outlined accent button, `active` for the chosen option |
-| Live values | `stats-grid` (three columns, `stats-grid-2` for two) of `power-title`, `power-value`, `power-unit`. Colour with `text-primary` (use), `text-warning` (solar), `text-danger` (import), `text-quaternary` (battery). |
+| Live values | `stats-grid` (three columns, `stats-grid-2` for two) of `power-title`, `power-value`, `power-unit`. Colour with the energy classes. |
+| Energy colours | `text-use`, `text-house`, `text-solar`, `text-wind`, `text-direct`, `text-import`, `text-export`, `text-battery`. Bootstrap `text-*` classes keep their Bootstrap meaning. |
 | Time bar | `visnavblock` with `visnav app-btn` buttons, joined with rounded ends. Manual date range: `ctrl-group` fields in a second `visnavblock`. |
 | Label and field pair | `ctrl-group` > `ctrl-label` + `select` or text `input`, `ctrl-checkbox`, `ctrl-note` |
 | Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour. |
@@ -177,7 +180,7 @@ App colours:
 
 - Surfaces, text, borders and accent come from the shared light and dark variables, plus `--ec-app-panel-bg`, `--ec-app-box-bg` and `--ec-app-bar-bg` (block header bar).
 - Time bar blue: `--ec-app-nav` and `--ec-app-nav-rgb`.
-- Energy colours shared by all apps: `--ec-energy-use`, `--ec-energy-use-light`, `--ec-energy-solar`, `--ec-energy-import`, `--ec-energy-export`, `--ec-energy-battery`, and `--ec-energy-text` for text on them. Values from MyElectricFlow. Heat is added with MyHeatpump. Chart series colours are still set in each app's JS.
+- Energy colours shared by all apps: `--ec-energy-use`, `--ec-energy-use-light`, `--ec-energy-solar`, `--ec-energy-import`, `--ec-energy-export`, `--ec-energy-battery`, `--ec-energy-direct`, `--ec-energy-wind`, and `--ec-energy-text` for text on them. Values from MyElectricFlow. Heat is added with MyHeatpump. Chart series colours are still set in each app's JS.
 - The page background and footer sit outside `.app-page`, so the kit sets them to fixed dark values when a dark `.app-page` is on the page.
 
 ### Reference
@@ -279,8 +282,8 @@ One core commit for the theme and panel files, then one commit per page repo.
 - Panel form: `panel-form`, `panel-field`, `panel-buttons`, `panel-actions`, `panel-empty` and `is-editing` on a table row in `panel.css`. Replaces the `admin-`, `pp-`, `sch-` and `er-` copies and the narrow screen table scroll rule.
 - Page defaults in the theme: `[v-cloak]`, body background, container width, page bottom padding and `page-lead`. Panel margin 1rem, which every page sets.
 - Remove the `.btn { margin: 0 }` resets, 19 across 8 files. Nothing sets a button margin.
-- Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg`, `--color-cat-default` and `--ec-energy-export`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
-- Apps: `app.css` (loaded by the controller), `utils.css` (loaded by the config panel) and `app-kit.css` overlap. One shared file now the apps are on the kit. `appconf.css` onto the variables so the config panel follows the mode. `app.css` `#app-block.in_kw .power-value` conflicts with the kit value size.
+- Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg` and `--color-cat-default`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
+- Apps: done 27 September 2026. `utils.css` removed: energy colour classes in the kit in place of the redefined Bootstrap `text-*` classes, `app-top-bar` sets its own flex layout, the description `.lead` moved to `appconf.css`. `app.css` is now the Available apps page stylesheet only (with its `<style>` block), no longer loaded on app views; its unused Bootstrap 4 helpers and the `in_kw` rule, which shrank kW values in the MySolar apps, removed. Still open: `appconf.css` onto the variables so the config panel follows the mode.
 - App kit candidates found in the conversions, each now in an app file: unit box after a `ctrl-group` field (`ctrl-unit`, three copies), small line under a value (`app-stat-sub`), export text colour, flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), app title as the active tab, a two column row of blocks, a small field in an `app-bar`.
 - Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
 

@@ -63,6 +63,8 @@
     --ec-energy-import: #d52e2e;
     --ec-energy-export: #2ed52e;
     --ec-energy-battery: #fb7b50;
+    --ec-energy-direct: #89ae65;       /* solar used directly */
+    --ec-energy-wind: #b7aa1f;
     --ec-energy-text: #333;            /* text on an energy colour */
 
     /* App time bar */

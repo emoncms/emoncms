@@ -13,7 +13,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 - `Theme/img/`: glyphicon sprites used by `bootstrap2-icons.css`.
 - `Theme/css/panel.css`: the emoncms panel component, formerly `card.css`.
 - `Theme/theme.php` and `Theme/embed.php` load Bootstrap 5 on every page. Bootstrap 2 (`Lib/bootstrap/`) and `Theme/css/bootstrap4-utils.css` are removed.
-- Custom classes from `bootstrap4-utils.css`: `color-box` moved to `Modules/user/profile/profile.css`. Classes the apps use are in `Modules/app/Views/css/utils.css`.
+- Custom classes from `bootstrap4-utils.css`: `color-box` moved to `Modules/user/profile/profile.css`. The apps use the energy colour classes in `Modules/app/Views/css/app-kit.css` in their place.
 
 Converted so far: `admin/info`, `input/view`, `feed/view`, `graph` and graph embed, `device/view`, all `admin` pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard` (list, editor, view), API help pages, apps (`Modules/app`), with the process list modal and device dialog they use.
 
@@ -216,7 +216,7 @@ Target for the remaining pages is "similar": same layout and colours, small diff
 
 Core pages are done. Modules done: backup, sync, network (and setup, which uses the network view), postprocess, emailreport, config, app.
 
-Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). `Modules/app/Views/css/utils.css` keeps them. It is loaded by the config panel (`Lib/appconf/appconf.php`), which every app includes. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). Every app is on the app kit (see `ui-patterns.md`). Apps without a test instance were checked from the markup and static renders only. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
+Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). These are replaced by the kit (energy colour classes, `app-top-bar` layout) and `utils.css` is removed. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). Every app is on the app kit (see `ui-patterns.md`). Apps without a test instance were checked from the markup and static renders only. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 
 Form elements are on `form-control`/`form-select`.
 
