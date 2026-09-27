@@ -7,7 +7,7 @@
     "bootstrap": "5.3.8",
     "clean-css": "^5.3.3",
     "postcss": "^8.5.28",
-    "purgecss": "^7.0.2",
+    "purgecss": "^8.0.0",
     "sass": "1.78.0"
   }
 }
