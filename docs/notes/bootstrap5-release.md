@@ -57,6 +57,26 @@ node bsmissing.mjs      # list classes used but missing from the build
 
 To use a left out component, uncomment it in `scripts/bootstrap5/scss/bootstrap.scss` and rebuild. Modules outside the emoncms repos are not scanned. If a class they use is missing, ask for it to be added to the build.
 
+## CSS size
+
+All CSS in core and the module repos, master against this release (27 September 2026). Counts cover every `.css` file and every `<style>` block in views, whether a page loads it or not. Raw bytes, not gzipped.
+
+| | Master | This release | Change |
+|---|---|---|---|
+| Bytes | 570,129 | 369,255 | −35% |
+| Rules | 4,291 | 2,623 | −39% |
+| Declarations | 11,021 | 6,514 | −41% |
+
+| Bytes, rules | Master | This release | Change |
+|---|---|---|---|
+| Third party (Bootstrap, date picker, font) | 279,644, 2,466 | 98,744, 1,045 | −65%, −58% |
+| Emoncms CSS files and `<style>` blocks | 195,287, 1,741 | 165,329, 1,351 | −15%, −22% |
+| Icons (`svg-icons.css`, `bootstrap2-icons.css`) | 95,196, 84 | 105,180, 227 | +10% |
+
+In emoncms CSS, hex colours fell from 711 to 373 and `!important` from 234 to 37. `<style>` blocks fell from 34 views and 62,592 bytes to 8 views and 9,944 bytes. Inline `style=""` attributes fell from 1,136 to 551.
+
+Icons grew as glyphicons moved out of Bootstrap 2 into `bootstrap2-icons.css`. Replacing glyphicons with SVG icons is a later step.
+
 ## Variables
 
 Colours and shared values are in `Theme/css/bootstrap5-theme.css`, in a light and a dark set. Page CSS uses the Bootstrap names where the role is the same and `--ec-*` names otherwise.
