@@ -6,7 +6,7 @@ Aim for the current look first. Visual changes come later, through the theme var
 
 ## Files
 
-- `Lib/bootstrap5/`: Bootstrap 5.3.8 dist (`bootstrap.min.css`, `bootstrap.bundle.min.js` with Popper).
+- `Lib/bootstrap5/`: `bootstrap.bundle.min.js` (Bootstrap 5.3.8 dist, with Popper) and `bootstrap.min.css`, a reduced build of Bootstrap 5.3.8 from `scripts/bootstrap5/build.mjs`. A class the build lacks has no style; `bsmissing.mjs` lists them. See the scripts README.
 - `Theme/css/bootstrap5-theme.css`: Bootstrap 2 metrics and colours as Bootstrap 5 variables, the element look where the Bootstrap 5 reboot differs (links, headings, paragraphs, lists, `hr`, `code`, `pre`), component sizes (buttons, badges, alerts, modals, input groups, tables, form controls) and `hide`. Loaded straight after `bootstrap.min.css`.
 - `Theme/css/bootstrap2-legacy.css` is removed. Its rules moved to Bootstrap 5 components or the theme.
 - `Theme/css/bootstrap2-icons.css`: Bootstrap 2 glyphicon sprites (`icon-*`, `icon-white`). Loaded after the theme.
@@ -208,13 +208,13 @@ The link hover rule uses `a:where(:hover, :focus)` so `.btn`, `.nav-link` and `.
 
 Bootstrap 2 is removed. Every page loads Bootstrap 5.
 
-Branch `bootstrap5` in core and the device, graph, account, dashboard, backup, sync, network, postprocess, emailreport, config and app modules. Postprocess branches from `stable`. Nothing pushed.
+Branch `bootstrap5` in core and the device, graph, account, dashboard, backup, sync, network, postprocess, emailreport, config, app and demandshaper modules. Postprocess branches from `stable`. Nothing pushed.
 
 Done: `admin/info`, `input/view`, `feed/view`, `graph`, graph embed, `device/view`, admin pages, `user` (login and account page), `account` module, `schedule/view`, `dashboard`, API help pages, apps, process list modal, device dialog, card to panel rename.
 
 Target for the remaining pages is "similar": same layout and colours, small differences allowed. Check for breakage, overlap and broken behaviour. Do not chase 2px shifts or near colours.
 
-Core pages are done. Modules done: backup, sync, network (and setup, which uses the network view), postprocess, emailreport, config, app.
+Core pages are done. Modules done: backup, sync, network (and setup, which uses the network view), postprocess, emailreport, config, app, demandshaper.
 
 Apps (`Modules/app`, branch `bootstrap5`): the apps used `bootstrap4-utils.css` classes, which Bootstrap 5 lacks or colours differently (`text-light` #aaa, `text-primary`, `text-tertiary`, `text-quaternary`, `d-xs-*`, wrapping `justify-content-between`). These are replaced by the kit (energy colour classes, `app-top-bar` layout) and `utils.css` is removed. App stylesheets load with `load_css`. The test account has instances of myelectricflow, myheatpump, timeofuse2, myelectric2, myboiler, ukgrid and co2monitor (`app` state group), and the admin account has solarbatterysim (`app_admin`). Every app is on the app kit (see `ui-patterns.md`). Apps without a test instance were checked from the markup and static renders only. Dashboard (`Modules/dashboard`, branch `bootstrap5`) keeps a test dashboard, id 224 "bs5-test" on the test account, used by the `dashboard` state group.
 

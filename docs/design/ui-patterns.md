@@ -57,8 +57,10 @@ Step 5, leftovers: hand written `.css` 162128 raw, 36032 gzipped, 1327 rules, 14
 
 End of step 5 against the step 4 figures (177582 raw, 37573 gzipped, 1511 rules, 4153 declarations): hand written `.css` 9% smaller raw, 4% gzipped, 184 rules and 517 declarations fewer. Against `HEAD` before step 5 (172677 raw, 37188 gzipped, 1469 rules): 10549 bytes, 1156 gzipped and 142 rules fewer. Hex literals outside the theme 321 to 260.
 
+Bootstrap tree shake, dead rules and demandshaper (27 September 2026): `bootstrap.min.css` is built from the Bootstrap Sass with unused components left out, then purged against the source by `purge.mjs`, keeping the grid and the utility families whole. 97854 raw, 16092 gzipped, 1045 rules, 1261 selectors, 2485 declarations, against 232111, 30768 and 2550 rules for the stock file. A pixel and computed style diff of every page state against the stock file showed no difference. Hand written `.css` 46 files, 155339 raw, 34706 gzipped, 1265 rules, 1365 selectors, 3444 declarations, after 3.5 KB of dead rules found by `deadcss.mjs` and the demandshaper conversion. `<style>` blocks 8 views, 9812 raw, 86 rules. Hex literals outside the theme 228, `!important` 37.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
-- Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
+- Bootstrap size is set by the source scan in `purge.mjs`, not browser coverage. `bsmissing.mjs` lists classes the source uses that the build lacks. `deadcss.mjs` lists dead rules in the hand written CSS.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
 - `!important` gets rarer: 69 uses.
 - Every theme variable has a use.
@@ -353,10 +355,9 @@ The `bootstrap5` branch spans core and eleven module repos and is not pushed. It
 ### Later
 
 - Site wide light or dark theme as a user setting, next to theme colour. Needs the remaining fixed colours in page CSS moved to variables.
-  Files not yet on variables, largest first: demandshaper (402 lines, 51 literals, still on master), timeofuse2, the profile app, graph view error and editor colours, device dialog, dashboard widget and editor CSS, config `style.css`, `autocomplete.css`. MyHeatpump and MyBoiler share one copied stylesheet.
+  Files not yet on variables, largest first: demandshaper, timeofuse2, the profile app, graph view error and editor colours, device dialog, dashboard widget and editor CSS, config `style.css`, `autocomplete.css`. MyHeatpump and MyBoiler share one copied stylesheet.
 - Colour schemes also set the primary colour.
 - Inline `style` attributes and `!important`: tidy when a page is converted, not as a sweep.
-- Tree shake Bootstrap. `bootstrap.min.css` is 232 KB (31 KB gzipped) with 2012 class names. The pages reference 234 of them (measured 26 September 2026 by class name across core and the module repos, so an over count). Unused: carousel, offcanvas, toast, popover, breadcrumb, placeholder, most of card, list group, navbar, and most of the utility and grid sets. The JS bundle is used for modal, dropdown, collapse, tooltip and button toggle. Build from the Bootstrap Sass with only the needed imports, in `scripts/bootstrap5/`, rather than purging the dist file: classes added by JS (`show`, `fade`, `collapsing`, `modal-backdrop`) and built in Vue templates and JS strings are easy to purge by mistake. Utilities through the Sass utility API, listing the ones in use. Keep the dist file until a pixel diff of the page list passes.
 - HTML docs section with a style guide.
 
 ## Decisions
