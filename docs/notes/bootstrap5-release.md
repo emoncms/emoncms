@@ -1,9 +1,29 @@
-# Bootstrap 5 release
+# Emoncms 12.0.0: Bootstrap 5
 
 Emoncms moves from Bootstrap 2.3.2 to Bootstrap 5.3.8. Core and every module maintained by OpenEnergyMonitor change together in this release. Bootstrap 2 is removed, so third party modules that use Bootstrap 2 markup, classes or JS need changes.
 
 - Converting a module: `docs/design/bootstrap5-migration.md`.
 - Styling pages and modules: `docs/design/css-guide.md`.
+
+## Versions
+
+Core and the modules below need updating together. The module versions work only with core 12.0.0 or later.
+
+| Repo | Version |
+|---|---|
+| emoncms (core) | 12.0.0 |
+| app | 3.6.0 |
+| backup | 2.6.0 |
+| config | 2.2.0 |
+| dashboard | 4.2.0 |
+| demandshaper | 2.4.0 |
+| device | 2.6.0 |
+| graph | 3.5.0 |
+| network | 3.4.0 |
+| postprocess | 2.8.0 |
+| sync | 3.6.0 |
+
+The account and emailreport modules also change. They have no version number.
 
 ## Summary
 
@@ -29,6 +49,7 @@ The work had four aims:
 - My Account, Post Process, Schedule and Email Reports on panels.
 - Sync with Upload and Download tabs. Sync Inputs and Sync Dashboards are removed.
 - Network and the setup wizard on the dark reference look.
+- Login on a light card with the logo in the colour scheme.
 - Admin pages. The Components page groups components by install folder, shows the remote protocol, and has Update all. Update Emoncms Only is removed: use Full Update or Components.
 - API help pages on the dark reference look.
 - Every app on the app kit, dark or light. The app config panel is rebuilt.
