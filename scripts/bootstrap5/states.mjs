@@ -188,6 +188,8 @@ let errors = [];
 p.on("pageerror", e => errors.push(String(e.message)));
 p.on("console", m => { if (m.type() === "error") errors.push(m.text()); });
 p.on("response", r => { if (r.status() >= 400) errors.push("HTTP " + r.status() + " " + r.url()); });
+// CSS coverage over the whole run, including the login page
+await p.coverage.startCSSCoverage({ resetOnNavigation: false });
 // groups that run logged out
 const LOGGED_OUT = ["login"];
 if (!LOGGED_OUT.includes(group)) {
@@ -259,5 +261,21 @@ for (const st of GROUPS[group]) {
   report[st.name] = { errors, missing, elements: data.length };
 }
 fs.writeFileSync(`${out}/report@${width}.json`, JSON.stringify(report, null, 1));
+// used byte ranges per stylesheet, merged across page loads. Inline style blocks have no url.
+const cov = {};
+for (const e of await p.coverage.stopCSSCoverage()) {
+  const key = e.url ? e.url.replace(base + "/", "").replace(/\?.*/, "") : "<style>";
+  const c = cov[key] || (cov[key] = { size: 0, ranges: [] });
+  c.size = Math.max(c.size, Buffer.byteLength(e.text));
+  c.ranges.push(...e.ranges);
+}
+for (const c of Object.values(cov)) {
+  c.ranges.sort((a, b) => a.start - b.start);
+  const m = [];
+  for (const r of c.ranges) { const l = m[m.length - 1]; if (l && r.start <= l.end) l.end = Math.max(l.end, r.end); else m.push({ ...r }); }
+  c.ranges = m;
+  c.used = m.reduce((n, r) => n + r.end - r.start, 0);
+}
+fs.writeFileSync(`${out}/css-coverage@${width}.json`, JSON.stringify(cov));
 console.log(JSON.stringify(report));
 await br.close();

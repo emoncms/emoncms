@@ -10,6 +10,29 @@ Sets the page families, the components each family uses and a proposal per page.
 - Page CSS goes in a `.css` file loaded with `load_css`, not in a `<style>` block.
 - Reuse a component before writing a new one. A new component goes in this guide.
 
+## Goal metrics
+
+Measured on core and the module repos at the end of each roadmap step, with the scripts below, and compared with the figures of 27 September 2026. Sizes are bytes, raw and gzipped, as the browser downloads the gzipped file and a minified file has no useful line count. Hand written CSS is every `.css` file except `bootstrap.min.css`, `bootstrap2-icons.css`, `svg-icons.css` and `montserrat.css`, with `node_modules`, `vendor` and `tools` skipped and the module symlinks followed, plus the `<style>` blocks in views.
+
+| | Raw | Gzipped | Rules | Selectors | Declarations |
+|---|---|---|---|---|---|
+| Hand written `.css`, 45 files | 199876 | 41182 | 1705 | 1859 | 4673 |
+| `<style>` blocks, 20 views | 18654 | 4326 | 178 | 200 | 447 |
+| `bootstrap.min.css` | 232111 | 30768 | 2550 | 2961 | 5543 |
+
+- Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
+- Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
+- Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
+- `!important` gets rarer: 69 uses.
+- Every theme variable has a use. The unused ones are listed in roadmap step 5.
+
+```sh
+sh scripts/bootstrap5/cssbytes.sh
+python3 scripts/bootstrap5/csscount.py
+node states.mjs cov-input input    # one folder per group, see the scripts README
+node csscov.mjs cov-*
+```
+
 ## Families
 
 | Family | Purpose | Look | Best current examples |
@@ -182,7 +205,7 @@ Done.
 - Graph, backup and devices `<style>` blocks moved to `Modules/graph/view.css`, `Modules/backup/backup_view.css` and `Modules/device/Views/device_view.css`.
 - Checked checkbox and radio in `--bs-primary`, with `accent-color` for native fields.
 - Check: colour moves pixel identical in light. Look changes (header, `h3`, checkbox colour) checked on screenshots.
-- Gaps seen in dark: glyphicon sprites stay black (step 5), graph "select a feed" box, feed engine badges (pastel, readable).
+- Gaps seen in dark: glyphicon sprites stay black (step 6), graph "select a feed" box, feed engine badges (pastel, readable).
 
 ### 3. Page conversions
 
@@ -206,7 +229,24 @@ Colours move to variables as each page is converted.
 - MyHeatpump onto the light set.
 - The other apps that load `dark.css` or `light.css` move one by one. The 14 without test instances need instances first. Then `dark.css` and `light.css` are removed.
 
-### 5. Glyphicons to SVG icons
+### 5. Shared components from the page conversions
+
+CSS audit of 26 September 2026. Hand written CSS is about the same size on `bootstrap5` as on `master`: core 3091 to 2961 lines, all repos about 9400 lines on both sides, vendor and icon files excluded. Style block lines went from 2156 to 662. The theme, panel, group list and app kit are shared and on variables. The page conversions rebuilt the same small components under a page prefix, so this step moves them to the theme.
+
+One core commit for the theme and panel files, then one commit per page repo.
+
+- Tag: one component in the theme with colour tokens in both sets (blue, green, amber, purple, red, orange). Replaces the feed engine badges, admin `info-tag` and `cmp-proto`, users `user-tag` and `user-avatar`, network `net-tag`, backup `bk-badge` and the API `badge-*`. The same six colour pairs are pasted into three files today.
+- Sticky list toolbar: one class in `group-list.css`. Replaces the 25 line blocks in feeds, inputs, devices and sync, and the old `.controls.affix` rules in `emoncms-base.css`.
+- Panel form: `panel-form`, `panel-field`, `panel-buttons`, `panel-actions`, `panel-empty` and `is-editing` on a table row in `panel.css`. Replaces the `admin-`, `pp-`, `sch-` and `er-` copies and the narrow screen table scroll rule.
+- Page defaults in the theme: `[v-cloak]`, body background, container width, page bottom padding and `page-lead`. Panel margin 1rem, which every page sets.
+- Remove the `.btn { margin: 0 }` resets, 19 across 8 files. Nothing sets a button margin.
+- Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg`, `--color-cat-default` and `--ec-energy-export`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
+- Apps: `app.css` (loaded by the controller), `utils.css` (loaded by the config panel) and `app-kit.css` overlap. One shared file once the apps are on the kit. `appconf.css` onto the variables so the config panel follows the mode.
+- Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.
+
+Check: pixel diff on the converted pages, as the moves do not change the look.
+
+### 6. Glyphicons to SVG icons
 
 Low priority, last.
 
@@ -223,8 +263,10 @@ The `bootstrap5` branch spans core and eleven module repos and is not pushed. It
 ### Later
 
 - Site wide light or dark theme as a user setting, next to theme colour. Needs the remaining fixed colours in page CSS moved to variables.
+  Files not yet on variables, largest first: demandshaper (402 lines, 51 literals, still on master), timeofuse2, the profile app, graph view error and editor colours, device dialog, dashboard widget and editor CSS, config `style.css`, `autocomplete.css`. MyHeatpump and MyBoiler share one copied stylesheet.
 - Colour schemes also set the primary colour.
 - Inline `style` attributes and `!important`: tidy when a page is converted, not as a sweep.
+- Tree shake Bootstrap. `bootstrap.min.css` is 232 KB (31 KB gzipped) with 2012 class names. The pages reference 234 of them (measured 26 September 2026 by class name across core and the module repos, so an over count). Unused: carousel, offcanvas, toast, popover, breadcrumb, placeholder, most of card, list group, navbar, and most of the utility and grid sets. The JS bundle is used for modal, dropdown, collapse, tooltip and button toggle. Build from the Bootstrap Sass with only the needed imports, in `scripts/bootstrap5/`, rather than purging the dist file: classes added by JS (`show`, `fade`, `collapsing`, `modal-backdrop`) and built in Vue templates and JS strings are easy to purge by mistake. Utilities through the Sass utility API, listing the ones in use. Keep the dist file until a pixel diff of the page list passes.
 - HTML docs section with a style guide.
 
 ## Decisions
