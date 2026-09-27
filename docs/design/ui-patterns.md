@@ -37,6 +37,8 @@ After the app CSS tidy (`utils.css` removed, `app.css` to the app list page only
 
 After apps on Bootstrap components: hand written `.css` 47 files, 177582 raw, 37573 gzipped, 1511 rules, 1626 selectors, 4153 declarations. `<style>` blocks unchanged. Hex literals 343 and `!important` 53, counted with `/usr/bin/grep`; the earlier figures went through the interactive `ugrep` wrapper and are not comparable. This step removed one `!important` and no hex literals.
 
+After the reference pages on Bootstrap (API, Network, app config panel, 27 September 2026): hand written `.css` 176725 raw, 37608 gzipped, 1516 rules, 4121 declarations. Hex literals 339, `!important` 39.
+
 - Hand written CSS gets smaller. A page copy moved into the theme counts, as the page loses more than the theme gains. Minifying does not, which is why rules, selectors and declarations are counted next to the bytes.
 - Bootstrap use is the share of `bootstrap.min.css` matched at least once across the page state list, from browser CSS coverage. It sets the size of the tree shaken build. Baseline still to record from a logged in run. The same run gives the used share of each hand written file, which points at dead rules.
 - Fixed colours outside `bootstrap5-theme.css` go to zero, apart from the exceptions in the principles: 450 hex literals.
@@ -119,6 +121,8 @@ A setup page is one of two layouts, both under a page header.
 - Dates: `DateTimePicker`.
 - Buttons: `btn-default` for ordinary actions, `btn-primary` for the main action of a panel or modal, `btn-danger` for delete and other destructive actions. One primary button per panel or modal.
 - Status labels: `badge bg-success`, `bg-warning`, `bg-danger`, `bg-secondary`.
+- Pastel tags (method, access, state): `badge px-2 bg-success-subtle text-success-emphasis`, with `primary`, `secondary`, `info`, `warning` or `danger` in place of `success`. No CSS needed: the theme sets the subtle and emphasis colours in both modes. Used by the API pages, Network and the app config panel.
+- Monospace text: `font-monospace` (theme sets `--bs-font-monospace`).
 - On and off setting in a list row: `form-check form-switch`, as the Sync upload switch.
 - Modals: Bootstrap 5 modal as in `bootstrap5-migration.md`.
 
@@ -288,6 +292,7 @@ One core commit for the theme and panel files, then one commit per page repo.
 - Tokens: remove the unused `--s1` to `--s6`, `--font-heading`, `--font-base`, `--accent-hover`, `--accent-bg-hover`, `--focus-ring`, `--controls-bg` and `--color-cat-default`. Decide between `--text-muted` and `--bs-secondary-color`, and whether pages use the `--bs-*` and `--ec-*` names or the `--accent`, `--bg-card` and `--text-*` aliases.
 - Apps: done 27 September 2026. `utils.css` removed: energy colour classes in the kit in place of the redefined Bootstrap `text-*` classes, `app-top-bar` sets its own flex layout, the description `.lead` moved to `appconf.css`. `app.css` is now the Available apps page stylesheet only (with its `<style>` block), no longer loaded on app views; its unused Bootstrap 4 helpers and the `in_kw` rule, which shrank kW values in the MySolar apps, removed. The config panel is rebuilt on the shared dark set in the API and Network look (27 September 2026).
 - Apps on Bootstrap components, done 27 September 2026: tabs `nav-underline`, text and icon buttons `nav-link`, time bar `btn-group app-timebar`, actions `btn-outline-primary` (tinted, in the theme), fields `input-group`, checkboxes `form-check`, tables `table`. The kit's `btn-list`, `app-tabs`, `app-btn`, `cost-btn`, `visnavblock`, `visnav`, `ctrl-*` and `app-table` are removed (kit 17281 to 11900 bytes). MyElectricFlow was checked A/B first.
+- Reference pages on Bootstrap (27 September 2026): pastel tags to `badge` with subtle utilities, buttons to `btn-default` and `btn-primary`, fields to `form-control`, `form-select` and `input-group`, muted text to `text-body-secondary`, monospace to `font-monospace`, readiness bar to `progress`. The three sheets went from 24383 to 18149 bytes and 14 `!important` went. Fields and buttons now use the theme's compact size, where the API page had its own taller ones. The setup wizard keeps its blue look through overrides of the `--bs-*` and `--ec-*` variables on `.net-blue`.
 - Reference look components: the Network page (`net-*`), the API pages (`Lib/api_explorer.css`) and the app config panel (`cfg-*`, 6.5 KB) each define the same card, icon circle, section heading, row and pastel tag. One set in the theme would serve all three.
 - App kit candidates still in app files: small line under a value (`app-stat-sub`), flow box and arrow colour classes (`statsbox-solar` and the like, with `--statsbox-color` from the energy variables), a two column row of blocks, a small field in an `app-bar`.
 - Feed edit modal `panel-badge` style block, API explorer inline layout styles and the profile page swatch colours onto the theme.

@@ -38,17 +38,17 @@
     </div>
     <?php if ($auth_logged_in) { ?>
     <div style="display:flex; flex-direction:column; gap:6px">
-      <span class="api-auth-muted"><?php echo tr('Read only access'); ?></span>
-      <div class="api-auth-keyrow">
-        <input type="text" readonly value="<?php echo $auth_apikey_read; ?>" onclick="this.select()">
-        <button class="copy-btn" onclick="api_copy('<?php echo $auth_apikey_read; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+      <span class="text-body-secondary"><?php echo tr('Read only access'); ?></span>
+      <div class="input-group w-100">
+        <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_read; ?>" onclick="this.select()">
+        <button class="btn btn-default" onclick="api_copy('<?php echo $auth_apikey_read; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
       </div>
     </div>
     <div style="display:flex; flex-direction:column; gap:6px">
-      <span class="api-auth-muted"><?php echo tr('Full Read &amp; Write access'); ?></span>
-      <div class="api-auth-keyrow">
-        <input type="text" readonly value="<?php echo $auth_apikey_write; ?>" onclick="this.select()">
-        <button class="copy-btn" onclick="api_copy('<?php echo $auth_apikey_write; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
+      <span class="text-body-secondary"><?php echo tr('Full Read &amp; Write access'); ?></span>
+      <div class="input-group w-100">
+        <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_write; ?>" onclick="this.select()">
+        <button class="btn btn-default" onclick="api_copy('<?php echo $auth_apikey_write; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
       </div>
     </div>
     <?php } else { ?>
@@ -66,18 +66,18 @@
     </div>
     <div style="display:flex; flex-direction:column; gap:10px">
       <div class="api-auth-row">
-        <span class="api-auth-tag recommended"><?php echo tr('RECOMMENDED'); ?></span>
-        <span class="api-auth-mono"><?php echo tr('POST body:'); ?> <span class="hl">apikey=APIKEY</span></span>
+        <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo tr('RECOMMENDED'); ?></span>
+        <span class="api-auth-mono font-monospace"><?php echo tr('POST body:'); ?> <span class="hl">apikey=APIKEY</span></span>
       </div>
       <div class="api-auth-row">
-        <span class="api-auth-tag"><?php echo tr('HEADER'); ?></span>
-        <span class="api-auth-mono">Authorization: Bearer APIKEY</span>
+        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo tr('HEADER'); ?></span>
+        <span class="api-auth-mono font-monospace">Authorization: Bearer APIKEY</span>
       </div>
       <div class="api-auth-row">
-        <span class="api-auth-tag"><?php echo tr('URL'); ?></span>
-        <span class="api-auth-mono">&amp;apikey=APIKEY</span>
+        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo tr('URL'); ?></span>
+        <span class="api-auth-mono font-monospace">&amp;apikey=APIKEY</span>
       </div>
     </div>
-    <p class="api-auth-muted"><?php echo tr('No HTTPS on your device? Emoncms also supports AES-128-CBC encrypted posting using your API key as a pre-shared key. See the reference below.'); ?></p>
+    <p class="text-body-secondary"><?php echo tr('No HTTPS on your device? Emoncms also supports AES-128-CBC encrypted posting using your API key as a pre-shared key. See the reference below.'); ?></p>
   </div>
 </div>

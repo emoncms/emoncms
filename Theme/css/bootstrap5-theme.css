@@ -34,6 +34,7 @@
 
     /* Type */
     --bs-body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --bs-font-monospace: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;   /* font-monospace utility */
     --bs-body-font-size: 14px;
     --bs-body-line-height: 20px;
 
@@ -101,7 +102,9 @@
     --bs-link-hover-color: #1d6189;
     --bs-link-hover-color-rgb: 29, 97, 137;
 
-    /* Alerts and row tints: text, background, border */
+    /* Alerts, row tints and pastel badges: text, background, border */
+    --bs-primary-text-emphasis: var(--ec-primary-dark); --bs-primary-bg-subtle: rgba(var(--bs-primary-rgb), 0.10); --bs-primary-border-subtle: rgba(var(--bs-primary-rgb), 0.35);
+    --bs-secondary-text-emphasis: #666;  --bs-secondary-bg-subtle: #efefef; --bs-secondary-border-subtle: #ddd;
     --bs-info-text-emphasis: #3a87ad;    --bs-info-bg-subtle: #d9edf7;    --bs-info-border-subtle: #bce8f1;
     --bs-success-text-emphasis: #468847; --bs-success-bg-subtle: #dff0d8; --bs-success-border-subtle: #d6e9c6;
     --bs-warning-text-emphasis: #c09853; --bs-warning-bg-subtle: #fcf8e3; --bs-warning-border-subtle: #fbeed5;
@@ -178,6 +181,8 @@
     --bs-link-hover-color: #6ec6ea;    /* lighter on dark */
     --bs-link-hover-color-rgb: 110, 198, 234;
 
+    --bs-primary-text-emphasis: var(--bs-primary); --bs-primary-bg-subtle: rgba(var(--bs-primary-rgb), 0.15); --bs-primary-border-subtle: rgba(var(--bs-primary-rgb), 0.3);
+    --bs-secondary-text-emphasis: #999;  --bs-secondary-bg-subtle: #2a2a2a; --bs-secondary-border-subtle: #3f3f3f;
     --bs-info-text-emphasis: #9ecbdd;    --bs-info-bg-subtle: rgba(68, 179, 226, 0.15);    --bs-info-border-subtle: rgba(68, 179, 226, 0.3);
     --bs-success-text-emphasis: #5cb85c; --bs-success-bg-subtle: rgba(92, 184, 92, 0.15);  --bs-success-border-subtle: rgba(92, 184, 92, 0.3);
     --bs-warning-text-emphasis: #e7a944; --bs-warning-bg-subtle: rgba(231, 169, 68, 0.15); --bs-warning-border-subtle: rgba(231, 169, 68, 0.3);

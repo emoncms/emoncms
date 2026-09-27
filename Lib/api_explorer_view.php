@@ -71,10 +71,10 @@
   <div class="ref-header" style="margin-bottom:4px">
     <div>
       <h2><?php echo $title; ?></h2>
-      <p class="ref-sub"><?php echo $sub; ?></p>
+      <p class="text-body-secondary mb-0"><?php echo $sub; ?></p>
     </div>
     <?php if (!empty($show_docs_link)) { ?>
-    <a class="ref-docs-btn" href="<?php echo $docs_route; ?>">
+    <a class="btn btn-default" href="<?php echo $docs_route; ?>">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
       <?php echo tr('Getting started guide'); ?>
     </a>
@@ -96,20 +96,20 @@
         <h2 style="font-size:20px; line-height:28px"><?php echo tr('Reference'); ?></h2>
         <?php } else { ?>
         <h2><?php echo $title; ?></h2>
-        <p class="ref-sub"><?php echo $sub; ?></p>
+        <p class="text-body-secondary mb-0"><?php echo $sub; ?></p>
         <?php } ?>
       </div>
       <div class="ref-actions">
         <?php if (!empty($show_docs_link) && !$standalone) { ?>
-        <a class="ref-docs-btn" href="<?php echo $docs_route; ?>">
+        <a class="btn btn-default" href="<?php echo $docs_route; ?>">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
           <?php echo tr('Getting started guide'); ?>
         </a>
         <?php } ?>
-        <div class="ref-filter">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.5-4.5"></path></svg>
-          <input type="text" ref="filterbox" v-model="filter" placeholder="<?php echo tr('Filter endpoints...'); ?>">
-          <span class="mono filter-key">/</span>
+        <div class="input-group ref-filter">
+          <span class="input-group-text"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.5-4.5"></path></svg></span>
+          <input type="text" class="form-control" ref="filterbox" v-model="filter" placeholder="<?php echo tr('Filter endpoints...'); ?>">
+          <span class="input-group-text font-monospace">/</span>
         </div>
       </div>
     </div>
@@ -125,9 +125,9 @@
         <div class="ref-legend">
           <span class="module-label" style="padding:0"><?php echo tr('KEY REQUIRED'); ?></span>
           <div style="display:flex; gap:8px; flex-wrap:wrap">
-            <span class="badge badge-read">read</span>
-            <span class="badge badge-write">write</span>
-            <span class="badge badge-public">public ok</span>
+            <span class="badge px-2 bg-primary-subtle text-primary-emphasis">read</span>
+            <span class="badge px-2 bg-warning-subtle text-warning-emphasis">write</span>
+            <span class="badge px-2 bg-success-subtle text-success-emphasis">public ok</span>
           </div>
         </div>
       </div>
@@ -140,11 +140,11 @@
             <div v-for="e in group.endpoints" class="endpoint" :class="{open: e.open}">
 
               <div class="endpoint-row" @click="toggle(e)">
-                <span class="badge" :class="e.http=='post' ? 'badge-post' : 'badge-get'">{{ e.http=='post' ? 'POST' : 'GET' }}</span>
-                <span class="path">{{ e.path }}</span>
+                <span class="badge px-2 api-method" :class="e.http=='post' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-primary-subtle text-primary-emphasis'">{{ e.http=='post' ? 'POST' : 'GET' }}</span>
+                <span class="path font-monospace">{{ e.path }}</span>
                 <span class="desc">{{ e.description }}</span>
-                <span class="badge" :class="e.mode=='write' ? 'badge-write' : 'badge-read'">{{ e.mode }}</span>
-                <span v-if="e.public" class="badge badge-public">public ok</span>
+                <span class="badge px-2" :class="e.mode=='write' ? 'bg-warning-subtle text-warning-emphasis' : 'bg-primary-subtle text-primary-emphasis'">{{ e.mode }}</span>
+                <span v-if="e.public" class="badge px-2 bg-success-subtle text-success-emphasis">public ok</span>
                 <svg class="chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"></path></svg>
               </div>
 
@@ -159,21 +159,21 @@
                     <span><?php echo tr('DESCRIPTION'); ?></span>
                   </div>
                   <div v-for="name in param_names(e)" class="param-row">
-                    <span class="param-name">{{ name }}</span>
+                    <span class="param-name font-monospace">{{ name }}</span>
                     <span>
-                      <select v-if="e.parameters[name].type=='feed' && feeds.length" v-model="e.values[name]" @change="param_changed(e)">
+                      <select v-if="e.parameters[name].type=='feed' && feeds.length" class="form-select" v-model="e.values[name]" @change="param_changed(e)">
                         <optgroup v-for="(node_feeds, nodename) in nodes" :label="nodename">
                           <option v-for="f in node_feeds" :value="f.id">{{ f.name }}</option>
                         </optgroup>
                       </select>
-                      <select v-else-if="e.parameters[name].type=='bool'" v-model="e.values[name]" @change="param_changed(e)">
+                      <select v-else-if="e.parameters[name].type=='bool'" class="form-select" v-model="e.values[name]" @change="param_changed(e)">
                         <option value="0"><?php echo tr('No'); ?></option>
                         <option value="1"><?php echo tr('Yes'); ?></option>
                       </select>
-                      <select v-else-if="e.parameters[name].type=='select'" v-model="e.values[name]" @change="param_changed(e)">
+                      <select v-else-if="e.parameters[name].type=='select'" class="form-select" v-model="e.values[name]" @change="param_changed(e)">
                         <option v-for="option in e.parameters[name].options">{{ option }}</option>
                       </select>
-                      <input v-else type="text" v-model="e.values[name]" @input="param_changed(e)">
+                      <input v-else type="text" class="form-control" v-model="e.values[name]" @input="param_changed(e)">
                     </span>
                     <span class="param-desc">{{ e.parameters[name].description || '' }}</span>
                   </div>
@@ -183,24 +183,24 @@
                   <div class="request-header">
                     <span class="req-label"><?php echo tr('REQUEST'); ?></span>
                     <div class="request-buttons">
-                      <button class="copy-btn" @click="copy_url(e, $event)"><?php echo tr('Copy'); ?></button>
-                      <button class="copy-btn" @click="copy_curl(e, $event)">curl</button>
-                      <button class="try-btn" @click="try_endpoint(e)" :disabled="!can_try(e)" :title="can_try(e) ? '' : '<?php echo tr('Log in to try'); ?>'"><?php echo tr('Try it'); ?></button>
+                      <button class="btn btn-default btn-sm" @click="copy_url(e, $event)"><?php echo tr('Copy'); ?></button>
+                      <button class="btn btn-default btn-sm" @click="copy_curl(e, $event)">curl</button>
+                      <button class="btn btn-primary btn-sm" @click="try_endpoint(e)" :disabled="!can_try(e)" :title="can_try(e) ? '' : '<?php echo tr('Log in to try'); ?>'"><?php echo tr('Try it'); ?></button>
                     </div>
                   </div>
-                  <div class="code-block">{{ display_url(e) }}<span class="key" v-if="e.http!='post' && apikey_for(e)">{{ has_query(e) ? '&' : '?' }}apikey={{ key_trunc(e) }}&hellip;</span><template v-if="e.http=='post'"><br><?php echo tr('POST body:'); ?> {{ display_body(e) }}<span class="key" v-if="apikey_for(e)">&amp;apikey={{ key_trunc(e) }}&hellip;</span></template></div>
+                  <div class="code-block font-monospace">{{ display_url(e) }}<span class="key" v-if="e.http!='post' && apikey_for(e)">{{ has_query(e) ? '&' : '?' }}apikey={{ key_trunc(e) }}&hellip;</span><template v-if="e.http=='post'"><br><?php echo tr('POST body:'); ?> {{ display_body(e) }}<span class="key" v-if="apikey_for(e)">&amp;apikey={{ key_trunc(e) }}&hellip;</span></template></div>
                 </div>
 
                 <div v-if="e.loading || e.response!==null" style="display:flex; flex-direction:column; gap:8px">
                   <span class="request-header"><span class="req-label"><?php echo tr('RESPONSE'); ?><span v-if="e.status">: {{ e.status }}</span></span></span>
-                  <pre class="response-block">{{ e.loading ? '...' : e.response }}</pre>
+                  <pre class="response-block font-monospace">{{ e.loading ? '...' : e.response }}</pre>
                 </div>
               </div>
             </div>
           </template>
         </template>
 
-        <p v-if="!modules.length" class="api-muted" style="text-align:center; padding:24px 0"><?php echo tr('No endpoints match your filter'); ?></p>
+        <p v-if="!modules.length" class="text-body-secondary" style="text-align:center; padding:24px 0"><?php echo tr('No endpoints match your filter'); ?></p>
       </div>
     </div>
   </div>
@@ -210,7 +210,7 @@
   <!-- Machine readable renditions, also linked from /llms.txt. The link text
        survives HTML to markdown conversion, so AI tools that fetch this page
        without running javascript can find the full reference. -->
-  <p class="api-muted" style="text-align:center; margin:0">
+  <p class="text-body-secondary text-center m-0">
     <?php echo tr('Using an AI assistant to write API client code? Point it at the machine readable reference:'); ?>
     <a href="<?php echo $docs_route; ?>.md"><?php echo api_docs_route(); ?>.md</a> &middot;
     <a href="<?php echo $docs_route; ?>.json"><?php echo api_docs_route(); ?>.json</a> &middot;
