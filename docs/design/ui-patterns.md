@@ -2,6 +2,17 @@
 
 Sets the page families, the components each family uses and a proposal per page. New pages and modules start from these patterns.
 
+## Goal
+
+Reduce the amount of CSS in the application significantly. This includes:
+
+- Tree shaking Bootstrap, keeping the Bootstrap 5 class names and their intent.
+- Modern CSS: variables, colour modes, grid and flex in place of hand rolled layout.
+- Reuse. One component in the theme replaces the copies in page CSS.
+- Clear design patterns, set out in this guide, for future development.
+
+Progress is measured against the goal metrics below.
+
 ## Principles
 
 - Consistent structure and behaviour matter more than an identical look. Pages that do the same job are built the same way.
