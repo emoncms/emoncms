@@ -463,7 +463,7 @@ class Feed
                 $f['value'] = $timevalue['value'];
             } elseif (!isset($f['time'])) {
                 if ($timevalue = $this->EngineClass($f['engine'])->lastvalue($f['id'])) {
-                    $this->redis->hMset("feed:$id", $timevalue);
+                    $this->set_timevalue($f['id'], $timevalue['value'], $timevalue['time']);
                     $f['time'] = $timevalue['time'];
                     $f['value'] = $timevalue['value'];
                 }
