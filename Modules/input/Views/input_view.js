@@ -698,3 +698,8 @@ $.get(path + "input/isdisabled.json").done(function(response) {
         app.input_creation_disabled = response === true || response.disabled === true;
     }
 });
+
+// Redraw process list previews once process_ui has loaded process info
+function on_process_ui_ready() {
+    draw_devices();
+}

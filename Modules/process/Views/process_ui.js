@@ -150,8 +150,9 @@ var process_vue = Vue.createApp({
         initprogress: function () {
             this.init_done--;
             if (this.init_done == 0) {
-                // Which table draw is this? input and feed list perhaps/
-                if (window.table != undefined && window.table.draw != undefined) table.draw();
+                // Let the page (feed or input list) redraw process list previews
+                // that were drawn with loading badges before init completed
+                if (typeof window.on_process_ui_ready === 'function') window.on_process_ui_ready();
             }
         },
 
