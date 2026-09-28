@@ -177,6 +177,11 @@ class Feed
 
         $engine = $this->get_engine($feedid);
 
+        // Get userid from mysql rather than the redis cache, which may be incomplete
+        $userid = false;
+        $result = $this->mysqli->query("SELECT userid FROM feeds WHERE `id` = '$feedid'");
+        if ($row = $result->fetch_object()) $userid = (int) $row->userid;
+
         if ($this->settings['redisbuffer']['enabled']) {
             // Call to buffer delete
             $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
@@ -188,9 +193,9 @@ class Feed
         $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
 
         if ($this->redis) {
-            $userid = $this->redis->hget("feed:$feedid",'userid');
+            if ($userid === false) $userid = $this->redis->hget("feed:$feedid",'userid');
             $this->redis->del("feed:$feedid");
-            $this->redis->srem("user:feeds:$userid",$feedid);
+            if ($userid) $this->redis->srem("user:feeds:$userid",$feedid);
         }
         $this->log->info("delete() feedid=$feedid");
         return array('success'=>true, 'message'=>'Feed removed successfully.');
@@ -254,12 +259,14 @@ class Feed
 
         $feedexist = false;
         if ($this->redis) {
-            if (!$this->redis->exists("feed:$feedid")) {
-                if ($this->load_feed_to_redis($feedid)) {
-                    $feedexist = true;
-                }
-            } else {
+            // A feed hash without userid is incomplete, e.g recreated by set_timevalue
+            // after the feed was deleted, reload from mysql or remove it
+            if ($this->redis->hExists("feed:$feedid",'userid')) {
                 $feedexist = true;
+            } else if ($this->load_feed_to_redis($feedid)) {
+                $feedexist = true;
+            } else {
+                $this->redis->del("feed:$feedid");
             }
         } else {
             $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
@@ -457,6 +464,18 @@ class Feed
 
         foreach ($feeds as $k=>$f) {
 
+            // Feed hash missing or incomplete, reload from mysql or remove stale id
+            if (empty($f['userid'])) {
+                $id = (int) $feedids[$k];
+                if (!$this->load_feed_to_redis($id)) {
+                    $this->redis->del("feed:$id");
+                    $this->redis->srem("user:feeds:$userid",$id);
+                    unset($feeds[$k]);
+                    continue;
+                }
+                $f = $this->redis->hGetAll("feed:$id");
+            }
+
             if ($f['engine']==Engine::VIRTUALFEED) {
                 $timevalue = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($f['id']);
                 $f['time'] = $timevalue['time'];
@@ -480,7 +499,7 @@ class Feed
             $feeds[$k] = $f;
         }
 
-        return $feeds;
+        return array_values($feeds);
     }
 
     private function mysql_get_user_feeds($userid,$getmeta=false)
