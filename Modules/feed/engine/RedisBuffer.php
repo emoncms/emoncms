@@ -34,7 +34,7 @@ class RedisBuffer implements engine_methods
     public function delete($feedid)
     {
         $this->redis->srem("feed:bufferactive",$feedid); // remove from feedlist
-        $this->redis->zRemRangeByRank('feed:$feedid:buffer', 0, -1); // remove buffer
+        $this->redis->zRemRangeByRank("feed:$feedid:buffer", 0, -1); // remove buffer
     }
 
     public function get_meta($feedid)
