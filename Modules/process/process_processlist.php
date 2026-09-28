@@ -1002,6 +1002,9 @@ class Process_ProcessList
 
     public function abs_value($arg, $time, $value)
     {
+        if ($value === null) {
+            return null;
+        }
         return abs($value);
     }
 
