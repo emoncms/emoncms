@@ -410,6 +410,7 @@ function update_feed_list() {
         }
 
         $('#feed-loader').hide();
+        $('#feed-list-error').hide();
 
         // Index incoming data by id
         var incoming = {};
@@ -502,6 +503,17 @@ function update_feed_list() {
         }
 
         feedApp.feedsLoaded = true;
+    }, error: function(xhr, textStatus, errorThrown) {
+        // Typically a PHP warning printed ahead of the JSON, or a json_encode failure (empty response)
+        $('#feed-loader').hide();
+        var message = "Request failed: "+textStatus;
+        if (xhr.status) message += " (HTTP "+xhr.status+(errorThrown ? " "+errorThrown : "")+")";
+        var response = xhr.responseText || "";
+        if (response === "") response = "Empty response, see the emoncms log for json_encode errors";
+        $('#feed-list-error-message').text(message);
+        $('#feed-list-error-response').text(response.substring(0, 5000));
+        $('#feed-list-error').show();
+        console.log("ERROR", "feed/list.json", textStatus, errorThrown, xhr.responseText);
     }}); // end of ajax callback
 }// end of update_feed_list() function
 

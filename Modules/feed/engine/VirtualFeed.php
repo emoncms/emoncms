@@ -48,11 +48,12 @@ class VirtualFeed implements engine_methods
                 $processval = (int) $inputprocess[1];  
                 
                 if ($processkey==53) {
-                    if ($source_feed_meta = $this->feed->get_meta($processval)) {
-                        $meta->start_time = $source_feed_meta->start_time;
-                        $meta->end_time = $source_feed_meta->end_time;
-                        $meta->interval = $source_feed_meta->interval;
-                        $meta->npoints = $source_feed_meta->npoints;
+                    // get_meta returns an array if the source feed does not exist, false if meta is missing
+                    $source_feed_meta = $this->feed->get_meta($processval);
+                    if (is_object($source_feed_meta)) {
+                        foreach (array('start_time','end_time','interval','npoints') as $key) {
+                            if (isset($source_feed_meta->$key)) $meta->$key = $source_feed_meta->$key;
+                        }
                     }
                 }
             }
