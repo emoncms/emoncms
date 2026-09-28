@@ -397,6 +397,15 @@ document.addEventListener('keydown', function(e) {
 setTimeout(update_feed_list,1);
 setInterval(update_feed_list,5000);
 
+// Redraw process list previews once process_ui has loaded process info,
+// the feed list may have been drawn with loading badges before this
+function on_process_ui_ready() {
+    for (var id in feedApp.feeds) {
+        var f = feedApp.feeds[id];
+        if (f.processList) f.processListHTML = process_vue.drawPreview(f.processList, f);
+    }
+}
+
 function update_feed_list() {
     var public_username_str = "";
     if (public_userid) public_username_str = public_username+"/";
