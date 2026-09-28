@@ -135,7 +135,7 @@ var process_vue = Vue.createApp({
         adjustModal: function () {
             // Adjust the height of the process list UI
             if ($("#processlistModal").length) {
-                var h = $(window).height() - $("#processlistModal .modal-content").offset().top - 180;
+                var h = $(window).height() - $("#processlistModal .modal-content")[0].getBoundingClientRect().top - 180;
                 $("#processlist-ui").height(h);
             }
         },
