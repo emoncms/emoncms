@@ -503,7 +503,7 @@ function draw_devices() {
                 }
             }
             
-            input.processlistHtml = process_vue ? process_vue.drawPreview(input.processList, input) : '';
+            input.processlistHtml = typeof process_vue !== "undefined" ? process_vue.drawPreview(input.processList, input) : '';
             
             var fv = list_format_updated_obj(input.time);
             input.time_color = fv.color

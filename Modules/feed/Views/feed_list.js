@@ -457,8 +457,8 @@ function update_feed_list() {
                 if (node_time_and_colour[feeds[z].tag]==undefined || formatted_time.color_code > node_time_and_colour[feeds[z].tag].color_code) {
                     node_time_and_colour[feeds[z].tag] = formatted_time;
                 }
-                if (feeds[z].processList && process_vue != undefined) {
-                    feeds[z].processListHTML = process_vue ? process_vue.drawPreview(feeds[z].processList, feeds[z]) : '';
+                if (feeds[z].processList && typeof process_vue !== "undefined") {
+                    feeds[z].processListHTML = process_vue.drawPreview(feeds[z].processList, feeds[z]);
                 }
             }
 
@@ -499,7 +499,7 @@ function update_feed_list() {
 
                 if (fresh.processList !== existing.processList) {
                     existing.processList = fresh.processList;
-                    existing.processListHTML = process_vue ? process_vue.drawPreview(fresh.processList, existing) : '';
+                    existing.processListHTML = typeof process_vue !== "undefined" ? process_vue.drawPreview(fresh.processList, existing) : '';
                 }
 
                 var tag = fresh.tag;
