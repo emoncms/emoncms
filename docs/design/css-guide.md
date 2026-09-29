@@ -395,6 +395,27 @@ Light app:
 | Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit`, `app-stat-sub` for a small line below |
 | Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
 
+Compact dark app, from MyElectricFlow. Other dark apps still use panels.
+
+```html
+<div class="app-card">
+    <nav class="app-card-head">tabs, then app-card-tools: app-status, config nav</nav>
+    <div class="app-live">label and value per item</div>
+</div>
+<div class="app-card app-card-body">app-navbar, chart, app-legend</div>
+<div class="app-card app-card-body">app-card-caption, app-flow</div>
+```
+
+| Component | Classes |
+|---|---|
+| Card | `app-card` bordered block, `app-card-body` for padding. `app-card-head` header row with `app-card-tools` on the right. |
+| Status | `app-status` > `app-status-dot` + `app-status-text`. `is-live` turns the dot green. |
+| Live values | `app-live` row of equal columns, each `app-live-label` (uppercase) and `app-live-value` with `power-unit` or `power-unit-static`. Hidden items give their width to the rest. Three columns on narrow screens. |
+| Chart toolbar | One `app-timebar` group in `app-navbar`, as the graph module: range `select.btn`, `icon-resize-horizontal` button to switch to Start and End fields (`icon-ok` to switch back), zoom and pan, then `app-window-text` with the window dates. `btn-group app-segmented` for a two way toggle. Sprite icons take `icon-white` on dark. |
+| Legend | `app-legend` of `app-legend-item`, each an `app-legend-swatch` or `app-legend-line` and a label. |
+| Caption | `app-card-caption` > `app-section-label` + `app-caption-note` |
+| Flow diagram | `app-flow` five column grid of `app-flow-node` (energy fill with `statsbox-solar`, `-import`, `-battery`, `-house`; `app-flow-wide` spans three) and `app-flow-link` (colour from `--statsbox-color`). Content: `app-flow-name`, `app-flow-value`, `app-flow-unit`, `app-flow-title`, `app-flow-arrow`. |
+
 Colours:
 
 - Surfaces, text, borders and accent come from the shared variables, plus `--ec-app-panel-bg`, `--ec-app-box-bg` and `--ec-app-bar-bg`.
