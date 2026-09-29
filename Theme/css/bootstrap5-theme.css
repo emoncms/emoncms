@@ -139,7 +139,6 @@
     /* Apps */
     --ec-app-panel-bg: var(--bs-body-bg);
     --ec-app-box-bg: var(--bs-tertiary-bg);   /* flow boxes without a colour */
-    --ec-app-bar-bg: #ccc;             /* block header bar, from MyHeatpump */
 
     --border: var(--bs-border-color);
     --border-strong: #c0c0c0;
@@ -209,7 +208,6 @@
 
     --ec-app-panel-bg: var(--bs-body-bg);
     --ec-app-box-bg: var(--bs-tertiary-bg);
-    --ec-app-bar-bg: var(--bs-secondary-bg);
 
     --border: var(--bs-border-color);
     --border-strong: #555;

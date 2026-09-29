@@ -87,7 +87,7 @@ Use the Bootstrap name where the role is the same, and the `--ec-*` name otherwi
 | Code | `--bs-code-color`, `--ec-code-bg`, `--ec-code-border` |
 | Other components | `--ec-highlight`, `--ec-highlight-soft` (inset line and text shadow, transparent in dark), `--ec-table-striped-bg`, `--ec-form-text` |
 | Energy (apps) | `--ec-energy-use`, `-use-light`, `-solar`, `-import`, `-export`, `-battery`, `-direct`, `-wind`, `--ec-energy-text` for text on them |
-| App surfaces | `--ec-app-panel-bg`, `--ec-app-box-bg`, `--ec-app-bar-bg`, time bar blue `--ec-app-nav-rgb` |
+| App surfaces | `--ec-app-panel-bg`, `--ec-app-box-bg`, time bar blue `--ec-app-nav-rgb` |
 | Extra pastel pairs | `--ec-purple-*`, `--ec-orange-*` |
 
 `--border`, `--bg-body`, `--font-*` and `--radius-*` are also available.
@@ -379,7 +379,7 @@ An app loads the kit with `load_css`, wraps its view (`section#app-block`, confi
 
 Colours:
 
-- Surfaces, text, borders and accent come from the shared variables, plus `--ec-app-panel-bg`, `--ec-app-box-bg` and `--ec-app-bar-bg`.
+- Surfaces, text, borders and accent come from the shared variables, plus `--ec-app-panel-bg` and `--ec-app-box-bg`.
 - Time bar blue: `rgba(var(--ec-app-nav-rgb), a)`.
 - Energy colours: `--ec-energy-*` (see Colours and tokens). Chart series colours are set in each app's JS.
 
