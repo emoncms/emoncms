@@ -522,7 +522,7 @@ class Feed
                     $f['value'] = $timevalue['value'];
                 }
             }
-            $row = $this->validate_timevalue($f);
+            $f = $this->validate_timevalue($f);
 
             if ($getmeta) {
                 $meta = $this->EngineClass($f['engine'])->get_meta($f['id']);
@@ -1470,12 +1470,12 @@ class Feed
     }
 
     public function validate_timevalue($timevalue) {
-        if (!isset($timevalue['time']) || !is_numeric($timevalue['time']) || is_nan($timevalue['time'])) {
+        if (!isset($timevalue['time']) || !is_numeric($timevalue['time']) || !is_finite($timevalue['time'])) {
             $timevalue['time'] = null;
         } else {
             $timevalue['time'] = (int) $timevalue['time'];
         }
-        if (!isset($timevalue['value']) || !is_numeric($timevalue['value']) || is_nan($timevalue['value'])) {
+        if (!isset($timevalue['value']) || !is_numeric($timevalue['value']) || !is_finite($timevalue['value'])) {
             $timevalue['value'] = null;
         } else {
             $timevalue['value'] = (float) $timevalue['value'];
