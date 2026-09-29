@@ -60,6 +60,10 @@
     /* App time bar */
     --ec-app-nav-rgb: 6, 153, 250;
 
+    /* Dark page frame. Page and footer sit outside the theme root, so shared. */
+    --ec-dark-page-bg: #222;
+    --ec-dark-footer-bg: #181818;
+
     --font-subheading: 1rem;
     --font-sm: 13px;
     --font-xs: 12px;
@@ -167,17 +171,17 @@
 
     --bs-body-color: #ccc;
     --bs-body-color-rgb: 204, 204, 204;
-    --bs-body-bg: #2e2e2e;
-    --bs-body-bg-rgb: 46, 46, 46;
+    --bs-body-bg: #2a2a2a;             /* surfaces: cards, app panels, fields, modals */
+    --bs-body-bg-rgb: 42, 42, 42;
     --bs-emphasis-color: #fff;
     --bs-emphasis-color-rgb: 255, 255, 255;
     --bs-secondary-color: #999;
-    --bs-border-color: #3f3f3f;
+    --bs-border-color: #3a3a3a;
     --ec-input-border-color: #444;
-    --bs-secondary-bg: #383838;
+    --bs-secondary-bg: #383838;        /* raised: row hover, app header bar */
     --bs-secondary-bg-rgb: 56, 56, 56;
-    --bs-tertiary-bg: #2a2a2a;
-    --bs-tertiary-bg-rgb: 42, 42, 42;
+    --bs-tertiary-bg: #262626;         /* recessed: wells, app flow boxes */
+    --bs-tertiary-bg-rgb: 38, 38, 38;
 
     --ec-btn-default-hover-bg: #383838;
     --ec-btn-default-active-bg: #444;
@@ -186,12 +190,12 @@
     --ec-highlight-soft: transparent;
     --bs-code-color: #e685b5;
     --ec-code-bg: #1a1a1a;
-    --ec-code-border: #3f3f3f;
+    --ec-code-border: var(--bs-border-color);
     --ec-table-striped-bg: #333;
-    --ec-divider: #3f3f3f;
+    --ec-divider: var(--bs-border-color);
     --ec-form-text: #aaa;
 
-    --bg-body: #222;
+    --bg-body: var(--ec-dark-page-bg);
     --ec-header-bg: #383838;
     --ec-header-hover-bg: #3f3f3f;
     --ec-row-hover-bg: var(--bs-secondary-bg);
@@ -203,16 +207,16 @@
     --ec-list-selected-hover-bg: rgba(68, 179, 226, 0.25);
     --ec-list-status: #555;
 
-    --ec-app-panel-bg: #262626;
-    --ec-app-box-bg: #282828;
-    --ec-app-bar-bg: #3a3a3a;
+    --ec-app-panel-bg: var(--bs-body-bg);
+    --ec-app-box-bg: var(--bs-tertiary-bg);
+    --ec-app-bar-bg: var(--bs-secondary-bg);
 
-    --border: #333;
+    --border: var(--bs-border-color);
     --border-strong: #555;
 
     --ec-value-color: var(--bs-body-color);
-    --ec-text-secondary: #aaa;
-    --ec-text-muted: #999;
+    --ec-text-secondary: var(--bs-secondary-color);
+    --ec-text-muted: var(--bs-secondary-color);
 
     color-scheme: dark;
 }
@@ -607,6 +611,15 @@ main.content-container.container-fluid { width: auto; }
 
 /* Vue templates stay hidden until mounted */
 [v-cloak] { display: none; }
+
+/* Dark page frame, for dark pages below body. The app config panel sets app-config-open. */
+body:has(.app-page[data-bs-theme="dark"], .ref-page[data-bs-theme="dark"]),
+body.app-config-open { background-color: var(--ec-dark-page-bg); }
+body:has(.app-page[data-bs-theme="dark"], .ref-page[data-bs-theme="dark"]) #footer,
+body.app-config-open #footer {
+    background-color: var(--ec-dark-footer-bg);
+    color: #999;
+}
 
 /* Page of panels on the grey page background, 1150px wide. On the page root. */
 body:has(.panel-page) { background-color: var(--bg-body); }

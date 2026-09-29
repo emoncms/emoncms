@@ -2,9 +2,6 @@
    Page, cards, rows, labels and code blocks are the reference page components in
    Theme/css/bootstrap5-theme.css. Dark through data-bs-theme="dark". */
 
-/* Page background stays fixed until the colour mode is set on <html> */
-body { background-color: #222; }
-
 
 .api-page { --ref-width: 1150px; }
 :is(.api-page, .api-explorer) a:not(.btn) { color: var(--bs-primary); text-decoration: none; font-weight: bold; }
