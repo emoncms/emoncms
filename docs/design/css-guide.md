@@ -340,41 +340,19 @@ Page CSS keeps what is particular to the page: the API sidebar, parameter grid a
 
 ## 10. Apps
 
-Apps share one kit, `Modules/app/Views/css/app-kit.css`, on the shared variables. Dark apps use panels, from MyElectricFlow. Light apps use blocks, from MyHeatpump.
+Apps share one kit, `Modules/app/Views/css/app-kit.css`, on the shared variables. Light and dark apps use the same card layout, from MyElectricFlow.
 
-An app loads the kit with `load_css`, wraps its view (app block, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` or `"light"` on it. Light apps also load `Lib/fonts/montserrat/montserrat.css`, which the kit applies to a light `.app-page`. App specific CSS goes in a file beside the app.
-
-Dark app:
+An app loads the kit with `load_css`, wraps its view (`section#app-block`, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` or `"light"` on it. Light apps also load `Lib/fonts/montserrat/montserrat.css`, which the kit applies to a light `.app-page`. App specific CSS goes in a file beside the app. Light apps sit on the grey page background.
 
 ```html
 <div class="app-page" data-bs-theme="dark">
     <section id="app-block" style="display:none">
-        <div class="app-panel">
-            <nav class="app-top-bar">
-                <div id="tabs" class="nav nav-underline">button.nav-link tabs</div>
-                <div class="nav">config-open and config-close nav-link buttons</div>
-            </nav>
-            <div class="stats-grid">...</div>
+        <div class="app-card">
+            <nav class="app-card-head">tabs, then app-card-tools: app-status, config nav</nav>
+            <div class="app-live">label and value per item</div>
         </div>
-        <div class="app-panel">time bar and chart</div>
-    </section>
-    appconf include, ajax-loader
-</div>
-```
-
-Light app:
-
-```html
-<div class="app-page" data-bs-theme="light">
-    <section id="app-block" style="display:none">
-        <div class="app-block">
-            <div class="app-bar">
-                <div class="app-bar-title">MY HEATPUMP</div>
-                <button class="app-bar-btn config-open"><span class="svg-icon-wrench"></span></button>
-            </div>
-            <div class="app-block-body app-stats">...</div>
-        </div>
-        <div class="app-block">bar with time buttons, body with the chart, foot</div>
+        <div class="app-card app-card-body">app-navbar, chart, app-legend</div>
+        <div class="app-card app-card-body">app-card-caption, app-flow</div>
     </section>
     appconf include, ajax-loader
 </div>
@@ -382,32 +360,12 @@ Light app:
 
 | Component | Classes |
 |---|---|
-| App frame | `app-page`, `app-panel` rounded blocks. The first panel has a top margin. |
-| Top bar and tabs | `app-top-bar` (flex, space between) holding a `nav nav-underline` of `button.nav-link` tabs (icon and label, accent underline when `active`) and a `nav` of icon `nav-link` buttons (`config-open`, `config-close`) |
+| Tabs | `app-card-head` holds a `nav nav-underline` of `button.nav-link` tabs (icon and label, accent underline when `active`) |
 | Buttons | Text or toggle button: `nav-link` in a `nav`, underlined when `active`. Action: `btn btn-outline-primary`, `active` for the chosen option. |
-| Live values | `stats-grid` (three columns, `stats-grid-2` for two) of `power-title`, `power-value`, `power-unit`. Colour with the energy classes. |
 | Energy colours | `text-use`, `text-house`, `text-solar`, `text-wind`, `text-direct`, `text-import`, `text-export`, `text-battery`. Bootstrap `text-*` classes keep their Bootstrap meaning. |
-| Time bar | `app-navbar` row (safe to show and hide from JS) with a `btn-group app-timebar` of plain `btn` buttons, then notes and a `nav ms-auto` of `nav-link` toggles such as Daily. Manual date range: `input-group` fields with `DateTimePicker.attach`, and a one button `app-timebar` for Done. |
 | Fields | `input-group w-auto` > `input-group-text` + `form-select` or `form-control` (width classes), a trailing `input-group-text` for a unit. `form-check` for a checkbox, `small text-body-secondary` for a note. `.app-page .input-group` has no bottom margin, so fields line up with buttons in a flex row. |
-| Flow blocks | `statstable` of `statsbox` cells: `statsbox-title`, `statsbox-value`, `statsbox-units`, `statsbox-prc`, arrows `statsbox-arrow-down`, `-right`, `-left` in `--statsbox-color`. `statsbox-energy` on a box filled with an energy colour, with the fill `statsbox-solar`, `-import`, `-export`, `-battery` or `-house`. |
 | Tables | `table` (`table-sm` for dense ones), `col-primary` for the name cell, `app-swatch` colour square |
-| Blocks (light apps) | `app-block` > `app-bar` (grey header bar: `app-bar-title`, `app-bar-btn` buttons with `active`, `app-bar-spacer` to push the following buttons right), `app-block-body` (white), `app-block-foot` (grey summary strip) |
-| Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit`, `app-stat-sub` for a small line below |
 | Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
-
-Compact app on cards, from MyElectricFlow. Dark apps and MyHeatpump use it; the other light apps still use blocks. Light apps on cards sit on the grey page background.
-
-```html
-<div class="app-card">
-    <nav class="app-card-head">tabs, then app-card-tools: app-status, config nav</nav>
-    <div class="app-live">label and value per item</div>
-</div>
-<div class="app-card app-card-body">app-navbar, chart, app-legend</div>
-<div class="app-card app-card-body">app-card-caption, app-flow</div>
-```
-
-| Component | Classes |
-|---|---|
 | Card | `app-card` bordered block, `app-card-body` for padding. `app-card-head` header row with `app-card-tools` on the right. |
 | Status | `app-status` > `app-status-dot` + `app-status-text`. `is-live` turns the dot green. |
 | Live values | `app-live` row of equal columns, each `app-live-label` (uppercase) and `app-live-value` with `power-unit` or `power-unit-static`. Hidden items give their width to the rest. Three columns on narrow screens. |
