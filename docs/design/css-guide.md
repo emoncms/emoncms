@@ -395,7 +395,7 @@ Light app:
 | Block values | `app-stats` row of equal columns, each `app-stat-title`, `app-stat-value` with `app-stat-unit`, `app-stat-sub` for a small line below |
 | Option rows | `app-option`: checkbox and bold label, with fields (`input-group`) below when ticked. Rows stack with shared borders. |
 
-Compact dark app, from MyElectricFlow. Other dark apps still use panels.
+Compact app on cards, from MyElectricFlow. Dark apps and MyHeatpump use it; the other light apps still use blocks. Light apps on cards sit on the grey page background.
 
 ```html
 <div class="app-card">
@@ -411,7 +411,7 @@ Compact dark app, from MyElectricFlow. Other dark apps still use panels.
 | Card | `app-card` bordered block, `app-card-body` for padding. `app-card-head` header row with `app-card-tools` on the right. |
 | Status | `app-status` > `app-status-dot` + `app-status-text`. `is-live` turns the dot green. |
 | Live values | `app-live` row of equal columns, each `app-live-label` (uppercase) and `app-live-value` with `power-unit` or `power-unit-static`. Hidden items give their width to the rest. Three columns on narrow screens. |
-| Chart toolbar | `<?php include "Modules/app/Lib/timebar.php"; ?>` in `div#graph-nav.app-navbar`, then `Lib/timebar_manual.php` after it. One `app-timebar` group as the graph module: range `select.btn` (`$timebar_ranges` to change the list), `icon-resize-horizontal` switch to Start and End fields (`icon-ok` back), zoom, pan and Now, then `app-window-text`. `btn-group app-segmented` for a two way toggle. Sprite icons take `icon-white` on dark. JS in `Lib/vis.helper.js`: `timebar_update(daily)` after each draw, `timebar_manual(cb)` and `timebar_now(cb)` once, `live_status_update(time)` for the status, `chart_legend(series)` for a legend below the chart. |
+| Chart toolbar | `<?php include "Modules/app/Lib/timebar.php"; ?>` in `div#graph-nav.app-navbar`, then `Lib/timebar_manual.php` after it. One `app-timebar` group as the graph module: range `select.btn` (`$timebar_ranges` to change the list), `icon-resize-horizontal` switch to Start and End fields (`icon-ok` back), zoom, pan and Now, then `app-window-text`. `btn-group app-segmented` for a two way toggle. Sprite icons switch to the white set inside a dark `.app-page`. JS in `Lib/vis.helper.js`: `timebar_update(daily)` after each draw, `timebar_manual(cb)` and `timebar_now(cb)` once, `live_status_update(time)` for the status, `chart_legend(series)` for a legend below the chart. |
 | Legend | `app-legend` of `app-legend-item`, each an `app-legend-swatch` or `app-legend-line` and a label. |
 | Caption | `app-card-caption` > `app-section-label` + `app-caption-note` |
 | Flow diagram | `app-flow` five column grid of `app-flow-node` (energy fill with `statsbox-solar`, `-import`, `-battery`, `-house`; `app-flow-wide` spans three) and `app-flow-link` (colour from `--statsbox-color`). Content: `app-flow-name`, `app-flow-value`, `app-flow-unit`, `app-flow-title`, `app-flow-arrow`. |
