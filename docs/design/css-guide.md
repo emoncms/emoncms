@@ -342,7 +342,7 @@ Page CSS keeps what is particular to the page: the API sidebar, parameter grid a
 
 Apps share one kit, `Modules/app/Views/css/app-kit.css`, on the shared variables. Dark apps use panels, from MyElectricFlow. Light apps use blocks, from MyHeatpump.
 
-An app loads the kit with `load_css`, wraps its view (app block, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` or `"light"` on it. Light apps also load `Lib/fonts/montserrat/montserrat.css`, which the kit applies to a light `.app-page`. App specific CSS goes in a file beside the app.
+An app loads the kit with `load_css`, wraps its view (app block, config and loader) in `div.app-page` and sets `data-bs-theme="dark"` or `"light"` on it. Light and dark apps use the theme body font. App specific CSS goes in a file beside the app.
 
 Dark app:
 
