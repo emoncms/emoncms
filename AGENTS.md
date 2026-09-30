@@ -8,6 +8,7 @@ Emoncms is a PHP web application for logging and visualising energy, temperature
 
 Read first:
 
+- [docs/development.md](docs/development.md): local install, test data, tests, debugging.
 - [docs/design/architecture.md](docs/design/architecture.md): request flow, directory layout, services.
 - [docs/design/developing-a-new-module.md](docs/design/developing-a-new-module.md): controllers, models, views, menus, schema, translations.
 - [docs/design/css-guide.md](docs/design/css-guide.md): page structure and CSS for the Bootstrap 5 UI.

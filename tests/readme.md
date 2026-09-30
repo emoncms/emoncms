@@ -6,7 +6,7 @@ Three PHPUnit suites covering different layers of the application.
 
 - PHP 8.x with the `curl` and `mysqli` extensions
 - MySQL running with the `emoncms` database set up
-- The emoncms app served at `http://localhost/original` (for Feature tests only)
+- The emoncms app served at `http://localhost/emoncms`, or at the URL in `EMONCMS_BASE_URL` (Feature tests only)
 - Composer dependencies installed:
   ```
   php composer.phar install
