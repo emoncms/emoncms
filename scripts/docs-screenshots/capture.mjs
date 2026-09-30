@@ -1,6 +1,6 @@
 // Capture user guide screenshots from a running Emoncms.
 // Usage: node capture.mjs [--only <name-prefix>] [--list] [--no-seed]
-// Settings from environment: EMONCMS_URL, EMONCMS_USER, EMONCMS_PASS, CHROME_PATH, OUTDIR
+// Settings from environment: EMONCMS_URL, EMONCMS_USER, EMONCMS_PASS, EMONCMS_ADMIN_USER, EMONCMS_ADMIN_PASS, CHROME_PATH, OUTDIR
 
 import { chromium } from 'playwright';
 import sharp from 'sharp';
@@ -84,10 +84,31 @@ const guest = await browser.newContext({
 });
 const guestPage = await guest.newPage();
 
+// Admin shots use a separate login, from EMONCMS_ADMIN_USER and EMONCMS_ADMIN_PASS
+let adminPage = null;
+if (process.env.EMONCMS_ADMIN_USER) {
+    const admin = await browser.newContext({
+        viewport: defaults.viewport,
+        deviceScaleFactor: defaults.scale,
+        colorScheme: 'light',
+        locale: 'en-GB',
+        timezoneId: defaults.timezone
+    });
+    const r = await (await admin.request.post(base + 'user/login.json', {
+        form: { username: process.env.EMONCMS_ADMIN_USER, password: process.env.EMONCMS_ADMIN_PASS || '', rememberme: 0 }
+    })).json().catch(() => ({}));
+    if (r.success) adminPage = await admin.newPage();
+    else console.warn('Admin login failed, admin shots skipped');
+}
+
 await mkdir(outdir, { recursive: true });
 
 let failed = 0;
 for (const shot of shots) {
+    if (shot.admin && !adminPage) {
+        console.log('skip ' + shot.name + ' (set EMONCMS_ADMIN_USER)');
+        continue;
+    }
     try {
         await capture(shot);
         console.log('ok   ' + shot.name);
@@ -108,7 +129,7 @@ function resolve(url) {
 }
 
 async function capture(shot) {
-    page = shot.loggedOut ? guestPage : userPage;
+    page = shot.loggedOut ? guestPage : shot.admin ? adminPage : userPage;
     await page.setViewportSize(shot.viewport || defaults.viewport);
     await page.goto(base + resolve(shot.url), { waitUntil: 'networkidle' });
     if (shot.waitFor) await page.waitForSelector(shot.waitFor, { state: 'visible' });

@@ -297,6 +297,125 @@
                 {"wait": 500}
             ],
             "element": "#pp-form"
+        },
+        {
+            "name": "inputs-4-process-list",
+            "page": "intro-rpi.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": ".group-list-group:has(.group-list-header:has-text('emontx4')) .group-list-row:has([data-col=name]:text-is('P1')) a[title='Configure Input processing']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"wait": 800}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "virtual-feeds-1-fahrenheit",
+            "page": "virtual-feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('outsideT_F')) input.feed-select"},
+                {"click": "button[title='Process config']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"wait": 800}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "virtual-feeds-2-fahrenheit-graph",
+            "page": "virtual-feeds.md",
+            "url": "graph?feedidsLH={feed:outsideT_F}&feedidsRH={feed:heatpump_outsideT}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "virtual-feeds-3-cop",
+            "page": "virtual-feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('heatpump_cop')) input.feed-select"},
+                {"click": "button[title='Process config']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"wait": 800}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "virtual-feeds-4-cop-graph",
+            "page": "virtual-feeds.md",
+            "url": "graph/{feed:heatpump_cop}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "virtual-feeds-5-peak",
+            "page": "virtual-feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('use_peak')) input.feed-select"},
+                {"click": "button[title='Process config']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"wait": 800}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "virtual-feeds-6-peak-graph",
+            "page": "virtual-feeds.md",
+            "url": "graph/{feed:use_peak},{feed:use_offpeak}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "24"]},
+                {"wait": 1500},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=0"},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=1"},
+                {"check": "#feed-options-table tbody tr >> nth=1 >> input[type=checkbox] >> nth=0"},
+                {"check": "#feed-options-table tbody tr >> nth=1 >> input[type=checkbox] >> nth=1"},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "schedule-1-list",
+            "page": "schedule.md",
+            "url": "schedule/view",
+            "waitFor": "table tr"
+        },
+        {
+            "name": "schedule-2-edit",
+            "page": "schedule.md",
+            "url": "schedule/view",
+            "waitFor": "table tr",
+            "actions": [
+                {"click": "tr:has-text('Peak') button:has-text('Edit')"},
+                {"wait": 800}
+            ],
+            "element": ".panel:has(.panel-name:text-is('Edit schedule'))"
+        },
+        {
+            "name": "admin-1-system-info",
+            "page": "admin.md",
+            "url": "admin/info",
+            "admin": true,
+            "waitFor": "body",
+            "settle": 2000
+        },
+        {
+            "name": "admin-2-update",
+            "page": "update.md",
+            "url": "admin/update",
+            "admin": true,
+            "waitFor": "body",
+            "settle": 1500
         }
     ]
 }

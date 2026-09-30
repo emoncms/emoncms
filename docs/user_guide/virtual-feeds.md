@@ -81,6 +81,10 @@ A single schedule also works. For example, with a `daytime` schedule of 08:00 to
 
 To view the result, open the virtual feeds together in the [graph view](graphs.md) and tick **Stack** in **Feed Config**.
 
+```{note}
+A virtual feed checks the schedule once for each value it returns. Use a fixed interval shorter than the schedule periods, for example 30 minutes or less. With **Daily**, **Weekly** or **Monthly**, the schedule is checked only at the start of each period, so the split is wrong. For daily peak and off-peak totals, split the energy with input processing. See [Schedules](schedule.md#use-a-schedule).
+```
+
 ## Credits
 
 Virtual feeds were created by N Chaveiro. See the [original forum post](https://openenergymonitor.github.io/forum-archive/node/10977.html) and the [emoncms.org announcement](https://community.openenergymonitor.org/t/virtual-feed-support-on-emoncms-org/21712).
