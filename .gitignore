@@ -24,7 +24,6 @@ Modules/*/
 !Modules/schedule/
 !Modules/time/
 !Modules/user/
-!Modules/vis/
 
 /vendor/
 /composer.phar

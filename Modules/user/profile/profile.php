@@ -171,7 +171,7 @@ function profile_text_field($key, $save, $width = "input-220") {
   <div class="panel-row">
     <div class="row-key"><?php echo tr('Archived features'); ?></div>
     <div class="row-value">
-      <label class="profile-check"><input type="checkbox" id="show-archived"> <?php echo tr('Show archived features (e.g. Visualization)'); ?></label>
+      <label class="profile-check"><input type="checkbox" id="show-archived"> <?php echo tr('Show archived menu items'); ?></label>
     </div>
   </div>
 </div>

@@ -180,7 +180,7 @@ function feed_api_obj() {
         "interval" => array( "default" => 60, "description" => tr("Seconds, 0 = auto (~800 points), or timezone aligned: daily, weekly, monthly, annual") ),
         "average" => array( "type" => "bool", "default" => 0, "description" => tr("Mean of each interval rather than the value at its start") ),
         "delta" => array( "type" => "bool", "default" => 0, "description" => tr("Difference per interval, turns cumulative kWh feeds into kWh per interval") ),
-        "timeformat" => array( "type" => "select", "default" => "unix", "options" => array("unix","unixms","excel","iso8601","notime"), "description" => tr("unix: seconds, unixms: milliseconds") ),
+        "timeformat" => array( "type" => "select", "default" => "unixms", "options" => array("unix","unixms","excel","iso8601","notime"), "description" => tr("unix: seconds, unixms: milliseconds") ),
         "skipmissing" => array( "type" => "bool", "default" => 0, "description" => tr("Omit null datapoints") ),
         "limitinterval" => array( "type" => "bool", "default" => 0, "description" => tr("Limit interval to the feed's native interval") ),
         "dp" => array( "default" => -1, "description" => tr("Round values to N decimal places, -1 = off") ),
@@ -199,7 +199,7 @@ function feed_api_obj() {
         "start" => array( "default" => 0 ),
         "end" => array( "default" => 0 ),
         "interval" => array( "default" => 60 ),
-        "timeformat" => array( "type" => "select", "default" => "unix", "options" => array("unix","unixms","excel","iso8601","notime"), "description" => tr("unix: seconds, unixms: milliseconds") )
+        "timeformat" => array( "type" => "select", "default" => "unixms", "options" => array("unix","unixms","excel","iso8601","notime"), "description" => tr("unix: seconds, unixms: milliseconds") )
       ),
       "mode" => "read",
       "group" => tr("Reading data"),

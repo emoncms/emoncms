@@ -139,7 +139,7 @@ class Process_ProcessList
                 "nochange" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
-                "description" => tr("<p>Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1. See <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+                "description" => tr("<p>Convert a power value in Watts to a cumulative kWh feed.</p><p><b>Daily kWh:</b> open the feed in the graph view, set Type to Daily and tick Delta. See <a href='https://docs.openenergymonitor.org/emoncms/daily-kwh.html' target='_blank' rel='noopener'>Daily kWh</a>.</p>"),
             ),
             array(
                 "id_num" => 5,
@@ -511,7 +511,7 @@ class Process_ProcessList
                 "requireredis" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
-                "description" => tr("Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+                "description" => tr("<p>Use with a cumulative watt hour input, such as a pulse count or the energy values from an emonTx or emonPi. When the device restarts and its count resets, the feed continues from its last value. Increases above a maximum power of 60 kW are treated as errors and ignored.</p><p><b>Daily kWh:</b> open the feed in the graph view, set Type to Daily and tick Delta, and set Scale to 0.001 for kWh. See <a href='https://docs.openenergymonitor.org/emoncms/daily-kwh.html' target='_blank' rel='noopener'>Daily kWh</a>.</p>"),
             ),
             array(
                 "id_num" => 35,
@@ -738,14 +738,14 @@ class Process_ProcessList
             ),
             array(
                 "id_num" => 59,
-                "name" => tr("/ source feed"),
-                "short" => "/ sfeed",
+                "name" => tr("1 / source feed"),
+                "short" => "1/sfeed",
                 "argtype" => ProcessArg::FEEDID,
                 "function" => "reciprocal_by_source_feed",
                 "group" => tr("Virtual"),
                 "input_context" => false,
                 "virtual_feed_context" => true,
-                "description" => tr("<p>Return the reciprical of the specified feed. Returns NULL for zero values.</p>")
+                "description" => tr("<p>Replace the value with 1 divided by the specified feed. Returns NULL for zero values.</p>")
             ),
             array(
                 // "id_num" => 60,
@@ -810,7 +810,7 @@ class Process_ProcessList
                 "requireredis" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
-                "description" => tr("This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 60 kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+                "description" => tr("<p>Use with a cumulative kWh input. When the device restarts and its count resets, the feed continues from its last value. Increases above a maximum power of 60 kW are treated as errors and ignored.</p><p><b>Daily kWh:</b> open the feed in the graph view, set Type to Daily and tick Delta. See <a href='https://docs.openenergymonitor.org/emoncms/daily-kwh.html' target='_blank' rel='noopener'>Daily kWh</a>.</p>"),
             ),
             array(
                 "id_num" => 65,
@@ -823,7 +823,7 @@ class Process_ProcessList
                 "nochange" => true,
                 "input_context" => true,
                 "virtual_feed_context" => false,
-                "description" => tr("<p>In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. See: <a href='https://guide.openenergymonitor.org/setup/daily-kwh/' target='_blank' rel='noopener'>Guide: Daily kWh</a><br><br>")
+                "description" => tr("<p>Log to feed, joining gaps in the data with a straight line between the previous and the newest value. Use with cumulative kWh meter readings, so that daily totals have no gaps.</p><p><b>Daily kWh:</b> open the feed in the graph view, set Type to Daily and tick Delta. See <a href='https://docs.openenergymonitor.org/emoncms/daily-kwh.html' target='_blank' rel='noopener'>Daily kWh</a>.</p>"),
             ),
             array(
                 "id_num" => 66,

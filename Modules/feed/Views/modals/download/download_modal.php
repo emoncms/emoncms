@@ -71,3 +71,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
         </div>
     </div>
 </div>
+
+<script>
+var str_enter_valid_start_date = <?php echo json_encode(tr('Please enter a valid start date.')); ?>;
+var str_enter_valid_end_date = <?php echo json_encode(tr('Please enter a valid end date.')); ?>;
+var str_start_before_end = <?php echo json_encode(tr('The start date must be before the end date.')); ?>;
+var str_interval_for_download = <?php echo json_encode(tr('Please select an interval.')); ?>;
+var str_large_download = <?php echo json_encode(tr('This download is larger than the recommended limit. Continue?')); ?>;
+</script>
