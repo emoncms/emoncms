@@ -16,6 +16,10 @@ Done in this round:
 
 ## Where help is welcome
 
+- **Responsive dashboards.** A second layout mode, chosen per dashboard, for good looking dashboards on phones as well as desktops. Widgets sit in rows of cells in place of fixed coordinates. Rows stack on narrow screens. A card style draws each cell as a panel, a flat style has no panels. The layout is stored in the dashboard document, and switching back restores the fixed positions. The groundwork is done: stable widget ids, the widget interface and the editor holding the document. See `notes/RESPONSIVE.md` in the [dashboard module](https://github.com/emoncms/dashboard).
+- **Modular apps.** Splitting the app module so that each app is its own module, or can be installed on its own. This would make it much easier for users to write and maintain their own app dashboards, and to share them.
+- **Code outside the web root.** Restructuring the install so that only `index.php` and static assets are served, with the PHP code in `Modules/`, `Lib/` and `scripts/` outside the public folder. The web server could then not serve PHP files directly, and the direct access guard in each file would no longer be needed.
+- **Updates and firmware out of core.** Moving the updater, component updates, firmware upload and serial config (`Modules/admin/update`, `Modules/admin/serial`, `Modules/admin/components`) into their own module. A cloud install would then carry no Raspberry Pi features, and a Docker install, which updates by pulling a new image, would carry no update machinery.
 - **Feed migration.** Moving feeds stored as PHPTimeSeries and MysqlTimeSeries to PHPFina (fixed interval). Scripts in [usefulscripts](https://github.com/emoncms/usefulscripts) convert PHPTimeSeries from the command line. There is nothing in the web interface.
 - **Icons.** Replacing the Glyphicons (`icon-*`) with SVG icons, then removing `bootstrap2-icons.css`. See section 12 of the [CSS guide](docs/design/css-guide.md).
 - **Light and dark mode.** A site wide setting. The remaining fixed colours in page CSS need moving to theme variables first.
