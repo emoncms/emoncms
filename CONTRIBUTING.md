@@ -1,49 +1,50 @@
+# Contributing
 
-## State of development and how to contribute
+## State of development
 
-**June 2026**: Emoncms is currently going through a process of refactoring. Over the years we have developed many different ways of doing the same thing in Emoncms:
+**September 2026**: Emoncms 12 completes a round of consolidation. Over the years Emoncms gained many ways of doing the same thing, in features and in code, and that made it hard to maintain. The focus is on the core use case, with one consistent implementation.
 
-- On the feature side there is input processing, virtual feeds for post processing, the post processing module, multiple time series storage engines, many similar but slightly different app dashboards, the dashboard module and associated visualisations. 
+Done in this round:
 
-- On the implementation side on the front end at least we are using mixture of Vue.js, jQuery, bootstrap 2 + bootstrap 4 utility classes + lots of custom CSS.
+- **Bootstrap 5.** Bootstrap 2 and the Bootstrap 4 utility classes are replaced by a reduced Bootstrap 5.3 build and one theme, with shared page patterns and much less custom CSS. See the [CSS guide](docs/design/css-guide.md) and the [release notes](docs/notes/bootstrap5-release.md).
+- **Vis module retired.** Its charts are part of the dashboard module, or replaced by the graph module.
+- **Dashboard module 4.** Dashboards are stored as a JSON document. Text and HTML are checked against an allowlist in place of the AntiXSS library. Existing dashboards, including multigraphs and other retired charts, are converted when they load.
+- **Apps.** My Electric, My Solar and My Solar Battery are combined in My Electric Flow. Similar or unmaintained apps are archived. Apps share one style kit, in light and dark.
+- **Lists.** Inputs, feeds and devices share one CSS grid and Vue implementation.
+- **Libraries.** Vue 3, jQuery 4 and Flot 5.1.
+- **Documentation.** The user guide is rewritten, with screenshots captured by script. There are developer docs for the architecture, modules and development setup, and a guide for AI coding agents. See [docs/README.md](docs/README.md).
 
-This expansion in different directions in terms of both features and implementation has made ongoing maintenance and development more difficult. 
+## Where help is welcome
 
-The project is at a stage where the focus needs to be more one of narrowing the scope, focusing on the core use case of Emoncms and consolidating and evolving the implementation to achieve a better level of consistency.
+- **Feed migration.** Moving feeds stored as PHPTimeSeries and MysqlTimeSeries to PHPFina (fixed interval). Scripts in [usefulscripts](https://github.com/emoncms/usefulscripts) convert PHPTimeSeries from the command line. There is nothing in the web interface.
+- **Icons.** Replacing the Glyphicons (`icon-*`) with SVG icons, then removing `bootstrap2-icons.css`. See section 12 of the [CSS guide](docs/design/css-guide.md).
+- **Light and dark mode.** A site wide setting. The remaining fixed colours in page CSS need moving to theme variables first.
+- **Tests.** More coverage of the API and models. See [tests/readme.md](tests/readme.md).
+- **Translations.** Removing the remaining gettext calls, since translations now use JSON files.
 
-Recent changes include:
+If one of these interests you, please get in touch before starting. We are happy to talk ideas through.
 
-- Input, feed and device list now all use the same css grid + vue implementation. Removing different implementations for the same ui experience.
+## How to contribute
 
-- Archiving visualisations and apps that are similar to each other or no longer actively maintained. Consolidation of the MyElectric, MySolar and MySolarPVBattery apps into a single MyElectricFlow app.
+1. Discuss the change in an issue, or by email.
+2. Set up a development install. See [docs/development.md](docs/development.md).
+3. Make the change on `master`, in the repository that owns the code. Core and each module are separate repositories.
+4. Run the checks: `php composer.phar run test` and the unit tests.
+5. Update the user guide in `docs/user_guide` if the change affects what users see.
+6. Open a pull request against `master`, and say how you tested it.
 
-- Making use of Vue.js more consistently and upgrading to vue.js v3.
-
-- Upgrading to the under more active development flot 5.1 charting library.
-
-The next step is a more substantial refactoring of Emoncms styling, moving from bootstrap 2 to a combination of custom CSS and standardised utility classes, this will also remove a lot of dead CSS and ui related javascript in the process.
-
-
-**If helping with this process interests you, please get in touch. Some of the challenges include:**
-
-- How to remove the vis module from core and integrate it directly in the dashboard module. This would make more sense from a dependency perspective as these visualisations are only used by the dashboard module. 
-
-- How to deprecate vis multigraph in favour of using the graph module without breaking existing use of multigraphs in dashboards. 
-
-- Can we replace the AntiXSS dependency in the dashboard module with a more strict and secure white list approach. How do we ensure that dashboards that have lots of custom html properties and css migrate correctly without breaking.
-
-- Making it easier for users to migrate feeds stored as PHPTimeSeries and MysqlTimeSeries over to PHPFina (fixed interval).
-
-- Carefull staged refinement of Emoncms css, there is a lot of cusom css, a fair bit of it is duplicated, we need to carefully extract common css and create an emoncms specific css framework.
-
----
-
-Please feel free to get in touch:
-
-hello@openenergymonitor.zendesk.com (Trystan, Glyn and Gwil)
-or: trystanlea@openenergymonitor.org
----
+Keep pull requests small, with one change each.
 
 ## Using AI agents
 
 Issues and pull requests written with the help of an AI agent are welcome. Please say that an agent was used, check the result yourself before submitting, and keep pull requests small. Agents should read [AGENTS.md](AGENTS.md) for the project layout, checks and conventions.
+
+## Security
+
+Report security problems privately, not in an issue. See [SECURITY.md](SECURITY.md).
+
+## Contact
+
+- hello@openenergymonitor.zendesk.com (Trystan, Glyn and Gwil)
+- trystanlea@openenergymonitor.org
+- [Community forum](https://community.openenergymonitor.org)
