@@ -1,233 +1,138 @@
-# Import / Backup / Restore / Update
+# Backup and restore
 
-## Emoncms Backup Module
+The backup module keeps a copy of your Emoncms data and restores it after a failure or on a new SD card. Open it from **Setup > Backup**. It has two tabs, **Backup** and **Restore**.
 
-The [Emoncms backup module](https://github.com/emoncms/backup) can be used to backup and restore/import an emoncms installation and migrate from an older emonPi / emonBase image to the latest image.
+The backup module works on local installs such as the emonPi and emonBase. For emoncms.org, see [Back up a remote account](#back-up-a-remote-account).
 
-There are two methods available to do this:
+## What is included
 
-1. Import/Restore an emoncms installation directly without a previous backup archive using a USB SD card reader
-2. Export and import a compressed archive containing all emoncms user data
+Included:
 
-The direct USB SD card reader approach is the most straightforward method for migration from an old SD card to a new SD card running the latest emonSD image. It can also minimise data loss in the event of a system failure where a recent archive backup has not been created.
+- Emoncms accounts, inputs, input processing, feeds, dashboards and apps.
+- Feed data.
+- emonHub configuration, `emonhub.conf`.
 
-The archive export/import approach is useful for creating backup snapshot's and can be a good fall back in the case of more serious SD card corruption. An archive export will however be needed prior to the failure point.
+Not included:
 
-<p class="note">
-Currently the Backup Module can only be used with Local Emoncms <strong>not</strong> Emoncms.org </p>
+- WiFi and network settings.
+- Other changes to the system.
 
-## Update SD Card and Import using an USB SD card reader
+## Back up to a drive
 
-This process will take you through creating a new SD Card, the initial boot and then importing your current system (data, settings, dashboards etc).
+Emoncms can back up every day to a USB drive or a network share. Each run copies only new data, a few MB a day.
 
-### 1. Prepare a new card
+1. Plug in a USB drive.
+2. Go to **Setup > Backup** and click **Scan for drives**.
+3. Choose the drive:
+   - **Set up this drive** mounts the drive as it is. Nothing on it is erased.
+   - **Erase and format** erases the whole drive and formats it as btrfs. Type `ERASE` to confirm. btrfs compresses feed data by about 80%, checks every block for damage, and keeps dated copies of feed data as well as the database.
+4. The daily backup turns on. Click **Back up now** to run the first backup.
 
-It is a good idea to start with a new SD Card to minimise risk of disk errors from previous use, though reuse should also be fine if lightly used. A 16Gb card should suffice; emonCMS is very efficient in the way it stores it's data.
+The status line at the top of the **Backup** tab shows whether your data is protected:
 
-There are 2 options for a new card:
+- Green: a recent backup exists and the daily backup is on.
+- Amber: the drive is disconnected, no backup has run yet, the last backup is more than two days old, or the daily backup is off.
+- Red: the last backup failed, the last backup is more than a week old, or the drive does not respond.
 
-1. Purchase a new card with the image pre-installed, from the [OEM Store](https://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
-2. Burn/flash a new image to an SD Card. To do this:
-    1. Download image from the [Release Page](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
-    2. The easiest method of flashing the new image to an SD card is to use a cross-platform tool called Etcher, see: [https://www.etcher.io/](https://www.etcher.io/)
+A full check runs every Sunday. To run one now, click **Verify and repair**.
 
-### 2. Install Card and Initial boot
+The **Restore points** card lists the dated database copies on the drive. The last 7 daily and 4 weekly copies are kept.
 
-1. Shutdown your existing system by clicking on Shutdown on the emonCMS Admin page, after 30s remove the USB power cable to fully power down.
-2. Remove your existing SD card (you will need this SD card again in a moment).
+```{note}
+Backup to a drive is on by default on a Raspberry Pi. On other systems, see the [backup module readme](https://github.com/emoncms/backup#backup-to-an-attached-drive).
+```
 
-    1. On an EmonPi, replacing the card will involve removing the black end plate with a Torx Bit (T20)
-    2. You can then access the SD Card (circled below). Use a pair of pliers or tweezers. Older Pis are push to release
+## Download a portable copy
 
-![EmonPi Sd Card](img/emonpi_sd_card.png)
+A portable copy is one `.tar.gz` file that holds everything. Keep it off site, or use it to move to another system.
 
-3. Insert the new SD card (and replace the end plate on the emonPi) & power up the device. Then wait, wait, wait, make a cup of coffee, wait, wait, wait… (lots of updates etc) - really do not rush this part it does take a while
-4. If you do not have a wired Ethernet connection you will need to [setup your WiFi](https://guide.openenergymonitor.org/setup/connect/#1a-connect-to-wifi). **Note** the updates will not happen until after you have connected the Pi to the Internet
+1. On the **Backup** tab, under **Portable copy**, click **Build archive**.
+2. When the archive is built, click **Download**.
 
-Once the initial update and setup is complete, you can proceed to import your data, settings etc.
+The archive holds all data each time, so it is larger and slower than a drive backup.
 
-### 3. Restoring your system
+## Restore
 
-1. Place the old SD card in an SD card reader. and plug into any of the USB ports on the emonPi/emonBase running the new image
-2. From the emonCMS login page, click register and create a temporary user. Once the import is complete the original user details will be used
-3. Navigate to Setup > Backup
-4. Click `Import from USB drive` to start import process
-5. Once the import is complete, log out and back into the emonCMS page with the original user details
+```{warning}
+Restoring replaces all Emoncms data on this system. Inputs, feeds, dashboards and feed data are all replaced by the copy you restore from.
+```
 
-![USB Import](img/usb_import.png)
+The current database is saved before a restore, so a restore started by mistake can be undone. Feed data is not saved.
 
-## Fixing a corrupt SD card
+Open the **Restore** tab and choose a source:
 
-The SD card may become corrupted after a system failure, and will not mount when the USB importer is run. It can be possible to restore a corrupted SD card by running `fsck` to fix the card errors. To do this: 
+- **From the backup drive**: choose a restore point and click **Restore from drive**.
+- **From an archive file**: upload a `.tar.gz` archive and click **Upload and restore**. Browsers limit the upload size. For a large archive, see the [backup module readme](https://github.com/emoncms/backup#portable-archive).
+- **From an old emonSD card**: put the card in a USB card reader, plug it in and click **Import from SD card**.
 
-1. Place the old SD card in a SD card reader and plug into any of the USB ports on the Pi running the new image
-2. SSH into the emonPi/emonbase
-3. Run the following commands (without part in brackets) to attempt to fix the card:
+Tick **I understand this overwrites all Emoncms data on this system** to confirm.
 
-<pre style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-sudo fsck.ext4 /dev/sda2 (root OS partition)
-sudo fsck.ext2 /dev/sda3 (data partition)
-</pre>
+When the restore is complete, log out and log in with the restored account details.
 
-4. Continue as above, Navigate to Setup > Backup and click `Import from USB drive` to start import process
+## Move to a new SD card
 
----
+To move to a new emonSD image, set up a new SD card and import the data from the old one. The old card stays unchanged as a backup.
 
-## Backup Module Archives
+### Prepare the new card
 
-### Archive Export
+Buy a card with emonSD installed from the [OpenEnergyMonitor shop](https://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/), or write the latest image from [emonSD download](../emonsd/download.md) to a card of 16 GB or more. [balenaEtcher](https://etcher.balena.io) is a simple tool for writing images.
 
-1. Navigate to Setup > Backup
-2. Click `Create Backup` (see screenshot below)
-3. Wait for backup to be created, then refresh the page to view `Download Backup` link
-4. Download `.tar.gz` compressed backup
+### Swap the cards
 
-![backup old data](img/export.png)
+1. Go to **Setup > Admin > System Info** and click **Shutdown**. Wait 30 seconds, then unplug the power.
+2. Remove the old SD card. On an emonPi, remove the end plate with a Torx T20 bit first.
 
-### Archive Import
+   ![emonPi SD card](img/emonpi_sd_card.png)
 
-<p class='note warning'>
-Importing / restoring a backup will overwrite <strong>ALL</strong> data in the current Emoncms account.
-</p>
+3. Insert the new card, refit the end plate and power up.
+4. Connect to the network. See [Connect](../emonpi/connect.md). The first boot runs updates and takes a while.
 
-*Note for emonSD-30Oct18.img.zip: If the image has been written to an SD card larger than 4GB the data partition should be expanded to fill the SD card to create sufficient space to import a backup. **Do not use Raspbian raspi-config**, instead connect via SSH and run `$ sudo emonSDexpand` and follow prompts.*
+### Import the old card
 
-*The latest emonSD-17Oct19.img.zip has already been expanded to fit a minimum 16 GB SD card size. To expand the data partition further run: `/opt/emoncms/modules/usefulscripts/sdpart/./sdpart_imagefile`.*
+1. Put the old SD card in a USB card reader and plug it into the emonPi or emonBase.
+2. Open Emoncms and log in with the default account from [emonSD download](../emonsd/download.md). The import replaces it with your original account.
+3. Go to **Setup > Admin > Update** and run **Full Update**.
+4. Go to **Setup > Backup**, open the **Restore** tab and click **Import from SD card**.
+5. When the import is complete, log out and log in with your original account details.
 
-To import a backup:
+### Fix a corrupt card
 
-1. Check available disk space in the data partition (`/var/opt/emoncms`), see `Local Emoncms > Setup > Admin`
-1. Select `.tar.gz` backup file
-2. Wait for upload to complete
-3. Click `Import Backup`
-4. Check restore log (see below)
-5. Log out then log back into Local Emocms using the imported account login credentials
-
-<p class='note warning'>
-Backup <b>tar.gz</b> filename cannot contain any spaces; e.g., if the same backup has been downloaded more than once: rename <b>'emoncms-backup-2016-04-23 (1).tar'</b> to <b>'emoncms-backup-2016-04-23.tar'</b> before uploading.
-</p>
-
-*`emonSDexpand` will run `~/usefulscripts/sdpart/./sdpart_imagefile` script, for more info see [Useful Scripts Readme](https://github.com/emoncms/usefulscripts#sdpart_imagefile)*
-
-![Import](img/import.png)
-
-### Successful import log example
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js" type="text/javascript"></script>
-<script src="/javascripts/showHide.js" type="text/javascript"></script>
-<script type="text/javascript">
-
-$(document).ready(function(){
-
-
-   $('.show_hide').showHide({
-		speed: 100,  // speed you want the toggle to happen
-		//easing: '',  // the animation effect you want. Remove this line if you dont want an effect and if you haven't included jQuery UI
-		changeText: 0, // if you dont want the button text to change, set this to 0
-		showText: 'View',// the button text to show when a div is closed
-		hideText: 'Close' // the button text to show when a div is open
+If the old card does not mount, `fsck` may repair it. With the card in a USB reader, connect via SSH ([credentials](../emonsd/download.md)) and run:
 
-	});
+```
+sudo fsck.ext4 /dev/sda2    # system partition
+sudo fsck.ext2 /dev/sda3    # data partition
+```
 
+Then run the import again.
 
-});
+## Back up a remote account
 
-</script>
+The backup module cannot back up emoncms.org or another remote server. Use one of these:
 
+- **Sync module**: download all feeds from the remote account to a local emonPi, emonBase or Raspberry Pi. You can browse the data locally afterwards. See [Sync](sync.md).
+- **Python backup script**: download feed data to a computer, with an option to convert it to CSV. See the [forum post](https://community.openenergymonitor.org/t/python-based-emoncms-backup-utility/19526).
 
-<button type="button" class="show_hide" href="#" rel="#slidingDiv">View</button>
-<div id="slidingDiv" class="toggleDiv" style="display: none;">
+## Back up a whole server
 
-<pre>
-=== Emoncms import start ===
-2019-10-18-08:21:15
-Backup module version:
-cat: /opt/emoncms/modules/backup/backup/module.json: No such file or directory
-EUID: 1000
-Reading /opt/emoncms/modules/backup/config.cfg....
-Location of data databases: /var/opt/emoncms
-Location of emonhub.conf: /etc/emonhub
-Location of Emoncms: /var/www/emoncms
-Backup destination: /opt/openenergymonitor/data
-Backup source path: /opt/openenergymonitor/data/uploads
-Starting import from /opt/openenergymonitor/data/uploads to /opt/openenergymonitor/data...
-Image version: emonSD-17Oct19
-new image
-Backup found: emoncms-backup-2019-10-18.tar.gz starting import..
-Read MYSQL authentication details from settings.php
-Decompressing backup..
-emoncms.sql
-emonhub.conf
-settings.ini
-phpfina/
-phpfina/165119.meta
-phpfina/165146.dat
-phpfiwa/
-phptimeseries/
-Removing compressed backup to save disk space..
-Stopping services..
-Emoncms MYSQL database import...
-Import feed meta data..
-Restore phpfina and phptimeseries data folders...
-Import emonhub.conf > /etc/emonhub/emohub.conf
-OK
-Restarting emonhub...
-Restarting feedwriter...
-2019-10-18-08:26:56
-=== Emoncms import complete! ===
-</pre>
-</div>
+To back up every account on your own server:
 
----
+1. Stop the services that write data, so the files are not changing:
 
-### Included in backup
+   ```
+   sudo systemctl stop emonhub emoncms_mqtt feedwriter apache2
+   ```
 
-- Emoncms account credentials
-- Historic Feed data
-- Input Processing config
-- Emoncms Dashboards
-- Emoncms App settings
-- EmonHub config: `emonhub.conf`
+2. Export the database:
 
-### Not included in backup
+   ```
+   mysqldump -u root -p emoncms > emoncms_backup.sql
+   ```
 
-- WiFi passcode & custom network config
-- Custom NodeRED flows (old systems with this included)
-- Custom openHAB settings (old systems whith this included)
-- Input processing setup if migrating from Emoncms V8, input processing will need to be re-created after import and new inputs should be logged to imported feeds
-- Any other system or software modifications
+3. Copy the feed data directories. On emonSD they are under `/var/opt/emoncms` (`phpfina`, `phptimeseries`). On other installs, check `settings.ini`.
+4. Copy `settings.ini` from the Emoncms directory, usually `/var/www/emoncms`.
+5. Start the services again.
 
-### How-to backup items not automatically included
+## Help
 
-- nodeRED custom flows: select all flows then `menu > export > clipboard` copy the JSON text (deprecated)
-- Connect via SSH:
-  - See credentials for your image [emonSD download](../emonsd/download.md)
-  - WiFi settings & password: backup copy: `~/data/wpa_supplicant.conf`
-  - openHAB custom config: copy `~/data/open_openHab` folder (deprecated)
-
----
-
-### Video Guide (Export/Import method)
-
-The following video guide was put together using emoncms v9, the appearance will be different if you are using v10 of emoncms or newer but the functionality is much the same. We will be updating this video soon.
-
-<div class='videoWrapper'>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/5U_tOlsWjXM" frameborder="0" allowfullscreen></iframe>
-</div>
-
-<br>
-
-## Troubleshooting
-
-If you have any questions or if an error occurs during the backup or import process please post in the [`Hardware > emonPi` category of the Community Forums](http://community.openenergymonitor.org/c/hardware/emonpi). Please provide as much information as possible e.g. backup / import logs and [emonSD version](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).
-
-Alternatively try and perform a manual import, see [Backup Module Readme](https://github.com/emoncms/backup).
-
-
-## Export from an older emonPi / emonBase
-
-If the Backup module is not visible in the Local Emoncms menu then the emonPi / emonBase is running an older version e.g Emoncms V8.x. Try the USB Import method above.
-
-<p class="note">
-To check what software stack (emonSD pre-built SD card) version an emonPi is running see instructions on emonPi <a href="https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log">emonSD download repository and changelog</a>
-</p>
+If a backup or restore fails, post on the [community forum](https://community.openenergymonitor.org). Include the log shown on the backup page and the server information from **Setup > Admin > System Info**.

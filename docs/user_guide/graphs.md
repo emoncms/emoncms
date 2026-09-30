@@ -1,66 +1,78 @@
-# View Graphs
+# Graphs
 
-The Emoncms graph viewer is used to explore feed data. With a comprehensive set of features it is possible to compare multiple feeds on one graph, view averages and statistics, export CSV data and share and embed resulting graphs in dashboards.
+The graph module is the main viewer for feed data. Use it to compare feeds, calculate daily totals and averages, view statistics and export CSV.
 
-## 1) Select feeds to view on feeds page
+## Open a graph
 
-To view a single feed click on the feed row on the feeds page to bring up the graph view. To view multiple feeds select the feeds you wish to view using the selection tick boxes and then click on the eye icon in the feeds page toolbar:
+- Click a feed on the **Feeds** page to open it in the graph view.
+- To open several feeds, tick them on the **Feeds** page and click **Graph view** in the toolbar.
 
-![graph](img/graph1.png)
+The URL lists the feed ids, for example `http://emonpi.local/graph/1,2`.
 
-**Graph view URL:** Note that selected feeds are listed in the URL when accessed via the feeds page. See Graph module API options below for more examples.
+![Feeds page](img/graph1.png)
 
-    http://emonpi.local/graph/1,2
+## Choose feeds and axes
 
-## 2) The Graph view
+The sidebar lists your feeds by tag. Each feed has two tick boxes: the first places it on the left y-axis, the second on the right. Use both axes to compare feeds with different units, such as power and temperature.
 
-The feeds selected above will now display on the graph view. To compare feeds with different axis scales e.g power and temperature click on the axis tick box in the left sidebar to place the feed on the applicable left or right y-axis.
+![Graph view](img/graph2.png)
 
-![graph](img/graph2.png)
+## Time window
 
-## 3) Configuring a custom graph
+Choose a preset from **1 hour** to **5 Years**, or use **Zoom In**, **Zoom Out**, **Earlier** and **Later**. Drag across the graph to zoom to a period. To enter exact dates, click **Select time window** and set **Start** and **End**.
 
-The screenshot below shows an example with the feed series colours changed, temperature is now in red and the power feed is filled by placing a tick in the Fill tick box.
+## Interval
 
-**Averaging:** By default feeds are loaded without averaging. Tick the average tick box for each feed to view fully representative averages of the underlying data. *Tip: In the case of unreliable data with lots of missing data-points enabling averaging can give better results in the graph view.*
+**Type** sets how data is grouped:
 
-![graph](img/graph3.png)
+- **Fixed Interval**: one value per interval, for example every 60 seconds. Click the interval to set it.
+- **Daily**, **Weekly**, **Monthly**, **Annual**: one value per period, aligned to your timezone.
 
-**Saving a Graph:** Enter a unique graph name in the 'My Graphs' section to save the current graph for faster access in future.
+**Fill nulls with last value** fills gaps in the data. **Show gaps** leaves them visible.
 
-## 4) Feed statistics
+## Feed Config
 
-Click on 'Show statistics' to view min, max, difference between min and max, mean & standard deviation for each feed in the graph view. A Watt-hour calculation is also made for each feed - but only applicable in the case of power feeds in Watts. In the example graph above we can see that the power view covers 32.5 kWh of consumption.
+**Feed Config** sets how each feed is drawn:
 
-![graph](img/graph4.png)
+| Column | Effect |
+|---|---|
+| Type | **Lines**, **Bars**, **Points** or **Steps** |
+| Color | Line colour |
+| Fill | Fill the area below the line |
+| Stack | Stack on other stacked feeds |
+| Scale, Offset | Multiply or shift values |
+| Delta | Show the change in each period. Use with cumulative kWh feeds for daily kWh |
+| Average | Show the mean for each interval, not a sample |
+| DP | Decimal places |
 
-## 5) CSV Export
+![Feed config](img/graph3.png)
 
-The data in the graph view can be exported as CSV for further analysis in an external program. Click on 'Show CSV Output', select time format as required. 
+## Feed Stats
 
-**Null values:** If shown, missing data points will be displayed as null entries, this makes comparison across different feeds easier as it ensures the time-base is consistent.
+**Feed Stats** shows **Quality**, **Min**, **Max**, **Diff**, **Mean** and **Stdev** for each feed in the window. **Wh** is the energy for a power feed in watts.
 
-![graph](img/graph5.png)
+![Feed stats](img/graph4.png)
 
-## 6) Graph API options
+## Save a graph
 
-**Embed a graph:**<br>Remove the Emoncms theme wrap and graph editor. This is available publicly but will only show graph data if individual feeds are made public.
+Enter a name under **My Graphs** and click **Save**. Saved graphs can be opened from **Select graph** and added to dashboards.
 
-    http://emonpi.local/graph/embed?graphid=1
-    
-**Load a saved graph by id:**<br>Only available when logged in.
+## Related tasks
 
-    http://emonpi.local/graph#/Saved/1
-    
-**Load specified feeds in a graph:**<br>Available publicly if individual feeds are made public.
+- [Daily kWh](daily-kwh.md)
+- [Averages](daily-averages.md)
+- [Histograms](histograms.md)
+- [Export CSV](export-csv.md)
 
-    http://emonpi.local/graph/1,5
-    
-**Load graph with feeds aligned to left or right y-axis:**<br>Available publicly if individual feeds are made public.
+## Graph URLs
 
-    http://emonpi.local/graph?feedidsLH=1&feedidsRH=5
-    
-## Open Source
+| URL | Shows | Access |
+|---|---|---|
+| `graph/1,5` | Feeds 1 and 5 | Public feeds, or when logged in |
+| `graph?feedidsLH=1&feedidsRH=5` | Feed 1 on the left axis, feed 5 on the right | Public feeds, or when logged in |
+| `graph#/Saved/1` | Saved graph 1 | When logged in |
+| `graph/embed?graphid=1` | Saved graph 1, without menus or editor | Public feeds |
 
-The EmonCms graph module is available on github here: [https://github.com/emoncms/graph](https://github.com/emoncms/graph)<br>
-See also open bugs and enhancement requests: [https://github.com/emoncms/graph/issues](https://github.com/emoncms/graph/issues)
+## Source code
+
+[emoncms/graph](https://github.com/emoncms/graph) on GitHub.

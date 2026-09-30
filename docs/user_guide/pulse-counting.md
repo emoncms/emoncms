@@ -1,27 +1,28 @@
 # Pulse counting
 
-The following guide details how to configure emoncms to record and visualise a pulse counting input from an emonPi, emonTx or emonTH and follows on from the hardware setup guide.
+Record and view a pulse count input from an emonPi, emonTx or emonTH. Set up the hardware first, see [emonPi pulse counting](../emonpi/pulse_counting.md).
 
-1\. With the hardware up and running, navigate to the Setup > Inputs page, you should see the node for your device listed here. The pulse input will either be named **pulsecount** or just **pulse**:
+## Set up input processing
 
-![emonpi-input-list.png](img/emonpi-input-list.png)
+1. Go to **Setup > Inputs**. The pulse input for your device is named `pulse` or `pulsecount`.
 
-2\. Click on the spanner icon on the right hand side of the input to configure input processing for this input:
+   ![Pulse input](img/emonpi-input-list.png)
 
-![emonpi-pulse-input-process.png](img/emonpi-pulse-input-process.png)
+2. Click the spanner icon on the pulse input.
 
-3\. It's a good idea to start with to log the raw pulse count to a feed so that you have a copy of the original values. 
+   ![Pulse input processing](img/emonpi-pulse-input-process.png)
 
-4\. The pulse count needs to be multiplied by a scale process to convert the pulses to kWh. The scale factor will depend on your meter, see the table in Appendix A below. 
+3. Add **Log to feed** to keep a copy of the raw pulse count. This step is optional.
+4. Add a **x** process to convert pulses to kWh. The value depends on your meter. For a meter with 1000 pulses per kWh, enter `0.001`.
+5. Add **kWh Accumulator** and create a new feed, for example `import_kwh`. It removes the reset in the count when the device restarts.
+6. Click **Changed, press to save**.
 
-5\. Next add a **kWh Accumulator** process, this process both removes resets in the pulse count caused when then emonTx/emonPi or emonTH is reset or power cycles and records the result to a feed.
+## View the data
 
-Viewing the Wh accumulator feed:
+The accumulated feed rises steadily:
 
-![wh-accumulator.png](img/wh-accumulator.png)
+![Accumulated feed](img/wh-accumulator.png)
 
-To convert the Wh accumulator feed to daily kWh bargraph using the graph tool select Window `type-daily` feed `type=Bars` and `delta = 1` then click `reload`
+For daily totals, open the feed in the graph view, set **Type** to **Daily**, set the feed **Type** to **Bars** and tick **Delta**. See [Daily kWh](daily-kwh.md).
 
-![wh-accumulator-bargraph.png](img/wh-accumulator-bargraph.png)
-
-See Emoncms [daily kWh guide](/emoncms/daily-kwh) for more info.
+![Daily bar graph](img/wh-accumulator-bargraph.png)

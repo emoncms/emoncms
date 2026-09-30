@@ -1,47 +1,40 @@
 # Troubleshooting
 
-## Community Forum FAQ
+Start with the [community forum FAQ](https://community.openenergymonitor.org/t/frequently-asked-questions/3005).
 
-**Community Forum:** [Frequently asked Questions](https://community.openenergymonitor.org/t/frequently-asked-questions/3005)
+## Inputs or feeds not updating
 
-## Feeds / Inputs not Updating
+### Check the services
 
-There are a number of things to check if inputs or feeds are not updating. The first is to check the status of emoncms services on the `Emoncms > Admin` page:
+Go to **Setup > Admin > System Info** and check the **Services** list. `emonhub`, `emoncms_mqtt`, `feedwriter`, `redis-server` and `mosquitto` should all show **Active** and running.
 
-![emoncms_services.png](img/emoncms_services.png)
+![Services](img/emoncms_services.png)
 
-Services: `emonhub`, `emoncms_mqtt`, `feedwriter`, `redis-server` and `mosquitto` should all be '**Active** Running'.
+To check a service via SSH:
 
-Service status can also be checked via SSH command, e.g:
+```
+sudo systemctl status emoncms_mqtt
+```
 
-    sudo systemctl status emoncms_mqtt.service
+Common causes of a stopped service:
 
-Potential causes of services not running may be: 
+- Incorrect configuration or installation.
+- A full `/tmp` or `/var/log` partition.
+- SD card corruption after a power cut.
 
-- Incorrect configuration
-- Incorrect installation
-- Full /tmp partition
-- Full /var/log partition
-- Unclean power cycle / power-cut related SD card corruption 
+`emoncms_mqtt` and `feedwriter` depend on `redis-server`. `emonhub` and `emoncms_mqtt` depend on `mosquitto`.
 
-`redis-server` is a dependency of `emoncms_mqtt` and `feedwriter`.<br>
-`mosquitto` is a dependency of `emonhub` and `emoncms_mqtt`
+### Services running but no inputs
 
-**All services are running but there are still no inputs on the emoncms inputs page**<br>
-This may be caused by incorrect emonhub configuration. Navigate to `Emoncms > Setup > Emonhub > View Log`. A valid log should look similar to the example log below. 
+Check the emonHub log at **Setup > EmonHub**. A working log looks like the example below.
 
-1\. If you do not see any `DEBUG    RFM2Pi     8 NEW FRAME : OK` lines, this suggests that the RaspberryPi is not receiving any data from the emonPi measurement board or RFM69Pi adapter board. Potential causes of missing 'NEW FRAME' lines:
+1. No `NEW FRAME : OK` lines means emonHub receives no data from the radio or the measurement board. Possible causes:
+   - A fault on the emonPi measurement board.
+   - A fault on a wireless node sending to an emonBase.
+   - Wrong radio settings, such as frequency or network group. These are in emonhub.conf. Click **Edit Config** on the EmonHub page. See [emonHub configuration](../emonhub/configuration.md).
+2. `NEW FRAME : OK` lines but no `MQTT Publishing:` lines means a problem with the MQTT interfacer. Compare it with the [default emonhub.conf](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf).
 
-- Issue with emonPi measurement board itself
-- Issue with any wireless nodes sending data to the rfm69pi adapter on an emonBase
-- Invalid radio settings on the emonBase such as frequency or network group
-
-The emonPi and emonBase receiver radio module settings are set in emonhub.conf, see:<br> `Emoncms > Setup > Emonhub > Edit Config`. The default RFM2Pi emonhub interfacer on an unmodifed system should look like this: [emonhub.conf#L21](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf#L21).
-
-2\. If you don not see any lines that look like: `DEBUG    MQTT       Publishing: emon/emontx1/power1 623` but do see `NEW FRAME : OK` this suggests an issue with the MQTT interfacer. Default configuration should look like this [emonhub.conf#L38](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf#L38).
-
-
-**Example of valid emonhub.log posting via MQTT to local emoncms:**
+Example of a working emonhub.log:
 
 ```
 2020-02-21 16:02:33,236 INFO     MainThread EmonHub emonHub emon-pi variant v3-beta
@@ -132,66 +125,73 @@ The emonPi and emonBase receiver radio module settings are set in emonhub.conf, 
 2020-02-21 16:02:42,029 INFO     MQTT       Publishing: emonhub/rx/10/values 623,482,0,0,232.6,121940,66971,0,0,-53
 ```
 
-**emonHub is not running**<br>
-Check the result of `Emoncms > Setup > Emonhub > View Log`, make sure that the log level is set to ERROR in `Edit Config`. 
+### emonHub not running
 
-A potential causes of errors could be invalid emonhub.conf configuration: double check emonhub.conf and consider restoring from default config [emonhub.conf](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf).
+Check the log at **Setup > EmonHub**. A common cause is an error in emonhub.conf. Check it against the [default emonhub.conf](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf).
 
-**Emoncms MQTT Service is not running**<br>
-Check the emoncms logfile for any errors: `Emoncms > Setup > Admin > Emoncms log` or via SSH:
+### Emoncms MQTT service not running
 
-    tail /var/log/emoncms/emoncms.log
+Check **Setup > Admin > Emoncms Log**, or via SSH:
 
-A potential cause could be an issue with required services such as mysql, redis or mosquitto. Try rebooting.
+```
+tail /var/log/emoncms/emoncms.log
+```
 
-Make a note of any error's shown in the logs, create a post on our [community forums](https://community.openenergymonitor.org/) to ask for further assistance, make sure to include in your post any errors seen in the logs and the content of the 'Server Information' section on the Admin page (click on copy as markdown or copy to clipboard and paste the result in your post).
+A common cause is a problem with MySQL, Redis or Mosquitto. Try a reboot.
+
+### Ask for help
+
+Post on the [community forum](https://community.openenergymonitor.org/). Include any errors from the logs and the server information from **Setup > Admin > System Info**. Click **Copy as Markdown** and paste the result into your post.
 
 ## Disk space
 
-Check available disk space in the data partition by looking at the table at the bottom of: **Emoncms > Setup > Admin**.
+Check free space in the **Disk** section of **Setup > Admin > System Info**. The data partition is `/var/opt/emoncms`.
 
-![emoncms_diskuse.png](img/emoncms_diskuse.png)
-
-Make a note of any full partitions, create a post on our [community forums](https://community.openenergymonitor.org/) to ask for further assistance, make sure to include in your post the 'Server Information' section on the Admin page (click on copy as markdown or copy to clipboard and paste the result in your post).
+If a partition is full, ask for help on the forum as above.
 
 ## Incorrect system time
 
-It's important that the emonPi/emonBase has the correct time (The time should reflect the UTC time). The emonPi requires an active Internet connection at boot to obtain the time from a NTP server. If using an emonPi for a long period with no web connection it's recommended to [add a hardware Real-Time-Clock (RTC)](https://docs.openenergymonitor.org/emonpi/modifications.html).
+The emonPi and emonBase must have the correct time, set to UTC. They get the time from an NTP server, so they need an internet connection at boot. For long periods without internet, [add a hardware real time clock](../emonpi/modifications.md).
 
+On the emonPi, press the LCD button until the `uptime` page shows the time.
 
-To check the time on the emonPi LCD display, press LCD push-button until `uptime` page is displayed.
+To check the time via SSH:
 
-To check the time via SSH type: `$ date`
-
-## To Force NTP time update:
-
-   - Check that the emonPi/emonBase has a connection to the internet
-   - Try a reboot
-   - If time is still incorrect, force a manual NTP update:
-   - Connect Via SSH, [Find credentials here](../emonsd/download.md) and restart ntp:
-   
 ```
-sudo service ntp stop
-sudo service ntp start
+timedatectl
 ```
 
-   -  Check time by typing: `$ date`
+`System clock synchronized: yes` shows that the time is set from NTP.
 
-## Setting the Emoncms Timezone:
+### Force a time update
 
-The emonPi/emonBase time shown via SSH is intended to be UTC time. Timezone's are taken into account seperately in Emoncms and via the internet browser. To set a user account timezone in emoncms; navigate to: `Emoncms > Setup > My Account > Timezone` and adjust as required.
+1. Check that the emonPi or emonBase has an internet connection.
+2. Reboot.
+3. If the time is still wrong, connect via SSH ([credentials](../emonsd/download.md)) and restart the time service:
 
-## Vrms reporting as twice what it should be
+   ```
+   sudo systemctl restart systemd-timesyncd
+   ```
 
-For users in North America, please read through our ['Use in North America' setup guide](../emonpi/north-america.md). Software calibration is discussed in step 3.
+4. Run `timedatectl` again to check.
 
-## Emoncms Local Password Reset
+### Set the Emoncms timezone
 
-If the password for the local Emoncms account has been forgotten this can be reset by connecting in via ssh (Find SSH credentials for your image download [here](../emonsd/download.md)) and running:
+The system time is UTC. Emoncms applies your timezone separately. To set it, go to **Setup > My Account** and change **Timezone**.
 
-    php /opt/emoncms/modules/usefulscripts/resetpassword.php
-    
-It then asks for the userid (default:1) and for a new password or option to auto generate. Example:
+## Vrms reads twice the expected value
+
+In North America, see [Use in North America](../emonpi/north-america.md). Step 3 covers software calibration.
+
+## Reset a local password
+
+Connect via SSH ([credentials](../emonsd/download.md)) and run:
+
+```
+php /opt/emoncms/modules/usefulscripts/resetpassword.php
+```
+
+Enter the user id (default 1), then a new password or press enter to generate one:
 
 ```
 =======================================
@@ -203,23 +203,19 @@ Enter new password, or press enter to auto generate:
 Auto generated password: 9f7599c8da
 ```
 
-If the account username has also been forgotten this can be retrieved by connecting via ssh and looking at the MYSQL database entry :
-
-When prompted enter the emonPi MYSQL root password (Find MYSQL credentials for your image download [here](../emonsd/download.md)).
+If you have also forgotten the username, list the users in the database. Enter the MySQL password when prompted ([credentials](../emonsd/download.md)):
 
 ```
-$ mysql -u emoncms -p emonpiemoncmsmysql2016
-use emoncms;
-SELECT * FROM users;
-exit
+mysql -u emoncms -p emoncms -e "SELECT id, username, email FROM users;"
 ```
 
-## Factory Reset
+## Factory reset
 
-**Caution: this will delete ALL Emoncms data**
+```{warning}
+A factory reset deletes all Emoncms data.
+```
 
 ```
-sudo su
-/opt/openenergymonitor/EmonScripts/other/factoryreset
-reboot 
+sudo /opt/openenergymonitor/EmonScripts/other/factoryreset
+sudo reboot
 ```

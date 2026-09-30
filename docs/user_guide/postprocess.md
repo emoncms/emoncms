@@ -1,109 +1,80 @@
-# Post Process module
+# Post process
 
-While emoncms is designed around 'input processing' the processing of data (e.g calibration, summing inputs, calculating kWh data)  before it is recorded to a feed. Sometimes it is useful to be able to manipulate feed data after it has been recorded, removing the reliance on setting everything up right in the first time.
+Input processing acts on data as it arrives. The post process module acts on feed data that is already recorded. Use it to create a feed you forgot to set up, rebuild a feed after a fault, or clean up bad data.
 
-This guide gives an overview of how to use the Emoncms post processing module to do this. Including examples of commonly used post processors. The post process module is installed by default and available under the **Setup** menu on the emonSD software stack running on the emonPi and emonBase.
+The module is installed on the emonPi and emonBase. Open it from **Setup > Post Process**.
 
-## Example 1: Creating a cumulative kWh feed from a power feed
+## Create a process
 
-Cumulative kWh feeds are useful for calculating kWh consumption per half hour/hourday/month & year. They are used by many of the emoncms apps. See the guide here on [Creating Daily kWh](/emoncms/daily-kwh/).
+1. Go to **Setup > Post Process**.
+2. Select a process from **Process**. A description appears below it.
+3. Fill in the parameters. For an output feed, choose **Create new** and enter a tag and name, or select an existing feed.
+4. Set **Run on** to **All data, from the start** or **New data only**.
+5. Click **Create and run**.
 
-Typically a cumulative kWh feed is created from a power input using input processing. The **power_to_kwh** input processor is used. But lets say we forgot to create this feed at original setup - or that as is still sometimes an issue the cumulative kWh value resets as a result of a power failure to the Pi. We can use the post process module to create or re-build the feed.
+The process appears in the **Processes** list. **Status** shows **Queued**, **Running**, **Finished** or **Error**. Hover over the status for details. A large feed can take several minutes.
 
-1\. Navigate to the post process module under the emoncms setup menu.
+An output feed does not update by itself when new data arrives. To update it once, run the process again with **New data only**. To keep it updated, add an input process that writes to the same feed. See [Example: cumulative kWh from power](#example-cumulative-kwh-from-power).
 
-2\. Select the **powertokwh** process in the process selection dropdown.
+![Post process](img/emoncms_post_process_01.png)
 
-3\. Select the source power feed, in the example below I have selected P1 (the power value of CT1 on an EmonTx).
+## Example: cumulative kWh from power
 
-4\. Enter a suitable name for the new cumulative kWh feed. The name needs to be unique. 
+Many apps and daily kWh graphs need a cumulative kWh feed. Use this example if you only have the power feed.
 
-5\. A 'Run' button will appear below the feed output name input box. Select 'Run from start'.
+1. Select **Power to kWh**.
+2. Select the power feed.
+3. Choose **Create new** and name the output feed, for example `use_kwh`.
+4. Set **Run on** to **All data, from the start** and click **Create and run**.
+5. To keep the feed updated, go to **Setup > Inputs**. On the power input, add a **Power to kWh** process that writes to the new feed.
 
-![postprocess 1](img/emoncms_post_process_01.png)
+Optional limits on power values can remove spikes, or create import only or export only feeds.
 
-*There is an option here to set a positive and negative limit to the allowed power values this can be helpful for producing e.g import or export only kWh feeds or filtering out invalid spikes.* 
+## Example: grid import from solar and use
 
-6\. Click on 'Run' to start the post processing operation. The process will now list in the process list and should show as 'Running':
+**Import calculation** calculates grid import from a solar feed and a use feed. Run **Power to kWh** on the result to get a cumulative import feed.
 
-![postprocess 2](img/emoncms_post_process_02.png)
+## Example: formula
 
-Depending on the size of the source feed the processing time could be short (couple of seconds) to quite long (several minutes). After completion it will show as 'Finished'. Hover over the status tag to see further information about the process state.
+**Basic Formula** combines feeds with `+`, `-`, `*` and `/`, constants and brackets, for example:
 
-After completion the new feed **will not** automatically update as new data is added to the original power feed. To automatically update the feed: use input processing on the original power input to update the feed - in this case we would add a **power_to_kwh** input process and select the feed that we have created with the post processing module.
+```
+f1+2*f2-f3/12
+```
 
-## Example 2: The 'importcalc' post processor
+`f1` is the feed with id 1. Use **Feed finder** to look up feed ids.
 
-The Emoncms MySolar app requires 3 power feeds: solar, use & import and 3 cumulative kWh feeds: solar_kwh, use_kwh & import_kwh. It's easy to miss setting up the input processing to calculate the import feeds when doing initial setup. We can use this post process to calculate the import power feed at a later point.
+## Processes
 
-To configure: select the relevant solar power feed and house consumption feed, create a feed called 'import' as the output feed and click Create.
+| Group | Process | Description |
+|---|---|---|
+| Calibration | Scale feed | Multiply a feed by a constant |
+| Calibration | Offset feed | Add a constant to a feed |
+| Power & Energy | Power to kWh | Create a cumulative kWh feed from a power feed |
+| Limits | Allow positive | Keep only positive values |
+| Limits | Allow negative | Keep only negative values |
+| Limits | Limit more than/less than | Limit values above or below a set value |
+| Limits | Remove more than/less than | Remove values above or below a set value |
+| Feeds | Add feeds | Add two feeds together |
+| Feeds | Average | Average a feed to a longer interval |
+| Feeds | Downsample | Reduce a feed to a longer interval |
+| Feeds | Upsample | Increase a feed to a shorter interval |
+| Feeds | Merge feeds | Fill gaps in one feed from another. Average where both have data |
+| Formula | Basic Formula | Combine feeds with a formula |
+| Solar | Import calculation | Grid import from use and solar |
+| Solar | Export calculation | Grid export from use and solar |
+| Solar | Solar direct calculation | Solar used directly from use and solar |
+| Solar | Solar battery kWh flows | Energy flows between solar, battery, grid and home. Used by [My Electric Flow](apps.md#my-electric-flow) |
+| Simulation | Battery simulator | Simple solar battery simulation |
+| Simulation | Carnot COP simulator | Heat pump heat output and COP from flow and outside temperature |
+| Data cleanup | Remove resets | Remove resets from a cumulative feed, such as a pulse count |
+| Data cleanup | Remove missing values | Fill gaps by interpolation |
+| Data cleanup | Replace missing values with last value | Fill gaps with the last value |
+| Misc | Accumulator | Running total of a feed |
+| Misc | Constant flow to kWh | Heat from flow and return temperature at a constant flow rate |
+| Misc | Liquid or airflow to kWh | Heat from flow and return temperature and a flow rate feed |
+| Misc | To signed | Convert unsigned values to signed values |
 
-As a second step we can create a cumulative kWh feed from this newly created import feed using example 1 above. The newly created import and import_kwh feed can now be used by the MySolar app to show proportion of self consumption and quantity of imported electricity from the grid.
+## Source code
 
-## Example 3: The formula post processor
-
-The basic_formula processor is a versatile post processor that can be used to add, subtract, multiply and divide feeds with each other as well as applying multiplication factors and offsets.
-
-An example formula might look like this:
-
-    f1+2*f2-f3/12
-
-Here the feed id is the number appended to the 'f' identifier. f1 = feed id 1. 
-
-Use the feed selection helper to select feeds when entering the formula.
-
-## Full post processor list
-
-**Calibration**
-
-- scalefeed: scale a feed by the value given
-- offsetfeed: add an offset to a feed
-
-**Power & Energy**
-
-- powertokwh: calculate a cumulative kwh feed from a power feed
-
-**Limits**
-
-- allowpositive: Either create a new feed with only positive values or remove negative values from the source feed.
-- allownegative: Either create a new feed with only negative values or remove positive values from the source feed.
-- remove\_morethan\_lessthan: Remove values from a feed if they are more than or less than the set limits.
-
-**Misc**
-
-- accumulator: calculate a cumulative sum of the source feed
-- constantflow_tokwh: calculate kWh from flow, return temperature, flow rate constant and specific heat
-- liquidairflow_tokwh: calculate kWh from flow, return temperature, flow rate feed and specific heat
-- to_signed: convert unsigned values in a feed to a signed values
-
-**Feeds**
-
-- addfeeds: add multiple feeds together (see basic_formula to add more than 2 feeds)
-- average: average and downsample effectively do the same thing. Take feed at a higher resolution e.g 10s interval and reduce to the set output interval e.g 60s
-- downsample: same as above.
-- mergefeeds: calculates the average of both feeds where data is available 
-
-**Formula**
-
-- basic_formula: Vesatile formula post processor for custom calculations
-
-**Simulation**
-
-- batterysimulator
-- carnot\_cop\_simulator
-
-**Solar**
-
-- exportcalc: calculate grid export from house consumption and solar generation (ignores any import values)
-- importcalc: calculate grid import from house consumption and solar generation (ignores any export values)
-- solardirectcalc: calculate solar generation used directly from a solar generation feed and house consumption feed.
-
-**Data cleanup**
-
-- removeresets: remove resets in a accumulating feed
-- removenan: join across missing data points with a straight line
-
-## Open Source
-
-The post process module is available on github here: [https://github.com/emoncms/postprocess](https://github.com/emoncms/postprocess)<br>
-See also open bugs and enhancement requests: [https://github.com/emoncms/postprocess/issues](https://github.com/emoncms/postprocess/issues)
+[emoncms/postprocess](https://github.com/emoncms/postprocess) on GitHub.

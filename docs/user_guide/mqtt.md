@@ -1,103 +1,80 @@
 # MQTT
 
-We use MQTT (Message Queuing Telemetry Transport) as one way of passing data between different hardware devices and software components within the OpenEnergyMonitor ecosystem.
+MQTT is a messaging protocol. On the emonPi and emonBase it passes data between emonHub, Emoncms and other software.
 
-The emonPi and emonBase running our emonSD software stack includes a local [Mosquitto MQTT](http://mosquitto.org/) server. A device can connect to this server and publish data to a MQTT topic. A script on the emonPi/emonBase then subscribes and receives the data sent by the device.
+The emonPi and emonBase run a [Mosquitto](https://mosquitto.org) MQTT server on port 1883. Find the username and password on the [emonSD download](../emonsd/download.md) page.
 
-This Mosquitto server is accessible on port 1883, the default username is `emonpi` and password `emonpimqtt2016`.
+## Topics
 
-## MQTT Publishers
+Emoncms uses the base topic `emon/`. Each value has its own topic:
+
+```
+emon/<node>/<key>
+```
+
+For example, `emon/emonpi/power1` is input `power1` of node `emonpi`.
+
+The base topic is set in `/etc/emonhub/emonhub.conf` and in the `[mqtt]` section of `/var/www/emoncms/settings.ini`.
+
+## Publishers
 
 ### emonHub
 
-The emonHub python service decodes the data received from the emonPi/emonBase + RF nodes and publishes to the emonPi/emonBase's Mosquitto MQTT server using the following topic format:
+emonHub decodes data from the emonPi, the emonBase radio and other interfacers, and publishes each value to `emon/<node>/<key>`.
 
-Each data key (power) has its own MQTT topic as a sub-topic of the NodeID or NodeName. This MQTT topic structure makes it far easier to subscribe to a particular node/key of interest e.g. `emontx/power1` from another service.
+- Restart: `sudo systemctl restart emonhub`
+- Log: **Setup > EmonHub**, or `tail -f /var/log/emonhub/emonhub.log`
 
-    basetopic/node/keyname
+The emonHub log shows every value published to MQTT.
 
-*Note: the default base topic is `emon/` this is set in `/etc/emonhub/emonhub.conf` and `/var/www/emoncms/settings.ini`.*
+### Emoncms
 
-Example:
+The **Publish to MQTT via Redis** input process publishes an input value to any topic, for example `house/power/solar`. Enter the topic in the process text box.
 
-    emon/emonpi/power1
+## Subscribers
 
-The emonHub service can be restarted with `$ sudo systemctl restart emonhub`.
+### Emoncms MQTT service
 
-Latest log file entries can be viewed via the Emoncms web interface admin or with: `$ tail -f /var/log/emonhub/emonhub.log`. All the data currently being published to MQTT topic can be viewed in real-time in the EmonHub log.
+The `emoncms_mqtt` service subscribes to `emon/#`. It posts each value to Emoncms as an input, with node and key from the topic. Any device or script that publishes to `emon/` with valid credentials creates inputs in Emoncms.
 
-### Emoncms Publisher
+- Restart: `sudo systemctl restart emoncms_mqtt`
+- Log: **Setup > Admin > Emoncms Log**, or `tail /var/log/emoncms/emoncms.log`
 
-Data can be published to an MQTT topic using the `Publish to MQTT` Emoncms Input Process. In the Input process 'Text' box add the topic, for example: `house/power/solar`.
+### emonPi LCD
 
----
+The emonPi LCD service subscribes to the emonHub topics to show live values on the display.
 
-## MQTT Subscribers
+- Restart: `sudo systemctl restart emonPiLCD`
+- Log: `tail /var/log/emonpilcd/emonpilcd.log`
 
-### Emoncms MQTT Service
+## Test from the command line
 
-The Emoncms MQTT service subscribes to the MQTT base topic (default `emon/#`) and posts any data on this topic to Emoncms Inputs with the NodeName and KeyName taken from the MQTT topic and sub-topic name.
+Install the Mosquitto clients:
 
-**Example:**
-
-A power value published to `emon/emonpi/power1` would result in an Emoncms Input from `Node: emonpi` with `power1=XX`.
-
-Data from any service (internal or external) that connect to the MQTT server (assuming authentication) and publishes to the base topic `emon/` will appear in Emoncms.
-
-*Emoncms MQTT Service is running by default on the emonSD software stack*
-
-The MQTT input service can be restarted using `$ sudo systemctl restart emoncms_mqtt`. The Emoncms MQTT service runs the [`emoncms_mqtt.php` script](https://github.com/emoncms/emoncms/tree/master/scripts/services/emoncms_mqtt).
-
-Latest log file entries can be viewed via Emoncms web interface admin or with: `$ tail /var/log/emoncms/emoncms.log`
-
-### EmonPiLCD Service
-
-The [emonPi's python LCD Service Script](https://github.com/openenergymonitor/emonpi/blob/master/lcd/emonPiLCD.py) subscribes to the MQTT messages published by emonHub in order to obtain the real-time data to display on the emonPiLCD.
-
-The emonPiLCD service can be restarted with: `$ sudo systemctl restart emonPiLCD`.
-
-Latest log file entries can be viewed with: `$ tail /var/log/emonpilcd/emonpilcd.log`.
-
----
-
-## Testing MQTT
-
-### Install the mosquitto-clients package
-
-To test from the command line you first need to install the `mosquitto-clients` package
-
-```shell
- sudo apt install -y mosquitto-clients
+```
+sudo apt install -y mosquitto-clients
 ```
 
-### Testing MQTT From the command line
+The examples below use `USER` and `PASS` in place of the MQTT credentials. Add `-h <host>` to connect to another machine.
 
-Note all example commands presume you are using the MQTT Broker on the emonPi/emonBase/emonSD. Change the username/password/host if not.
+Show all Emoncms messages. `#` is a wildcard:
 
-To view all MQTT messages subscribe to  `emon/#` base topic :
+```
+mosquitto_sub -v -u USER -P PASS -t 'emon/#'
+```
 
-    $ mosquitto_sub -v -u 'emonpi' -P 'emonpimqtt2016' -t 'emon/#'
+Show messages for one node:
 
-To view all MQTT messages for a particular node subscribe to sub-topic:
+```
+mosquitto_sub -v -u USER -P PASS -t 'emon/emonpi/#'
+```
 
-    $ mosquitto_sub -v -u 'emonpi' -P 'emonpimqtt2016' -t 'emon/emonpi/#'
+Publish a test value. It appears as an input on the **Inputs** page:
 
-*Note: `#` denotes a wild-card*
+```
+mosquitto_pub -u USER -P PASS -t 'emon/test/power1' -m '100'
+```
 
-### Test publishing and subscribing on a test topic
+## Other clients
 
-Subscribe to test topic:
-
-    $ mosquitto_sub -v -u 'emonpi' -P 'emonpimqtt2016' -t 'test'
-
-Open *another shell window* to publish to the test topic :
-
-    $mosquitto_pub -u 'emonpi' -P 'emonpimqtt2016' -t 'test' -m 'helloWorld'
-
-If all is working we should see `helloWord`.
-
-### View the data from a browser or other device
-
-To avoid connecting via SSH alternately you could use [MQTTlens Chrome Extension](https://chrome.google.com/webstore/detail/mqttlens/hemojaaeigabkbcookmlgmdigohjobjm?hl=en) or any other MQTT client connected to the emonPi IP address on port 1883 with user name: `emonpi` and password: `emonpimqtt2016`.
-
-There are also MQTT clients for your phone or tablet.
+Any MQTT client can connect to the emonPi or emonBase IP address on port 1883, for example [MQTT Explorer](https://mqtt-explorer.com) on a computer, or an MQTT app on a phone.

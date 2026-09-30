@@ -1,25 +1,31 @@
 # Histograms
 
-The Emoncms Data Viewer features a histogram tool for determining the time spent at different values or energy used at different power levels.
+The graph view has a histogram mode. It shows how long a feed spent at each value, or how much energy was used at each power level.
 
-The following is an example of using this feature for determining the amount of time a heat pump spends on standby and the power level at which most of its energy demand is consumed.
+This example uses a heat pump power feed.
 
-## Example: Heat pump power data
+## Open a histogram
 
-Here we select the heat pump power feed and data range to view. For higher resolution decrease the interval to a point where the number of datapoints is near 8928 datapoints.
+1. Open the feed in the [graph view](graphs.md) and choose the time window.
+2. In **Feed Config**, click **Histogram** on the feed.
+3. Set **Type** and **Resolution**.
 
-![heatpump_elec.png](img/histogram_power.png)
+For a more detailed result, use a shorter interval. Each request is limited to 70,000 datapoints by default.
+
+![Heat pump power](img/histogram_power.png)
 
 ## Time at value
 
-The first histogram mode shows the amount of time spent at a given range.
+**Time at value** shows the time spent in each range of values.
 
-This could be useful for determining the amount of time a heat pump spends at standby as an example. Here we see that the heat pump spent ~1,123,200 seconds between 0-50 Watts out of a total time of 2,592,000 seconds selected in the data viewer. This tells us that the heat pump is on standby for 43% of the time in this period.
+In this example the heat pump spent about 1,123,200 seconds between 0 and 50 W, out of 2,592,000 seconds in the window. It was on standby 43% of the time.
 
-![histogram_timeatvalue.png](img/histogram_timeatvalue.png)
+![Time at value](img/histogram_timeatvalue.png)
 
-## kWh at power
+## kWh at Power
 
-The kWh at power mode is useful for determining the power level where most power was used or generated, In this example we can see that most of the energy used by the heat pump was consumed in the 500-549 Watt segment (97 kWh).
+**kWh at Power** shows the energy used or generated in each power range. Use a power feed in watts.
 
-![histogram_kwhatpower.png](img/histogram_kwhatpower.png)
+In this example most of the heat pump's energy, 97 kWh, was used between 500 and 549 W.
+
+![kWh at power](img/histogram_kwhatpower.png)

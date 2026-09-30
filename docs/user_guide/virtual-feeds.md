@@ -1,124 +1,86 @@
-### The Virtual Feed - Post-processing data on the fly
+# Virtual feeds
 
-#### *Introduction*
+A virtual feed calculates its values from other feeds each time it is read. It stores no data. Use it anywhere you would use a feed: graphs, dashboards and apps.
 
-Although it is called a ‘Virtual’ feed, it should be thought of as an arithmetic plug-in for a feed, which enables the feed data to be processed as it is extracted from the feed. In many ways, it is more closely related to the Input process list. Unlike the Input process list, data from a Virtual Feed cannot be stored, it must be used – displayed – immediately.
+Common uses:
 
-#### *Features*
+- Convert units, for example °C to °F.
+- Calculate a ratio, such as heat pump COP.
+- Split use by tariff period with a schedule.
 
-A Virtual Feed is used by naming it as the data source in places where you would use a Feed as the data source in a Graph, Dashboard, Visualisation or App. It fetches the data from one or more feeds, processes it and makes the transformed data available in place of the original version direct from the Feed.
+A virtual feed uses no disk space. On emoncms.org, virtual feeds are free.
 
-The output from a Virtual Feed cannot be logged to another Feed, nor sent to MQTT – you must use the input process list for this.
+A virtual feed cannot be logged to another feed or published to MQTT. Use input processing for that.
 
-A Virtual Feed uses no storage, therefore it costs nothing in terms of SD card, HDD or SSD storage capacity, and it is free of charge in emoncms.org
+## Create a virtual feed
 
-A Virtual Feed can be used to replace post-processing followed up by a change/addition to the input processor.
+1. On the **Feeds** page, click **New feed**.
+2. Enter a **Feed Name** and **Feed Tag**. Leave **Feed Engine** set to **VIRTUAL Feed**. Click **Save**.
 
-#### *Uses*
+   ![New virtual feed](img/vf1.png)
 
-Typically, a Virtual Feed might be used for
+3. Tick the new feed and click the spanner icon (**Process config**) in the toolbar.
 
-* Scaling data, e.g. temperatures stored in °C to be displayed in °F
-* Showing energy consumed on different tariffs at different times.
+   ![Process config](img/vf2.png)
 
-*Note: The averaging mentioned in early documents is now available in the source Feeds.*
+4. Add processes. The first must be **Source Feed**. The dialog works like the input process list. See [Inputs](inputs.md).
+5. Click **Changed, press to save**.
 
-#### *Creating a Virtual Feed*
+## Example: °C to °F
 
-This example will create a Virtual Feed to convert °C to °F.
+F = C × 1.8 + 32. Add these processes:
 
-On the Feeds page, scroll to the bottom and click “New feed”
+1. **Source Feed**: the temperature feed in °C.
+2. **x**: `1.8`.
+3. **+**: `32`.
 
-![|vf1](img/vf1.png)
+![Process list for °C to °F](img/vf3.png)
 
-In the box, give the new feed a suitable name and ensure the Feed engine is “VIRTUAL feed”. (Optionally, you can add a “Tag” – an extension to the feed name.) Click Save.
+The virtual feed can be selected in the graph view and in dashboard widgets like any other feed.
 
-You will be returned to the Feeds page. Click the box in front of your new Virtual Feed and the menu at the top of the page will expand. At this point, you could if you wish click the Edit icon (a pencil) and enter the name of the node of the parent feed and add the units, saving each in turn. The new Virtual Feed will then be listed under that Node, with the units alongside.
+![°F and °C compared](img/vf4.png)
 
-To add the processes, choose the spanner icon.
+![Dashboard widget with a virtual feed](img/vf5.png)
 
-![|vf2](img/vf2.png)
+## Example: heat pump COP
 
-You will be taken to the Process List Setup page, which is almost the same as the Inputs process list page.
+COP is heat output divided by electricity input. With feeds `heatpump_heat` and `heatpump_elec`:
 
-We shall add steps to convert the numbers in the existing Feed, “emonth5: Garage Temperature” (in degrees Celsius) to degrees Fahrenheit, using the well-known formula **F = C × 1.8 + 32**. The steps to add are
+1. Create a virtual feed, for example `heatpump_cop`.
 
-1. Source Feed. Select the feed from the drop-down list, and Add. *[Note: you can’t set a feed engine or feed interval.]*
-2. Calibration × . Enter the value 1.8 and Add [To divide, enter a fractional value]
-3. Calibration + . Enter the value 32 and Add [To subtract, add a negative value]
+   ![New feed](img/vf6.png)
 
-*(Hint: Look in the blue box for a summary of the process’s actions.)*
+2. Add **Source Feed**: `heatpump_heat`.
 
-It should look like this
+   ![Process config](img/vf7.png)
 
-![|vf3](img/vf3.png)
+3. Add **/ source feed**: `heatpump_elec`.
 
-Click “Changed, press to save” and close the box. The Virtual Feed is ready for use.
+   ![Divide by source feed](img/vf8.png)
 
-#### *Using the Virtual Feed which converts °C to °F*
+4. Save and open the feed in the graph view. Set y-axis limits, because COP can spike when the compressor starts and stops.
 
-Here is a graph showing, on the left-hand y-axis and in yellow, the temperature converted to degrees Fahrenheit, and on the right-hand y-axis and in blue, the temperature from the original Feed in degrees Celsius. The Virtual Feed is selected in exactly the same way as the other.
+   ![COP graph](img/vf9.png)
 
-![|vf4](img/vf4.png)
+## Example: use by tariff period
 
-A widget on a Dashboard is configured by selecting the Virtual Feed in exactly the same way:
+A [schedule](schedule.md) can split one power feed into one virtual feed for each tariff period.
 
-![|vf5](img/vf5.png)
+For each period, create a virtual feed with:
 
-Each data point in degrees Fahrenheit exists only for as long as it takes to plot the point on the graph or change the dial. It is never stored on the SSD/HDD/SD card.
+1. **Source Feed**: the power feed.
+2. **If !schedule, ZERO**: the schedule for that period. The value is set to zero outside the period.
 
-#### *Using a Virtual Feed on emoncms.org to show Heatpump CoP*
+The schedules must together cover the whole day with no overlap.
 
-Here is an example of how to use a virtual feed to obtain the instantaneous CoP of a heat pump. The feeds for heat output and electricity consumption already exist and contain data.
+![Virtual feeds with schedules](img/vf10.webp)
 
-On the emonCMS feeds page, scroll to the bottom and click on New feed. In the dialogue that opens, select the VIRTUAL Feed engine, enter a Feed Name and (optionally) a Feed Tag, e.g:
+A single schedule also works. For example, with a `daytime` schedule of 08:00 to 17:00, use **If !schedule, ZERO** for the day feed and **If schedule, ZERO** for the night feed.
 
-![|vf6](img/vf6.png)
+![Day and night virtual feeds](img/vf12.png)
 
-Save, and you should now see the new Virtual Feed in your feed list.
+To view the result, open the virtual feeds together in the [graph view](graphs.md) and tick **Stack** in **Feed Config**.
 
-Click the box in front of your new Virtual Feed and the menu at the top of the page will expand. To add the processes, choose the spanner icon. The feed process list configuration dialogue appears:
+## Credits
 
-![|vf7](img/vf7.png)
-
-Select the Source Feed process and select the “heatpump_heat” feed from the drop-down list, and Add.
-
-Then select the ‘/ source feed’ process (divide by specified feed) and select the “heatpump_elec” feed and Add:
-
-![|vf8](img/vf8.png)
-
-Click ‘Changed, press to save’ and then open the Virtual Feed in the graph view. If you are calculating CoP you may want to set minimum and maximum limits on the y-axis as the calculation can momentarily go off the scale when the compressor starts and stops:
-
-![|vf9](img/vf9.png)
-
-The CoP calculation here is done on the fly from the underlying heat output and electricity consumption feeds. The Virtual Feed does not use any additional disk space, and because of this, Virtual feeds created on emoncms.org are free, they are not included in the pay-per-feed billing.
-
-#### *Using a Virtual Feed to show energy used at different tariffs*
-
-Here is an example of how to use a virtual feed and Multigraph to highlight energy used at different times of day. The feeds for measured power and the schedule already exist.
-
-Create a virtual feed for each rate schedule, to receive data when the schedule is true, all using the same source feed data (measured power). The schedules should together exactly cover the time period (day, week etc) and not overlap:
-
-![|vf10](img/vf10.webp)
-
-And the resulting Multigraph shows the measured power for each schedule in a different colour :
-
-![|vf11](img/vf11.webp)
-
-The above example came from Chaveiro’s original post announcing Virtual Feeds, unfortunately without the Multigraph settings.
-
-Here is another example, this time using a single schedule to indicate from 8 am until 5 pm is ‘daytime’ and everything else is ‘night time’. Take care with the negative logic. The Virtual Feeds look like this:
-
-![|vf12](img/vf12.png)
-
-and the Multigraph visualisation settings and the graph they produce:
-
-![|vf13](img/vf13.png)
-
-&nbsp;
-
-*Acknowledgments.*
-
-N Chaveiro for the original idea, the code and examples at https://openenergymonitor.github.io/forum-archive/node/10977.html
-
-Trystan Lea for maintaining and extending the code and the Heatpump COP example at https://community.openenergymonitor.org/t/virtual-feed-support-on-emoncms-org/21712, and the many forum contributors who have used and commented on Virtual Feeds.
+Virtual feeds were created by N Chaveiro. See the [original forum post](https://openenergymonitor.github.io/forum-archive/node/10977.html) and the [emoncms.org announcement](https://community.openenergymonitor.org/t/virtual-feed-support-on-emoncms-org/21712).

@@ -1,39 +1,33 @@
-# Exporting CSV
+# Export CSV
 
-Its possible to easily export data selected using the emoncms data viewer by clicking on the **Show CSV Output** button at the bottom of the page. Multiple feeds can be selected with datapoints aligned to the same timestamps.
+There are two ways to export feed data as CSV:
 
-The data viewer CSV export tool is limited to 8928 datapoints. For larger exports the export tool that is part of the feed interface can be used, see below.
+- **Graph view**: export what the graph shows, with several feeds on the same timestamps.
+- **Feeds page**: export a whole feed or a long period.
 
-## Data viewer CSV export tool
+## From the graph view
 
-There are 3 timestamp formats available:
+1. Open the feeds in the [graph view](graphs.md) and set the time window and interval.
+2. Click **CSV Export**.
+3. Choose the options:
+   - **Time format**: **Unix timestamp**, **Seconds since start** or **Date-time string**.
+   - **Null values**: **Show**, **Replace with last value** or **Remove whole line**.
+   - **Headers**: **Show name and tag**, **Show name** or **Hide**.
+4. Click **Download**, or **Copy** to copy to the clipboard.
 
-1. Unix timestamp
-2. Seconds since the start of the export
-3. Date time string "2016-04-06 00:00:00"
+With several feeds, keep **Null values** set to **Show** so that each row lines up on the same timestamp.
 
-**Unix timestamp**
+Each request is limited to 70,000 datapoints per feed by default (`max_datapoints` in settings.ini). For more, use a longer interval or export from the feeds page.
 
-![csv_export_1.png](img/csvexport_timestamp.png)
+![CSV export, multiple feeds](img/csvexport_multiple.png)
 
-**Date time string (i.e: 2019-11-01 00:00:00)**
+## From the feeds page
 
-![csv_export_2.png](img/csvexport_datetime.png)
+1. On the **Feeds** page, tick the feeds to export.
+2. Click **Download** in the toolbar.
+3. Set **Start date & time**, **End date & time**, **Interval** and **Date time format**.
+4. Check the **Estimated download size** and download.
 
-**Seconds since the start of the export**
+**Interval** can be the original feed interval, a fixed interval from 5 seconds to 12 hours, or **Daily**, **Weekly**, **Monthly** or **Annual**.
 
-![csv_export_3.png](img/csvexport_secondsstart.png)
-
-**Example of exporting multiple feeds**
-
-Multiple feeds can be exported for the same timestamps by selecting multiple feeds from the left hand feed selection menu.
-
-Make sure that null values are shown to ensure that datapoints line up correctly.
-
-![csv_export_4.png](img/csvexport_multiple.png)
-
-## Full Export via Feed interface
-
-Full feed exports can be obtained via the export tool that can be accessed from the feed list interface. The start time, end time interval and timezone offset can be selected and am estimate is given of the download size. Select a feed using the tick box selector and then click on the down-arrow icon in the feed list toolbar to open the feed export tool.
-
-![csvexportfromfeeds.png](img/csvexport_feedlist.png)
+![CSV export from feeds page](img/csvexport_feedlist.png)

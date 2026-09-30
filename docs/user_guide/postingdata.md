@@ -1,80 +1,79 @@
 # Posting data
 
-It's possible to post data to emoncms using either the HTTP API or via MQTT. This guide covers the basics of sending data to emoncms and may be useful when writing custom scripts that record data from different devices or interfacing with 3rd party software such as NodeRed.
+Send data to Emoncms from your own scripts, devices or other software, such as Node-RED or Home Assistant. Use the HTTP input API or MQTT.
 
-## The Emoncms HTTP Input API
+For the full input API, click **API Help** on the **Inputs** page.
 
-The full input API is available from the emoncms inputs page, see top right "Input API Help".
+## HTTP input API
 
-If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. Login to your emoncms account and paste the following into your browsers address bar:
+### API key
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-http://emonpi.local/input/post?node=mynode&fulljson={"power1":100,"power2":200,"power3":300}
-</div>
-<br>
+Scripts and devices authenticate with the **Read & Write API Key**. Find it on the **My Account** page or the input API help page.
 
-This should return: `{"success": true}`
+The examples below use `emonpi.local` as the host and `APIKEY` in place of your key.
 
-Navigate now to the Emoncms inputs page, you should see a new node with inputs as above:
+### Send a test value
 
-![postingdata1.png](img/postingdata1.png)
+Paste this into a browser address bar:
 
-*Once inputs have been created the next step is to record the inputs to feeds using input processing. See [Log Locally](../emoncms/intro-rpi.md) for an example of how to do this.*
+```
+http://emonpi.local/input/post?node=mynode&fulljson={"power1":100,"power2":200,"power3":300}&apikey=APIKEY
+```
 
+Emoncms returns `{"success": true}`. The inputs appear under the node `mynode` on the **Inputs** page.
 
-**Authentication:**<br>
-The example above relied on being logged into emoncms to provide authentication. For devices or scripts posting to the API it's possible to authenticate with an API KEY.
+![Posted inputs](img/postingdata1.png)
 
-An emoncms account has two api keys a read-only apikey and a read & write apikey. Both are listed on the 'My Account' page or from the 'Input API Helper' page. 
+To record the inputs, add input processing. See [Inputs](inputs.md).
 
-To post data to emoncms the read & write apikey needs to be used - and can be appended to the API request as follows (here given with an example key):
+### Send the key in a header
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-http://emonpi.local/input/post?node=mynode&fulljson={"power1":100,"power2":200,"power3":300}&<b>apikey=fc9c9ae50942b35f8a1baa67649e301b</b>
-</div>
-<br>
+Keeping the key out of the URL stops it appearing in server logs:
 
-Logout of emoncms and paste the above into your browsers address bar. This should again return: `{"success": true}`
+```
+curl -H "Authorization: Bearer APIKEY" \
+  "http://emonpi.local/input/post?node=mynode&fulljson={\"power1\":100}"
+```
 
-**Using HTTP POST method:**
-<br>All the request parameters above can also be included in the POST body:
+### Use POST
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-<b>URL:</b> http://emonpi.local/input/post<br>
-<b>BODY:</b> node=mynode&fulljson={"power1":100,"power2":200,"power3":300}&apikey=fc9c9ae50942b35f8a1baa67649e301b
-</div>
-<br>
+All parameters can go in the POST body:
 
-**CSV format:**
-<br>It is also possible to send data in CSV format:
+```
+curl -X POST http://emonpi.local/input/post \
+  -H "Authorization: Bearer APIKEY" \
+  -d 'node=mynode&fulljson={"power1":100,"power2":200}'
+```
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-http://emonpi.local/input/post?node=mynode&<b>csv=100,200,300</b>
-</div>
-<br>
+### CSV values
 
-**Specifying a timestamp:**
-<br>A timestamp can be attached to the request to specify the input update time:
+Values without names are numbered from 1:
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-http://emonpi.local/input/post?<b>time=1581112821</b>&node=1&csv=100,200,300
-</div>
-<br>
+```
+http://emonpi.local/input/post?node=mynode&csv=100,200,300&apikey=APIKEY
+```
 
-**Bulk upload of data:**
-<br>The input/bulk API can be used to bulk upload historic data from multiple nodes in a single update. See the Input API Helper for full details on this API option.
+### Set the time
 
-## Sending data to Emoncms using MQTT
+Add a Unix timestamp to set the input time:
 
-Both the emonPi and emonBase running the emonSD software stack have a local Mosquitto MQTT server running as standard. This server is accessible with authentication on port 1883. Find the MQTT Service Credentials for your image on [emonSD Download](../emonsd/download.md)
+```
+http://emonpi.local/input/post?time=1581112821&node=mynode&csv=100,200,300&apikey=APIKEY
+```
 
-The standard base topic to which emoncms subscribes is: **emon/**. The following publish example posts the power1 input associated with node: mynode.
+### Bulk upload
 
-<div style="font-family:monospace; font-size:14px; background-color: #eee; padding: 20px;">
-<b>topic:</b> emon/mynode/power1<br>
-<b>message:</b> 100
-</div>
-<br>
+`input/bulk` sends many readings from several nodes in one request. Use it for historic data or buffered readings. See the input API help page.
 
-emonSD uses MQTT internally to pass data from emonHub to Emoncms. It's possible to subscribe to these messages by subscribing to the emon/* base topic.
+## MQTT
 
+The emonPi and emonBase run a Mosquitto MQTT server on port 1883. Find the MQTT username and password on the [emonSD download](../emonsd/download.md) page.
+
+Emoncms subscribes to the base topic `emon/`. Publish a value to `emon/<node>/<key>`:
+
+```
+topic:   emon/mynode/power1
+message: 100
+```
+
+See [MQTT](mqtt.md) for more.
