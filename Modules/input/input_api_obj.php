@@ -268,7 +268,7 @@ function input_api_obj() {
       "path" => "input/process/set",
       "parameters" => array(
         "inputid" => array( "default" => 1 ),
-        "processlist" => array( "default" => '[{"fn":"process__log_to_feed","args":[1]}]', "post" => true, "description" => tr("Must be sent in the POST body") )
+        "processlist" => array( "default" => '[{"fn":"process__log_to_feed","args":[1]}]', "post" => true, "description" => tr("JSON array of steps, each {\"fn\": process key, \"args\": [arguments]}. Process keys are listed by process/list.json. Must be sent in the POST body") )
       ),
       "mode" => "write",
       "group" => tr("Process lists"),

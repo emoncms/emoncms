@@ -418,7 +418,7 @@ function feed_api_obj() {
       "path" => "feed/process/set.json",
       "parameters" => array(
         "id" => array( "type" => "feed" ),
-        "processlist" => array( "default" => '[{"fn":"process__source_feed_data_time","args":[1]}]', "post" => true, "description" => tr("Must be sent in the POST body") )
+        "processlist" => array( "default" => '[{"fn":"process__source_feed_data_time","args":[1]}]', "post" => true, "description" => tr("JSON array of steps, each {\"fn\": process key, \"args\": [arguments]}. Process keys are listed by process/list.json. Must be sent in the POST body") )
       ),
       "mode" => "write",
       "group" => tr("Virtual feed process list"),
