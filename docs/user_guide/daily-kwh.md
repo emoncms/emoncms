@@ -18,7 +18,7 @@ Newer emonTx and emonPi firmware reports cumulative energy for each CT channel. 
 4. Select an interval. Match the post rate, for example 10s, or choose a longer interval up to 1h to save disk space.
 5. Click **Add**, then **Changed, press to save**.
 
-![Power to kWh](img/inputproc_powertokwh.png)
+![Power to kWh](img/inputs-3-power-to-kwh.webp)
 
 ## From an energy meter reading
 
@@ -28,7 +28,7 @@ An energy meter reading does not reset. Gaps in the data would show as spikes or
 2. If the input is in Wh, add a **x** process with value `0.001` to convert to kWh.
 3. Add **Log to feed (Join)** and create a new feed as above.
 
-![Log to feed join](img/inputproc_logfeedjoin.png)
+![Log to feed (Join)](img/daily-kwh-1-log-join.webp)
 
 ## From an input that resets
 
@@ -38,7 +38,7 @@ emonTx and emonPi energy and pulse count inputs reset to zero when the unit rest
 2. For a kWh input, add **kWh Accumulator** and create a new feed as above.
 3. For a Wh input, add **Wh Accumulator**, or scale by `0.001` and add **kWh Accumulator**.
 
-![kWh Accumulator](img/inputproc_kwhacc.png)
+![kWh Accumulator](img/daily-kwh-2-kwh-accumulator.webp)
 
 ## View daily kWh
 
@@ -50,9 +50,7 @@ You need at least two days of data.
 
 Each bar is the kWh at the end of the day minus the kWh at the start. Choose **Weekly**, **Monthly** or **Annual** for longer periods.
 
-![Cumulative kWh](img/graph_cumulative.png)
-
-![Daily kWh](img/graph_kwhday.png)
+![Daily kWh bar graph](img/daily-kwh-3-daily-bars.webp)
 
 Dashboards and apps also show daily kWh from the same feed. See [Dashboards](dashboards.md) and [Apps](apps.md).
 

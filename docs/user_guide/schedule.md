@@ -12,6 +12,8 @@ A schedule defines time windows, such as peak tariff hours. Input processes and 
 3. Click **Add rule** for another rule.
 4. Click **Save**.
 
+![Edit schedule](img/schedule-2-edit.webp)
+
 Click **Test** on a schedule to check whether it is active now.
 
 The schedule uses the timezone of the user who last saved it.
@@ -19,6 +21,8 @@ The schedule uses the timezone of the user who last saved it.
 ## Expressions
 
 Each schedule is stored as an expression, shown in the **Expression** column. Click **Custom expression** to type one.
+
+![Schedules](img/schedule-1-list.webp)
 
 An expression has blocks separated by `|`. Blocks can be a season (`Summer`, `Winter`), a date (`mm/dd`), days (`Mon`...`Sun`) and times (`hh:mm`). Use `-` for a range and `,` to add another rule.
 

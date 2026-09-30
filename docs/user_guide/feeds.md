@@ -6,6 +6,8 @@ A feed stores the history of a value as a time series. Most feeds are created by
 
 Feeds are grouped by tag. Each group header shows the total size and the time of the last update.
 
+![Feeds page](img/feeds-1-list.webp)
+
 Each row shows the name, a public or private icon, the engine, size, process list, latest value with unit, and time of the last update. Hover over a row for the feed id, engine, interval, and start and end times.
 
 Click a feed to open it in the [graph view](graphs.md).
@@ -58,6 +60,8 @@ Most feeds are created from an input process. See [Inputs](inputs.md).
 
 To create one directly, click **New feed**. Enter **Feed Name** and **Feed Tag**, choose **Feed Engine**, and for a fixed interval feed choose the interval. Click **Save**. Add data by input processing, the feed API or **Import data**.
 
+![New feed](img/feeds-2-new.webp)
+
 ## Edit a feed
 
 Tick the feed and click **Edit**:
@@ -66,6 +70,8 @@ Tick the feed and click **Edit**:
 - **Unit**: choose from the list, or **Other** to type one.
 - **Public**: anyone can read the feed without logging in. Public feeds can be shown on public dashboards and graphs.
 
+![Edit feed](img/feeds-3-edit.webp)
+
 ## Delete a feed
 
 Tick the feed and click **Delete**. There are three options:
@@ -73,6 +79,8 @@ Tick the feed and click **Delete**. There are three options:
 - **Clear**: remove all data and keep the feed.
 - **Trim**: remove data before a date.
 - **Delete**: remove the feed and its data.
+
+![Delete feed](img/feeds-4-delete.webp)
 
 ```{warning}
 Deleting a feed is permanent.

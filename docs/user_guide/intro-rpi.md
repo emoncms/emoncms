@@ -7,7 +7,7 @@ Set up Emoncms on an emonPi or emonBase, log your first feeds and, if you want, 
 - The emonPi or emonBase is powered up and connected to your network. See [Connect](../emonpi/connect.md).
 - Open its address in a browser, for example `http://emonpi.local`. The Emoncms login page appears.
 
-![Login page](img/emoncms_login.png)
+![Login page](img/intro-rpi-1-login.webp)
 
 ## Log in
 
@@ -15,13 +15,9 @@ Log in with username `emonsd` and password `emonsd`. Change the password afterwa
 
 Emoncms opens on the **Feeds** page. It is empty until you create feeds.
 
-![Empty feeds page](img/emoncms_feeds_1.png)
-
 ## Check your inputs
 
 Go to **Setup > Inputs**. Data from the emonPi, and from an emonTx or other node sending to an emonBase, appears here automatically.
-
-![Inputs page](img/emoncms_inputs.png)
 
 Each input holds only its latest value. To record history, log the input to a feed. See [Core concepts](coreconcepts.md).
 
@@ -30,9 +26,6 @@ Each input holds only its latest value. To record history, log the input to a fe
 This example logs a power input, such as `P1` from an emonTx4, and creates a cumulative kWh feed from it.
 
 1. Click the spanner icon on the input.
-
-   ![Inputs page](img/local-log1.png)
-
 2. In the process list dialog:
    - Select **Log to feed**.
    - Under **Feed**, choose **CREATE NEW:** and enter a name, for example `use`.
@@ -40,24 +33,24 @@ This example logs a power input, such as `P1` from an emonTx4, and creates a cum
    - Select an interval of 10s for an emonPi or emonTx, or 60s for an emonTH.
    - Click **Add**.
 
-   ![Log to feed](img/local-log2.png)
+   ![Log to feed with a new feed](img/inputs-2-log-to-feed.webp)
 
 3. To add daily kWh for a power input:
    - Select **Power to kWh**.
    - Create a new feed, for example `use_kwh`, with the same interval.
    - Click **Add**.
 
-   ![Power to kWh](img/local-log3.png)
+   ![Power to kWh with a new feed](img/inputs-3-power-to-kwh.webp)
 
    The emonTx4 and recent emonPi firmware also send cumulative energy for each CT channel. You can log those inputs in place of **Power to kWh**. See [Daily kWh](daily-kwh.md).
 
 4. Click **Changed, press to save**, then **Close**.
 
-   ![Process list](img/local-log4.png)
+   ![Saved process list](img/inputs-4-process-list.webp)
 
 5. The input now shows its processes as short labels, such as `log` and `kwh`.
 
-   ![Inputs with processing](img/local-log5.png)
+   ![Inputs with log and kwh labels](img/inputs-1-list.webp)
 
 ```{note}
 Do not choose an interval shorter than the rate at which the device sends data. A longer interval is fine and uses less disk space.
@@ -71,11 +64,11 @@ For hardware with a device template, such as the emonTx4, the device module can 
 
 Go to **Setup > Feeds**. The new feeds are listed and update every few seconds.
 
-![Feeds page](img/local-log6.png)
+![Feeds page](img/feeds-1-list.webp)
 
 Click a feed to open it in the graph view. There is little data at first. Zoom in to the last few minutes, or come back later.
 
-![Graph view](img/data-viewer.png)
+![Graph view](img/graphs-1-view.webp)
 
 Next steps:
 

@@ -9,13 +9,11 @@ The graph module is the main viewer for feed data. Use it to compare feeds, calc
 
 The URL lists the feed ids, for example `http://emonpi.local/graph/1,2`.
 
-![Feeds page](img/graph1.png)
-
 ## Choose feeds and axes
 
 The sidebar lists your feeds by tag. Each feed has two tick boxes: the first places it on the left y-axis, the second on the right. Use both axes to compare feeds with different units, such as power and temperature.
 
-![Graph view](img/graph2.png)
+![Graph view with feeds on the left and right axes](img/graphs-1-view.webp)
 
 ## Time window
 
@@ -45,13 +43,13 @@ Choose a preset from **1 hour** to **5 Years**, or use **Zoom In**, **Zoom Out**
 | Average | Show the mean for each interval, not a sample |
 | DP | Decimal places |
 
-![Feed config](img/graph3.png)
+![Feed Config](img/graphs-2-feed-config.webp)
 
 ## Feed Stats
 
 **Feed Stats** shows **Quality**, **Min**, **Max**, **Diff**, **Mean** and **Stdev** for each feed in the window. **Wh** is the energy for a power feed in watts.
 
-![Feed stats](img/graph4.png)
+![Feed Stats](img/graphs-3-feed-stats.webp)
 
 ## Save a graph
 

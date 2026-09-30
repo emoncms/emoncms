@@ -6,11 +6,9 @@ Record and view a pulse count input from an emonPi, emonTx or emonTH. Set up the
 
 1. Go to **Setup > Inputs**. The pulse input for your device is named `pulse` or `pulsecount`.
 
-   ![Pulse input](img/emonpi-input-list.png)
-
 2. Click the spanner icon on the pulse input.
 
-   ![Pulse input processing](img/emonpi-pulse-input-process.png)
+   ![kWh Accumulator](img/daily-kwh-2-kwh-accumulator.webp)
 
 3. Add **Log to feed** to keep a copy of the raw pulse count. This step is optional.
 4. Add a **x** process to convert pulses to kWh. The value depends on your meter. For a meter with 1000 pulses per kWh, enter `0.001`.
@@ -21,8 +19,6 @@ Record and view a pulse count input from an emonPi, emonTx or emonTH. Set up the
 
 The accumulated feed rises steadily:
 
-![Accumulated feed](img/wh-accumulator.png)
-
 For daily totals, open the feed in the graph view, set **Type** to **Daily**, set the feed **Type** to **Bars** and tick **Delta**. See [Daily kWh](daily-kwh.md).
 
-![Daily bar graph](img/wh-accumulator-bargraph.png)
+![Daily bar graph](img/daily-kwh-3-daily-bars.webp)

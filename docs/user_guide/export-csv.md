@@ -19,7 +19,7 @@ With several feeds, keep **Null values** set to **Show** so that each row lines 
 
 Each request is limited to 70,000 datapoints per feed by default (`max_datapoints` in settings.ini). For more, use a longer interval or export from the feeds page.
 
-![CSV export, multiple feeds](img/csvexport_multiple.png)
+![CSV Export in the graph view](img/export-csv-1-graph.webp)
 
 ## From the feeds page
 
@@ -30,4 +30,4 @@ Each request is limited to 70,000 datapoints per feed by default (`max_datapoint
 
 **Interval** can be the original feed interval, a fixed interval from 5 seconds to 12 hours, or **Daily**, **Weekly**, **Monthly** or **Annual**.
 
-![CSV export from feeds page](img/csvexport_feedlist.png)
+![CSV export from the feeds page](img/feeds-5-export.webp)

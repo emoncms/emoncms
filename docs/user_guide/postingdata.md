@@ -22,7 +22,7 @@ http://emonpi.local/input/post?node=mynode&fulljson={"power1":100,"power2":200,"
 
 Emoncms returns `{"success": true}`. The inputs appear under the node `mynode` on the **Inputs** page.
 
-![Posted inputs](img/postingdata1.png)
+![Posted inputs](img/postingdata-1-inputs.webp)
 
 To record the inputs, add input processing. See [Inputs](inputs.md).
 

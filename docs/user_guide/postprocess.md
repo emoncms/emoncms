@@ -16,7 +16,7 @@ The process appears in the **Processes** list. **Status** shows **Queued**, **Ru
 
 An output feed does not update by itself when new data arrives. To update it once, run the process again with **New data only**. To keep it updated, add an input process that writes to the same feed. See [Example: cumulative kWh from power](#example-cumulative-kwh-from-power).
 
-![Post process](img/emoncms_post_process_01.png)
+![New process](img/postprocess-1-new.webp)
 
 ## Example: cumulative kWh from power
 

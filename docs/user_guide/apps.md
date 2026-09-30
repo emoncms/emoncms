@@ -28,6 +28,10 @@ It shows:
 - An energy flow breakdown for the selected period: solar to home, solar to grid, solar to battery, battery to home, grid to battery and grid to home. Self-consumption and self-sufficiency are shown as percentages.
 - A **Tariff explorer** that costs each flow on a chosen tariff, including Octopus Agile and other UK time of use tariffs.
 
+![My Electric Flow](img/apps-1-myelectricflow.webp)
+
+![Tariff explorer](img/apps-2-myelectricflow-tariff.webp)
+
 ### Feeds
 
 Tick **Has solar PV** and **Has battery** to match your system. Then select the power feeds in watts.
@@ -72,6 +76,8 @@ It shows:
 - A power view with flow, return, outside and room temperatures, flow rate and instantaneous COP.
 - COP and SCOP for the full window, when running, space heating, water heating and cooling.
 - Chart options: immersion, flow rate, hot water temperature, defrosts, simulated Carnot heat output, emitter and system volume calculation.
+
+![My Heatpump](img/apps-3-myheatpump.webp)
 
 ### Feeds
 

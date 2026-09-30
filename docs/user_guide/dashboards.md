@@ -16,6 +16,8 @@ For ready-made dashboards, see [Apps](apps.md).
 5. To set a widget's feed and options, double-click it, or select it and click **Configure selected item**. Choose the **Feed** and click **Save changes**.
 6. Click **Changed, press to save**.
 
+![Dashboard editor](img/dashboards-3-edit.webp)
+
 The **Toolbox** also has undo, redo, copy, cut, paste, and move to front or back.
 
 ## Charts
@@ -60,6 +62,8 @@ To show a private dashboard without logging in, add `&readkey=` and your read on
 ## Dashboard list
 
 The list shows each dashboard with **Name**, **Alias**, main, **Public** and **Published**. The icons on each row clone, edit, delete and view the dashboard.
+
+![Dashboard list](img/dashboards-1-list.webp)
 
 ```{warning}
 Deleting a dashboard is permanent.

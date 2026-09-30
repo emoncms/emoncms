@@ -10,15 +10,13 @@ Each value is the mean from its timestamp to the next. The timestamp marks the s
 2. Set **Type** to **Fixed Interval** and set the interval to 3600 seconds.
 3. In **Feed Config**, tick **Average**.
 
-![Hourly averages](img/graph_averages_hourly.png)
-
 ## Daily averages
 
 1. Open the feed in the graph view.
 2. Set **Type** to **Daily**.
 3. In **Feed Config**, tick **Average** and set **Type** to **Bars**.
 
-![Daily averages](img/graph_averages_daily.png)
+![Daily average outside temperature](img/daily-averages-1-daily.webp)
 
 Averages are calculated in the background on first request. If the graph is empty, click **Refresh** after a few seconds.
 

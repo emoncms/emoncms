@@ -6,6 +6,8 @@ Inputs receive data from devices and scripts. Input processing records inputs to
 
 Inputs are grouped by node. An input is created the first time data arrives for a new node and key.
 
+![Inputs page](img/inputs-1-list.webp)
+
 Each node header shows the node name, the device description and the time of the last update. The time is coloured by age. The header also has two icons:
 
 - Lock: **Show device key**.
@@ -30,6 +32,8 @@ To stop new inputs being created, click **Disable further input creation** at th
 Each input has a process list. The processes run in order each time a new value arrives. Each process can change the value passed to the next process, log it to a feed, or both.
 
 To edit the list, click the spanner icon on the input. The **process list setup** dialog opens.
+
+![Process list setup](img/inputs-4-process-list.webp)
 
 ### Add a process
 
