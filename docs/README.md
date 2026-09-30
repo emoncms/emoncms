@@ -2,7 +2,7 @@
 
 ## User guide
 
-The user guide is in [user_guide](user_guide/index.rst) and is published at [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms). See [STYLE.md](STYLE.md) for how to write and publish it.
+The user guide is in [user_guide](user_guide/README.md) and is published at [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms). See [STYLE.md](STYLE.md) for how to write and publish it.
 
 ## Getting started
 
