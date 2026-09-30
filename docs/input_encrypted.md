@@ -5,7 +5,7 @@ Devices that cannot use HTTPS can encrypt the data they post to `input/post` and
 ## Request
 
 - Method: `POST` to `input/post` or `input/bulk`.
-- Header `Content-Type: aes128cbc`, or `aes128cbcgz` for a gzip compressed payload.
+- Header `Content-Type: aes128cbc`. Use `aes128cbcgz` when the request string is compressed with zlib (PHP `gzcompress`) before encryption. The HMAC and the response hash then cover the compressed data.
 - Header `Authorization: USERID:HMAC`, where HMAC is the SHA-256 HMAC of the plain request string, keyed with the hex decoded write API key.
 - Body: base64 of the 16 byte IV followed by the AES-128-CBC ciphertext of the plain request string. The key is the write API key, hex decoded to 16 bytes. Use URL safe base64 with no padding.
 

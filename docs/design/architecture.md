@@ -1,684 +1,127 @@
-### Architecture
+# Architecture
 
-The Emoncms architecture is a combination of a front controller on the server,
-a model-view-controller design pattern and a directory structure
-that makes adding features in a self-contained modular way easy. 
+Emoncms is a PHP web application with a front controller, modules in a model-view-controller layout, and background services for MQTT input and feed writing.
 
-As with most web applications, Emoncms has both a server side component and a client side component.
-The server side is written in PHP, and the client side is a mixture of html, css & javascript.
-This client side component is typically called a 'view' within Emoncms.
-The server side 'controller' typically defines the HTTP API as well as providing the route for loading a view.
-Models typically implement a class that defines and implements interaction with the underlying database.
+The server side is PHP. Controllers define the HTTP API and load views. Models are classes that handle storage and logic. Views are HTML pages that use jQuery and Vue 3 and call the API in JSON. Devices posting data use the same API.
 
-Although it is not strictly adhered to, Emoncms does try to avoid significant use of PHP templating.
-It instead renders dynamic content and interacts with the server side API using Javascript, jQuery, and Vue.js.
-Data is usually passed back and forth in JSON format.
-
-The server side API is also used directly by energy monitoring equipment posting data to Emoncms.
-
-**Directory Structure**
+## Directory structure
 
 ```
-    / (your Web root)
-    .htaccess
-    index.php
+/var/www/emoncms/
+    .htaccess              rewrites requests to index.php
+    index.php              front controller
+    core.php               shared functions: controller(), view(), get(), load_js() ...
+    route.php              Route class, decodes the request path
+    param.php              request parameters, including encrypted input
+    locale.php             language selection
+    process_settings.php   loads settings.ini over default-settings.php
     Modules/
-        user/
-            user_controller.php
-            user_model.php
-            user_view.php
         feed/
+            module.json
             feed_controller.php
             feed_model.php
-            feed_view.php
+            feed_menu.php
+            feed_schema.php
+            engine/        storage engines
+            Views/
+            locale/
+        input/ ...
     Lib/
-        php/
-        js/
-            jquery
-            flot
+        bootstrap5/        Bootstrap 5
+        js/                jQuery, Vue, Flot and shared scripts
+        EmonLogger.php
+        dbschemasetup.php
+    Theme/
+        theme.php          page layout and menus
+        embed.php          layout for embedded pages
+        css/ js/ menu/
+    scripts/
+        services/          emoncms_mqtt, feedwriter, service-runner
 ```
 
-**index.php: The Front Controller**
+Core modules are `admin`, `api`, `feed`, `input`, `process`, `schedule` and `user`. Other modules, such as graph, dashboard and app, are separate repositories cloned into `Modules/`, or into `/opt/emoncms/modules` and symlinked.
 
-The first key point is that all site traffic is directed through index.php.
-This is a common design pattern called the front controller, which then allows us
-to load components used by the whole application such as user sessions and database connection in one place.
+## Request flow
 
-We use mod_rewrite to make the URL look clean, converting:
+### Rewrite
 
-    emoncms/user/login
+`.htaccess` rewrites a request path to `index.php?q=path`, unless it is an existing file or under `Lib`, `Modules`, `Theme`, `scripts` or `docs`. The `B` flag escapes the path before it goes into `q`.
 
-to:
-
-    emoncms/index.php?q=user/login
-
-index.php then fetches the property **q** with `$_GET['q']`, using q as a command to tell the application what to do.
-
-#### Build it
-
-Start by creating a folder in your LAMP server `/var/www` directory lets call it `framework`
-
-Create a new file called .htaccess and open it in your favourite code editor, copy and paste the following code into the .htaccess file:
-
-.htaccess:
-```apacheconf
-    #
-    # Apache/PHP/Emoncms settings:
-    #
-
-    # Don't show directory listings for URLs which map to a directory.
-    Options -Indexes
-
-    # Set the default handler.
-    DirectoryIndex index.php
-
-    # Various rewrite rules.
-    <IfModule mod_rewrite.c>
-      RewriteEngine on
-      # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
-      RewriteCond %{REQUEST_FILENAME} !-f
-      RewriteCond %{REQUEST_FILENAME} !-d
-      RewriteCond %{REQUEST_URI} !=/favicon.ico
-      RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
-    </IfModule>
+```
+emoncms/feed/list.json  ->  emoncms/index.php?q=feed/list.json
 ```
 
-This script tells Apache that whenever a HTTP request arrives and if no physical file (!-f) or path (!-d) or symbolic link (!-l) can be found, it should transfer control to index.php, which is the front controller.
+### index.php
 
-Next, create a new file called index.php.
-To illustrate what the .htaccess file does, add the following two lines to index.php.
+`index.php` runs these steps, each marked with a comment in the file:
 
-```php
-    <?php
+1. Load settings and core scripts.
+2. Connect to MySQL and, if enabled, Redis.
+3. Start the session: web login, API key, device key or encrypted input.
+4. Set the language.
+5. Decode the route and load the module controller.
+6. If no controller matches, try the path as a public username, then public dashboards and apps.
+7. Output the result.
 
-    echo "q=".$_GET['q'];
+### Route
+
+`Route` in `route.php` splits the path:
+
+```
+controller/action/subaction/subaction2.format
 ```
 
-Next: navigate to [http://localhost/framework/feed/list.json](http://localhost/framework/feed/list.json) in your browser and you should see the following:
+`format` is `html` by default. `json`, `text`, `md` and `csv` are also supported. See [Global variables](global-variables.md#route).
 
-    q=feed/list.json
+### Controller
 
-As you can see, the `feed/list.json` part has been passed to index.php as a string
-rather than navigating to an actual folder and file location.
+`controller()` in `core.php` loads `Modules/<controller>/<controller>_controller.php` and the module's translations, then calls the function `<controller>_controller()`. The return value becomes `$output['content']`.
 
-#### Decoding the route
+### Output
 
-Next, we want to decode the `feed/list.json` file so that we can use it in our application, in this example:
+For `json`, `index.php` sends the content as JSON. For `html`, it builds the menu from each module's `*_menu.php` and wraps the content in `Theme/theme.php`, or `Theme/embed.php` when `embed=1`. Unknown formats return HTTP 406.
 
-- **feed** is the controller (the module we want to use)
-- **list** is the action
-- **json** is the format
+## Modules
 
-Copy and paste the following into index.php:
+A module is a folder with the files for one feature:
 
-```php
-    <?php
+- **Controller**: handles requests and access checks, and returns data or a view.
+- **Model**: a class for storage and logic. Models can be used by other modules.
+- **Views**: HTML with jQuery or Vue 3, styled with Bootstrap 5.
+- **Schema**: table definitions in `*_schema.php`. **Update Database** on the **Admin** page, or `scripts/emoncms-cli admin:dbupdate`, applies changes.
+- **Menu**: entries in `*_menu.php`.
+- **Locale**: translations in `locale/<lang>.json`.
 
-    require "route.php";
-    $route = new Route($_GET['q']);
+See [Developing a new module](developing-a-new-module.md).
 
-    echo "The requested controller is: " . $route->controller . "<br>";
-    echo "The requested action is: " . $route->action . "<br>";
-    echo "The requested format is: " . $route->format . "<br>";
-```
+## Data flow
 
-and create a file called `route.php` with the following:
+1. Data arrives by HTTP at `input/post` or `input/bulk`, or by MQTT through the `emoncms_mqtt` service.
+2. The input model stores the latest value of each input, in Redis when enabled.
+3. The input's process list runs. See [Input processing](input-processing.md).
+4. Processes that log data write to feeds through a storage engine in `Modules/feed/engine/`.
+5. With the low-write setting, writes go to a Redis buffer first. The `feedwriter` service writes them to disk at an interval.
 
-```php
-    <?php
+## Storage engines
 
-    class Route {
-        public $controller = '';
-        public $action = '';
-        public $subaction = '';
-        public $format = "html";
+| Engine | Use |
+|---|---|
+| PHPFina | Fixed interval time series. See [Fixed interval](../timeseries/Fixed-interval.md) |
+| PHPTimeSeries | Variable interval time series. See [Variable interval](../timeseries/Variable-interval.md) |
+| VirtualFeed | Values calculated from other feeds when read |
+| RedisBuffer | Buffers writes for `feedwriter` on low-write systems |
+| MysqlTimeSeries, MysqlMemory | MySQL storage, hidden by default |
 
-        public function __construct($q) {
-            $this->decode($q);
-        }
+## Background services
 
-        public function decode($q) {
-            // filter out all except a-z and / .
-            $q = preg_replace('/[^.\/A-Za-z0-9]/', '', $q);
-     
-            // Split by /
-            $args = preg_split('/[\/]/', $q);
+| Service | Role |
+|---|---|
+| `emoncms_mqtt` | Subscribes to MQTT and posts values as inputs |
+| `feedwriter` | Writes buffered feed data to disk |
+| `service-runner` | Runs allowed scripts requested by the web interface, such as updates and backups |
 
-            // get format (part of last argument after . i.e view.json)
-            $lastarg = sizeof($args) - 1;
-            $lastarg_split = preg_split('/[.]/', $args[$lastarg]);
-            if (count($lastarg_split) > 1) { $this->format = $lastarg_split[1]; }
-            $args[$lastarg] = $lastarg_split[0];
+Service scripts and install notes are in `scripts/services/`.
 
-            if (count($args) > 0) { $this->controller = $args[0]; }
-            if (count($args) > 1) { $this->action = $args[1]; }
-            if (count($args) > 2) { $this->subaction = $args[2]; }
-        }
-    }
-```
+## Settings
 
-The route class decodes the string into the following properties that can be accessed from within the application:
-
-    $route->controller
-    $route->action
-    $route->subaction
-    $route->format
-
-Navigate again to [http://localhost/framework/feed/list.json](http://localhost/framework/feed/list.json) in your browser and you should see the following:
-
-    The requested controller is: feed
-    The requested action is: list
-    The requested format is: json
-
-Now that we have our routing specification, we can use the first part of the route:
-`$route->controller` to load the controller of the module named by `$route->controller`.
-In the case of the `/feed/list.json` query, we want to load the feed module which has a `feed_controller.php` inside,
-the next section introduces the concept of the module in full:
-
-#### Modules
-
-An Emoncms module is simply a directory with all the files that belong to a certain distinct feature inside,
-making it easy to add features to Emoncms just by dropping a new module in the modules' folder.
-A module can then be developed in its own GitHub repository, making development easier.
-
-A module usually includes the following files, but does not have to include all of them:
-
-- **The module controller:**
-The module controller is the second part of responding to the HTTP request.
-- In the first part the front controller `index.php` loads the module controller using the `$route->controller` property,
-- now that we are in the module controller the properties `$route->action`, sub-action and format are used to either select html, css, js pages to be sent to the client or to call module model methods.
-
-- **The module model:**, a class with properties and methods that defines and implements a data model, in most cases a model methods include an element of input sanitation, data validation, processing, storage and error reporting. A good way to think of the model is as a software library that can be included in an application, you could even use an Emoncms model in another application.
-
-- **Module Views:** Each module usually comes with client side application scripts to generate the user interface and handle data on the client (for example, HTML, css or js pages; page is used in a blurred sense here). Client side code is getting more complex as the user interface's becomes more and more javascript driven (providing a nicer more dynamic experience for the user).
-
-- DB Schema definition
-
-- Module menu settings
-
-#### Build it
-
-Now we can extend our index.php to load the requested module controller and create a bare-bones module controller to test it:
-
-Copy and paste the following code into index.php:
-
-```php
-    <?php
-
-    require "core.php";
-    require "route.php";
-
-    $route = new Route(get('q'));
-    $output = controller($route->controller);
-
-    print $output;
-```
-
-Create a file called core.php and add the controller loading function to it:
-
-```php
-    <?php
-    
-    function controller($controller_name) {
-        if ($controller_name) {
-            $controller = $controller_name."_controller";
-            $controllerScript = "Modules/".$controller_name."/".$controller.".php";
-            if (is_file($controllerScript)) {
-                require $controllerScript;
-                $output = $controller();
-            }
-        }
-        return $output;
-    }
-```
-
-Add also to `core.php` the following helper function for checking if `$_GET` has been set.
-
-```php
-    function get($index) {
-      $val = null;
-      if (isset($_GET[$index])) $val = $_GET[$index];
-      return $val;
-    }
-```
-
-Create a folder called `Modules` and a sub-folder called `feed`.
-Inside the `feed` folder, create a file called `feed_controller.php` and copy and paste the following there:
-
-```php
-    <?php
-  
-    function feed_controller()
-    {
-        global $route;
-        
-        if ($route->action == 'list') {
-            $route->format = 'text';
-            return "There will be a feed list here soon";
-        }
-    }
-```
-
-Navigate again to [http://localhost/framework/feed/list.json](http://localhost/framework/feed/list.json) in your browser and you should see the following:
-
-    There will be a feed list here soon
-
-That completes the implementation and use of routing in the Emoncms framework.
-The next sections will detail how to build data models and views to be used by our module.
-
-#### The Module Model
-
-A model should be created as a php class that contains the properties and methods that define the functionality of a module rather than straight functions.
-
-Now we can create a simple model for our feed module that allows us to create, get a list of and also delete feeds.
-The model below shows a complete example of input sanitation and returned success or error reporting for each method:
-
-```php
-    <?php
-
-    class Feed
-    {
-        private $mysqli;
-
-        public function __construct($mysqli)
-        {
-            $this->mysqli = $mysqli;
-        }
-
-        public function create($userid, $name)
-        {
-            // Sanitise input
-            $userid = intval($userid);
-            $name = preg_replace('/[^\w\s-]/','',$name);
-
-            // Insert entry in feeds table
-            $result = $this->mysqli->query("INSERT INTO `feeds` (`userid`, `name`) VALUES ('$userid', '$name')");
-
-            $feedid = $this->mysqli->insert_id;
-
-            if ($feedid==0){
-                return array('success'=>false);
-            } else {
-                return array('success'=>true, 'feedid'=>$feedid);
-            }
-        }
-
-        public function select($userid)
-        {
-            // Sanitise input
-            $userid = intval($userid);
-
-            $result = $this->mysqli->query("SELECT id, name FROM feeds WHERE userid = '$userid'");
-            $feeds = array();
-            while ($row = $result->fetch_object()) $feeds[] = $row;
-            return $feeds;
-        }
-
-        public function delete($userid, $feedid)
-        {
-            // Sanitise input
-            $userid = intval($userid);
-            $feedid = intval($feedid);
-
-            $result = $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid' AND userid = '$userid'");
-
-            if ($this->mysqli->affected_rows>0){
-                return array('success'=>true, 'message'=>'feed deleted');
-            } else {
-                return array('success'=>false, 'message'=>'feed does not exist');
-            }
-        }
-    }
-```
-
-We will need a database and feeds table for the above to connect and query, create a table with the following sql:
-```sql
-    CREATE TABLE  `framework`.`feeds` (
-    `id` INT NOT NULL AUTO_INCREMENT ,
-    `userid` INT NOT NULL ,
-    `name` TEXT NOT NULL ,
-    PRIMARY KEY (  `id` )
-    ) ENGINE = MYISAM ;
-```
-
-Next, we need to update the feed model controller to route actions to the feed model methods: create, select, and delete.
-We also need to include and initialize the feed model and pass the `$mysqli` instance through to the `feed_model` as it is a dependency:
-
-```php
-    <?php
-
-    function feed_controller() {
-        global $route, $mysqli;
-
-        // Fixed userid for now, the userid would usually be set by user session control.
-        $userid = 1;
-
-        include "Modules/feed/feed_model.php";
-        $feed = new Feed($mysqli);
-
-        // JSON API
-        $route->format = 'json';
-        if ($route->action == 'create') {
-            return $feed->create($userid,get('name'));
-        }
-        if ($route->action == 'list') {
-            return $feed->select($userid);
-        }
-        if ($route->action == 'delete') {
-            return $feed->delete($userid,get('id'));
-        }
-```
-
-We also need to update index.php to include the connection to the database,
-placing the connection here means we can use `$mysqli` in all modules as we add more modules.
-We also want to add here the line to format the output as json if the request format is json:
-
-```php
-    <?php
- 
-    require "core.php";
-    require "route.php";
-
-    $mysqli = new mysqli("localhost","username","password","framework");
-
-    $route = new Route(get('q'));
-    $output = controller($route->controller);
-
-    if ($route->format == 'json') {
-        echo json_encode($output);
-    }
- ```
-
-**Try it out**
-
-[http://localhost/framework/feed/create.json?name=power](http://localhost/framework/feed/create.json?name=power)
-
-    {"success":true,"feedid":1}
-
-[http://localhost/framework/feed/list.json](http://localhost/framework/feed/list.json)
-
-    [{"id":"1","name":"power"},{"id":"2","name":"temperature"}]
-
-[http://localhost/framework/feed/delete.json?id=1](http://localhost/framework/feed/delete.json?id=1)
-
-    {"success":true,"message":"feed deleted"} or {"success":false,"message":"feed does not exist"}
-
-That's the JSON API done! Next, we will build a nice client side user interface using javascript:
-
-#### Module Views
-
-Views are html, css, javascript application scripts to be loaded from the server to the browser on the client.
-Once loaded on the client, the client side javascript will usually continue to request,
-receive and send data to and from the server JSON API.
-
-This view uses angular js [https://angularjs.org/](https://angularjs.org/).
-
-Create a file in the feed directory called `feed_view.html`:
-
-```html
-    <div ng-app>
-
-        <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script>
-
-        <div class="container" ng-controller="FeedsListCtrl">
-            <h1>Feeds</h1>
-
-            <table class="table table-bordered">
-                <tr>
-                    <th><a ng-click="sort='id'">Id</a></th>
-                    <th><a ng-click="sort='name'">Name</a></th>
-                </tr>
-
-                <tr ng-repeat="feed in feeds | orderBy: sort">
-                    <td>{{feed.id}}</td>
-                    <td>{{feed.name}}</td>
-                </tr>
-
-            </table>
-        </div>
-
-        <script>
-            function FeedsListCtrl($scope, $http) {
-               $http.get('/framework/feed/list.json').success(function (data) {
-                   $scope.feeds = data;
-               });
-            }
-        </script>
-
-    </div>
-```
-
-To tell the feed controller to load the `feed_view.html`,
-add the following lines before `return $output` in `feed_controller.php`
-
-```php
-    if ($route->format == 'html') {
-        $output['content'] = view("Modules/feed/feed_view.html",array());
-    }
-```
-
-Add the view function to `core.php`:
-
-```php
-    function view($filepath, array $args) {
-      extract($args);
-      ob_start();
-      include "$filepath";
-      $content = ob_get_clean();
-      return $content;
-    }
-```
-
-The view above is returned to `index.php`.
-At the moment we have an option to print the output if its json format,
-but no option to print the output when in html format, so we will need to add that.
-But first lets wrap the module view in a common site wide Twitter bootstrap-based theme:
-
-#### Theme
-
-Create a folder called Theme and create a file called theme.php with the following:
-
-```html
-    <!doctype html>
-    <html>
-
-        <head>
-            <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
-        </head>
-
-        <body style="padding-top:42px;" >
-
-            <div class="navbar navbar-inverse navbar-fixed-top">
-                <div class="navbar-inner"></div>
-            </div>
-
-            <?php echo $content; ?>
-        </body>
-
-    </html>
-```
-
-To finish, we tell `index.php` to wrap `$output` in the theme if the format is html and print the result,
-add the following line below the `if ($route->format == 'json') {` block.
-
-```php
-    if ($route->format == 'html') {
-        print view("Theme/theme.php", $output);
-    }
-```
-
-#### Try it out
-
-[http://localhost/framework/feed/](http://localhost/framework/feed/)
-
-You should now see a simple list as follows, you may need to create some feeds first:
-
-[http://localhost/framework/feed/create.json?name=power](http://localhost/framework/feed/create.json?name=power)
-
-![text](files/final.png)
-
-## table.js dynamic editable table view's
-
-Now we can upgrade our table view above to a fully dynamic editable table ui
-created using a library called table.js developed as part of this project.
-
-1) Replace the content of `feed_view.html` with the following:
-
-```php
-    <?php
-      global $path;
-      $path = "http://localhost/framework/";
-    ?>
-
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-3.6.0.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-    <style>
-    input[type="text"] {
-         width: 88%;
-    }
-    </style>
-
-    <div class="container">
-        <h2>Feeds</h2>
-        <div id="table"></div>
-    </div>
-
-    <script>
-
-      var path = "<?php echo $path; ?>";
-
-      // Extend table library field types
-      for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-
-      table.element = "#table";
-
-      table.fields = {
-        'id':{'type':"fixed"},
-        'name':{'type':"text"},
-
-        // Actions
-        'edit-action':{'title':'', 'type':"edit"},
-        'delete-action':{'title':'', 'type':"delete"},
-        'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="}
-
-      }
-
-      update();
-
-      function update()
-      {
-        table.data = feed.select();
-        table.draw();
-      }
-
-      var updater = setInterval(update, 5000);
-
-      $("#table").bind("onEdit", function(e){
-        clearInterval(updater);
-      });
-
-      $("#table").bind("onSave", function(e,id,fields_to_update){
-        feed.update(id,fields_to_update);
-        updater = setInterval(update, 5000);
-      });
-
-      $("#table").bind("onDelete", function(e,id){
-        feed.delete(id);
-      });
-
-    </script>
-```
-
-2) Create a new script called `feed.js` in the `Modules/feed` folder with the following in it:
-
-```js
-    var feed = {
-
-      'create':function()
-      {
-        var result = {};
-        $.ajax({ url: path+"feed/create.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-      },
-
-      'select':function()
-      {
-        var result = {};
-        $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-        return result;
-      },
-
-      'update':function(id, fields)
-      {
-        var result = {};
-        $.ajax({ url: path+"feed/update.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){} });
-        return result;
-      },
-
-      'delete':function(id)
-      {
-        $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
-      }
-
-    }
-```
-
-3) Create a folder called Lib in the framework directory and download and place the tablejs library in that folder:
-
-    https://github.com/emoncms/tablejs
-    
-4) Nextm we need to add an update method to the feed model and controller, in the feed model add:
-
-```php
-    public function update($userid,$id,$fields)
-    {
-        $id = intval($id);
-        $userid = intval($userid);
-
-        $fields = json_decode($fields);
-
-        $array = array();
-
-        // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
-
-        // Convert to a comma seperated string for the mysql query
-        $fieldstr = implode(",",$array);
-
-        $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id' AND userid = '$userid'");
-
-        if ($this->mysqli->affected_rows>0){
-            return array('success'=>true, 'message'=>'Field updated');
-        } else {
-            return array('success'=>false, 'message'=>'Field could not be updated');
-        }
-    }
-```
-
-and in the controller add (in with the other API method calls)
-
-```php
-    if ($route->action == 'update') {
-       $output = $feed->update($userid,get('id'),get('fields'));
-    }
-```
-
-#### Try It Out
-
-[http://localhost/framework/feed/](http://localhost/framework/feed/)
-
-You should now see a simple list as follows, you may need to create some feeds first:
-
-[http://localhost/framework/feed/create.json?name=power](http://localhost/framework/feed/create.json?name=power)
-
-![text](files/tablejs.png)
-
-
-#### Resources
-
-- [Models in MVC](https://blog.astrumfutura.com/2008/12/the-m-in-mvc-why-models-are-misunderstood-and-unappreciated/)
-- [Twitter bootstrap](https://getbootstrap.com/)
-- [jQuery](https://jquery.com)
-- [angularjs.org](https://angularjs.org)
+`process_settings.php` merges `settings.ini` (or `settings.php`) over `default-settings.php`. See `example.settings.ini`.
