@@ -1,79 +1,55 @@
 # Emoncms
 
-Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
+Emoncms is an open source web application for processing, logging and visualising energy, temperature and other environmental data. It is part of the [OpenEnergyMonitor project](https://openenergymonitor.org).
 
 ![Emoncms](emoncms_graphic.png)
 
----
-
-### Contributing
-
-***Please read the [project state of development and contributing page](CONTRIBUTING.md) before investing significant development time**. If after reading this you see an oppertunity to make a change, please discuss this with us first in the issue list, via email (hello@openenergymonitor.zendesk.com) or via a call (drop us an email to arrange) before submitting a pull request. The process of development on github can often feel quite impersonal and honestly we are also more than happy to have a call to get to know each other and help refine ideas from the outset - Trystan & Glyn, OpenEnergyMonitor.*
-
-## Requirements
-
-- PHP (tested with 8.1.12) 
-- MySQL or MariaDB (tested with 10.5.15) 
-- Apache (tested with 2.4.54)
-- Redis* (tested with 6.0.16)
-
-_*Redis is recommended because it reduces the number of disk writes and therefore prolongs disk life (noticeably on SD cards e.g. Raspberry Pi). Some input-processors also require Redis and fail silently if Redis is not installed. Some environments such as shared hosting or as far as we have tried Windows servers don't support Redis hence why Emoncms has a fall back mode that allows core operation without Redis._
+Emoncms 12 moves the interface to Bootstrap 5. See the [release notes](docs/notes/bootstrap5-release.md).
 
 ## Documentation
 
 - User guide: [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms)
 - Developer documentation: [docs/README.md](docs/README.md)
+- Development setup: [docs/development.md](docs/development.md)
+- Glossary of terms such as input, node, feed and process: [glossary](https://docs.openenergymonitor.org/emoncms/glossary.html)
 
-For terms such as input, node, feed and process, see the [glossary](https://docs.openenergymonitor.org/emoncms/glossary.html).
+### API
 
-**Emoncms.org API Reference**
+Every install includes its API reference:
 
-- [Input API reference](https://emoncms.org/site/api#input)
-- [Feed API reference](https://emoncms.org/site/api#feed)
+- **API Help** on the **Inputs** page and **Feed API Help** on the **Feeds** page.
+- `/llms-full.txt` or `/api.md`: the full reference as Markdown, for AI assistants and other tools. `/llms.txt` is a short index.
+
+The emoncms.org reference: [Input API](https://emoncms.org/site/api#input), [Feed API](https://emoncms.org/site/api#feed).
 
 ## Install
 
-Emoncms is designed and tested to run on either Ubuntu Linux (Local, Dedicated machine or VPS) or RaspberryPi OS. It should work on other Debian Linux systems though we dont test or provide documentation for installation on these. 
+Emoncms is tested on Raspberry Pi OS and Ubuntu. It should work on other Debian systems. Shared hosting and XAMPP are not supported, because Emoncms needs background services. A small Linux VPS works well.
 
-We do not recommend and are unable to support installation on shared hosting or XAMPP servers, shared hosting in particular has no or limited capabilities for running some of the scripts used by emoncms. There is now a large choice of low cost miniature Linux VPS hosting solutions that provide a much better installation environment at similar cost.
+- [Install with EmonScripts](https://docs.openenergymonitor.org/emonsd/install.html)
+- [Download the emonSD image](https://docs.openenergymonitor.org/emonsd/download.html) for a Raspberry Pi
+- [Buy an SD card with emonSD installed](https://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
 
-Recommended: 
+### Docker
 
-* [Install with emonScripts](https://docs.openenergymonitor.org/emonsd/install.html)
-* [Pre built emonSD SD-card Image Download](https://docs.openenergymonitor.org/emonsd/download.html)
-* [Purchase pre-loaded SD card](http://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
-
-## docker standalone container
-
-An easy way to start with emoncms is to use the [all-in-one docker container](https://hub.docker.com/r/alexjunk/emoncms) 
-
-A pipeline using github actions is producing builds with latest emoncms stable version for different architectures : amd64, arm64, arm/v7 
-
-These docker images, based on the [alpine linux](https://www.alpinelinux.org) distribution, are designed for iot. Images are tagged using alpine and emoncms versions, for example alpine3.19_emoncms11.4.11. 
-
-The images have onboard :
-- the mariadb and redis databases,
-- the mosquitto mqtt broker,
-- the main modules : graph, sync, backup, dashboard and app,
-- the workers : emoncms_mqtt, service-runner and feedwriter. 
-
-You can easily : 
-* deactivate the low-write
-* use an external broker. 
-
-To pull the latest image for testing : 
+An [all-in-one Docker container](https://hub.docker.com/r/alexjunk/emoncms) is available for amd64, arm64 and arm/v7. It is built from the Emoncms `stable` branch on Alpine Linux, and tagged with the Alpine and Emoncms versions. It includes MariaDB, Redis, Mosquitto, the graph, sync, backup, dashboard and app modules, and the `emoncms_mqtt`, `service-runner` and `feedwriter` services.
 
 ```
 sudo docker pull alexjunk/emoncms
 ```
-More on https://emoncms-docker.github.io
 
+See [emoncms-docker.github.io](https://emoncms-docker.github.io).
 
-### Experimental
+## Requirements
 
-not currently up to date
+- PHP 8.1 or later. CI tests PHP 8.1 to 8.4.
+- PHP extensions: `mysqli`, `redis`, `gettext`, `mbstring`, `curl`, `gd`, `xml`.
+- MySQL or MariaDB.
+- Apache with `mod_rewrite`.
+- Redis, recommended.
+- Mosquitto, for MQTT input.
 
-[Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
+Redis reduces disk writes, which extends the life of SD cards. Emoncms runs without Redis where it is not available, but input processes marked as needing Redis do not work.
 
 ## Modules
 
@@ -96,24 +72,28 @@ Other modules include [Email reports](https://github.com/emoncms/emailreport) an
 
 ## Branches
 
-* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.
+- [master](https://github.com/emoncms/emoncms): latest development. Open pull requests against `master`.
+- [stable](https://github.com/emoncms/emoncms/tree/stable): release branch, used by emonPi and emonBase updates. See the [releases](https://github.com/emoncms/emoncms/releases).
 
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See release change log](https://github.com/emoncms/emoncms/releases).
+## Contributing
+
+Please read the [state of development and contributing page](CONTRIBUTING.md) before starting significant work. Then discuss your idea with us in the issue list, by email (hello@openenergymonitor.zendesk.com), or on a call (email us to arrange one). We are happy to talk ideas through from the start. Trystan & Glyn, OpenEnergyMonitor.
+
+Issues and pull requests made with the help of an AI agent are welcome. See [AGENTS.md](AGENTS.md).
+
+Report security problems privately. See [SECURITY.md](SECURITY.md).
 
 ## Tools
 
-* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full Emoncms installation. Useful for checking backups and archived data.
-
-#### Android App
-
-[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB)
-
-[GitHub Repo](https://github.com/emoncms/AndroidApp)
-
-[Development Forum](https://community.openenergymonitor.org/c/emoncms/mobile-app)
+- [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview): explore PHPFina feed data files without an Emoncms install. Useful for checking backups and archived data.
+- Android app: [Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB), [source](https://github.com/emoncms/AndroidApp), [forum](https://community.openenergymonitor.org/c/emoncms/mobile-app).
 
 ## More information
 
-- Cloud hosted platform - http://emoncms.org
-- [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
-- [OpenEnergyMonitor Homepage](https://openenergymonitor.org)
+- [Emoncms.org](https://emoncms.org), hosted Emoncms
+- [OpenEnergyMonitor forum](https://community.openenergymonitor.org)
+- [OpenEnergyMonitor](https://openenergymonitor.org)
+
+## Licence
+
+Emoncms is released under the GNU Affero General Public License, version 3 or later. See [LICENSE.txt](LICENSE.txt) and [COPYRIGHT.txt](COPYRIGHT.txt).
