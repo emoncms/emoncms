@@ -49,6 +49,8 @@ Reference pages, such as Feeds and Admin, use one section per screen area in pla
 
 ## Screenshots
 
+- Capture with `scripts/docs-screenshots`. Add each screenshot to its `manifest.json`.
+- Name images `<page>-<n>-<subject>.webp`, for example `feeds-1-list.webp`.
 - One screenshot per step at most. Leave it out if the step is obvious.
 - Alt text describes the content.
 - Remove images that no page references.

@@ -26,7 +26,7 @@ Each request is limited to 70,000 datapoints per feed by default (`max_datapoint
 1. On the **Feeds** page, tick the feeds to export.
 2. Click **Download** in the toolbar.
 3. Set **Start date & time**, **End date & time**, **Interval** and **Date time format**.
-4. Check the **Estimated download size** and download.
+4. Check the **Estimated download size** and click **Export**.
 
 **Interval** can be the original feed interval, a fixed interval from 5 seconds to 12 hours, or **Daily**, **Weekly**, **Monthly** or **Annual**.
 

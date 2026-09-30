@@ -1,0 +1,74 @@
+{
+    "defaults": {
+        "outdir": "../../docs/user_guide/img",
+        "viewport": {
+            "width": 1200,
+            "height": 750
+        },
+        "scale": 2,
+        "maxWidth": 1600,
+        "quality": 80,
+        "settle": 500,
+        "timezone": "Europe/London"
+    },
+    "seed": [
+        {"node": "emontx4", "values": {"P1": 412, "P2": 1830, "P3": 0, "P4": 64, "V": 241.2, "E1": 5231.4, "E2": 2210.8, "E3": 0, "E4": 310.2}},
+        {"node": "emonth2", "values": {"temperature": 19.6, "humidity": 54.1, "battery": 3.0}}
+    ],
+    "shots": [
+        {
+            "name": "feeds-1-list",
+            "page": "feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header"
+        },
+        {
+            "name": "feeds-2-new",
+            "page": "feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": "#addnewfeed"},
+                {"waitFor": "#newFeedNameModal .modal-content"}
+            ],
+            "element": "#newFeedNameModal .modal-content"
+        },
+        {
+            "name": "feeds-3-edit",
+            "page": "feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('heatpump_elec')) input.feed-select"},
+                {"click": "button[title='Edit']"},
+                {"waitFor": "#feedEditModal .modal-content"}
+            ],
+            "element": "#feedEditModal .modal-content"
+        },
+        {
+            "name": "feeds-4-delete",
+            "page": "feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('heatpump_elec')) input.feed-select"},
+                {"click": "button[title='Delete']"},
+                {"waitFor": "#feedDeleteModal .modal-content"}
+            ],
+            "element": "#feedDeleteModal .modal-content"
+        },
+        {
+            "name": "feeds-5-export",
+            "page": "feeds.md",
+            "url": "feed/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"check": ".group-list-row:has([data-col=name]:text-is('heatpump_elec')) input.feed-select"},
+                {"click": "button[title='Download']"},
+                {"waitFor": "#feedExportModal .modal-content"},
+                {"eval": "(() => { const d = new Date(Date.now() - 7*864e5); const p = n => String(n).padStart(2, '0'); const el = document.getElementById('export-start'); el.value = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} 00:00:00`; el.dispatchEvent(new Event('input', { bubbles: true })); })()"}
+            ],
+            "element": "#feedExportModal .modal-content"
+        }
+    ]
+}

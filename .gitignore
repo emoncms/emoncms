@@ -34,3 +34,5 @@ __pycache__/
 /audits/
 # Bootstrap 5 migration tools
 scripts/bootstrap5/node_modules/
+# Docs screenshot tooling
+scripts/docs-screenshots/node_modules/

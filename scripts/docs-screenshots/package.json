@@ -1,0 +1,12 @@
+{
+  "name": "emoncms-docs-screenshots",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "node capture.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.63.0",
+    "sharp": "^0.34.0"
+  }
+}
