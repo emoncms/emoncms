@@ -26,104 +26,12 @@ Common causes of a stopped service:
 
 ### Services running but no inputs
 
-Check the emonHub log at **Setup > EmonHub**. A working log looks like the example below.
+Check the log at **Setup > EmonHub**:
 
-1. No `NEW FRAME : OK` lines means emonHub receives no data from the radio or the measurement board. Possible causes:
-   - A fault on the emonPi measurement board.
-   - A fault on a wireless node sending to an emonBase.
-   - Wrong radio settings, such as frequency or network group. These are in emonhub.conf. Click **Edit Config** on the EmonHub page. See [emonHub configuration](../emonhub/configuration.md).
-2. `NEW FRAME : OK` lines but no `MQTT Publishing:` lines means a problem with the MQTT interfacer. Compare it with the [default emonhub.conf](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf).
+- No `NEW FRAME` lines means emonHub receives no data from the radio or the measurement board. Check the hardware and the radio settings in emonhub.conf. Click **Edit config** on the EmonHub page.
+- `NEW FRAME` lines but no `MQTT Publishing:` lines means a problem with the MQTT interfacer. Compare it with the [default emonhub.conf](https://github.com/openenergymonitor/emonhub/blob/emon-pi/conf/emonpi.default.emonhub.conf).
 
-Example of a working emonhub.log:
-
-```
-2020-02-21 16:02:33,236 INFO     MainThread EmonHub emonHub emon-pi variant v3-beta
-2020-02-21 16:02:33,236 INFO     MainThread Opening hub...
-2020-02-21 16:02:33,237 INFO     MainThread Logging level set to DEBUG
-2020-02-21 16:02:33,237 INFO     MainThread Creating EmonHubJeeInterfacer 'RFM2Pi' 
-2020-02-21 16:02:33,238 DEBUG    MainThread Opening serial port: /dev/ttyAMA0 @ 38400 bits/s
-2020-02-21 16:02:35,243 INFO     MainThread RFM2Pi device firmware version: [RF12demo.14]
-2020-02-21 16:02:35,244 INFO     MainThread RFM2Pi device current settings:  E i5 g210 @ 433 MHz q1
-2020-02-21 16:02:35,245 INFO     MainThread Setting RFM2Pi calibration: 230V (1p)
-2020-02-21 16:02:36,247 DEBUG    MainThread Setting RFM2Pi interval: 60
-2020-02-21 16:02:36,247 DEBUG    MainThread Setting RFM2Pi pubchannels: ['ToEmonCMS']
-2020-02-21 16:02:36,248 DEBUG    MainThread Setting RFM2Pi subchannels: ['ToRFM12']
-2020-02-21 16:02:36,249 INFO     MainThread Creating EmonHubMqttInterfacer 'MQTT' 
-2020-02-21 16:02:36,251 DEBUG    RFM2Pi     acknowledged command: > 1p
-2020-02-21 16:02:36,253 DEBUG    MainThread Setting MQTT subchannels: ['ToEmonCMS']
-2020-02-21 16:02:36,254 INFO     MainThread Setting MQTT node_format_enable: 1
-2020-02-21 16:02:36,254 INFO     MainThread Setting MQTT nodevar_format_enable: 1
-2020-02-21 16:02:36,255 INFO     MainThread Setting MQTT nodevar_format_basetopic: emon/
-2020-02-21 16:02:36,256 INFO     MainThread Creating EmonHubEmoncmsHTTPInterfacer 'emoncmsorg' 
-2020-02-21 16:02:36,257 DEBUG    MainThread Setting emoncmsorg pubchannels: ['ToRFM12']
-2020-02-21 16:02:36,258 DEBUG    MainThread Setting emoncmsorg subchannels: ['ToEmonCMS']
-2020-02-21 16:02:36,258 WARNING  MainThread Setting emoncmsorg apikey: obscured
-2020-02-21 16:02:36,258 INFO     MainThread Setting emoncmsorg url: https://emoncms.org
-2020-02-21 16:02:36,259 INFO     MainThread Setting emoncmsorg senddata: 0
-2020-02-21 16:02:36,259 INFO     MainThread Setting emoncmsorg sendstatus: 1
-2020-02-21 16:02:36,352 DEBUG    RFM2Pi     RFM2Pi broadcasting time: 16:02
-2020-02-21 16:02:38,456 DEBUG    RFM2Pi     device settings updated: E i5 g210 @ 433 MHz q1
-2020-02-21 16:02:38,559 DEBUG    RFM2Pi     7 NEW FRAME : OK 24 164 0 0 0 151 2 27 0 1 0 0 0 (-45)
-2020-02-21 16:02:38,561 DEBUG    RFM2Pi     7 Timestamp : 1582300958.5596843
-2020-02-21 16:02:38,561 DEBUG    RFM2Pi     7 From Node : 24
-2020-02-21 16:02:38,562 DEBUG    RFM2Pi     7    Values : [16.400000000000002, 0, 66.3, 2.7, 1]
-2020-02-21 16:02:38,562 DEBUG    RFM2Pi     7      RSSI : -45
-2020-02-21 16:02:38,563 DEBUG    RFM2Pi     7 Sent to channel(start)' : ToEmonCMS
-2020-02-21 16:02:38,563 DEBUG    RFM2Pi     7 Sent to channel(end)' : ToEmonCMS
-2020-02-21 16:02:38,665 DEBUG    RFM2Pi     acknowledged command: > 0,16,2,0,0s
-2020-02-21 16:02:38,763 INFO     MQTT       Connecting to MQTT Server
-2020-02-21 16:02:38,767 DEBUG    RFM2Pi     confirmed sent packet size: -> 4 b
-2020-02-21 16:02:38,866 INFO     MQTT       connection status: Connection successful
-2020-02-21 16:02:38,867 DEBUG    MQTT       CONACK => Return code: 0
-2020-02-21 16:02:38,871 DEBUG    RFM2Pi     8 NEW FRAME : OK 19 181 0 0 0 37 2 28 0 1 0 0 0 (-49)
-2020-02-21 16:02:38,872 DEBUG    RFM2Pi     8 Timestamp : 1582300958.87131
-2020-02-21 16:02:38,873 DEBUG    RFM2Pi     8 From Node : 19
-2020-02-21 16:02:38,873 DEBUG    RFM2Pi     8    Values : [18.1, 0, 54.900000000000006, 2.8000000000000003, 1]
-2020-02-21 16:02:38,874 DEBUG    RFM2Pi     8      RSSI : -49
-2020-02-21 16:02:38,874 DEBUG    RFM2Pi     8 Sent to channel(start)' : ToEmonCMS
-2020-02-21 16:02:38,874 DEBUG    RFM2Pi     8 Sent to channel(end)' : ToEmonCMS
-2020-02-21 16:02:38,881 DEBUG    emoncmsorg Buffer size: 1
-2020-02-21 16:02:38,969 INFO     MQTT       on_subscribe
-2020-02-21 16:02:38,970 DEBUG    MQTT       Publishing: emon/emonth1/temperature 18.1
-2020-02-21 16:02:38,977 DEBUG    MQTT       Publishing: emon/emonth1/external temperature 0
-2020-02-21 16:02:38,978 DEBUG    MQTT       Publishing: emon/emonth1/humidity 54.900000000000006
-2020-02-21 16:02:38,980 DEBUG    MQTT       Publishing: emon/emonth1/battery 2.8000000000000003
-2020-02-21 16:02:38,981 DEBUG    MQTT       Publishing: emon/emonth1/pulsecount 1
-2020-02-21 16:02:38,982 DEBUG    MQTT       Publishing: emon/emonth1/rssi -49
-2020-02-21 16:02:38,984 INFO     MQTT       Publishing: emonhub/rx/19/values 18.1,0,54.900000000000006,2.8000000000000003,1,-49
-2020-02-21 16:02:39,480 DEBUG    RFM2Pi     9 NEW FRAME : OK 22 175 0 0 0 47 2 28 0 1 0 0 0 (-44)
-2020-02-21 16:02:39,481 DEBUG    RFM2Pi     9 Timestamp : 1582300959.4804919
-2020-02-21 16:02:39,482 DEBUG    RFM2Pi     9 From Node : 22
-2020-02-21 16:02:39,482 DEBUG    RFM2Pi     9    Values : [17.5, 0, 55.900000000000006, 2.8000000000000003, 1]
-2020-02-21 16:02:39,483 DEBUG    RFM2Pi     9      RSSI : -44
-2020-02-21 16:02:39,483 DEBUG    RFM2Pi     9 Sent to channel(start)' : ToEmonCMS
-2020-02-21 16:02:39,484 DEBUG    RFM2Pi     9 Sent to channel(end)' : ToEmonCMS
-2020-02-21 16:02:39,594 DEBUG    MQTT       Publishing: emon/emonth4/temperature 17.5
-2020-02-21 16:02:39,595 DEBUG    MQTT       Publishing: emon/emonth4/external temperature 0
-2020-02-21 16:02:39,597 DEBUG    MQTT       Publishing: emon/emonth4/humidity 55.900000000000006
-2020-02-21 16:02:39,598 DEBUG    MQTT       Publishing: emon/emonth4/battery 2.8000000000000003
-2020-02-21 16:02:39,600 DEBUG    MQTT       Publishing: emon/emonth4/pulsecount 1
-2020-02-21 16:02:39,601 DEBUG    MQTT       Publishing: emon/emonth4/rssi -44
-2020-02-21 16:02:39,602 INFO     MQTT       Publishing: emonhub/rx/22/values 17.5,0,55.900000000000006,2.8000000000000003,1,-44
-2020-02-21 16:02:41,904 DEBUG    RFM2Pi     10 NEW FRAME : OK 10 111 2 226 1 0 0 0 0 220 90 84 220 1 0 155 5 1 0 0 0 0 0 0 0 0 0 (-53)
-2020-02-21 16:02:41,905 DEBUG    RFM2Pi     10 Timestamp : 1582300961.904312
-2020-02-21 16:02:41,906 DEBUG    RFM2Pi     10 From Node : 10
-2020-02-21 16:02:41,906 DEBUG    RFM2Pi     10    Values : [623, 482, 0, 0, 232.6, 121940, 66971, 0, 0]
-2020-02-21 16:02:41,907 DEBUG    RFM2Pi     10      RSSI : -53
-2020-02-21 16:02:41,907 DEBUG    RFM2Pi     10 Sent to channel(start)' : ToEmonCMS
-2020-02-21 16:02:41,908 DEBUG    RFM2Pi     10 Sent to channel(end)' : ToEmonCMS
-2020-02-21 16:02:42,019 DEBUG    MQTT       Publishing: emon/emontx1/power1 623
-2020-02-21 16:02:42,020 DEBUG    MQTT       Publishing: emon/emontx1/power2 482
-2020-02-21 16:02:42,021 DEBUG    MQTT       Publishing: emon/emontx1/power3 0
-2020-02-21 16:02:42,022 DEBUG    MQTT       Publishing: emon/emontx1/power4 0
-2020-02-21 16:02:42,023 DEBUG    MQTT       Publishing: emon/emontx1/vrms 232.6
-2020-02-21 16:02:42,023 DEBUG    MQTT       Publishing: emon/emontx1/e1 121940
-2020-02-21 16:02:42,024 DEBUG    MQTT       Publishing: emon/emontx1/e2 66971
-2020-02-21 16:02:42,025 DEBUG    MQTT       Publishing: emon/emontx1/e3 0
-2020-02-21 16:02:42,026 DEBUG    MQTT       Publishing: emon/emontx1/e4 0
-2020-02-21 16:02:42,028 DEBUG    MQTT       Publishing: emon/emontx1/rssi -53
-2020-02-21 16:02:42,029 INFO     MQTT       Publishing: emonhub/rx/10/values 623,482,0,0,232.6,121940,66971,0,0,-53
-```
+See [emonHub troubleshooting](../emonhub/troubleshooting.md) for an example of a working log and how to read it.
 
 ### emonHub not running
 

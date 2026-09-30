@@ -416,6 +416,27 @@
             "admin": true,
             "waitFor": "body",
             "settle": 1500
+        },
+        {
+            "name": "dashboards-1-list",
+            "page": "dashboards.md",
+            "url": "dashboard/list",
+            "waitFor": "body",
+            "settle": 1500
+        },
+        {
+            "name": "dashboards-2-view",
+            "page": "dashboards.md",
+            "url": "dashboard/view?id=224",
+            "waitFor": "body",
+            "settle": 3000
+        },
+        {
+            "name": "dashboards-3-edit",
+            "page": "dashboards.md",
+            "url": "dashboard/edit?id=224",
+            "waitFor": "body",
+            "settle": 3000
         }
     ]
 }

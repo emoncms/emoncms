@@ -8,15 +8,15 @@ For ready-made dashboards, see [Apps](apps.md).
 
 1. Go to **Dashboards** and click **New**.
 2. Click the edit icon (**Edit Layout**) on the new dashboard.
-3. Add items from the editor menus:
-   - **Widgets**: dials, values, thermometers, gauges and indicators.
-   - **Visualisations**: charts.
-   - **Text**, **Containers** and **Image**.
-4. Drag items to place and resize them.
+3. The editor opens with a **Toolbox** on the right. Click a category button and choose an item:
+   - Widgets: dials, values, thermometers, gauges and indicators.
+   - Charts.
+   - Text, containers and images.
+4. Click on the dashboard to place the item. Drag to move and resize it.
 5. To set a widget's feed and options, double-click it, or select it and click **Configure selected item**. Choose the **Feed** and click **Save changes**.
 6. Click **Changed, press to save**.
 
-The editor toolbar also has undo, redo, copy, cut, paste, and move to front or back.
+The **Toolbox** also has undo, redo, copy, cut, paste, and move to front or back.
 
 ## Charts
 
