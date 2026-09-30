@@ -13,7 +13,8 @@
     },
     "seed": [
         {"node": "emontx4", "values": {"P1": 412, "P2": 1830, "P3": 0, "P4": 64, "V": 241.2, "E1": 5231.4, "E2": 2210.8, "E3": 0, "E4": 310.2}},
-        {"node": "emonth2", "values": {"temperature": 19.6, "humidity": 54.1, "battery": 3.0}}
+        {"node": "emonth2", "values": {"temperature": 19.6, "humidity": 54.1, "battery": 3.0}},
+        {"node": "mynode", "values": {"power1": 100, "power2": 200, "power3": 300}}
     ],
     "shots": [
         {
@@ -69,6 +70,233 @@
                 {"eval": "(() => { const d = new Date(Date.now() - 7*864e5); const p = n => String(n).padStart(2, '0'); const el = document.getElementById('export-start'); el.value = `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())} 00:00:00`; el.dispatchEvent(new Event('input', { bubbles: true })); })()"}
             ],
             "element": "#feedExportModal .modal-content"
+        },
+        {
+            "name": "intro-rpi-1-login",
+            "page": "intro-rpi.md",
+            "url": "",
+            "loggedOut": true,
+            "waitFor": "#login"
+        },
+        {
+            "name": "inputs-1-list",
+            "page": "inputs.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"eval": "document.querySelectorAll('.group-list-group').forEach(g => { const h = g.querySelector('.group-list-header'); if (h && !/^\\s*(emontx4|emonth2)\\b/.test(h.querySelector('[data-col=name]')?.textContent || h.textContent)) g.style.display = 'none'; })"}
+            ]
+        },
+        {
+            "name": "inputs-2-log-to-feed",
+            "page": "intro-rpi.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": ".group-list-group:has(.group-list-header:has-text('emontx4')) .group-list-row:has([data-col=name]:text-is('P1')) a[title='Configure Input processing']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"selectLabel": ["#select-process", "Log to feed"]},
+                {"select": [".input-group:has(.feed-select-label) select >> nth=0", "-1"]},
+                {"fill": ["#new-feed-name", "use"]},
+                {"select": ["#processlist-ui select.input-75", "10"]}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "inputs-3-power-to-kwh",
+            "page": "intro-rpi.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": ".group-list-group:has(.group-list-header:has-text('emontx4')) .group-list-row:has([data-col=name]:text-is('P1')) a[title='Configure Input processing']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"selectLabel": ["#select-process", "Power to kWh"]},
+                {"select": [".input-group:has(.feed-select-label) select >> nth=0", "-1"]},
+                {"fill": ["#new-feed-name", "use_kwh"]},
+                {"select": ["#processlist-ui select.input-75", "10"]}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "daily-kwh-1-log-join",
+            "page": "daily-kwh.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": ".group-list-group:has(.group-list-header:has-text('emontx4')) .group-list-row:has([data-col=name]:text-is('E1')) a[title='Configure Input processing']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"selectLabel": ["#select-process", "Log to feed (Join)"]},
+                {"select": [".input-group:has(.feed-select-label) select >> nth=0", "-1"]},
+                {"fill": ["#new-feed-name", "use_kwh"]},
+                {"select": ["#processlist-ui select.input-75", "10"]}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "daily-kwh-2-kwh-accumulator",
+            "page": "daily-kwh.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"click": ".group-list-group:has(.group-list-header:has-text('emontx4')) .group-list-row:has([data-col=name]:text-is('E1')) a[title='Configure Input processing']"},
+                {"waitFor": "#processlistModal .modal-content"},
+                {"selectLabel": ["#select-process", "kWh Accumulator"]},
+                {"select": [".input-group:has(.feed-select-label) select >> nth=0", "-1"]},
+                {"fill": ["#new-feed-name", "use_kwh"]},
+                {"select": ["#processlist-ui select.input-75", "10"]}
+            ],
+            "element": "#processlistModal .modal-content"
+        },
+        {
+            "name": "postingdata-1-inputs",
+            "page": "postingdata.md",
+            "url": "input/view",
+            "waitFor": ".group-list-header",
+            "actions": [
+                {"eval": "document.querySelectorAll('.group-list-group').forEach(g => { const h = g.querySelector('.group-list-header'); if (h && !/^\\s*(mynode)\\b/.test(h.querySelector('[data-col=name]')?.textContent || h.textContent)) g.style.display = 'none'; })"}
+            ]
+        },
+        {
+            "name": "graphs-1-view",
+            "page": "graphs.md",
+            "url": "graph?feedidsLH={feed:heatpump_elec}&feedidsRH={feed:heatpump_flowT}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "graphs-2-feed-config",
+            "page": "graphs.md",
+            "element": ".panel:has(#feed-options-table)",
+            "url": "graph?feedidsLH={feed:heatpump_elec}&feedidsRH={feed:heatpump_flowT}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "graphs-3-feed-stats",
+            "page": "graphs.md",
+            "element": ".panel:has(#feed-options-table)",
+            "url": "graph?feedidsLH={feed:heatpump_elec}&feedidsRH={feed:heatpump_flowT}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"click": "button:has-text('Feed Stats')"},
+                {"wait": 1000}
+            ]
+        },
+        {
+            "name": "daily-kwh-3-daily-bars",
+            "page": "daily-kwh.md",
+            "url": "graph/{feed:heatpump_elec_kwh}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"select": ["#request-type", "daily"]},
+                {"select": ["#feed-options-table tbody tr >> nth=0 >> select >> nth=0", "bars"]},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=0"},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=2"},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "daily-averages-1-daily",
+            "page": "daily-averages.md",
+            "url": "graph/{feed:heatpump_outsideT}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"select": ["#request-type", "daily"]},
+                {"select": ["#feed-options-table tbody tr >> nth=0 >> select >> nth=0", "bars"]},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=0"},
+                {"check": "#feed-options-table tbody tr >> nth=0 >> input[type=checkbox] >> nth=3"},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "histograms-1-time-at-value",
+            "page": "histograms.md",
+            "url": "graph/{feed:heatpump_elec}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"click": "#feed-options-table button.histogram >> nth=0"},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "histograms-2-kwh-at-power",
+            "page": "histograms.md",
+            "url": "graph/{feed:heatpump_elec}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"click": "#feed-options-table button.histogram >> nth=0"},
+                {"wait": 1000},
+                {"selectLabel": ["select:has(option:text-is('kWh at Power'))", "kWh at Power"]},
+                {"wait": 1500}
+            ]
+        },
+        {
+            "name": "export-csv-1-graph",
+            "page": "export-csv.md",
+            "element": ".panel:has(#feed-options-table)",
+            "url": "graph?feedidsLH={feed:heatpump_elec},{feed:heatpump_heat}",
+            "waitFor": "#placeholder canvas",
+            "actions": [
+                {"select": [".graph_time", "168"]},
+                {"wait": 1500},
+                {"click": "button:has-text('CSV Export')"},
+                {"wait": 1000}
+            ]
+        },
+        {
+            "name": "apps-1-myelectricflow",
+            "page": "apps.md",
+            "url": "app/view?id={app:myelectricflow}",
+            "waitFor": "#app-block",
+            "settle": 4000,
+            "element": "#app-block"
+        },
+        {
+            "name": "apps-2-myelectricflow-tariff",
+            "page": "apps.md",
+            "url": "app/view?id={app:myelectricflow}",
+            "waitFor": "#app-block",
+            "actions": [
+                {"wait": 3000},
+                {"click": ".view-toggle-btn[data-view=costs]"}
+            ],
+            "settle": 4000,
+            "element": "#app-block"
+        },
+        {
+            "name": "apps-3-myheatpump",
+            "page": "apps.md",
+            "url": "app/view?id={app:myheatpump}",
+            "waitFor": "#app-block",
+            "settle": 4000,
+            "element": "#app-block"
+        },
+        {
+            "name": "postprocess-1-new",
+            "page": "postprocess.md",
+            "url": "postprocess",
+            "waitFor": "#pp-form",
+            "actions": [
+                {"selectLabel": ["#pp-form select >> nth=0", "Power to kWh"]},
+                {"wait": 500}
+            ],
+            "element": "#pp-form"
         }
     ]
 }

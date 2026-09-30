@@ -38,7 +38,13 @@ const context = await browser.newContext({
     locale: 'en-GB',
     timezoneId: defaults.timezone
 });
-const page = await context.newPage();
+const userPage = await context.newPage();
+let page = userPage;
+
+// API keys, requested before login. user/auth.json answers only without a session
+const keys = await (await context.request.post(base + 'user/auth.json', {
+    form: { username, password }
+})).json();
 
 // Log in once. The session cookie is shared by every shot.
 const auth = await context.request.post(base + 'user/login.json', {
@@ -51,9 +57,6 @@ if (!login.success) {
     process.exit(1);
 }
 
-const keys = await (await context.request.post(base + 'user/auth.json', {
-    form: { username, password }
-})).json();
 
 // Seed live values so inputs and feeds show as recently updated
 const seeds = args.includes('--no-seed') ? [] : (manifest.seed || []);
@@ -64,6 +67,22 @@ for (const seed of seeds) {
     });
     if (!res.ok()) console.warn('Seed failed for node ' + seed.node);
 }
+
+// Names in URLs, such as {feed:use} or {app:myheatpump}, resolve to ids in this account
+const bearer = { Authorization: 'Bearer ' + keys.apikey_write };
+const ids = { feed: {}, app: {} };
+for (const f of await (await context.request.get(base + 'feed/list.json', { headers: bearer })).json()) ids.feed[f.name] = f.id;
+for (const a of await (await context.request.get(base + 'app/list.json', { headers: bearer })).json().catch(() => [])) ids.app[a.app] = a.id;
+
+// Separate context for pages seen before login
+const guest = await browser.newContext({
+    viewport: defaults.viewport,
+    deviceScaleFactor: defaults.scale,
+    colorScheme: 'light',
+    locale: 'en-GB',
+    timezoneId: defaults.timezone
+});
+const guestPage = await guest.newPage();
 
 await mkdir(outdir, { recursive: true });
 
@@ -81,9 +100,17 @@ for (const shot of shots) {
 await browser.close();
 process.exit(failed ? 1 : 0);
 
+function resolve(url) {
+    return url.replace(/\{(feed|app):([^}]+)\}/g, (m, type, name) => {
+        if (ids[type][name] === undefined) throw new Error('No ' + type + ' named ' + name);
+        return ids[type][name];
+    });
+}
+
 async function capture(shot) {
+    page = shot.loggedOut ? guestPage : userPage;
     await page.setViewportSize(shot.viewport || defaults.viewport);
-    await page.goto(base + shot.url, { waitUntil: 'networkidle' });
+    await page.goto(base + resolve(shot.url), { waitUntil: 'networkidle' });
     if (shot.waitFor) await page.waitForSelector(shot.waitFor, { state: 'visible' });
 
     for (const action of shot.actions || []) await run(action);
@@ -95,6 +122,13 @@ async function capture(shot) {
         await el.waitFor({ state: 'visible' });
         png = await el.screenshot({ animations: 'disabled', caret: 'hide' });
     } else {
+        // Actions such as ticking a box can scroll the page. Show it from the top.
+        await page.evaluate(() => {
+            for (const el of [document.scrollingElement, ...document.querySelectorAll('*')]) {
+                if (el && el.scrollTop > 0) el.scrollTop = 0;
+            }
+        });
+        await page.waitForTimeout(200);
         png = await page.screenshot({ animations: 'disabled', caret: 'hide', fullPage: !!shot.fullPage });
     }
 
@@ -114,6 +148,8 @@ async function run(action) {
         case 'hover': await page.locator(value).first().hover(); break;
         case 'fill': await page.locator(value[0]).first().fill(value[1]); break;
         case 'select': await page.locator(value[0]).first().selectOption(value[1]); break;
+        case 'selectLabel': await page.locator(value[0]).first().selectOption({ label: value[1] }); break;
+        case 'hide': await page.locator(value).evaluateAll(els => els.forEach(e => { e.style.display = 'none'; })); break;
         case 'press': await page.keyboard.press(value); break;
         case 'waitFor': await page.waitForSelector(value, { state: 'visible' }); break;
         case 'wait': await page.waitForTimeout(value); break;
