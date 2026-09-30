@@ -1,4 +1,6 @@
-## Emoncms Time Series engine history
+# Time series engine history
+
+> Historical. Describes how the storage engines developed up to about 2015. For the engines in use now, see [Fixed interval](Fixed-interval.md) and [Variable interval](Variable-interval.md).
 
 Writing, storing and viewing time series data is a core part of an energy monitoring application like emoncms. Over the years the way time series data has been handled in emoncms has gone through several significant revisions both out of necessity as emoncms.org use has grown and through increased understanding of how disks and filesystems work and how to reduce disk IO through in-memory storage.
 In order to best describe the current solution it helps to begin with a brief history of time series database design within emoncms.

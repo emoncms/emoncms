@@ -21,60 +21,10 @@ _*Redis is recommended because it reduces the number of disk writes and therefor
 
 ## Documentation
 
-**View the Emoncms documentation at: [https://docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms)**
+- User guide: [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms)
+- Developer documentation: [docs/README.md](docs/README.md)
 
-- [Getting started emonPi/Base](https://docs.openenergymonitor.org/emoncms/intro-rpi.html)
-- [Getting started emoncms.org](https://docs.openenergymonitor.org/emoncms/intro-remote.html)
-- [Emoncms Core Concepts](https://docs.openenergymonitor.org/emoncms/coreconcepts.html)
-- [Posting data](https://docs.openenergymonitor.org/emoncms/postingdata.html)
-- [MQTT](https://docs.openenergymonitor.org/emoncms/mqtt.html)
-- [View Graphs](https://docs.openenergymonitor.org/emoncms/graphs.html)
-- [Dashboard Builder](https://docs.openenergymonitor.org/emoncms/dashboards.html)
-- [Application dashboards](https://docs.openenergymonitor.org/emoncms/dashboards.html)
-- [Octopus Agile app](https://docs.openenergymonitor.org/emoncms/agileapp.html)
-- [Calculating Daily kWh](https://docs.openenergymonitor.org/emoncms/daily-kwh.html)
-- [Calculating Averages](https://docs.openenergymonitor.org/emoncms/daily-averages.html)
-- [Pulse counting](https://docs.openenergymonitor.org/emoncms/pulse-counting.html)
-- [Exporting CSV](https://docs.openenergymonitor.org/emoncms/export-csv.html)
-- [Histograms](https://docs.openenergymonitor.org/emoncms/histograms.html)
-- [Post Process module](https://docs.openenergymonitor.org/emoncms/postprocess.html)
-- [DemandShaper module](https://docs.openenergymonitor.org/emoncms/demandshaper.html)
-- [Import / Backup](https://docs.openenergymonitor.org/emoncms/import.html)
-- [Update & Upgrade](https://docs.openenergymonitor.org/emoncms/update.html)
-- [Remote Access](https://docs.openenergymonitor.org/emoncms/remoteaccess.html)
-- [Troubleshooting](https://docs.openenergymonitor.org/emoncms/troubleshooting.html)
-
-**Design**
-
-- [Emoncms architecture](docs/design/architecture.md)
-- [Input processing implementation](docs/design/input-processing.md)
-- [Developing a new Module](docs/design/developing-a-new-module.md)
-- [Global variables in Emoncms](docs/design/global-variables.md)
-- [Translation](scripts/translation/readme.md)
-
-**Emoncms timeseries database design (feed storage)**
-
-- [Emoncms time series database development history](docs/timeseries/History.md)
-- [Fixed interval time series](docs/timeseries/Fixed-interval.md)
-- [Variable interval time series](docs/timeseries/Variable-interval.md)
-- [Improving write performance with buffering](docs/timeseries/Write-load-investigation.md)
-
-**Other**
-
-- [Backup](docs/Backup.md)
-- [CLI](docs/CLI.md)
-- [Encrypted Input](docs/input_encrypted.md)
-
-**Emoncms Terminology**
-
-- **Input:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
-- **Input: Node:** A grouping identifier for an input or feed.
-- **Input: Key:** A sub-identifier for items within each Node.
-- **Input process list (or input processing):** A list of processes* performed sequentially on each input value as it is received on that input.
-- **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed*.
-- **Feed:** A place where data is recorded, a time-series of datapoints. The standard time-series databases used by Emoncms are PHPFina and PHPTimeSeries and were written as part of the Emoncms project.
-
-* For a description of what each input process does in Emoncms, see the helper note within the Emoncms input processing configuration interface.
+For terms such as input, node, feed and process, see the [glossary](https://docs.openenergymonitor.org/emoncms/glossary.html).
 
 **Emoncms.org API Reference**
 
@@ -127,29 +77,22 @@ not currently up to date
 
 ## Modules
 
-Modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to check for database updates in Administration menu after installing new modules. The following core modules are included on the emonSD image:
+Install a module by cloning it into the `Modules` folder, or into `/opt/emoncms/modules` with a symlink for modules that have background scripts. Run **Update Database** on the **Admin** page after installing a module.
 
-- [Graph module](https://github.com/emoncms/graph) - Advanced graphing module that integrates with the emoncms feed list, highly recommended; examples of use can be found in emoncms guide [[1]](http://guide.openenergymonitor.org/setup/daily-kwh)[[2]](http://guide.openenergymonitor.org/setup/daily-averages/)[[3]](http://guide.openenergymonitor.org/setup/export-csv/)[[4]](http://guide.openenergymonitor.org/setup/histograms).
+Modules installed on the emonSD image:
 
-- [Device module](https://github.com/emoncms/device) - Automatically configure inputs and feeds using device templates.
+- [Graph](https://github.com/emoncms/graph): feed viewer.
+- [Device](https://github.com/emoncms/device): set up inputs and feeds from device templates.
+- [Dashboard](https://github.com/emoncms/dashboard): dashboard builder.
+- [App](https://github.com/emoncms/app): ready-made dashboards such as My Electric Flow and My Heatpump.
+- [Config](https://github.com/emoncms/config): emonHub configuration editor and log viewer.
+- [Network](https://github.com/emoncms/network): WiFi and network settings.
+- [Backup](https://github.com/emoncms/backup): backup, restore and SD card import.
+- [Sync](https://github.com/emoncms/sync): upload or download feeds between servers.
+- [Post Process](https://github.com/emoncms/postprocess): process recorded feed data.
+- [Usefulscripts](https://github.com/emoncms/usefulscripts): maintenance scripts.
 
-- [Dashboards module](https://github.com/emoncms/dashboard) - Required for creating, viewing and publishing dashboards.
-
-- [App module](https://github.com/emoncms/app.git) - Application specific dashboards e.g. MyElectric, MySolar.
-
-- [Config]( https://github.com/emoncms/config.git) - In-browser emonhub.conf editor and emonhub.log log viewer. Use `git clone` to install.
-
-- [Wifi module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
-
-- [Raspberry Pi Backup / Restore module](https://github.com/emoncms/backup) (emonPi / emonBase)
-
-- [Sync module](https://github.com/emoncms/sync)
-
-- [Usefulscripts](https://github.com/emoncms/usefulscripts): Not strictly a module, more a collection of useful scripts for use with emoncms.
-
-- [DemandShaper module]( http://github.com/emoncms/demandshaper) - Schedule smartplugs, EmonEVSE smart EV chargers, heatpumps to run at best time in terms of: carbon, cost, grid strain. Based on day ahead forecasts.
-
-There are many other available modules such as the event module and openbem (open source building energy modelling module): check out the [Emoncms repo list](https://github.com/emoncms).
+Other modules include [Email reports](https://github.com/emoncms/emailreport) and the [DemandShaper](https://github.com/emoncms/demandshaper). See the [Emoncms repositories](https://github.com/emoncms).
 
 ## Branches
 

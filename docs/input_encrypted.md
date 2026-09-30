@@ -1,16 +1,31 @@
-## Example code for posting encrypted data to the input/post and input/bulk API
+# Encrypted input
 
+Devices that cannot use HTTPS can encrypt the data they post to `input/post` and `input/bulk`. The write API key is the shared key. The API key itself is not sent.
 
-1. Start with a request string conforming with the API options above e.g: node=emontx&data={power1:100,power2:200,power3:300}
-2. Create an initialization vector.
-3. Encrypt using AES-128-CBC.
-4. Create a single string starting with the initialization vector followed by the cipher-text result of the AES-128-CBC encryption.
-5. Convert to a base64 encoded string.
-6. Generate a HMAC_HASH of the data string together, using the emoncms apikey for authorization.
-7. Send the encrypted string in the POST body of a request to either input/post or input/bulk with headers properties 'Content-type' and 'Authorization' set as below.
-8. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
+## Request
 
-PHP Example source code:
+- Method: `POST` to `input/post` or `input/bulk`.
+- Header `Content-Type: aes128cbc`, or `aes128cbcgz` for a gzip compressed payload.
+- Header `Authorization: USERID:HMAC`, where HMAC is the SHA-256 HMAC of the plain request string, keyed with the hex decoded write API key.
+- Body: base64 of the 16 byte IV followed by the AES-128-CBC ciphertext of the plain request string. The key is the write API key, hex decoded to 16 bytes. Use URL safe base64 with no padding.
+
+The plain request string uses the same parameters as an unencrypted request, for example `node=emontx&data=100,200,300`.
+
+## Response
+
+The response is the URL safe base64 SHA-256 hash of the plain request string. Compare it with your own hash to confirm that Emoncms received the data.
+
+## Steps
+
+1. Build the request string, for example `node=emontx&data=100,200,300`.
+2. Create a random 16 byte initialisation vector.
+3. Encrypt the request string with AES-128-CBC.
+4. Join the IV and the ciphertext and encode as base64.
+5. Calculate the HMAC of the request string.
+6. POST the encoded string with the two headers.
+7. Check the returned hash.
+
+## PHP example
 
     <?php
 

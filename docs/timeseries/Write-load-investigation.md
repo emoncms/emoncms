@@ -1,4 +1,6 @@
-## Investigation into effect of minimum IO size on write performance and potential for improvement by buffering writes
+# Write load investigation, 2014
+
+> Historical, 2014. The measurements count bytes submitted to the disk, not flash page writes. Its conclusions on write buffering still apply. Its conclusions on filesystem and block size should be checked before use.
 
 A single PHPFina (PHP Fixed Interval No averaging) or PHPTimeSeries datapoint in emoncms uses between 4 and 9 bytes. The write load on the disk however is a bit more complicated than that. Most filesystems and disk's have a minimum IO size that is much larger than 4-9 bytes, on a FAT filesystem the minimum IO size is 512 bytes this means that if you try and write 4 bytes the operation will actually cause 512 bytes of write load. But its not just the datafile that gets written to, every file has inode meta data which can also result in a further 512 bytes of write load. A single 4 byte write can therefore cause 1kb of write load.
 

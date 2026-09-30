@@ -1,12 +1,12 @@
 # CLI
 
-Bundled with Emoncms is a simple CLI tool that right now can be used to update the configured database to ensure the schema is up to date.
+`scripts/emoncms-cli` is a command line tool for Emoncms. It currently runs database updates.
 
-This tool resides in the `scripts/` directory. However it must be executed from the root of the project.
+Run it from the Emoncms root directory.
 
 ## Print usage
 
-Running the CLI without any arguments will print all available commands that can be executed.
+Run without arguments to list the commands.
 
 ```bash
 ./scripts/emoncms-cli
@@ -14,7 +14,7 @@ Running the CLI without any arguments will print all available commands that can
 
 ## Perform database update
 
-Running this command will run any pending migrations that need to be run. Typically this is done after upgrades that have changes to the database schema.
+Apply pending database changes. Run it after an update that changes the database schema. It does the same as **Update Database** on the **Admin** page.
 
 ```bash
 ./scripts/emoncms-cli admin:dbupdate
