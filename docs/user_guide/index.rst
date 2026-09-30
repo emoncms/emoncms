@@ -18,6 +18,7 @@ Emoncms user guide
    devices.md
    postingdata.md
    mqtt.md
+   agents.md
    pulse-counting.md
 
 .. toctree::

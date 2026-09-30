@@ -4,6 +4,11 @@
 
 The user guide is in [user_guide](user_guide/index.rst) and is published at [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms). See [STYLE.md](STYLE.md) for how to write and publish it.
 
+## AI agents
+
+- [AGENTS.md](../AGENTS.md): guide for AI coding agents
+- [AI assistants](user_guide/agents.md): user guide page on using assistants with Emoncms
+
 ## Design
 
 - [Architecture](design/architecture.md)
@@ -31,6 +36,7 @@ The user guide is in [user_guide](user_guide/index.rst) and is published at [doc
 - [CLI](CLI.md)
 - [User guide screenshots](../scripts/docs-screenshots/README.md)
 
-## Release notes
+## Releases
 
+- [Release checklist](release-checklist.md)
 - [12.0.0: Bootstrap 5](notes/bootstrap5-release.md)

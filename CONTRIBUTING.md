@@ -42,3 +42,8 @@ Please feel free to get in touch:
 
 hello@openenergymonitor.zendesk.com (Trystan, Glyn and Gwil)
 or: trystanlea@openenergymonitor.org
+---
+
+## Using AI agents
+
+Issues and pull requests written with the help of an AI agent are welcome. Please say that an agent was used, check the result yourself before submitting, and keep pull requests small. Agents should read [AGENTS.md](AGENTS.md) for the project layout, checks and conventions.
