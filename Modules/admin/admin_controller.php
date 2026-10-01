@@ -56,7 +56,7 @@ function admin_controller()
 
         $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL)));
         return sprintf(
-            '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>',
+            '<div class="alert alert-warning mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>',
             tr('Admin Authentication Required'),
             tr('Session timed out or user not Admin'),
             sprintf("%suser/logout?msg=%s&ref=%s",$path, $message, $referrer),

@@ -197,7 +197,7 @@ load_css("Modules/feed/Views/feed_view.css");
     <button id="importdata" class="btn btn-default btn-sm" data-bs-toggle="modal" data-bs-target="#importDataModal"><i class="icon-arrow-up" ></i>&nbsp;<?php echo tr('Import data'); ?></button>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
-<div id="feed-list-error" class="alert alert-error" style="display:none">
+<div id="feed-list-error" class="alert alert-danger" style="display:none">
     <h4 class="alert-heading"><?php echo tr('Error loading feed list'); ?></h4>
     <p id="feed-list-error-message"></p>
     <pre id="feed-list-error-response" style="white-space:pre-wrap; max-height:300px; overflow:auto"></pre>
