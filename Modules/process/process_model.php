@@ -365,7 +365,6 @@ class Process
             // TODO: parameter or similar seems to be missing at end of error message...
             return array('success' => false, 'message' => tr("Invalid process list format: "));
         }
-        // TODO: This error doesn't make any sense; json_decode will return an associative array, unless it errored.
         if (!is_array($processlist)) {
             return array('success' => false, 'message' => tr("Process list must be an array"));
         }
