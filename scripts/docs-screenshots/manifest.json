@@ -1,6 +1,6 @@
 {
     "defaults": {
-        "outdir": "../../docs/user_guide/img",
+        "outdir": "../../docs/img",
         "viewport": {
             "width": 1200,
             "height": 750

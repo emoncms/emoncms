@@ -8,11 +8,11 @@ Emoncms is a PHP web application for logging and visualising energy, temperature
 
 Read first:
 
-- [docs/development.md](docs/development.md): local install, test data, tests, debugging.
-- [docs/design/architecture.md](docs/design/architecture.md): request flow, directory layout, services.
-- [docs/design/developing-a-new-module.md](docs/design/developing-a-new-module.md): controllers, models, views, menus, schema, translations.
-- [docs/design/css-guide.md](docs/design/css-guide.md): page structure and CSS for the Bootstrap 5 UI.
-- [docs/README.md](docs/README.md): index of the developer docs.
+- [docs/developer/development.md](docs/developer/development.md): local install, test data, tests, debugging.
+- [docs/developer/design/architecture.md](docs/developer/design/architecture.md): request flow, directory layout, services.
+- [docs/developer/design/developing-a-new-module.md](docs/developer/design/developing-a-new-module.md): controllers, models, views, menus, schema, translations.
+- [docs/developer/design/css-guide.md](docs/developer/design/css-guide.md): page structure and CSS for the Bootstrap 5 UI.
+- [docs/README.md](docs/README.md): docs contents, user guide and developer docs.
 
 The HTTP API reference is generated from the module definitions. A running install serves it at `/llms.txt`, `/llms-full.txt` and `/api.md`.
 
@@ -36,7 +36,7 @@ composer phpunit     # unit tests, no database needed
 
 Integration and feature tests need MySQL, and feature tests need a running web server. See [tests/readme.md](tests/readme.md).
 
-For a UI change, load the page in a browser and check the browser console for errors. For a change to the user guide, see [docs/STYLE.md](docs/STYLE.md).
+For a UI change, load the page in a browser and check the browser console for errors. For a change to the user guide, see [docs/developer/STYLE.md](docs/developer/STYLE.md).
 
 ## Code conventions
 
@@ -67,7 +67,7 @@ For commit messages, pull requests, code comments and documentation:
 - A person should read and check every issue and pull request before it is submitted.
 - For a bug, give the Emoncms version, steps to reproduce and the expected and actual result.
 - Keep pull requests small, with one change each. Say how the change was tested.
-- Update the user guide in `docs/user_guide` when a change affects what users see.
+- Update the user guide in `docs` when a change affects what users see.
 
 ## Security
 

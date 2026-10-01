@@ -24,13 +24,13 @@ Steps for releasing Emoncms core and the modules maintained by OpenEnergyMonitor
 ## Documentation
 
 - [ ] User guide pages match changed screens and labels. See [STYLE.md](STYLE.md).
-- [ ] Screenshots are captured again for changed screens. See [scripts/docs-screenshots](../scripts/docs-screenshots/README.md):
+- [ ] Screenshots are captured again for changed screens. See [scripts/docs-screenshots](../../scripts/docs-screenshots/README.md):
   1. Refresh the demo data.
   2. `node setup-account.mjs`
   3. `node capture.mjs`
   4. Check the images and commit them.
 - [ ] The user guide builds without warnings in the docs site repo.
-- [ ] Release notes for module authors are in `docs/notes/` if the release changes APIs, markup or CSS.
+- [ ] Release notes for module authors are in `docs/developer/notes/` if the release changes APIs, markup or CSS.
 
 ## Release
 

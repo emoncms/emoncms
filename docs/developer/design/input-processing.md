@@ -4,7 +4,7 @@ Inputs hold the latest value from a device. Input processing runs a list of step
 
 ![Input processing concept](files/inputproc/inputprocessing.jpg)
 
-For the user view, see [Inputs](../user_guide/inputs.md) in the user guide.
+For the user view, see [Inputs](../../inputs.md) in the user guide.
 
 ## Flow
 

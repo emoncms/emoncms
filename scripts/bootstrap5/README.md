@@ -1,6 +1,6 @@
 # Bootstrap build
 
-Builds `Lib/bootstrap5/css/bootstrap.min.css`, a reduced build of Bootstrap 5.3.8. See Bootstrap build in `docs/design/css-guide.md`.
+Builds `Lib/bootstrap5/css/bootstrap.min.css`, a reduced build of Bootstrap 5.3.8. See Bootstrap build in `docs/developer/design/css-guide.md`.
 
 Setup: `npm ci` in this folder. It installs the versions in `package-lock.json` (Bootstrap source, Sass, PostCSS, clean-css, PurgeCSS).
 

@@ -66,7 +66,7 @@ php composer.phar run test          # lint and code style, as run in CI
 php composer.phar run phpunit       # unit tests
 ```
 
-Integration tests need MySQL. Feature tests call the API over HTTP at `http://localhost/emoncms`, or at `EMONCMS_BASE_URL`. See [tests/readme.md](../tests/readme.md).
+Integration tests need MySQL. Feature tests call the API over HTTP at `http://localhost/emoncms`, or at `EMONCMS_BASE_URL`. See [tests/readme.md](../../tests/readme.md).
 
 ## Debugging
 
@@ -92,4 +92,4 @@ Integration tests need MySQL. Feature tests call the API over HTTP at `http://lo
 - [Architecture](design/architecture.md)
 - [Developing a new module](design/developing-a-new-module.md)
 - [CSS guide](design/css-guide.md)
-- [AGENTS.md](../AGENTS.md), if you work with an AI coding agent
+- [AGENTS.md](../../AGENTS.md), if you work with an AI coding agent

@@ -17,7 +17,6 @@ Emoncms user guide
    inputs.md
    devices.md
    postingdata.md
-   mqtt.md
    agents.md
    pulse-counting.md
 

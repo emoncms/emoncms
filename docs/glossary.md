@@ -16,7 +16,7 @@
 | Input processing | A list of steps that runs on each new input value, such as scaling it or logging it to a feed. See [Inputs](inputs.md). |
 | Interval | The time between values in a fixed interval feed, for example 10 seconds. |
 | Key | The name of one value from a node, for example `P1` or `temperature`. |
-| MQTT | A messaging protocol used to pass data between emonHub, Emoncms and other software. See [MQTT](mqtt.md). |
+| MQTT | A messaging protocol used to pass data between emonHub, Emoncms and other software. See [MQTT](postingdata.md#mqtt). |
 | Node | The name of a device or source that sends data, for example `emontx4`. Inputs are grouped by node. |
 | Post process | Processing applied to recorded feed data. See [Post process](postprocess.md). |
 | Public feed | A feed anyone can read without logging in. |

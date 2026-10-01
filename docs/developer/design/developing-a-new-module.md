@@ -212,7 +212,7 @@ load_language_files("Modules/mymodule/locale", "mymodule_messages");
 echo ctx_tr("mymodule_messages", "My module");
 ```
 
-See [Translation](../../scripts/translation/readme.md).
+See [Translation](../../../scripts/translation/readme.md).
 
 ## Logging
 

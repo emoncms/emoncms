@@ -1,6 +1,6 @@
 # User guide screenshots
 
-Captures the screenshots in `docs/user_guide/img` from a running Emoncms, so they can be taken again after UI changes.
+Captures the screenshots in `docs/img` from a running Emoncms, so they can be taken again after UI changes.
 
 ## Setup
 
@@ -52,7 +52,7 @@ Environment:
 | `EMONCMS_USER` | `test` |
 | `EMONCMS_PASS` | `test` |
 | `CHROME_PATH` | Playwright's Chromium |
-| `OUTDIR` | `docs/user_guide/img` |
+| `OUTDIR` | `docs/img` |
 
 Before capturing, the script posts the `seed` values in `manifest.json` as inputs, so that the **Inputs** page shows recent data.
 

@@ -2,7 +2,7 @@
    Group list
    Rows grouped under collapsible headers, on a CSS subgrid.
    Used by the input, feed, device and sync lists. Column widths are set per page
-   on the .group-list grid. Classes are listed in docs/design/css-guide.md.
+   on the .group-list grid. Classes are listed in docs/developer/design/css-guide.md.
    ========================================================================== */
 
 /* ── 1. Outer grid container ─────────────────────────────────────── */

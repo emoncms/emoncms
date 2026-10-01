@@ -4,13 +4,13 @@ Emoncms is an open source web application for processing, logging and visualisin
 
 ![Emoncms](emoncms_graphic.png)
 
-Emoncms 12 moves the interface to Bootstrap 5. See the [release notes](docs/notes/bootstrap5-release.md).
+Emoncms 12 moves the interface to Bootstrap 5. See the [release notes](docs/developer/notes/bootstrap5-release.md).
 
 ## Documentation
 
 - User guide: [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms)
-- Developer documentation: [docs/README.md](docs/README.md)
-- Development setup: [docs/development.md](docs/development.md)
+- Docs contents, user guide and developer docs: [docs/README.md](docs/README.md)
+- Development setup: [docs/developer/development.md](docs/developer/development.md)
 - Glossary of terms such as input, node, feed and process: [glossary](https://docs.openenergymonitor.org/emoncms/glossary.html)
 
 ### API

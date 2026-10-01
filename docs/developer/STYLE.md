@@ -1,12 +1,14 @@
 # User guide style
 
-Style for `docs/user_guide/`, published at docs.openenergymonitor.org/emoncms. The writing rules in `CLAUDE.md` also apply.
+Style for the user guide in `docs/`, published at docs.openenergymonitor.org/emoncms. Pages in `docs/developer/` are not published. The writing rules in `CLAUDE.md` also apply.
 
 ## Publishing
 
 - The guide is built with Sphinx and MyST as part of the OpenEnergyMonitor docs site.
 - File names are public URLs. Do not rename a page. To retire one, replace its content with a short pointer and add `orphan: true` front matter.
 - Page order and sections are set in `index.rst`.
+- Add each page to `README.md` as well, which is the contents in Emoncms and on GitHub.
+- To leave a page out of the Emoncms docs menu, end its line in `README.md` with `<!-- menu:hide -->`.
 - Link to other guide pages as `page.md` and to other parts of the docs site as `../section/page.md`.
 - Use MyST admonitions (```` ```{note} ````, ```` ```{tip} ````, ```` ```{warning} ````). Do not use raw HTML for notes or code.
 - Use tables in place of definition lists. The `deflist` extension is not enabled.

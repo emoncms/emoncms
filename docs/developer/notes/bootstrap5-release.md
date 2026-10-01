@@ -2,8 +2,8 @@
 
 Emoncms moves from Bootstrap 2.3.2 to Bootstrap 5.3.8. Core and every module maintained by OpenEnergyMonitor change together in this release. Bootstrap 2 is removed, so third party modules that use Bootstrap 2 markup, classes or JS need changes.
 
-- Converting a module: `docs/design/bootstrap5-migration.md`.
-- Styling pages and modules: `docs/design/css-guide.md`.
+- Converting a module: `docs/developer/design/bootstrap5-migration.md`.
+- Styling pages and modules: `docs/developer/design/css-guide.md`.
 
 ## Versions
 
@@ -82,6 +82,6 @@ Icons grew as glyphicons moved out of Bootstrap 2 into `bootstrap2-icons.css`. R
 
 ## For module authors
 
-A module that uses Bootstrap 2 needs converting before it works with this release. The main changes are class renames, `form-control` on every field, modal markup and JS, and box sizing. `docs/design/bootstrap5-migration.md` has the full list and the steps.
+A module that uses Bootstrap 2 needs converting before it works with this release. The main changes are class renames, `form-control` on every field, modal markup and JS, and box sizing. `docs/developer/design/bootstrap5-migration.md` has the full list and the steps.
 
 The Bootstrap build includes only the classes used in core and the emoncms modules. Modules outside the emoncms repos are not scanned. If a class they use is missing, ask for it to be added to the build.
