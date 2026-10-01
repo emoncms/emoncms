@@ -1445,6 +1445,10 @@ class Feed
         $feedid = (int) $feedid;
         if ($this->redis) {
             $engine = $this->redis->hget("feed:$feedid",'engine');
+            // Feed missing from redis cache, reload from mysql
+            if ($engine === false && $this->load_feed_to_redis($feedid)) {
+                $engine = $this->redis->hget("feed:$feedid",'engine');
+            }
         } else {
             $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
             $row = $result->fetch_object();
