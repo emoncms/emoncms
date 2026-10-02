@@ -43,6 +43,12 @@ class FakeProcessFeed
         return $this->last[(int) $id] ?? null;
     }
 
+    // Feeds in the fake store have no datapoints on disk
+    public function get_meta($id)
+    {
+        return (object) ['npoints' => 0];
+    }
+
     public function get_data($id, $start, $end, $interval, $average, $timezone, $timeformat, $csv, $skipmissing, $limitinterval)
     {
         return $this->data[(int) $id] ?? [];

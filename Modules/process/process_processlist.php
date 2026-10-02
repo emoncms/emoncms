@@ -1156,9 +1156,9 @@ class Process_ProcessList
         $new_kwh = 0;
 
         // Get last value
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
@@ -1200,9 +1200,9 @@ class Process_ProcessList
         $new_kwh = 0;
 
         // Get last value
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
@@ -1240,9 +1240,9 @@ class Process_ProcessList
         $new_kwh = 0;
 
         // Get last value
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
@@ -1287,9 +1287,9 @@ class Process_ProcessList
         $new_kwh = 0;
 
         // Get last value
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_kwh = $last['value'] * 1; // will convert null to 0, required for first reading starting from 0
         $last_time = $last['time'] * 1; // will convert null to 0
@@ -1376,9 +1376,9 @@ class Process_ProcessList
     public function input_ontime($feedid, $time_now, $value)
     {
         // Get last value
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_time = $last['time'];
 
@@ -1435,9 +1435,9 @@ class Process_ProcessList
 
     public function whinc_to_kwhd($feedid, $time_now, $value)
     {
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $last_time = $last['time'];
 
@@ -1466,9 +1466,9 @@ class Process_ProcessList
         // Convert to numeric value - this is the key fix for PHP 8+
         $value = (float)$value;
 
-        $last = $this->feed->get_timevalue($feedid);
+        $last = $this->get_last_total($feedid);
         if ($last === null) {
-            return $value; // feed does not exist
+            return $value; // feed does not exist or cannot be read
         }
         $value = $last['value'] + $value;
         $padding_mode = "join";
@@ -1675,9 +1675,9 @@ class Process_ProcessList
         if ($redis->exists("process:whaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:whaccumulator:$feedid", array('time', 'value'));
 
-            $last_feed = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->get_last_total($feedid);
             if ($last_feed === null) {
-                return $value; // feed does not exist
+                return $value; // feed does not exist or cannot be read
             }
 
             $totalwh = $last_feed['value'];
@@ -1714,9 +1714,9 @@ class Process_ProcessList
         if ($redis->exists("process:kwhaccumulator:$feedid")) {
             $last_input = $redis->hmget("process:kwhaccumulator:$feedid", array('time', 'value'));
 
-            $last_feed = $this->feed->get_timevalue($feedid);
+            $last_feed = $this->get_last_total($feedid);
             if ($last_feed === null) {
-                return $value; // feed does not exist
+                return $value; // feed does not exist or cannot be read
             }
 
             $totalkwh = $last_feed['value'];
@@ -1984,6 +1984,23 @@ class Process_ProcessList
     {
         return $value;
     } // Removed to be reintroduced as a post-processing based visualisation calculated on the fly.
+
+    // Last time and value for processes that add to the previous value.
+    // Null if the feed does not exist, or has no last time and its data
+    // cannot be read (e.g at boot). Prevents adding to 0 in place of the
+    // stored total. A new feed with no datapoints starts from 0.
+    private function get_last_total($feedid)
+    {
+        $last = $this->feed->get_timevalue($feedid);
+        if ($last !== null && $last['time'] === null) {
+            $meta = $this->feed->get_meta($feedid);
+            if (!$meta || !empty($meta->npoints)) {
+                $this->log->warn("Feed $feedid last value unavailable, skipping");
+                return null;
+            }
+        }
+        return $last;
+    }
 
     // Get the start of the day
     public function getstartday($time_now)
