@@ -497,34 +497,30 @@ var process_vue = Vue.createApp({
 
         // Cuts the selected processes from the process list
         cut: function () {
-            /*
-            if (this.selected_processes.length > 0) {
-                this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
-                this.selected_processes.forEach(index => this.remove(index));
-                this.selected_processes = [];
-            }*/
             this.copy(); // Call copy to put the cut processes on the clipboard
             this.remove_selected(); // Remove selected processes from the list
         },
 
+        // Stores the selected processes and returns them as JSON, or false if none are selected
+        copy_selected: function () {
+            if (this.selected_processes.length == 0) return false;
+            this.copied_processes = this.selected_processes.map(index => this.process_list[index]);
+            return JSON.stringify(this.copied_processes);
+        },
+
         // Copies the selected processes from the process list and puts them on the clipboard
         copy: function () {
-            if (this.selected_processes.length > 0) {
-                // Get the selected process objects
-                const copiedProcesses = this.selected_processes.map(index => this.process_list[index]);
-                this.copied_processes = copiedProcesses;
-
-                // Serialize and copy to clipboard
-                const clipboardText = JSON.stringify(copiedProcesses);
-                navigator.clipboard.writeText(clipboardText).then(() => {
-                    // Optionally notify the user
-                    // alert("Copied processes to clipboard.");
-                }).catch((error) => {
-                    console.error("Failed to copy to clipboard:", error);
-                    alert("Failed to copy processes to clipboard. " + error);
-                });
-            } else {
+            const clipboardText = this.copy_selected();
+            if (clipboardText === false) {
                 alert("No processes selected to copy.");
+                return;
+            }
+            // navigator.clipboard is only available over HTTPS or on localhost
+            // copied_processes is used for paste otherwise
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(clipboardText).catch((error) => {
+                    console.error("Failed to copy to clipboard:", error);
+                });
             }
         },
 
@@ -532,42 +528,53 @@ var process_vue = Vue.createApp({
         // This is currently a bit sticky for some reason? 
         // You have to click away from the paste button to see the changes
         paste: function () {
-            // Try to read from the clipboard first
+            if (!navigator.clipboard) {
+                this.insert_processes(this.copied_processes);
+                return;
+            }
             navigator.clipboard.readText().then((clipboardText) => {
-                try {
-                    const pastedProcesses = JSON.parse(clipboardText);
-                    if (!Array.isArray(pastedProcesses)) {
-                        throw new Error("Clipboard data is not a valid array");
-                    }
-                    // Validate each pasted process
-                    pastedProcesses.forEach(process => {
-                        if (!process.fn || !Array.isArray(process.args)) {
-                            throw new Error("Invalid process format in clipboard data");
-                        }
-                        // Ensure the process function exists in the known processes
-                        if (!this.processes_by_key[process.fn]) {
-                            throw new Error(`Process function ${process.fn} not found`);
-                        }
-                    });
-                    // Insert pasted processes at the end of the process list
-                    this.process_list.push(...pastedProcesses);
-                    this.selected_processes = []; // Clear selected processes after pasting
-                    this.modified();
-                } catch (error) {
-                    alert("Failed to paste processes. The clipboard data is not in the correct format.");
-                    console.error("Error parsing clipboard data:", error);
-                }
+                this.paste_text(clipboardText);
             }).catch((error) => {
                 // If clipboard read fails, fallback to internal copied_processes
-                if (this.copied_processes && this.copied_processes.length > 0) {
-                    this.process_list.push(...this.copied_processes);
-                    this.selected_processes = [];
-                    this.modified();
+                if (this.copied_processes.length > 0) {
+                    this.insert_processes(this.copied_processes);
                 } else {
-                    alert("Failed to read data from the clipboard." + error);
+                    alert("Failed to read data from the clipboard. " + error);
                     console.error("Failed to read data from the clipboard:", error);
                 }
             });
+        },
+
+        // Validates clipboard text and pastes the processes it contains
+        paste_text: function (clipboardText) {
+            try {
+                const pastedProcesses = JSON.parse(clipboardText);
+                if (!Array.isArray(pastedProcesses)) {
+                    throw new Error("Clipboard data is not a valid array");
+                }
+                // Validate each pasted process
+                pastedProcesses.forEach(process => {
+                    if (!process.fn || !Array.isArray(process.args)) {
+                        throw new Error("Invalid process format in clipboard data");
+                    }
+                    // Ensure the process function exists in the known processes
+                    if (!this.processes_by_key[process.fn]) {
+                        throw new Error(`Process function ${process.fn} not found`);
+                    }
+                });
+                this.insert_processes(pastedProcesses);
+            } catch (error) {
+                alert("Failed to paste processes. The clipboard data is not in the correct format.");
+                console.error("Error parsing clipboard data:", error);
+            }
+        },
+
+        // Appends copies of the given processes to the end of the process list
+        insert_processes: function (processes) {
+            // Deep copy so that pasted processes do not share args with the originals
+            this.process_list.push(...JSON.parse(JSON.stringify(processes)));
+            this.selected_processes = []; // Clear selected processes after pasting
+            this.modified();
         },
 
         // Removes the selected processes from the process list
@@ -769,27 +776,36 @@ if (!String.prototype.format) {
     };
 }
 
+// True if a key or clipboard event should act on the process list
+// Text fields and selected page text are left to the browser
+function process_ui_shortcut_target(e) {
+    if (!$("#processlistModal").is(":visible")) return false;
+    if (e.target.isContentEditable) return false;
+    if ($(e.target).is("textarea, select, input:not([type=checkbox], [type=radio], [type=button], [type=submit])")) return false;
+    if (e.type != "keydown" && window.getSelection().toString() != "") return false;
+    return true;
+}
+
 // Support keyboard shortcuts
+// Clipboard events give clipboard access over plain HTTP, navigator.clipboard does not
+$(document).on("copy cut", function (e) {
+    if (!process_ui_shortcut_target(e)) return;
+    const clipboardText = process_vue.copy_selected();
+    if (clipboardText === false) return;
+    e.originalEvent.clipboardData.setData("text/plain", clipboardText);
+    e.preventDefault();
+    if (e.type == "cut") process_vue.remove_selected();
+});
+
+$(document).on("paste", function (e) {
+    if (!process_ui_shortcut_target(e)) return;
+    e.preventDefault();
+    process_vue.paste_text(e.originalEvent.clipboardData.getData("text/plain"));
+});
+
 $(document).on("keydown", function (e) {
-    if ($("#processlistModal").is(":visible")) { // Ensure modal is visible
-        if (e.ctrlKey) {
-            switch (e.key) {
-                case "c":
-                    e.preventDefault();
-                    process_vue.copy(); // Call copy method
-                    break;
-                case "v":
-                    e.preventDefault();
-                    process_vue.paste(); // Call paste method
-                    break;
-                case "x":
-                    e.preventDefault();
-                    process_vue.cut(); // Call cut method
-                    break;
-            }
-        } else if (e.key === "Delete") {
-            e.preventDefault();
-            process_vue.remove_selected(); // Call remove_selected method
-        }
+    if (e.key === "Delete" && process_ui_shortcut_target(e)) {
+        e.preventDefault();
+        process_vue.remove_selected(); // Call remove_selected method
     }
 });
