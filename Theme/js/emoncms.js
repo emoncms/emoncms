@@ -160,3 +160,10 @@ if (typeof localStorage !== 'undefined') {
         current_themesidebar = themesidebar
     }
 }
+
+// Service worker for the offline page. Requires HTTPS or localhost.
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register(path + 'service-worker.js').catch(function() {});
+    });
+}
