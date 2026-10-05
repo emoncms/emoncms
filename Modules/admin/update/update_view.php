@@ -25,7 +25,11 @@ global $settings;
         <div class="panel-row">
             <div class="row-key"><?php echo tr('Update Database Only'); ?></div>
             <div class="row-value"><?php echo tr('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></div>
-            <a href="<?php echo $path; ?>admin/db" class="btn btn-primary"><?php echo tr('Update Database'); ?></a>
+            <?php if ($db_changes) { ?>
+            <a href="<?php echo $path; ?>admin/db" class="btn btn-warning" title="<?php echo sprintf(tr('%s pending changes'), $db_changes); ?>"><?php echo tr('Update Database'); ?></a>
+            <?php } else { ?>
+            <button class="btn btn-success" disabled><?php echo tr('Database up to date'); ?></button>
+            <?php } ?>
         </div>
     </div>
 

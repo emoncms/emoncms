@@ -222,7 +222,9 @@ function admin_controller()
         // System update view
         if ($route->subaction == '') {
             $route->format = 'html';
+            require_once "Lib/dbschemasetup.php";
             return view("Modules/admin/update/update_view.php", array(
+                'db_changes'=>count(db_schema_setup($mysqli, load_db_schema(), false)),
                 'update_log_filename'=> $update_model->update_logfile(),
                 'serial_ports'=>$update_model->listSerialPorts(),
                 'firmware_available'=>$update_model->firmware_available()
