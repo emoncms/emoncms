@@ -16,6 +16,8 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         <div class="panel-header panel-header-static">
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr('Update Log'); ?></span>
+            <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-default btn-sm"><?php echo tr('Download Log'); ?></a>
+            <button id="close-update-log" type="button" class="btn btn-default btn-sm"><?php echo tr('Close'); ?></button>
         </div>
         <pre class="log"><div id="update-log"></div></pre>
     </div>
@@ -216,6 +218,11 @@ function refresh_updateLog(result){
     $("#update-log-bound").slideDown();
 }
 
+$("#close-update-log").click(function() {
+    clearInterval(updates_log_interval);
+    $("#update-log-bound").slideUp();
+});
+
 function getUpdateLog() {
   $.ajax({ url: path+"admin/update/log", async: true, dataType: "text", success: function(result)
     {
@@ -235,10 +242,7 @@ function getUpdateLog() {
                 refresh_updateLog(result); 
                 
                 if (result.indexOf(log_end)!=-1) {
-                    clearInterval(updates_log_interval);   
-                    setTimeout(function() {
-                        $("#update-log-bound").slideUp();            
-                    },3000);
+                    clearInterval(updates_log_interval);
                 }
             }
         }
