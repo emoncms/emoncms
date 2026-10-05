@@ -284,6 +284,24 @@ var app = Vue.createApp({
         open_edit: function(event) {
             edit_input.openModal(event);
         },
+        editInput: function(inputid) {
+            this.selected = [inputid];
+            edit_input.openModal();
+        },
+        getInputTooltip: function(input) {
+            var lines = [input.name,
+                         '-----------------------',
+                         tr('Node') + ': ' + input.nodeid,
+                         tr('Input ID') + ': ' + input.id];
+            if (input.description) {
+                lines.push(tr('Description') + ': ' + input.description);
+            }
+            if (input.time > 0) {
+                lines.push(tr('Updated') + ': ' + new Date(input.time * 1000).toLocaleString() + ' (' + input.time + ')');
+            }
+            lines.push(tr('Value') + ': ' + input.value);
+            return lines.join("\n");
+        },
         clean_unused: function() {
             const inputText = this.inactive_unconfigured_inputs === 1 ? "input" : "inputs";
             const deviceText = this.inactive_unconfigured_devices === 1 ? "device" : "devices";

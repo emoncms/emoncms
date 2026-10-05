@@ -43,6 +43,10 @@ input[type="checkbox"] { margin:0px; }
 .input-list-grid [data-col="value"]       { grid-column: 7; }
 .input-list-grid [data-col="configure"]   { grid-column: 8; }
 
+/* Add description link, shown on row hover when description is empty */
+.input-add-description { visibility: hidden; color: var(--ec-text-muted); font-style: italic; }
+.group-list-row:hover .input-add-description { visibility: visible; }
+
 /* Muted icon buttons (device module not installed) */
 a.text-muted i[class*="icon-"] {
     opacity: .5;

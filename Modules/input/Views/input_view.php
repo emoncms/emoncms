@@ -105,7 +105,7 @@ load_css("Modules/input/Views/input_view.css");
                         <!-- Node Inputs (collapsible) -->
                         <div class="group-list-rows" :class="{'is-expanded': nodesDisplay[nodeid]}">
                             <div class="group-list-rows-inner">
-                            <div @click="toggleSelected($event, input.id)" class="group-list-row" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}">
+                            <div @click="toggleSelected($event, input.id)" class="group-list-row" :key="input.id" v-for="(input,index) in device.inputs" :style="{'--status-color': input.time_color}" :class="{'selected': selected.indexOf(input.id) > -1}" :title="getInputTooltip(input)">
                                 <!-- Col 1: Checkbox -->
                                 <div data-col="select" class="group-list-cell text-center" @click.stop>
                                     <input class="feed-select input-select" type="checkbox" :value="input.id" v-model="selected">
@@ -113,7 +113,10 @@ load_css("Modules/input/Views/input_view.css");
                                 <!-- Col 2: Name -->
                                 <div data-col="name" class="group-list-cell text-nowrap">{{ input.name }}</div>
                                 <!-- Col 3: Description -->
-                                <div data-col="description" class="group-list-cell">{{ input.description }}</div>
+                                <div data-col="description" class="group-list-cell">
+                                    <template v-if="input.description">{{ input.description }}</template>
+                                    <a v-else-if="!selectMode" @click.prevent.stop="editInput(input.id)" href="#" class="input-add-description"><?php echo tr('Add description'); ?></a>
+                                </div>
                                 <!-- Col 4: Processlist -->
                                 <div data-col="process" class="group-list-cell">
                                     <div class="label-container" v-html="input.processlistHtml"></div>
