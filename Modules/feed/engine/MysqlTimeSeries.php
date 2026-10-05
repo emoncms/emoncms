@@ -464,7 +464,7 @@ class MysqlTimeSeries implements engine_methods
                 }
             } else {
                 // Limit DB requests to available datapoints in feed
-                if ($start_time < $time && $time < $end_time) {
+                if ($start_time <= $time && $time <= $end_time) {
                     // get datapoint using interpolation if necessary
                     $dp = $this->get_datapoint_interpolated($feedid, $time);
                     $value = $dp[1];
@@ -918,6 +918,10 @@ class MysqlTimeSeries implements engine_methods
                         $data = array($time , (float) $value);
                     }
                 }
+            }
+            else if (count($dp) == 1 && $dp[0]['time'] == $time) {
+                // Last datapoint matches given timestamp
+                $data = array($time, (float) $dp[0]['data']);
             }
             else {
                 // only one datapoint found, interpolation not possible.
