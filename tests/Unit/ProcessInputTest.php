@@ -544,6 +544,19 @@ class ProcessInputTest extends TestCase
         $this->assertSame([], $this->feed->posts);
     }
 
+    public function test_publish_to_mqtt_enabled(): void
+    {
+        // Enabled without the Mosquitto extension, as in a web request
+        $GLOBALS['settings']['mqtt'] = ['enabled' => true];
+        $this->process = new Process($this->stub_mysqli(true), $this->input, $this->feed, 'UTC');
+
+        $this->assertSame([10], $this->run_list('process__publish_to_mqtt:emon/test', [[self::T, 10]]));
+        $this->assertSame(['emon/test' => 10], $this->redis->hashes['publish_to_mqtt']);
+
+        $GLOBALS['redis'] = null;
+        $this->assertSame([12], $this->run_list('process__publish_to_mqtt:emon/test', [[self::T + 10, 12]]));
+    }
+
     // -------------------------------------------------------------------------
     // validate_processlist
     // -------------------------------------------------------------------------

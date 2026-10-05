@@ -9,8 +9,6 @@
  */
 
 // no direct access
-use Mosquitto\Client;
-
 defined('EMONCMS_EXEC') or die('Restricted access');
 
 // This is core Process list module
@@ -43,29 +41,9 @@ class Process_ProcessList
 
         $this->log = new EmonLogger(__FILE__);
 
-        // Load MQTT if enabled
-        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $settings, $log;
-
-        if ($settings['mqtt']['enabled'] && !$this->mqtt) {
-            // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
-            if (class_exists(Client::class)) {
-                /*
-                    new Mosquitto\Client($id,$cleanSession)
-                    $id (string) – The client ID. If omitted or null, one will be generated at random.
-                    $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
-                 */
-                $mqtt_client = new Mosquitto\Client(null, true);
-
-                $mqtt_client->onDisconnect(function ($responseCode) use ($log) {
-                    if ($responseCode > 0) {
-                        $log->info('unexpected disconnect from mqtt server');
-                    }
-                });
-
-                $this->mqtt = $mqtt_client;
-            }
-        }
+        // Publish to MQTT is handled by the emoncms_mqtt service via redis
+        global $settings;
+        $this->mqtt = !empty($settings['mqtt']['enabled']);
     }
 
     public function process_list()
@@ -1743,9 +1721,8 @@ class Process_ProcessList
     public function publish_to_mqtt($topic, $time, $value)
     {
         global $redis;
-        // saves value to redis
-        // phpmqtt_input.php is then used to publish the values
-        if ($this->mqtt) {
+        // Saves value to redis, emoncms_mqtt service publishes the values
+        if ($this->mqtt && $redis) {
             $data = array('topic' => $topic, 'value' => $value, 'timestamp' => $time);
             $redis->hset("publish_to_mqtt", $topic, $value);
             // $redis->rpush('mqtt-pub-queue', json_encode($data));
