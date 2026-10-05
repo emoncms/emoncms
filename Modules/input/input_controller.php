@@ -175,8 +175,17 @@ function input_controller()
     // input/get/emontx                       {"power1":{"time":0,"value":0},"power2":{"time":0,"value":0},"power3":{"time":0,"value":0}}
     // input/get?node=emontx&name=power1      {"time":0,"value":0}
     // input/get/emontx/power1                {"time":0,"value":0}
+    // input/get?inputid=1                    {"id":1,"nodeid":"emontx","name":"power1",...}
 
     if ($route->action == "get") {
+        if (isset($_GET['inputid'])) {
+            $inputid = (int) get('inputid');
+            if (!$input->belongs_to_user($session['userid'], $inputid)) {
+                return array('success'=>false, 'message'=>'Input does not exist');
+            }
+            return $input->get_input($inputid);
+        }
+
         $dbinputs = $input->get_inputs_v2($session['userid']);
 
         if (!$route->subaction && !isset($_GET['node'])) {

@@ -334,13 +334,12 @@ class Input
 
     // -----------------------------------------------------------------------------------------
     // get_inputs_v2, returns user inputs by node name and input name
-    // - last time and value is included in the response
-    // - input id is not included in the response
+    // - id, description, last time and value are included in the response
     //
     // {"emontx":{
-    //   "1":{"time":TIME,"value":100,"processList":""},
-    //   "2":{"time":TIME,"value":200,"processList":""},
-    //   "3":{"time":TIME,"value":300,"processList":""}
+    //   "1":{"id":1,"description":"","time":TIME,"value":100,"processList":""},
+    //   "2":{"id":2,"description":"","time":TIME,"value":200,"processList":""},
+    //   "3":{"id":3,"description":"","time":TIME,"value":300,"processList":""}
     // }}
     // -----------------------------------------------------------------------------------------
     public function get_inputs_v2($userid)
@@ -360,12 +359,19 @@ class Input
         $dbinputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
 
+        $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id)
         {
-            $row = $this->redis->hGetAll("input:$id");
+            $pipe->hGetAll("input:$id");
+            $pipe->hmget("input:lastvalue:$id",array('time','value'));
+        }
+        $result = $pipe->exec();
+
+        for ($i=0; $i<count($result); $i+=2) {
+            $row = $result[$i];
+            $lastvalue = $result[$i+1];
             if ($row['nodeid']==null) $row['nodeid'] = 0;
 
-            $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
             if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
                 $row['time'] = null;
             } else {
@@ -378,7 +384,7 @@ class Input
             }
 
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>(int) $row['id'], 'description'=>$row['description'], 'time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
         }
 
         return $dbinputs;
@@ -388,7 +394,7 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
@@ -405,7 +411,7 @@ class Input
                 $row['value'] = (float) $row['value'];
             }
 
-            $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>(int) $row['id'], 'description'=>$row['description'], 'time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
         }
         return $dbinputs;
     }
@@ -467,6 +473,27 @@ class Input
     }
 
     // -----------------------------------------------------------------------------------------
+    // get_input: returns a single input with last time and value
+    // -----------------------------------------------------------------------------------------
+    public function get_input($id)
+    {
+        $id = (int) $id;
+        $details = $this->get_details($id);
+        if (!$details) return false;
+        $lastvalue = $this->get_last_timevalue($id);
+
+        return array(
+            'id'=>$id,
+            'nodeid'=>$details['nodeid'],
+            'name'=>$details['name'],
+            'description'=>$details['description'],
+            'processList'=>$details['processList'],
+            'time'=>$lastvalue['time'],
+            'value'=>$lastvalue['value']
+        );
+    }
+
+    // -----------------------------------------------------------------------------------------
 
     public function get_name($id)
     {
@@ -489,8 +516,8 @@ class Input
             if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
             return $this->redis->hGetAll("input:$id");
         } else {
-            $result = $this->mysqli->query("SELECT nodeid,name,description FROM input WHERE `id` = '$id'");
-            return $result->fetch_array();
+            $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$id'");
+            return $result->fetch_assoc();
         }
     }
 

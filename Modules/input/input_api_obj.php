@@ -120,7 +120,7 @@ function input_api_obj() {
       "parameters" => array(),
       "mode" => "read",
       "group" => tr("Listing inputs"),
-      "notes" => tr("Returns {node: {input: {time, value, processList}}} for all nodes.")
+      "notes" => tr("Returns {node: {input: {id, description, time, value, processList}}} for all nodes.")
     ),
     array(
       "description" => tr("List inputs for a node"),
@@ -137,6 +137,15 @@ function input_api_obj() {
       "parameters" => array(
         "node" => array( "default" => "emontx" ),
         "name" => array( "default" => "power1", "description" => tr("Can also be given as sub-action: input/get/emontx/power1") )
+      ),
+      "mode" => "read",
+      "group" => tr("Listing inputs")
+    ),
+    array(
+      "description" => tr("Get an input by id"),
+      "path" => "input/get",
+      "parameters" => array(
+        "inputid" => array( "default" => 1 )
       ),
       "mode" => "read",
       "group" => tr("Listing inputs")
