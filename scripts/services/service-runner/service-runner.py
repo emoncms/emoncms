@@ -16,7 +16,7 @@ import subprocess
 import time
 import redis
 
-KEYS = ["service-runner", "emoncms:service-runner"]
+KEYS = ["service-runner", "emoncms:service-runner", "emoncmsservice-runner"]
 
 # Base directories — override via environment variables when needed
 _EMON_DIR    = os.environ.get("OPENENERGYMONITOR_DIR", "/opt/openenergymonitor")
