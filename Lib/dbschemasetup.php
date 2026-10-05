@@ -27,13 +27,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 //
 
 
-// Normalize int types for comparison (treats int, int(11), int(4) as "int")
+// Normalize integer types for comparison by removing display width
+// e.g int(11) becomes int, bigint(20) unsigned becomes bigint unsigned
+// MySQL 8.0.19+ does not report display width
 function normalize_type($type) {
-    $type = strtolower($type);
-    if (strpos($type, 'int') === 0) {
-        return 'int';
-    }
-    return $type;
+    $type = strtolower(trim($type));
+    return preg_replace('/^(tinyint|smallint|mediumint|int|integer|bigint)\(\d+\)/', '$1', $type);
 }
 
 //
