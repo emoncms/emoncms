@@ -17,6 +17,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
             <span class="panel-accent"></span>
             <span class="panel-name"><?php echo tr('Update Log'); ?></span>
             <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-default btn-sm"><?php echo tr('Download Log'); ?></a>
+            <button type="button" class="btn btn-default btn-sm log-expand" title="<?php echo tr('Expand'); ?>"><i class="icon-resize-full"></i></button>
             <button id="close-update-log" type="button" class="btn btn-default btn-sm"><?php echo tr('Close'); ?></button>
         </div>
         <pre class="log"><div id="update-log"></div></pre>
@@ -217,6 +218,12 @@ function refresh_updateLog(result){
     output_logfile(result, $("#update-log"));
     $("#update-log-bound").slideDown();
 }
+
+$(".log-expand").click(function() {
+    var expanded = $(this).closest(".panel").find(".log").toggleClass("log-expanded").hasClass("log-expanded");
+    $(this).attr("title", expanded ? "<?php echo tr('Collapse'); ?>" : "<?php echo tr('Expand'); ?>");
+    $(this).find("i").toggleClass("icon-resize-full", !expanded).toggleClass("icon-resize-small", expanded);
+});
 
 $("#close-update-log").click(function() {
     clearInterval(updates_log_interval);

@@ -120,6 +120,7 @@ global $settings;
             <button id="getupdatelog" type="button" class="btn btn-default btn-sm" aria-pressed="false" autocomplete="off"><?php echo tr('Auto refresh'); ?></button>
             <a href="<?php echo $path; ?>admin/update/log-download" class="btn btn-default btn-sm"><?php echo tr('Download Log'); ?></a>
             <button class="btn btn-default btn-sm" id="copyupdatelogfile" type="button"><?php echo tr('Copy Log to clipboard'); ?></button>
+            <button type="button" class="btn btn-default btn-sm log-expand" title="<?php echo tr('Expand'); ?>"><i class="icon-resize-full"></i></button>
         </div>
         <pre id="update-log-bound" class="log"><div id="update-log"></div></pre>
         <div class="panel-footer-note"><?php echo sprintf("%s <code>%s</code>",tr('View last entries on the logfile:'), $update_log_filename); ?></div>
@@ -170,6 +171,13 @@ function refresh_updateLog(result){
     output_logfile(result, $("#update-log"));
     $("#update-logfile-view").slideDown();
 }
+
+// expand or collapse the log window
+$(".log-expand").click(function() {
+    var expanded = $(this).closest(".panel").find(".log").toggleClass("log-expanded").hasClass("log-expanded");
+    $(this).attr("title", expanded ? "<?php echo tr('Collapse'); ?>" : "<?php echo tr('Expand'); ?>");
+    $(this).find("i").toggleClass("icon-resize-full", !expanded).toggleClass("icon-resize-small", expanded);
+});
 
 // auto refresh the updates logfile
 $("#getupdatelog").click(function() {

@@ -6,6 +6,7 @@
 /* Log window in a panel */
 .panel .log { display: block; border-radius: 0; }
 .panel .log.admin-log { height: calc(100vh - 260px); min-height: 320px; }
+.panel .log.log-expanded { height: 70vh; }
 .panel-footer-note {
     padding: 6px 1rem;
     font-size: var(--font-xs);
