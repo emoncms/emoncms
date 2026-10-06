@@ -50,6 +50,7 @@ For a UI change, load the page in a browser and check the browser console for er
 - `$redis` is `false` when Redis is disabled. Code must work in both cases.
 - Wrap UI text in `tr()` and add translations to `locale/<lang>.json`.
 - Use Bootstrap 5 components and the shared theme classes. Avoid new CSS where a theme class exists.
+- Follow the rules for views in [developing-a-new-module.md](docs/developer/design/developing-a-new-module.md#views).
 - Do not add dependencies without discussing them in an issue first.
 - Schema changes go in `*_schema.php`. **Update Database** applies them.
 

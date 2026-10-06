@@ -79,6 +79,16 @@ A controller can return a value or `array('content' => $value)`. Other values ar
 
 Check `$session['read']`, `$session['write']` or `$session['admin']` before each action. The session may come from a web login or from an API key.
 
+Actions that change data and are called from the web interface must be POST only. A GET can be fired by any tag that loads a URL, including stored content such as a dashboard, and the browser sends the session cookie with it. Check the method in the controller:
+
+```php
+if ($route->action == 'delete' && $session['write'] && $route->method == 'POST') {
+    return $mymodule->delete($session['userid'], (int) post('id'));
+}
+```
+
+Actions called by devices and scripts with an API key in the request may stay GET.
+
 ## Direct access
 
 Controllers, models and views start with:
@@ -140,20 +150,65 @@ To install Redis: `sudo apt install redis-server php-redis`.
 
 Load scripts and styles with `load_js()` and `load_css()`. They add a version to the URL from the file time, so browsers load the new file after an update.
 
+A view is a PHP file for the markup and a JS file for the behaviour. PHP renders the static text and one block of initial data. Vue renders everything that changes.
+
 ```php
 <?php
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $path;
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
-load_js("Modules/mymodule/Views/mymodule.js");
 load_css("Modules/mymodule/Views/mymodule.css");
 ?>
-<div id="mymodule-app" class="panel-page">
-    <h3><?php echo tr("My module"); ?></h3>
+<div id="mymodule-app" class="panel-page" v-cloak>
+    <h3><?php echo htmlspecialchars(tr("My module")); ?></h3>
+    <div v-for="item in items">
+        {{ item.name }}
+        <button class="btn btn-default btn-sm" @click="remove(item)"><?php echo htmlspecialchars(tr("Delete")); ?></button>
+    </div>
 </div>
+<script>
+var mymodule_init = {
+    items: <?php echo json_encode($items); ?>,
+    strings: <?php echo json_encode(array("Request failed" => tr("Request failed"))); ?>
+};
+</script>
+<?php load_js("Modules/mymodule/Views/mymodule.js"); ?>
 ```
 
-The UI uses Bootstrap 5, jQuery and Vue 3. See the [CSS guide](css-guide.md) for page structure and shared components.
+`mymodule.js`:
+
+```js
+Vue.createApp({
+    data: function() {
+        return { items: mymodule_init.items };
+    },
+    methods: {
+        remove: function(item) {
+            fetch(path + "mymodule/delete.json", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "id=" + encodeURIComponent(item.id)
+            }).then((response) => response.json()).then((result) => {
+                if (!result.success) return alert(result.message);
+                this.items = this.items.filter((i) => i.id !== item.id);
+            }).catch(() => alert(mymodule_init.strings["Request failed"]));
+        }
+    }
+}).mount("#mymodule-app");
+```
+
+Rules for views:
+
+- **One owner per page.** Mount Vue on the page root, with the page's modals inside it. Do not change the DOM inside the Vue root with jQuery. Pages without Vue may use jQuery.
+- **PHP output.** Escape text with `htmlspecialchars()`. Pass data, and the translated strings that JS needs, with `json_encode()`. Do not add `JSON_UNESCAPED_SLASHES` in a script block, as escaped slashes stop a `</script>` in the data from ending the block. Do not build JS code or Vue attributes in PHP strings.
+- **JS in `.js` files.** Only the data block is inline. Inline scripts are not linted.
+- **State in Vue data.** Do not keep state in DOM elements or in globals.
+- **Requests.** Use `fetch`. Do not use synchronous requests. Check `success` in the response and show `message` on failure.
+- **Writes.** Send writes as POST, see [Controller](#controller).
+- **Text from the server or the user.** Show it with `{{ }}`. Do not insert it with `v-html` or jQuery `.html()`.
+- **Components.** Use Bootstrap 5 components and the theme classes. Open modals with `bootstrap.Modal`. See the [CSS guide](css-guide.md).
+- **Check.** Load the page in a browser and check the console for errors.
+
+`Modules/user/profile/` is an example of a page that follows these rules.
 
 ## Menu
 
