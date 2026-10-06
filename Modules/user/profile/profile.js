@@ -136,7 +136,7 @@ var profile = Vue.createApp({
         save_username: function() {
             var username = this.user.username;
             if (username == this.stored.username) return this.close_edit();
-            profile_request("changeusername.json", { username: username }).then((result) => {
+            profile_request("changeusername.json", { username: username }, true).then((result) => {
                 if (!result.success) return alert(result.message);
                 this.stored.username = username;
                 this.close_edit();
@@ -173,7 +173,7 @@ var profile = Vue.createApp({
         },
         confirm_new_apikey: function() {
             var type = this.apikey_type;
-            profile_request("newapikey" + type + ".json").then((result) => {
+            profile_request("newapikey" + type + ".json", {}, true).then((result) => {
                 if (!result.success) return;
                 this.user["apikey_" + type] = result[type + "_apikey"];
                 this.stored["apikey_" + type] = result[type + "_apikey"];

@@ -219,17 +219,18 @@ function user_controller()
             return array('success'=>false, 'message'=>tr("This action requires an interactive login and cannot be performed with an API key"));
         }
         
-        // Change username, email, password
-        if ($route->action == 'changeusername' && $session['write']) return  $user->change_username($session['userid'],get('username'));
-        // POST only and password gated. As a GET it could be fired by any tag
-        // that loads a URL, and dashboard content is attacker authored markup
-        // served from this origin.
+        // Change username, email, password, and new API keys. POST only. As a GET
+        // these could be fired by any tag that loads a URL, and dashboard content
+        // is attacker authored markup served from this origin. Email and password
+        // are also password gated.
+        $is_post = $route->method == 'POST';
+        if ($route->action == 'changeusername' && $session['write'] && $is_post) return  $user->change_username($session['userid'],post('username'));
         if ($route->action == 'changeemail' && $session['write']) return  $user->change_email($session['userid'],post('email'),post('password'));
         if ($route->action == 'changepassword' && $session['write']) return  $user->change_password($session['userid'],post('old'),post('new'));
-        
+
         // Apikey
-        if ($route->action == 'newapikeyread' && $session['write']) return  $user->new_apikey_read($session['userid']);
-        if ($route->action == 'newapikeywrite' && $session['write']) return  $user->new_apikey_write($session['userid']);
+        if ($route->action == 'newapikeyread' && $session['write'] && $is_post) return  $user->new_apikey_read($session['userid']);
+        if ($route->action == 'newapikeywrite' && $session['write'] && $is_post) return  $user->new_apikey_write($session['userid']);
 
         // Get and set - user by profile client
         if ($route->action == 'get' && $session['write']) return  $user->get($session['userid']);
