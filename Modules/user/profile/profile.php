@@ -21,17 +21,18 @@ load_js("Lib/js/qrcode.js");
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 // Translated text for HTML content and attributes
-function profile_tr($text) {
+function profile_tr($text)
+{
     return htmlspecialchars(tr($text), ENT_QUOTES, 'UTF-8');
 }
 
 // Translated strings used from profile.js
-$js_strings = array(
+$js_strings = [
     'Save', 'Cancel', 'Edit',
     'Current password field empty', 'New password field empty', 'Repeat password field empty',
     'Passwords do not match', 'Request failed',
     'Write API Key copied to clipboard', 'Read API Key copied to clipboard'
-);
+];
 ?>
 <div id="profile" class="panel-page profile-page" v-cloak>
   <div class="page-header">

@@ -22,7 +22,7 @@ function profile_request(action, params, post) {
         // deleteall and logout return plain text
         try { return JSON.parse(text); } catch (e) { return text; }
     }).catch(function(error) {
-        alert(profile_strings['Request failed'] + ": " + error.message);
+        alert(profile_strings["Request failed"] + ": " + error.message);
         throw error;
     });
 }
@@ -105,7 +105,7 @@ var profile = Vue.createApp({
             this.editing = key;
         },
         cancel_edit: function() {
-            if (this.editing && this.editing != "password") {
+            if (this.editing && this.editing !== "password") {
                 this.user[this.editing] = this.stored[this.editing];
             }
             this.password = { current: "", new: "", repeat: "" };
@@ -121,7 +121,7 @@ var profile = Vue.createApp({
                 if (!result.success) return alert(result.message);
                 // Reload after a language change so the new translation applies, and after
                 // a gravatar change because the avatar hash is rendered server side
-                if (this.user.language != this.stored.language || this.user.gravatar != this.stored.gravatar) {
+                if (this.user.language !== this.stored.language || this.user.gravatar !== this.stored.gravatar) {
                     window.location.href = path + "user/view";
                     return;
                 }
@@ -135,7 +135,7 @@ var profile = Vue.createApp({
         },
         save_username: function() {
             var username = this.user.username;
-            if (username == this.stored.username) return this.close_edit();
+            if (username === this.stored.username) return this.close_edit();
             profile_request("changeusername.json", { username: username }, true).then((result) => {
                 if (!result.success) return alert(result.message);
                 this.stored.username = username;
@@ -144,9 +144,9 @@ var profile = Vue.createApp({
         },
         save_email: function() {
             var email = this.user.email;
-            if (email == this.stored.email) return this.close_edit();
+            if (email === this.stored.email) return this.close_edit();
             // Current password is required, see change_email
-            if (this.password.current == "") return alert(profile_strings['Current password field empty']);
+            if (this.password.current === "") return alert(profile_strings["Current password field empty"]);
             profile_request("changeemail.json", { email: email, password: this.password.current }, true).then((result) => {
                 if (!result.success) return alert(result.message);
                 this.stored.email = email;
@@ -154,17 +154,17 @@ var profile = Vue.createApp({
             });
         },
         change_password: function() {
-            if (this.password.current == "") return alert(profile_strings['Current password field empty']);
-            if (this.password.new == "") return alert(profile_strings['New password field empty']);
-            if (this.password.repeat == "") return alert(profile_strings['Repeat password field empty']);
-            if (this.password.new != this.password.repeat) return alert(profile_strings['Passwords do not match']);
+            if (this.password.current === "") return alert(profile_strings["Current password field empty"]);
+            if (this.password.new === "") return alert(profile_strings["New password field empty"]);
+            if (this.password.repeat === "") return alert(profile_strings["Repeat password field empty"]);
+            if (this.password.new !== this.password.repeat) return alert(profile_strings["Passwords do not match"]);
             profile_request("changepassword.json", { old: this.password.current, new: this.password.new }, true).then((result) => {
                 if (result.success) this.close_edit();
                 alert(result.message);
             });
         },
         copy_apikey: function(type) {
-            var message = type == "write" ? profile_strings['Write API Key copied to clipboard'] : profile_strings['Read API Key copied to clipboard'];
+            var message = type === "write" ? profile_strings["Write API Key copied to clipboard"] : profile_strings["Read API Key copied to clipboard"];
             copy_text_to_clipboard(this.user["apikey_" + type], message);
         },
         new_apikey: function(type) {
