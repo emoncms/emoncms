@@ -12,6 +12,10 @@ main.content-container:has(.profile-page) { max-width: 980px; }
 }
 .profile-edit .form-control,
 .profile-edit .form-select { margin: 0; }
+.profile-edit-buttons {
+    display: flex;
+    gap: 6px;
+}
 .profile-password { padding: 6px 0; }
 
 .profile-gravatar {
@@ -34,7 +38,7 @@ main.content-container:has(.profile-page) { max-width: 980px; }
     box-sizing: content-box;
     width: 20px;
     height: 20px;
-    margin-right: 2px;
+    margin-right: 6px;
     border: 2px solid var(--border);
     border-radius: 3px;
     vertical-align: middle;

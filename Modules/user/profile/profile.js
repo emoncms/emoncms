@@ -1,243 +1,224 @@
-var user_data = user.get();
-var last_username = ""+user_data.username
-var last_email = ""+user_data.email
-var last_language = ""+user_data.language;
-var last_gravatar = ""+user_data.gravatar;
+// My Account page. Initial data and translated strings come from profile_init, see profile.php.
 
-var timezones = [];
-$.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
-    app.timezones = result;
-}});
+var profile_strings = profile_init.strings;
 
-var app = Vue.createApp({
-    data() { return {
-        user: user_data,
-        timezones: timezones,
-        languages: languages,
-        translation_status: translation_status,
-        edit: {
-            username: false,
-            email: false,
-            password: false,
-            gravatar: false,
-            name: false,
-            location: false,
-            timezone: false,
-            language: false,
-            startingpage: false
-        },
-        password: {
-            current: "",
-            new: "",
-            repeat: ""
-        },
-        email_password: "",
-        before: {},
-        gravatarHash: gravatar_hash
-    }; },
+// Request to a user API action. Params are sent as a form body for POST, or as a query string.
+function profile_request(action, params, post) {
+    var body = Object.keys(params || {}).map(function(key) {
+        return key + "=" + encodeURIComponent(params[key]);
+    }).join("&");
+
+    var url = path + "user/" + action;
+    var options = {};
+    if (post) {
+        options = { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body };
+    } else if (body) {
+        url += "?" + body;
+    }
+    return fetch(url, options).then(function(response) {
+        if (!response.ok) throw new Error(response.status + " " + response.statusText);
+        return response.text();
+    }).then(function(text) {
+        // deleteall and logout return plain text
+        try { return JSON.parse(text); } catch (e) { return text; }
+    }).catch(function(error) {
+        alert(profile_strings['Request failed'] + ": " + error.message);
+        throw error;
+    });
+}
+
+function local_get(key) {
+    try { return localStorage.getItem(key); } catch (e) { return null; }
+}
+function local_set(key, value) {
+    try { localStorage.setItem(key, value); } catch (e) {}
+}
+
+var edit_row = {
+    template: "#edit-row-template",
+    props: {
+        label: String,
+        editing: Boolean,
+        editClass: { type: String, default: "profile-edit" }
+    },
+    emits: ["edit", "save", "cancel"],
+    data: function() { return { strings: profile_strings }; }
+};
+
+var profile = Vue.createApp({
+    data: function() {
+        if (profile_init.user.success === false) alert(profile_init.user.message);
+        return {
+            user: Object.assign({}, profile_init.user),
+            // Values last confirmed by the server
+            stored: Object.assign({}, profile_init.user),
+            timezones: [],
+            languages: profile_init.languages,
+            translation_status: profile_init.translation_status,
+            gravatar_hash: profile_init.gravatar_hash,
+            // Key of the row being edited, one at a time
+            editing: null,
+            password: { current: "", new: "", repeat: "" },
+            apikey_type: "",
+            delete_password: "",
+            delete_output: "",
+            deleted: false,
+            themecolors: ["blue", "black", "sun", "yellow2", "copper", "green"],
+            sidebarcolors: ["dark", "light"],
+            themecolor: current_themecolor,
+            themesidebar: current_themesidebar,
+            show_archived: local_get("show_archived") === "true"
+        };
+    },
     computed: {
-        gravatarUrl: function() {
-            // avatars are served via the local proxy rather than gravatar.com directly,
+        gravatar_url: function() {
+            // Avatars are served via the local proxy rather than gravatar.com directly,
             // and the proxy is only available where its cache directory exists
-            if (!gravatar_enabled || !this.gravatarHash) return '';
-            return path + 'user/gravatar?hash=' + this.gravatarHash + '&s=80';
+            if (!profile_init.gravatar_enabled || !this.gravatar_hash) return "";
+            return path + "user/gravatar?hash=" + this.gravatar_hash + "&s=80";
+        },
+        qr_text: function() {
+            return path + "app?readkey=" + this.user.apikey_read + "#myelectric";
         }
+    },
+    watch: {
+        qr_text: function(text) {
+            this.qrcode.makeCode(text);
+        }
+    },
+    mounted: function() {
+        this.qrcode = new QRCode(this.$refs.qr, {
+            text: this.qr_text,
+            width: 160,
+            height: 160,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+        profile_request("gettimezones.json").then((result) => {
+            this.timezones = result;
+        });
     },
     methods: {
         show_edit: function(key) {
-            app.before[key] = app.user[key];
-            app.edit[key] = true;
+            if (this.editing) this.cancel_edit();
+            this.editing = key;
         },
-        cancel_edit: function(key) {
-            if (key == 'password') {
-                app.password = { current: "", new: "", repeat: "" };
-            } else {
-                app.user[key] = app.before[key];
+        cancel_edit: function() {
+            if (this.editing && this.editing != "password") {
+                this.user[this.editing] = this.stored[this.editing];
             }
-            if (key == 'email') app.email_password = "";
-            app.edit[key] = false;
+            this.password = { current: "", new: "", repeat: "" };
+            this.editing = null;
         },
-        save: function(key) {
-            user.set(app.user);
-            app.edit[key] = false;
-            // Reload after a language change so the new translation applies, and
-            // after a gravatar change because the avatar hash is rendered server
-            // side, see gravatar_hash in profile.php. Only the server knows what
-            // was actually stored: set() strips characters an address may
-            // legitimately contain, so hashing what was typed here would ask the
-            // proxy for an address the account does not have.
-            if (app.user.language!=last_language || app.user.gravatar!=last_gravatar) {
-                window.location.href = path+"user/view";
-            }
+        close_edit: function() {
+            this.password = { current: "", new: "", repeat: "" };
+            this.editing = null;
         },
-        save_username: function(username) {
-            if (username!=last_username) {
-                $.ajax({
-                    url: path+"user/changeusername.json",
-                    data: "&username="+username,
-                    dataType: 'json',
-                    success: function(result) {
-                        if (result.success!=undefined) {
-                            if (result.success) {
-                                last_username = username;
-                                app.edit.username = false;
-                            } else {
-                                alert(result.message)                        
-                            }
-                        }
-                    }
-                });
-            } else {
-                app.edit.username = false;
-            }
-        },
-        save_email: function(email) {
-            if (email!=last_email) {
-                // The current password is required, see change_email
-                if (app.email_password=='') {
-                    alert("Current password field empty");
-                    return false;
+        // Profile fields: user/set replaces all of them, so the whole user object is sent
+        save: function() {
+            profile_request("set.json", { data: JSON.stringify(this.user) }, true).then((result) => {
+                if (!result.success) return alert(result.message);
+                // Reload after a language change so the new translation applies, and after
+                // a gravatar change because the avatar hash is rendered server side
+                if (this.user.language != this.stored.language || this.user.gravatar != this.stored.gravatar) {
+                    window.location.href = path + "user/view";
+                    return;
                 }
-                $.ajax({
-                    type: 'POST',
-                    url: path+"user/changeemail.json",
-                    data: "email="+encodeURIComponent(email)+"&password="+encodeURIComponent(app.email_password),
-                    dataType: 'json',
-                    success: function(result) {
-                        if (result.success!=undefined) {
-                            if (result.success) {
-                                last_email = email;
-                                app.edit.email = false;
-                                app.email_password = "";
-                            } else {
-                                alert(result.message)                        
-                            }
-                        }
-                    }
+                // Read back the stored values, user/set removes characters it does not allow
+                profile_request("get.json").then((user) => {
+                    this.user = Object.assign({}, user);
+                    this.stored = Object.assign({}, user);
+                    this.close_edit();
                 });
-            } else {
-                app.edit.email = false;
-                app.email_password = "";
-            }
+            });
+        },
+        save_username: function() {
+            var username = this.user.username;
+            if (username == this.stored.username) return this.close_edit();
+            profile_request("changeusername.json", { username: username }).then((result) => {
+                if (!result.success) return alert(result.message);
+                this.stored.username = username;
+                this.close_edit();
+            });
+        },
+        save_email: function() {
+            var email = this.user.email;
+            if (email == this.stored.email) return this.close_edit();
+            // Current password is required, see change_email
+            if (this.password.current == "") return alert(profile_strings['Current password field empty']);
+            profile_request("changeemail.json", { email: email, password: this.password.current }, true).then((result) => {
+                if (!result.success) return alert(result.message);
+                this.stored.email = email;
+                this.close_edit();
+            });
         },
         change_password: function() {
-            if (app.password.current=='') {
-                alert("Current password field empty");
-                return false;   
-            }
-            if (app.password.new=='') {
-                alert("New password field empty");
-                return false;   
-            }        
-            if (app.password.repeat=='') {
-                alert("Repeat password field empty");
-                return false;   
-            }
-            if (app.password.new != app.password.repeat) {
-                alert(str_passwords_do_not_match);
-                return false;
-            }
-            $.ajax({
-                type: 'POST',
-                url: path+"user/changepassword.json",
-                data: "old="+encodeURIComponent(app.password.current)+"&new="+encodeURIComponent(app.password.new),
-                dataType: 'json',
-                success: function(result) {
-                    if (result.success!=undefined) {
-                        if (result.success) {
-                            app.edit.password = false;
-                            alert(result.message)       
-                        } else {
-                            alert(result.message)
-                        }
-                    }
-                }
+            if (this.password.current == "") return alert(profile_strings['Current password field empty']);
+            if (this.password.new == "") return alert(profile_strings['New password field empty']);
+            if (this.password.repeat == "") return alert(profile_strings['Repeat password field empty']);
+            if (this.password.new != this.password.repeat) return alert(profile_strings['Passwords do not match']);
+            profile_request("changepassword.json", { old: this.password.current, new: this.password.new }, true).then((result) => {
+                if (result.success) this.close_edit();
+                alert(result.message);
+            });
+        },
+        copy_apikey: function(type) {
+            var message = type == "write" ? profile_strings['Write API Key copied to clipboard'] : profile_strings['Read API Key copied to clipboard'];
+            copy_text_to_clipboard(this.user["apikey_" + type], message);
+        },
+        new_apikey: function(type) {
+            this.apikey_type = type;
+            bootstrap.Modal.getOrCreateInstance(this.$refs.apikey_modal).show();
+        },
+        confirm_new_apikey: function() {
+            var type = this.apikey_type;
+            profile_request("newapikey" + type + ".json").then((result) => {
+                if (!result.success) return;
+                this.user["apikey_" + type] = result[type + "_apikey"];
+                this.stored["apikey_" + type] = result[type + "_apikey"];
+                bootstrap.Modal.getOrCreateInstance(this.$refs.apikey_modal).hide();
             });
         },
         delete_account: function() {
-            $('#myModal').modal('show');
-            $.ajax({type:"POST",url: path+"user/deleteall.json", data: "mode=dryrun", dataType: 'text', success: function(result){
-                $("#deleteall-output").html(result);
-            }});
+            this.deleted = false;
+            this.delete_password = "";
+            this.delete_output = "";
+            bootstrap.Modal.getOrCreateInstance(this.$refs.delete_modal).show();
+            profile_request("deleteall.json", { mode: "dryrun" }, true).then((result) => {
+                this.delete_output = result;
+            });
         },
-        new_apikey: function(type) {
-            $("#apikey_type").html(type);
-            $('#modalNewApikey').modal('show');
+        confirm_delete: function() {
+            profile_request("deleteall.json", { mode: "permanentdelete", password: this.delete_password }, true).then((result) => {
+                this.delete_output = result;
+                if (result.startsWith("PERMANENT DELETE")) this.deleted = true;
+            });
+        },
+        logout: function() {
+            profile_request("logout.json").finally(function() {
+                window.location = path;
+            });
+        },
+        // Theme selection, used in conjunction with code in Theme/js/emoncms.js
+        set_themecolor: function(name) {
+            document.documentElement.classList.remove("theme-" + this.themecolor);
+            document.documentElement.classList.add("theme-" + name);
+            local_set("themecolor", name);
+            current_themecolor = this.themecolor = name;
+        },
+        set_themesidebar: function(name) {
+            document.documentElement.classList.remove("sidebar-" + this.themesidebar);
+            document.documentElement.classList.add("sidebar-" + name);
+            local_set("themesidebar", name);
+            current_themesidebar = this.themesidebar = name;
+        },
+        // Archived features toggle, used in conjunction with code in Theme/menu/menu.js
+        set_show_archived: function(show) {
+            local_set("show_archived", show ? "true" : "false");
+            window.location.reload();
         }
     }
-}).mount('#app');
-
-//QR COde Generation
-var urlCleaned = window.location.href.replace("user/view" ,"");
-var qrcode = new QRCode(document.getElementById("qr_apikey"), {
-    text: urlCleaned + "app?readkey=" + user_data.apikey_read  + "#myelectric",
-    width: 160,
-    height: 160,
-    colorDark : "#000000",
-    colorLight : "#ffffff",
-    correctLevel : QRCode.CorrectLevel.H
-}); //Re-designed on-board QR generation using javascript
-
-$("#delete-account").click(function() {
-    app.delete_account();
 });
-
-$("#confirmdelete").click(function() {
-    var password = $("#delete-account-password").val();
-    
-    $.ajax({type:"POST", url: path+"user/deleteall.json", data: "mode=permanentdelete&password="+encodeURIComponent(password), dataType: 'text', success: function(result){
-        $("#deleteall-output").html(result);
-        
-        if (result!="invalid password") {
-            $("#canceldelete").hide();
-            $("#confirmdelete").hide();
-            $("#logoutdelete").show();
-            $(".delete-account-s1").hide();
-            $(".delete-account-s2").show();
-        }
-    }});
-});
-
-$("#logoutdelete").click(function() {
-    $.ajax({url: path+"user/logout.json", dataType: 'text', success: function(result){
-        window.location = path;
-    }});
-});
-
-$("#confirm_generate_apikey").click(function() {
-    var type = $("#apikey_type").html();
-    $.ajax({ url: path+"user/newapikey"+type+".json", dataType: 'json', success: function(result){
-        if (result.success) {
-            app.user['apikey_'+type] = result[type+'_apikey'];
-            $('#modalNewApikey').modal('hide');
-        }
-    }});
-});
-
-// Theme selection used in conjunction with code in Lib/emoncms.js
-$(".themecolor[name='"+current_themecolor+"']").addClass("color-box-active");
-$(".themecolor").click(function() {
-    themecolor = $(this).attr("name");
-    $("html").removeClass('theme-'+current_themecolor).addClass('theme-'+themecolor);
-    localStorage.setItem('themecolor', themecolor);
-    $(".themecolor[name='"+current_themecolor+"']").removeClass("color-box-active"); 
-    $(".themecolor[name='"+themecolor+"']").addClass("color-box-active");    
-    current_themecolor = themecolor
-});
-$(".sidebarcolor[name='"+current_themesidebar+"']").addClass("color-box-active");
-$(".sidebarcolor").click(function() {
-    themesidebar = $(this).attr("name");
-    $("html").removeClass('sidebar-'+current_themesidebar).addClass('sidebar-'+themesidebar);
-    localStorage.setItem('themesidebar', themesidebar);
-    $(".sidebarcolor[name='"+current_themesidebar+"']").removeClass("color-box-active"); 
-    $(".sidebarcolor[name='"+themesidebar+"']").addClass("color-box-active");
-    current_themesidebar = themesidebar
-});
-
-// Archived features toggle, used in conjunction with code in Theme/menu/menu.js
-$("#show-archived").prop("checked", localStorage.getItem('show_archived') === 'true');
-$("#show-archived").change(function() {
-    localStorage.setItem('show_archived', this.checked ? 'true' : 'false');
-    // Reload page
-    window.location.reload();
-});
+profile.component("edit-row", edit_row);
+profile.mount("#profile");

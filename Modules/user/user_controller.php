@@ -61,8 +61,7 @@ function user_controller()
             ));
         }
         if ($route->action == 'view' && $session['write']) {
-            return view("Modules/user/profile/profile.php", array(
-            ));
+            return view("Modules/user/profile/profile.php", array('account' => $user->get($session['userid'])));
         }
         
         if ($route->action == 'logout') {
@@ -161,7 +160,7 @@ function user_controller()
                     }
                 }
                 
-                return view("Modules/user/profile/profile.php",array());
+                return view("Modules/user/profile/profile.php", array('account' => $user->get($session['userid'])));
             }
         }
     }
