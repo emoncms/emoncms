@@ -787,6 +787,28 @@ class MysqlTimeSeries implements engine_methods
 
 // #### \/ Bellow are engine private methods
 
+    // Allowlist feed data column types. Returns the normalised type, or
+    // false when the requested type is not permitted. Prevents SQL injection
+    // through the create options when generic table naming is disabled.
+    private function validate_type($type)
+    {
+        $allowed = array(
+            "FLOAT", "DOUBLE", "REAL",
+            "DECIMAL",
+            "TINYINT", "SMALLINT", "MEDIUMINT", "INT", "INTEGER", "BIGINT"
+        );
+        $type = strtoupper(trim($type));
+        $unsigned = false;
+        if (substr($type, -9) === " UNSIGNED") {
+            $unsigned = true;
+            $type = trim(substr($type, 0, -9));
+        }
+        if (!in_array($type, $allowed, true)) {
+            return false;
+        }
+        return $unsigned ? $type." UNSIGNED" : $type;
+    }
+
     private function create_meta($feedid, $options)
     {
         // Check to ensure ne existing feed will be overridden
@@ -812,7 +834,12 @@ class MysqlTimeSeries implements engine_methods
             else {
                 $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
             }
-            $type = !empty($options['type']) ? $options['type'] : "FLOAT";
+            $type = !empty($options['type']) ? $this->validate_type($options['type']) : "FLOAT";
+            if ($type === false) {
+                $result = "Invalid feed data type '".$options['type']."'";
+                $this->log->error($result);
+                return $result;
+            }
             $empty = isset($options['empty']) && boolval($options['empty']);
         }
         // Set initial feed meta data
