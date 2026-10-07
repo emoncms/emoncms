@@ -37,24 +37,22 @@ load_css("Modules/admin/users/userlist_view.css");
         <div class="panel-table">
         <table>
             <colgroup>
-                <col style="width:60px">
+                <col style="width:80px">
                 <col>
                 <col>
                 <col style="width:110px">
                 <col style="width:90px">
-                <col style="width:80px">
             </colgroup>
             <thead>
                 <tr>
                     <th v-for="col in sortColumns" :key="col.key" class="user-sort" :class="{ 'is-sorted': orderby === col.key }" :aria-sort="orderby === col.key ? order : 'none'" @click="sortBy(col.key)">
                         {{ col.label }}<span class="user-sort-arrow">{{ orderby === col.key ? (order === 'ascending' ? '▲' : '▼') : '' }}</span>
                     </th>
-                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="user in users" :key="user.id">
-                    <td class="col-secondary">{{ user.id }}</td>
+                    <td><a class="btn btn-default btn-sm" :href="'../admin/setuser?id=' + user.id" title="<?php echo tr('View'); ?>">{{ user.id }}</a></td>
                     <td>
                         <div class="user-cell">
                             <span class="user-avatar" :class="tagClass(avatarColour(user.username))">{{ initials(user.username) }}</span>
@@ -68,7 +66,6 @@ load_css("Modules/admin/users/userlist_view.css");
                         <span v-else class="badge px-2 bg-secondary-subtle text-secondary-emphasis"><?php echo tr("Unverified"); ?></span>
                     </td>
                     <td><span class="badge px-2" :class="tagClass(user.feeds > 0 ? 'info' : 'secondary')">{{ user.feeds }}</span></td>
-                    <td class="text-end"><a class="btn btn-default btn-sm" :href="'../admin/setuser?id=' + user.id"><?php echo tr('View'); ?></a></td>
                 </tr>
             </tbody>
         </table>
