@@ -23,35 +23,44 @@ $key = htmlspecialchars($key, ENT_QUOTES, 'UTF-8');
 $key_valid = !empty($key_valid);
 
 ?>
-<style>
-  .main { max-width: 340px; margin: 0 auto; padding-top: 40px; }
-  .main .form-group { margin-bottom: 12px; }
-</style>
+<?php
+load_css("Modules/user/login_block.css");
+?>
 
-<div class="main">
-    <h3>Choose a new password</h3>
+<div class="login-page" data-bs-theme="light">
+    <div class="card login-card">
+        <div class="login-head">
+            <div class="login-brand">
+                <img src="<?php echo $path; ?>Theme/emoncms-logo.svg" alt="" width="50" height="43">
+                <span><b>emon</b>cms</span>
+            </div>
+            <p>Open-source energy visualisation</p>
+        </div>
+
+        <div class="card-body">
+            <h4 class="login-title"><?php echo tr('Choose a new password'); ?></h4>
 
 <?php if (!$key_valid) { ?>
-    <div class="alert alert-danger"><?php echo tr("This password reset link is invalid or has expired, please request a new one"); ?></div>
+            <div class="alert alert-danger"><?php echo tr("This password reset link is invalid or has expired, please request a new one"); ?></div>
 <?php } else { ?>
-    <div id="reset-form">
-        <div class="form-group">
-            <label class="form-label">New password
-                <input class="form-control mb-2" id="reset-password" type="password" autocomplete="new-password" />
-            </label>
-        </div>
-        <div class="form-group">
-            <label class="form-label">Confirm new password
-                <input class="form-control mb-2" id="reset-password2" type="password" autocomplete="new-password" />
-            </label>
-        </div>
-        <button id="reset-submit" class="btn btn-primary" type="button">Set new password</button>
-    </div>
-
-    <div id="reset-message" class="pt-2"></div>
+            <form id="reset-form" onsubmit="return false;">
+                <div class="login-field">
+                    <label class="form-label" for="reset-password"><?php echo tr('New password'); ?></label>
+                    <input class="form-control" id="reset-password" type="password" placeholder="<?php echo tr('Enter a new password'); ?>" autocomplete="new-password" />
+                </div>
+                <div class="login-field">
+                    <label class="form-label" for="reset-password2"><?php echo tr('Confirm new password'); ?></label>
+                    <input class="form-control" id="reset-password2" type="password" placeholder="<?php echo tr('Enter the new password again'); ?>" autocomplete="new-password" />
+                </div>
+                <div id="reset-message"></div>
+                <button id="reset-submit" class="btn btn-primary login-btn" type="submit"><?php echo tr('Set new password'); ?></button>
+            </form>
+            <div id="reset-done"></div>
 <?php } ?>
 
-    <p class="pt-2"><a href="<?php echo $path; ?>user/login">Back to login</a></p>
+            <p class="login-switch"><a href="<?php echo $path; ?>user/login"><?php echo tr('Back to log in'); ?></a></p>
+        </div>
+    </div>
 </div>
 
 <?php if ($key_valid) { ?>
@@ -59,7 +68,7 @@ $key_valid = !empty($key_valid);
 var path = "<?php echo $path; ?>";
 var reset_key = <?php echo json_encode($key); ?>;
 
-$("#reset-submit").on("click", function () {
+$("#reset-form").on("submit", function () {
     var password = $("#reset-password").val();
     var password2 = $("#reset-password2").val();
 
@@ -83,7 +92,7 @@ $("#reset-submit").on("click", function () {
             if (data && data.success) {
                 // The token is spent: hide the form so it cannot be resubmitted
                 $("#reset-form").hide();
-                $("#reset-message").html("<div class='alert alert-success'>" + data.message + "</div>");
+                $("#reset-done").html("<div class='alert alert-success'>" + data.message + "</div>");
             } else {
                 var msg = (data && data.message) ? data.message : "Password reset failed";
                 $("#reset-message").html("<div class='alert alert-danger'>" + msg + "</div>");
