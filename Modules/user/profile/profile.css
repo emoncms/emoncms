@@ -51,22 +51,6 @@ main.content-container:has(.profile-page) { max-width: 980px; }
     border-color: var(--bs-emphasis-color);
 }
 
-/* Mobile app: QR code beside the text. QR keeps a white margin so it scans in dark mode. */
-.profile-mobile {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 1rem;
-}
-.profile-mobile > div:last-child { flex: 1; min-width: 220px; }
-#qr_apikey {
-    padding: 8px;
-    background-color: #fff;
-    line-height: 0;
-}
-.profile-mobile .store-badge { height: 40px; width: auto; }
-
 @media (max-width: 576px) {
     .profile-page .apikey { font-size: var(--font-xs); }
 }

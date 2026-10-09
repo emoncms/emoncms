@@ -1,5 +1,5 @@
 // My Account page. Initial data and translated strings come from profile_init, see profile.php.
-/* global QRCode, copy_text_to_clipboard, profile_init, current_themecolor: writable, current_themesidebar: writable */
+/* global copy_text_to_clipboard, profile_init, current_themecolor: writable, current_themesidebar: writable */
 
 (function() {
 
@@ -79,25 +79,9 @@
                 // and the proxy is only available where its cache directory exists
                 if (!profile_init.gravatar_enabled || !this.gravatar_hash) return "";
                 return path + "user/gravatar?hash=" + this.gravatar_hash + "&s=80";
-            },
-            qr_text: function() {
-                return path + "app?readkey=" + this.user.apikey_read + "#myelectric";
-            }
-        },
-        watch: {
-            qr_text: function(text) {
-                this.qrcode.makeCode(text);
             }
         },
         mounted: function() {
-            this.qrcode = new QRCode(this.$refs.qr, {
-                text: this.qr_text,
-                width: 160,
-                height: 160,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
             profile_request("gettimezones.json").then((result) => {
                 this.timezones = result;
             });
