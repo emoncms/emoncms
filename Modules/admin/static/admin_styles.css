@@ -122,11 +122,13 @@ ul.info-list li { white-space: nowrap; overflow: hidden; text-overflow: ellipsis
 
 /* -- Components ----------------------------------------------------------- */
 
+/* Auto layout: name and branch columns fit their content, the table scrolls when narrow */
+.panel table.cmp-table { table-layout: auto; }
+.cmp-name { white-space: nowrap; }
 .cmp-col-source { width: 100px; }
 .cmp-col-version { width: 90px; }
 .cmp-col-describe { width: 170px; }
 .cmp-col-changes { width: 100px; }
-.cmp-col-branch { width: 190px; }
 .cmp-col-actions { width: 90px; }
 .admin-page .cmp-table tr.cmp-group td {
     height: auto;

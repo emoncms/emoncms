@@ -40,7 +40,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
         </div>
         <div class="panel-table">
         <table class="cmp-table">
-            <colgroup><col><col class="cmp-col-source"><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col class="cmp-col-branch"><col class="cmp-col-actions"></colgroup>
+            <colgroup><col><col class="cmp-col-source"><col class="cmp-col-version"><col class="cmp-col-describe"><col class="cmp-col-changes"><col><col class="cmp-col-actions"></colgroup>
             <thead>
                 <tr>
                     <th><?php echo tr('Component name'); ?></th>
@@ -57,7 +57,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                 <tr class="cmp-group"><td colspan="7">{{ group.dir }}<span class="cmp-group-count">{{ group.items.length }}</span></td></tr>
                 <tr v-for="{ key, item } in group.items" :key="key">
                     <td>
-                        <div class="col-primary text-truncate" :title="item.path">{{ item.name }}</div>
+                        <div class="col-primary cmp-name" :title="item.path">{{ item.name }}</div>
                     </td>
                     <td>
                         <a class="badge px-2 cmp-proto" :class="protocolClass(item.url)" :href="repoLink(item.url)" :title="item.url + '\n' + protocolNote(item.url)" target="_blank" rel="noopener"><span>{{ protocol(item.url) || 'git' }}</span><span class="svg-icon-link"></span></a>
@@ -69,7 +69,7 @@ load_js("Lib/js/vue.global.prod-3.5.22.min.js");
                         <span class="badge bg-success" v-else><?php echo tr('No'); ?></span>
                     </td>
                     <td v-if="item.local_changes==''">
-                        <select class="form-select input-165" v-model="item.branch" @change="switch_branch(key)">
+                        <select class="form-select input-auto" v-model="item.branch" @change="switch_branch(key)">
                             <option v-for="branch in item.branches_available" :key="branch">{{ branch }}</option>
                         </select>
                     </td>
