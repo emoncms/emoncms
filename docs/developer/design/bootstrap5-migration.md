@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Converting a module from Bootstrap 2
 
 Emoncms uses Bootstrap 5.3. Bootstrap 2 is removed, so a module that uses Bootstrap 2 markup, classes or JS needs the changes below. For the components and patterns to convert to, see `css-guide.md`.

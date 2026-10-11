@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # CLI
 
 `scripts/emoncms-cli` is a command line tool for Emoncms. It currently runs database updates.

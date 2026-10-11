@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Emoncms 12.0.0: Bootstrap 5
 
 Emoncms moves from Bootstrap 2.3.2 to Bootstrap 5.3.8. Core and every module maintained by OpenEnergyMonitor change together in this release. Bootstrap 2 is removed, so third party modules that use Bootstrap 2 markup, classes or JS need changes.

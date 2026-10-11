@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Backup
 
 Backup and restore is covered in the user guide: [Backup and restore](../import.md).

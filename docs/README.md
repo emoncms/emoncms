@@ -4,7 +4,7 @@ orphan: true
 
 # Docs
 
-The user guide is published at [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms). Page order on the docs site is set in [index.rst](index.rst). Developer pages in [developer](developer) are not published there. See [STYLE.md](developer/STYLE.md) for how to write and publish the guide.
+The user guide is published at [docs.openenergymonitor.org/emoncms](https://docs.openenergymonitor.org/emoncms). Page order on the docs site is set in [index.rst](index.rst). Developer pages in [developer](developer) are published there as the developer guide, ordered in [developer/index.rst](developer/index.rst). See [STYLE.md](developer/STYLE.md) for how to write and publish the guide.
 
 ## Getting started
 

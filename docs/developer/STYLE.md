@@ -1,6 +1,10 @@
+---
+orphan: true
+---
+
 # User guide style
 
-Style for the user guide in `docs/`, published at docs.openenergymonitor.org/emoncms. Pages in `docs/developer/` are not published. The writing rules in `CLAUDE.md` also apply.
+Style for the user guide in `docs/`, published at docs.openenergymonitor.org/emoncms. Pages in `docs/developer/` are published as the developer guide. The writing rules in `CLAUDE.md` also apply.
 
 ## Publishing
 

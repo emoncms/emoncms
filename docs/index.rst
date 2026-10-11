@@ -10,3 +10,4 @@ Emoncms user guide
    viewing-data
    managing-your-system
    scheduling-and-control
+   developer/index
