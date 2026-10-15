@@ -69,6 +69,8 @@ if device=="/dev/ttyAMA0" and rpi: reset()
 if redis:
     try:
         r = redis.Redis('localhost', 6379)
+        # Drop commands queued while the monitor was not running
+        r.delete('serialmonitor')
     except:
         pass
 # -------------------------------------------------------------
@@ -102,12 +104,17 @@ while True:
   
     # If serial input, read from serial    
     if ser in inp:
-        while ser.in_waiting:
-            # linestr = ""
+        while True:
             try:
+                if not ser.in_waiting:
+                    break
                 linestr = linestr + ser.read().decode()
             except UnicodeDecodeError:
                 pass
+            except serial.SerialException as err:
+                if redis:
+                    r.rpush('serialmonitor-log', "Serial port error, check that emonhub is stopped: " + str(err))
+                sys.exit(1)
             except KeyboardInterrupt:
                 sys.exit(0)
             

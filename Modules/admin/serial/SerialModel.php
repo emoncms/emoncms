@@ -54,12 +54,16 @@ class SerialModel
         if (!in_array($baudrate, array(9600, 38400, 115200))) {
             return array('success' => false, 'message' => "invalid baud rate");
         }
+        if ($this->serialmonitor_pid()) {
+            return array('success' => false, 'message' => "serialmonitor already running");
+        }
         return $this->pushAction("serialmonitor-start", [(string)$baudrate, "/dev/" . $serialport]);
     }
 
     public function stop()
     {
         if (!$this->redis) return array('success' => false, 'message' => "Redis not enabled");
+        if (!$this->serialmonitor_pid()) return array('success' => false, 'message' => "serialmonitor not running");
         $this->redis->rpush("serialmonitor", "exit");
         return array('success' => true, 'message' => "serialmonitor stop command sent");
     }
@@ -78,6 +82,7 @@ class SerialModel
     {
         if (!$this->redis) return array('success' => false, 'message' => "Redis not enabled");
         if ($cmd === "") return array('success' => false, 'message' => "no command");
+        if (!$this->serialmonitor_pid()) return array('success' => false, 'message' => "serialmonitor not running");
         $this->redis->rpush("serialmonitor", $cmd);
         return array('success' => true, 'message' => "serialmonitor cmd sent");
     }
