@@ -267,7 +267,7 @@ load_language_files("Modules/mymodule/locale", "mymodule_messages");
 echo ctx_tr("mymodule_messages", "My module");
 ```
 
-See [Translation](../../../scripts/translation/readme.md).
+See [Translation](https://github.com/emoncms/emoncms/blob/master/scripts/translation/readme.md).
 
 ## Logging
 

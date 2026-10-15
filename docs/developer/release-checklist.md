@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Release checklist
 
 Steps for releasing Emoncms core and the modules maintained by OpenEnergyMonitor. `master` holds development. `stable` is the release branch that emonPi and emonBase systems update from.
@@ -24,7 +28,7 @@ Steps for releasing Emoncms core and the modules maintained by OpenEnergyMonitor
 ## Documentation
 
 - [ ] User guide pages match changed screens and labels. See [STYLE.md](STYLE.md).
-- [ ] Screenshots are captured again for changed screens. See [scripts/docs-screenshots](../../scripts/docs-screenshots/README.md):
+- [ ] Screenshots are captured again for changed screens. See [scripts/docs-screenshots](https://github.com/emoncms/emoncms/blob/master/scripts/docs-screenshots/README.md):
   1. Refresh the demo data.
   2. `node setup-account.mjs`
   3. `node capture.mjs`

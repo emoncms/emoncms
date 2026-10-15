@@ -1,3 +1,7 @@
+---
+orphan: true
+---
+
 # Global variables
 
 `index.php` sets up these globals before it runs a controller. Declare the ones a module needs:
