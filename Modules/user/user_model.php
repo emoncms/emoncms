@@ -1415,12 +1415,16 @@ class User
     public function new_apikey_read($userid)
     {
         $userid = (int) $userid;
+        $old_apikey = $this->get_apikey_read($userid);
         $apikey = generate_secure_key(16);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_read = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);
         $stmt->execute();
         $stmt->close();
+
+        // Remove cached session for the old key
+        if ($this->redis && $old_apikey) $this->redis->del("readapikey:$old_apikey");
         
         return array('success'=>true, 'read_apikey'=>$apikey);
     }
@@ -1429,12 +1433,16 @@ class User
     public function new_apikey_write($userid)
     {
         $userid = (int) $userid;
+        $old_apikey = $this->get_apikey_write($userid);
         $apikey = generate_secure_key(16);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET apikey_write = ? WHERE id = ?");
         $stmt->bind_param("si", $apikey, $userid);
         $stmt->execute();
         $stmt->close();
+
+        // Remove cached session for the old key
+        if ($this->redis && $old_apikey) $this->redis->del("writeapikey:$old_apikey");
 
         return array('success'=>true, 'write_apikey'=>$apikey);
     }

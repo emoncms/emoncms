@@ -2,6 +2,17 @@
 
 use PHPUnit\Framework\TestCase;
 
+// Key subset of the redis API used by apikey_session and key rotation
+class FakeApikeyRedis
+{
+    public array $keys = [];
+
+    public function exists($key) { return isset($this->keys[$key]); }
+    public function get($key) { return $this->keys[$key] ?? false; }
+    public function set($key, $value) { $this->keys[$key] = $value; return true; }
+    public function del($key) { unset($this->keys[$key]); return 1; }
+}
+
 /**
  * Integration tests for the User model.
  *
@@ -373,5 +384,47 @@ class UserModelIntegrationTest extends TestCase
         $reg = $this->registerTestUser($username);
 
         $this->assertSame($reg['apikey_write'], $this->user->get_apikey_write($reg['userid']));
+    }
+
+    /**
+ * @test 
+*/
+    public function new_apikey_write_invalidates_cached_old_key(): void
+    {
+        $reg = $this->registerTestUser($this->uniqueUsername());
+        $redis = new FakeApikeyRedis();
+        $user = new User(static::$mysqli, $redis);
+
+        $this->assertNotEmpty($user->apikey_session($reg['apikey_write']));
+        $this->assertTrue($redis->exists("writeapikey:" . $reg['apikey_write']));
+
+        $result = $user->new_apikey_write($reg['userid']);
+        $this->assertNotSame($reg['apikey_write'], $result['write_apikey']);
+
+        $this->assertSame([], $user->apikey_session($reg['apikey_write']));
+        $session = $user->apikey_session($result['write_apikey']);
+        $this->assertSame((int) $reg['userid'], (int) $session['userid']);
+        $this->assertSame(1, $session['write']);
+    }
+
+    /**
+ * @test 
+*/
+    public function new_apikey_read_invalidates_cached_old_key(): void
+    {
+        $reg = $this->registerTestUser($this->uniqueUsername());
+        $redis = new FakeApikeyRedis();
+        $user = new User(static::$mysqli, $redis);
+
+        $this->assertNotEmpty($user->apikey_session($reg['apikey_read']));
+        $this->assertTrue($redis->exists("readapikey:" . $reg['apikey_read']));
+
+        $result = $user->new_apikey_read($reg['userid']);
+        $this->assertNotSame($reg['apikey_read'], $result['read_apikey']);
+
+        $this->assertSame([], $user->apikey_session($reg['apikey_read']));
+        $session = $user->apikey_session($result['read_apikey']);
+        $this->assertSame((int) $reg['userid'], (int) $session['userid']);
+        $this->assertSame(0, $session['write']);
     }
 }
