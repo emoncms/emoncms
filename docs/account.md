@@ -28,10 +28,6 @@ A device can also use a [device key](devices.md#device-key), which can only post
 
 **Theme colour** and **Sidebar colour** are saved in this browser only.
 
-## Mobile app
-
-Scan the QR code with the Emoncms app for iOS or Android to connect it to your account.
-
 ## Delete account
 
 **Delete account** removes the account with its inputs, feeds and data. Enter your password to confirm.

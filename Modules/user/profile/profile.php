@@ -17,7 +17,6 @@ global $session;
 
 load_css("Modules/user/profile/profile.css");
 load_js("Lib/js/clipboard.js");
-load_js("Lib/js/qrcode.js");
 load_js("Lib/js/vue.global.prod-3.5.22.min.js");
 
 // Translated text for HTML content and attributes
@@ -153,19 +152,6 @@ $js_strings = [
             <div class="row-key"><?php echo profile_tr('Archived features'); ?></div>
             <div class="row-value">
                 <label class="profile-check"><input type="checkbox" :checked="show_archived" @change="set_show_archived($event.target.checked)"> <?php echo profile_tr('Show archived menu items'); ?></label>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel">
-        <div class="panel-header panel-header-static"><span class="panel-accent"></span><span class="panel-name"><?php echo profile_tr('Mobile app'); ?></span></div>
-        <div class="panel-body profile-mobile">
-            <div id="qr_apikey" ref="qr"></div>
-            <div>
-                <p><?php echo profile_tr('Scan QR code from the iOS or Android app to connect.'); ?></p>
-                <p class="text-muted"><?php echo profile_tr('Or scan to view MyElectric web app.'); ?></p>
-                <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img class="store-badge" alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png"/></a>
-                <a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&amp;mt=8"><img class="store-badge" alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png"/></a>
             </div>
         </div>
     </div>
