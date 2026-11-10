@@ -56,9 +56,17 @@ for i in range(1,3):
 # -------------------------------------------------------------
 # 3. Reset 
 # -------------------------------------------------------------
+# Pin 7 (GPIO4) resets the emonPi1's ATmega. On the emonPi2 and emonPi3 it is
+# the LCD push button, held by emonPiLCD, and no reset is needed: skip the
+# reset when the pin is in use rather than drive the button line.
 def reset():
   GPIO.setmode(GPIO.BOARD)
-  GPIO.setup(7, GPIO.OUT)
+  try:
+    GPIO.setup(7, GPIO.OUT, initial=GPIO.LOW)
+  except Exception as err:
+    print("Reset skipped, GPIO4 (pin 7) is in use: "+str(err))
+    GPIO.cleanup()
+    return
   GPIO.output(7, GPIO.HIGH)
   time.sleep(0.32)
   GPIO.output(7, GPIO.LOW)
