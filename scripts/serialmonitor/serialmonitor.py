@@ -6,17 +6,25 @@
 
 # 1. Import
 
+import os
 import serial
 import time
 import sys
 import select
 import glob
 
-# Check if this is a RaspberryPi and GPIO module is available
+# rpi-lgpio (RPi.GPIO on trixie) creates a notification pipe in the working
+# directory on import. Run from service-runner that is /, which pi cannot
+# write to, and the import fails: use /tmp unless LG_WD is already set.
+os.environ.setdefault("LG_WD", "/tmp")
+
+# Check if this is a RaspberryPi and GPIO module is available. Any failure
+# only means no reset, it must not stop the serial monitor.
 rpi = True
-try: 
+try:
     import RPi.GPIO as GPIO
-except ModuleNotFoundError as err:
+except Exception as err:
+    print("GPIO not available, no reset: "+str(err))
     rpi = False
 
 # Check if redis available for emoncms -> script link
@@ -59,13 +67,17 @@ for i in range(1,3):
 # Pin 7 (GPIO4) resets the emonPi1's ATmega. On the emonPi2 and emonPi3 it is
 # the LCD push button, held by emonPiLCD, and no reset is needed: skip the
 # reset when the pin is in use rather than drive the button line.
+# The serial monitor carries on without a reset if GPIO fails for any reason.
 def reset():
-  GPIO.setmode(GPIO.BOARD)
   try:
+    GPIO.setmode(GPIO.BOARD)
     GPIO.setup(7, GPIO.OUT, initial=GPIO.LOW)
   except Exception as err:
-    print("Reset skipped, GPIO4 (pin 7) is in use: "+str(err))
-    GPIO.cleanup()
+    print("Reset skipped, GPIO4 (pin 7) is not available: "+str(err))
+    try:
+      GPIO.cleanup()
+    except Exception:
+      pass
     return
   GPIO.output(7, GPIO.HIGH)
   time.sleep(0.32)
@@ -85,8 +97,14 @@ if redis:
 try:
     ser = serial.Serial(device, baudrate)
     ser.reset_input_buffer()
-except:
-    print("Could not open serial port "+str(device)+" "+str(baudrate))
+except Exception as err:
+    message = "Could not open serial port "+str(device)+" "+str(baudrate)+": "+str(err)
+    print(message)
+    if redis:
+        try:
+            r.rpush('serialmonitor-log', message)
+        except Exception:
+            pass
     sys.exit(0)
 # -------------------------------------------------------------
 
