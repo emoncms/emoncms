@@ -115,18 +115,26 @@ ser.write(("l\n").encode())
 r.rpush('serialmonitor-log',"Loading configuration, list (l) command sent:\n")
 
 linestr = ""
+# Started from service-runner, stdin is /dev/null: it is always readable and
+# at end of file, so select() would return at once on every loop. Stop
+# watching stdin once it reaches end of file.
+inputs = [sys.stdin, ser]
 while True:
     # Check for standard input or serial input (timeout of .2 sec):
     try:
-        inp, outp, err = select.select([sys.stdin, ser], [], [], .2)
+        inp, outp, err = select.select(inputs, [], [], .2)
     except KeyboardInterrupt:
         sys.exit(0)
-        
+
     # If standard input, write to serial
     if sys.stdin in inp:
-        line = sys.stdin.readline().rstrip()
-        if line!="":
-            ser.write((line+"\r\n").encode())
+        line = sys.stdin.readline()
+        if line=="":
+            inputs.remove(sys.stdin)
+        else:
+            line = line.rstrip()
+            if line!="":
+                ser.write((line+"\r\n").encode())
   
     # If serial input, read from serial    
     if ser in inp:
