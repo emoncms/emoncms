@@ -22,15 +22,16 @@
 
 /* Icon-only links should inherit surrounding text colour, not default link/visited palette.
    Excludes dropdown-menu links: their icon is the only child *element* but is followed by
-   text, and inheriting there lets page-level colours leak into the menus. */
-a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child),
-a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child),
-a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):visited,
-a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):visited,
-a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):hover,
-a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):hover,
-a:not(.text-muted, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):focus,
-a:not(.text-muted, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):focus {
+   text, and inheriting there lets page-level colours leak into the menus. Buttons
+   are excluded as they set their own text colour. */
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child),
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child),
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):visited,
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):visited,
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):hover,
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):hover,
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class^="svg-icon-"]:only-child):focus,
+a:not(.text-muted, .btn, .dropdown-menu a):has(> [class*=" svg-icon-"]:only-child):focus {
     color: inherit;
 }
 
