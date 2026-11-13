@@ -557,12 +557,9 @@ Vue.createApp({
 				tr('Client Information') + '\n-----------------------\n' + client;
 			copyTextToClipboard(txt, tr('Server info copied to clipboard as Text [text/plain]'));
 		},
-		redisFlush: function() {
-			if (!confirm('Are you sure you want to flush all Redis data?')) {
-				return;
-			}
+		postAction: function(action, failMessage) {
 			var self = this;
-			fetch(adminPath + 'redisflush', { method: 'POST', credentials: 'same-origin' })
+			fetch(adminPath + action, { method: 'POST', credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
@@ -572,32 +569,27 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
+					if (result.success === false) {
+						snackbar(failMessage + ': ' + result.message);
+						return;
+					}
 					self.refresh();
 				})
 				.catch(function() {
-					snackbar(tr('Refresh failed'));
+					snackbar(failMessage);
 				});
+		},
+		redisFlush: function() {
+			if (!confirm('Are you sure you want to flush all Redis data?')) {
+				return;
+			}
+			this.postAction('redisflush', tr('Flush failed'));
 		},
 		resetDiskStats: function() {
 			if (!confirm('Are you sure you want to reset disk stats?')) {
 				return;
 			}
-			var self = this;
-			fetch(adminPath + 'reset-disk-stats', { credentials: 'same-origin' })
-				.then(function(res) {
-					if (!res.ok) throw new Error('http');
-					return res.json();
-				})
-				.then(function(result) {
-					if (result.reauth) {
-						window.location.reload(true);
-						return;
-					}
-					self.refresh();
-				})
-				.catch(function() {
-					snackbar(tr('Refresh failed'));
-				});
+			this.postAction('resetdiskstats', tr('Reset disk stats failed'));
 		},
 		haltPi: function() {
 			if (!confirm(tr('Please confirm you wish to shutdown your Pi, please wait 30 secs before disconnecting the power...'))) {

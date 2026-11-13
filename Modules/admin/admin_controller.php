@@ -102,6 +102,11 @@ function admin_controller()
         }
     }
 
+    if (in_array($route->action, array('redisflush', 'resetdiskstats')) && $route->method != 'POST') {
+        $route->format = 'json';
+        return array('success'=>false, 'message'=>tr("This action has to be requested with POST"));
+    }
+
     if ($route->action == 'redisflush') {
         $route->format = 'json';
         if ($redis) {
