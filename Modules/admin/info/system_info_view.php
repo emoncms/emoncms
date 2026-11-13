@@ -562,7 +562,7 @@ Vue.createApp({
 				return;
 			}
 			var self = this;
-			fetch(adminPath + 'redis-flush', { credentials: 'same-origin' })
+			fetch(adminPath + 'redisflush', { method: 'POST', credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
