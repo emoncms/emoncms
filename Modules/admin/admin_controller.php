@@ -82,7 +82,7 @@ function admin_controller()
 
     // !!! SHUT DOWN WHOLE SYSTEM - Designed for use with RaspberryPi !!! 
     if ($route->action == 'shutdown') {
-        $route->format = 'text';
+        $route->format = $route->format == 'json' ? 'json' : 'text';
         if ($systemInfo->isPi()) {
             shell_exec('sudo shutdown -h now 2>&1');
             return "System halt in progress";
@@ -93,7 +93,7 @@ function admin_controller()
 
     // !!! REBOOT WHOLE SYSTEM - Designed for use with RaspberryPi !!!
     if ($route->action == 'reboot') {
-        $route->format = 'text';
+        $route->format = $route->format == 'json' ? 'json' : 'text';
         if ($systemInfo->isPi()) {
             shell_exec('sudo shutdown -r now 2>&1');
             return "System reboot in progress";

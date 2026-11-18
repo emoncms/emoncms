@@ -597,7 +597,7 @@ Vue.createApp({
 			}
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'shutdown', { credentials: 'same-origin' })
+			fetch(adminPath + 'shutdown.json', { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
@@ -621,7 +621,7 @@ Vue.createApp({
 			}
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'reboot', { credentials: 'same-origin' })
+			fetch(adminPath + 'reboot.json', { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
