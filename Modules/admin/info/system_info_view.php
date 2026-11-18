@@ -607,8 +607,9 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
-					self.shuttingDown = true;
-					snackbar('Pi shutting down...');
+					self.shuttingDown = result === 'System halt in progress';
+					self.loading = self.shuttingDown;
+					snackbar(self.shuttingDown ? 'Pi shutting down...' : result);
 				})
 				.catch(function() {
 					self.loading = false;
@@ -631,8 +632,9 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
-					self.shuttingDown = true;
-					snackbar('Pi rebooting...');
+					self.shuttingDown = result === 'System reboot in progress';
+					self.loading = self.shuttingDown;
+					snackbar(self.shuttingDown ? 'Pi rebooting...' : result);
 				})
 				.catch(function() {
 					self.loading = false;
