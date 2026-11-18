@@ -597,7 +597,7 @@ Vue.createApp({
 			}
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'shutdown', { credentials: 'same-origin' })
+			fetch(adminPath + 'shutdown.json', { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
@@ -607,8 +607,9 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
-					self.shuttingDown = true;
-					snackbar('Pi shutting down...');
+					self.shuttingDown = result === 'System halt in progress';
+					self.loading = self.shuttingDown;
+					snackbar(self.shuttingDown ? 'Pi shutting down...' : result);
 				})
 				.catch(function() {
 					self.loading = false;
@@ -621,7 +622,7 @@ Vue.createApp({
 			}
 			var self = this;
 			self.loading = true;
-			fetch(adminPath + 'reboot', { credentials: 'same-origin' })
+			fetch(adminPath + 'reboot.json', { credentials: 'same-origin' })
 				.then(function(res) {
 					if (!res.ok) throw new Error('http');
 					return res.json();
@@ -631,8 +632,9 @@ Vue.createApp({
 						window.location.reload(true);
 						return;
 					}
-					self.shuttingDown = true;
-					snackbar('Pi rebooting...');
+					self.shuttingDown = result === 'System reboot in progress';
+					self.loading = self.shuttingDown;
+					snackbar(self.shuttingDown ? 'Pi rebooting...' : result);
 				})
 				.catch(function() {
 					self.loading = false;
