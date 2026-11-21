@@ -27,10 +27,16 @@ function profile_tr($text)
 
 // Translated strings used from profile.js
 $js_strings = [
-    'Save', 'Cancel', 'Edit',
-    'Current password field empty', 'New password field empty', 'Repeat password field empty',
-    'Passwords do not match', 'Request failed',
-    'Write API Key copied to clipboard', 'Read API Key copied to clipboard'
+    'Save' => tr('Save'),
+    'Cancel' => tr('Cancel'),
+    'Edit' => tr('Edit'),
+    'Current password field empty' => tr('Current password field empty'),
+    'New password field empty' => tr('New password field empty'),
+    'Repeat password field empty' => tr('Repeat password field empty'),
+    'Passwords do not match' => tr('Passwords do not match'),
+    'Request failed' => tr('Request failed'),
+    'Write API Key copied to clipboard' => tr('Write API Key copied to clipboard'),
+    'Read API Key copied to clipboard' => tr('Read API Key copied to clipboard')
 ];
 ?>
 <div id="profile" class="panel-page profile-page" v-cloak>
@@ -238,7 +244,7 @@ var profile_init = {
     gravatar_hash: <?php echo json_encode($session["gravatar"] ? hash('sha256', strtolower(trim($session["gravatar"]))) : ''); ?>,
     languages: <?php echo json_encode(get_available_languages_with_names()); ?>,
     translation_status: <?php echo json_encode(get_translation_status()); ?>,
-    strings: <?php echo json_encode(array_combine($js_strings, array_map('tr', $js_strings))); ?>
+    strings: <?php echo json_encode($js_strings); ?>
 };
 </script>
 <?php load_js("Modules/user/profile/profile.js"); ?>

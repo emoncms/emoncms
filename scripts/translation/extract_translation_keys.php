@@ -51,14 +51,14 @@ function extractTranslationKeys($directory) {
         if ($file->getExtension() === 'php') {
             $content = file_get_contents($file->getPathname());
             
-            // Regex explanation for tr() calls:
-            // \btr\s* - word boundary + 'tr' + optional whitespace
+            // Regex explanation for tr() and its HTML-escaping wrapper profile_tr():
+            // \b(?:profile_)?tr\s* - match either function name and optional whitespace
             // \(\s* - opening parenthesis + optional whitespace
             // ([\'\"]) - capture group 1: opening quote (single or double)
             // ((?:[^\\\\]|\\\\.)*?) - capture group 2: non-greedy match of text, handling escaped characters
             // \1 - backreference to the same quote type as opening
             // \s*\) - optional whitespace + closing parenthesis
-            preg_match_all('/\btr\s*\(\s*([\'"])((?:[^\\\\]|\\\\.)*?)\1\s*\)/', $content, $trMatches);
+            preg_match_all('/\b(?:profile_)?tr\s*\(\s*([\'"])((?:[^\\\\]|\\\\.)*?)\1\s*\)/', $content, $trMatches);
             
             // Regex explanation for ctx_tr() calls:
             // Similar to above but matches two string parameters separated by comma
@@ -182,41 +182,28 @@ if ($lang == "all") {
     $availableLanguages = [$lang]; // Only generate for specified language
 }
 
+// A view can request another module's strings, such as the sidebar's lib_messages.
+$moduleKeys = [];
+$contextKeys = [];
+$knownContexts = [];
+foreach (array_keys($translationPaths) as $module) {
+    $knownContexts[$module . '_messages'] = true;
+}
+foreach ($translationPaths as $module => $modulePath) {
+    $result = extractTranslationKeys($modulePath);
+    $moduleKeys[$module] = $result['tr_keys'];
+    foreach ($result['ctx_keys'] as $context => $texts) {
+        if ($context !== $module && !isset($knownContexts[$context])) {
+            echo "Warning: Found unknown translation context '$context' in module '$module'.\n";
+        }
+        $contextKeys[$context] = array_merge($contextKeys[$context] ?? [], $texts);
+    }
+}
+
 foreach ($availableLanguages as $lang) {
-    foreach ($translationPaths as $module=>$modulePath) {
-
+    foreach ($translationPaths as $module => $modulePath) {
         echo "Processing: $modulePath\n";
-
-        $result = extractTranslationKeys($modulePath);
-
-        $keys = $result['tr_keys'];
-        $ctx_keys = $result['ctx_keys'];
-
-        // Handle contextual translations
-        // Convention: context should be "{module_name}_messages" for module-specific messages
-        $messages_context = $module . "_messages";
-        if (isset($ctx_keys[$messages_context])) {
-            // Merge contextual translations into main keys array
-            foreach ($ctx_keys[$messages_context] as $msgKey) {
-                if (!in_array($msgKey, $keys)) {
-                    $keys[] = $msgKey;
-                }
-            }
-        }
-        
-        // Ensure all keys are unique after merging
-        $keys = array_unique($keys);
-
-        // Validation: Check for unexpected contexts
-        // All contexts should either match the module name or follow the "{module}_messages" pattern
-        foreach ($ctx_keys as $context => $texts) {
-            if ($context !== $messages_context && $context !== $module) {
-                echo "Warning: Found context '$context' in module '$module' that does not match expected patterns.\n";
-                echo "Expected: '$module' or '$messages_context'\n";
-                // Note: This is a warning, not a fatal error, in case there are legitimate edge cases
-            }
-        }
-        
+        $keys = array_unique(array_merge($moduleKeys[$module], $contextKeys[$module . '_messages'] ?? []));
         echo "Found " . count($keys) . " translation keys in $module\n";
         
         // Debug: Uncomment to see all extracted keys

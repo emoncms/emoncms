@@ -425,6 +425,27 @@ function load_language_files($path, $context = false)
     }
 }
 
+// Evaluate a module's definitions with its own catalogue, then restore the caller's.
+function with_module_translations($module, callable $callback)
+{
+    if (($GLOBALS['language'] ?? 'en_GB') === 'en_GB') {
+        return $callback();
+    }
+
+    $previous = $GLOBALS['translations'] ?? null;
+    unset($GLOBALS['translations']);
+    try {
+        load_language_files(__DIR__."/Modules/".$module."/locale");
+        return $callback();
+    } finally {
+        if ($previous === null) {
+            unset($GLOBALS['translations']);
+        } else {
+            $GLOBALS['translations'] = $previous;
+        }
+    }
+}
+
 function tr($text)
 {
     return isset($GLOBALS['translations'][$text]) && $GLOBALS['translations'][$text] !== ''

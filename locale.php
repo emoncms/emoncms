@@ -12,8 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-// Return all locale directory from all modules.
-// If one module has a language it will be detected
+// Find languages supplied by legacy locale directories or JSON catalogues.
 function directoryLocaleScan($dir)
 {
     $directoryList = array();
@@ -30,6 +29,18 @@ function directoryLocaleScan($dir)
             },
             $directoryList
         );
+
+        $catalogue = '/locale/[a-z][a-z]_[A-Z][A-Z].json';
+        $files = array_merge(
+            glob($dir.'/Modules/*'.$catalogue),
+            glob($dir.'/Theme'.$catalogue),
+            glob($dir.'/Lib'.$catalogue)
+        );
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $directoryList[] = basename($file, '.json');
+            }
+        }
     }
 
     return array_unique($directoryList);
@@ -54,7 +65,7 @@ function get_available_languages_with_names()
     $available_languages_with_names = array();
     
     foreach ($available_languages as $code) {
-        $available_languages_with_names[$code] = $language_names[$code];
+        $available_languages_with_names[$code] = $language_names[$code] ?? $code;
     }
     return $available_languages_with_names;
 }
@@ -107,8 +118,9 @@ function lang_http_accept()
 
         $splits = array();
 
-        if (preg_match($pattern, $lang, $splits)) {
-            $langs[] = !empty($splits['subtag']) ? $splits["primarytag"] . "_" . $splits['subtag'] : $splits["primarytag"];
+        if (preg_match($pattern, trim($lang), $splits)) {
+            $code = strtolower($splits['primarytag']);
+            $langs[] = !empty($splits['subtag']) ? $code . "_" . strtoupper($splits['subtag']) : $code;
         }
     }
     return $langs;
@@ -132,6 +144,8 @@ function set_lang($language)
         'fr' => 'fr_FR',
         'it' => 'it_IT',
         'nl' => 'nl_NL',
+        'sv' => 'sv_SE',
+        'sv_FI' => 'sv_SE',
         'en' => 'en_GB'
     );
 

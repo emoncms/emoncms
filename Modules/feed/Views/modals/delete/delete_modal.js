@@ -110,10 +110,10 @@ function showSelectedFeeds(feed_inputs) {
             msg += total_input_processes_linked + ' ' + tr("input processes");
         }
         if (total_virtual_feed_processes_linked > 0) {
-            if (msg.length > 0) msg += ' and ';
+            if (msg.length > 0) msg += ' ' + tr('and') + ' ';
             msg += total_virtual_feed_processes_linked + ' '+tr("virtual feed processes");
         }
-        msg += total_selected === 1? tr("associated with this feed"): tr("associated with these feeds");
+        msg += ' ' + (total_selected === 1 ? tr("associated with this feed") : tr("associated with these feeds"));
 
         feedProcessList = `<span class="badge rounded-pill bg-secondary" style="padding-left:4px;margin-right:6px"><i class="icon icon-white icon-exclamation-sign"></i> ${msg}</span>`;
     }

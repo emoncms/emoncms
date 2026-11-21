@@ -34,26 +34,26 @@
       <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2l-2 2m-7.6 7.6a5.5 5.5 0 1 1-7.78 7.78 5.5 5.5 0 0 1 7.78-7.78zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
       </span>
-      <?php echo tr('Your API keys'); ?>
+      <?php echo ctx_tr('lib_messages', 'Your API keys'); ?>
     </h3>
     <?php if ($auth_logged_in) { ?>
     <div class="d-flex flex-column api-key-field">
-      <span class="text-body-secondary"><?php echo tr('Read only access'); ?></span>
+      <span class="text-body-secondary"><?php echo ctx_tr('lib_messages', 'Read only access'); ?></span>
       <div class="input-group w-100">
         <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_read; ?>" onclick="this.select()">
         <button class="btn btn-default" onclick="api_copy('<?php echo $auth_apikey_read; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
       </div>
     </div>
     <div class="d-flex flex-column api-key-field">
-      <span class="text-body-secondary"><?php echo tr('Full Read &amp; Write access'); ?></span>
+      <span class="text-body-secondary"><?php echo ctx_tr('lib_messages', 'Full Read &amp; Write access'); ?></span>
       <div class="input-group w-100">
         <input type="text" class="form-control font-monospace" readonly value="<?php echo $auth_apikey_write; ?>" onclick="this.select()">
         <button class="btn btn-default" onclick="api_copy('<?php echo $auth_apikey_write; ?>',this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="9" width="12" height="12" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg></button>
       </div>
     </div>
     <?php } else { ?>
-    <p><?php echo tr('There are two API keys: a <strong>read only</strong> key, safe to use in dashboards and shared links, and a <strong>read &amp; write</strong> key that lets devices post data to your account.'); ?></p>
-    <p><a href="<?php echo $path; ?>user/login"><?php echo tr('Log in or create an account'); ?></a> <?php echo tr('to get your keys.'); ?></p>
+    <p><?php echo ctx_tr('lib_messages', 'There are two API keys: a <strong>read only</strong> key, safe to use in dashboards and shared links, and a <strong>read &amp; write</strong> key that lets devices post data to your account.'); ?></p>
+    <p><a href="<?php echo $path; ?>user/login"><?php echo ctx_tr('lib_messages', 'Log in or create an account'); ?></a> <?php echo ctx_tr('lib_messages', 'to get your keys.'); ?></p>
     <?php } ?>
   </div></div>
 
@@ -62,22 +62,22 @@
       <span class="ref-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3"></path></svg>
       </span>
-      <?php echo tr('Three ways to authenticate'); ?>
+      <?php echo ctx_tr('lib_messages', 'Three ways to authenticate'); ?>
     </h3>
     <div class="d-flex flex-column api-auth-rows">
       <div class="api-auth-row">
-        <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo tr('RECOMMENDED'); ?></span>
-        <span class="api-auth-mono font-monospace"><?php echo tr('POST body:'); ?> <span class="hl">apikey=APIKEY</span></span>
+        <span class="badge px-2 api-auth-tag bg-primary-subtle text-primary-emphasis"><?php echo ctx_tr('lib_messages', 'RECOMMENDED'); ?></span>
+        <span class="api-auth-mono font-monospace"><?php echo ctx_tr('lib_messages', 'POST body:'); ?> <span class="hl">apikey=APIKEY</span></span>
       </div>
       <div class="api-auth-row">
-        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo tr('HEADER'); ?></span>
+        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo ctx_tr('lib_messages', 'HEADER'); ?></span>
         <span class="api-auth-mono font-monospace">Authorization: Bearer APIKEY</span>
       </div>
       <div class="api-auth-row">
-        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo tr('URL'); ?></span>
+        <span class="badge px-2 api-auth-tag bg-secondary-subtle text-secondary-emphasis"><?php echo ctx_tr('lib_messages', 'URL'); ?></span>
         <span class="api-auth-mono font-monospace">&amp;apikey=APIKEY</span>
       </div>
     </div>
-    <p class="text-body-secondary"><?php echo tr('No HTTPS on your device? Emoncms also supports AES-128-CBC encrypted posting using your API key as a pre-shared key. See the reference below.'); ?></p>
+    <p class="text-body-secondary"><?php echo ctx_tr('lib_messages', 'No HTTPS on your device? Emoncms also supports AES-128-CBC encrypted posting using your API key as a pre-shared key. See the reference below.'); ?></p>
   </div></div>
 </div>
