@@ -222,7 +222,9 @@ class Process
         foreach ($modules as $value) {
             $class = $this->get_module_class( $value );
             if ($class !== null) {
-                $mod_process_list = $class->process_list();
+                $mod_process_list = function_exists('with_module_translations')
+                    ? with_module_translations($value, [$class, 'process_list'])
+                    : $class->process_list();
 
                 foreach ($mod_process_list as $v) {
                     $processkey = strtolower( $value ."__".$v['function']);
@@ -359,6 +361,16 @@ class Process
      */
     public function validate_processlist($userid, $id, $processlist, $context_type = 0)
     {
+        $validate = function () use ($userid, $processlist, $context_type) {
+            return $this->validate_processlist_for_context($userid, $processlist, $context_type);
+        };
+        return function_exists('with_module_translations')
+            ? with_module_translations('process', $validate)
+            : $validate();
+    }
+
+    private function validate_processlist_for_context($userid, $processlist, $context_type)
+    {
         // Process list expected in new JSON format
         $processlist = json_decode($processlist, true);
         if (json_last_error() !== JSON_ERROR_NONE) {
@@ -376,17 +388,20 @@ class Process
 
         foreach ($processlist as $index => $inputprocess) {
             if (!isset($inputprocess['fn'])) {
-                return array('success' => false, 'message' => tr("Missing process key in process list at index $index"));
+                $message = tr('Missing process key in process list at index $index');
+                return array('success' => false, 'message' => str_replace('$index', (string) $index, $message));
             }
 
             if (!isset($inputprocess['args']) || !is_array($inputprocess['args'])) {
-                return array('success' => false, 'message' => tr("Invalid or missing args in process list at index $index"));
+                $message = tr('Invalid or missing args in process list at index $index');
+                return array('success' => false, 'message' => str_replace('$index', (string) $index, $message));
             }
 
             // Verify process key
             $process_key = $inputprocess['fn'];
             if (!isset($processes[$process_key])) {
-                return array('success' => false, 'message' => tr("Invalid process process key:$process_key"));
+                $message = tr('Invalid process process key:$process_key');
+                return array('success' => false, 'message' => str_replace('$process_key', $process_key, $message));
             }
 
             // Process arguments can be defined with an args array or a singular argtype
@@ -404,7 +419,8 @@ class Process
 
             // Validate number of args against arg_types
             if (count($args) !== count($arg_types)) {
-                return array('success' => false, 'message' => tr("Invalid number of arguments for process: $process_key"));
+                $message = tr('Invalid number of arguments for process: $process_key');
+                return array('success' => false, 'message' => str_replace('$process_key', $process_key, $message));
             }
 
             // Validate each arg against its type

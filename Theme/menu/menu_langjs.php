@@ -1,4 +1,4 @@
-<?php bindtextdomain("lib_messages",__DIR__ . "/../../Lib/locale"); ?>
+<?php load_language_files(__DIR__ . "/../../Lib/locale", "lib_messages"); ?>
 
 <script type="text/javascript">
 // Create a Javascript associative array who contain sentences from menu

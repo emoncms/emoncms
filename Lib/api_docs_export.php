@@ -54,7 +54,7 @@ function api_docs_obj() {
         $definitions = "Modules/$module/".$module."_api_obj.php";
         if (!is_file($definitions)) continue;
         require_once $definitions;
-        $modules[$module] = call_user_func($module."_api_obj");
+        $modules[$module] = with_module_translations($module, $module."_api_obj");
     }
 
     $api = array();

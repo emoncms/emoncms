@@ -1,0 +1,14 @@
+{
+    "If rate >=, skip next": "Hoppa över nästa om förändringen är minst gränsvärdet",
+    "Conditional - Event": "Villkor för händelser",
+    "<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.<\/p>": "<p>Hoppar över nästa steg om absolutbeloppet av värdets förändring sedan förra beräkningen är större än eller lika med det angivna gränsvärdet.<\/p>",
+    "If rate <, skip next": "Hoppa över nästa om förändringen är mindre än gränsvärdet",
+    "<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.<\/p>": "<p>Hoppar över nästa steg om absolutbeloppet av värdets förändring sedan förra beräkningen är mindre än det angivna gränsvärdet.<\/p>",
+    "If Mute, skip next": "Hoppa över nästa under väntetiden",
+    "<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.<\/p>": "<p>Första gången listan körs fortsätter den som vanligt och väntetiden börjar räknas. Vid följande körningar hoppas nästa steg över så länge den angivna tiden i sekunder inte har gått ut.<\/p>",
+    "If !Mute, skip next": "Hoppa över nästa när väntetiden har gått ut",
+    "<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.<\/p>": "<p>Första gången listan körs hoppas nästa steg över och väntetiden börjar räknas. Vid följande körningar hoppas nästa steg över när den angivna tiden i sekunder har gått ut.<\/p>",
+    "Send Email": "Skicka e-post",
+    "Event": "Händelse",
+    "<p>Send an email to the user with the specified body. Email sent to user's email address or default set in settings.ini.<\/p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}<\/p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.<\/p>": "<p>Skickar ett e-postmeddelande med den angivna texten till användarens e-postadress eller till standardadressen i settings.ini.<\/p><p>Följande malltaggar kan användas i meddelandet: {type}, {id}, {key}, {name}, {node}, {time}, {value}<\/p><p>Exempel på meddelandetext: Klockan {time} hade {type} med namnet {name} och nyckeln {key} från noden {node} värdet {value}.<\/p>"
+}
